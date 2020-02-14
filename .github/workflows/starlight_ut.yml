@@ -1,0 +1,16 @@
+name: Starlight unit tests runner
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: submodules
+      run: git submodule update --init --recursive
+    - name: build
+      run: ./build.sh
+    - name: run_tests
+      run: ./run_tests.sh
