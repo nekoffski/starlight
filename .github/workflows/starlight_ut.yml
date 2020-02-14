@@ -7,9 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - uses: actions/checkout@v2
     - name: submodules
       run: git submodule update --init --recursive
-    - uses: actions/checkout@v2
     - name: build
       run: ./build.sh
     - name: run_tests
