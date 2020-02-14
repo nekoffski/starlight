@@ -1,3 +1,5 @@
+project(starlight)
+
 cmake_minimum_required(VERSION 3.10)
 
 enable_testing()
@@ -5,6 +7,7 @@ enable_testing()
 set(CMAKE_CXX_STANDARD 17)
 set(STARLIGHT_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-add_subdirectory(3rdparty)
+add_subdirectory(3rdparty/googletest)
+add_subdirectory(3rdparty/spdlog)
 add_subdirectory(src/starlight)
 add_subdirectory(test)
