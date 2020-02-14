@@ -7,6 +7,8 @@ enable_testing()
 set(CMAKE_CXX_STANDARD 17)
 set(STARLIGHT_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
+set(spdlog_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/spdlog)
+
 add_subdirectory(3rdparty/googletest)
 add_subdirectory(3rdparty/spdlog)
 add_subdirectory(src/starlight)
