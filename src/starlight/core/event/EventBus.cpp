@@ -3,11 +3,20 @@
 namespace starl::core::event {
     
     void EventBus::notifyAll(const Event& event) {
-
+        for (auto &[_, observer] : m_observers) {
+            observer->onEvent(event);
+        }
     }
 
     void EventBus::notify(const Event& event, const std::vector<EventObserverIdent>& targets) {
-
+        for (auto& target : targets) {
+            if (auto observer = m_observers.find(target); observer != m_observers.end()) {
+                observer->second->onEvent(event);
+            } else {
+                // TODO: handle error
+            }
+            
+        }
     }
 
     void EventBus::registerObserver(const types::NotNullPtr<IEventObserver>& observer, EventObserverIdent ident) {
@@ -15,7 +24,7 @@ namespace starl::core::event {
             // TODO: error code handling
             return;
         }
-        m_observers[ident] = observer;
+        m_observers[ident] = observer; 
     }
  
 }

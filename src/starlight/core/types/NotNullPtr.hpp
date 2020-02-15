@@ -12,7 +12,7 @@ public:
         }
     }
 
-    operator T*() {
+    operator T*() const {
         return m_ptr;
     }
 
@@ -20,16 +20,15 @@ public:
         return m_ptr;
     }
 
-    T operator*() {
+    T& operator*() {
         return *m_ptr;
     }
 
-    NotNullPtr(const NotNullPtr&) = delete;
+    NotNullPtr(const NotNullPtr&) = default;
     NotNullPtr(NotNullPtr&&) = default;
 
-    NotNullPtr& operator=(const NotNullPtr&) = delete;
+    NotNullPtr& operator=(const NotNullPtr&) = default;
     NotNullPtr& operator=(NotNullPtr&&) = default;
-
 private:
     T* m_ptr;
 };
