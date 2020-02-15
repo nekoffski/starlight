@@ -12,6 +12,10 @@ public:
         }
     }
 
+    operator T*() {
+        return m_ptr;
+    }
+
     T* operator->() {
         return m_ptr;
     }
