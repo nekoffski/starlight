@@ -8,9 +8,11 @@ jobs:
     
     steps:
     - uses: actions/checkout@v2
-    - name: submodules
+    - name: Install dependencies
+      run: ./install_deps.sh
+    - name: Pull submodules
       run: git submodule update --init --recursive
-    - name: build
+    - name: Build 
       run: ./build.sh
-    - name: run_tests
+    - name: Run tests
       run: ./run_tests.sh
