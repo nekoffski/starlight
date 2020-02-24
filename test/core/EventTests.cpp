@@ -9,9 +9,7 @@ using namespace starl::core;
 
 class EventTests : public testing::Test {
 protected:
-    void SetUp() override {
-        m_eventBus = std::make_unique<event::EventBus>();
-    }
+    void SetUp() override { m_eventBus = std::make_unique<event::EventBus>(); }
 
     std::unique_ptr<event::EventBus> m_eventBus;
 };
@@ -22,7 +20,6 @@ struct Event1 : event::Event {
 
 struct Event2 : event::Event {
     using event::Event::Event;
-
 };
 
 class SomeService : public event::IEventObserver {
@@ -34,13 +31,8 @@ TEST_F(EventTests, givenSameIdentTwice_whenRegisteringObserver_shouldReturnError
     SomeService a, b;
     auto ident = "ident";
 
-    auto err1 = m_eventBus->registerObserver(&a, ident);
-    auto err2 = m_eventBus->registerObserver(&b, ident);
-
-    EXPECT_FALSE(err1);
-    EXPECT_TRUE(err2);
-    EXPECT_EQ(err2.code, static_cast<int>(event::ErrorCode::TWO_OBSERVERS_WITH_SAME_IDENT));
-    EXPECT_EQ(err2.severity, err::Severity::FATAL);
+    EXPECT_NO_THROW(m_eventBus->registerObserver(&a, ident));
+    EXPECT_THROW(m_eventBus->registerObserver(&b, ident), CoreException);
 }
 
 TEST_F(EventTests, givenEvent_whenCreatingDefault_expectIsHandledAndDispatchOnceSetToFalse) {
