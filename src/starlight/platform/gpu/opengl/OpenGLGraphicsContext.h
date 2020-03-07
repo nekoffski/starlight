@@ -7,7 +7,7 @@ namespace starl::platform::gpu::opengl {
 
 class OpenGLGraphicsContext : public GraphicsContext {
 public:
-    OpenGLGraphicsContext(void*);
+    explicit OpenGLGraphicsContext(void*);
 
     void init() override;
     void swapBuffers() override;

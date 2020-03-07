@@ -19,6 +19,9 @@ public:
     }
 
     std::string toStr() const override {
+        std::ostringstream ss;
+        ss << "[Core Exception: " << getLocalCode() << "/" << getGlobalCode() << ']';
+        return ss.str();
     }
 };
 }

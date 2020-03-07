@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -30,4 +31,9 @@ protected:
     int m_code;
     int m_category;
 };
+
+inline std::ostream& operator<<(std::ostream& ss, const Exception& e) {
+    ss << e.toStr();
+    return ss;
+}
 }

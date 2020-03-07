@@ -2,11 +2,12 @@
 
 #include <string>
 
+#include <starlight/platform/window/Viewport.h>
+
 namespace starl::platform::window {
 
 struct WindowParams {
-    unsigned int width;
-    unsigned int height;
+    Viewport viewport;
     std::string title;
 };
 }

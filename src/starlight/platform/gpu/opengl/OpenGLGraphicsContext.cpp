@@ -11,7 +11,7 @@ void OpenGLGraphicsContext::init() {
     glfwMakeContextCurrent(m_windowHandle);
 
     if (auto status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress); status <= 0) {
-        throw PlatformException(ErrorCode::COULD_NOT_LOAD_GRAPHICS_HANDLE);
+        throw PlatformException(ErrorCode::COULD_NOT_LOAD_GRAPHICS_HANDLE, status);
     }
 }
 

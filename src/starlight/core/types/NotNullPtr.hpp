@@ -4,9 +4,10 @@
 
 namespace starl::core::types {
 
-template <typename T> class NotNullPtr {
+template <typename T>
+class NotNullPtrBase {
 public:
-    NotNullPtr(T* ptr)
+    NotNullPtrBase(T* ptr)
         : m_ptr(ptr) {
         if (ptr == nullptr) {
             throw std::logic_error("Pointer could not be empty");
@@ -17,15 +18,27 @@ public:
 
     T* operator->() { return m_ptr; }
 
-    T& operator*() { return *m_ptr; }
+    NotNullPtrBase(const NotNullPtrBase&) = default;
+    NotNullPtrBase(NotNullPtrBase&&) = default;
 
-    NotNullPtr(const NotNullPtr&) = default;
-    NotNullPtr(NotNullPtr&&) = default;
+    NotNullPtrBase& operator=(const NotNullPtrBase&) = default;
+    NotNullPtrBase& operator=(NotNullPtrBase&&) = default;
 
-    NotNullPtr& operator=(const NotNullPtr&) = default;
-    NotNullPtr& operator=(NotNullPtr&&) = default;
-
-private:
+protected:
     T* m_ptr;
+};
+
+template <typename T>
+class NotNullPtr : public NotNullPtrBase<T> {
+public:
+    using NotNullPtrBase<T>::NotNullPtrBase;
+
+    T& operator*() { return *this->m_ptr; }
+};
+
+template <>
+class NotNullPtr<void> : public NotNullPtrBase<void> {
+public:
+    using NotNullPtrBase<void>::NotNullPtrBase;
 };
 }
