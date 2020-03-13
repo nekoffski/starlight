@@ -11,12 +11,16 @@ void OpenGLGraphicsContext::init() {
     glfwMakeContextCurrent(m_windowHandle);
 
     if (auto status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress); status <= 0) {
-        throw PlatformException(ErrorCode::COULD_NOT_LOAD_GRAPHICS_HANDLE, status);
+        throw PlatformException(ErrorCode::COULD_NOT_LOAD_GRAPHICS_HANDLE, "Could not load glad proc addr", status);
     }
 }
 
 void OpenGLGraphicsContext::swapBuffers() {
     glfwSwapBuffers(m_windowHandle);
+}
+
+void OpenGLGraphicsContext::clearBuffers() {
+    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 } // namespace starl::platform::gpu::opengl

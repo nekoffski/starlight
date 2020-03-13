@@ -13,16 +13,4 @@ std::unique_ptr<ShaderCompilerImpl> ShaderCompilerImpl::create() {
     return std::make_unique<opengl::OpenGLShaderCompilerImpl>();
 #endif
 }
-
-std::string ShaderCompilerImpl::getVertexShaderPath(std::shared_ptr<Shader>& shader) {
-    return shader->m_vertexPath;
-}
-
-std::string ShaderCompilerImpl::getFragmentShaderPath(std::shared_ptr<Shader>& shader) {
-    return shader->m_fragmentPath;
-}
-
-std::string ShaderCompilerImpl::getGeometryShaderPath(std::shared_ptr<Shader>& shader) {
-    return shader->m_geometryPath;
-}
 }

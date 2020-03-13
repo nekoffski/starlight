@@ -11,6 +11,7 @@ public:
 
     void init() override;
     void swapBuffers() override;
+    void clearBuffers() override;
 
 private:
     GLFWwindow* m_windowHandle;

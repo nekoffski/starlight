@@ -23,7 +23,7 @@ void EventBus::notify(std::shared_ptr<Event> event, const std::vector<EventObser
     }
 }
 
-void EventBus::registerObserver(const types::NotNullPtr<IEventObserver>& observer, EventObserverIdent ident) {
+void EventBus::registerObserver(const misc::types::NotNullPtr<IEventObserver>& observer, EventObserverIdent ident) {
     if (auto o = m_observers.find(ident); o != m_observers.end()) {
         throw CoreException(ErrorCode::TWO_OBSERVERS_WITH_SAME_IDENT);
     }

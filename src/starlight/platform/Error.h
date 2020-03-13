@@ -1,6 +1,7 @@
 #pragma once
 
 #include <starlight/core/BaseError.h>
+#include <starlight/platform/PlatformDetector.h>
 
 namespace starl::platform {
 
@@ -10,13 +11,20 @@ enum class ErrorCode : unsigned int {
     NO_ERROR = 0,
     COULD_NOT_LOAD_GRAPHICS_HANDLE,
     COULD_NOT_INIT_WINDOW_LIBRARY,
-    COULD_NOT_CREATE_WINDOW_INSTANCE
+    COULD_NOT_CREATE_WINDOW_INSTANCE,
+    COULD_NOT_OPEN_FRAGMENT_SHADER,
+    COULD_NOT_OPEN_VERTEX_SHADER,
+    COULD_NOT_COMPILE_FRAGMENT_SHADER,
+    COULD_NOT_COMPILE_VERTEX_SHADER,
+    COULD_NOT_LINK_SHADER,
+    COULD_NOT_LOAD_IMAGE,
+    UNKNOWN_TEXTURE_FORMAT
 };
 
 class PlatformException : public err::Exception {
 public:
-    explicit PlatformException(ErrorCode code, int thirdPartyErrorCode = 1)
-        : Exception(ERR_CATEGORY, static_cast<int>(code))
+    explicit PlatformException(ErrorCode code, std::string msg = "", int thirdPartyErrorCode = 1)
+        : Exception(ERR_CATEGORY, static_cast<int>(code), std::move(msg))
         , m_thirdPartyErrorCode(thirdPartyErrorCode) {
     }
 
@@ -26,7 +34,8 @@ public:
 
     std::string toStr() const override {
         std::ostringstream ss;
-        ss << "[Platform Exception: " << getLocalCode() << '/' << getGlobalCode() << '/' << m_thirdPartyErrorCode << ']';
+        ss << "Platform Exception: " << STARL_GET_PLATFORM_NAME() << "/" << m_code << '/' << getGlobalCode()
+           << '/' << m_thirdPartyErrorCode << '/' << m_msg;
         return ss.str();
     }
 

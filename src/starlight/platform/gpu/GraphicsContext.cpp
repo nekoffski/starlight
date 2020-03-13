@@ -6,7 +6,7 @@
 
 namespace starl::platform::gpu {
 
-std::unique_ptr<GraphicsContext> GraphicsContext::create(core::types::NotNullPtr<void> windowHandle) {
+std::unique_ptr<GraphicsContext> GraphicsContext::create(misc::types::NotNullPtr<void> windowHandle) {
 #ifdef STARL_USE_OPENGL
     return std::make_unique<opengl::OpenGLGraphicsContext>(windowHandle);
 #endif

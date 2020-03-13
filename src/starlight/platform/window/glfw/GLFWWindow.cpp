@@ -10,7 +10,7 @@ GLFWWindow::~GLFWWindow() {
 
 void GLFWWindow::init() {
     if (auto status = glfwInit(); status < 0) {
-        throw PlatformException(ErrorCode::COULD_NOT_INIT_WINDOW_LIBRARY, status);
+        throw PlatformException(ErrorCode::COULD_NOT_INIT_WINDOW_LIBRARY, "Could not load GLFW", status);
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -21,7 +21,7 @@ void GLFWWindow::init() {
         m_windowParams.title.c_str(), nullptr, nullptr);
 
     if (m_windowHandle == nullptr) {
-        throw PlatformException(ErrorCode::COULD_NOT_CREATE_WINDOW_INSTANCE);
+        throw PlatformException(ErrorCode::COULD_NOT_CREATE_WINDOW_INSTANCE, "Could not create GLFW window instance");
     }
 }
 

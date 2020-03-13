@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-namespace starl::core::types {
+namespace starl::misc::types {
 
 template <typename T>
 class NotNullPtrBase {

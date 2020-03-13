@@ -11,14 +11,9 @@ class Shader {
 public:
     static std::shared_ptr<Shader> create(std::string, std::string, std::string = "");
 
-    explicit Shader(std::string, std::string, std::string);
+    virtual ~Shader() {}
 
     virtual void enable() = 0;
     virtual void disable() = 0;
-
-protected:
-    std::string m_vertexPath;
-    std::string m_fragmentPath;
-    std::string m_geometryPath;
 };
 }

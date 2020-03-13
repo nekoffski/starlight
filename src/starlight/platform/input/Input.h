@@ -4,7 +4,7 @@
 #include <memory>
 #include <tuple>
 
-#include <starlight/core/types/NotNullPtr.hpp>
+#include <starlight/misc/types/NotNullPtr.hpp>
 
 #include <starlight/platform/PlatformDetector.h>
 
@@ -18,7 +18,7 @@ using InputCallback = std::function<void(int)>;
 
 class Input {
 public:
-    static std::unique_ptr<Input> create(core::types::NotNullPtr<void>);
+    static std::unique_ptr<Input> create(misc::types::NotNullPtr<void>);
 
     virtual void setKeyCallback(InputCallback){};
 

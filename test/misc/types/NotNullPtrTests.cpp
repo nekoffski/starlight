@@ -1,12 +1,13 @@
 #include <gtest/gtest.h>
 
-#include <starlight/core/types/NotNullPtr.hpp>
+#include <starlight/misc/types/NotNullPtr.hpp>
 
-using namespace starl::core::types;
+using namespace starl::misc::types;
 
 class NotNullPtrTests : public testing::Test {
 protected:
-    template <typename T> void foo(const NotNullPtr<T>&) {}
+    template <typename T>
+    void foo(const NotNullPtr<T>&) {}
 };
 
 TEST_F(NotNullPtrTests, givenNotNullPtr_whenPassingNullptr_expectThrow) {

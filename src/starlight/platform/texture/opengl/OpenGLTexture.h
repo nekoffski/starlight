@@ -1,0 +1,23 @@
+#pragma once
+
+#include <starlight/platform/texture/Texture.h>
+
+namespace starl::platform::texture::opengl {
+
+class OpenGLTexture : public Texture {
+public:
+    OpenGLTexture(const std::string&);
+    ~OpenGLTexture();
+
+    void bind() override;
+    void unbind() override;
+
+    std::shared_ptr<img::Image> getImage() {
+        return m_textureImage;
+    }
+
+private:
+    unsigned int m_textureId;
+    std::shared_ptr<img::Image> m_textureImage;
+};
+}

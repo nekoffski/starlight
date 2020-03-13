@@ -14,13 +14,13 @@ enum class ErrorCode : unsigned int {
 
 class CoreException : public err::Exception {
 public:
-    explicit CoreException(ErrorCode code)
-        : Exception(ERR_CATEGORY, static_cast<int>(code)) {
+    explicit CoreException(ErrorCode code, std::string msg = "")
+        : Exception(ERR_CATEGORY, static_cast<int>(code), std::move(msg)) {
     }
 
     std::string toStr() const override {
         std::ostringstream ss;
-        ss << "[Core Exception: " << getLocalCode() << "/" << getGlobalCode() << ']';
+        ss << "Core Exception: " << m_code << "/" << getGlobalCode() << '/' << m_msg;
         return ss.str();
     }
 };

@@ -12,9 +12,10 @@ namespace starl::err {
 
 class Exception : public std::exception {
 public:
-    explicit Exception(int category, int code)
+    explicit Exception(int category, int code, std::string msg)
         : m_category(category)
-        , m_code(code) {
+        , m_code(code)
+        , m_msg(std::move(msg)) {
     }
 
     virtual std::string toStr() const = 0;
@@ -27,9 +28,14 @@ public:
         return m_code;
     }
 
+    const std::string& getMsg() const {
+        return m_msg;
+    }
+
 protected:
     int m_code;
     int m_category;
+    std::string m_msg;
 };
 
 inline std::ostream& operator<<(std::ostream& ss, const Exception& e) {

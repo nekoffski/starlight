@@ -13,10 +13,4 @@ std::shared_ptr<Shader> Shader::create(std::string vertexPath, std::string fragm
     return std::make_shared<opengl::OpenGLShader>(vertexPath, fragmentPath, geometryPath);
 #endif
 }
-
-Shader::Shader(std::string vertexPath, std::string fragmentPath, std::string geometryPath)
-    : m_vertexPath(std::move(vertexPath))
-    , m_fragmentPath(std::move(fragmentPath))
-    , m_geometryPath(std::move(geometryPath)) {
-}
 }

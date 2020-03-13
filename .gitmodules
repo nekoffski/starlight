@@ -7,3 +7,6 @@
 [submodule "3rdparty/glfw"]
 	path = 3rdparty/glfw
 	url = https://github.com/glfw/glfw
+[submodule "3rdparty/jsoncpp"]
+	path = 3rdparty/jsoncpp
+	url = https://github.com/open-source-parsers/jsoncpp.git
