@@ -3,6 +3,7 @@
 #include <starlight/asset/PathManager.hpp>
 #include <starlight/asset/loaders/AssetLoader.h>
 
+#include <starlight/core/log/Logger.h>
 #include <starlight/platform/texture/Texture.h>
 
 namespace starl::asset::loaders {
@@ -17,7 +18,11 @@ struct AssetLoaderArgs<Texture> {
 class TextureLoader : public AssetLoader<Texture> {
 public:
     std::shared_ptr<Texture> load(AssetLoaderArgs<Texture> args) {
+        logger->trace("loading texture: {}", args.path);
         return Texture::create(PathManager::createGlobalPath<Texture>(args.path));
     }
+
+private:
+    Logger logger{ starl::core::log::createLogger("TextureLoader") };
 };
 }

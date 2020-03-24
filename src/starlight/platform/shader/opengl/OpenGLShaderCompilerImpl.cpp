@@ -11,6 +11,10 @@
 
 #define INFO_BUFFER 1024
 
+#include <starlight/core/log/Logger.h>
+
+static auto logger = starl::core::log::createLogger("OpenGLShaderCompilerImpl");
+
 namespace starl::platform::shader::opengl {
 
 void OpenGLShaderCompilerImpl::compile(std::shared_ptr<Shader>& shader) {
@@ -18,15 +22,20 @@ void OpenGLShaderCompilerImpl::compile(std::shared_ptr<Shader>& shader) {
 }
 
 void OpenGLShaderCompilerImpl::compileImpl(std::shared_ptr<OpenGLShader> shader) {
+    logger->trace("compiling shader: {}, {}, {}", shader->m_fragmentPath, shader->m_vertexPath, shader->m_geometryPath);
+
     GLuint& _shader_program = shader->m_shaderProgram;
     _shader_program = glCreateProgram();
 
+    logger->trace("compiling vertex shader");
     auto vertexShader = compileShader(shader->m_vertexPath, GL_VERTEX_SHADER);
+    logger->trace("compiling fragment shader");
     auto fragmentShader = compileShader(shader->m_fragmentPath, GL_FRAGMENT_SHADER);
 
     glAttachShader(_shader_program, vertexShader);
     glAttachShader(_shader_program, fragmentShader);
 
+    logger->trace("linking shader");
     glLinkProgram(_shader_program);
 
     char info_buffer[infoBufferSize];
@@ -37,6 +46,7 @@ void OpenGLShaderCompilerImpl::compileImpl(std::shared_ptr<OpenGLShader> shader)
 
     if (!linked) {
         glGetProgramInfoLog(_shader_program, infoBufferSize, nullptr, info_buffer);
+        logger->error("could not link: {}", info_buffer);
         throw PlatformException(ErrorCode::COULD_NOT_LINK_SHADER, std::string(info_buffer));
     }
 
@@ -51,6 +61,7 @@ unsigned int OpenGLShaderCompilerImpl::compileShader(const std::string& path, un
     std::fstream shaderSource(path);
 
     if (!shaderSource.good()) {
+        logger->error("could not find source: {}", path);
         throw PlatformException(type == GL_VERTEX_SHADER ? ErrorCode::COULD_NOT_OPEN_VERTEX_SHADER : ErrorCode::COULD_NOT_OPEN_FRAGMENT_SHADER,
             "Could not load glsl shader source");
     }
@@ -75,6 +86,7 @@ unsigned int OpenGLShaderCompilerImpl::compileShader(const std::string& path, un
 
     if (!compiled) {
         glGetShaderInfoLog(shader, infoBufferSize, nullptr, info_buffer);
+        logger->error("could not compile: {}", info_buffer);
         throw PlatformException(type == GL_VERTEX_SHADER ? ErrorCode::COULD_NOT_COMPILE_VERTEX_SHADER : ErrorCode::COULD_NOT_COMPILE_FRAGMENT_SHADER,
             std::string(info_buffer));
     }

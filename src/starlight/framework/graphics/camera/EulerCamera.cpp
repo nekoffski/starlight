@@ -8,6 +8,10 @@
 
 #include <iostream>
 
+#include <starlight/core/log/Logger.h>
+
+static auto logger = starl::core::log::createLogger("EulerCamera");
+
 namespace starl::framework::graphics::camera {
 
 const float EulerCamera::MIN_PSI = -math::PI / 2.0f;
@@ -16,6 +20,7 @@ const float EulerCamera::MIN_FI = 0.0f;
 const float EulerCamera::MAX_FI = 2.0f * math::PI;
 
 std::shared_ptr<EulerCamera> EulerCamera::create(math::Vec3 centre, float speed, float radius) {
+    logger->info("creating instance: speed: {}, radius: {}", speed, radius);
     return std::make_shared<EulerCamera>(centre, speed, radius);
 }
 

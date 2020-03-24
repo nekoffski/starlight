@@ -29,9 +29,11 @@ using namespace starl::framework;
 using namespace starl;
 
 int main() {
-    starl::core::log::Logger::init();
+    starl::core::log::initLogging();
     starl::asset::PathManager::registerResourcePath<shader::Shader>(SHADERS_DIR);
     starl::asset::PathManager::registerResourcePath<texture::Texture>(TEXTURES_DIR);
+
+    static auto logger = core::log::createLogger("main");
 
     auto window = window::Window::create(window::WindowParams{
         window::Viewport{ 1600, 900 }, "title" });
@@ -88,6 +90,7 @@ int main() {
 
     clock::Clock clock;
 
+    logger->trace("Starting main loop");
     while (!window->getShouldClose()) {
         const auto delta = clock.getDeltaTime();
 
@@ -106,6 +109,7 @@ int main() {
 
         clock.update();
     }
+    logger->trace("Main loop finished");
 
     return 0;
 }

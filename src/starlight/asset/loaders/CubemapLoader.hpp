@@ -5,6 +5,8 @@
 
 #include <starlight/platform/texture/Cubemap.h>
 
+#include <starlight/core/log/Logger.h>
+
 namespace starl::asset::loaders {
 
 using platform::texture::Cubemap;
@@ -23,6 +25,7 @@ class CubemapLoader : public AssetLoader<Cubemap> {
 public:
     std::shared_ptr<Cubemap> load(AssetLoaderArgs<Cubemap> args) {
         // clang-format off
+        logger->trace("loading cubemap {}, {}, {}, {}, {}, {}", args.top, args.bottom, args.right, args.left, args.front, args.back);
         return Cubemap::create({ 
             PathManager::createGlobalPath<Cubemap>(args.top),
             PathManager::createGlobalPath<Cubemap>(args.bottom),
@@ -32,5 +35,8 @@ public:
             PathManager::createGlobalPath<Cubemap>(args.back) });
         // clang-format on
     }
+
+private:
+    Logger logger { starl::core::log::createLogger("CubemapLoader") };
 };
 }

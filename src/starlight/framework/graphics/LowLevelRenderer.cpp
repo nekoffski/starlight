@@ -1,8 +1,13 @@
 #include <starlight/framework/graphics/LowLevelRenderer.h>
 
+#include <starlight/core/log/Logger.h>
+
+static auto logger = starl::core::log::createLogger("LowLevelRenderer");
+
 namespace starl::framework::graphics {
 
 void LowLevelRenderer::init() {
+    logger->info("initializing");
     m_graphicsContext->init();
 }
 
