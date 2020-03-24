@@ -26,6 +26,7 @@ public:
     explicit PlatformException(ErrorCode code, std::string msg = "", int thirdPartyErrorCode = 1)
         : Exception(ERR_CATEGORY, static_cast<int>(code), std::move(msg))
         , m_thirdPartyErrorCode(thirdPartyErrorCode) {
+        m_whatMsg = toStr();
     }
 
     int getThirdPartyError() const {

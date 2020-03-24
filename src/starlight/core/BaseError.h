@@ -32,10 +32,17 @@ public:
         return m_msg;
     }
 
+    virtual const char* what() const noexcept override {
+        return m_whatMsg.c_str();
+    };
+
 protected:
     int m_code;
     int m_category;
     std::string m_msg;
+    std::string msg;
+
+    std::string m_whatMsg;
 };
 
 inline std::ostream& operator<<(std::ostream& ss, const Exception& e) {

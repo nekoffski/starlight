@@ -9,7 +9,8 @@ namespace starl::core::event {
 
 class EventDispatcher {
 public:
-    explicit EventDispatcher(std::shared_ptr<Event> e) : m_event(e) {
+    explicit EventDispatcher(std::shared_ptr<Event> e)
+        : m_event(e) {
     }
 
     template <typename T>
@@ -30,5 +31,4 @@ private:
         return typeid(t) == typeid(Base);
     }
 };
-
 }

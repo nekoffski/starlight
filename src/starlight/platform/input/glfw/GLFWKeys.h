@@ -1,5 +1,3 @@
-#include <GLFW/glfw3.h>
-
 /* The unknown key */
 #define STARL_KEY_UNKNOWN -1
 

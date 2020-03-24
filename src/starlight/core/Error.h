@@ -16,6 +16,7 @@ class CoreException : public err::Exception {
 public:
     explicit CoreException(ErrorCode code, std::string msg = "")
         : Exception(ERR_CATEGORY, static_cast<int>(code), std::move(msg)) {
+        m_whatMsg = toStr();
     }
 
     std::string toStr() const override {

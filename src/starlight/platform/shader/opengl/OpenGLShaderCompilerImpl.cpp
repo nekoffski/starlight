@@ -1,13 +1,13 @@
 #include <starlight/platform/shader/opengl/OpenGLShaderCompilerImpl.h>
 
+#include <cstring>
 #include <fstream>
 #include <sstream>
-#include <cstring>
 
 #include <glad/glad.h>
 
-#include <starlight/platform/shader/opengl/OpenGLShader.h>
 #include <starlight/platform/Error.h>
+#include <starlight/platform/shader/opengl/OpenGLShader.h>
 
 #define INFO_BUFFER 1024
 

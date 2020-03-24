@@ -10,3 +10,6 @@
 [submodule "3rdparty/jsoncpp"]
 	path = 3rdparty/jsoncpp
 	url = https://github.com/open-source-parsers/jsoncpp.git
+[submodule "3rdparty/glm"]
+	path = 3rdparty/glm
+	url = https://github.com/g-truc/glm.git

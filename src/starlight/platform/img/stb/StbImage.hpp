@@ -7,12 +7,14 @@
 #include <starlight/platform/Error.h>
 #include <starlight/platform/img/Image.h>
 
+#include <iostream>
+
 namespace starl::platform::img::stb {
 
 class StbImage : public Image {
 public:
     StbImage(const std::string& path, int desiredChannels = 0)
-        : m_data(stbi_load(path.c_str(), &m_imageSize.first, &m_imageSize.second, &m_channels, desiredChannels)) {
+        : m_data(stbi_load(path.c_str(), &m_imageSize.width, &m_imageSize.height, &m_channels, desiredChannels)) {
 
         if (!m_data) {
             throw PlatformException(ErrorCode::COULD_NOT_LOAD_IMAGE);
@@ -41,5 +43,7 @@ private:
     unsigned char* m_data{ nullptr };
     int m_channels;
     ImageSize m_imageSize;
+    int w;
+    int h;
 };
 }

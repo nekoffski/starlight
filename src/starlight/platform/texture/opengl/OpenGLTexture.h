@@ -7,9 +7,9 @@ namespace starl::platform::texture::opengl {
 class OpenGLTexture : public Texture {
 public:
     OpenGLTexture(const std::string&);
-    ~OpenGLTexture();
+    ~OpenGLTexture() override;
 
-    void bind() override;
+    void bind(unsigned int) override;
     void unbind() override;
 
     std::shared_ptr<img::Image> getImage() {

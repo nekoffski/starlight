@@ -4,7 +4,10 @@
 
 namespace starl::platform::img {
 
-using ImageSize = std::pair<int, int>;
+struct ImageSize {
+    int width;
+    int height;
+};
 
 class Image {
 public:

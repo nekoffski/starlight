@@ -1,5 +1,5 @@
-#include <starlight/platform/gpu/opengl/OpenGLVertexArray.h>
 #include <starlight/platform/gpu/VertexBuffer.h>
+#include <starlight/platform/gpu/opengl/OpenGLVertexArray.h>
 
 #include <glad/glad.h>
 
