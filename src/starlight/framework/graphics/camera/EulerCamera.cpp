@@ -47,7 +47,7 @@ void EulerCamera::update(float deltaTime) {
     if (m_direction & DIR_LEFT)
         m_fi -= velocity;
 
-    m_fi = std::clamp(m_fi, MIN_FI, MAX_FI);
+    m_fi = math::circularRange(m_fi, MIN_FI, MAX_FI);
     m_psi = std::clamp(m_psi, MIN_PSI, MAX_PSI);
 
     calculateVectors();

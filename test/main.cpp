@@ -12,6 +12,8 @@
 #include <starlight/platform/gpu/VertexArray.h>
 #include <starlight/platform/gpu/VertexBuffer.h>
 
+#include <starlight/platform/clock/Clock.h>
+
 #include <starlight/asset/AssetManager.hpp>
 #include <starlight/asset/PathManager.hpp>
 
@@ -67,7 +69,7 @@ int main() {
     auto vao = gpu::VertexArray::create();
     vao->addVertexBuffer(buffer);
 
-    auto camera = graphics::camera::EulerCamera::create(glm::vec3(0.0f), 0.03f, 3.0f);
+    auto camera = graphics::camera::EulerCamera::create(glm::vec3(0.0f), 1.0f, 3.0f);
     starl::rendering::renderer::ModelRenderer modelRenderer(llrenderer);
 
     auto model = std::make_shared<geometry::Model>();
@@ -84,9 +86,13 @@ int main() {
     modelRenderer.pushModelRenderObject(shader, modelRenderObject);
     modelRenderer.setCamera(camera);
 
+    clock::Clock clock;
+
     while (!window->getShouldClose()) {
-        window->update(1.0f);
-        camera->update(1.0f);
+        const auto delta = clock.getDeltaTime();
+
+        window->update(delta);
+        camera->update(delta);
 
         llrenderer.begin();
         modelRenderer.render();
@@ -97,6 +103,8 @@ int main() {
         if (input->isKeyPressed(STARL_KEY_ESCAPE)) {
             window->setShouldClose(true);
         }
+
+        clock.update();
     }
 
     return 0;
