@@ -8,7 +8,8 @@
 namespace starl::platform::gpu::opengl {
 
 OpenGLVertexArray::OpenGLVertexArray()
-    : m_bufferId(0u) {
+    :   m_bufferId(0u),
+        m_verticesCount(0u) {
     glGenVertexArrays(1, &m_bufferId);
 }
 
@@ -18,7 +19,7 @@ OpenGLVertexArray::~OpenGLVertexArray() {
     }
 }
 
-void OpenGLVertexArray::addVertexBuffer(std::shared_ptr<VertexBuffer>& vertexBuffer) {
+void OpenGLVertexArray::addVertexBuffer(std::shared_ptr<VertexBuffer> vertexBuffer) {
     this->bind();
     vertexBuffer->bind();
 
@@ -31,6 +32,8 @@ void OpenGLVertexArray::addVertexBuffer(std::shared_ptr<VertexBuffer>& vertexBuf
 
     vertexBuffer->unbind();
     this->unbind();
+
+    m_verticesCount += vertexBuffer->getVerticesCount();
 }
 
 void OpenGLVertexArray::bind() {
@@ -40,4 +43,9 @@ void OpenGLVertexArray::bind() {
 void OpenGLVertexArray::unbind() {
     glBindVertexArray(0u);
 }
+
+unsigned int OpenGLVertexArray::getVerticesCount() {
+    return m_verticesCount;
+}
+
 }

@@ -21,8 +21,7 @@
 #include <starlight/framework/graphics/camera/EulerCamera.h>
 
 #include <starlight/rendering/renderer/ModelRenderer.h>
-
-#include <GLFW/glfw3.h>
+#include <starlight/rendering/renderer/CubemapRenderer.h>
 
 using namespace starl::platform;
 using namespace starl::framework;
@@ -32,6 +31,7 @@ int main() {
     starl::core::log::initLogging();
     starl::asset::PathManager::registerResourcePath<shader::Shader>(SHADERS_DIR);
     starl::asset::PathManager::registerResourcePath<texture::Texture>(TEXTURES_DIR);
+    starl::asset::PathManager::registerResourcePath<texture::Cubemap>(CUBEMAPS_DIR);
 
     static auto logger = core::log::createLogger("main");
 
@@ -49,10 +49,20 @@ int main() {
     shader::ShaderCompiler::init();
 
     auto shader = assetManager.load<shader::Shader>({ "/t.vert", "/t.frag", "" });
+    auto cubemapShader = assetManager.load<shader::Shader>({ "/cubemap.vert", "/cubemap.frag" });
     auto texture = assetManager.load<texture::Texture>({ "/wall.jpg" });
+    auto cubemap = assetManager.load<texture::Cubemap>({
+        "/skybox/posx.jpg",
+        "/skybox/negx.jpg",
+        "/skybox/posy.jpg",
+        "/skybox/negy.jpg",
+        "/skybox/posz.jpg",
+        "/skybox/negz.jpg"
+    });
 
     try {
         shader::ShaderCompiler::compile(shader);
+        shader::ShaderCompiler::compile(cubemapShader);
     } catch (PlatformException& e) {
         std::cout << e;
         return -1;
@@ -64,9 +74,9 @@ int main() {
         0.0f, 0.5f, -1.0f, 0.5f, 1.0f
     };
 
-    auto buffer = gpu::VertexBuffer::create(vertices, sizeof(vertices));
-    buffer->addMemoryOffsetScheme(3, GL_FLOAT, sizeof(float));
-    buffer->addMemoryOffsetScheme(2, GL_FLOAT, sizeof(float));
+    auto buffer = gpu::VertexBuffer::create(vertices, sizeof(vertices), 3);
+    buffer->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
+    buffer->addMemoryOffsetScheme(2, STARL_FLOAT, sizeof(float));
 
     auto vao = gpu::VertexArray::create();
     vao->addVertexBuffer(buffer);
@@ -90,6 +100,12 @@ int main() {
 
     clock::Clock clock;
 
+    // cubemap
+    rendering::renderer::CubemapRenderer cubemapRenderer(llrenderer);
+    cubemapRenderer.setCamera(camera);
+    cubemapRenderer.setCubemap(cubemap);
+    cubemapRenderer.setCubemapShader(cubemapShader);
+
     logger->trace("Starting main loop");
     while (!window->getShouldClose()) {
         const auto delta = clock.getDeltaTime();
@@ -99,6 +115,7 @@ int main() {
 
         llrenderer.begin();
         modelRenderer.render();
+        cubemapRenderer.render();
         llrenderer.end();
 
         camera->handleInput(input);

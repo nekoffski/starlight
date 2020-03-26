@@ -25,8 +25,8 @@ void OpenGLGraphicsContext::swapBuffers() {
     glfwSwapBuffers(m_windowHandle);
 }
 
-void OpenGLGraphicsContext::clearBuffers() {
-    glClear(GL_COLOR_BUFFER_BIT);
+void OpenGLGraphicsContext::clearBuffers(unsigned buffersToClear) {
+    glClear(buffersToClear);
 }
 
 } // namespace starl::platform::gpu::opengl

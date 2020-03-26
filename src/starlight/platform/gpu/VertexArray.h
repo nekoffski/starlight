@@ -13,7 +13,8 @@ public:
 
     virtual ~VertexArray() = default;
 
-    virtual void addVertexBuffer(std::shared_ptr<VertexBuffer>&) = 0;
+    virtual unsigned int getVerticesCount() = 0;
+    virtual void addVertexBuffer(std::shared_ptr<VertexBuffer>) = 0;
     virtual void bind() = 0;
     virtual void unbind() = 0;
 };

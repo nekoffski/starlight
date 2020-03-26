@@ -9,12 +9,14 @@ namespace starl::platform::gpu {
 
 class VertexBuffer {
 public:
-    static std::shared_ptr<VertexBuffer> create(misc::types::NotNullPtr<void>, int);
+    static std::shared_ptr<VertexBuffer> create(misc::types::NotNullPtr<void>, int, int);
 
     virtual ~VertexBuffer() = default;
 
     virtual void bind() = 0;
     virtual void unbind() = 0;
+
+    virtual unsigned int getVerticesCount() = 0;
 
     const BufferMemoryScheme& getMemoryScheme() {
         return m_bufferMemoryScheme;

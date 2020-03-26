@@ -9,17 +9,29 @@ namespace starl::framework::graphics {
 void LowLevelRenderer::init() {
     logger->info("initializing");
     m_graphicsContext->init();
+
+    m_renderAPI->enable(STARL_DEPTH_TEST);
+    m_renderAPI->setDepthFunc(STARL_LEQUAL);
+    m_renderAPI->enable(STARL_BLEND);
+    m_renderAPI->setBlendFunc(STARL_SRC_ALPHA, STARL_ONE_MINUS_SRC_ALPHA);
 }
 
 void LowLevelRenderer::renderVertexArray(std::shared_ptr<gpu::VertexArray>& vertexArray) {
     vertexArray->bind();
-    m_renderAPI->drawArrays(0, 0, 3);
+    m_renderAPI->drawArrays(STARL_TRIANGLES, 0, vertexArray->getVerticesCount());
     vertexArray->unbind();
 }
 
+void LowLevelRenderer::renderVertexArrayWithDepthMaskDisabled(std::shared_ptr<gpu::VertexArray>& vertexArray) {
+    m_renderAPI->disableDepthMask();
+    renderVertexArray(vertexArray);
+    m_renderAPI->enableDepthMask();
+}
+
 void LowLevelRenderer::begin() {
-    m_graphicsContext->clearBuffers();
-    m_renderAPI->clearColor(1.0f, 1.0f, 0.4f, 1.0f);
+    m_graphicsContext->clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
+    // TODO: extract as another method
+    //m_renderAPI->clearColor(1.0f, 1.0f, 0.4f, 1.0f);
 }
 
 void LowLevelRenderer::end() {

@@ -34,6 +34,7 @@ public:
 
     void init();
     void renderVertexArray(std::shared_ptr<gpu::VertexArray>&);
+    void renderVertexArrayWithDepthMaskDisabled(std::shared_ptr<gpu::VertexArray>&);
 
     void begin();
     void end();

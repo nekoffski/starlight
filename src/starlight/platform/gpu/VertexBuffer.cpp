@@ -7,8 +7,8 @@
 static auto logger = starl::core::log::createLogger("VertexBuffer");
 
 namespace starl::platform::gpu {
-std::shared_ptr<VertexBuffer> VertexBuffer::create(misc::types::NotNullPtr<void> data, int size) {
+std::shared_ptr<VertexBuffer> VertexBuffer::create(misc::types::NotNullPtr<void> data, int size, int verticesCount) {
     logger->trace("instancing opengl vertex buffer");
-    return std::make_shared<opengl::OpenGLVertexBuffer>(data, size);
+    return std::make_shared<opengl::OpenGLVertexBuffer>(data, size, verticesCount);
 }
 }
