@@ -12,6 +12,7 @@ public:
     static std::unique_ptr<RenderAPI> create();
 
     virtual void drawArrays(unsigned, unsigned, unsigned) = 0;
+    virtual void drawElements(unsigned, unsigned, unsigned) = 0;
     virtual void clearColor(float, float, float, float) = 0;
 
     virtual void enableDepthMask() = 0;

@@ -8,6 +8,10 @@ void OpenGLRenderAPI::drawArrays(unsigned mode, unsigned begin, unsigned end) {
     glDrawArrays(GL_TRIANGLES, begin, end);
 }
 
+void OpenGLRenderAPI::drawElements(unsigned mode, unsigned count, unsigned type) {
+    glDrawElements(mode, count, type, 0);
+}
+
 void OpenGLRenderAPI::clearColor(float r, float g, float b, float a) {
     glClearColor(r, g, b, a);
 }

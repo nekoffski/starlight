@@ -5,6 +5,9 @@
 #include <starlight/misc/types/NotNullPtr.hpp>
 #include <starlight/platform/gpu/BufferMemoryScheme.hpp>
 
+// TODO: IFDEF
+#include <starlight/platform/gpu/opengl/OpenGLDefines.h>
+
 namespace starl::platform::gpu {
 
 class VertexBuffer {

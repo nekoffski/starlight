@@ -1,15 +1,16 @@
-#include <starlight/platform/gpu/VertexBuffer.h>
 #include <starlight/platform/gpu/opengl/OpenGLVertexArray.h>
 
 #include <glad/glad.h>
 
-#include <iostream>
+#include <starlight/platform/gpu/ElementBuffer.h>
+#include <starlight/platform/gpu/VertexBuffer.h>
 
 namespace starl::platform::gpu::opengl {
 
 OpenGLVertexArray::OpenGLVertexArray()
-    :   m_bufferId(0u),
-        m_verticesCount(0u) {
+    : m_bufferId(0u)
+    , m_verticesCount(0u)
+    , m_indicesCount(0u) {
     glGenVertexArrays(1, &m_bufferId);
 }
 
@@ -34,6 +35,15 @@ void OpenGLVertexArray::addVertexBuffer(std::shared_ptr<VertexBuffer> vertexBuff
     this->unbind();
 
     m_verticesCount += vertexBuffer->getVerticesCount();
+    m_vertexBuffers.push_back(vertexBuffer);
+}
+
+void OpenGLVertexArray::addElementBuffer(std::shared_ptr<ElementBuffer> elementBuffer) {
+    this->bind();
+    elementBuffer->bind();
+
+    m_indicesCount = elementBuffer->getIndicesCount();
+    m_elementBuffer = elementBuffer;
 }
 
 void OpenGLVertexArray::bind() {
@@ -48,4 +58,7 @@ unsigned int OpenGLVertexArray::getVerticesCount() {
     return m_verticesCount;
 }
 
+unsigned int OpenGLVertexArray::getIndicesCount() {
+    return m_indicesCount;
+}
 }

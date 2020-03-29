@@ -18,7 +18,14 @@ void LowLevelRenderer::init() {
 
 void LowLevelRenderer::renderVertexArray(std::shared_ptr<gpu::VertexArray>& vertexArray) {
     vertexArray->bind();
-    m_renderAPI->drawArrays(STARL_TRIANGLES, 0, vertexArray->getVerticesCount());
+
+    // to optimize!
+    auto indices = vertexArray->getIndicesCount();
+    if (indices != 0u) {
+        m_renderAPI->drawElements(STARL_TRIANGLES, indices, STARL_UNSIGNED_INT);
+    } else {
+        m_renderAPI->drawArrays(STARL_TRIANGLES, 0, vertexArray->getVerticesCount());
+    }
     vertexArray->unbind();
 }
 

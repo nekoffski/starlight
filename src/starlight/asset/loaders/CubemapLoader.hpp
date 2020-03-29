@@ -37,6 +37,6 @@ public:
     }
 
 private:
-    Logger logger { starl::core::log::createLogger("CubemapLoader") };
+    Logger logger{ starl::core::log::createLogger("CubemapLoader") };
 };
 }

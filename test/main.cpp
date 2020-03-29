@@ -8,6 +8,7 @@
 #include <starlight/platform/shader/Shader.h>
 #include <starlight/platform/shader/ShaderCompiler.hpp>
 
+#include <starlight/platform/gpu/ElementBuffer.h>
 #include <starlight/platform/gpu/RenderAPI.h>
 #include <starlight/platform/gpu/VertexArray.h>
 #include <starlight/platform/gpu/VertexBuffer.h>
@@ -19,9 +20,10 @@
 
 #include <starlight/framework/graphics/LowLevelRenderer.h>
 #include <starlight/framework/graphics/camera/EulerCamera.h>
+#include <starlight/platform/model/ModelLoader.h>
 
-#include <starlight/rendering/renderer/ModelRenderer.h>
 #include <starlight/rendering/renderer/CubemapRenderer.h>
+#include <starlight/rendering/renderer/ModelRenderer.h>
 
 using namespace starl::platform;
 using namespace starl::framework;
@@ -51,14 +53,12 @@ int main() {
     auto shader = assetManager.load<shader::Shader>({ "/t.vert", "/t.frag", "" });
     auto cubemapShader = assetManager.load<shader::Shader>({ "/cubemap.vert", "/cubemap.frag" });
     auto texture = assetManager.load<texture::Texture>({ "/wall.jpg" });
-    auto cubemap = assetManager.load<texture::Cubemap>({
-        "/skybox/posx.jpg",
+    auto cubemap = assetManager.load<texture::Cubemap>({ "/skybox/posx.jpg",
         "/skybox/negx.jpg",
         "/skybox/posy.jpg",
         "/skybox/negy.jpg",
         "/skybox/posz.jpg",
-        "/skybox/negz.jpg"
-    });
+        "/skybox/negz.jpg" });
 
     try {
         shader::ShaderCompiler::compile(shader);
@@ -68,34 +68,45 @@ int main() {
         return -1;
     }
 
-    float vertices[] = {
-        -0.5f, -0.5f, -1.0f, 0.0f, 0.0,
-        0.5f, -0.5f, -1.0f, 1.0f, 1.0f,
-        0.0f, 0.5f, -1.0f, 0.5f, 1.0f
-    };
+    // // clang-format off
+    // float vertices[] = {
+    //     -0.5f, -0.5f, -1.0f, 0.0f, 0.0,
+    //     0.5f, -0.5f, -1.0f, 1.0f, 1.0f,
+    //     0.5f, 0.5f, -1.0f, 1.0f, 0.0f,
+    //     -0.5f, 0.5f,  -1.0f, 0.0f, 1.0f
+    // };
 
-    auto buffer = gpu::VertexBuffer::create(vertices, sizeof(vertices), 3);
-    buffer->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
-    buffer->addMemoryOffsetScheme(2, STARL_FLOAT, sizeof(float));
+    // unsigned indices[] = {
+    //     0, 1, 2,
+    //     0, 2, 3
+    // };
 
-    auto vao = gpu::VertexArray::create();
-    vao->addVertexBuffer(buffer);
+    // // clang-format on
 
-    auto camera = graphics::camera::EulerCamera::create(glm::vec3(0.0f), 1.0f, 3.0f);
+    // auto buffer = gpu::VertexBuffer::create(vertices, sizeof(vertices), 3);
+    // buffer->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
+    // buffer->addMemoryOffsetScheme(2, STARL_FLOAT, sizeof(float));
+
+    // auto ebo = gpu::ElementBuffer::create(indices, sizeof(indices), 6);
+
+    // auto vao = gpu::VertexArray::create();
+    // vao->addVertexBuffer(buffer);
+    // vao->addElementBuffer(ebo);
+
+    auto camera = graphics::camera::EulerCamera::create(glm::vec3(0.0f), 1.0f, 8.0f);
     starl::rendering::renderer::ModelRenderer modelRenderer(llrenderer);
 
-    auto model = std::make_shared<geometry::Model>();
-    auto mesh = std::make_shared<geometry::Mesh>();
+    // auto model = std::make_shared<geometry::Model>();
+    // auto mesh = std::make_shared<geometry::Mesh>();
 
-    mesh->vertexArray = vao;
-    mesh->textures.push_back(texture);
-    model->meshes.push_back(mesh);
+    // mesh->vertexArray = vao;
+    // mesh->textures.push_back(texture);
+    // model->meshes.push_back(mesh);
 
-    auto modelRenderObject = std::make_shared<rendering::renderable::ModelRenderObject>();
-    modelRenderObject->model = model;
-    modelRenderObject->modelMatrix = std::make_shared<math::Mat4>(1.0f);
+    // modelRenderObject->model = model;
+    // modelRenderObject->modelMatrix = std::make_shared<math::Mat4>(1.0f);
 
-    modelRenderer.pushModelRenderObject(shader, modelRenderObject);
+    //    modelRenderer.pushModelRenderObject(shader, modelRenderObject);
     modelRenderer.setCamera(camera);
 
     clock::Clock clock;
@@ -105,6 +116,14 @@ int main() {
     cubemapRenderer.setCamera(camera);
     cubemapRenderer.setCubemap(cubemap);
     cubemapRenderer.setCubemapShader(cubemapShader);
+
+    auto modelLoader = platform::model::ModelLoader::create();
+    auto model = modelLoader->loadModel(std::string(MODELS_DIR) + "/tow/tower.obj");
+    auto modelRenderObject = std::make_shared<rendering::renderable::ModelRenderObject>();
+    modelRenderObject->model = model;
+    modelRenderObject->modelMatrix = std::make_shared<math::Mat4>(1.0f);
+
+    modelRenderer.pushModelRenderObject(shader, modelRenderObject);
 
     logger->trace("Starting main loop");
     while (!window->getShouldClose()) {

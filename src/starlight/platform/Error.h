@@ -18,7 +18,8 @@ enum class ErrorCode : unsigned int {
     COULD_NOT_COMPILE_VERTEX_SHADER,
     COULD_NOT_LINK_SHADER,
     COULD_NOT_LOAD_IMAGE,
-    UNKNOWN_TEXTURE_FORMAT
+    UNKNOWN_TEXTURE_FORMAT,
+    COULD_NOT_LOAD_MODEL
 };
 
 class PlatformException : public err::Exception {
