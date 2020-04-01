@@ -16,7 +16,7 @@
 #include <starlight/platform/clock/Clock.h>
 
 #include <starlight/asset/AssetManager.hpp>
-#include <starlight/asset/PathManager.hpp>
+#include <starlight/core/path/PathManager.hpp>
 
 #include <starlight/framework/graphics/LowLevelRenderer.h>
 #include <starlight/framework/graphics/camera/EulerCamera.h>
@@ -31,9 +31,10 @@ using namespace starl;
 
 int main() {
     starl::core::log::initLogging();
-    starl::asset::PathManager::registerResourcePath<shader::Shader>(SHADERS_DIR);
-    starl::asset::PathManager::registerResourcePath<texture::Texture>(TEXTURES_DIR);
-    starl::asset::PathManager::registerResourcePath<texture::Cubemap>(CUBEMAPS_DIR);
+    starl::core::path::PathManager::registerResourcePath<shader::Shader>(SHADERS_DIR);
+    starl::core::path::PathManager::registerResourcePath<texture::Texture>(TEXTURES_DIR);
+    starl::core::path::PathManager::registerResourcePath<texture::Cubemap>(CUBEMAPS_DIR);
+    starl::core::path::PathManager::registerResourcePath<geometry::Model>(MODELS_DIR);
 
     static auto logger = core::log::createLogger("main");
 
@@ -68,45 +69,9 @@ int main() {
         return -1;
     }
 
-    // // clang-format off
-    // float vertices[] = {
-    //     -0.5f, -0.5f, -1.0f, 0.0f, 0.0,
-    //     0.5f, -0.5f, -1.0f, 1.0f, 1.0f,
-    //     0.5f, 0.5f, -1.0f, 1.0f, 0.0f,
-    //     -0.5f, 0.5f,  -1.0f, 0.0f, 1.0f
-    // };
-
-    // unsigned indices[] = {
-    //     0, 1, 2,
-    //     0, 2, 3
-    // };
-
-    // // clang-format on
-
-    // auto buffer = gpu::VertexBuffer::create(vertices, sizeof(vertices), 3);
-    // buffer->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
-    // buffer->addMemoryOffsetScheme(2, STARL_FLOAT, sizeof(float));
-
-    // auto ebo = gpu::ElementBuffer::create(indices, sizeof(indices), 6);
-
-    // auto vao = gpu::VertexArray::create();
-    // vao->addVertexBuffer(buffer);
-    // vao->addElementBuffer(ebo);
-
     auto camera = graphics::camera::EulerCamera::create(glm::vec3(0.0f), 1.0f, 8.0f);
     starl::rendering::renderer::ModelRenderer modelRenderer(llrenderer);
 
-    // auto model = std::make_shared<geometry::Model>();
-    // auto mesh = std::make_shared<geometry::Mesh>();
-
-    // mesh->vertexArray = vao;
-    // mesh->textures.push_back(texture);
-    // model->meshes.push_back(mesh);
-
-    // modelRenderObject->model = model;
-    // modelRenderObject->modelMatrix = std::make_shared<math::Mat4>(1.0f);
-
-    //    modelRenderer.pushModelRenderObject(shader, modelRenderObject);
     modelRenderer.setCamera(camera);
 
     clock::Clock clock;
@@ -117,8 +82,7 @@ int main() {
     cubemapRenderer.setCubemap(cubemap);
     cubemapRenderer.setCubemapShader(cubemapShader);
 
-    auto modelLoader = platform::model::ModelLoader::create();
-    auto model = modelLoader->loadModel(std::string(MODELS_DIR) + "/tow/tower.obj");
+    auto model = assetManager.load<geometry::Model>({ "/tow/tower.obj" });
     auto modelRenderObject = std::make_shared<rendering::renderable::ModelRenderObject>();
     modelRenderObject->model = model;
     modelRenderObject->modelMatrix = std::make_shared<math::Mat4>(1.0f);

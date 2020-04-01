@@ -5,6 +5,7 @@
 #include <starlight/platform/gpu/ElementBuffer.h>
 #include <starlight/platform/gpu/VertexArray.h>
 #include <starlight/platform/gpu/VertexBuffer.h>
+#include <starlight/platform/texture/Texture.h>
 
 #include <starlight/core/log/Logger.h>
 
@@ -12,7 +13,7 @@ static auto logger = starl::core::log::createLogger("AssimpMeshProcesor");
 
 namespace starl::platform::model::assimp {
 
-std::shared_ptr<geometry::Mesh> AssimpMeshProcessor::processMesh(aiMesh* assimpMesh, const aiScene* scene) {
+std::shared_ptr<geometry::Mesh> AssimpMeshProcessor::processMesh(aiMesh* assimpMesh, const aiScene* scene, std::string directory) {
     using geometry::Vertex;
 
     std::vector<Vertex> vertices;
@@ -67,6 +68,20 @@ std::shared_ptr<geometry::Mesh> AssimpMeshProcessor::processMesh(aiMesh* assimpM
     }
     mesh->indices = std::move(indices);
 
+    aiMaterial* material = scene->mMaterials[assimpMesh->mMaterialIndex];
+
+    auto diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse", directory);
+    auto specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular", directory);
+    auto normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal", directory);
+    auto heightMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_height", directory);
+
+    textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+    textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+    textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+    textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+
+    mesh->textures = std::move(textures);
+
     auto vao = platform::gpu::VertexArray::create();
     auto vbo = platform::gpu::VertexBuffer::create(&mesh->vertices[0], mesh->vertices.size() * sizeof(Vertex), mesh->vertices.size());
     auto ebo = platform::gpu::ElementBuffer::create(&mesh->indices[0], mesh->indices.size() * sizeof(unsigned), mesh->indices.size());
@@ -87,5 +102,18 @@ std::shared_ptr<geometry::Mesh> AssimpMeshProcessor::processMesh(aiMesh* assimpM
 
     mesh->vertexArray = vao;
     return mesh;
+}
+
+std::vector<std::shared_ptr<texture::Texture>>
+AssimpMeshProcessor::loadMaterialTextures(aiMaterial* material, aiTextureType textureType, std::string typeName, std::string directory) {
+    std::vector<std::shared_ptr<texture::Texture>> textures;
+    for (unsigned i = 0; i < material->GetTextureCount(textureType); ++i) {
+        aiString str;
+        material->GetTexture(textureType, i, &str);
+
+        // TODO: OPTIMIZE, store texture in models as most of mesh reuse them!
+        textures.push_back(texture::Texture::create(directory + "/" + str.C_Str()));
+    }
+    return textures;
 }
 }

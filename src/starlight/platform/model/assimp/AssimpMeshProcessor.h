@@ -8,10 +8,17 @@
 
 #include <starlight/geometry/Mesh.h>
 
+namespace starl::platform::texture {
+class Texture;
+}
+
 namespace starl::platform::model::assimp {
 
 class AssimpMeshProcessor {
 public:
-    std::shared_ptr<geometry::Mesh> processMesh(aiMesh*, const aiScene*);
+    std::shared_ptr<geometry::Mesh> processMesh(aiMesh*, const aiScene*, std::string);
+
+private:
+    std::vector<std::shared_ptr<texture::Texture>> loadMaterialTextures(aiMaterial*, aiTextureType, std::string, std::string);
 };
 }

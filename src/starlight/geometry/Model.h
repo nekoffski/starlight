@@ -9,5 +9,7 @@ namespace starl::geometry {
 
 struct Model {
     std::vector<std::shared_ptr<Mesh>> meshes;
+    std::string path;
+    std::string directory;
 };
 }

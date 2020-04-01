@@ -1,7 +1,7 @@
 #pragma once
 
-#include <starlight/asset/PathManager.hpp>
 #include <starlight/asset/loaders/AssetLoader.h>
+#include <starlight/core/path/PathManager.hpp>
 
 #include <starlight/core/log/Logger.h>
 #include <starlight/platform/texture/Texture.h>
@@ -19,7 +19,7 @@ class TextureLoader : public AssetLoader<Texture> {
 public:
     std::shared_ptr<Texture> load(AssetLoaderArgs<Texture> args) {
         logger->trace("loading texture: {}", args.path);
-        return Texture::create(PathManager::createGlobalPath<Texture>(args.path));
+        return Texture::create(core::path::PathManager::createGlobalPath<Texture>(args.path));
     }
 
 private:

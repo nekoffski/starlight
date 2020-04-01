@@ -15,6 +15,8 @@ std::shared_ptr<geometry::Model> AssimpModelLoader::loadModel(std::string path) 
     const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenNormals);
 
     auto model = std::make_shared<geometry::Model>();
+    model->path = path;
+    model->directory = path.substr(0, path.find_last_of("/"));
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         logger->error("could not load scene");
@@ -30,7 +32,7 @@ std::shared_ptr<geometry::Model> AssimpModelLoader::loadModel(std::string path) 
 void AssimpModelLoader::processNode(aiNode* node, const aiScene* scene, AssimpMeshProcessor& meshProcessor, std::shared_ptr<geometry::Model>& model) {
     for (int i = 0; i < node->mNumMeshes; ++i) {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-        model->meshes.push_back(meshProcessor.processMesh(mesh, scene));
+        model->meshes.push_back(meshProcessor.processMesh(mesh, scene, model->directory));
     }
 
     for (int i = 0; i < node->mNumChildren; ++i) {

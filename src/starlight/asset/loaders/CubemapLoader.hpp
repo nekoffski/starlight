@@ -1,7 +1,7 @@
 #pragma once
 
-#include <starlight/asset/PathManager.hpp>
 #include <starlight/asset/loaders/AssetLoader.h>
+#include <starlight/core/path/PathManager.hpp>
 
 #include <starlight/platform/texture/Cubemap.h>
 
@@ -27,12 +27,12 @@ public:
         // clang-format off
         logger->trace("loading cubemap {}, {}, {}, {}, {}, {}", args.top, args.bottom, args.right, args.left, args.front, args.back);
         return Cubemap::create({ 
-            PathManager::createGlobalPath<Cubemap>(args.top),
-            PathManager::createGlobalPath<Cubemap>(args.bottom),
-            PathManager::createGlobalPath<Cubemap>(args.right),
-            PathManager::createGlobalPath<Cubemap>(args.left),
-            PathManager::createGlobalPath<Cubemap>(args.front),
-            PathManager::createGlobalPath<Cubemap>(args.back) });
+            core::path::PathManager::createGlobalPath<Cubemap>(args.top),
+            core::path::PathManager::createGlobalPath<Cubemap>(args.bottom),
+            core::path::PathManager::createGlobalPath<Cubemap>(args.right),
+            core::path::PathManager::createGlobalPath<Cubemap>(args.left),
+            core::path::PathManager::createGlobalPath<Cubemap>(args.front),
+            core::path::PathManager::createGlobalPath<Cubemap>(args.back) });
         // clang-format on
     }
 

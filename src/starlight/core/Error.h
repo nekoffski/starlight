@@ -9,7 +9,9 @@ constexpr int ERR_CATEGORY = 1;
 enum class ErrorCode : unsigned int {
     NO_ERROR = 0,
     TWO_OBSERVERS_WITH_SAME_IDENT,
-    TARGET_NOT_EXIST
+    TARGET_NOT_EXIST,
+    PATH_ALREADY_REGISTERED,
+    PATH_NOT_REGISTERED
 };
 
 class CoreException : public err::Exception {

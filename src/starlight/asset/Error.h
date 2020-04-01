@@ -8,8 +8,6 @@ constexpr int ERR_CATEGORY = 3;
 
 enum class ErrorCode : unsigned int {
     NO_ERROR = 0,
-    PATH_ALREADY_REGISTERED,
-    PATH_NOT_REGISTERED,
     LOADER_NOT_FOUND
 };
 

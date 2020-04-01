@@ -3,11 +3,11 @@
 #include <typeindex>
 #include <unordered_map>
 
-#include <starlight/asset/Error.h>
+#include <starlight/core/Error.h>
 
 #include <starlight/core/log/Logger.h>
 
-namespace starl::asset {
+namespace starl::core::path {
 
 class PathManager {
 public:
@@ -15,7 +15,7 @@ public:
     static void registerResourcePath(const std::string& path) {
         logger->info("registering path: {} - {}", typeid(T).name(), path);
         if (0 < m_resourcePaths.count(typeid(T))) {
-            throw AssetException(ErrorCode::PATH_ALREADY_REGISTERED);
+            throw CoreException(ErrorCode::PATH_ALREADY_REGISTERED);
         }
         m_resourcePaths[typeid(T)] = path;
     }
@@ -23,7 +23,7 @@ public:
     template <typename T>
     static std::string createGlobalPath(const std::string& path) {
         if (0 >= m_resourcePaths.count(typeid(T))) {
-            throw AssetException(ErrorCode::PATH_NOT_REGISTERED);
+            throw CoreException(ErrorCode::PATH_NOT_REGISTERED);
         }
         return m_resourcePaths.at(typeid(T)) + path;
     }

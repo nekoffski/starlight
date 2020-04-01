@@ -2,7 +2,9 @@
 
 #include <memory>
 
+#include <starlight/asset/Error.h>
 #include <starlight/asset/loaders/CubemapLoader.hpp>
+#include <starlight/asset/loaders/ModelLoaderWrapper.hpp>
 #include <starlight/asset/loaders/ShaderLoader.hpp>
 #include <starlight/asset/loaders/TextureLoader.hpp>
 
@@ -16,6 +18,7 @@ struct AssetLoaderDispatcher {
 static starl::asset::loaders::ShaderLoader SHADER_LOADER;
 static starl::asset::loaders::TextureLoader TEXTURE_LOADER;
 static starl::asset::loaders::CubemapLoader CUBEMAP_LOADER;
+static starl::asset::loaders::ModelLoaderWrapper MODEL_LOADER_WRAPPER;
 }
 
 namespace starl::asset {
@@ -50,5 +53,10 @@ struct AssetLoaderDispatcher<texture::Texture> {
 template <>
 struct AssetLoaderDispatcher<texture::Cubemap> {
     inline static loaders::AssetLoader<texture::Cubemap>* loader{ &CUBEMAP_LOADER };
+};
+
+template <>
+struct AssetLoaderDispatcher<starl::geometry::Model> {
+    inline static loaders::AssetLoader<starl::geometry::Model>* loader{ &MODEL_LOADER_WRAPPER };
 };
 }

@@ -24,8 +24,9 @@ void ModelRenderer::renderModel(const std::shared_ptr<geometry::Model>& model) {
 }
 
 void ModelRenderer::renderMesh(const std::shared_ptr<geometry::Mesh>& mesh) {
+    int i = 0;
     for (const auto& texture : mesh->textures) {
-        texture->bind();
+        texture->bind(i++);
     }
 
     m_lowLevelRenderer.renderVertexArray(mesh->vertexArray);
