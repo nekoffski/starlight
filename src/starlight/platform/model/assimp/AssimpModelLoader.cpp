@@ -6,8 +6,6 @@
 
 #include <starlight/core/log/Logger.h>
 
-static auto logger = starl::core::log::createLogger("AssimpModelLoader");
-
 namespace starl::platform::model::assimp {
 
 std::shared_ptr<geometry::Model> AssimpModelLoader::loadModel(std::string path) {
@@ -19,7 +17,7 @@ std::shared_ptr<geometry::Model> AssimpModelLoader::loadModel(std::string path) 
     model->directory = path.substr(0, path.find_last_of("/"));
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-        logger->error("could not load scene");
+        LOG(ERROR) << "could not load scene";
         throw PlatformException(ErrorCode::COULD_NOT_LOAD_MODEL, "failed to load assimp scene: " + path);
     }
 

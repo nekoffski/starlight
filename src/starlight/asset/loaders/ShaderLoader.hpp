@@ -20,12 +20,9 @@ struct AssetLoaderArgs<Shader> {
 class ShaderLoader : public AssetLoader<Shader> {
 public:
     std::shared_ptr<Shader> load(AssetLoaderArgs<Shader> args) {
-        logger->trace("loading shader: {}, {}, {}", args.vertexPath, args.fragmentPath, args.geometryPath);
+        LOG(DEBUG) << "loading shader: " << args.vertexPath << ", " << args.fragmentPath << ", " << args.geometryPath;
         return Shader::create(core::path::PathManager::createGlobalPath<Shader>(args.vertexPath),
             core::path::PathManager::createGlobalPath<Shader>(args.fragmentPath), core::path::PathManager::createGlobalPath<Shader>(args.geometryPath));
     }
-
-private:
-    Logger logger{ starl::core::log::createLogger("ShaderLoader") };
 };
 }

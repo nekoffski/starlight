@@ -25,7 +25,7 @@ class CubemapLoader : public AssetLoader<Cubemap> {
 public:
     std::shared_ptr<Cubemap> load(AssetLoaderArgs<Cubemap> args) {
         // clang-format off
-        logger->trace("loading cubemap {}, {}, {}, {}, {}, {}", args.top, args.bottom, args.right, args.left, args.front, args.back);
+        LOG(DEBUG) << "loading cubemap " << args.top << ", " << args.bottom << ", " << args.right << ", " << args.left << ", " << args.front<< ", " << args.back;
         return Cubemap::create({ 
             core::path::PathManager::createGlobalPath<Cubemap>(args.top),
             core::path::PathManager::createGlobalPath<Cubemap>(args.bottom),
@@ -35,8 +35,5 @@ public:
             core::path::PathManager::createGlobalPath<Cubemap>(args.back) });
         // clang-format on
     }
-
-private:
-    Logger logger{ starl::core::log::createLogger("CubemapLoader") };
 };
 }

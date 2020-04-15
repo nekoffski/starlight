@@ -1,115 +1,134 @@
-#include <iostream>
-
-#include <starlight/core/log/Logger.h>
-#include <starlight/platform/gpu/GraphicsContext.h>
-#include <starlight/platform/input/Input.h>
-#include <starlight/platform/window/Window.h>
-
-#include <starlight/platform/shader/Shader.h>
-#include <starlight/platform/shader/ShaderCompiler.hpp>
-
-#include <starlight/platform/gpu/ElementBuffer.h>
-#include <starlight/platform/gpu/RenderAPI.h>
-#include <starlight/platform/gpu/VertexArray.h>
-#include <starlight/platform/gpu/VertexBuffer.h>
-
-#include <starlight/platform/clock/Clock.h>
-
-#include <starlight/asset/AssetManager.hpp>
+#include <starlight/application/Entrypoint.hpp>
 #include <starlight/core/path/PathManager.hpp>
+#include <starlight/geometry/Model.h>
+#include <starlight/platform/shader/Shader.h>
+#include <starlight/platform/texture/Cubemap.h>
+#include <starlight/platform/texture/Texture.h>
 
-#include <starlight/framework/graphics/LowLevelRenderer.h>
-#include <starlight/framework/graphics/camera/EulerCamera.h>
-#include <starlight/platform/model/ModelLoader.h>
+class App : public starl::application::Application {
+    using starl::application::Application::Application;
 
-#include <starlight/rendering/renderer/CubemapRenderer.h>
-#include <starlight/rendering/renderer/ModelRenderer.h>
-
-using namespace starl::platform;
-using namespace starl::framework;
-using namespace starl;
-
-int main() {
-    starl::core::log::initLogging();
-    starl::core::path::PathManager::registerResourcePath<shader::Shader>(SHADERS_DIR);
-    starl::core::path::PathManager::registerResourcePath<texture::Texture>(TEXTURES_DIR);
-    starl::core::path::PathManager::registerResourcePath<texture::Cubemap>(CUBEMAPS_DIR);
-    starl::core::path::PathManager::registerResourcePath<geometry::Model>(MODELS_DIR);
-
-    static auto logger = core::log::createLogger("main");
-
-    auto window = window::Window::create(window::WindowParams{
-        window::Viewport{ 1600, 900 }, "title" });
-
-    window->init();
-
-    auto input = input::Input::create(window->getHandle());
-
-    starl::framework::graphics::LowLevelRenderer llrenderer(window);
-    llrenderer.init();
-
-    starl::asset::AssetManager assetManager;
-    shader::ShaderCompiler::init();
-
-    auto shader = assetManager.load<shader::Shader>({ "/t.vert", "/t.frag", "" });
-    auto cubemapShader = assetManager.load<shader::Shader>({ "/cubemap.vert", "/cubemap.frag" });
-    auto texture = assetManager.load<texture::Texture>({ "/wall.jpg" });
-    auto cubemap = assetManager.load<texture::Cubemap>({ "/skybox/posx.jpg",
-        "/skybox/negx.jpg",
-        "/skybox/posy.jpg",
-        "/skybox/negy.jpg",
-        "/skybox/posz.jpg",
-        "/skybox/negz.jpg" });
-
-    try {
-        shader::ShaderCompiler::compile(shader);
-        shader::ShaderCompiler::compile(cubemapShader);
-    } catch (PlatformException& e) {
-        std::cout << e;
-        return -1;
+public:
+    virtual void onStart() override {
+        starl::core::path::PathManager::registerResourcePath<starl::platform::shader::Shader>(SHADERS_DIR);
+        starl::core::path::PathManager::registerResourcePath<starl::platform::texture::Texture>(TEXTURES_DIR);
+        starl::core::path::PathManager::registerResourcePath<starl::platform::texture::Cubemap>(CUBEMAPS_DIR);
+        starl::core::path::PathManager::registerResourcePath<starl::geometry::Model>(MODELS_DIR);
     }
+};
 
-    auto camera = graphics::camera::EulerCamera::create(glm::vec3(0.0f), 1.0f, 8.0f);
-    starl::rendering::renderer::ModelRenderer modelRenderer(llrenderer);
+STARLIGHT_ENTRYPOINT(App);
 
-    modelRenderer.setCamera(camera);
+// #include <starlight/core/log/Logger.h>
+// #include <starlight/platform/gpu/GraphicsContext.h>
+// #include <starlight/platform/input/Input.h>
+// #include <starlight/platform/window/Window.h>
 
-    clock::Clock clock;
+// #include <starlight/platform/shader/Shader.h>
+// #include <starlight/platform/shader/ShaderCompiler.hpp>
 
-    // cubemap
-    rendering::renderer::CubemapRenderer cubemapRenderer(llrenderer);
-    cubemapRenderer.setCamera(camera);
-    cubemapRenderer.setCubemap(cubemap);
-    cubemapRenderer.setCubemapShader(cubemapShader);
+// #include <starlight/platform/gpu/ElementBuffer.h>
+// #include <starlight/platform/gpu/RenderAPI.h>
+// #include <starlight/platform/gpu/VertexArray.h>
+// #include <starlight/platform/gpu/VertexBuffer.h>
 
-    auto model = assetManager.load<geometry::Model>({ "/tow/tower.obj" });
-    auto modelRenderObject = std::make_shared<rendering::renderable::ModelRenderObject>();
-    modelRenderObject->model = model;
-    modelRenderObject->modelMatrix = std::make_shared<math::Mat4>(1.0f);
+// #include <starlight/platform/clock/Clock.h>
 
-    modelRenderer.pushModelRenderObject(shader, modelRenderObject);
+// #include <starlight/asset/AssetManager.hpp>
+// #include <starlight/core/path/PathManager.hpp>
 
-    logger->trace("Starting main loop");
-    while (!window->getShouldClose()) {
-        const auto delta = clock.getDeltaTime();
+// #include <starlight/framework/graphics/LowLevelRenderer.h>
+// #include <starlight/framework/graphics/camera/EulerCamera.h>
+// #include <starlight/platform/model/ModelLoader.h>
 
-        window->update(delta);
-        camera->update(delta);
+// #include <starlight/rendering/renderer/CubemapRenderer.h>
+// #include <starlight/rendering/renderer/ModelRenderer.h>
+// #include <starlight/scene/Scene.h>
 
-        llrenderer.begin();
-        modelRenderer.render();
-        cubemapRenderer.render();
-        llrenderer.end();
+// using namespace starl::platform;
+// using namespace starl::framework;
+// using namespace starl;
 
-        camera->handleInput(input);
+// int main(int argc, char** argv) {
+//     starl::core::log::initLogger(argc, argv);
+//     starl::core::path::PathManager::registerResourcePath<shader::Shader>(SHADERS_DIR);
+//     starl::core::path::PathManager::registerResourcePath<texture::Texture>(TEXTURES_DIR);
+//     starl::core::path::PathManager::registerResourcePath<texture::Cubemap>(CUBEMAPS_DIR);
+//     starl::core::path::PathManager::registerResourcePath<geometry::Model>(MODELS_DIR);
 
-        if (input->isKeyPressed(STARL_KEY_ESCAPE)) {
-            window->setShouldClose(true);
-        }
+//     auto window = window::Window::create(window::WindowParams{
+//         window::Viewport{ 1600, 900 }, "title" });
 
-        clock.update();
-    }
-    logger->trace("Main loop finished");
+//     window->init();
 
-    return 0;
-}
+//     auto input = input::Input::create(window->getHandle());
+
+//     starl::framework::graphics::LowLevelRenderer llrenderer(window);
+//     llrenderer.init();
+
+//     starl::asset::AssetManager assetManager;
+//     shader::ShaderCompiler::init();
+
+//     auto shader = assetManager.load<shader::Shader>({ "/t.vert", "/t.frag", "" });
+//     auto cubemapShader = assetManager.load<shader::Shader>({ "/cubemap.vert", "/cubemap.frag" });
+//     auto texture = assetManager.load<texture::Texture>({ "/wall.jpg" });
+//     auto cubemap = assetManager.load<texture::Cubemap>({ "/skybox/posx.jpg",
+//         "/skybox/negx.jpg",
+//         "/skybox/posy.jpg",
+//         "/skybox/negy.jpg",
+//         "/skybox/posz.jpg",
+//         "/skybox/negz.jpg" });
+
+//     try {
+//         shader::ShaderCompiler::compile(shader);
+//         shader::ShaderCompiler::compile(cubemapShader);
+//     } catch (PlatformException& e) {
+//         LOG(INFO) << e.toStr();
+//         return -1;
+//     }
+
+//     auto camera = graphics::camera::EulerCamera::create(glm::vec3(0.0f), 1.0f, 8.0f);
+//     starl::rendering::renderer::ModelRenderer modelRenderer(llrenderer);
+
+//     modelRenderer.setCamera(camera);
+
+//     clock::Clock clock;
+
+//     // cubemap
+//     rendering::renderer::CubemapRenderer cubemapRenderer(llrenderer);
+//     cubemapRenderer.setCamera(camera);
+//     cubemapRenderer.setCubemap(cubemap);
+//     cubemapRenderer.setCubemapShader(cubemapShader);
+
+//     auto model = assetManager.load<geometry::Model>({ "/tow/tower.obj" });
+//     auto modelRenderObject = std::make_shared<rendering::entity::ModelRenderEntity>(model);
+
+//     //modelRenderer.pushModelRenderObject(shader, modelRenderObject);
+
+//     scene::Scene scene;
+
+//     rendering::renderer::ShaderToModelRenderEntities m;
+
+//     m.insert({ shader, { modelRenderObject } });
+
+//     while (!window->getShouldClose()) {
+//         const auto delta = clock.getDeltaTime();
+
+//         window->update(delta);
+//         camera->update(delta);
+
+//         llrenderer.begin();
+//         modelRenderer.render(m);
+//         cubemapRenderer.render();
+//         llrenderer.end();
+
+//         camera->handleInput(input);
+
+//         if (input->isKeyPressed(STARL_KEY_ESCAPE)) {
+//             window->setShouldClose(true);
+//         }
+
+//         clock.update();
+//     }
+//     return 0;
+// }

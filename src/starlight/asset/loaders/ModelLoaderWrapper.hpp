@@ -21,11 +21,8 @@ class ModelLoaderWrapper : public AssetLoader<Model> {
 public:
     std::shared_ptr<Model> load(AssetLoaderArgs<Model> args) {
         static auto modelLoader{ ModelLoader::create() };
-        logger->trace("loading model {}", args.path);
+        LOG(DEBUG) << "loading model " << args.path;
         return modelLoader->loadModel(core::path::PathManager::createGlobalPath<Model>(args.path));
     }
-
-private:
-    Logger logger{ starl::core::log::createLogger("ModelLoaderWrapper") };
 };
 }

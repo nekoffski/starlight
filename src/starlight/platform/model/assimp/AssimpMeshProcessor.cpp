@@ -9,18 +9,71 @@
 
 #include <starlight/core/log/Logger.h>
 
-static auto logger = starl::core::log::createLogger("AssimpMeshProcesor");
-
 namespace starl::platform::model::assimp {
 
+using geometry::Vertex;
 std::shared_ptr<geometry::Mesh> AssimpMeshProcessor::processMesh(aiMesh* assimpMesh, const aiScene* scene, std::string directory) {
-    using geometry::Vertex;
+    auto mesh = std::make_shared<geometry::Mesh>();
 
-    std::vector<Vertex> vertices;
-    std::vector<unsigned> indices;
+    mesh->vertices = loadVertices(assimpMesh);
+    mesh->indices = loadIndices(assimpMesh);
+    mesh->textures = loadTextures(scene->mMaterials[assimpMesh->mMaterialIndex], directory);
+    initVertexArray(mesh);
+
+    return mesh;
+}
+
+void AssimpMeshProcessor::initVertexArray(std::shared_ptr<geometry::Mesh>& mesh) {
+    auto vao = platform::gpu::VertexArray::create();
+    auto vbo = platform::gpu::VertexBuffer::create(&mesh->vertices[0], mesh->vertices.size() * sizeof(Vertex), mesh->vertices.size());
+    auto ebo = platform::gpu::ElementBuffer::create(&mesh->indices[0], mesh->indices.size() * sizeof(unsigned), mesh->indices.size());
+
+    // vertices
+    vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
+    // normals
+    vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
+    // tex coords
+    vbo->addMemoryOffsetScheme(2, STARL_FLOAT, sizeof(float));
+    // tangents
+    vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
+    // bitangents
+    vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
+
+    vao->addVertexBuffer(vbo);
+    vao->addElementBuffer(ebo);
+
+    mesh->vertexArray = vao;
+}
+
+std::vector<std::shared_ptr<texture::Texture>> AssimpMeshProcessor::loadTextures(aiMaterial* material, std::string directory) {
     std::vector<std::shared_ptr<texture::Texture>> textures;
 
-    auto mesh = std::make_shared<geometry::Mesh>();
+    auto diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse", directory);
+    auto specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular", directory);
+    auto normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal", directory);
+    auto heightMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_height", directory);
+
+    textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+    textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+    textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+    textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+
+    return textures;
+}
+
+std::vector<unsigned> AssimpMeshProcessor::loadIndices(aiMesh* assimpMesh) {
+    std::vector<unsigned> indices;
+
+    for (unsigned i = 0; i < assimpMesh->mNumFaces; ++i) {
+        aiFace face = assimpMesh->mFaces[i];
+        for (unsigned j = 0; j < face.mNumIndices; ++j)
+            indices.push_back(face.mIndices[j]);
+    }
+    return indices;
+}
+
+std::vector<geometry::Vertex> AssimpMeshProcessor::loadVertices(aiMesh* assimpMesh) {
+    std::vector<Vertex> vertices;
 
     for (unsigned i = 0; i < assimpMesh->mNumVertices; ++i) {
         Vertex vertex;
@@ -59,49 +112,7 @@ std::shared_ptr<geometry::Mesh> AssimpMeshProcessor::processMesh(aiMesh* assimpM
 
         vertices.push_back(std::move(vertex));
     }
-    mesh->vertices = std::move(vertices);
-
-    for (unsigned i = 0; i < assimpMesh->mNumFaces; ++i) {
-        aiFace face = assimpMesh->mFaces[i];
-        for (unsigned j = 0; j < face.mNumIndices; ++j)
-            indices.push_back(face.mIndices[j]);
-    }
-    mesh->indices = std::move(indices);
-
-    aiMaterial* material = scene->mMaterials[assimpMesh->mMaterialIndex];
-
-    auto diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse", directory);
-    auto specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular", directory);
-    auto normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal", directory);
-    auto heightMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_height", directory);
-
-    textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-    textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-    textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-    textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
-
-    mesh->textures = std::move(textures);
-
-    auto vao = platform::gpu::VertexArray::create();
-    auto vbo = platform::gpu::VertexBuffer::create(&mesh->vertices[0], mesh->vertices.size() * sizeof(Vertex), mesh->vertices.size());
-    auto ebo = platform::gpu::ElementBuffer::create(&mesh->indices[0], mesh->indices.size() * sizeof(unsigned), mesh->indices.size());
-
-    // vertices
-    vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
-    // normals
-    vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
-    // tex coords
-    vbo->addMemoryOffsetScheme(2, STARL_FLOAT, sizeof(float));
-    // tangents
-    vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
-    // bitangents
-    vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
-
-    vao->addVertexBuffer(vbo);
-    vao->addElementBuffer(ebo);
-
-    mesh->vertexArray = vao;
-    return mesh;
+    return vertices;
 }
 
 std::vector<std::shared_ptr<texture::Texture>>

@@ -13,7 +13,7 @@ class PathManager {
 public:
     template <typename T>
     static void registerResourcePath(const std::string& path) {
-        logger->info("registering path: {} - {}", typeid(T).name(), path);
+        LOG(INFO) << "registering path: " << typeid(T).name() << " - " << path;
         if (0 < m_resourcePaths.count(typeid(T))) {
             throw CoreException(ErrorCode::PATH_ALREADY_REGISTERED);
         }
@@ -30,6 +30,5 @@ public:
 
 private:
     inline static std::unordered_map<std::type_index, std::string> m_resourcePaths;
-    inline static Logger logger{ starl::core::log::createLogger("PathManager") };
 };
 }

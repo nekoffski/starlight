@@ -14,7 +14,6 @@ public:
     }
 
     virtual ~Renderer() = default;
-    virtual void render() = 0;
 
     void setCamera(std::shared_ptr<graphics::camera::Camera> camera) {
         m_camera = camera;

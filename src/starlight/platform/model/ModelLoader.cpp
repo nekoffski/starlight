@@ -4,12 +4,10 @@
 
 #include <starlight/core/log/Logger.h>
 
-static auto logger = starl::core::log::createLogger("ModelLoader");
-
 namespace starl::platform::model {
 
 std::unique_ptr<ModelLoader> ModelLoader::create() {
-    logger->info("instancing assimp model loader");
+    LOG(INFO) << "instancing assimp model loader";
     return std::make_unique<assimp::AssimpModelLoader>();
 }
 }

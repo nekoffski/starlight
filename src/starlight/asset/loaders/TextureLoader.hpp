@@ -18,11 +18,8 @@ struct AssetLoaderArgs<Texture> {
 class TextureLoader : public AssetLoader<Texture> {
 public:
     std::shared_ptr<Texture> load(AssetLoaderArgs<Texture> args) {
-        logger->trace("loading texture: {}", args.path);
+        LOG(DEBUG) << "loading texture: " << args.path;
         return Texture::create(core::path::PathManager::createGlobalPath<Texture>(args.path));
     }
-
-private:
-    Logger logger{ starl::core::log::createLogger("TextureLoader") };
 };
 }

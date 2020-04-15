@@ -2,12 +2,10 @@
 
 #include <starlight/core/log/Logger.h>
 
-static auto logger = starl::core::log::createLogger("LowLevelRenderer");
-
 namespace starl::framework::graphics {
 
 void LowLevelRenderer::init() {
-    logger->info("initializing");
+    LOG(INFO) << "initializing";
     m_graphicsContext->init();
 
     m_renderAPI->enable(STARL_DEPTH_TEST);

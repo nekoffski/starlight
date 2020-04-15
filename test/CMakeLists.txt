@@ -1,8 +1,8 @@
 set(GTEST_LINK gtest gtest_main gmock gmock_main)
 
 add_executable(sl_test ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
-target_link_libraries(sl_test starlight)
-target_include_directories(sl_test PUBLIC ${STARLIGHT_HEADERS} )
+target_link_libraries(sl_test PUBLIC starlight)
+target_include_directories(sl_test PUBLIC ${STARLIGHT_HEADERS})
 
 file (GLOB_RECURSE SL_TEST_CORE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/core/*.cpp)
 file (GLOB_RECURSE SL_TEST_PLATFORM_SRC ${CMAKE_CURRENT_SOURCE_DIR}/platform/*.cpp)

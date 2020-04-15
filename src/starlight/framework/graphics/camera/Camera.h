@@ -7,7 +7,7 @@
 
 namespace starl::framework::graphics::camera {
 
-using Direction = uint8_t;
+using Direction = u_int8_t;
 
 // clang-format off
 constexpr Direction DIR_NONE   = 0b0000;

@@ -3,12 +3,10 @@
 
 #include <starlight/core/log/Logger.h>
 
-static auto logger = starl::core::log::createLogger("Image");
-
 namespace starl::platform::img {
 
 std::shared_ptr<Image> Image::create(const std::string& path) {
-    logger->trace("loading image: {} using StbImage", path);
+    LOG(DEBUG) << "loading image: " << path << " using StbImage";
     return std::make_shared<stb::StbImage>(path);
 }
 }

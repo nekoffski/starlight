@@ -1,15 +1,8 @@
 #pragma once
 
-#include <spdlog/spdlog.h>
-
-#include <starlight/core/macros/class.h>
-
-namespace starl {
-using Logger = std::shared_ptr<spdlog::logger>;
-}
+#include <easylogging++.h>
 
 namespace starl::core::log {
 
-extern void initLogging();
-extern Logger createLogger(const std::string&);
+extern void initLogger(int, char**);
 }
