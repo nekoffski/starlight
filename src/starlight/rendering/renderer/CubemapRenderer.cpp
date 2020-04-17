@@ -53,9 +53,8 @@ static float cubemapVertices[] = {
 
 namespace starl::rendering::renderer {
 
-CubemapRenderer::CubemapRenderer(framework::graphics::LowLevelRenderer& lowLevelRenderer) 
-    :   Renderer(lowLevelRenderer)
-{
+CubemapRenderer::CubemapRenderer(framework::graphics::LowLevelRenderer& lowLevelRenderer)
+    : Renderer(lowLevelRenderer) {
     auto vertexBuffer = platform::gpu::VertexBuffer::create(cubemapVertices, sizeof(cubemapVertices), 36);
     vertexBuffer->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
 

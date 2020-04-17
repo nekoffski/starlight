@@ -36,10 +36,13 @@ public:
             m_application = std::make_unique<App>(Application::Token{});
             m_application->onStart();
 
+            if (not m_application->getContext())
+                throw std::logic_error("Application context is null");
+
             while (m_application->isRunning()) {
+                m_application->handleInput();
                 m_application->update(m_clock.getDeltaTime());
                 m_application->render();
-                m_application->handleInput();
                 m_clock.update();
             }
 
