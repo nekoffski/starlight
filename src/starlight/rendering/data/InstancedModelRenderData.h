@@ -6,9 +6,9 @@
 #include <starlight/geometry/Model.h>
 #include <starlight/math/Matrix.hpp>
 
-namespace starl::rendering::entity {
+namespace starl::rendering::data {
 
-struct InstancedModelRenderEntity {
+struct InstancedModelRenderData {
     std::shared_ptr<geometry::Model> model;
     std::vector<std::shared_ptr<math::Mat4>> modelMatrices;
 };

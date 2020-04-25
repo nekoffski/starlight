@@ -62,13 +62,14 @@ CubemapRenderer::CubemapRenderer(framework::graphics::LowLevelRenderer& lowLevel
     m_cubemapVertexArray->addVertexBuffer(vertexBuffer);
 }
 
-void CubemapRenderer::render() {
-    m_cubemapShader->enable();
-    m_cubemapShader->setUniform("projection", m_lowLevelRenderer.getProjectionMatrix());
-    m_cubemapShader->setUniform("view", m_camera->getViewMatrix());
-    m_cubemap->bind();
+void CubemapRenderer::render(const std::shared_ptr<platform::texture::Cubemap>& cubemap,
+    const std::shared_ptr<platform::shader::Shader>& cubemapShader) {
+    cubemapShader->enable();
+    cubemapShader->setUniform("projection", m_lowLevelRenderer.getProjectionMatrix());
+    cubemapShader->setUniform("view", m_camera->getViewMatrix());
+    cubemap->bind();
     m_lowLevelRenderer.renderVertexArrayWithDepthMaskDisabled(m_cubemapVertexArray);
-    m_cubemap->unbind();
-    m_cubemapShader->disable();
+    cubemap->unbind();
+    cubemapShader->disable();
 }
 }

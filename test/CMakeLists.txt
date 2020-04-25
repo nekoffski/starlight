@@ -1,7 +1,9 @@
 set(GTEST_LINK gtest gtest_main gmock gmock_main)
 
 add_executable(sl_test ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
+set_property(TARGET sl_test PROPERTY CXX_STANDARD 20)
 target_link_libraries(sl_test PUBLIC starlight)
+
 target_include_directories(sl_test PUBLIC ${STARLIGHT_HEADERS})
 
 file (GLOB_RECURSE SL_TEST_CORE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/core/*.cpp)

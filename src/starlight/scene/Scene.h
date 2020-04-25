@@ -4,31 +4,33 @@
 #include <unordered_map>
 #include <vector>
 
-#include <starlight/rendering/entity/ModelRenderEntity.h>
-
-namespace starl {
-namespace platform::shader {
-    class Shader;
-}
-
-namespace rendering::entity {
-    class ModelRenderEntity;
-}
-}
+#include <starlight/ecs/entity/Entity.h>
+#include <starlight/framework/graphics/camera/Camera.h>
+#include <starlight/scene/Skybox.h>
 
 namespace starl::scene {
 
-using ShaderPtr = std::shared_ptr<platform::shader::Shader>;
-using ModelRenderEntityPtr = std::shared_ptr<rendering::entity::ModelRenderEntity>;
-using ShaderToModelRenderEntities = std::unordered_map<ShaderPtr, std::vector<ModelRenderEntityPtr>>;
+class SceneRenderer;
 
 class Scene {
+    friend class SceneManager;
+
 public:
-    void pushModel(const ShaderPtr& shader, std::shared_ptr<geometry::Model>& model) {
-        m_entitiesMap[shader].push_back(std::make_shared<rendering::entity::ModelRenderEntity>(model));
+    void setCamera(std::shared_ptr<framework::graphics::camera::Camera> camera) {
+        m_camera = std::move(camera);
+    }
+
+    void setSkybox(std::shared_ptr<Skybox> skybox) {
+        m_skybox = std::move(skybox);
+    }
+
+    void addEntity(std::shared_ptr<ecs::entity::Entity> entity) {
+        m_entities.push_back(std::move(entity));
     }
 
 private:
-    ShaderToModelRenderEntities m_entitiesMap;
+    std::vector<std::shared_ptr<ecs::entity::Entity>> m_entities;
+    std::shared_ptr<framework::graphics::camera::Camera> m_camera;
+    std::shared_ptr<Skybox> m_skybox;
 };
 }

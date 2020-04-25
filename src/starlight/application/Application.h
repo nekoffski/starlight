@@ -10,10 +10,16 @@
 #include <starlight/platform/window/Window.h>
 #include <starlight/rendering/renderer/CubemapRenderer.h>
 #include <starlight/rendering/renderer/ModelRenderer.h>
+#include <starlight/scene/SceneManager.h>
 
 namespace starl::application {
 
+class Application;
+
 template <typename T>
+concept Applicable = std::derived_from<T, Application>;
+
+template <Applicable App>
 class Entrypoint;
 
 class Application {
@@ -41,7 +47,7 @@ public:
     }
 
     context::ApplicationContextResource createApplicationContextResource() {
-        return context::ApplicationContextResource(m_cubemapRenderer, m_modelRenderer, m_assetManager);
+        return context::ApplicationContextResource(m_cubemapRenderer, m_modelRenderer, m_assetManager, m_sceneManager);
     }
 
     virtual void onStart() {}
@@ -56,10 +62,11 @@ private:
     asset::AssetManager m_assetManager;
     std::shared_ptr<rendering::renderer::CubemapRenderer> m_cubemapRenderer;
     std::shared_ptr<rendering::renderer::ModelRenderer> m_modelRenderer;
+    std::shared_ptr<scene::SceneManager> m_sceneManager;
 };
 
 class Application::Token {
-    template <typename T>
+    template <Applicable App>
     friend class Entrypoint;
     Token() = default;
 };

@@ -16,7 +16,7 @@ public:
     template <typename T>
     void setCallback(std::function<bool(std::shared_ptr<T>)> callback) {
         if (isInstanceOf<T>(*m_event)) {
-            auto isHandled = callback(std::dynamic_pointer_cast<T>(m_event));
+            bool isHandled = callback(std::dynamic_pointer_cast<T>(m_event));
             if (m_event->dispatchOnce) {
                 const_cast<bool&>(m_event->isHandled) = isHandled;
             }

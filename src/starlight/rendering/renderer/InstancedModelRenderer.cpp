@@ -2,8 +2,8 @@
 
 namespace starl::rendering::renderer {
 
-void InstancedModelRenderer::render(const ShaderToInstancedModelRenderEntities& shaderToInstancedModelRenderEntities) {
-    for (const auto& [shader, instancedModelRenderObjects] : shaderToInstancedModelRenderEntities) {
+void InstancedModelRenderer::render(const ShaderToInstancedModelRenderData& shaderToInstancedModelRenderData) {
+    for (const auto& [shader, instancedModelRenderObjects] : shaderToInstancedModelRenderData) {
         shader->enable();
         shader->setUniform("projection", m_lowLevelRenderer.getProjectionMatrix());
 

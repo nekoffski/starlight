@@ -5,21 +5,21 @@
 
 #include <starlight/framework/graphics/LowLevelRenderer.h>
 #include <starlight/platform/shader/Shader.h>
-#include <starlight/rendering/entity/ModelRenderEntity.h>
+#include <starlight/rendering/data/ModelRenderData.h>
 #include <starlight/rendering/renderer/Renderer.h>
 
 // TODO: create FWD
 namespace starl::rendering::renderer {
 
 using ShaderPtr = std::shared_ptr<shader::Shader>;
-using ModelRenderEntityPtr = std::shared_ptr<entity::ModelRenderEntity>;
-using ShaderToModelRenderEntities = std::unordered_map<ShaderPtr, std::vector<ModelRenderEntityPtr>>;
+using ModelRenderDataPtr = std::shared_ptr<data::ModelRenderData>;
+using ShaderToModelRenderData = std::unordered_map<ShaderPtr, std::vector<ModelRenderDataPtr>>;
 
 class ModelRenderer : public Renderer {
 public:
     using Renderer::Renderer;
 
-    void render(const ShaderToModelRenderEntities&);
+    void render(const ShaderToModelRenderData&);
 
 protected:
     void renderModel(const std::shared_ptr<geometry::Model>&);

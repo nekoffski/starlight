@@ -5,10 +5,10 @@
 #include <starlight/geometry/Model.h>
 #include <starlight/math/Matrix.hpp>
 
-namespace starl::rendering::entity {
+namespace starl::rendering::data {
 
-struct ModelRenderEntity {
-    ModelRenderEntity(std::shared_ptr<geometry::Model> model)
+struct ModelRenderData {
+    ModelRenderData(std::shared_ptr<geometry::Model> model)
         : model(std::move(model))
         , modelMatrix(std::make_shared<math::Mat4>(1.0f)) {}
 

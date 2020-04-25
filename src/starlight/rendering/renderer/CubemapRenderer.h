@@ -5,7 +5,7 @@
 #include <starlight/rendering/renderer/Renderer.h>
 
 namespace starl::platform {
-namespace shader{
+namespace shader {
     class Shader;
 }
 
@@ -24,20 +24,10 @@ class CubemapRenderer : public Renderer {
 public:
     explicit CubemapRenderer(framework::graphics::LowLevelRenderer&);
 
-    void render();
-
-    void setCubemapShader(std::shared_ptr<platform::shader::Shader> shader) {
-        m_cubemapShader = shader;
-    }
-
-    void setCubemap(std::shared_ptr<platform::texture::Cubemap> cubemap) {
-        m_cubemap = cubemap;
-    }
+    void render(const std::shared_ptr<platform::texture::Cubemap>& cubemap,
+        const std::shared_ptr<platform::shader::Shader>& cubemapShader);
 
 private:
-    std::shared_ptr<platform::texture::Cubemap> m_cubemap;
-    std::shared_ptr<platform::shader::Shader> m_cubemapShader;
     std::shared_ptr<platform::gpu::VertexArray> m_cubemapVertexArray;
 };
-
 }

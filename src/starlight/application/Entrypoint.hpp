@@ -1,5 +1,6 @@
 #pragma once
 
+#include <concepts>
 #include <memory>
 #include <type_traits>
 
@@ -12,7 +13,7 @@
 namespace starl::application {
 
 // TODO: use concept to check if App is base of application::Application
-template <typename App>
+template <Applicable App>
 class Entrypoint : public core::sig::SignalHandler {
 public:
     explicit Entrypoint(int& argc, char**& argv)

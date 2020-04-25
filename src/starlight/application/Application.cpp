@@ -17,6 +17,7 @@ Application::Application(Application::Token&&) {
 
     m_cubemapRenderer = std::make_shared<rendering::renderer::CubemapRenderer>(*m_lowLevelRenderer);
     m_modelRenderer = std::make_shared<rendering::renderer::ModelRenderer>(*m_lowLevelRenderer);
+    m_sceneManager = std::make_shared<scene::SceneManager>(scene::SceneManagerArgs{ m_cubemapRenderer, m_modelRenderer });
 }
 
 void Application::update(float deltaTime) {
