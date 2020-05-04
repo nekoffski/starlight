@@ -18,23 +18,21 @@
 
 // TODO: create FWD and move implementations to .cpp
 
-using namespace starl::platform;
-
 namespace starl::framework::graphics {
 
 class LowLevelRenderer {
 public:
-    explicit LowLevelRenderer(std::unique_ptr<window::Window>& window)
-        : m_graphicsContext(gpu::GraphicsContext::create(window->getHandle()))
-        , m_renderAPI(gpu::RenderAPI::create())
+    explicit LowLevelRenderer(std::unique_ptr<platform::window::Window>& window)
+        : m_graphicsContext(platform::gpu::GraphicsContext::create(window->getHandle()))
+        , m_renderAPI(platform::gpu::RenderAPI::create())
         , m_mainCamera(nullptr)
         , m_viewport(window->getParams().viewport) {
         calculateProjectionMatrix();
     }
 
     void init();
-    void renderVertexArray(std::shared_ptr<gpu::VertexArray>&);
-    void renderVertexArrayWithDepthMaskDisabled(std::shared_ptr<gpu::VertexArray>&);
+    void renderVertexArray(std::shared_ptr<platform::gpu::VertexArray>&);
+    void renderVertexArrayWithDepthMaskDisabled(std::shared_ptr<platform::gpu::VertexArray>&);
 
     void begin();
     void end();
@@ -44,10 +42,10 @@ public:
     }
 
 private:
-    std::unique_ptr<gpu::GraphicsContext> m_graphicsContext;
-    std::unique_ptr<gpu::RenderAPI> m_renderAPI;
+    std::unique_ptr<platform::gpu::GraphicsContext> m_graphicsContext;
+    std::unique_ptr<platform::gpu::RenderAPI> m_renderAPI;
     std::shared_ptr<camera::Camera> m_mainCamera;
-    window::Viewport m_viewport;
+    platform::window::Viewport m_viewport;
     math::Mat4 m_projectionMatrix;
 
     void calculateProjectionMatrix() {

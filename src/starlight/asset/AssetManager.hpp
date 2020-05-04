@@ -37,21 +37,20 @@ public:
 namespace {
 
 using namespace starl::asset;
-using namespace starl::platform;
 
 template <>
-struct AssetLoaderDispatcher<shader::Shader> {
-    inline static loaders::AssetLoader<shader::Shader>* loader{ &SHADER_LOADER };
+struct AssetLoaderDispatcher<starl::platform::shader::Shader> {
+    inline static loaders::AssetLoader<starl::platform::shader::Shader>* loader{ &SHADER_LOADER };
 };
 
 template <>
-struct AssetLoaderDispatcher<texture::Texture> {
-    inline static loaders::AssetLoader<texture::Texture>* loader{ &TEXTURE_LOADER };
+struct AssetLoaderDispatcher<starl::platform::texture::Texture> {
+    inline static loaders::AssetLoader<starl::platform::texture::Texture>* loader{ &TEXTURE_LOADER };
 };
 
 template <>
-struct AssetLoaderDispatcher<texture::Cubemap> {
-    inline static loaders::AssetLoader<texture::Cubemap>* loader{ &CUBEMAP_LOADER };
+struct AssetLoaderDispatcher<starl::platform::texture::Cubemap> {
+    inline static loaders::AssetLoader<starl::platform::texture::Cubemap>* loader{ &CUBEMAP_LOADER };
 };
 
 template <>

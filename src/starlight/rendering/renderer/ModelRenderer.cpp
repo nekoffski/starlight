@@ -2,11 +2,12 @@
 
 namespace starl::rendering::renderer {
 
-void ModelRenderer::render(const ShaderToModelRenderData& shaderToModelRenderData) {
+void ModelRenderer::render(const ShaderToModelRenderData& shaderToModelRenderData,
+    const std::shared_ptr<framework::graphics::camera::Camera>& camera) {
     for (const auto& [shader, modelRenderObjects] : shaderToModelRenderData) {
         shader->enable();
         shader->setUniform("projection", m_lowLevelRenderer.getProjectionMatrix());
-        shader->setUniform("view", m_camera->getViewMatrix());
+        shader->setUniform("view", camera->getViewMatrix());
 
         for (const auto& modelRenderObject : modelRenderObjects) {
             shader->setUniform("model", *modelRenderObject->modelMatrix);

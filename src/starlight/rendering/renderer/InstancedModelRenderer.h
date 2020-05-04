@@ -11,7 +11,7 @@
 // TODO: create FWD
 namespace starl::rendering::renderer {
 
-using ShaderPtr = std::shared_ptr<shader::Shader>;
+using ShaderPtr = std::shared_ptr<platform::shader::Shader>;
 using InstancedModelRenderDataPtr = std::shared_ptr<data::InstancedModelRenderData>;
 using ShaderToInstancedModelRenderData = std::unordered_map<ShaderPtr, std::vector<InstancedModelRenderDataPtr>>;
 

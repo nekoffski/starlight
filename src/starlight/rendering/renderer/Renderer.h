@@ -15,12 +15,7 @@ public:
 
     virtual ~Renderer() = default;
 
-    void setCamera(std::shared_ptr<graphics::camera::Camera> camera) {
-        m_camera = camera;
-    }
-
 protected:
     graphics::LowLevelRenderer& m_lowLevelRenderer;
-    std::shared_ptr<graphics::camera::Camera> m_camera;
 };
 }

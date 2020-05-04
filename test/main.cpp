@@ -3,6 +3,8 @@
 #include <starlight/core/path/PathManager.hpp>
 #include <starlight/framework/graphics/camera/EulerCamera.h>
 #include <starlight/geometry/Model.h>
+#include <starlight/gui/GUIProxy.h>
+#include <starlight/gui/Window.h>
 #include <starlight/platform/shader/Shader.h>
 #include <starlight/platform/texture/Cubemap.h>
 #include <starlight/platform/texture/Texture.h>
@@ -15,28 +17,23 @@ class Context : public application::context::ApplicationContext {
 public:
     Context(application::context::ApplicationContextResource&& acr)
         : ApplicationContext(std::move(acr)) {
-        m_cubemap = m_applicationContextResource.assetManager.load<texture::Cubemap>({ "/skybox/posx.jpg",
+        m_cubemap = m_applicationContextResource.assetManager.load<platform::texture::Cubemap>({ "/skybox/posx.jpg",
             "/skybox/negx.jpg",
             "/skybox/posy.jpg",
             "/skybox/negy.jpg",
             "/skybox/posz.jpg",
             "/skybox/negz.jpg" });
-        m_cubemapShader = m_applicationContextResource.assetManager.load<shader::Shader>({ "/cubemap.vert", "/cubemap.frag" });
+
+        m_cubemapShader = m_applicationContextResource.assetManager.load<platform::shader::Shader>({ "/cubemap.vert", "/cubemap.frag" });
         m_camera = framework::graphics::camera::EulerCamera::create(glm::vec3(0.0f), 1.0f, 8.0f);
 
-        m_applicationContextResource.cubemapRenderer->setCamera(m_camera);
-        m_applicationContextResource.modelRenderer->setCamera(m_camera);
-
-        m_shader = m_applicationContextResource.assetManager.load<shader::Shader>({ "/t.vert", "/t.frag", "" });
+        m_shader = m_applicationContextResource.assetManager.load<platform::shader::Shader>({ "/t.vert", "/t.frag", "" });
         m_model = m_applicationContextResource.assetManager.load<geometry::Model>({ "/tow/tower.obj" });
         m_modelRenderData = std::make_shared<rendering::data::ModelRenderData>(m_model);
         m_skybox = std::make_shared<scene::Skybox>(scene::Skybox{ m_cubemapShader, m_cubemap });
 
         m_scene = std::make_shared<scene::Scene>();
-        m_scene->setCamera(m_camera);
         m_scene->setSkybox(m_skybox);
-
-        models.insert({ m_shader, { m_modelRenderData } });
 
         auto entity = std::make_shared<ecs::entity::Entity>();
         auto modelComponent = std::make_shared<ecs::component::ModelComponent>(m_modelRenderData, m_shader);
@@ -53,6 +50,15 @@ public:
     void onDetach() override {
     }
 
+    void renderGUI(std::shared_ptr<gui::GUIProxy>& guiProxy) override {
+        static float width = 300;
+        auto vp = m_applicationContextResource.viewport;
+
+        {
+            auto w = guiProxy->createWindow("Starlight", { vp.width - width, 0 }, { 200, 500 });
+        }
+    }
+
     void handleInput(std::unique_ptr<platform::input::Input>& input) override {
         m_camera->handleInput(input);
     }
@@ -63,9 +69,7 @@ public:
     }
 
     void render() override {
-        // m_applicationContextResource.cubemapRenderer->render();
-        // TODO: pass camera as const ref instead of setting it once
-        m_applicationContextResource.sceneManager->render();
+        m_applicationContextResource.sceneManager->render(m_camera);
     }
 
 private:
@@ -77,8 +81,6 @@ private:
     std::shared_ptr<rendering::data::ModelRenderData> m_modelRenderData;
     std::shared_ptr<scene::Scene> m_scene;
     std::shared_ptr<scene::Skybox> m_skybox;
-
-    rendering::renderer::ShaderToModelRenderData models;
 };
 
 class App : public starl::application::Application {

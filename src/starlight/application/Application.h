@@ -6,6 +6,8 @@
 #include <starlight/application/context/ApplicationContextResource.h>
 #include <starlight/asset/AssetManager.hpp>
 #include <starlight/framework/graphics/LowLevelRenderer.h>
+#include <starlight/gui/GUIProxy.h>
+#include <starlight/platform/gui/GUIAdapter.hpp>
 #include <starlight/platform/input/Input.h>
 #include <starlight/platform/window/Window.h>
 #include <starlight/rendering/renderer/CubemapRenderer.h>
@@ -34,6 +36,7 @@ public:
     void update(float);
     void handleInput();
     void render();
+    void renderGUI();
 
     const std::shared_ptr<context::ApplicationContext>& getContext() const {
         return m_context;
@@ -47,7 +50,7 @@ public:
     }
 
     context::ApplicationContextResource createApplicationContextResource() {
-        return context::ApplicationContextResource(m_cubemapRenderer, m_modelRenderer, m_assetManager, m_sceneManager);
+        return context::ApplicationContextResource(m_assetManager, m_sceneManager, m_window->getParams().viewport);
     }
 
     virtual void onStart() {}
@@ -57,7 +60,9 @@ private:
     std::unique_ptr<platform::window::Window> m_window;
     std::unique_ptr<platform::input::Input> m_input;
     std::unique_ptr<framework::graphics::LowLevelRenderer> m_lowLevelRenderer;
+    std::shared_ptr<platform::gui::GUIAdapter> m_guiAdapter;
     std::shared_ptr<context::ApplicationContext> m_context;
+    std::shared_ptr<gui::GUIProxy> m_guiProxy;
 
     asset::AssetManager m_assetManager;
     std::shared_ptr<rendering::renderer::CubemapRenderer> m_cubemapRenderer;

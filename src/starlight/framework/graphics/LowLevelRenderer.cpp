@@ -14,7 +14,7 @@ void LowLevelRenderer::init() {
     m_renderAPI->setBlendFunc(STARL_SRC_ALPHA, STARL_ONE_MINUS_SRC_ALPHA);
 }
 
-void LowLevelRenderer::renderVertexArray(std::shared_ptr<gpu::VertexArray>& vertexArray) {
+void LowLevelRenderer::renderVertexArray(std::shared_ptr<platform::gpu::VertexArray>& vertexArray) {
     vertexArray->bind();
 
     // to optimize!
@@ -27,7 +27,7 @@ void LowLevelRenderer::renderVertexArray(std::shared_ptr<gpu::VertexArray>& vert
     vertexArray->unbind();
 }
 
-void LowLevelRenderer::renderVertexArrayWithDepthMaskDisabled(std::shared_ptr<gpu::VertexArray>& vertexArray) {
+void LowLevelRenderer::renderVertexArrayWithDepthMaskDisabled(std::shared_ptr<platform::gpu::VertexArray>& vertexArray) {
     m_renderAPI->disableDepthMask();
     renderVertexArray(vertexArray);
     m_renderAPI->enableDepthMask();

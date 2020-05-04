@@ -16,10 +16,6 @@ class Scene {
     friend class SceneManager;
 
 public:
-    void setCamera(std::shared_ptr<framework::graphics::camera::Camera> camera) {
-        m_camera = std::move(camera);
-    }
-
     void setSkybox(std::shared_ptr<Skybox> skybox) {
         m_skybox = std::move(skybox);
     }
@@ -30,7 +26,6 @@ public:
 
 private:
     std::vector<std::shared_ptr<ecs::entity::Entity>> m_entities;
-    std::shared_ptr<framework::graphics::camera::Camera> m_camera;
     std::shared_ptr<Skybox> m_skybox;
 };
 }

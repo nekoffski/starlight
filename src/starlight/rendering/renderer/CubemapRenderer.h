@@ -25,7 +25,8 @@ public:
     explicit CubemapRenderer(framework::graphics::LowLevelRenderer&);
 
     void render(const std::shared_ptr<platform::texture::Cubemap>& cubemap,
-        const std::shared_ptr<platform::shader::Shader>& cubemapShader);
+        const std::shared_ptr<platform::shader::Shader>& cubemapShader,
+        const std::shared_ptr<framework::graphics::camera::Camera>& camera);
 
 private:
     std::shared_ptr<platform::gpu::VertexArray> m_cubemapVertexArray;

@@ -13,6 +13,9 @@ Application::Application(Application::Token&&) {
     m_lowLevelRenderer = std::make_unique<framework::graphics::LowLevelRenderer>(m_window);
     m_lowLevelRenderer->init();
 
+    m_guiAdapter = std::make_shared<platform::gui::GUIAdapter>(m_window->getHandle());
+    m_guiProxy = std::make_shared<gui::GUIProxy>(m_guiAdapter);
+
     platform::shader::ShaderCompiler::init();
 
     m_cubemapRenderer = std::make_shared<rendering::renderer::CubemapRenderer>(*m_lowLevelRenderer);
@@ -28,7 +31,14 @@ void Application::update(float deltaTime) {
 void Application::render() {
     m_lowLevelRenderer->begin();
     m_context->render();
+    renderGUI();
     m_lowLevelRenderer->end();
+}
+
+void Application::renderGUI() {
+    m_guiAdapter->begin();
+    m_context->renderGUI(m_guiProxy);
+    m_guiAdapter->end();
 }
 
 void Application::handleInput() {

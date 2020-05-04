@@ -37,11 +37,11 @@ public:
         m_scene = std::move(scene);
     }
 
-    void render() {
-        m_modelRenderer->render(m_modelSystem->getModels());
+    void render(const std::shared_ptr<framework::graphics::camera::Camera>& camera) {
+        m_modelRenderer->render(m_modelSystem->getModels(), camera);
 
         if (const auto& skybox = m_scene->m_skybox; skybox)
-            m_cubemapRenderer->render(skybox->cubemap, skybox->shader);
+            m_cubemapRenderer->render(skybox->cubemap, skybox->shader, camera);
     }
 
 private:
