@@ -28,6 +28,34 @@ public:
         m_pimpl->endWindow();
     }
 
+    void displayText(std::string text) {
+        m_pimpl->displayText(std::move(text));
+    }
+
+    void breakLine() {
+        m_pimpl->breakLine();
+    }
+
+    void sliderFloat3(std::string label, math::Vec3& v, float min, float max) {
+        m_pimpl->sliderFloat3(std::move(label), v, min, max);
+    }
+
+    void sliderFloat(std::string label, float& v, float min, float max) {
+        m_pimpl->sliderFloat(std::move(label), v, min, max);
+    }
+
+    bool beginTreeNode(std::string label) {
+        return m_pimpl->beginTreeNode(std::move(label));
+    }
+
+    void popTreeNode() {
+        m_pimpl->popTreeNode();
+    }
+
+    bool isPreviousWidgetClicked() {
+        return m_pimpl->isPreviousWidgetClicked();
+    }
+
 private:
     std::unique_ptr<impl::GUIImpl> m_pimpl;
 };

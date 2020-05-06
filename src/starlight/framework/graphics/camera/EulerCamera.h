@@ -20,6 +20,7 @@ public:
     const math::Mat4 getViewMatrix() override;
 
     void handleInput(std::unique_ptr<platform::input::Input>&) override;
+    void onGUI(gui::Window&) override;
 
 private:
     void calculateVectors();

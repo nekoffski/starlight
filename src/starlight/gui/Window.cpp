@@ -16,4 +16,32 @@ Window::Window(std::string title, math::Vec2 pos, math::Vec2 size,
 Window::~Window() {
     m_guiAdapter->endWindow();
 }
+
+void Window::displayText(std::string text) {
+    m_guiAdapter->displayText(std::move(text));
+}
+
+void Window::breakLine() {
+    m_guiAdapter->breakLine();
+}
+
+void Window::sliderFloat3(std::string label, math::Vec3& v, float min, float max) {
+    m_guiAdapter->sliderFloat3(std::move(label), v, min, max);
+}
+
+void Window::sliderFloat(std::string label, float& v, float min, float max) {
+    m_guiAdapter->sliderFloat(std::move(label), v, min, max);
+}
+
+bool Window::beginTreeNode(std::string label) {
+    return m_guiAdapter->beginTreeNode(std::move(label));
+}
+
+void Window::popTreeNode() {
+    m_guiAdapter->popTreeNode();
+}
+
+bool Window::isPreviousWidgetClicked() {
+    return m_guiAdapter->isPreviousWidgetClicked();
+}
 }

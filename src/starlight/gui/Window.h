@@ -14,6 +14,14 @@ class Window {
 public:
     ~Window();
 
+    void displayText(std::string);
+    void breakLine();
+    void sliderFloat3(std::string, math::Vec3&, float, float);
+    void sliderFloat(std::string, float&, float, float);
+    bool beginTreeNode(std::string);
+    void popTreeNode();
+    bool isPreviousWidgetClicked();
+
 private:
     Window(std::string, math::Vec2, math::Vec2, std::shared_ptr<platform::gui::GUIAdapter>);
 

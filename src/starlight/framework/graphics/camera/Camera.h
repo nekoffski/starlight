@@ -5,6 +5,10 @@
 #include <starlight/math/Matrix.hpp>
 #include <starlight/math/Vector.hpp>
 
+namespace starl::gui {
+class Window;
+}
+
 namespace starl::framework::graphics::camera {
 
 using Direction = u_int8_t;
@@ -31,5 +35,7 @@ public:
     virtual const math::Vec3& getRight() = 0;
 
     virtual const math::Mat4 getViewMatrix() = 0;
+
+    virtual void onGUI(gui::Window&) {}
 };
 }

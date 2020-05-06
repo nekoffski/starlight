@@ -35,7 +35,7 @@ public:
         m_scene = std::make_shared<scene::Scene>();
         m_scene->setSkybox(m_skybox);
 
-        auto entity = std::make_shared<ecs::entity::Entity>();
+        auto entity = std::make_shared<ecs::entity::Entity>("ExampleEntity");
         auto modelComponent = std::make_shared<ecs::component::ModelComponent>(m_modelRenderData, m_shader);
         entity->addComponent(modelComponent);
 
@@ -55,7 +55,14 @@ public:
         auto vp = m_applicationContextResource.viewport;
 
         {
-            auto w = guiProxy->createWindow("Starlight", { vp.width - width, 0 }, { 200, 500 });
+            auto rightWindow = guiProxy->createWindow("Starlight", { vp.width - width, 250 }, { width, 500 });
+            m_camera->onGUI(rightWindow);
+            m_applicationContextResource.sceneManager->renderMainGUI(rightWindow);
+        }
+
+        {
+            auto leftWindow = guiProxy->createWindow("Scene", { 0, 250 }, { width, 350 });
+            m_applicationContextResource.sceneManager->renderSceneGUI(leftWindow);
         }
     }
 

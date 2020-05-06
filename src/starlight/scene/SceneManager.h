@@ -2,6 +2,7 @@
 
 #include <starlight/ecs/system/ModelSystem.h>
 #include <starlight/ecs/system/System.h>
+#include <starlight/gui/Window.h>
 #include <starlight/rendering/renderer/CubemapRenderer.h>
 #include <starlight/rendering/renderer/ModelRenderer.h>
 #include <starlight/scene/Scene.h>
@@ -44,12 +45,31 @@ public:
             m_cubemapRenderer->render(skybox->cubemap, skybox->shader, camera);
     }
 
+    void renderSceneGUI(gui::Window& window) {
+        for (auto& entity : m_scene->m_entities) {
+            window.displayText(entity->getName());
+            if (window.isPreviousWidgetClicked())
+                m_activeEntity = entity;
+        }
+    }
+
+    void renderMainGUI(gui::Window& window) {
+        if (auto entity = m_activeEntity.lock()) {
+            if (window.beginTreeNode("Selected entity")) {
+                entity->onGUI(window);
+                window.popTreeNode();
+            }
+        }
+    }
+
 private:
     std::shared_ptr<Scene> m_scene;
     std::shared_ptr<rendering::renderer::CubemapRenderer> m_cubemapRenderer;
     std::shared_ptr<rendering::renderer::ModelRenderer> m_modelRenderer;
     std::shared_ptr<ecs::system::ModelSystem> m_modelSystem;
     std::unordered_map<ecs::component::ComponentType, std::shared_ptr<ecs::system::System>> m_systems;
+
+    std::weak_ptr<ecs::entity::Entity> m_activeEntity;
 
     void processEntity(std::shared_ptr<ecs::entity::Entity>& entity) {
         for (auto& component : entity->getComponents())

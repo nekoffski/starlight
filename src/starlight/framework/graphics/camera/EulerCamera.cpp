@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include <starlight/gui/Window.h>
 #include <starlight/math/Matrix.hpp>
 #include <starlight/math/Utils.hpp>
 #include <starlight/platform/input/Input.h>
@@ -102,5 +103,14 @@ void EulerCamera::handleInput(std::unique_ptr<platform::input::Input>& input) {
 
     if (input->isKeyPressed(STARL_KEY_LEFT))
         m_direction |= DIR_LEFT;
+}
+
+void EulerCamera::onGUI(gui::Window& window) {
+    if (window.beginTreeNode("Euler camera")) {
+        window.sliderFloat("Fi", m_fi, MIN_FI, MAX_FI);
+        window.sliderFloat("Psi", m_psi, MIN_PSI, MAX_PSI);
+        window.sliderFloat("R", m_radius, 1.0f, 25.0f);
+        window.popTreeNode();
+    }
 }
 }
