@@ -44,6 +44,14 @@ public:
         m_pimpl->sliderFloat(std::move(label), v, min, max);
     }
 
+    void dragFloat3(std::string label, math::Vec3& v, float speed = 1.0f, float min = 0.0f, float max = 0.0f) {
+        m_pimpl->dragFloat3(std::move(label), v, speed, min, max);
+    }
+
+    void dragFloat(std::string label, float& v, float speed = 1.0f, float min = 0.0f, float max = 0.0f) {
+        m_pimpl->dragFloat(std::move(label), v, speed, min, max);
+    }
+
     bool beginTreeNode(std::string label) {
         return m_pimpl->beginTreeNode(std::move(label));
     }

@@ -20,6 +20,9 @@ public:
     void sliderFloat3(std::string, math::Vec3&, float, float) override;
     void sliderFloat(std::string, float&, float, float) override;
 
+    void dragFloat3(std::string, math::Vec3&, float, float, float) override;
+    void dragFloat(std::string, float&, float, float, float) override;
+
     bool beginTreeNode(std::string) override;
     void popTreeNode() override;
     bool isPreviousWidgetClicked() override;

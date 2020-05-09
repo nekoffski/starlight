@@ -1,6 +1,7 @@
 #include <starlight/application/Entrypoint.hpp>
 #include <starlight/application/context/ApplicationContext.h>
 #include <starlight/core/path/PathManager.hpp>
+#include <starlight/ecs/component/TransformComponent.h>
 #include <starlight/framework/graphics/camera/EulerCamera.h>
 #include <starlight/geometry/Model.h>
 #include <starlight/gui/GUIProxy.h>
@@ -37,7 +38,9 @@ public:
 
         auto entity = std::make_shared<ecs::entity::Entity>("ExampleEntity");
         auto modelComponent = std::make_shared<ecs::component::ModelComponent>(m_modelRenderData, m_shader);
+
         entity->addComponent(modelComponent);
+        entity->addComponent(std::make_shared<ecs::component::TransformComponent>());
 
         m_scene->addEntity(entity);
 

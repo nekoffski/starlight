@@ -33,6 +33,14 @@ void Window::sliderFloat(std::string label, float& v, float min, float max) {
     m_guiAdapter->sliderFloat(std::move(label), v, min, max);
 }
 
+void Window::dragFloat3(std::string label, math::Vec3& v, float speed, float min, float max) {
+    m_guiAdapter->dragFloat3(std::move(label), v, speed, min, max);
+}
+
+void Window::dragFloat(std::string label, float& v, float speed, float min, float max) {
+    m_guiAdapter->dragFloat(std::move(label), v, speed, min, max);
+}
+
 bool Window::beginTreeNode(std::string label) {
     return m_guiAdapter->beginTreeNode(std::move(label));
 }

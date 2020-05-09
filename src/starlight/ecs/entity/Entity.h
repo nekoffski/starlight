@@ -18,6 +18,14 @@ public:
         return m_name;
     }
 
+    void setPosition(math::Vec3 position) {
+        m_position = std::move(position);
+    }
+
+    math::Vec3 getPosition() {
+        return m_position;
+    }
+
     std::vector<std::shared_ptr<component::Component>>& getComponents() {
         return m_components;
     }
@@ -31,7 +39,8 @@ public:
     }
 
     void onGUI(gui::Window& window) {
-        window.displayText(m_name);
+        for (const auto& component : m_components)
+            component->onGUI(window);
     }
 
 private:

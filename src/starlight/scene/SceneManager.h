@@ -2,6 +2,7 @@
 
 #include <starlight/ecs/system/ModelSystem.h>
 #include <starlight/ecs/system/System.h>
+#include <starlight/ecs/system/TransformSystem.h>
 #include <starlight/gui/Window.h>
 #include <starlight/rendering/renderer/CubemapRenderer.h>
 #include <starlight/rendering/renderer/ModelRenderer.h>
@@ -23,8 +24,10 @@ public:
         : m_cubemapRenderer(std::move(args.cubemapRenderer))
         , m_modelRenderer(std::move(args.modelRenderer)) {
         m_modelSystem = std::make_shared<ecs::system::ModelSystem>();
+        m_transformSystem = std::make_shared<ecs::system::TransformSystem>();
 
         m_systems.insert({ ecs::component::ComponentType::MODEL, m_modelSystem });
+        m_systems.insert({ ecs::component::ComponentType::TRANSFORM, m_transformSystem });
     }
 
     void update(float deltaTime) {
@@ -67,6 +70,7 @@ private:
     std::shared_ptr<rendering::renderer::CubemapRenderer> m_cubemapRenderer;
     std::shared_ptr<rendering::renderer::ModelRenderer> m_modelRenderer;
     std::shared_ptr<ecs::system::ModelSystem> m_modelSystem;
+    std::shared_ptr<ecs::system::TransformSystem> m_transformSystem;
     std::unordered_map<ecs::component::ComponentType, std::shared_ptr<ecs::system::System>> m_systems;
 
     std::weak_ptr<ecs::entity::Entity> m_activeEntity;
@@ -74,7 +78,7 @@ private:
     void processEntity(std::shared_ptr<ecs::entity::Entity>& entity) {
         for (auto& component : entity->getComponents())
             if (const auto type = component->getType(); m_systems.count(type) > 0)
-                m_systems.at(type)->processComponent(component);
+                m_systems.at(type)->processComponent(component, entity);
 
         for (auto& child : entity->getChilds())
             processEntity(child);

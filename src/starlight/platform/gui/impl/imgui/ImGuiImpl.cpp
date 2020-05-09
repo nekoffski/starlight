@@ -67,6 +67,14 @@ void ImGuiImpl::sliderFloat(std::string label, float& v, float min, float max) {
     ImGui::SliderFloat(label.c_str(), &v, min, max);
 }
 
+void ImGuiImpl::dragFloat3(std::string label, math::Vec3& v, float speed, float min, float max) {
+    ImGui::DragFloat3(label.c_str(), &v.x, speed, min, max);
+}
+
+void ImGuiImpl::dragFloat(std::string label, float& v, float speed, float min, float max) {
+    ImGui::DragFloat(label.c_str(), &v, speed, min, max);
+}
+
 bool ImGuiImpl::beginTreeNode(std::string label) {
     ImGui::SetNextTreeNodeOpen(true, ImGuiCond_Once);
     return ImGui::TreeNode(label.c_str());

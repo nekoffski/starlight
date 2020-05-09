@@ -3,11 +3,12 @@
 #include <memory>
 
 #include <starlight/ecs/component/Component.h>
+#include <starlight/ecs/entity/Entity.h>
 
 namespace starl::ecs::system {
 
 class System {
 public:
-    virtual void processComponent(std::shared_ptr<component::Component>&) = 0;
+    virtual void processComponent(std::shared_ptr<component::Component>&, std::shared_ptr<entity::Entity>&) = 0;
 };
 }

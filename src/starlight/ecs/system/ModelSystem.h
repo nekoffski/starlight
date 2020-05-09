@@ -2,6 +2,7 @@
 
 #include <starlight/ecs/component/ModelComponent.h>
 #include <starlight/ecs/system/System.h>
+#include <starlight/math/Utils.hpp>
 
 // TODO: move FWD to another file
 #include <starlight/rendering/renderer/ModelRenderer.h>
@@ -14,8 +15,8 @@ public:
         m_models.clear();
     }
 
-    void processComponent(std::shared_ptr<component::Component>& component) override {
-        processComponentImpl(std::dynamic_pointer_cast<component::ModelComponent>(component));
+    void processComponent(std::shared_ptr<component::Component>& component, std::shared_ptr<entity::Entity>& entity) override {
+        processComponentImpl(std::dynamic_pointer_cast<component::ModelComponent>(component), entity);
     }
 
     rendering::renderer::ShaderToModelRenderData& getModels() {
@@ -23,7 +24,8 @@ public:
     }
 
 private:
-    void processComponentImpl(std::shared_ptr<component::ModelComponent> component) {
+    void processComponentImpl(std::shared_ptr<component::ModelComponent> component, const std::shared_ptr<entity::Entity>& entity) {
+        *component->getRenderData()->modelMatrix = math::translate(entity->getPosition());
         m_models[component->getShader()].push_back(component->getRenderData());
     }
 
