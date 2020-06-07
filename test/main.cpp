@@ -1,6 +1,8 @@
+
 #include <starlight/application/Entrypoint.hpp>
 #include <starlight/application/context/ApplicationContext.h>
 #include <starlight/core/path/PathManager.hpp>
+#include <starlight/ecs/component/PFXComponent.h>
 #include <starlight/ecs/component/TransformComponent.h>
 #include <starlight/framework/graphics/camera/EulerCamera.h>
 #include <starlight/geometry/Model.h>
@@ -30,6 +32,7 @@ public:
 
         m_shader = m_applicationContextResource.assetManager.load<platform::shader::Shader>({ "/t.vert", "/t.frag", "" });
         m_model = m_applicationContextResource.assetManager.load<geometry::Model>({ "/tow/tower.obj" });
+
         m_modelRenderData = std::make_shared<rendering::data::ModelRenderData>(m_model);
         m_skybox = std::make_shared<scene::Skybox>(scene::Skybox{ m_cubemapShader, m_cubemap });
 
@@ -37,10 +40,12 @@ public:
         m_scene->setSkybox(m_skybox);
 
         auto entity = std::make_shared<ecs::entity::Entity>("ExampleEntity");
+        // TODO: pass only model, render data should be created inside!+
         auto modelComponent = std::make_shared<ecs::component::ModelComponent>(m_modelRenderData, m_shader);
 
         entity->addComponent(modelComponent);
         entity->addComponent(std::make_shared<ecs::component::TransformComponent>());
+        entity->addComponent(std::make_shared<ecs::component::PFXComponent>());
 
         m_scene->addEntity(entity);
 
@@ -61,6 +66,9 @@ public:
             auto rightWindow = guiProxy->createWindow("Starlight", { vp.width - width, 250 }, { width, 500 });
             m_camera->onGUI(rightWindow);
             m_applicationContextResource.sceneManager->renderMainGUI(rightWindow);
+            if (rightWindow.beginTreeNode("Assets")) {
+                rightWindow.popTreeNode();
+            }
         }
 
         {
@@ -97,8 +105,11 @@ class App : public starl::application::Application {
     using starl::application::Application::Application;
 
 public:
-    virtual void onStart() override {
+    void preInit() override {
         initPaths();
+    }
+
+    virtual void onStart() override {
         context = std::make_shared<Context>(createApplicationContextResource());
         switchContext(context);
     }

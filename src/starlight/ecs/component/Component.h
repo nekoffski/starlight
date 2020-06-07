@@ -8,7 +8,8 @@ namespace starl::ecs::component {
 
 enum class ComponentType : unsigned char {
     MODEL,
-    TRANSFORM
+    TRANSFORM,
+    PFX
 };
 
 class Component {

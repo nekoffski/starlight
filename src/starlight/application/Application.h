@@ -10,8 +10,7 @@
 #include <starlight/platform/gui/GUIAdapter.hpp>
 #include <starlight/platform/input/Input.h>
 #include <starlight/platform/window/Window.h>
-#include <starlight/rendering/renderer/CubemapRenderer.h>
-#include <starlight/rendering/renderer/ModelRenderer.h>
+#include <starlight/rendering/RendererProxy.h>
 #include <starlight/scene/SceneManager.h>
 
 namespace starl::application {
@@ -53,8 +52,11 @@ public:
         return context::ApplicationContextResource(m_assetManager, m_sceneManager, m_window->getParams().viewport);
     }
 
+    void init();
+
     virtual void onStart() {}
     virtual void onStop() {}
+    virtual void preInit() {}
 
 private:
     std::unique_ptr<platform::window::Window> m_window;
@@ -65,8 +67,7 @@ private:
     std::shared_ptr<gui::GUIProxy> m_guiProxy;
 
     asset::AssetManager m_assetManager;
-    std::shared_ptr<rendering::renderer::CubemapRenderer> m_cubemapRenderer;
-    std::shared_ptr<rendering::renderer::ModelRenderer> m_modelRenderer;
+    std::shared_ptr<rendering::RendererProxy> m_renderer;
     std::shared_ptr<scene::SceneManager> m_sceneManager;
 };
 

@@ -9,6 +9,7 @@ namespace starl::math {
 
 using Mat4 = glm::mat4;
 using Mat3 = glm::mat3;
+using Quaternion = glm::quat;
 
 template <typename T, glm::qualifier Q>
 glm::mat<4, 4, T, Q> lookAt(glm::vec<3, T, Q> const& eye, glm::vec<3, T, Q> const& center, glm::vec<3, T, Q> const& up) {

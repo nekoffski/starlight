@@ -19,21 +19,18 @@ void ModelRenderer::render(const ShaderToModelRenderData& shaderToModelRenderDat
 }
 
 void ModelRenderer::renderModel(const std::shared_ptr<geometry::Model>& model) {
-    for (const auto& mesh : model->meshes) {
+    for (const auto& mesh : model->meshes)
         renderMesh(mesh);
-    }
 }
 
 void ModelRenderer::renderMesh(const std::shared_ptr<geometry::Mesh>& mesh) {
     int i = 0;
-    for (const auto& texture : mesh->textures) {
+    for (const auto& texture : mesh->textures)
         texture->bind(i++);
-    }
 
     m_lowLevelRenderer.renderVertexArray(mesh->vertexArray);
     // is it neccessary?
-    for (const auto& texture : mesh->textures) {
+    for (const auto& texture : mesh->textures)
         texture->unbind();
-    }
 }
 }

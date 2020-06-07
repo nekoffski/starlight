@@ -4,6 +4,13 @@
 namespace starl::application {
 
 Application::Application(Application::Token&&) {
+}
+
+// TODO: refactor this, it left object in invalid state but as we need to define some actions by end user
+// we cannot do it ctor as we can't call overriden methods there :<
+void Application::init() {
+    preInit();
+
     m_window = platform::window::Window::create(platform::window::WindowParams{
         platform::window::Viewport{ 1600, 900 }, "title" });
     m_window->init();
@@ -18,9 +25,8 @@ Application::Application(Application::Token&&) {
 
     platform::shader::ShaderCompiler::init();
 
-    m_cubemapRenderer = std::make_shared<rendering::renderer::CubemapRenderer>(*m_lowLevelRenderer);
-    m_modelRenderer = std::make_shared<rendering::renderer::ModelRenderer>(*m_lowLevelRenderer);
-    m_sceneManager = std::make_shared<scene::SceneManager>(scene::SceneManagerArgs{ m_cubemapRenderer, m_modelRenderer });
+    m_renderer = rendering::RendererProxy::create(*m_lowLevelRenderer, m_assetManager);
+    m_sceneManager = std::make_shared<scene::SceneManager>(m_renderer);
 }
 
 void Application::update(float deltaTime) {

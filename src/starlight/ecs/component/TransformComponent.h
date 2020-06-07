@@ -33,7 +33,7 @@ public:
             window.displayText("Translation");
             window.dragFloat3(gui::createHiddenLabel("translation"), m_translation, 0.1f);
             window.displayText("Rotation");
-            window.dragFloat3(gui::createHiddenLabel("rotation"), m_rotation, 0.01f);
+            window.dragFloat3(gui::createHiddenLabel("rotation"), m_rotation, 0.5f, 0.0f, 360.0f);
             window.popTreeNode();
         }
     }

@@ -26,6 +26,14 @@ public:
         return m_position;
     }
 
+    void setOrientation(math::Vec3 orientation) {
+        m_orientation = std::move(orientation);
+    }
+
+    math::Vec3 getOrientation() {
+        return m_orientation;
+    }
+
     std::vector<std::shared_ptr<component::Component>>& getComponents() {
         return m_components;
     }
@@ -46,6 +54,7 @@ public:
 private:
     std::string m_name;
     math::Vec3 m_position;
+    math::Vec3 m_orientation;
     std::vector<std::shared_ptr<component::Component>> m_components;
     std::vector<std::shared_ptr<Entity>> m_childs;
 };

@@ -14,6 +14,7 @@ public:
 private:
     void processComponentImpl(std::shared_ptr<component::TransformComponent> component, std::shared_ptr<entity::Entity>& entity) {
         entity->setPosition(component->getTranslation());
+        entity->setOrientation(component->getRotation());
     }
 };
 }

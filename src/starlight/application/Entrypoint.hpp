@@ -35,6 +35,7 @@ public:
         try {
             LOG(INFO) << "creating and starting application instance";
             m_application = std::make_unique<App>(Application::Token{});
+            m_application->init();
             m_application->onStart();
 
             if (not m_application->getContext())

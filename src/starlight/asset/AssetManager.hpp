@@ -7,6 +7,7 @@
 #include <starlight/asset/loaders/ModelLoaderWrapper.hpp>
 #include <starlight/asset/loaders/ShaderLoader.hpp>
 #include <starlight/asset/loaders/TextureLoader.hpp>
+#include <starlight/gui/Window.h>
 
 namespace {
 
@@ -30,6 +31,9 @@ public:
         if (auto& loader = AssetLoaderDispatcher<T>::loader; loader != nullptr)
             return loader->load(args);
         throw AssetException(ErrorCode::LOADER_NOT_FOUND);
+    }
+
+    void onGUI(gui::Window& window) {
     }
 };
 }
