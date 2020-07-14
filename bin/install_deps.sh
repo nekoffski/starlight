@@ -2,6 +2,7 @@
 
 sudo apt-get update
 sudo apt-get install gcc-10
+sudo apt-get install g++-10
 sudo apt-get install libxrandr-dev
 sudo apt-get install libxinerama-dev
 sudo apt-get install libx11-dev
