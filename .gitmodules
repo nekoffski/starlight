@@ -22,6 +22,3 @@
 [submodule "3rdparty/easyloggingpp"]
 	path = 3rdparty/easyloggingpp
 	url = https://github.com/amrayn/easyloggingpp.git
-[submodule "3rdparty/imgui"]
-	path = 3rdparty/imgui
-	url = https://github.com/ocornut/imgui.git
