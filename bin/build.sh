@@ -7,5 +7,5 @@ fi
 mkdir ./build
 cd ./build
 
-cmake ..
+CC=gcc-10 CXX=g++-10 cmake ..
 make -j 4
