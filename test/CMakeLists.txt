@@ -1,4 +1,6 @@
 set(GTEST_LINK gtest gtest_main gmock gmock_main)
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fconcepts")
+SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -fconcepts")
 
 add_executable(sl_test ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
 set_property(TARGET sl_test PROPERTY CXX_STANDARD 20)
