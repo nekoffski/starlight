@@ -2,6 +2,8 @@
 
 #include <glad/glad.h>
 
+#include <starlight/core/log/Logger.h>
+
 namespace starl::platform::gpu::opengl {
 
 OpenGLElementBuffer::OpenGLElementBuffer(void* data, int size, unsigned int indicesCount)
@@ -14,13 +16,13 @@ OpenGLElementBuffer::OpenGLElementBuffer(void* data, int size, unsigned int indi
 }
 
 OpenGLElementBuffer::~OpenGLElementBuffer() {
-    if (m_bufferId) {
+    if (m_bufferId)
         glDeleteBuffers(1, &m_bufferId);
-    }
 }
 
 void OpenGLElementBuffer::bind() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bufferId);
+    // LOG(DEBUG) << "Binding EBO: " << m_bufferId;
 }
 
 void OpenGLElementBuffer::unbind() {

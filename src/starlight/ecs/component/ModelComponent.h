@@ -10,9 +10,8 @@ namespace starl::ecs::component {
 
 class ModelComponent : public Component {
 public:
-    ModelComponent(std::shared_ptr<rendering::data::ModelRenderData> renderData,
-        std::shared_ptr<platform::shader::Shader> shader)
-        : m_renderData(std::move(renderData))
+    ModelComponent(std::shared_ptr<geometry::Model> model, std::shared_ptr<platform::shader::Shader> shader)
+        : m_renderData(std::make_shared<rendering::data::ModelRenderData>(model))
         , m_shader(std::move(shader)) {
     }
 

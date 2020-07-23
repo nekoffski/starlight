@@ -5,6 +5,8 @@
 #include <starlight/platform/gpu/ElementBuffer.h>
 #include <starlight/platform/gpu/VertexBuffer.h>
 
+#include <starlight/core/log/Logger.h>
+
 namespace starl::platform::gpu::opengl {
 
 OpenGLVertexArray::OpenGLVertexArray()
@@ -15,9 +17,8 @@ OpenGLVertexArray::OpenGLVertexArray()
 }
 
 OpenGLVertexArray::~OpenGLVertexArray() {
-    if (m_bufferId) {
+    if (m_bufferId)
         glDeleteBuffers(1, &m_bufferId);
-    }
 }
 
 void OpenGLVertexArray::addVertexBuffer(std::shared_ptr<VertexBuffer> vertexBuffer) {
@@ -44,10 +45,14 @@ void OpenGLVertexArray::addElementBuffer(std::shared_ptr<ElementBuffer> elementB
 
     m_indicesCount = elementBuffer->getIndicesCount();
     m_elementBuffer = elementBuffer;
+
+    this->unbind();
+    elementBuffer->unbind();
 }
 
 void OpenGLVertexArray::bind() {
     glBindVertexArray(m_bufferId);
+    // LOG(DEBUG) << "Binding: " << m_bufferId;
 }
 
 void OpenGLVertexArray::unbind() {

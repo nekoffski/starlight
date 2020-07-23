@@ -20,36 +20,43 @@ class Context : public application::context::ApplicationContext {
 public:
     Context(application::context::ApplicationContextResource&& acr)
         : ApplicationContext(std::move(acr)) {
-        m_cubemap = m_applicationContextResource.assetManager.load<platform::texture::Cubemap>({ "/skybox/posx.jpg",
-            "/skybox/negx.jpg",
-            "/skybox/posy.jpg",
-            "/skybox/negy.jpg",
-            "/skybox/posz.jpg",
-            "/skybox/negz.jpg" });
+        m_cubemap = m_applicationContextResource.assetManager.load<platform::texture::Cubemap>({ "/skybox/right.jpg",
+            "/skybox/left.jpg",
+            "/skybox/top.jpg",
+            "/skybox/bottom.jpg",
+            "/skybox/front.jpg",
+            "/skybox/back.jpg" });
 
         m_cubemapShader = m_applicationContextResource.assetManager.load<platform::shader::Shader>({ "/cubemap.vert", "/cubemap.frag" });
         m_camera = framework::graphics::camera::EulerCamera::create(glm::vec3(0.0f), 1.0f, 8.0f);
 
         m_shader = m_applicationContextResource.assetManager.load<platform::shader::Shader>({ "/t.vert", "/t.frag", "" });
-        m_model = m_applicationContextResource.assetManager.load<geometry::Model>({ "/tow/tower.obj" });
+        m_model = m_applicationContextResource.assetManager.load<geometry::Model>({ "/ground/untitled.obj" });
 
-        m_modelRenderData = std::make_shared<rendering::data::ModelRenderData>(m_model);
         m_skybox = std::make_shared<scene::Skybox>(scene::Skybox{ m_cubemapShader, m_cubemap });
 
         m_scene = std::make_shared<scene::Scene>();
         m_scene->setSkybox(m_skybox);
 
-        auto entity = std::make_shared<ecs::entity::Entity>("ExampleEntity");
-        // TODO: pass only model, render data should be created inside!+
-        auto modelComponent = std::make_shared<ecs::component::ModelComponent>(m_modelRenderData, m_shader);
+        auto groundEntity = std::make_shared<ecs::entity::Entity>("ExampleEntity");
+        auto modelComponent = std::make_shared<ecs::component::ModelComponent>(m_model, m_shader);
 
-        entity->addComponent(modelComponent);
-        entity->addComponent(std::make_shared<ecs::component::TransformComponent>());
-        entity->addComponent(std::make_shared<ecs::component::PFXComponent>());
+        auto towerEntity = std::make_shared<ecs::entity::Entity>("Ground");
 
-        m_scene->addEntity(entity);
+        groundEntity->addComponent(modelComponent);
+        groundEntity->addComponent(std::make_shared<ecs::component::TransformComponent>());
 
+        auto towerModel = m_applicationContextResource.assetManager.load<geometry::Model>({ "/tow/tower.obj" });
+        auto towerModelComponent = std::make_shared<ecs::component::ModelComponent>(towerModel, m_shader);
+
+        towerEntity->addComponent(towerModelComponent);
+        towerEntity->addComponent(std::make_shared<ecs::component::TransformComponent>());
+
+        // entity->addComponent(std::make_shared<ecs::component::PFXComponent>());
         m_applicationContextResource.sceneManager->setActiveScene(m_scene);
+
+        m_scene->addEntity(groundEntity);
+        m_scene->addEntity(towerEntity);
     }
 
     void onAttach() override {
@@ -70,7 +77,6 @@ public:
                 rightWindow.popTreeNode();
             }
         }
-
         {
             auto leftWindow = guiProxy->createWindow("Scene", { 0, 250 }, { width, 350 });
             m_applicationContextResource.sceneManager->renderSceneGUI(leftWindow);
