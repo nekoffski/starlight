@@ -1,28 +1,30 @@
-#include <starlight/platform/clock/Clock.h>
+#include "Clock.h"
 
 #include <GLFW/glfw3.h>
 
-static constexpr float DIVIDER = 1000.0f;
+static constexpr float DIVIDER = 1.0f;
 
-namespace starl::platform::clock {
+namespace sl::platform::clock {
 
-Clock::Clock()
-    : m_current(0.0f)
-    , m_previous(0.0f)
-    , m_delta(0.0f) {
+float Clock::Timestamp::getTime() const {
+    return m_ticksTimestamp / DIVIDER;
+}
+
+Clock::Timestamp::Timestamp(float ts)
+    : m_ticksTimestamp(ts) {
+}
+
+Clock::Timestamp Clock::now() {
+    return Timestamp(m_ticker->getTicks());
 }
 
 void Clock::update() {
-    m_current = getTicks();
+    m_current = m_ticker->getTicks();
     m_delta = m_current - m_previous;
     m_previous = m_current;
 }
 
 float Clock::getDeltaTime() {
     return m_delta;
-}
-
-float Clock::getTicks() {
-    return glfwGetTime();
 }
 }

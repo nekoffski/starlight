@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace starl::platform::input {
+namespace sl::platform::input {
 
 class Input;
 

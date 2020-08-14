@@ -5,10 +5,10 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include <starlight/math/Matrix.hpp>
-#include <starlight/math/Vector.hpp>
+#include "Matrix.hpp"
+#include "Vector.hpp"
 
-namespace starl::math {
+namespace sl::math {
 
 const double PI = std::atan(1.0f) * 4.0f;
 
@@ -57,6 +57,10 @@ inline Mat4 translate(Mat4& mat, Vec3 transition) {
 
 inline Mat4 translate(Vec3 transition) {
     return translate(math::Mat4(1.0f), std::move(transition));
+}
+
+inline Mat4 scale(Vec3 scale) {
+    return glm::scale(glm::mat4(1.0f), scale);
 }
 
 inline float toRadians(float deg) {

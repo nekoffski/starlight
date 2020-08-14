@@ -3,7 +3,7 @@
 
 #include <GLFW/glfw3.h>
 
-namespace starl::platform::gpu::opengl {
+namespace sl::platform::gpu::opengl {
 
 class OpenGLGraphicsContext : public GraphicsContext {
 public:
@@ -17,4 +17,4 @@ private:
     GLFWwindow* m_windowHandle;
 };
 
-} // namespace starl::platform::gpu::opengl
+} // namespace sl::platform::gpu::opengl

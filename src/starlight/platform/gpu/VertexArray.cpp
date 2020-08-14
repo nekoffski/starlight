@@ -1,13 +1,12 @@
-#include <starlight/platform/gpu/VertexArray.h>
+#include "VertexArray.h"
 
-#include <starlight/platform/gpu/opengl/OpenGLVertexArray.h>
+#include "opengl/OpenGLVertexArray.h"
+#include "starlight/core/log/Logger.h"
 
-#include <starlight/core/log/Logger.h>
-
-namespace starl::platform::gpu {
+namespace sl::platform::gpu {
 
 std::shared_ptr<VertexArray> VertexArray::create() {
-    LOG(DEBUG) << "instancing opengl vertex array";
+    SL_DEBUG("instancing opengl vertex array");
     return std::make_shared<opengl::OpenGLVertexArray>();
 }
 }

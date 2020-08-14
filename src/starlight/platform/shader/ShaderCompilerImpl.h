@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace starl::platform::shader {
+namespace sl::platform::shader {
 
 class Shader;
 

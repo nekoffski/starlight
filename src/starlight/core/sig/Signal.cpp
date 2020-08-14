@@ -1,21 +1,20 @@
-#include <starlight/core/log/Logger.h>
-#include <starlight/core/sig/Signal.h>
+#include "Signal.h"
 
-#include <iostream>
+#include "starlight/core/log/Logger.h"
 
-static starl::core::sig::SignalHandler* signalHandler{ nullptr };
+static sl::core::sig::SignalHandler* signalHandler{ nullptr };
 
 static inline void signalHandlerWrapper(int signal) {
-    LOG(INFO) << "received signal: " << signal;
+    SL_INFO("received signal: {}", signal);
     signalHandler->onSignal(signal);
 }
 
-namespace starl::core::sig {
+namespace sl::core::sig {
 
 void setupSignalHandler(misc::types::NotNullPtr<SignalHandler> sigHandler) {
-    LOG(INFO) << "setting up signal handler";
+    SL_INFO("setting up signal handler");
     if (signalHandler != nullptr) {
-        LOG(ERROR) << "could not set signal handle twice";
+        SL_ERROR("could not set signal handle twice");
         throw std::logic_error("signal handler instance already exists");
     }
     signalHandler = sigHandler;

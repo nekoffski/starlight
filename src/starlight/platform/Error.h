@@ -1,9 +1,9 @@
 #pragma once
 
-#include <starlight/core/BaseError.h>
-#include <starlight/platform/PlatformDetector.h>
+#include "PlatformDetector.h"
+#include "starlight/core/BaseError.h"
 
-namespace starl::platform {
+namespace sl::platform {
 
 constexpr int ERR_CATEGORY = 2;
 

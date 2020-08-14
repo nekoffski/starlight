@@ -1,16 +1,14 @@
-#include <starlight/platform/gpu/GraphicsContext.h>
+#include "GraphicsContext.h"
 
-#include <starlight/platform/PlatformDetector.h>
+#include "opengl/OpenGLGraphicsContext.h"
+#include "starlight/core/log/Logger.h"
+#include "starlight/platform/PlatformDetector.h"
 
-#include <starlight/platform/gpu/opengl/OpenGLGraphicsContext.h>
-
-#include <starlight/core/log/Logger.h>
-
-namespace starl::platform::gpu {
+namespace sl::platform::gpu {
 
 std::unique_ptr<GraphicsContext> GraphicsContext::create(misc::types::NotNullPtr<void> windowHandle) {
 #ifdef STARL_USE_OPENGL
-    LOG(INFO) << "instancing opengl graphics context";
+    SL_INFO("instancing opengl graphics context");
     return std::make_unique<opengl::OpenGLGraphicsContext>(windowHandle);
 #endif
 }

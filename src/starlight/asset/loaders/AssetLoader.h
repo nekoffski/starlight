@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace starl::asset::loaders {
+namespace sl::asset::loaders {
 
 template <typename T>
 struct AssetLoaderArgs {

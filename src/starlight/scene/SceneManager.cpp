@@ -1,16 +1,18 @@
-#include <starlight/scene/SceneManager.h>
+#include "SceneManager.h"
 
-namespace starl::scene {
+namespace sl::scene {
 
 SceneManager::SceneManager(std::shared_ptr<rendering::RendererProxy> renderer)
     : m_renderer(std::move(renderer)) {
     m_modelSystem = std::make_shared<ecs::system::ModelSystem>();
     m_transformSystem = std::make_shared<ecs::system::TransformSystem>();
     m_pfxSystem = std::make_shared<ecs::system::PFXSystem>();
+    m_meshGridSystem = std::make_shared<ecs::system::MeshGridSystem>();
 
     m_systems.insert({ ecs::component::ComponentType::MODEL, m_modelSystem });
     m_systems.insert({ ecs::component::ComponentType::TRANSFORM, m_transformSystem });
     m_systems.insert({ ecs::component::ComponentType::PFX, m_pfxSystem });
+    m_systems.insert({ ecs::component::ComponentType::MESH_GRID, m_meshGridSystem });
 }
 
 void SceneManager::update(float deltaTime) {
@@ -25,10 +27,17 @@ void SceneManager::setActiveScene(std::shared_ptr<Scene> scene) {
 }
 
 void SceneManager::render(const std::shared_ptr<framework::graphics::camera::Camera>& camera) {
+    const auto& skybox = m_scene->m_skybox;
+
+    if (skybox)
+        skybox->cubemap->bind();
+
     m_renderer->renderModels(m_modelSystem->getModels(), camera);
 
-    if (const auto& skybox = m_scene->m_skybox; skybox)
+    if (skybox) {
+        skybox->cubemap->unbind();
         m_renderer->renderCubemap(skybox->cubemap, skybox->shader, camera);
+    }
 }
 
 void SceneManager::renderSceneGUI(gui::Window& window) {

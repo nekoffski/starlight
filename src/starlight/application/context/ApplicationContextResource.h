@@ -1,19 +1,19 @@
 #pragma once
 
-#include <starlight/asset/AssetManager.hpp>
-#include <starlight/platform/window/Viewport.h>
-#include <starlight/rendering/renderer/CubemapRenderer.h>
-#include <starlight/rendering/renderer/ModelRenderer.h>
-#include <starlight/scene/SceneManager.h>
+#include "starlight/asset/AssetManager.hpp"
+#include "starlight/platform/window/Viewport.h"
+#include "starlight/rendering/renderer/CubemapRenderer.h"
+#include "starlight/rendering/renderer/ModelRenderer.h"
+#include "starlight/scene/SceneManager.h"
 
-namespace starl::application {
+namespace sl::application {
 class Application;
 }
 
-namespace starl::application::context {
+namespace sl::application::context {
 
 struct ApplicationContextResource {
-    friend class starl::application::Application;
+    friend class sl::application::Application;
 
     asset::AssetManager& assetManager;
     std::shared_ptr<scene::SceneManager> sceneManager;

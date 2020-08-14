@@ -2,10 +2,10 @@
 
 #include <memory>
 
-#include <starlight/math/Matrix.hpp>
-#include <starlight/math/Vector.hpp>
+#include "starlight/math/Matrix.hpp"
+#include "starlight/math/Vector.hpp"
 
-namespace starl::platform::shader {
+namespace sl::platform::shader {
 class ShaderCompilerImpl;
 
 class Shader {

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <starlight/platform/input/Input.h>
+#include "starlight/platform/input/Input.h"
 
 #include <GLFW/glfw3.h>
 
-namespace starl::platform::input::glfw {
+namespace sl::platform::input::glfw {
 
 class GLFWInput : public Input {
 public:

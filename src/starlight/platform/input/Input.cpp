@@ -1,15 +1,14 @@
-#include <starlight/platform/input/Input.h>
+#include "Input.h"
 
-#include <starlight/platform/input/glfw/GLFWInput.h>
+#include "starlight/core/log/Logger.h"
+#include "starlight/platform/input/glfw/GLFWInput.h"
 
-#include <starlight/core/log/Logger.h>
-
-namespace starl::platform::input {
+namespace sl::platform::input {
 
 std::unique_ptr<Input> Input::create(misc::types::NotNullPtr<void> windowHandle) {
 #ifdef STARL_USE_GLFW
-    LOG(INFO) << "instancing glfw input";
+    SL_INFO("instancing glfw input");
     return std::make_unique<glfw::GLFWInput>(windowHandle);
 #endif
 }
-} // namespace starl::platform::input
+} // namespace sl::platform::input

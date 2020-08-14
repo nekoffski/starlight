@@ -1,12 +1,12 @@
-#include <starlight/platform/gui/impl/GUIImpl.h>
+#include "GUIImpl.h"
 
-#include <starlight/core/log/Logger.h>
-#include <starlight/platform/gui/impl/imgui/ImGuiImpl.h>
+#include "starlight/core/log/Logger.h"
+#include "starlight/platform/gui/impl/imgui/ImGuiImpl.h"
 
-namespace starl::platform::gui::impl {
+namespace sl::platform::gui::impl {
 
 std::unique_ptr<GUIImpl> GUIImpl::create(void* windowHandle) {
-    LOG(INFO) << "instancing imgui impl";
+    SL_INFO("instancing imgui impl");
     return std::make_unique<imgui::ImGuiImpl>(windowHandle);
 }
 

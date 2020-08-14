@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace starl::platform::img {
+namespace sl::platform::img {
 
 struct ImageSize {
     int width;

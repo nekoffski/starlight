@@ -1,11 +1,9 @@
-#include <starlight/core/log/Logger.h>
+#include "Logger.h"
 
-INITIALIZE_EASYLOGGINGPP;
+namespace sl::core::log {
 
-namespace starl::core::log {
-
-void initLogger(int argc, char** argv) {
-    START_EASYLOGGINGPP(argc, argv);
-    el::Loggers::reconfigureAllLoggers(el::ConfigurationType::Format, "[%datetime] %fbase:%line [%level]: %msg");
+void initLogging() {
+    spdlog::set_pattern("%^[%d-%m-%Y %T] [Th: %t] %-7l [starlight]: %v - [%s:%#]%$");
+    spdlog::set_level(spdlog::level::debug);
 }
 }

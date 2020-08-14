@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace starl::math {
+namespace sl::math {
 
 using Mat4 = glm::mat4;
 using Mat3 = glm::mat3;
@@ -17,7 +17,7 @@ glm::mat<4, 4, T, Q> lookAt(glm::vec<3, T, Q> const& eye, glm::vec<3, T, Q> cons
 }
 }
 
-inline std::ostream& operator<<(std::ostream& ss, const starl::math::Mat4& m) {
+inline std::ostream& operator<<(std::ostream& ss, const sl::math::Mat4& m) {
     ss << m[0].x << " " << m[0].y << " " << m[0].z << " " << m[0].w << '\n'
        << m[1].x << " " << m[1].y << " " << m[1].z << " " << m[1].w << '\n'
        << m[2].x << " " << m[2].y << " " << m[2].z << " " << m[2].w << '\n'
@@ -25,7 +25,7 @@ inline std::ostream& operator<<(std::ostream& ss, const starl::math::Mat4& m) {
     return ss;
 }
 
-inline std::ostream& operator<<(std::ostream& ss, const starl::math::Mat3& m) {
+inline std::ostream& operator<<(std::ostream& ss, const sl::math::Mat3& m) {
     ss << m[0].x << " " << m[0].y << " " << m[0].z << '\n'
        << m[1].x << " " << m[1].y << " " << m[1].z << '\n'
        << m[2].x << " " << m[2].y << " " << m[2].z << '\n';

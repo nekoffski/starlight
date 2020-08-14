@@ -1,8 +1,8 @@
 #pragma once
 
-#include <starlight/platform/texture/Cubemap.h>
+#include "starlight/platform/texture/Cubemap.h"
 
-namespace starl::platform::texture::opengl {
+namespace sl::platform::texture::opengl {
 
 class OpenGLCubemap : public Cubemap {
 public:

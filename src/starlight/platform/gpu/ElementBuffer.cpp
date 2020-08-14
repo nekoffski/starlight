@@ -1,12 +1,11 @@
-#include <starlight/platform/gpu/ElementBuffer.h>
+#include "ElementBuffer.h"
 
-#include <starlight/platform/gpu/opengl/OpenGLElementBuffer.h>
+#include "opengl/OpenGLElementBuffer.h"
+#include "starlight/core/log/Logger.h"
 
-#include <starlight/core/log/Logger.h>
-
-namespace starl::platform::gpu {
+namespace sl::platform::gpu {
 std::shared_ptr<ElementBuffer> ElementBuffer::create(misc::types::NotNullPtr<void> data, int size, int indicesCount) {
-    LOG(DEBUG) << "instancing opengl element buffer";
+    SL_DEBUG("instancing opengl element buffer");
     return std::make_shared<opengl::OpenGLElementBuffer>(data, size, indicesCount);
 }
 }

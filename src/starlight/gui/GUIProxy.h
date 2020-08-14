@@ -2,10 +2,10 @@
 
 #include <memory>
 
-#include <starlight/math/Vector.hpp>
-#include <starlight/platform/gui/GUIAdapter.hpp>
+#include "starlight/math/Vector.hpp"
+#include "starlight/platform/gui/GUIAdapter.hpp"
 
-namespace starl::gui {
+namespace sl::gui {
 
 class Window;
 

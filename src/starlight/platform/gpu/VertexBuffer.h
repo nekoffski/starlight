@@ -2,13 +2,13 @@
 
 #include <memory>
 
-#include <starlight/misc/types/NotNullPtr.hpp>
-#include <starlight/platform/gpu/BufferMemoryScheme.hpp>
+#include "BufferMemoryScheme.hpp"
+#include "starlight/misc/types/NotNullPtr.hpp"
 
 // TODO: IFDEF
-#include <starlight/platform/gpu/opengl/OpenGLDefines.h>
+#include "starlight/platform/gpu/opengl/OpenGLDefines.h"
 
-namespace starl::platform::gpu {
+namespace sl::platform::gpu {
 
 class VertexBuffer {
 public:

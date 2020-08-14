@@ -1,8 +1,8 @@
-#include <starlight/gui/Window.h>
+#include "Window.h"
 
-#include <starlight/gui/GUIProxy.h>
+#include "GUIProxy.h"
 
-namespace starl::gui {
+namespace sl::gui {
 Window::Window(std::string title, math::Vec2 pos, math::Vec2 size,
     std::shared_ptr<platform::gui::GUIAdapter> guiAdapter)
     : m_title(std::move(title))
@@ -39,6 +39,10 @@ void Window::dragFloat3(std::string label, math::Vec3& v, float speed, float min
 
 void Window::dragFloat(std::string label, float& v, float speed, float min, float max) {
     m_guiAdapter->dragFloat(std::move(label), v, speed, min, max);
+}
+
+void Window::dragInt(std::string label, int& v, float speed, int min, int max) {
+    m_guiAdapter->dragInt(std::move(label), v, speed, min, max);
 }
 
 bool Window::beginTreeNode(std::string label) {

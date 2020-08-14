@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-using namespace starl::platform::gpu::opengl;
+using namespace sl::platform::gpu::opengl;
 
 TEST(OpenGLContextTests, givenOpenGLGraphicsContext_whenCreating_expectNoError) {
     glfwInit();

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <starlight/scene/Scene.h>
+#include "Scene.h"
 
-namespace starl::scene {
+namespace sl::scene {
 }

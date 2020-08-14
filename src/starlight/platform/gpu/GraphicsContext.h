@@ -2,10 +2,10 @@
 
 #include <memory>
 
-#include <starlight/misc/types/NotNullPtr.hpp>
-#include <starlight/platform/Error.h>
+#include "starlight/misc/types/NotNullPtr.hpp"
+#include "starlight/platform/Error.h"
 
-namespace starl::platform::gpu {
+namespace sl::platform::gpu {
 
 class GraphicsContext {
 public:
@@ -16,4 +16,4 @@ public:
     virtual void clearBuffers(unsigned) = 0;
 };
 
-} // namespace starl::platform::gpu
+} // namespace sl::platform::gpu

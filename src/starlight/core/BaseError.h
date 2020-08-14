@@ -8,7 +8,7 @@ namespace {
 constexpr int ERROR_CODE_MULTIPLIER = 1000;
 }
 
-namespace starl::err {
+namespace sl::err {
 
 class Exception : public std::exception {
 public:

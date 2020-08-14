@@ -2,4 +2,4 @@
 
 #include <gtest/gtest.h>
 
-using namespace starl::platform::window::glfw;
+using namespace sl::platform::window::glfw;

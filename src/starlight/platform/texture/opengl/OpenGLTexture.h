@@ -1,8 +1,8 @@
 #pragma once
 
-#include <starlight/platform/texture/Texture.h>
+#include "starlight/platform/texture/Texture.h"
 
-namespace starl::platform::texture::opengl {
+namespace sl::platform::texture::opengl {
 
 class OpenGLTexture : public Texture {
 public:

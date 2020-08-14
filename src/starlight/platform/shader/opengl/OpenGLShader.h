@@ -1,8 +1,8 @@
 #pragma once
 
-#include <starlight/platform/shader/Shader.h>
+#include "starlight/platform/shader/Shader.h"
 
-namespace starl::platform::shader::opengl {
+namespace sl::platform::shader::opengl {
 
 class OpenGLShaderCompilerImpl;
 

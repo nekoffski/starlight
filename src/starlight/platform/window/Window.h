@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include <starlight/platform/window/WindowParams.h>
+#include "WindowParams.h"
 
-namespace starl::platform::window {
+namespace sl::platform::window {
 
 class Window {
 public:

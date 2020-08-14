@@ -1,12 +1,11 @@
-#include <starlight/platform/model/assimp/AssimpModelLoader.h>
+#include "AssimpModelLoader.h"
 
-#include <starlight/geometry/Model.h>
-#include <starlight/platform/Error.h>
-#include <starlight/platform/model/assimp/AssimpMeshProcessor.h>
+#include "starlight/core/log/Logger.h"
+#include "starlight/geometry/Model.h"
+#include "starlight/platform/Error.h"
+#include "starlight/platform/model/assimp/AssimpMeshProcessor.h"
 
-#include <starlight/core/log/Logger.h>
-
-namespace starl::platform::model::assimp {
+namespace sl::platform::model::assimp {
 
 std::shared_ptr<geometry::Model> AssimpModelLoader::loadModel(std::string path) {
     Assimp::Importer importer;
@@ -17,7 +16,7 @@ std::shared_ptr<geometry::Model> AssimpModelLoader::loadModel(std::string path) 
     model->directory = path.substr(0, path.find_last_of("/"));
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-        LOG(ERROR) << "could not load scene";
+        SL_ERROR("could not load scene");
         throw PlatformException(ErrorCode::COULD_NOT_LOAD_MODEL, "failed to load assimp scene: " + path);
     }
 

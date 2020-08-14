@@ -2,10 +2,10 @@
 
 #include <memory>
 
-#include <starlight/math/Vector.hpp>
-#include <starlight/misc/types/NotNullPtr.hpp>
+#include "starlight/math/Vector.hpp"
+#include "starlight/misc/types/NotNullPtr.hpp"
 
-namespace starl::platform::gui::impl {
+namespace sl::platform::gui::impl {
 
 class GUIImpl {
 public:
@@ -23,6 +23,7 @@ public:
     virtual void sliderFloat(std::string, float&, float, float) = 0;
     virtual void dragFloat3(std::string, math::Vec3&, float, float, float) = 0;
     virtual void dragFloat(std::string, float&, float, float, float) = 0;
+    virtual void dragInt(std::string, int&, float, int, int) = 0;
     virtual bool beginTreeNode(std::string) = 0;
     virtual void popTreeNode() = 0;
     virtual bool isPreviousWidgetClicked() = 0;

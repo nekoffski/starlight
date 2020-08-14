@@ -1,12 +1,12 @@
-#include <starlight/platform/gpu/opengl/OpenGLVertexBuffer.h>
+#include "OpenGLVertexBuffer.h"
 
 #include <glad/glad.h>
 
-namespace starl::platform::gpu::opengl {
+namespace sl::platform::gpu::opengl {
 
 OpenGLVertexBuffer::OpenGLVertexBuffer(void* data, int size, int verticesCount)
-    :   m_bufferId(0u),
-        m_verticesCount(verticesCount) {
+    : m_bufferId(0u)
+    , m_verticesCount(verticesCount) {
     glGenBuffers(1, &m_bufferId);
     glBindBuffer(GL_ARRAY_BUFFER, m_bufferId);
     glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
@@ -14,9 +14,8 @@ OpenGLVertexBuffer::OpenGLVertexBuffer(void* data, int size, int verticesCount)
 }
 
 OpenGLVertexBuffer::~OpenGLVertexBuffer() {
-    if (m_bufferId) {
+    if (m_bufferId)
         glDeleteBuffers(1, &m_bufferId);
-    }
 }
 
 void OpenGLVertexBuffer::bind() {
@@ -30,5 +29,4 @@ void OpenGLVertexBuffer::unbind() {
 unsigned int OpenGLVertexBuffer::getVerticesCount() {
     return m_verticesCount;
 }
-
 }

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <starlight/math/Vector.hpp>
+#include "starlight/math/Vector.hpp"
 
-namespace starl::geometry {
+namespace sl::geometry {
 
 struct Vertex {
     math::Vec3 position;

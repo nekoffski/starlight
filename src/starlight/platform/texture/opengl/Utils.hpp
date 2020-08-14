@@ -4,7 +4,7 @@
 
 #include <glad/glad.h>
 
-namespace starl::platform::texture::opengl {
+namespace sl::platform::texture::opengl {
 
 inline const std::unordered_map<int, GLuint> channelsToFormat{
     { 1, GL_RED },

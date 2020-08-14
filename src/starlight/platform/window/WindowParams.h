@@ -2,9 +2,9 @@
 
 #include <string>
 
-#include <starlight/platform/window/Viewport.h>
+#include "Viewport.h"
 
-namespace starl::platform::window {
+namespace sl::platform::window {
 
 struct WindowParams {
     Viewport viewport;

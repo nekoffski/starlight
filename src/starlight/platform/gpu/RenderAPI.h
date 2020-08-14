@@ -3,9 +3,9 @@
 #include <memory>
 
 // ifdef use_opengl
-#include <starlight/platform/gpu/opengl/OpenGLDefines.h>
+#include "opengl/OpenGLDefines.h"
 
-namespace starl::platform::gpu {
+namespace sl::platform::gpu {
 
 class RenderAPI {
 public:

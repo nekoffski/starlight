@@ -2,23 +2,23 @@
 
 #include <unordered_map>
 
-#include <starlight/framework/graphics/camera/Camera.h>
+#include "starlight/framework/graphics/camera/Camera.h"
 
-#include <starlight/platform/gpu/GraphicsContext.h>
-#include <starlight/platform/gpu/RenderAPI.h>
-#include <starlight/platform/gpu/VertexArray.h>
-#include <starlight/platform/shader/Shader.h>
-#include <starlight/platform/texture/Texture.h>
-#include <starlight/platform/window/Window.h>
+#include "starlight/platform/gpu/GraphicsContext.h"
+#include "starlight/platform/gpu/RenderAPI.h"
+#include "starlight/platform/gpu/VertexArray.h"
+#include "starlight/platform/shader/Shader.h"
+#include "starlight/platform/texture/Texture.h"
+#include "starlight/platform/window/Window.h"
 
-#include <starlight/math/Matrix.hpp>
-#include <starlight/math/Utils.hpp>
+#include "starlight/math/Matrix.hpp"
+#include "starlight/math/Utils.hpp"
 
-#include <starlight/geometry/Mesh.h>
+#include "starlight/geometry/Mesh.h"
 
 // TODO: create FWD and move implementations to .cpp
 
-namespace starl::framework::graphics {
+namespace sl::framework::graphics {
 
 class LowLevelRenderer {
 public:
@@ -31,8 +31,8 @@ public:
     }
 
     void init();
-    void renderVertexArray(std::shared_ptr<platform::gpu::VertexArray>&);
-    void renderVertexArrayWithDepthMaskDisabled(std::shared_ptr<platform::gpu::VertexArray>&);
+    void renderVertexArray(std::shared_ptr<platform::gpu::VertexArray>);
+    void renderVertexArrayWithDepthMaskDisabled(std::shared_ptr<platform::gpu::VertexArray>);
 
     void begin();
     void end();

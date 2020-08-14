@@ -3,17 +3,16 @@
 #include <typeindex>
 #include <unordered_map>
 
-#include <starlight/core/Error.h>
+#include "starlight/core/Error.h"
+#include "starlight/core/log/Logger.h"
 
-#include <starlight/core/log/Logger.h>
-
-namespace starl::core::path {
+namespace sl::core::path {
 
 class PathManager {
 public:
     template <typename T>
     static void registerResourcePath(const std::string& path) {
-        LOG(INFO) << "registering path: " << typeid(T).name() << " - " << path;
+        SL_INFO("registering path: {} - {}", typeid(T).name(), path);
         if (0 < m_resourcePaths.count(typeid(T))) {
             throw CoreException(ErrorCode::PATH_ALREADY_REGISTERED);
         }

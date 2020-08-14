@@ -1,8 +1,8 @@
 #pragma once
 
-#include <starlight/framework/graphics/camera/UserControllableCamera.h>
+#include "UserControllableCamera.h"
 
-namespace starl::framework::graphics::camera {
+namespace sl::framework::graphics::camera {
 
 class EulerCamera : public UserControllableCamera {
 public:

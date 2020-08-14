@@ -2,10 +2,10 @@
 
 #include <memory>
 
-#include <starlight/ecs/component/Component.h>
-#include <starlight/ecs/entity/Entity.h>
+#include "starlight/ecs/component/Component.h"
+#include "starlight/ecs/entity/Entity.h"
 
-namespace starl::ecs::system {
+namespace sl::ecs::system {
 
 class System {
 public:

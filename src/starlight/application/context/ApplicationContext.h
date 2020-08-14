@@ -2,14 +2,14 @@
 
 #include <memory>
 
-#include <starlight/application/context/ApplicationContextResource.h>
-#include <starlight/gui/GUIProxy.h>
+#include "ApplicationContextResource.h"
+#include "starlight/gui/GUIProxy.h"
 
-namespace starl::platform::input {
+namespace sl::platform::input {
 class Input;
 }
 
-namespace starl::application::context {
+namespace sl::application::context {
 
 class ApplicationContext {
 public:

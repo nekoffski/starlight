@@ -1,12 +1,12 @@
 #pragma once
 
-#include <starlight/asset/loaders/AssetLoader.h>
-#include <starlight/core/path/PathManager.hpp>
+#include "starlight/asset/loaders/AssetLoader.h"
 
-#include <starlight/core/log/Logger.h>
-#include <starlight/platform/texture/Texture.h>
+#include "starlight/core/log/Logger.h"
+#include "starlight/core/path/PathManager.hpp"
+#include "starlight/platform/texture/Texture.h"
 
-namespace starl::asset::loaders {
+namespace sl::asset::loaders {
 
 using platform::texture::Texture;
 
@@ -18,7 +18,7 @@ struct AssetLoaderArgs<Texture> {
 class TextureLoader : public AssetLoader<Texture> {
 public:
     std::shared_ptr<Texture> load(AssetLoaderArgs<Texture> args) {
-        LOG(DEBUG) << "loading texture: " << args.path;
+        SL_DEBUG("loading texture: {}", args.path);
         return Texture::create(core::path::PathManager::createGlobalPath<Texture>(args.path));
     }
 };

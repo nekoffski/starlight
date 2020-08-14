@@ -2,14 +2,14 @@
 
 #include <cstdint>
 
-#include <starlight/math/Matrix.hpp>
-#include <starlight/math/Vector.hpp>
+#include "starlight/math/Matrix.hpp"
+#include "starlight/math/Vector.hpp"
 
-namespace starl::gui {
+namespace sl::gui {
 class Window;
 }
 
-namespace starl::framework::graphics::camera {
+namespace sl::framework::graphics::camera {
 
 using Direction = u_int8_t;
 

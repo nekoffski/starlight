@@ -1,8 +1,10 @@
-#include <starlight/platform/gpu/opengl/OpenGLRenderAPI.h>
+#include "OpenGLRenderAPI.h"
 
 #include <glad/glad.h>
 
-namespace starl::platform::gpu::opengl {
+#include "starlight/core/log/Logger.h"
+
+namespace sl::platform::gpu::opengl {
 
 void OpenGLRenderAPI::drawArrays(unsigned mode, unsigned begin, unsigned end) {
     glDrawArrays(GL_TRIANGLES, begin, end);

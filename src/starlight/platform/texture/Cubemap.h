@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-namespace starl::platform::texture {
+namespace sl::platform::texture {
 
 using CubemapArgs = std::array<std::string, 6>;
 

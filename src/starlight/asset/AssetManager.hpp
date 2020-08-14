@@ -2,27 +2,27 @@
 
 #include <memory>
 
-#include <starlight/asset/Error.h>
-#include <starlight/asset/loaders/CubemapLoader.hpp>
-#include <starlight/asset/loaders/ModelLoaderWrapper.hpp>
-#include <starlight/asset/loaders/ShaderLoader.hpp>
-#include <starlight/asset/loaders/TextureLoader.hpp>
-#include <starlight/gui/Window.h>
+#include "starlight/asset/Error.h"
+#include "starlight/asset/loaders/CubemapLoader.hpp"
+#include "starlight/asset/loaders/ModelLoaderWrapper.hpp"
+#include "starlight/asset/loaders/ShaderLoader.hpp"
+#include "starlight/asset/loaders/TextureLoader.hpp"
+#include "starlight/gui/Window.h"
 
 namespace {
 
 template <typename T>
 struct AssetLoaderDispatcher {
-    inline static starl::asset::loaders::AssetLoader<T>* loader{ nullptr };
+    inline static sl::asset::loaders::AssetLoader<T>* loader{ nullptr };
 };
 
-static starl::asset::loaders::ShaderLoader SHADER_LOADER;
-static starl::asset::loaders::TextureLoader TEXTURE_LOADER;
-static starl::asset::loaders::CubemapLoader CUBEMAP_LOADER;
-static starl::asset::loaders::ModelLoaderWrapper MODEL_LOADER_WRAPPER;
+static sl::asset::loaders::ShaderLoader SHADER_LOADER;
+static sl::asset::loaders::TextureLoader TEXTURE_LOADER;
+static sl::asset::loaders::CubemapLoader CUBEMAP_LOADER;
+static sl::asset::loaders::ModelLoaderWrapper MODEL_LOADER_WRAPPER;
 }
 
-namespace starl::asset {
+namespace sl::asset {
 
 class AssetManager {
 public:
@@ -40,25 +40,25 @@ public:
 
 namespace {
 
-using namespace starl::asset;
+using namespace sl::asset;
 
 template <>
-struct AssetLoaderDispatcher<starl::platform::shader::Shader> {
-    inline static loaders::AssetLoader<starl::platform::shader::Shader>* loader{ &SHADER_LOADER };
+struct AssetLoaderDispatcher<sl::platform::shader::Shader> {
+    inline static loaders::AssetLoader<sl::platform::shader::Shader>* loader{ &SHADER_LOADER };
 };
 
 template <>
-struct AssetLoaderDispatcher<starl::platform::texture::Texture> {
-    inline static loaders::AssetLoader<starl::platform::texture::Texture>* loader{ &TEXTURE_LOADER };
+struct AssetLoaderDispatcher<sl::platform::texture::Texture> {
+    inline static loaders::AssetLoader<sl::platform::texture::Texture>* loader{ &TEXTURE_LOADER };
 };
 
 template <>
-struct AssetLoaderDispatcher<starl::platform::texture::Cubemap> {
-    inline static loaders::AssetLoader<starl::platform::texture::Cubemap>* loader{ &CUBEMAP_LOADER };
+struct AssetLoaderDispatcher<sl::platform::texture::Cubemap> {
+    inline static loaders::AssetLoader<sl::platform::texture::Cubemap>* loader{ &CUBEMAP_LOADER };
 };
 
 template <>
-struct AssetLoaderDispatcher<starl::geometry::Model> {
-    inline static loaders::AssetLoader<starl::geometry::Model>* loader{ &MODEL_LOADER_WRAPPER };
+struct AssetLoaderDispatcher<sl::geometry::Model> {
+    inline static loaders::AssetLoader<sl::geometry::Model>* loader{ &MODEL_LOADER_WRAPPER };
 };
 }

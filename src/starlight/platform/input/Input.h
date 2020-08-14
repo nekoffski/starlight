@@ -4,15 +4,14 @@
 #include <memory>
 #include <tuple>
 
-#include <starlight/misc/types/NotNullPtr.hpp>
-
-#include <starlight/platform/PlatformDetector.h>
+#include "starlight/misc/types/NotNullPtr.hpp"
+#include "starlight/platform/PlatformDetector.h"
 
 #ifdef STARL_USE_GLFW
-#include <starlight/platform/input/glfw/GLFWKeys.h>
+#include "starlight/platform/input/glfw/GLFWKeys.h"
 #endif
 
-namespace starl::platform::input {
+namespace sl::platform::input {
 
 using InputCallback = std::function<void(int)>;
 
@@ -26,4 +25,4 @@ public:
     virtual bool isMouseButtonPressed(int) const = 0;
     virtual std::pair<double, double> getMousePosition() const = 0;
 };
-} // namespace starl::platform::input
+} // namespace sl::platform::input

@@ -2,7 +2,7 @@
 
 #include <starlight/asset/loaders/ModelLoaderWrapper.hpp>
 
-namespace starl::asset::cache {
+namespace sl::asset::cache {
 
 class AssetCache {
 public:

@@ -1,4 +1,4 @@
 #pragma once
 
-namespace starl::rendering::renderer {
+namespace sl::rendering::renderer {
 }

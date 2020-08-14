@@ -1,19 +1,25 @@
 #pragma once
 
+#include "Component.h"
+
 #include <memory>
 
-#include <starlight/ecs/component/Component.h>
-#include <starlight/platform/shader/Shader.h>
-#include <starlight/rendering/data/ModelRenderData.h>
+#include "starlight/platform/shader/Shader.h"
+#include "starlight/rendering/data/ModelRenderData.h"
 
-namespace starl::ecs::component {
+namespace sl::ecs::component {
 
 class ModelComponent : public Component {
 public:
-    ModelComponent(std::shared_ptr<rendering::data::ModelRenderData> renderData,
-        std::shared_ptr<platform::shader::Shader> shader)
-        : m_renderData(std::move(renderData))
+    explicit ModelComponent(std::shared_ptr<rendering::data::ModelRenderData> renderData, std::shared_ptr<platform::shader::Shader> shader)
+        : m_renderData(renderData)
+        , m_shader(shader) {
+    }
+
+    explicit ModelComponent(std::shared_ptr<geometry::Model> model, std::shared_ptr<platform::shader::Shader> shader)
+        : m_renderData(std::make_shared<rendering::data::ModelRenderData>(model))
         , m_shader(std::move(shader)) {
+        m_renderData->modelMatrices.push_back(math::Mat4(1.0f));
     }
 
     ComponentType getType() const override {

@@ -1,15 +1,13 @@
-#include <starlight/platform/model/assimp/AssimpMeshProcessor.h>
+#include "AssimpMeshProcessor.h"
 
-#include <starlight/geometry/Mesh.h>
+#include "starlight/core/log/Logger.h"
+#include "starlight/geometry/Mesh.h"
+#include "starlight/platform/gpu/ElementBuffer.h"
+#include "starlight/platform/gpu/VertexArray.h"
+#include "starlight/platform/gpu/VertexBuffer.h"
+#include "starlight/platform/texture/Texture.h"
 
-#include <starlight/platform/gpu/ElementBuffer.h>
-#include <starlight/platform/gpu/VertexArray.h>
-#include <starlight/platform/gpu/VertexBuffer.h>
-#include <starlight/platform/texture/Texture.h>
-
-#include <starlight/core/log/Logger.h>
-
-namespace starl::platform::model::assimp {
+namespace sl::platform::model::assimp {
 
 using geometry::Vertex;
 std::shared_ptr<geometry::Mesh> AssimpMeshProcessor::processMesh(aiMesh* assimpMesh, const aiScene* scene, std::string directory) {

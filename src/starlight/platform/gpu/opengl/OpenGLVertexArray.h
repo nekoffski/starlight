@@ -1,8 +1,8 @@
 #pragma once
 
-#include <starlight/platform/gpu/VertexArray.h>
+#include "starlight/platform/gpu/VertexArray.h"
 
-namespace starl::platform::gpu::opengl {
+namespace sl::platform::gpu::opengl {
 
 class OpenGLVertexArray : public VertexArray {
 public:

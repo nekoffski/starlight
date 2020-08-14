@@ -1,8 +1,8 @@
 #pragma once
 
-#include <starlight/core/BaseError.h>
+#include "BaseError.h"
 
-namespace starl::core {
+namespace sl::core {
 
 constexpr int ERR_CATEGORY = 1;
 
