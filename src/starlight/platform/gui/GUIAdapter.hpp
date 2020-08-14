@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include <starlight/platform/gui/impl/GUIImpl.h>
+#include "impl/GUIImpl.h"
 
-namespace starl::platform::gui {
+namespace sl::platform::gui {
 
 class GUIAdapter {
 public:
@@ -50,6 +50,10 @@ public:
 
     void dragFloat(std::string label, float& v, float speed = 1.0f, float min = 0.0f, float max = 0.0f) {
         m_pimpl->dragFloat(std::move(label), v, speed, min, max);
+    }
+
+    void dragInt(std::string label, int& v, float speed = 1.0f, int min = 1, int max = 25) {
+        m_pimpl->dragInt(std::move(label), v, speed, min, max);
     }
 
     bool beginTreeNode(std::string label) {

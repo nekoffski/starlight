@@ -1,12 +1,13 @@
 #pragma once
 
+#include "Component.h"
+
 #include <memory>
 
-#include <starlight/ecs/component/Component.h>
-#include <starlight/gui/Utils.hpp>
-#include <starlight/gui/Window.h>
+#include "starlight/gui/Utils.hpp"
+#include "starlight/gui/Window.h"
 
-namespace starl::ecs::component {
+namespace sl::ecs::component {
 
 class PFXComponent : public Component {
 public:
@@ -18,9 +19,8 @@ public:
     }
 
     void onGUI(gui::Window& window) override {
-        if (window.beginTreeNode("Particle effect")) {
+        if (window.beginTreeNode("Particle effect"))
             window.popTreeNode();
-        }
     }
 
 private:

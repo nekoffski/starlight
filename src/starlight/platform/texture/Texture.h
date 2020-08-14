@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include <starlight/platform/img/Image.h>
+#include "starlight/platform/img/Image.h"
 
-namespace starl::platform::texture {
+namespace sl::platform::texture {
 
 class Texture {
 public:

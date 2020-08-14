@@ -1,10 +1,10 @@
 #pragma once
 
+#include "Renderer.h"
+
 #include <memory>
 
-#include <starlight/rendering/renderer/Renderer.h>
-
-namespace starl::platform {
+namespace sl::platform {
 namespace shader {
     class Shader;
 }
@@ -18,7 +18,7 @@ namespace texture {
 }
 }
 
-namespace starl::rendering::renderer {
+namespace sl::rendering::renderer {
 
 class CubemapRenderer : public Renderer {
 public:

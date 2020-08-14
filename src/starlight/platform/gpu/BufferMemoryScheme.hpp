@@ -5,7 +5,7 @@
 #include <vector>
 #include <numeric>
 
-namespace starl::platform::gpu {
+namespace sl::platform::gpu {
 
 struct BufferMemoryOffset {
     uint32_t index;

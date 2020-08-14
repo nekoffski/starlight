@@ -3,9 +3,9 @@
 #include <memory>
 #include <vector>
 
-#include <starlight/geometry/Mesh.h>
+#include "Mesh.h"
 
-namespace starl::geometry {
+namespace sl::geometry {
 
 struct Model {
     std::vector<std::shared_ptr<Mesh>> meshes;

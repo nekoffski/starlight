@@ -1,8 +1,8 @@
 #pragma once
 
-#include <starlight/platform/gpu/RenderAPI.h>
+#include "starlight/platform/gpu/RenderAPI.h"
 
-namespace starl::platform::gpu::opengl {
+namespace sl::platform::gpu::opengl {
 
 class OpenGLRenderAPI : public RenderAPI {
 public:

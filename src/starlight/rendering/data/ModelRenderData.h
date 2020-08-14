@@ -2,17 +2,17 @@
 
 #include <memory>
 
-#include <starlight/geometry/Model.h>
-#include <starlight/math/Matrix.hpp>
+#include "starlight/geometry/Model.h"
+#include "starlight/math/Matrix.hpp"
 
-namespace starl::rendering::data {
+namespace sl::rendering::data {
 
 struct ModelRenderData {
-    ModelRenderData(std::shared_ptr<geometry::Model> model)
-        : model(std::move(model))
-        , modelMatrix(std::make_shared<math::Mat4>(1.0f)) {}
+    explicit ModelRenderData(std::shared_ptr<geometry::Model> model)
+        : model(std::move(model)) {
+    }
 
     std::shared_ptr<geometry::Model> model;
-    std::shared_ptr<math::Mat4> modelMatrix;
+    std::vector<math::Mat4> modelMatrices;
 };
 }

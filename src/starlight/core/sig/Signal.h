@@ -2,10 +2,10 @@
 
 #include <csignal>
 
-#include <starlight/core/sig/SignalHandler.h>
-#include <starlight/misc/types/NotNullPtr.hpp>
+#include "SignalHandler.h"
+#include "starlight/misc/types/NotNullPtr.hpp"
 
-namespace starl::core::sig {
+namespace sl::core::sig {
 
 extern void setupSignalHandler(misc::types::NotNullPtr<SignalHandler>);
 }

@@ -4,11 +4,11 @@
 #include <unordered_map>
 #include <vector>
 
-#include <starlight/ecs/entity/Entity.h>
-#include <starlight/framework/graphics/camera/Camera.h>
-#include <starlight/scene/Skybox.h>
+#include "starlight/ecs/entity/Entity.h"
+#include "starlight/framework/graphics/camera/Camera.h"
+#include "Skybox.h"
 
-namespace starl::scene {
+namespace sl::scene {
 
 class SceneRenderer;
 

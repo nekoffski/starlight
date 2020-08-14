@@ -1,13 +1,11 @@
-#include <starlight/platform/shader/opengl/OpenGLShader.h>
+#include "OpenGLShader.h"
 
 #include <glad/glad.h>
 
-#include <starlight/math/Matrix.hpp>
-#include <starlight/math/Utils.hpp>
+#include "starlight/math/Matrix.hpp"
+#include "starlight/math/Utils.hpp"
 
-#include <iostream>
-
-namespace starl::platform::shader::opengl {
+namespace sl::platform::shader::opengl {
 
 OpenGLShader::OpenGLShader(std::string vertexPath, std::string fragmentPath, std::string geometryPath)
     : m_vertexPath(std::move(vertexPath))
@@ -24,9 +22,8 @@ void OpenGLShader::disable() {
 }
 
 OpenGLShader::~OpenGLShader() {
-    if (m_shaderProgram) {
+    if (m_shaderProgram)
         glDeleteProgram(m_shaderProgram);
-    }
 }
 
 void OpenGLShader::setUniform(const std::string& name, float value) {

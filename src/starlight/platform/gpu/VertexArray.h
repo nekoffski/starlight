@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-namespace starl::platform::gpu {
+namespace sl::platform::gpu {
 
 class VertexBuffer;
 class ElementBuffer;

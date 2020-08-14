@@ -1,13 +1,14 @@
 #pragma once
 
+#include "starlight/ecs/component/Component.h"
+
 #include <memory>
 
-#include <starlight/ecs/component/Component.h>
-#include <starlight/gui/Utils.hpp>
-#include <starlight/gui/Window.h>
-#include <starlight/math/Vector.hpp>
+#include "starlight/gui/Utils.hpp"
+#include "starlight/gui/Window.h"
+#include "starlight/math/Vector.hpp"
 
-namespace starl::ecs::component {
+namespace sl::ecs::component {
 
 class TransformComponent : public Component {
 public:

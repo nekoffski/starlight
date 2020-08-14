@@ -1,9 +1,9 @@
-#include <starlight/rendering/renderer/CubemapRenderer.h>
+#include "CubemapRenderer.h"
 
-#include <starlight/platform/gpu/VertexArray.h>
-#include <starlight/platform/gpu/VertexBuffer.h>
-#include <starlight/platform/shader/Shader.h>
-#include <starlight/platform/texture/Cubemap.h>
+#include "starlight/platform/gpu/VertexArray.h"
+#include "starlight/platform/gpu/VertexBuffer.h"
+#include "starlight/platform/shader/Shader.h"
+#include "starlight/platform/texture/Cubemap.h"
 
 // clang-format off
 static float cubemapVertices[] = {
@@ -51,7 +51,7 @@ static float cubemapVertices[] = {
 };
 // clang-format on
 
-namespace starl::rendering::renderer {
+namespace sl::rendering::renderer {
 
 CubemapRenderer::CubemapRenderer(framework::graphics::LowLevelRenderer& lowLevelRenderer)
     : Renderer(lowLevelRenderer) {

@@ -1,17 +1,15 @@
-#include <starlight/framework/graphics/camera/EulerCamera.h>
+#include "EulerCamera.h"
 
 #include <algorithm>
 
-#include <starlight/gui/Window.h>
-#include <starlight/math/Matrix.hpp>
-#include <starlight/math/Utils.hpp>
-#include <starlight/platform/input/Input.h>
+#include "starlight/gui/Window.h"
+#include "starlight/math/Matrix.hpp"
+#include "starlight/math/Utils.hpp"
+#include "starlight/platform/input/Input.h"
 
-#include <iostream>
+#include "starlight/core/log/Logger.h"
 
-#include <starlight/core/log/Logger.h>
-
-namespace starl::framework::graphics::camera {
+namespace sl::framework::graphics::camera {
 
 const float EulerCamera::MIN_PSI = -math::PI / 2.0f;
 const float EulerCamera::MAX_PSI = math::PI / 2.0f;
@@ -19,7 +17,7 @@ const float EulerCamera::MIN_FI = 0.0f;
 const float EulerCamera::MAX_FI = 2.0f * math::PI;
 
 std::shared_ptr<EulerCamera> EulerCamera::create(math::Vec3 centre, float speed, float radius) {
-    LOG(INFO) << "creating instance: speed: " << speed << ", radius: " << radius;
+    SL_INFO("creating instance, speed: {}, radius: {} ", speed, radius);
     return std::make_shared<EulerCamera>(centre, speed, radius);
 }
 

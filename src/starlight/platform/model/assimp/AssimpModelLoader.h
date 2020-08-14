@@ -1,15 +1,15 @@
 #pragma once
 
-#include <starlight/platform/model/ModelLoader.h>
+#include "starlight/platform/model/ModelLoader.h"
 
 class aiNode;
 class aiScene;
 
-namespace starl::geometry {
+namespace sl::geometry {
 class Model;
 }
 
-namespace starl::platform::model::assimp {
+namespace sl::platform::model::assimp {
 class AssimpMeshProcessor;
 
 class AssimpModelLoader : public ModelLoader {

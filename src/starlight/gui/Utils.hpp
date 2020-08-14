@@ -6,7 +6,7 @@ namespace {
 const std::string HIDDEN_LABEL_PREFIX = "##";
 }
 
-namespace starl::gui {
+namespace sl::gui {
 
 inline std::string createHiddenLabel(std::string label) {
     return HIDDEN_LABEL_PREFIX + std::move(label);

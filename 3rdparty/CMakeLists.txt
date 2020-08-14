@@ -7,6 +7,3 @@ add_subdirectory(jsoncpp)
 add_subdirectory(assimp)
 add_subdirectory(imgui)
 add_subdirectory(spdlog)
-
-add_library(easyloggingpp STATIC ${CMAKE_CURRENT_SOURCE_DIR}/easyloggingpp/src/easylogging++.cc)
-target_include_directories(easyloggingpp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/easyloggingpp/src)

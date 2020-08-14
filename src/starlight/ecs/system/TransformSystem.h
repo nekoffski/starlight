@@ -1,9 +1,10 @@
 #pragma once
 
-#include <starlight/ecs/component/TransformComponent.h>
-#include <starlight/ecs/system/System.h>
+#include "System.h"
 
-namespace starl::ecs::system {
+#include "starlight/ecs/component/TransformComponent.h"
+
+namespace sl::ecs::system {
 
 class TransformSystem : public System {
 public:

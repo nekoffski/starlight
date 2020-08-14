@@ -1,8 +1,8 @@
 #pragma once
 
-#include <starlight/platform/gpu/VertexBuffer.h>
+#include "starlight/platform/gpu/VertexBuffer.h"
 
-namespace starl::platform::gpu::opengl {
+namespace sl::platform::gpu::opengl {
 
 class OpenGLVertexBuffer : public VertexBuffer {
 public:

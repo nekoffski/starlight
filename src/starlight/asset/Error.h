@@ -1,8 +1,8 @@
 #pragma once
 
-#include <starlight/core/BaseError.h>
+#include "starlight/core/BaseError.h"
 
-namespace starl::asset {
+namespace sl::asset {
 
 constexpr int ERR_CATEGORY = 3;
 

@@ -1,6 +1,6 @@
-#include <starlight/platform/input/glfw/GLFWInput.h>
+#include "GLFWInput.h"
 
-namespace starl::platform::input::glfw {
+namespace sl::platform::input::glfw {
 
 GLFWInput::GLFWInput(void* windowHandle)
     : m_windowHandle(static_cast<GLFWwindow*>(windowHandle)) {

@@ -1,11 +1,11 @@
-#include <starlight/platform/texture/opengl/OpenGLTexture.h>
+#include "OpenGLTexture.h"
 
 #include <glad/glad.h>
 
-#include <starlight/platform/Error.h>
-#include <starlight/platform/texture/opengl/Utils.hpp>
+#include "starlight/platform/Error.h"
+#include "starlight/platform/texture/opengl/Utils.hpp"
 
-namespace starl::platform::texture::opengl {
+namespace sl::platform::texture::opengl {
 
 OpenGLTexture::OpenGLTexture(const std::string& path)
     : m_textureId(0u) {
@@ -34,9 +34,8 @@ OpenGLTexture::OpenGLTexture(const std::string& path)
 }
 
 OpenGLTexture::~OpenGLTexture() {
-    if (m_textureId) {
+    if (m_textureId)
         glDeleteTextures(1, &m_textureId);
-    }
 }
 
 void OpenGLTexture::bind(unsigned int index) {

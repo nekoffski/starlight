@@ -1,11 +1,11 @@
-#include <starlight/framework/graphics/LowLevelRenderer.h>
+#include "LowLevelRenderer.h"
 
-#include <starlight/core/log/Logger.h>
+#include "starlight/core/log/Logger.h"
 
-namespace starl::framework::graphics {
+namespace sl::framework::graphics {
 
 void LowLevelRenderer::init() {
-    LOG(INFO) << "initializing";
+    SL_INFO("initializing");
     m_graphicsContext->init();
 
     m_renderAPI->enable(STARL_DEPTH_TEST);

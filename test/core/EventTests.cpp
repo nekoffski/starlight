@@ -5,7 +5,7 @@
 #include <starlight/core/event/EventBus.h>
 #include <starlight/core/event/EventDispatcher.h>
 
-using namespace starl::core;
+using namespace sl::core;
 
 class EventTests : public testing::Test {
 protected:

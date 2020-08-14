@@ -1,13 +1,12 @@
-#include <starlight/platform/texture/Texture.h>
+#include "Texture.h"
 
-#include <starlight/platform/texture/opengl/OpenGLTexture.h>
+#include "opengl/OpenGLTexture.h"
+#include "starlight/core/log/Logger.h"
 
-#include <starlight/core/log/Logger.h>
-
-namespace starl::platform::texture {
+namespace sl::platform::texture {
 
 std::shared_ptr<Texture> Texture::create(const std::string& path) {
-    LOG(DEBUG) << "instancing opengl texture";
+    SL_DEBUG("instancing opengl texture");
     return std::make_shared<opengl::OpenGLTexture>(path);
 }
 }

@@ -3,9 +3,9 @@
 #include <memory>
 #include <vector>
 
-#include <starlight/geometry/Vertex.h>
+#include "Vertex.h"
 
-namespace starl::platform {
+namespace sl::platform {
 namespace texture {
     class Texture;
 }
@@ -15,12 +15,12 @@ namespace gpu {
 }
 }
 
-namespace starl::geometry {
+namespace sl::geometry {
 
 struct Mesh {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
-    std::vector<std::shared_ptr<platform::texture::Texture>> textures;
+    std::vector<std::shared_ptr<platform::texture::Texture>> textures{};
     std::shared_ptr<platform::gpu::VertexArray> vertexArray;
 };
 

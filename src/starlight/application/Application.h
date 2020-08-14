@@ -2,18 +2,18 @@
 
 #include <iostream>
 
-#include <starlight/application/context/ApplicationContext.h>
-#include <starlight/application/context/ApplicationContextResource.h>
-#include <starlight/asset/AssetManager.hpp>
-#include <starlight/framework/graphics/LowLevelRenderer.h>
-#include <starlight/gui/GUIProxy.h>
-#include <starlight/platform/gui/GUIAdapter.hpp>
-#include <starlight/platform/input/Input.h>
-#include <starlight/platform/window/Window.h>
-#include <starlight/rendering/RendererProxy.h>
-#include <starlight/scene/SceneManager.h>
+#include "starlight/application/context/ApplicationContext.h"
+#include "starlight/application/context/ApplicationContextResource.h"
+#include "starlight/asset/AssetManager.hpp"
+#include "starlight/framework/graphics/LowLevelRenderer.h"
+#include "starlight/gui/GUIProxy.h"
+#include "starlight/platform/gui/GUIAdapter.hpp"
+#include "starlight/platform/input/Input.h"
+#include "starlight/platform/window/Window.h"
+#include "starlight/rendering/RendererProxy.h"
+#include "starlight/scene/SceneManager.h"
 
-namespace starl::application {
+namespace sl::application {
 
 class Application;
 

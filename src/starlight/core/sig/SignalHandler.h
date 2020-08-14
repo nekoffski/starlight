@@ -1,6 +1,6 @@
 #pragma once
 
-namespace starl::core::sig {
+namespace sl::core::sig {
 
 class SignalHandler {
 public:

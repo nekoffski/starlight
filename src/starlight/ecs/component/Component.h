@@ -1,15 +1,16 @@
 #pragma once
 
-namespace starl::gui {
+namespace sl::gui {
 class Window;
 }
 
-namespace starl::ecs::component {
+namespace sl::ecs::component {
 
 enum class ComponentType : unsigned char {
     MODEL,
     TRANSFORM,
-    PFX
+    PFX,
+    MESH_GRID
 };
 
 class Component {

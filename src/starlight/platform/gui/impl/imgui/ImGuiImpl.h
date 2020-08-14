@@ -1,8 +1,8 @@
 #pragma once
 
-#include <starlight/platform/gui/impl/GUIImpl.h>
+#include "starlight/platform/gui/impl/GUIImpl.h"
 
-namespace starl::platform::gui::impl::imgui {
+namespace sl::platform::gui::impl::imgui {
 class ImGuiImpl : public GUIImpl {
 public:
     explicit ImGuiImpl(void*);
@@ -19,6 +19,8 @@ public:
 
     void sliderFloat3(std::string, math::Vec3&, float, float) override;
     void sliderFloat(std::string, float&, float, float) override;
+
+    void dragInt(std::string, int&, float, int, int) override;
 
     void dragFloat3(std::string, math::Vec3&, float, float, float) override;
     void dragFloat(std::string, float&, float, float, float) override;

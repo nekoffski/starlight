@@ -1,25 +1,33 @@
 
-#include <starlight/application/Entrypoint.hpp>
-#include <starlight/application/context/ApplicationContext.h>
-#include <starlight/core/path/PathManager.hpp>
-#include <starlight/ecs/component/PFXComponent.h>
-#include <starlight/ecs/component/TransformComponent.h>
-#include <starlight/framework/graphics/camera/EulerCamera.h>
-#include <starlight/geometry/Model.h>
-#include <starlight/gui/GUIProxy.h>
-#include <starlight/gui/Window.h>
-#include <starlight/platform/shader/Shader.h>
-#include <starlight/platform/texture/Cubemap.h>
-#include <starlight/platform/texture/Texture.h>
-#include <starlight/scene/Scene.h>
-#include <starlight/scene/Skybox.h>
 
-using namespace starl;
+#include "starlight/application/Entrypoint.hpp"
+#include "starlight/application/context/ApplicationContext.h"
+#include "starlight/core/path/PathManager.hpp"
+#include "starlight/ecs/component/PFXComponent.h"
+#include "starlight/ecs/component/TransformComponent.h"
+#include "starlight/ecs/entity/MeshGridEntity.h"
+#include "starlight/framework/graphics/camera/EulerCamera.h"
+#include "starlight/geometry/Geometry.hpp"
+#include "starlight/geometry/Model.h"
+#include "starlight/gui/GUIProxy.h"
+#include "starlight/gui/Window.h"
+#include "starlight/platform/shader/Shader.h"
+#include "starlight/platform/texture/Cubemap.h"
+#include "starlight/platform/texture/Texture.h"
+#include "starlight/scene/Scene.h"
+#include "starlight/scene/Skybox.h"
+
+// pass somehow current time to renderers
+// fix time
+// rework profiler
+
+using namespace sl;
 
 class Context : public application::context::ApplicationContext {
 public:
-    Context(application::context::ApplicationContextResource&& acr)
+    explicit Context(application::context::ApplicationContextResource&& acr)
         : ApplicationContext(std::move(acr)) {
+        geometry::Geometry::init();
         m_cubemap = m_applicationContextResource.assetManager.load<platform::texture::Cubemap>({ "/skybox/right.jpg",
             "/skybox/left.jpg",
             "/skybox/top.jpg",
@@ -28,6 +36,8 @@ public:
             "/skybox/back.jpg" });
 
         m_cubemapShader = m_applicationContextResource.assetManager.load<platform::shader::Shader>({ "/cubemap.vert", "/cubemap.frag" });
+        auto sshader = m_applicationContextResource.assetManager.load<platform::shader::Shader>(
+            { "/el.vert", "/el.frag" });
         m_camera = framework::graphics::camera::EulerCamera::create(glm::vec3(0.0f), 1.0f, 8.0f);
 
         m_shader = m_applicationContextResource.assetManager.load<platform::shader::Shader>({ "/t.vert", "/t.frag", "" });
@@ -38,25 +48,27 @@ public:
         m_scene = std::make_shared<scene::Scene>();
         m_scene->setSkybox(m_skybox);
 
-        auto groundEntity = std::make_shared<ecs::entity::Entity>("ExampleEntity");
+        auto groundEntity = std::make_shared<ecs::entity::Entity>("Ground");
         auto modelComponent = std::make_shared<ecs::component::ModelComponent>(m_model, m_shader);
-
-        auto towerEntity = std::make_shared<ecs::entity::Entity>("Ground");
 
         groundEntity->addComponent(modelComponent);
         groundEntity->addComponent(std::make_shared<ecs::component::TransformComponent>());
 
+        auto towerEntity = std::make_shared<ecs::entity::Entity>("ExampleEntity");
         auto towerModel = m_applicationContextResource.assetManager.load<geometry::Model>({ "/tow/tower.obj" });
         auto towerModelComponent = std::make_shared<ecs::component::ModelComponent>(towerModel, m_shader);
 
         towerEntity->addComponent(towerModelComponent);
         towerEntity->addComponent(std::make_shared<ecs::component::TransformComponent>());
 
-        // entity->addComponent(std::make_shared<ecs::component::PFXComponent>());
         m_applicationContextResource.sceneManager->setActiveScene(m_scene);
+
+        auto meshGridEntity = std::make_shared<ecs::entity::MeshGridEntity>("Water", sshader);
+        meshGridEntity->addComponent(std::make_shared<ecs::component::TransformComponent>());
 
         m_scene->addEntity(groundEntity);
         m_scene->addEntity(towerEntity);
+        m_scene->addEntity(meshGridEntity);
     }
 
     void onAttach() override {
@@ -107,8 +119,8 @@ private:
     std::shared_ptr<scene::Skybox> m_skybox;
 };
 
-class App : public starl::application::Application {
-    using starl::application::Application::Application;
+class App : public sl::application::Application {
+    using sl::application::Application::Application;
 
 public:
     void preInit() override {
@@ -121,10 +133,10 @@ public:
     }
 
     void initPaths() {
-        starl::core::path::PathManager::registerResourcePath<starl::platform::shader::Shader>(SHADERS_DIR);
-        starl::core::path::PathManager::registerResourcePath<starl::platform::texture::Texture>(TEXTURES_DIR);
-        starl::core::path::PathManager::registerResourcePath<starl::platform::texture::Cubemap>(CUBEMAPS_DIR);
-        starl::core::path::PathManager::registerResourcePath<starl::geometry::Model>(MODELS_DIR);
+        sl::core::path::PathManager::registerResourcePath<sl::platform::shader::Shader>(SHADERS_DIR);
+        sl::core::path::PathManager::registerResourcePath<sl::platform::texture::Texture>(TEXTURES_DIR);
+        sl::core::path::PathManager::registerResourcePath<sl::platform::texture::Cubemap>(CUBEMAPS_DIR);
+        sl::core::path::PathManager::registerResourcePath<sl::geometry::Model>(MODELS_DIR);
     }
 
 private:

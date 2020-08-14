@@ -1,8 +1,8 @@
 #pragma once
 
-#include <starlight/ecs/system/System.h>
+#include "System.h"
 
-namespace starl::ecs::system {
+namespace sl::ecs::system {
 
 class PFXSystem : public System {
 public:

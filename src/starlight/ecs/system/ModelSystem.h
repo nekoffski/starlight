@@ -1,13 +1,13 @@
 #pragma once
 
-#include <starlight/ecs/component/ModelComponent.h>
-#include <starlight/ecs/system/System.h>
-#include <starlight/math/Utils.hpp>
+#include "System.h"
 
+#include "starlight/ecs/component/ModelComponent.h"
+#include "starlight/math/Utils.hpp"
 // TODO: move FWD to another file
-#include <starlight/rendering/renderer/ModelRenderer.h>
+#include "starlight/rendering/renderer/ModelRenderer.h"
 
-namespace starl::ecs::system {
+namespace sl::ecs::system {
 
 class ModelSystem : public System {
 public:
@@ -27,8 +27,12 @@ private:
     void processComponentImpl(std::shared_ptr<component::ModelComponent> component, const std::shared_ptr<entity::Entity>& entity) {
         auto translation = math::translate(entity->getPosition());
         auto rotation = math::createRotationMatrix(math::toRadians(entity->getOrientation()));
-        *component->getRenderData()->modelMatrix = std::move(translation) * std::move(rotation);
-        m_models[component->getShader()].push_back(component->getRenderData());
+        auto transform = std::move(translation) * std::move(rotation);
+
+        auto renderData = *component->getRenderData();
+        for (auto& modelMatrix : renderData.modelMatrices)
+            modelMatrix = transform * modelMatrix; // keep in mind multiplication order
+        m_models[component->getShader()].push_back(std::move(renderData));
     }
 
     rendering::renderer::ShaderToModelRenderData m_models;

@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include <starlight/core/event/Event.h>
+#include "Event.h"
 
-namespace starl::core::event {
+namespace sl::core::event {
 
 using EventObserverIdent = std::string;
 

@@ -1,10 +1,10 @@
-#include <starlight/platform/gpu/opengl/OpenGLElementBuffer.h>
+#include "OpenGLElementBuffer.h"
 
 #include <glad/glad.h>
 
-#include <starlight/core/log/Logger.h>
+#include "starlight/core/log/Logger.h"
 
-namespace starl::platform::gpu::opengl {
+namespace sl::platform::gpu::opengl {
 
 OpenGLElementBuffer::OpenGLElementBuffer(void* data, int size, unsigned int indicesCount)
     : m_indicesCount(indicesCount)

@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include <starlight/misc/types/NotNullPtr.hpp>
+#include "starlight/misc/types/NotNullPtr.hpp"
 
-namespace starl::platform::gpu {
+namespace sl::platform::gpu {
 
 class ElementBuffer {
 public:

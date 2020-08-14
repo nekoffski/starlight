@@ -1,8 +1,8 @@
 #pragma once
 
-#include <starlight/platform/gpu/ElementBuffer.h>
+#include "starlight/platform/gpu/ElementBuffer.h"
 
-namespace starl::platform::gpu::opengl {
+namespace sl::platform::gpu::opengl {
 
 class OpenGLElementBuffer : public ElementBuffer {
 public:

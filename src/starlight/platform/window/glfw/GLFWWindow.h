@@ -2,10 +2,10 @@
 
 #include <GLFW/glfw3.h>
 
-#include <starlight/platform/Error.h>
-#include <starlight/platform/window/Window.h>
+#include "starlight/platform/Error.h"
+#include "starlight/platform/window/Window.h"
 
-namespace starl::platform::window::glfw {
+namespace sl::platform::window::glfw {
 
 class GLFWWindow : public Window {
 public:

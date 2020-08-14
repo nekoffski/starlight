@@ -1,13 +1,12 @@
-#include <starlight/platform/gpu/opengl/OpenGLVertexArray.h>
+#include "OpenGLVertexArray.h"
 
 #include <glad/glad.h>
 
-#include <starlight/platform/gpu/ElementBuffer.h>
-#include <starlight/platform/gpu/VertexBuffer.h>
+#include "starlight/core/log/Logger.h"
+#include "starlight/platform/gpu/ElementBuffer.h"
+#include "starlight/platform/gpu/VertexBuffer.h"
 
-#include <starlight/core/log/Logger.h>
-
-namespace starl::platform::gpu::opengl {
+namespace sl::platform::gpu::opengl {
 
 OpenGLVertexArray::OpenGLVertexArray()
     : m_bufferId(0u)

@@ -5,11 +5,11 @@
 #include <unordered_map>
 #include <vector>
 
-#include <starlight/core/Error.h>
-#include <starlight/core/event/IEventObserver.h>
-#include <starlight/misc/types/NotNullPtr.hpp>
+#include "IEventObserver.h"
+#include "starlight/core/Error.h"
+#include "starlight/misc/types/NotNullPtr.hpp"
 
-namespace starl::core::event {
+namespace sl::core::event {
 
 class EventBus {
 public:
@@ -20,4 +20,4 @@ public:
 private:
     std::unordered_map<EventObserverIdent, IEventObserver*> m_observers;
 };
-} // namespace starl::core::event
+} // namespace sl::core::event

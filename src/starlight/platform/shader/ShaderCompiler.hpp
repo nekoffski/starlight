@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include <starlight/platform/shader/ShaderCompilerImpl.h>
+#include "ShaderCompilerImpl.h"
 
-namespace starl::platform::shader {
+namespace sl::platform::shader {
 
 class Shader;
 

@@ -1,7 +1,9 @@
-#include <starlight/application/Application.h>
-#include <starlight/platform/shader/ShaderCompiler.hpp>
+#include "Application.h"
 
-namespace starl::application {
+#include "starlight/core/perf/Profiler.hpp"
+#include "starlight/platform/shader/ShaderCompiler.hpp"
+
+namespace sl::application {
 
 Application::Application(Application::Token&&) {
 }

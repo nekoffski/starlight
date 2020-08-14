@@ -1,12 +1,12 @@
-#include <starlight/platform/img/Image.h>
-#include <starlight/platform/img/stb/StbImage.hpp>
+#include "Image.h"
 
-#include <starlight/core/log/Logger.h>
+#include "starlight/core/log/Logger.h"
+#include "starlight/platform/img/stb/StbImage.hpp"
 
-namespace starl::platform::img {
+namespace sl::platform::img {
 
 std::shared_ptr<Image> Image::create(const std::string& path) {
-    LOG(DEBUG) << "loading image: " << path << " using StbImage";
+    SL_DEBUG("loading image: {} using StbImage", path);
     return std::make_shared<stb::StbImage>(path);
 }
 }

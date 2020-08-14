@@ -1,9 +1,9 @@
 #pragma once
 
-#include <starlight/framework/graphics/LowLevelRenderer.h>
-#include <starlight/framework/graphics/camera/Camera.h>
+#include "starlight/framework/graphics/LowLevelRenderer.h"
+#include "starlight/framework/graphics/camera/Camera.h"
 
-namespace starl::rendering::renderer {
+namespace sl::rendering::renderer {
 
 using namespace framework;
 

@@ -1,11 +1,11 @@
 #pragma once
 
-#include <starlight/asset/AssetManager.hpp>
-#include <starlight/rendering/renderer/CubemapRenderer.h>
-#include <starlight/rendering/renderer/ModelRenderer.h>
-#include <starlight/rendering/renderer/ParticleRenderer.h>
+#include "starlight/asset/AssetManager.hpp"
+#include "starlight/rendering/renderer/CubemapRenderer.h"
+#include "starlight/rendering/renderer/ModelRenderer.h"
+#include "starlight/rendering/renderer/ParticleRenderer.h"
 
-namespace starl::rendering {
+namespace sl::rendering {
 
 class RendererProxy {
 public:

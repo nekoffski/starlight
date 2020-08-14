@@ -1,12 +1,13 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
-#include <starlight/ecs/component/Component.h>
-#include <starlight/gui/Window.h>
-#include <starlight/math/Vector.hpp>
+#include "starlight/ecs/component/Component.h"
+#include "starlight/gui/Window.h"
+#include "starlight/math/Vector.hpp"
 
-namespace starl::ecs::entity {
+namespace sl::ecs::entity {
 
 class Entity {
 public:

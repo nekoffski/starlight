@@ -2,11 +2,11 @@
 
 #include <memory>
 
-namespace starl::geometry {
+namespace sl::geometry {
 class Model;
 }
 
-namespace starl::platform::model {
+namespace sl::platform::model {
 
 class ModelLoader {
 public:

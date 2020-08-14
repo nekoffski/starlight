@@ -1,6 +1,6 @@
 #pragma once
 
-namespace starl::core::event {
+namespace sl::core::event {
 
 struct Event {
     explicit Event(bool dispatchOnce = false)

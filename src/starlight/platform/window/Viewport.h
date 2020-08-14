@@ -1,6 +1,6 @@
 #pragma once
 
-namespace starl::platform::window {
+namespace sl::platform::window {
 
 struct Viewport {
     int width;

@@ -6,7 +6,7 @@
 
 // workaround
 
-namespace starl::math {
+namespace sl::math {
 
 using Vec2 = glm::vec2;
 using Vec3 = glm::vec3;
@@ -23,17 +23,17 @@ glm::vec<3, T, Q> cross(glm::vec<3, T, Q> const& x, glm::vec<3, T, Q> const& y) 
 }
 }
 
-inline std::ostream& operator<<(std::ostream& ss, const starl::math::Vec4& v) {
+inline std::ostream& operator<<(std::ostream& ss, const sl::math::Vec4& v) {
     ss << v.x << " " << v.y << " " << v.z << " " << v.w << '\n';
     return ss;
 }
 
-inline std::ostream& operator<<(std::ostream& ss, const starl::math::Vec3& v) {
+inline std::ostream& operator<<(std::ostream& ss, const sl::math::Vec3& v) {
     ss << v.x << " " << v.y << " " << v.z << '\n';
     return ss;
 }
 
-inline std::ostream& operator<<(std::ostream& ss, const starl::math::Vec2& v) {
+inline std::ostream& operator<<(std::ostream& ss, const sl::math::Vec2& v) {
     ss << v.x << " " << v.y << '\n';
     return ss;
 }

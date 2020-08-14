@@ -2,7 +2,7 @@
 
 #include <starlight/misc/types/NotNullPtr.hpp>
 
-using namespace starl::misc::types;
+using namespace sl::misc::types;
 
 class NotNullPtrTests : public testing::Test {
 protected:

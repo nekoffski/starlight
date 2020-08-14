@@ -1,6 +1,6 @@
 #pragma once
 
-namespace starl::platform::shader {
+namespace sl::platform::shader {
 
 class Shader;
 }

@@ -13,13 +13,7 @@
 [submodule "3rdparty/assimp"]
 	path = 3rdparty/assimp
 	url = https://github.com/assimp/assimp.git
-[submodule "3rdparty/loguru"]
-	path = 3rdparty/loguru
-	url = https://github.com/emilk/loguru
-[submodule "3rdparty/easyloggingpp"]
-	path = 3rdparty/easyloggingpp
-	url = https://github.com/amrayn/easyloggingpp.git
-
 [submodule "3rdparty/spdlog"]
 	path = 3rdparty/spdlog
-	url = https://github.com/gabime/spdlog.git
+    url = https://github.com/gabime/spdlog.git
+    branch = v1.x

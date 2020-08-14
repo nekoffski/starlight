@@ -6,13 +6,13 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
-#include <starlight/geometry/Mesh.h>
+#include "starlight/geometry/Mesh.h"
 
-namespace starl::platform::texture {
+namespace sl::platform::texture {
 class Texture;
 }
 
-namespace starl::platform::model::assimp {
+namespace sl::platform::model::assimp {
 
 class AssimpMeshProcessor {
 public:
