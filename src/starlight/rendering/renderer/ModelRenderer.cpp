@@ -5,7 +5,7 @@
 namespace sl::rendering::renderer {
 
 void ModelRenderer::render(const ShaderToModelRenderData& shaderToModelRenderData,
-    const std::shared_ptr<framework::graphics::camera::Camera> camera) {
+    const std::shared_ptr<camera::Camera> camera) {
     for (const auto& [shader, modelRenderDatas] : shaderToModelRenderData) {
         shader->enable();
         shader->setUniform("projection", m_lowLevelRenderer.getProjectionMatrix());

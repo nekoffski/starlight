@@ -19,11 +19,11 @@ public:
 
     void renderCubemap(const std::shared_ptr<platform::texture::Cubemap>& cubemap,
         const std::shared_ptr<platform::shader::Shader>& cubemapShader,
-        const std::shared_ptr<framework::graphics::camera::Camera>& camera) {
+        const std::shared_ptr<rendering::camera::Camera>& camera) {
         m_cubemapRenderer->render(cubemap, cubemapShader, camera);
     }
 
-    void renderModels(const renderer::ShaderToModelRenderData& models, const std::shared_ptr<framework::graphics::camera::Camera>& camera) {
+    void renderModels(const renderer::ShaderToModelRenderData& models, const std::shared_ptr<rendering::camera::Camera>& camera) {
         m_modelRenderer->render(models, camera);
     }
 
@@ -31,11 +31,11 @@ public:
         m_particleRenderer->render();
     }
 
-    static std::shared_ptr<RendererProxy> create(framework::graphics::LowLevelRenderer& lowLevelRenderer, asset::AssetManager& assetManager) {
+    static std::shared_ptr<RendererProxy> create(renderer::lowlevel::LowLevelRenderer& lowLevelRenderer) {
         auto cubemapRenderer = std::make_shared<renderer::CubemapRenderer>(lowLevelRenderer);
         auto modelRenderer = std::make_shared<renderer::ModelRenderer>(lowLevelRenderer);
 
-        auto particleShader = assetManager.load<platform::shader::Shader>({ "/particle.vert", "/particle.frag" });
+        auto particleShader = asset::AssetManager::load<platform::shader::Shader>({ "/particle.vert", "/particle.frag" });
         auto particleRenderer = std::make_shared<renderer::ParticleRenderer>(lowLevelRenderer, std::move(particleShader));
 
         return std::make_shared<RendererProxy>(std::move(cubemapRenderer), std::move(modelRenderer), std::move(particleRenderer));

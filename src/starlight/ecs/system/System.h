@@ -9,6 +9,6 @@ namespace sl::ecs::system {
 
 class System {
 public:
-    virtual void processComponent(std::shared_ptr<component::Component>&, std::shared_ptr<entity::Entity>&) = 0;
+    virtual void processComponent(component::Component&, std::shared_ptr<entity::Entity>&) = 0;
 };
 }

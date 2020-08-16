@@ -2,7 +2,7 @@
 
 #include "UserControllableCamera.h"
 
-namespace sl::framework::graphics::camera {
+namespace sl::rendering::camera {
 
 class EulerCamera : public UserControllableCamera {
 public:

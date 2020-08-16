@@ -9,7 +9,7 @@
 
 #include "starlight/core/log/Logger.h"
 
-namespace sl::framework::graphics::camera {
+namespace sl::rendering::camera {
 
 const float EulerCamera::MIN_PSI = -math::PI / 2.0f;
 const float EulerCamera::MAX_PSI = math::PI / 2.0f;

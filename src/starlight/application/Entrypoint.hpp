@@ -46,7 +46,7 @@ public:
             m_application->init();
             m_application->onStart();
 
-            if (not m_application->getContext())
+            if (not m_application->getActiveContext())
                 throw std::logic_error("Application context is null");
 
             while (m_application->isRunning()) {

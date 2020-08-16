@@ -20,21 +20,15 @@ public:
 
     void update(float);
     void setActiveScene(std::shared_ptr<Scene>);
-    void render(const std::shared_ptr<framework::graphics::camera::Camera>&);
+    void render(const std::shared_ptr<rendering::camera::Camera>&);
     void renderSceneGUI(gui::Window&);
     void renderMainGUI(gui::Window&);
 
 private:
     std::shared_ptr<Scene> m_scene;
     std::shared_ptr<rendering::RendererProxy> m_renderer;
-    std::shared_ptr<ecs::system::ModelSystem> m_modelSystem;
-    std::shared_ptr<ecs::system::TransformSystem> m_transformSystem;
-    std::shared_ptr<ecs::system::PFXSystem> m_pfxSystem;
-    std::shared_ptr<ecs::system::MeshGridSystem> m_meshGridSystem;
     std::unordered_map<ecs::component::ComponentType, std::shared_ptr<ecs::system::System>> m_systems;
 
     std::weak_ptr<ecs::entity::Entity> m_activeEntity;
-
-    void processEntity(std::shared_ptr<ecs::entity::Entity>&);
 };
 }

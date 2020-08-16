@@ -7,8 +7,8 @@
 
 namespace sl::rendering::data {
 
-struct ModelRenderData {
-    explicit ModelRenderData(std::shared_ptr<geometry::Model> model)
+struct ModelData {
+    explicit ModelData(std::shared_ptr<geometry::Model> model)
         : model(std::move(model)) {
     }
 

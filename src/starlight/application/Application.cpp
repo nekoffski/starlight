@@ -19,7 +19,7 @@ void Application::init() {
 
     m_input = platform::input::Input::create(m_window->getHandle());
 
-    m_lowLevelRenderer = std::make_unique<framework::graphics::LowLevelRenderer>(m_window);
+    m_lowLevelRenderer = std::make_unique<rendering::renderer::lowlevel::LowLevelRenderer>(m_window);
     m_lowLevelRenderer->init();
 
     m_guiAdapter = std::make_shared<platform::gui::GUIAdapter>(m_window->getHandle());
@@ -27,7 +27,7 @@ void Application::init() {
 
     platform::shader::ShaderCompiler::init();
 
-    m_renderer = rendering::RendererProxy::create(*m_lowLevelRenderer, m_assetManager);
+    m_renderer = rendering::RendererProxy::create(*m_lowLevelRenderer);
     m_sceneManager = std::make_shared<scene::SceneManager>(m_renderer);
 }
 

@@ -17,3 +17,6 @@
 	path = 3rdparty/spdlog
     url = https://github.com/gabime/spdlog.git
     branch = v1.x
+[submodule "3rdparty/crossguid"]
+	path = 3rdparty/crossguid
+	url = https://github.com/graeme-hill/crossguid.git

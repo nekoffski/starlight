@@ -3,13 +3,12 @@
 #include <memory>
 #include <unordered_map>
 
+#include "lowlevel/LowLevelRenderer.h"
 #include "starlight/core/log/Logger.h"
-#include "starlight/framework/graphics/LowLevelRenderer.h"
 #include "starlight/platform/gpu/ElementBuffer.h"
 #include "starlight/platform/gpu/VertexArray.h"
 #include "starlight/platform/gpu/VertexBuffer.h"
 #include "starlight/platform/shader/Shader.h"
-#include "starlight/rendering/data/ModelRenderData.h"
 #include "starlight/rendering/renderer/Renderer.h"
 
 namespace sl::rendering::renderer {
@@ -20,7 +19,7 @@ namespace sl::rendering::renderer {
 
 class ParticleRenderer : public Renderer {
 public:
-    explicit ParticleRenderer(framework::graphics::LowLevelRenderer& lowLevelRenderer, std::shared_ptr<platform::shader::Shader> particleShader)
+    explicit ParticleRenderer(lowlevel::LowLevelRenderer& lowLevelRenderer, std::shared_ptr<platform::shader::Shader> particleShader)
         : Renderer(lowLevelRenderer)
         , m_particleShader(std::move(particleShader)) {
         m_particleVertexArray = platform::gpu::VertexArray::create();

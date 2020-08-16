@@ -2,7 +2,7 @@
 
 #include "starlight/core/log/Logger.h"
 
-namespace sl::framework::graphics {
+namespace sl::rendering::renderer::lowlevel {
 
 void LowLevelRenderer::init() {
     SL_INFO("initializing");

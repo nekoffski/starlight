@@ -27,7 +27,7 @@ namespace sl::asset {
 class AssetManager {
 public:
     template <typename T>
-    std::shared_ptr<T> load(loaders::AssetLoaderArgs<T> args) {
+    static std::shared_ptr<T> load(loaders::AssetLoaderArgs<T> args) {
         if (auto& loader = AssetLoaderDispatcher<T>::loader; loader != nullptr)
             return loader->load(args);
         throw AssetException(ErrorCode::LOADER_NOT_FOUND);
