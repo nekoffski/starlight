@@ -53,7 +53,7 @@ static float cubemapVertices[] = {
 
 namespace sl::rendering::renderer {
 
-CubemapRenderer::CubemapRenderer(framework::graphics::LowLevelRenderer& lowLevelRenderer)
+CubemapRenderer::CubemapRenderer(lowlevel::LowLevelRenderer& lowLevelRenderer)
     : Renderer(lowLevelRenderer) {
     auto vertexBuffer = platform::gpu::VertexBuffer::create(cubemapVertices, sizeof(cubemapVertices), 36);
     vertexBuffer->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
@@ -64,7 +64,7 @@ CubemapRenderer::CubemapRenderer(framework::graphics::LowLevelRenderer& lowLevel
 
 void CubemapRenderer::render(const std::shared_ptr<platform::texture::Cubemap>& cubemap,
     const std::shared_ptr<platform::shader::Shader>& cubemapShader,
-    const std::shared_ptr<framework::graphics::camera::Camera>& camera) {
+    const std::shared_ptr<rendering::camera::Camera>& camera) {
     cubemapShader->enable();
     cubemapShader->setUniform("projection", m_lowLevelRenderer.getProjectionMatrix());
     cubemapShader->setUniform("view", camera->getViewMatrix());

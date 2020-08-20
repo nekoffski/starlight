@@ -39,6 +39,8 @@ public:
         // TODO: load config
 
         auto t1 = PROFILER_CREATE_TIMER("Main loop");
+        auto t2 = PROFILER_CREATE_TIMER("Render");
+        auto t3 = PROFILER_CREATE_TIMER("Update");
 
         try {
             SL_INFO("creating and starting application instance");
@@ -46,15 +48,21 @@ public:
             m_application->init();
             m_application->onStart();
 
-            if (not m_application->getContext())
+            if (not m_application->getActiveContext())
                 throw std::logic_error("Application context is null");
 
             while (m_application->isRunning()) {
                 PROFILER_TIMER_BEGIN(t1);
                 m_application->handleInput();
+                PROFILER_TIMER_BEGIN(t3);
                 m_application->update(m_clock->getDeltaTime());
+                PROFILER_TIMER_END(t3);
+
+                PROFILER_TIMER_BEGIN(t2);
                 m_application->render();
+                PROFILER_TIMER_END(t2);
                 m_clock->update();
+
                 PROFILER_TIMER_END(t1);
                 PROFILER_PRINT(1);
             }

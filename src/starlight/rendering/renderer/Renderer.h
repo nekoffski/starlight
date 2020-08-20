@@ -1,21 +1,19 @@
 #pragma once
 
-#include "starlight/framework/graphics/LowLevelRenderer.h"
-#include "starlight/framework/graphics/camera/Camera.h"
+#include "lowlevel/LowLevelRenderer.h"
+#include "starlight/rendering/camera/Camera.h"
 
 namespace sl::rendering::renderer {
 
-using namespace framework;
-
 class Renderer {
 public:
-    explicit Renderer(graphics::LowLevelRenderer& lowLevelRenderer)
+    explicit Renderer(lowlevel::LowLevelRenderer& lowLevelRenderer)
         : m_lowLevelRenderer(lowLevelRenderer) {
     }
 
     virtual ~Renderer() = default;
 
 protected:
-    graphics::LowLevelRenderer& m_lowLevelRenderer;
+    lowlevel::LowLevelRenderer& m_lowLevelRenderer;
 };
 }

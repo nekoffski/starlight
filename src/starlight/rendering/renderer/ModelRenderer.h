@@ -3,26 +3,23 @@
 #include <memory>
 #include <unordered_map>
 
-#include "starlight/framework/graphics/LowLevelRenderer.h"
+#include "Renderer.h"
+#include "lowlevel/LowLevelRenderer.h"
 #include "starlight/platform/shader/Shader.h"
-#include "starlight/rendering/data/ModelRenderData.h"
-#include "starlight/rendering/renderer/Renderer.h"
+#include "starlight/rendering/data/ModelData.h"
 
 // TODO: create FWD
 namespace sl::rendering::renderer {
-
-using ShaderPtr = std::shared_ptr<platform::shader::Shader>;
-using ModelRenderDataPtr = std::shared_ptr<data::ModelRenderData>;
-using ShaderToModelRenderData = std::unordered_map<ShaderPtr, std::vector<data::ModelRenderData>>;
 
 class ModelRenderer : public Renderer {
 public:
     using Renderer::Renderer;
 
-    void render(const ShaderToModelRenderData&, const std::shared_ptr<framework::graphics::camera::Camera>);
+    void render(std::shared_ptr<platform::shader::Shader> shader, const data::ModelData& modelData,
+        const math::Mat4& transform);
 
 protected:
-    void renderModel(const std::shared_ptr<geometry::Model>);
-    void renderMesh(const std::shared_ptr<geometry::Mesh>);
+    void renderModel(std::shared_ptr<geometry::Model>);
+    void renderMesh(std::shared_ptr<geometry::Mesh>);
 };
 }

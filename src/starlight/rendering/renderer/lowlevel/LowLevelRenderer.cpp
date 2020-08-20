@@ -2,7 +2,7 @@
 
 #include "starlight/core/log/Logger.h"
 
-namespace sl::framework::graphics {
+namespace sl::rendering::renderer::lowlevel {
 
 void LowLevelRenderer::init() {
     SL_INFO("initializing");
@@ -17,7 +17,7 @@ void LowLevelRenderer::init() {
 void LowLevelRenderer::renderVertexArray(std::shared_ptr<platform::gpu::VertexArray> vertexArray) {
     vertexArray->bind();
 
-    // to optimize!
+    // to optimize! -> BRANCHING!!!
     auto indices = vertexArray->getIndicesCount();
     if (indices != 0u)
         m_renderAPI->drawElements(STARL_TRIANGLES, indices, STARL_UNSIGNED_INT);

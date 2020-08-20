@@ -4,9 +4,10 @@
 #include <unordered_map>
 #include <vector>
 
-#include "starlight/ecs/entity/Entity.h"
-#include "starlight/framework/graphics/camera/Camera.h"
 #include "Skybox.h"
+#include "starlight/ecs/Entity.h"
+#include "starlight/ecs/Registry.h"
+#include "starlight/rendering/camera/Camera.h"
 
 namespace sl::scene {
 
@@ -20,12 +21,17 @@ public:
         m_skybox = std::move(skybox);
     }
 
-    void addEntity(std::shared_ptr<ecs::entity::Entity> entity) {
-        m_entities.push_back(std::move(entity));
+    std::shared_ptr<ecs::Entity> addEntity(std::string name) {
+        return m_ecsRegistry.createEntity(std::move(name));
+    }
+
+    template <typename Component, typename Factory>
+    void setComponentWrapperFactory() {
+        m_ecsRegistry.setComponentWrapperFactory<Component, Factory>();
     }
 
 private:
-    std::vector<std::shared_ptr<ecs::entity::Entity>> m_entities;
     std::shared_ptr<Skybox> m_skybox;
+    ecs::Registry m_ecsRegistry;
 };
 }

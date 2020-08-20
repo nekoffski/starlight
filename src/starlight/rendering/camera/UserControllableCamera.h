@@ -4,7 +4,7 @@
 
 #include "starlight/platform/input/InputHandler.h"
 
-namespace sl::framework::graphics::camera {
+namespace sl::rendering::camera {
 
 class UserControllableCamera : public Camera, public platform::input::InputHandler {
 };

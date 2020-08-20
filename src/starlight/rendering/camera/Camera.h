@@ -9,7 +9,7 @@ namespace sl::gui {
 class Window;
 }
 
-namespace sl::framework::graphics::camera {
+namespace sl::rendering::camera {
 
 using Direction = u_int8_t;
 

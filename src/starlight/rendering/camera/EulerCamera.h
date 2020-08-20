@@ -2,7 +2,7 @@
 
 #include "UserControllableCamera.h"
 
-namespace sl::framework::graphics::camera {
+namespace sl::rendering::camera {
 
 class EulerCamera : public UserControllableCamera {
 public:
@@ -19,7 +19,7 @@ public:
 
     const math::Mat4 getViewMatrix() override;
 
-    void handleInput(std::unique_ptr<platform::input::Input>&) override;
+    void handleInput(std::shared_ptr<platform::input::Input>) override;
     void onGUI(gui::Window&) override;
 
 private:

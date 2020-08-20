@@ -9,7 +9,7 @@
 
 #include "starlight/core/log/Logger.h"
 
-namespace sl::framework::graphics::camera {
+namespace sl::rendering::camera {
 
 const float EulerCamera::MIN_PSI = -math::PI / 2.0f;
 const float EulerCamera::MAX_PSI = math::PI / 2.0f;
@@ -87,7 +87,7 @@ const math::Vec3& EulerCamera::getRight() {
     return m_right;
 }
 
-void EulerCamera::handleInput(std::unique_ptr<platform::input::Input>& input) {
+void EulerCamera::handleInput(std::shared_ptr<platform::input::Input> input) {
     m_direction = DIR_NONE;
 
     if (input->isKeyPressed(STARL_KEY_UP))

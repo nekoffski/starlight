@@ -2,7 +2,7 @@
 
 #include <unordered_map>
 
-#include "starlight/framework/graphics/camera/Camera.h"
+#include "starlight/rendering/camera/Camera.h"
 
 #include "starlight/platform/gpu/GraphicsContext.h"
 #include "starlight/platform/gpu/RenderAPI.h"
@@ -18,7 +18,7 @@
 
 // TODO: create FWD and move implementations to .cpp
 
-namespace sl::framework::graphics {
+namespace sl::rendering::renderer::lowlevel {
 
 class LowLevelRenderer {
 public:

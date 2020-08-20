@@ -8,6 +8,6 @@ class Input;
 
 class InputHandler {
 public:
-    virtual void handleInput(std::unique_ptr<Input>&) = 0;
+    virtual void handleInput(std::shared_ptr<Input>) = 0;
 };
 }
