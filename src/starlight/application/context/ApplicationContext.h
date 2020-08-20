@@ -23,7 +23,7 @@ public:
     virtual void onAttach() = 0;
     virtual void onDetach() = 0;
 
-    virtual void handleInput(std::unique_ptr<platform::input::Input>&) = 0;
+    virtual void handleInput(std::shared_ptr<platform::input::Input>) = 0;
     virtual void update(float) = 0;
     virtual void render() = 0;
 

@@ -5,14 +5,18 @@
 #include "starlight/geometry/Model.h"
 #include "starlight/gui/GUIProxy.h"
 #include "starlight/gui/Window.h"
+#include "starlight/misc/colors.hpp"
 #include "starlight/platform/shader/Shader.h"
 #include "starlight/platform/texture/Cubemap.h"
 #include "starlight/platform/texture/Texture.h"
 #include "starlight/rendering/camera/EulerCamera.h"
 #include "starlight/scene/Scene.h"
 #include "starlight/scene/Skybox.h"
+#include "starlight/scene/components/DirectionalLightComponent.h"
 #include "starlight/scene/components/ModelComponent.h"
 #include "starlight/scene/components/RendererComponent.h"
+#include "starlight/scene/components/TransformComponent.h"
+#include "starlight/scene/components/TransformComponentWrapper.h"
 
 // pass somehow current time to renderers
 // fix time
@@ -20,6 +24,7 @@
 // remove pointer references
 
 using namespace sl;
+using namespace sl::scene;
 
 class Context : public application::context::ApplicationContext {
 public:
@@ -44,14 +49,28 @@ public:
         m_skybox = std::make_shared<scene::Skybox>(scene::Skybox{ m_cubemapShader, m_cubemap });
 
         m_scene = std::make_shared<scene::Scene>();
+
         m_scene->setSkybox(m_skybox);
+        m_scene->setComponentWrapperFactory<components::TransformComponent, components::TransformComponentWrapperFactory>();
 
         m_sceneManager->setActiveScene(m_scene);
 
-        auto entity = m_scene->addEntity();
+        auto entity = m_scene->addEntity("Ground");
 
-        entity->addComponent<scene::components::ModelComponent>(m_model);
-        entity->addComponent<scene::components::RendererComponent>(m_shader);
+        entity->addComponent<components::ModelComponent>(m_model);
+        entity->addComponent<components::RendererComponent>(m_shader);
+        entity->addComponent<components::TransformComponent>();
+
+        auto towerModel = asset::AssetManager::load<geometry::Model>({ "/tow/tower.obj" });
+        auto entity2 = m_scene->addEntity("Tower");
+
+        entity2->addComponent<components::ModelComponent>(towerModel);
+        entity2->addComponent<components::RendererComponent>(m_shader);
+        entity2->addComponent<components::TransformComponent>();
+
+        auto sun = m_scene->addEntity("Sun");
+        sun->addComponent<components::DirectionalLightComponent>(math::Vec3{ 1.0f, 1.0f, 1.0f },
+            misc::COL_WHITE, misc::COL_WHITE);
 
         // entity->addComponent<scene::components::ModelComponent>(m_model, m_shader);
 
@@ -62,7 +81,6 @@ public:
         // groundEntity->addComponent(std::make_shared<ecs::component::TransformComponent>());
 
         // auto towerEntity = std::make_shared<ecs::entity::Entity>("ExampleEntity");
-        // auto towerModel = m_applicationContextResource.assetManager.load<geometry::Model>({ "/tow/tower.obj" });
         // auto towerModelComponent = std::make_shared<ecs::component::ModelComponent>(towerModel, m_shader);
 
         // towerEntity->addComponent(towerModelComponent);
@@ -100,7 +118,7 @@ public:
         }
     }
 
-    void handleInput(std::unique_ptr<platform::input::Input>& input) override {
+    void handleInput(std::shared_ptr<platform::input::Input> input) override {
         m_camera->handleInput(input);
     }
 

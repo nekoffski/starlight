@@ -37,10 +37,26 @@ void Application::update(float deltaTime) {
 }
 
 void Application::render() {
+    static auto t1 = PROFILER_CREATE_TIMER("Context render");
+    static auto t2 = PROFILER_CREATE_TIMER("GUI render");
+    static auto t3 = PROFILER_CREATE_TIMER("LLRenderer begin");
+    static auto t4 = PROFILER_CREATE_TIMER("LLRenderer end");
+
+    PROFILER_TIMER_BEGIN(t3);
     m_lowLevelRenderer->begin();
+    PROFILER_TIMER_END(t4);
+
+    PROFILER_TIMER_BEGIN(t1);
     m_context->render();
+    PROFILER_TIMER_END(t1);
+
+    PROFILER_TIMER_BEGIN(t2);
     renderGUI();
+    PROFILER_TIMER_END(t2);
+
+    PROFILER_TIMER_BEGIN(t4);
     m_lowLevelRenderer->end();
+    PROFILER_TIMER_END(t4);
 }
 
 void Application::renderGUI() {

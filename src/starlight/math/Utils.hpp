@@ -74,4 +74,9 @@ inline Vec3 toRadians(const Vec3& vec) {
 inline Mat4 createRotationMatrix(const math::Vec3& orientation) {
     return quaternionToMat4(Quaternion(orientation));
 }
+
+template <class T>
+inline float lerp(const T& a, const T& b, float alfa) {
+    return a * alfa + (1.0f - alfa) * b;
+}
 }

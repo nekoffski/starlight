@@ -28,9 +28,11 @@ public:
     }
 
     template <typename... Args>
-    void add(std::string entityId, Args&&... args) {
+    Component& add(std::string entityId, Args&&... args) {
         m_components.emplace_back(Component(std::forward<Args>(args)...));
-        m_entityIdToComponent[std::move(entityId)] = &m_components.back();
+        auto& component = m_components.back();
+        m_entityIdToComponent[std::move(entityId)] = &component;
+        return component;
     }
 
     Container<Component>& getAll() {

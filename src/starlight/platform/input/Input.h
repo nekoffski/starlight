@@ -17,7 +17,7 @@ using InputCallback = std::function<void(int)>;
 
 class Input {
 public:
-    static std::unique_ptr<Input> create(misc::types::NotNullPtr<void>);
+    static std::shared_ptr<Input> create(misc::types::NotNullPtr<void>);
 
     virtual void setKeyCallback(InputCallback){};
 

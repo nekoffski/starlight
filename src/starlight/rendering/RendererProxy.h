@@ -1,6 +1,7 @@
 #pragma once
 
 #include "starlight/asset/AssetManager.hpp"
+#include "starlight/math/Matrix.hpp"
 #include "starlight/rendering/renderer/CubemapRenderer.h"
 #include "starlight/rendering/renderer/ModelRenderer.h"
 #include "starlight/rendering/renderer/ParticleRenderer.h"
@@ -23,8 +24,9 @@ public:
         m_cubemapRenderer->render(cubemap, cubemapShader, camera);
     }
 
-    void renderModels(const renderer::ShaderToModelRenderData& models, const std::shared_ptr<rendering::camera::Camera>& camera) {
-        m_modelRenderer->render(models, camera);
+    void renderModels(std::shared_ptr<platform::shader::Shader> shader, const data::ModelData& modelData,
+        const math::Mat4& transform) {
+        m_modelRenderer->render(shader, modelData, transform);
     }
 
     void renderParticles() {

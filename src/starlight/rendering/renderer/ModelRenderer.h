@@ -11,18 +11,15 @@
 // TODO: create FWD
 namespace sl::rendering::renderer {
 
-using ShaderPtr = std::shared_ptr<platform::shader::Shader>;
-using ModelRenderDataPtr = std::shared_ptr<data::ModelData>;
-using ShaderToModelRenderData = std::unordered_map<ShaderPtr, std::vector<data::ModelData>>;
-
 class ModelRenderer : public Renderer {
 public:
     using Renderer::Renderer;
 
-    void render(const ShaderToModelRenderData&, const std::shared_ptr<camera::Camera>);
+    void render(std::shared_ptr<platform::shader::Shader> shader, const data::ModelData& modelData,
+        const math::Mat4& transform);
 
 protected:
-    void renderModel(const std::shared_ptr<geometry::Model>);
-    void renderMesh(const std::shared_ptr<geometry::Mesh>);
+    void renderModel(std::shared_ptr<geometry::Model>);
+    void renderMesh(std::shared_ptr<geometry::Mesh>);
 };
 }

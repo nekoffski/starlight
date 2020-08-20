@@ -3,6 +3,7 @@
 #include "OpenGLGraphicsContext.h"
 
 #include "starlight/core/log/Logger.h"
+#include "starlight/core/perf/Profiler.hpp"
 
 namespace sl::platform::gpu::opengl {
 
@@ -19,7 +20,11 @@ void OpenGLGraphicsContext::init() {
 }
 
 void OpenGLGraphicsContext::swapBuffers() {
+    static auto t = PROFILER_CREATE_TIMER("Raw glfwSwapBuffers call");
+
+    PROFILER_TIMER_BEGIN(t);
     glfwSwapBuffers(m_windowHandle);
+    PROFILER_TIMER_END(t);
 }
 
 void OpenGLGraphicsContext::clearBuffers(unsigned buffersToClear) {

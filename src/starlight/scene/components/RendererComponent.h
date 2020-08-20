@@ -6,13 +6,11 @@
 
 namespace sl::scene::components {
 
-class RendererComponent : public ecs::Component {
-public:
+struct RendererComponent : public ecs::Component {
     explicit RendererComponent(std::shared_ptr<platform::shader::Shader> shader)
-        : m_shader(shader) {
+        : shader(shader) {
     }
 
-private:
-    std::shared_ptr<platform::shader::Shader> m_shader;
+    std::shared_ptr<platform::shader::Shader> shader;
 };
 }

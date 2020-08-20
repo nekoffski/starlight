@@ -20,6 +20,11 @@ public:
     }
 
     template <typename Component>
+    std::shared_ptr<Container<Component>> getByIndex(std::type_index id) {
+        return std::static_pointer_cast<Container<Component>>(m_componentsContainers[id]);
+    }
+
+    template <typename Component>
     bool exists() {
         auto id = TYPE_INDEX(Component);
         return m_componentsContainers.count(id) > 0;

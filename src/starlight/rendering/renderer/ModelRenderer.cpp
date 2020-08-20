@@ -1,28 +1,19 @@
 #include "ModelRenderer.h"
 
 #include "starlight/core/log/Logger.h"
+#include "starlight/math/Utils.hpp"
 
 namespace sl::rendering::renderer {
 
-void ModelRenderer::render(const ShaderToModelRenderData& shaderToModelRenderData,
-    const std::shared_ptr<camera::Camera> camera) {
-    for (const auto& [shader, modelRenderDatas] : shaderToModelRenderData) {
-        shader->enable();
-        shader->setUniform("projection", m_lowLevelRenderer.getProjectionMatrix());
-        shader->setUniform("view", camera->getViewMatrix());
-        shader->setUniform("cameraPosition", camera->getPosition());
+void ModelRenderer::render(std::shared_ptr<platform::shader::Shader> shader, const data::ModelData& modelData,
+    const math::Mat4& transform) {
+    float t = static_cast<float>(std::clock()) / CLOCKS_PER_SEC;
+    shader->setUniform("t", t);
+    shader->setUniform("projection", m_lowLevelRenderer.getProjectionMatrix());
 
-        float t = static_cast<float>(std::clock()) / CLOCKS_PER_SEC;
-        shader->setUniform("t", t);
-
-        for (const auto& modelRenderData : modelRenderDatas) {
-            for (const auto& modelMatrix : modelRenderData.modelMatrices) {
-                shader->setUniform("model", modelMatrix);
-                renderModel(modelRenderData.model);
-            }
-        }
-
-        shader->disable();
+    for (const auto& position : modelData.positions) {
+        shader->setUniform("model", transform * math::translate(position));
+        renderModel(modelData.model);
     }
 }
 

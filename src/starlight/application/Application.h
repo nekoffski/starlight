@@ -66,7 +66,7 @@ protected:
 
 private:
     std::unique_ptr<platform::window::Window> m_window;
-    std::unique_ptr<platform::input::Input> m_input;
+    std::shared_ptr<platform::input::Input> m_input;
     std::unique_ptr<rendering::renderer::lowlevel::LowLevelRenderer> m_lowLevelRenderer;
     std::shared_ptr<platform::gui::GUIAdapter> m_guiAdapter;
     std::shared_ptr<context::ApplicationContext> m_context;
