@@ -9,8 +9,22 @@ struct AssetLoaderArgs {
 };
 
 template <typename T>
-class AssetLoader {
+struct AssetLoader {
+};
+
+template <typename T>
+class IsSpecializedFor {
+    using Yes = char;
+    using No = int;
+
 public:
-    virtual std::shared_ptr<T> load(AssetLoaderArgs<T>) = 0;
+    static constexpr bool value = (sizeof(test<T>(0)) == sizeof(Yes));
+
+private:
+    template <typename U>
+    static Yes test(decltype(&U::load));
+
+    template <typename U>
+    static No test(...);
 };
 }

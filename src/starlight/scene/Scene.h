@@ -17,6 +17,10 @@ class Scene {
     friend class SceneManager;
 
 public:
+    static std::shared_ptr<Scene> create() {
+        return std::make_shared<Scene>();
+    }
+
     void setSkybox(std::shared_ptr<Skybox> skybox) {
         m_skybox = std::move(skybox);
     }

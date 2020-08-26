@@ -1,5 +1,6 @@
 #include "starlight/application/Entrypoint.hpp"
 #include "starlight/application/context/ApplicationContext.h"
+#include "starlight/core/log/Logger.h"
 #include "starlight/core/path/PathManager.hpp"
 #include "starlight/geometry/Geometry.hpp"
 #include "starlight/geometry/Model.h"
@@ -31,24 +32,22 @@ public:
     void onInit() override {
         geometry::Geometry::init();
         // rework asset manager to be singleton/static class
-        m_cubemap = asset::AssetManager::load<platform::texture::Cubemap>({ "/skybox/right.jpg",
+        m_cubemap = asset::AssetManager::load<platform::texture::Cubemap>("/skybox/right.jpg",
             "/skybox/left.jpg",
             "/skybox/top.jpg",
             "/skybox/bottom.jpg",
             "/skybox/front.jpg",
-            "/skybox/back.jpg" });
+            "/skybox/back.jpg");
 
-        m_cubemapShader = asset::AssetManager::load<platform::shader::Shader>({ "/cubemap.vert", "/cubemap.frag" });
-        auto sshader = asset::AssetManager::load<platform::shader::Shader>(
-            { "/el.vert", "/el.frag" });
+        m_cubemapShader = asset::AssetManager::load<platform::shader::Shader>("/cubemap.vert", "/cubemap.frag");
+        auto sshader = asset::AssetManager::load<platform::shader::Shader>("/el.vert", "/el.frag");
         m_camera = rendering::camera::EulerCamera::create(glm::vec3(0.0f), 1.0f, 8.0f);
 
-        m_shader = asset::AssetManager::load<platform::shader::Shader>({ "/t.vert", "/t.frag", "" });
-        m_model = asset::AssetManager::load<geometry::Model>({ "/ground/untitled.obj" });
+        m_shader = asset::AssetManager::load<platform::shader::Shader>("/t.vert", "/t.frag", "");
+        m_model = asset::AssetManager::load<geometry::Model>("/ground/untitled.obj");
 
-        m_skybox = std::make_shared<scene::Skybox>(scene::Skybox{ m_cubemapShader, m_cubemap });
-
-        m_scene = std::make_shared<scene::Scene>();
+        m_skybox = scene::Skybox::create(m_cubemapShader, m_cubemap);
+        m_scene = scene::Scene::create();
 
         m_scene->setSkybox(m_skybox);
         m_scene->setComponentWrapperFactory<components::TransformComponent, components::TransformComponentWrapperFactory>();
@@ -61,7 +60,7 @@ public:
         entity->addComponent<components::RendererComponent>(m_shader);
         entity->addComponent<components::TransformComponent>();
 
-        auto towerModel = asset::AssetManager::load<geometry::Model>({ "/tow/tower.obj" });
+        auto towerModel = asset::AssetManager::load<geometry::Model>("/tow/tower.obj");
         auto entity2 = m_scene->addEntity("Tower");
 
         entity2->addComponent<components::ModelComponent>(towerModel);
@@ -71,27 +70,6 @@ public:
         auto sun = m_scene->addEntity("Sun");
         sun->addComponent<components::DirectionalLightComponent>(math::Vec3{ 1.0f, 1.0f, 1.0f },
             misc::COL_WHITE, misc::COL_WHITE);
-
-        // entity->addComponent<scene::components::ModelComponent>(m_model, m_shader);
-
-        // auto groundEntity = std::make_shared<ecs::entity::Entity>("Ground");
-        // auto modelComponent = std::make_shared<ecs::component::ModelComponent>(m_model, m_shader);
-
-        // groundEntity->addComponent(modelComponent);
-        // groundEntity->addComponent(std::make_shared<ecs::component::TransformComponent>());
-
-        // auto towerEntity = std::make_shared<ecs::entity::Entity>("ExampleEntity");
-        // auto towerModelComponent = std::make_shared<ecs::component::ModelComponent>(towerModel, m_shader);
-
-        // towerEntity->addComponent(towerModelComponent);
-        // towerEntity->addComponent(std::make_shared<ecs::component::TransformComponent>());
-
-        // auto meshGridEntity = std::make_shared<ecs::entity::MeshGridEntity>("Water", sshader);
-        // meshGridEntity->addComponent(std::make_shared<ecs::component::TransformComponent>());
-
-        // m_scene->addEntity(groundEntity);
-        // m_scene->addEntity(towerEntity);
-        // m_scene->addEntity(meshGridEntity);
     }
 
     void onAttach() override {

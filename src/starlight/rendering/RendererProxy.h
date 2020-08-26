@@ -37,7 +37,7 @@ public:
         auto cubemapRenderer = std::make_shared<renderer::CubemapRenderer>(lowLevelRenderer);
         auto modelRenderer = std::make_shared<renderer::ModelRenderer>(lowLevelRenderer);
 
-        auto particleShader = asset::AssetManager::load<platform::shader::Shader>({ "/particle.vert", "/particle.frag" });
+        auto particleShader = asset::AssetManager::load<platform::shader::Shader>("/particle.vert", "/particle.frag");
         auto particleRenderer = std::make_shared<renderer::ParticleRenderer>(lowLevelRenderer, std::move(particleShader));
 
         return std::make_shared<RendererProxy>(std::move(cubemapRenderer), std::move(modelRenderer), std::move(particleRenderer));

@@ -3,4 +3,5 @@
 namespace sl::platform::shader {
 
 class Shader;
+class ShaderCompiler;
 }

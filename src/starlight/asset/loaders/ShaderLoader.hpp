@@ -18,9 +18,9 @@ struct AssetLoaderArgs<Shader> {
     std::string geometryPath;
 };
 
-class ShaderLoader : public AssetLoader<Shader> {
-public:
-    std::shared_ptr<Shader> load(AssetLoaderArgs<Shader> args) {
+template <>
+struct AssetLoader<Shader> {
+    static std::shared_ptr<Shader> load(AssetLoaderArgs<Shader> args) {
         SL_DEBUG("loading shader: \n {}/{}/{}", args.vertexPath, args.fragmentPath, args.geometryPath);
         auto shader = Shader::create(core::path::PathManager::createGlobalPath<Shader>(args.vertexPath),
             core::path::PathManager::createGlobalPath<Shader>(args.fragmentPath), core::path::PathManager::createGlobalPath<Shader>(args.geometryPath));

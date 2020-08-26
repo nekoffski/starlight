@@ -6,7 +6,8 @@
 #include <unordered_map>
 
 #include "starlight/core/log/Logger.h"
-#include "starlight/platform/clock/Clock.h"
+#include "starlight/math/Utils.hpp"
+#include "starlight/platform/time/Clock.h"
 
 constexpr float eta = 0.3f;
 
@@ -15,28 +16,27 @@ namespace sl::core::perf {
 class Profiler {
     class Timer {
     public:
-        explicit Timer(float& value, std::shared_ptr<platform::clock::Clock> clock)
+        explicit Timer(float& value)
             : m_value(value)
-            , m_clock(clock) {}
+            , m_start(platform::time::Clock::now()) {
+        }
 
         void begin() {
-            m_start = m_clock->now();
+            m_start = platform::time::Clock::now();
         }
 
         void end() {
-            float tmp = m_clock->now() - m_start;
-            m_value = (1 - eta) * m_value + eta * tmp;
+            float tmp = platform::time::Clock::now()->substract(m_start);
+            m_value = math::linInterpolate(m_value, tmp, eta);
         }
 
     private:
         float& m_value;
-        float m_start;
-        std::shared_ptr<platform::clock::Clock> m_clock;
+        std::shared_ptr<platform::time::impl::ITimestamp> m_start;
     };
 
 public:
-    static void init(std::shared_ptr<platform::clock::Clock> clock, std::string logfile) {
-        m_clock = clock;
+    static void init(std::string logfile) {
         m_logfile = std::move(logfile);
     }
 
@@ -45,7 +45,7 @@ public:
             // todo
         }
         m_times[name] = 0.0f;
-        return Timer{ m_times[name], m_clock };
+        return Timer{ m_times[name] };
     }
 
     static void shutdown() {
@@ -72,7 +72,7 @@ public:
 private:
     inline static std::string m_logfile;
     inline static std::unordered_map<std::string, float> m_times;
-    inline static std::shared_ptr<platform::clock::Clock> m_clock;
+    // inline static std::shared_ptr<platform::clock::Clock> m_clock;
 };
 }
 

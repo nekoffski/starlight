@@ -15,9 +15,9 @@ struct AssetLoaderArgs<Texture> {
     std::string path;
 };
 
-class TextureLoader : public AssetLoader<Texture> {
-public:
-    std::shared_ptr<Texture> load(AssetLoaderArgs<Texture> args) {
+template <>
+struct AssetLoader<Texture> {
+    static std::shared_ptr<Texture> load(AssetLoaderArgs<Texture> args) {
         SL_DEBUG("loading texture: {}", args.path);
         return Texture::create(core::path::PathManager::createGlobalPath<Texture>(args.path));
     }
