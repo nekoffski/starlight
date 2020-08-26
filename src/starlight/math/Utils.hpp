@@ -76,7 +76,7 @@ inline Mat4 createRotationMatrix(const math::Vec3& orientation) {
 }
 
 template <class T>
-inline float lerp(const T& a, const T& b, float alfa) {
-    return a * alfa + (1.0f - alfa) * b;
+inline float linInterpolate(const T& a, const T& b, float alfa) {
+    return (1.0f - alfa) * a + alfa * b;
 }
 }

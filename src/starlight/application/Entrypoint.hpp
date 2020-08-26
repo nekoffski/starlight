@@ -10,8 +10,8 @@
 #include "starlight/core/log/Logger.h"
 #include "starlight/core/perf/Profiler.hpp"
 #include "starlight/core/sig/Signal.h"
-#include "starlight/platform/clock/Clock.h"
-#include "starlight/platform/clock/tickers/GlfwTicker.h"
+#include "starlight/platform/time/Clock.h"
+#include "starlight/platform/time/impl/StdClockImpl.h"
 
 namespace sl::application {
 
@@ -21,8 +21,7 @@ public:
     explicit Entrypoint(int& argc, char**& argv)
         : m_argc(argc)
         , m_argv(argv)
-        , m_application(nullptr)
-        , m_clock(std::make_shared<platform::clock::Clock>()) {
+        , m_application(nullptr) {
         // TODO: replace with concept as soon as c++20 arrives
         if (!std::is_base_of<Application, App>())
             throw std::logic_error("App has to be derived from application::Application!");
@@ -33,8 +32,8 @@ public:
         core::log::initLogging();
         SL_INFO("Initialized logging");
 
-        m_clock->setTickerPolicy<platform::clock::tickers::GlfwTicker>();
-        core::perf::Profiler::init(m_clock, "profiler.txt");
+        platform::time::Clock::setClockImpl<platform::time::impl::StdClockImpl>();
+        core::perf::Profiler::init("profiler.txt");
 
         // TODO: load config
 
@@ -55,13 +54,13 @@ public:
                 PROFILER_TIMER_BEGIN(t1);
                 m_application->handleInput();
                 PROFILER_TIMER_BEGIN(t3);
-                m_application->update(m_clock->getDeltaTime());
+                m_application->update(platform::time::Clock::getDeltaTime());
                 PROFILER_TIMER_END(t3);
 
                 PROFILER_TIMER_BEGIN(t2);
                 m_application->render();
                 PROFILER_TIMER_END(t2);
-                m_clock->update();
+                platform::time::Clock::update();
 
                 PROFILER_TIMER_END(t1);
                 PROFILER_PRINT(1);
@@ -89,7 +88,6 @@ private:
     std::unique_ptr<Application> m_application;
     int& m_argc;
     char**& m_argv;
-    std::shared_ptr<platform::clock::Clock> m_clock;
 };
 }
 

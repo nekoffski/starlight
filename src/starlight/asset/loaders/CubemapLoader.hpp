@@ -19,9 +19,9 @@ struct AssetLoaderArgs<Cubemap> {
     std::string back;
 };
 
-class CubemapLoader : public AssetLoader<Cubemap> {
-public:
-    std::shared_ptr<Cubemap> load(AssetLoaderArgs<Cubemap> args) {
+template <>
+struct AssetLoader<Cubemap> {
+    static std::shared_ptr<Cubemap> load(AssetLoaderArgs<Cubemap> args) {
         // clang-format off
         SL_DEBUG("loading cubemap: \n {}/{}/{}/{}/{}/{} ", args.top, args.bottom , args.right, args.left, args.front, args.back);
         return Cubemap::create({ 

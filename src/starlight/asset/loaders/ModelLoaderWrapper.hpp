@@ -16,12 +16,16 @@ struct AssetLoaderArgs<Model> {
     std::string path;
 };
 
-class ModelLoaderWrapper : public AssetLoader<Model> {
+template <>
+class AssetLoader<Model> {
 public:
-    std::shared_ptr<Model> load(AssetLoaderArgs<Model> args) {
-        static auto modelLoader{ ModelLoader::create() };
+    static std::shared_ptr<Model> load(AssetLoaderArgs<Model> args) {
+
         SL_DEBUG("loading model: {}", args.path);
-        return modelLoader->loadModel(core::path::PathManager::createGlobalPath<Model>(args.path));
+        return m_modelLoader->loadModel(core::path::PathManager::createGlobalPath<Model>(args.path));
     }
+
+private:
+    inline static auto m_modelLoader{ ModelLoader::create() };
 };
 }
