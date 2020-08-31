@@ -2,12 +2,14 @@
 
 #include "starlight/core/log/Logger.h"
 #include "starlight/math/Utils.hpp"
+#include "starlight/platform/time/Clock.h"
 
 namespace sl::rendering::renderer {
 
 void ModelRenderer::render(std::shared_ptr<platform::shader::Shader> shader, const data::ModelData& modelData,
     const math::Mat4& transform) {
-    float t = static_cast<float>(std::clock()) / CLOCKS_PER_SEC;
+
+    float t = platform::time::Clock::now()->value();
     shader->setUniform("t", t);
     shader->setUniform("projection", m_lowLevelRenderer.getProjectionMatrix());
 

@@ -3,18 +3,17 @@
 #include "starlight/ecs/Component.h"
 
 #include "starlight/math/Vector.hpp"
+#include "starlight/misc/colors.hpp"
 
 namespace sl::scene::components {
 
 struct DirectionalLightComponent : public ecs::Component {
-    explicit DirectionalLightComponent(math::Vec3 position, math::Vec3 ambientColor, math::Vec3 diffuseColor)
-        : position(position)
-        , ambientColor(ambientColor)
-        , diffuseColor(diffuseColor) {
+    explicit DirectionalLightComponent(math::Vec3 direction, math::Vec3 color = misc::COL_WHITE)
+        : direction(direction)
+        , color(color) {
     }
 
-    math::Vec3 position;
-    math::Vec3 ambientColor;
-    math::Vec3 diffuseColor;
+    math::Vec3 direction;
+    math::Vec3 color;
 };
 }

@@ -28,5 +28,7 @@ public:
     bool beginTreeNode(std::string) override;
     void popTreeNode() override;
     bool isPreviousWidgetClicked() override;
+
+    void colorPicker3(std::string, math::Vec3&) override;
 };
 }

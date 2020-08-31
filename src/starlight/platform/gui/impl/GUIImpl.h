@@ -27,5 +27,6 @@ public:
     virtual bool beginTreeNode(std::string) = 0;
     virtual void popTreeNode() = 0;
     virtual bool isPreviousWidgetClicked() = 0;
+    virtual void colorPicker3(std::string, math::Vec3&) = 0;
 };
 }

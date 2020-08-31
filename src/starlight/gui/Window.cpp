@@ -56,4 +56,8 @@ void Window::popTreeNode() {
 bool Window::isPreviousWidgetClicked() {
     return m_guiAdapter->isPreviousWidgetClicked();
 }
+
+void Window::colorPicker3(std::string label, math::Vec3& color) {
+    m_guiAdapter->colorPicker3(std::move(label), color);
+}
 }

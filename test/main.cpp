@@ -14,15 +14,17 @@
 #include "starlight/scene/Scene.h"
 #include "starlight/scene/Skybox.h"
 #include "starlight/scene/components/DirectionalLightComponent.h"
+#include "starlight/scene/components/DirectionalLightComponentWrapper.h"
+#include "starlight/scene/components/MaterialComponent.h"
+#include "starlight/scene/components/MaterialComponentWrapper.h"
 #include "starlight/scene/components/ModelComponent.h"
+#include "starlight/scene/components/PointLightComponent.h"
+#include "starlight/scene/components/PointLightComponentWrapper.h"
 #include "starlight/scene/components/RendererComponent.h"
 #include "starlight/scene/components/TransformComponent.h"
 #include "starlight/scene/components/TransformComponentWrapper.h"
 
-// pass somehow current time to renderers
-// fix time
 // rework profiler
-// remove pointer references
 
 using namespace sl;
 using namespace sl::scene;
@@ -41,7 +43,7 @@ public:
 
         m_cubemapShader = asset::AssetManager::load<platform::shader::Shader>("/cubemap.vert", "/cubemap.frag");
         auto sshader = asset::AssetManager::load<platform::shader::Shader>("/el.vert", "/el.frag");
-        m_camera = rendering::camera::EulerCamera::create(glm::vec3(0.0f), 1.0f, 8.0f);
+        m_camera = rendering::camera::EulerCamera::create(math::Vec3(0.0f), 1.0f, 8.0f);
 
         m_shader = asset::AssetManager::load<platform::shader::Shader>("/t.vert", "/t.frag", "");
         m_model = asset::AssetManager::load<geometry::Model>("/ground/untitled.obj");
@@ -50,7 +52,16 @@ public:
         m_scene = scene::Scene::create();
 
         m_scene->setSkybox(m_skybox);
-        m_scene->setComponentWrapperFactory<components::TransformComponent, components::TransformComponentWrapperFactory>();
+
+        // TODO: this should be defined outside
+        m_scene->setComponentWrapperFactory<components::TransformComponent,
+            components::TransformComponentWrapperFactory>();
+        m_scene->setComponentWrapperFactory<components::MaterialComponent,
+            components::MaterialComponentWrapperFactory>();
+        m_scene->setComponentWrapperFactory<components::DirectionalLightComponent,
+            components::DirectionalLightComponentWrapperFactory>();
+        m_scene->setComponentWrapperFactory<components::PointLightComponent,
+            components::PointLightComponentWrapperFactory>();
 
         m_sceneManager->setActiveScene(m_scene);
 
@@ -59,6 +70,7 @@ public:
         entity->addComponent<components::ModelComponent>(m_model);
         entity->addComponent<components::RendererComponent>(m_shader);
         entity->addComponent<components::TransformComponent>();
+        entity->addComponent<components::MaterialComponent>();
 
         auto towerModel = asset::AssetManager::load<geometry::Model>("/tow/tower.obj");
         auto entity2 = m_scene->addEntity("Tower");
@@ -68,8 +80,13 @@ public:
         entity2->addComponent<components::TransformComponent>();
 
         auto sun = m_scene->addEntity("Sun");
-        sun->addComponent<components::DirectionalLightComponent>(math::Vec3{ 1.0f, 1.0f, 1.0f },
-            misc::COL_WHITE, misc::COL_WHITE);
+        sun->addComponent<components::DirectionalLightComponent>(math::Vec3{ 1.0f, 1.0f, 1.0f });
+
+        auto lightSource = m_scene->addEntity("LightSource");
+        lightSource->addComponent<components::TransformComponent>();
+        lightSource->addComponent<components::ModelComponent>(geometry::Geometry::getSquare());
+        lightSource->addComponent<components::RendererComponent>(sshader);
+        lightSource->addComponent<components::PointLightComponent>();
     }
 
     void onAttach() override {
