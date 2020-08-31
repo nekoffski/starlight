@@ -68,6 +68,10 @@ public:
         return m_pimpl->isPreviousWidgetClicked();
     }
 
+    void colorPicker3(std::string label, math::Vec3& color) {
+        m_pimpl->colorPicker3(std::move(label), color);
+    }
+
 private:
     std::unique_ptr<impl::GUIImpl> m_pimpl;
 };

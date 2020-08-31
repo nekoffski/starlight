@@ -23,6 +23,10 @@ public:
         : m_time(time) {
     }
 
+    float value() override {
+        return std::chrono::duration_cast<TimeUnit>(m_time.time_since_epoch()).count() / DIVIDER;
+    }
+
     // could be possibly optimized
     float substract(const std::shared_ptr<ITimestamp>& rhs) override {
         auto ptr = std::static_pointer_cast<StdTimestamp>(rhs);

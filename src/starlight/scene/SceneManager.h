@@ -6,6 +6,7 @@
 #include "starlight/rendering/renderer/CubemapRenderer.h"
 #include "starlight/rendering/renderer/ModelRenderer.h"
 #include "starlight/scene/Scene.h"
+#include "systems/LightSystem.h"
 #include "systems/RendererSystem.h"
 
 namespace sl::scene {
@@ -24,7 +25,9 @@ public:
 private:
     std::shared_ptr<Scene> m_scene;
     std::shared_ptr<rendering::RendererProxy> m_renderer;
-    std::shared_ptr<systems::RendererSystem> m_rendererSystem;
+
+    systems::RendererSystem m_rendererSystem;
+    systems::LightSystem m_lightSystem;
 
     std::weak_ptr<ecs::Entity> m_activeEntity;
 };

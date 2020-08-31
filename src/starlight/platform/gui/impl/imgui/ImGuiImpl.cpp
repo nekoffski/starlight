@@ -92,4 +92,8 @@ void ImGuiImpl::popTreeNode() {
 bool ImGuiImpl::isPreviousWidgetClicked() {
     return ImGui::IsItemClicked();
 }
+
+void ImGuiImpl::colorPicker3(std::string label, math::Vec3& color) {
+    ImGui::ColorPicker3(label.c_str(), &color[0]);
+}
 }

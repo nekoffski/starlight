@@ -25,6 +25,7 @@ public:
     void dragFloat3(std::string, math::Vec3&, float speed = 1.0f, float min = 0.0f, float max = 0.0f);
     void dragFloat(std::string, float&, float speed = 1.0f, float min = 0.0f, float max = 0.0f);
     void dragInt(std::string, int&, float speed = 1.0f, int min = 1, int max = 25);
+    void colorPicker3(std::string, math::Vec3&);
 
 private:
     Window(std::string, math::Vec2, math::Vec2, std::shared_ptr<platform::gui::GUIAdapter>);

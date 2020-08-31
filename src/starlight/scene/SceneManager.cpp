@@ -1,12 +1,13 @@
 #include "SceneManager.h"
+#include "components/DirectionalLightComponent.h"
 #include "components/ModelComponent.h"
 #include "components/RendererComponent.h"
 
 namespace sl::scene {
 
 SceneManager::SceneManager(std::shared_ptr<rendering::RendererProxy> renderer)
-    : m_renderer(renderer) {
-    m_rendererSystem = std::make_shared<systems::RendererSystem>(m_renderer);
+    : m_renderer(renderer)
+    , m_rendererSystem(m_renderer) {
 }
 
 void SceneManager::update(float deltaTime) {
@@ -29,8 +30,16 @@ void SceneManager::render(const std::shared_ptr<rendering::camera::Camera> camer
     if (skybox)
         skybox->cubemap->bind();
 
-    for (auto& rendererComponent : m_scene->m_ecsRegistry.getComponentView<components::RendererComponent>())
-        m_rendererSystem->render(rendererComponent, camera);
+    auto& directionalLights = m_scene->m_ecsRegistry.getComponentView<components::DirectionalLightComponent>();
+    auto& pointLights = m_scene->m_ecsRegistry.getComponentView<components::PointLightComponent>();
+
+    for (auto& rendererComponent : m_scene->m_ecsRegistry.getComponentView<components::RendererComponent>()) {
+        rendererComponent.shader->enable();
+        m_lightSystem.prepareDirectionalLights(directionalLights, rendererComponent.shader);
+        m_lightSystem.preparePointsLights(pointLights, rendererComponent.shader);
+        m_rendererSystem.render(rendererComponent, camera);
+        rendererComponent.shader->disable();
+    }
 
     if (skybox) {
         skybox->cubemap->unbind();
