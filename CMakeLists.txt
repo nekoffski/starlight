@@ -9,6 +9,8 @@ add_definitions(-DTEXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/res/textures")
 add_definitions(-DCUBEMAPS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/res/cubemaps")
 add_definitions(-DMODELS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/res/models")
 
+enable_testing()
+
 add_subdirectory(3rdparty)
 add_subdirectory(src/starlight)
 add_subdirectory(test)

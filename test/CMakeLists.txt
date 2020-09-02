@@ -10,10 +10,16 @@ add_executable(sl_core_test ${SL_TEST_CORE_SRC})
 target_link_libraries(sl_core_test PUBLIC sl ${GTEST_LINK})
 target_include_directories(sl_core_test PUBLIC ${STARLIGHT_HEADERS})
 
+add_test(test_core sl_core_test)
+
 add_executable(sl_platform_test ${SL_TEST_PLATFORM_SRC})    
 target_link_libraries(sl_platform_test PUBLIC sl ${GTEST_LINK})
 target_include_directories(sl_platform_test PUBLIC ${STARLIGHT_HEADERS})
 
+add_test(test_platform sl_platform_test)
+
 add_executable(sl_misc_test ${SL_TEST_MISC_SRC})    
 target_link_libraries(sl_misc_test PUBLIC sl ${GTEST_LINK})
 target_include_directories(sl_misc_test PUBLIC ${STARLIGHT_HEADERS})
+
+add_test(test_misc sl_misc_test)
