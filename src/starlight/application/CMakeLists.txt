@@ -2,7 +2,7 @@
 set(SL_APP_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 file(GLOB_RECURSE SL_APP_SRC ${SL_APP_PATH}/*.cpp)
 
-add_library(starl_application STATIC ${SL_APP_SRC})
-set_property(TARGET starl_application PROPERTY CXX_STANDARD 20)
-target_include_directories(starl_application PUBLIC ${STARLIGHT_HEADERS})
-target_link_libraries(starl_application PUBLIC starl_platform starl_rendering starl_gui starl_scene)
+add_library(sl_application STATIC ${SL_APP_SRC})
+set_property(TARGET sl_application PROPERTY CXX_STANDARD 20)
+target_include_directories(sl_application PUBLIC ${STARLIGHT_HEADERS})
+target_link_libraries(sl_application PUBLIC sl_platform sl_rendering sl_gui sl_scene)

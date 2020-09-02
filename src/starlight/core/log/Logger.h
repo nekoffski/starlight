@@ -28,4 +28,3 @@ extern void initLogging();
         SPK_FATAL(__VA_ARGS__); \
         raise(SIGTRAP);         \
     }
-    
