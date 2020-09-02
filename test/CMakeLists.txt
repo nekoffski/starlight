@@ -2,6 +2,8 @@ set(GTEST_LINK gtest gtest_main gmock gmock_main)
 SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fconcepts")
 SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -fconcepts")
 
+include(GoogleTest)
+
 file (GLOB_RECURSE SL_TEST_CORE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/core/*.cpp)
 file (GLOB_RECURSE SL_TEST_PLATFORM_SRC ${CMAKE_CURRENT_SOURCE_DIR}/platform/*.cpp)
 file (GLOB_RECURSE SL_TEST_MISC_SRC ${CMAKE_CURRENT_SOURCE_DIR}/misc/*.cpp)
@@ -10,16 +12,16 @@ add_executable(sl_core_test ${SL_TEST_CORE_SRC})
 target_link_libraries(sl_core_test PUBLIC sl ${GTEST_LINK})
 target_include_directories(sl_core_test PUBLIC ${STARLIGHT_HEADERS})
 
-add_test(test_core sl_core_test)
 
 add_executable(sl_platform_test ${SL_TEST_PLATFORM_SRC})    
 target_link_libraries(sl_platform_test PUBLIC sl ${GTEST_LINK})
 target_include_directories(sl_platform_test PUBLIC ${STARLIGHT_HEADERS})
 
-add_test(test_platform sl_platform_test)
 
 add_executable(sl_misc_test ${SL_TEST_MISC_SRC})    
 target_link_libraries(sl_misc_test PUBLIC sl ${GTEST_LINK})
 target_include_directories(sl_misc_test PUBLIC ${STARLIGHT_HEADERS})
 
-add_test(test_misc sl_misc_test)
+gtest_add_tests(TARGET sl_core_test)
+# gtest_add_tests(TARGET sl_platform_test)
+gtest_add_tests(TARGET sl_misc_test)
