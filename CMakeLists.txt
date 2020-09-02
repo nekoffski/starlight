@@ -14,4 +14,3 @@ add_definitions(-DMODELS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/res/models")
 add_subdirectory(3rdparty)
 add_subdirectory(src/starlight)
 add_subdirectory(test)
- 
