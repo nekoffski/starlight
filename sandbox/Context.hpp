@@ -1,5 +1,8 @@
+#pragma once
+
 #include "starlight/application/Entrypoint.hpp"
 #include "starlight/application/context/ApplicationContext.h"
+#include "starlight/asset/AssetManager.hpp"
 #include "starlight/core/log/Logger.h"
 #include "starlight/core/path/PathManager.hpp"
 #include "starlight/geometry/Geometry.hpp"
@@ -10,21 +13,17 @@
 #include "starlight/platform/shader/Shader.h"
 #include "starlight/platform/texture/Cubemap.h"
 #include "starlight/platform/texture/Texture.h"
+#include "starlight/platform/time/Clock.h"
 #include "starlight/rendering/camera/EulerCamera.h"
 #include "starlight/scene/Scene.h"
 #include "starlight/scene/Skybox.h"
+
 #include "starlight/scene/components/DirectionalLightComponent.h"
-#include "starlight/scene/components/DirectionalLightComponentWrapper.h"
 #include "starlight/scene/components/MaterialComponent.h"
-#include "starlight/scene/components/MaterialComponentWrapper.h"
 #include "starlight/scene/components/ModelComponent.h"
 #include "starlight/scene/components/PointLightComponent.h"
-#include "starlight/scene/components/PointLightComponentWrapper.h"
 #include "starlight/scene/components/RendererComponent.h"
 #include "starlight/scene/components/TransformComponent.h"
-#include "starlight/scene/components/TransformComponentWrapper.h"
-
-// rework profiler
 
 using namespace sl;
 using namespace sl::scene;
@@ -32,7 +31,6 @@ using namespace sl::scene;
 class Context : public application::context::ApplicationContext {
 public:
     void onInit() override {
-        geometry::Geometry::init();
         // rework asset manager to be singleton/static class
         m_cubemap = asset::AssetManager::load<platform::texture::Cubemap>("/skybox/right.jpg",
             "/skybox/left.jpg",
@@ -52,17 +50,6 @@ public:
         m_scene = scene::Scene::create();
 
         m_scene->setSkybox(m_skybox);
-
-        // TODO: this should be defined outside
-        m_scene->setComponentWrapperFactory<components::TransformComponent,
-            components::TransformComponentWrapperFactory>();
-        m_scene->setComponentWrapperFactory<components::MaterialComponent,
-            components::MaterialComponentWrapperFactory>();
-        m_scene->setComponentWrapperFactory<components::DirectionalLightComponent,
-            components::DirectionalLightComponentWrapperFactory>();
-        m_scene->setComponentWrapperFactory<components::PointLightComponent,
-            components::PointLightComponentWrapperFactory>();
-
         m_sceneManager->setActiveScene(m_scene);
 
         auto entity = m_scene->addEntity("Ground");
@@ -82,11 +69,11 @@ public:
         auto sun = m_scene->addEntity("Sun");
         sun->addComponent<components::DirectionalLightComponent>(math::Vec3{ 1.0f, 1.0f, 1.0f });
 
-        auto lightSource = m_scene->addEntity("LightSource");
-        lightSource->addComponent<components::TransformComponent>();
-        lightSource->addComponent<components::ModelComponent>(geometry::Geometry::getSquare());
-        lightSource->addComponent<components::RendererComponent>(sshader);
-        lightSource->addComponent<components::PointLightComponent>();
+        m_lightSource = m_scene->addEntity("LightSource");
+        m_lightSource->addComponent<components::TransformComponent>();
+        m_lightSource->addComponent<components::ModelComponent>(geometry::Geometry::getSquare());
+        m_lightSource->addComponent<components::RendererComponent>(sshader);
+        m_lightSource->addComponent<components::PointLightComponent>();
     }
 
     void onAttach() override {
@@ -117,9 +104,16 @@ public:
         m_camera->handleInput(input);
     }
 
-    void update(float deltaTime) override {
+    void update(float deltaTime, float time) override {
         m_camera->update(deltaTime);
         m_sceneManager->update(deltaTime);
+
+        static float f = 1.0f;
+        static float R = 5.0f;
+
+        auto& transform = m_lightSource->getComponent<components::TransformComponent>();
+        transform.position.x = R * std::cos(f * time);
+        transform.position.z = R * std::sin(f * time);
     }
 
     void render() override {
@@ -127,6 +121,7 @@ public:
     }
 
 private:
+    std::shared_ptr<ecs::Entity> m_lightSource;
     std::shared_ptr<platform::shader::Shader> m_cubemapShader;
     std::shared_ptr<platform::shader::Shader> m_shader;
     std::shared_ptr<platform::texture::Cubemap> m_cubemap;
@@ -136,29 +131,3 @@ private:
     std::shared_ptr<scene::Scene> m_scene;
     std::shared_ptr<scene::Skybox> m_skybox;
 };
-
-class App : public sl::application::Application {
-    using sl::application::Application::Application;
-
-public:
-    void preInit() override {
-        initPaths();
-    }
-
-    virtual void onStart() override {
-        context = createContext<Context>();
-        switchContext(context);
-    }
-
-    void initPaths() {
-        sl::core::path::PathManager::registerResourcePath<sl::platform::shader::Shader>(SHADERS_DIR);
-        sl::core::path::PathManager::registerResourcePath<sl::platform::texture::Texture>(TEXTURES_DIR);
-        sl::core::path::PathManager::registerResourcePath<sl::platform::texture::Cubemap>(CUBEMAPS_DIR);
-        sl::core::path::PathManager::registerResourcePath<sl::geometry::Model>(MODELS_DIR);
-    }
-
-private:
-    std::shared_ptr<Context> context;
-};
-
-STARLIGHT_ENTRYPOINT(App);

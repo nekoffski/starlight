@@ -24,7 +24,7 @@ public:
     virtual void onDetach() = 0;
 
     virtual void handleInput(std::shared_ptr<platform::input::Input>) = 0;
-    virtual void update(float) = 0;
+    virtual void update(float, float) = 0;
     virtual void render() = 0;
 
     virtual void renderGUI(std::shared_ptr<gui::GUIProxy>&) {}

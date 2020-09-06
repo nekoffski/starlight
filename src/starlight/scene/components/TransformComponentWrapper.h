@@ -2,6 +2,7 @@
 
 #include "TransformComponent.h"
 #include "starlight/ecs/ComponentWrapper.h"
+#include "starlight/gui/Utils.hpp"
 
 namespace sl::scene::components {
 
@@ -13,7 +14,7 @@ public:
         TransformComponent& component = static_cast<TransformComponent&>(m_component);
         if (window.beginTreeNode("Transform")) {
             window.displayText("Translation");
-            window.dragFloat3(gui::createHiddenLabel("translation"), component.translation, 0.1f);
+            window.dragFloat3(gui::createHiddenLabel("translation"), component.position, 0.1f);
             window.displayText("Rotation");
             window.dragFloat3(gui::createHiddenLabel("rotation"), component.rotation, 0.5f, 0.0f, 360.0f);
             window.popTreeNode();

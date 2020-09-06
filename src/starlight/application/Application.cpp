@@ -1,6 +1,7 @@
 #include "Application.h"
 
 #include "starlight/core/perf/Profiler.hpp"
+#include "starlight/geometry/Geometry.hpp"
 #include "starlight/platform/shader/ShaderCompiler.hpp"
 
 namespace sl::application {
@@ -29,11 +30,13 @@ void Application::init() {
 
     m_renderer = rendering::RendererProxy::create(*m_lowLevelRenderer);
     m_sceneManager = std::make_shared<scene::SceneManager>(m_renderer);
+
+    geometry::Geometry::init();
 }
 
-void Application::update(float deltaTime) {
+void Application::update(float deltaTime, float time) {
     m_window->update(deltaTime);
-    m_context->update(deltaTime);
+    m_context->update(deltaTime, time);
 }
 
 void Application::render() {
@@ -44,7 +47,7 @@ void Application::render() {
 
     PROFILER_TIMER_BEGIN(t3);
     m_lowLevelRenderer->begin();
-    PROFILER_TIMER_END(t4);
+    PROFILER_TIMER_END(t3);
 
     PROFILER_TIMER_BEGIN(t1);
     m_context->render();
@@ -60,9 +63,21 @@ void Application::render() {
 }
 
 void Application::renderGUI() {
+    static auto t1 = PROFILER_CREATE_TIMER("GUI Begin");
+    static auto t2 = PROFILER_CREATE_TIMER("GUI Context render");
+    static auto t3 = PROFILER_CREATE_TIMER("GUI End");
+
+    PROFILER_TIMER_BEGIN(t1);
     m_guiAdapter->begin();
+    PROFILER_TIMER_END(t1);
+
+    PROFILER_TIMER_BEGIN(t2);
     m_context->renderGUI(m_guiProxy);
+    PROFILER_TIMER_END(t2);
+
+    PROFILER_TIMER_BEGIN(t3);
     m_guiAdapter->end();
+    PROFILER_TIMER_END(t3);
 }
 
 void Application::handleInput() {
