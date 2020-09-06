@@ -30,7 +30,7 @@ public:
     void forceStop();
     bool isRunning() const;
 
-    void update(float);
+    void update(float, float);
     void handleInput();
     void render();
     void renderGUI();

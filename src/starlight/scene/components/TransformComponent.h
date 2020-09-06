@@ -12,11 +12,11 @@
 namespace sl::scene::components {
 
 struct TransformComponent : public ecs::Component {
-    math::Vec3 translation{ 0.0f };
+    math::Vec3 position{ 0.0f };
     math::Vec3 rotation{ 0.0f };
 
     math::Mat4 operator()() {
-        return math::translate(translation) *
+        return math::translate(position) *
             math::createRotationMatrix(math::toRadians(rotation));
     }
 };

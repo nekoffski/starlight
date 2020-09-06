@@ -50,6 +50,8 @@ void EulerCamera::update(float deltaTime) {
         m_fi -= velocity;
 
     m_fi = math::circularRange(m_fi, MIN_FI, MAX_FI);
+
+    // TODO: FIX
     m_psi = std::clamp(m_psi, MIN_PSI, MAX_PSI);
 
     calculateVectors();

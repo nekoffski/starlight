@@ -54,7 +54,8 @@ public:
                 PROFILER_TIMER_BEGIN(t1);
                 m_application->handleInput();
                 PROFILER_TIMER_BEGIN(t3);
-                m_application->update(platform::time::Clock::getDeltaTime());
+                m_application->update(platform::time::Clock::getDeltaTime(),
+                    platform::time::Clock::now()->value());
                 PROFILER_TIMER_END(t3);
 
                 PROFILER_TIMER_BEGIN(t2);

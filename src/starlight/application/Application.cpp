@@ -1,6 +1,7 @@
 #include "Application.h"
 
 #include "starlight/core/perf/Profiler.hpp"
+#include "starlight/geometry/Geometry.hpp"
 #include "starlight/platform/shader/ShaderCompiler.hpp"
 
 namespace sl::application {
@@ -29,11 +30,13 @@ void Application::init() {
 
     m_renderer = rendering::RendererProxy::create(*m_lowLevelRenderer);
     m_sceneManager = std::make_shared<scene::SceneManager>(m_renderer);
+
+    geometry::Geometry::init();
 }
 
-void Application::update(float deltaTime) {
+void Application::update(float deltaTime, float time) {
     m_window->update(deltaTime);
-    m_context->update(deltaTime);
+    m_context->update(deltaTime, time);
 }
 
 void Application::render() {

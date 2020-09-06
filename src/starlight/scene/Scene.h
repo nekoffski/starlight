@@ -5,29 +5,19 @@
 #include <vector>
 
 #include "Skybox.h"
-#include "starlight/ecs/Entity.h"
 #include "starlight/ecs/Registry.h"
-#include "starlight/rendering/camera/Camera.h"
+#include "starlight/ecs/fwd.h"
 
 namespace sl::scene {
-
-class SceneRenderer;
 
 class Scene {
     friend class SceneManager;
 
 public:
-    static std::shared_ptr<Scene> create() {
-        return std::make_shared<Scene>();
-    }
+    static std::shared_ptr<Scene> create();
 
-    void setSkybox(std::shared_ptr<Skybox> skybox) {
-        m_skybox = std::move(skybox);
-    }
-
-    std::shared_ptr<ecs::Entity> addEntity(std::string name) {
-        return m_ecsRegistry.createEntity(std::move(name));
-    }
+    void setSkybox(std::shared_ptr<Skybox> skybox);
+    std::shared_ptr<ecs::Entity> addEntity(std::string name);
 
     template <typename Component, typename Factory>
     void setComponentWrapperFactory() {

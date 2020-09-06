@@ -5,6 +5,7 @@
 
 #include <stb/stb.h>
 
+#include "starlight/core/log/Logger.h"
 #include "starlight/platform/Error.h"
 
 namespace sl::platform::img::stb {
@@ -14,8 +15,10 @@ public:
     StbImage(const std::string& path, int desiredChannels = 0)
         : m_data(stbi_load(path.c_str(), &m_imageSize.width, &m_imageSize.height, &m_channels, desiredChannels)) {
 
-        if (!m_data)
+        if (!m_data) {
+            SL_ERROR("Could not load {}", path);
             throw PlatformException(ErrorCode::COULD_NOT_LOAD_IMAGE);
+        }
     }
 
     ~StbImage() override {

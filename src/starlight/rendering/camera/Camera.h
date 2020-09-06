@@ -2,12 +2,9 @@
 
 #include <cstdint>
 
+#include "starlight/gui/fwd.h"
 #include "starlight/math/Matrix.hpp"
 #include "starlight/math/Vector.hpp"
-
-namespace sl::gui {
-class Window;
-}
 
 namespace sl::rendering::camera {
 

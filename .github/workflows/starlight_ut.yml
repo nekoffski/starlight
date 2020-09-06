@@ -1,4 +1,4 @@
-name: Starlight unit tests runner
+name: Starlight unit test runner
 
 on: [push]
 

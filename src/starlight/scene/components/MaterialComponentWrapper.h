@@ -2,6 +2,7 @@
 
 #include "MaterialComponent.h"
 #include "starlight/ecs/ComponentWrapper.h"
+#include "starlight/gui/Utils.hpp"
 
 namespace sl::scene::components {
 
