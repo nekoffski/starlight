@@ -8,6 +8,7 @@
 
 #include "starlight/scene/components/DirectionalLightComponentWrapper.h"
 #include "starlight/scene/components/MaterialComponentWrapper.h"
+#include "starlight/scene/components/PFXComponentWrapper.h"
 #include "starlight/scene/components/PointLightComponentWrapper.h"
 #include "starlight/scene/components/TransformComponentWrapper.h"
 
@@ -23,6 +24,8 @@ std::shared_ptr<Scene> Scene::create() {
         components::DirectionalLightComponentWrapperFactory>();
     scene->setComponentWrapperFactory<components::PointLightComponent,
         components::PointLightComponentWrapperFactory>();
+    scene->setComponentWrapperFactory<components::PFXComponent,
+        components::PFXComponentWrapperFactory>();
     return scene;
 }
 

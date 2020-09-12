@@ -76,7 +76,7 @@ private:
 };
 }
 
-#define PROFILER_ENABLED 1
+// #define PROFILER_ENABLED 1
 
 #ifdef PROFILER_ENABLED
 #define PROFILER_CREATE_TIMER(name) core::perf::Profiler::createTimer(name)

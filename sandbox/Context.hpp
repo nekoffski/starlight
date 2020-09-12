@@ -21,6 +21,7 @@
 #include "starlight/scene/components/DirectionalLightComponent.h"
 #include "starlight/scene/components/MaterialComponent.h"
 #include "starlight/scene/components/ModelComponent.h"
+#include "starlight/scene/components/PFXComponent.h"
 #include "starlight/scene/components/PointLightComponent.h"
 #include "starlight/scene/components/RendererComponent.h"
 #include "starlight/scene/components/TransformComponent.h"
@@ -69,11 +70,18 @@ public:
         auto sun = m_scene->addEntity("Sun");
         sun->addComponent<components::DirectionalLightComponent>(math::Vec3{ 1.0f, 1.0f, 1.0f });
 
-        m_lightSource = m_scene->addEntity("LightSource");
-        m_lightSource->addComponent<components::TransformComponent>();
-        m_lightSource->addComponent<components::ModelComponent>(geometry::Geometry::getSquare());
-        m_lightSource->addComponent<components::RendererComponent>(sshader);
-        m_lightSource->addComponent<components::PointLightComponent>();
+        // m_lightSource = m_scene->addEntity("LightSource");
+        // m_lightSource->addComponent<components::TransformComponent>();
+        // m_lightSource->addComponent<components::ModelComponent>(geometry::Geometry::getSquare());
+        // m_lightSource->addComponent<components::RendererComponent>(sshader);
+        // m_lightSource->addComponent<components::PointLightComponent>();
+
+        auto pfxSource = m_scene->addEntity("PFX");
+        pfxSource->addComponent<components::TransformComponent>();
+        // pfxSource->addComponent<components::ModelComponent>(geometry::Geometry::getSquare());
+        // TODO: renderer component need model, we should check if model compnent exist
+        // pfxSource->addComponent<components::RendererComponent>(sshader);
+        pfxSource->addComponent<components::PFXComponent>();
     }
 
     void onAttach() override {
@@ -82,10 +90,11 @@ public:
     void onDetach() override {
     }
 
-    void renderGUI(std::shared_ptr<gui::GUIProxy>& guiProxy) override {
+    void renderGUI(std::shared_ptr<gui::GUIProxy> guiProxy) override {
         static float width = 300;
         auto vp = m_viewport;
 
+        // TODO: rework api, hierarchy is too deep and this shouldn't be based on RAII
         {
             auto rightWindow = guiProxy->createWindow("Starlight", { vp.width - width, 250 }, { width, 500 });
             m_camera->onGUI(rightWindow);
@@ -108,12 +117,12 @@ public:
         m_camera->update(deltaTime);
         m_sceneManager->update(deltaTime);
 
-        static float f = 1.0f;
-        static float R = 5.0f;
+        // static float f = 1.0f;
+        // static float R = 5.0f;
 
-        auto& transform = m_lightSource->getComponent<components::TransformComponent>();
-        transform.position.x = R * std::cos(f * time);
-        transform.position.z = R * std::sin(f * time);
+        // auto& transform = m_lightSource->getComponent<components::TransformComponent>();
+        // transform.position.x = R * std::cos(f * time);
+        // transform.position.z = R * std::sin(f * time);
     }
 
     void render() override {

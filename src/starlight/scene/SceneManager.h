@@ -7,6 +7,7 @@
 #include "starlight/rendering/renderer/ModelRenderer.h"
 #include "starlight/scene/Scene.h"
 #include "systems/LightSystem.h"
+#include "systems/PFXSystem.h"
 #include "systems/RendererSystem.h"
 
 namespace sl::scene {
@@ -28,6 +29,7 @@ private:
 
     systems::RendererSystem m_rendererSystem;
     systems::LightSystem m_lightSystem;
+    systems::PFXSystem m_pfxSystem;
 
     std::weak_ptr<ecs::Entity> m_activeEntity;
 };

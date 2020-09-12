@@ -6,6 +6,8 @@
 #include "starlight/math/Matrix.hpp"
 #include "starlight/platform/fwd.h"
 
+#include "starlight/rendering/renderer/ParticleRenderer.h"
+
 namespace sl::rendering {
 
 class RendererProxy {
@@ -14,14 +16,20 @@ public:
         std::shared_ptr<renderer::ModelRenderer> modelRenderer,
         std::shared_ptr<renderer::ParticleRenderer> particleRenderer);
 
-    void renderCubemap(const std::shared_ptr<platform::texture::Cubemap>& cubemap,
-        const std::shared_ptr<platform::shader::Shader>& cubemapShader,
-        const std::shared_ptr<rendering::camera::Camera>& camera);
+    void renderCubemap(std::shared_ptr<platform::texture::Cubemap> cubemap,
+        std::shared_ptr<platform::shader::Shader> cubemapShader,
+        std::shared_ptr<rendering::camera::Camera> camera);
 
-    void renderModels(std::shared_ptr<platform::shader::Shader> shader, const data::ModelData& modelData,
+    void renderModel(std::shared_ptr<platform::shader::Shader> shader, const data::ModelData& modelData,
         const math::Mat4& transform);
 
-    void renderParticles();
+    void beginPFX(std::shared_ptr<platform::shader::Shader> shader) {
+        m_particleRenderer->begin(shader);
+    }
+
+    void endPFX() {
+        m_particleRenderer->end();
+    }
 
     static std::shared_ptr<RendererProxy> create(renderer::lowlevel::LowLevelRenderer& lowLevelRenderer);
 

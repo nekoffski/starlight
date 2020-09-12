@@ -5,6 +5,7 @@
 
 #include "lowlevel/LowLevelRenderer.h"
 #include "starlight/core/log/Logger.h"
+#include "starlight/geometry/Geometry.hpp"
 #include "starlight/platform/gpu/ElementBuffer.h"
 #include "starlight/platform/gpu/VertexArray.h"
 #include "starlight/platform/gpu/VertexBuffer.h"
@@ -13,42 +14,22 @@
 
 namespace sl::rendering::renderer {
 
-// using ShaderPtr = std::shared_ptr<platform::shader::Shader>;
-// using ModelRenderDataPtr = std::shared_ptr<data::ModelRenderData>;
-// using ShaderToModelRenderData = std::unordered_map"shaderPtr, std::vector<ModelRenderDataPtr>>;
-
 class ParticleRenderer : public Renderer {
 public:
-    explicit ParticleRenderer(lowlevel::LowLevelRenderer& lowLevelRenderer, std::shared_ptr<platform::shader::Shader> particleShader)
-        : Renderer(lowLevelRenderer)
-        , m_particleShader(std::move(particleShader)) {
-        m_particleVertexArray = platform::gpu::VertexArray::create();
-
-        float vertices[] = {
-            -1.0f, -1.0f, 0.0f,
-            1.0f, -1.0f, 0.0f,
-            1.0f, 1.0f, 0.0f,
-            -1.0f, 1.0f, 0.0f
-        };
-
-        auto vbo = platform::gpu::VertexBuffer::create(vertices, sizeof(vertices), 4);
-
-        int indices[] = {
-            0, 1, 2,
-            0, 2, 3
-        };
-
-        auto ebo = platform::gpu::ElementBuffer::create(indices, sizeof(indices), 2);
-
-        m_particleVertexArray->addVertexBuffer(vbo);
-        m_particleVertexArray->addElementBuffer(ebo);
+    explicit ParticleRenderer(lowlevel::LowLevelRenderer& lowLevelRenderer)
+        : Renderer(lowLevelRenderer) {
+        m_vao = geometry::Geometry::getSquareVAO();
     }
 
-    void render() {
+    void begin(std::shared_ptr<platform::shader::Shader> shader) {
+        shader->setUniform("projection", m_lowLevelRenderer.getProjectionMatrix());
+        m_lowLevelRenderer.renderVertexArray(m_vao);
+    }
+
+    void end() {
     }
 
 private:
-    std::shared_ptr<platform::shader::Shader> m_particleShader;
-    std::shared_ptr<platform::gpu::VertexArray> m_particleVertexArray;
+    std::shared_ptr<platform::gpu::VertexArray> m_vao;
 };
 }

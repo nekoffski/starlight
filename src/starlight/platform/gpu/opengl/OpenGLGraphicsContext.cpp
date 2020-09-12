@@ -5,6 +5,13 @@
 #include "starlight/core/log/Logger.h"
 #include "starlight/core/perf/Profiler.hpp"
 
+static void GLAPIENTRY messageCallback(GLenum source, GLenum type, GLuint id,
+    GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
+    SL_DEBUG("GL CALLBACK: {} type = {}, severity = {}, message = {}\n",
+        (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+        type, severity, message);
+}
+
 namespace sl::platform::gpu::opengl {
 
 OpenGLGraphicsContext::OpenGLGraphicsContext(void* windowHandle)
@@ -17,6 +24,10 @@ void OpenGLGraphicsContext::init() {
     SL_INFO("loading glad memory proc");
     if (auto status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress); status <= 0)
         throw PlatformException(ErrorCode::COULD_NOT_LOAD_GRAPHICS_HANDLE, "Could not load glad proc addr", status);
+
+    // TODO: make it configurable
+    glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageCallback(messageCallback, 0);
 }
 
 void OpenGLGraphicsContext::swapBuffers() {
