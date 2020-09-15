@@ -72,11 +72,10 @@ public:
 private:
     inline static std::string m_logfile;
     inline static std::unordered_map<std::string, float> m_times;
-    // inline static std::shared_ptr<platform::clock::Clock> m_clock;
 };
 }
 
-// #define PROFILER_ENABLED 1
+#define PROFILER_ENABLED 1
 
 #ifdef PROFILER_ENABLED
 #define PROFILER_CREATE_TIMER(name) core::perf::Profiler::createTimer(name)

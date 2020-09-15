@@ -13,6 +13,8 @@ SceneManager::SceneManager(std::shared_ptr<rendering::RendererProxy> renderer)
 }
 
 void SceneManager::update(float deltaTime) {
+    m_pfxSystem.update(
+        m_scene->m_ecsRegistry.getComponentView<components::PFXComponent>(), deltaTime);
     // m_modelSystem->clean();
 
     // for (auto& model : m_scene->m_ecsRegistry.getComponentView<component::ModelComponent>())
@@ -43,8 +45,8 @@ void SceneManager::render(const std::shared_ptr<rendering::camera::Camera> camer
         rendererComponent.shader->disable();
     }
 
-    auto& pfxs = m_scene->m_ecsRegistry.getComponentView<components::PFXComponent>();
-    m_pfxSystem.renderPFXs(pfxs, camera);
+    m_pfxSystem.renderPFXs(
+        m_scene->m_ecsRegistry.getComponentView<components::PFXComponent>(), camera);
 
     if (skybox) {
         skybox->cubemap->unbind();

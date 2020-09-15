@@ -60,12 +60,12 @@ public:
         entity->addComponent<components::TransformComponent>();
         entity->addComponent<components::MaterialComponent>();
 
-        auto towerModel = asset::AssetManager::load<geometry::Model>("/tow/tower.obj");
-        auto entity2 = m_scene->addEntity("Tower");
+        // auto towerModel = asset::AssetManager::load<geometry::Model>("/tow/tower.obj");
+        // auto entity2 = m_scene->addEntity("Tower");
 
-        entity2->addComponent<components::ModelComponent>(towerModel);
-        entity2->addComponent<components::RendererComponent>(m_shader);
-        entity2->addComponent<components::TransformComponent>();
+        // entity2->addComponent<components::ModelComponent>(towerModel);
+        // entity2->addComponent<components::RendererComponent>(m_shader);
+        // entity2->addComponent<components::TransformComponent>();
 
         auto sun = m_scene->addEntity("Sun");
         sun->addComponent<components::DirectionalLightComponent>(math::Vec3{ 1.0f, 1.0f, 1.0f });

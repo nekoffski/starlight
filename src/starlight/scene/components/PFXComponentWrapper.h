@@ -15,6 +15,18 @@ public:
         if (window.beginTreeNode("PFX")) {
             window.displayText("Position");
             window.dragFloat3(gui::createHiddenLabel("pfxPositon"), component.position, 0.1f);
+            window.displayText("Max particles");
+            window.dragInt(gui::createHiddenLabel("pfxMaxParticles"), component.maxParticles, 1.0, 1, 12500);
+
+            auto& generatorSettings = component.pfxGeneratorSettings;
+            window.displayText("Radius");
+            window.dragFloat(gui::createHiddenLabel("pfxRadius"), generatorSettings.radius, 0.01f, 0.0f, 25.0f);
+            window.displayText("Min color");
+            window.dragFloat3(gui::createHiddenLabel("pfxMinColor"), generatorSettings.minColor, 0.01f, 0.0f, 1.0f);
+            window.displayText("Max color");
+            window.dragFloat3(gui::createHiddenLabel("pfxMaxColor"), generatorSettings.maxColor, 0.01f, 0.0f, 1.0f);
+
+            window.popTreeNode();
         }
     }
 };

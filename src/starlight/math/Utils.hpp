@@ -8,6 +8,8 @@
 #include "Matrix.hpp"
 #include "Vector.hpp"
 
+// TODO: HIDE IMPLEMENTATION OF GLM
+
 namespace sl::math {
 
 const double PI = std::atan(1.0f) * 4.0f;
@@ -63,6 +65,10 @@ inline Mat4 scale(Vec3 scale) {
     return glm::scale(glm::mat4(1.0f), scale);
 }
 
+inline Mat4 scale(float s) {
+    return scale(Vec3{ s });
+}
+
 inline float toRadians(float deg) {
     return glm::radians(deg);
 }
@@ -78,5 +84,10 @@ inline Mat4 createRotationMatrix(const math::Vec3& orientation) {
 template <class T>
 inline float linInterpolate(const T& a, const T& b, float alfa) {
     return (1.0f - alfa) * a + alfa * b;
+}
+
+template <class T>
+inline T ReLU(const T& lhs) {
+    return std::max(0, lhs);
 }
 }

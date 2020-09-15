@@ -7,8 +7,9 @@ layout(location = 1) in vec3 iNormal;
 uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
+uniform mat4 localModel;
 uniform vec3 viewPos;
 
 void main() {
-    gl_Position = projection * view * vec4(iPos, 1.0f);
+    gl_Position = projection * view * model * localModel * vec4(iPos, 1.0f);
 }
