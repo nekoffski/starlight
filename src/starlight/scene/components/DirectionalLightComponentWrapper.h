@@ -17,6 +17,8 @@ public:
             window.dragFloat3(gui::createHiddenLabel("dlcDirection"), component.direction, 0.01f, -1.0f, 1.0f);
             window.displayText("Color");
             window.colorPicker3(gui::createHiddenLabel("dlcColor"), component.color);
+
+            window.popTreeNode();
         }
     }
 };

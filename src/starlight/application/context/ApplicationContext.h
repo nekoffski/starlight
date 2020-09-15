@@ -27,7 +27,7 @@ public:
     virtual void update(float, float) = 0;
     virtual void render() = 0;
 
-    virtual void renderGUI(std::shared_ptr<gui::GUIProxy>&) {}
+    virtual void renderGUI(std::shared_ptr<gui::GUIProxy>) {}
 
     ApplicationContext& setSceneManager(std::shared_ptr<scene::SceneManager> sceneManager) {
         m_sceneManager = sceneManager;

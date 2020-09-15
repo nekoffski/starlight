@@ -27,11 +27,10 @@ void Application::init() {
     m_guiProxy = std::make_shared<gui::GUIProxy>(m_guiAdapter);
 
     platform::shader::ShaderCompiler::init();
+    geometry::Geometry::init();
 
     m_renderer = rendering::RendererProxy::create(*m_lowLevelRenderer);
     m_sceneManager = std::make_shared<scene::SceneManager>(m_renderer);
-
-    geometry::Geometry::init();
 }
 
 void Application::update(float deltaTime, float time) {

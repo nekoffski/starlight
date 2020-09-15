@@ -15,6 +15,7 @@ void LowLevelRenderer::init() {
 }
 
 void LowLevelRenderer::renderVertexArray(std::shared_ptr<platform::gpu::VertexArray> vertexArray) {
+    // TODO: this function should let call a lot of draw calls with same vao binded
     vertexArray->bind();
 
     // to optimize! -> BRANCHING!!!

@@ -1,16 +1,20 @@
 #include "SceneManager.h"
 #include "components/DirectionalLightComponent.h"
 #include "components/ModelComponent.h"
+#include "components/PFXComponent.h"
 #include "components/RendererComponent.h"
 
 namespace sl::scene {
 
 SceneManager::SceneManager(std::shared_ptr<rendering::RendererProxy> renderer)
     : m_renderer(renderer)
-    , m_rendererSystem(m_renderer) {
+    , m_rendererSystem(m_renderer)
+    , m_pfxSystem(m_renderer) {
 }
 
 void SceneManager::update(float deltaTime) {
+    m_pfxSystem.update(
+        m_scene->m_ecsRegistry.getComponentView<components::PFXComponent>(), deltaTime);
     // m_modelSystem->clean();
 
     // for (auto& model : m_scene->m_ecsRegistry.getComponentView<component::ModelComponent>())
@@ -40,6 +44,9 @@ void SceneManager::render(const std::shared_ptr<rendering::camera::Camera> camer
         m_rendererSystem.render(rendererComponent, camera);
         rendererComponent.shader->disable();
     }
+
+    m_pfxSystem.renderPFXs(
+        m_scene->m_ecsRegistry.getComponentView<components::PFXComponent>(), camera);
 
     if (skybox) {
         skybox->cubemap->unbind();

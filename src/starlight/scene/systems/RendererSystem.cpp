@@ -32,7 +32,7 @@ void RendererSystem::render(components::RendererComponent& component, std::share
     auto& model = entity->getComponent<components::ModelComponent>();
     auto transformComponent = entity->getComponent<components::TransformComponent>();
 
-    m_renderer->renderModels(shader, model.modelData, transformComponent());
+    m_renderer->renderModel(shader, model.modelData, transformComponent());
 }
 
 void RendererSystem::setMaterial(const components::MaterialComponent& material, std::shared_ptr<platform::shader::Shader> shader) {
