@@ -1,4 +1,4 @@
-#include "starlight/application/Entrypoint.hpp"
+#include "sl/application/Entrypoint.hpp"
 
 #include "Context.hpp"
 

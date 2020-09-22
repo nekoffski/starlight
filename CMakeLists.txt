@@ -12,6 +12,6 @@ add_definitions(-DMODELS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/res/models")
 enable_testing()
 
 add_subdirectory(3rdparty)
-add_subdirectory(src/starlight)
+add_subdirectory(src/sl)
 add_subdirectory(test)
 add_subdirectory(sandbox)

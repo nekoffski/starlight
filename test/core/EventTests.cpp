@@ -2,8 +2,8 @@
 
 #include <gtest/gtest.h>
 
-#include <starlight/core/event/EventBus.h>
-#include <starlight/core/event/EventDispatcher.h>
+#include "sl/core/event/EventBus.h"
+#include "sl/core/event/EventDispatcher.h"
 
 using namespace sl::core;
 
