@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "starlight/misc/misc.hpp"
+#include "sl/misc/misc.hpp"
 
 TEST(MiscTests, givenType_typeIndexShouldBeEqualToMiscWrapper) {
     using Type = int;

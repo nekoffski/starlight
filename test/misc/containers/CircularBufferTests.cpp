@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-#include "starlight/misc/containers/CircularBuffer.hpp"
+#include "sl/misc/containers/CircularBuffer.hpp"
 
 using namespace sl::misc::containers;
 

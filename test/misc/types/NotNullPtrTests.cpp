@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <starlight/misc/types/NotNullPtr.hpp>
+#include "sl/misc/types/NotNullPtr.hpp"
 
 using namespace sl::misc::types;
 
