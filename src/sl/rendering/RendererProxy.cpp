@@ -7,12 +7,11 @@
 
 namespace sl::rendering {
 
-RendererProxy::RendererProxy(std::shared_ptr<renderer::CubemapRenderer> cubemapRenderer,
-    std::shared_ptr<renderer::ModelRenderer> modelRenderer,
-    std::shared_ptr<renderer::ParticleRenderer> particleRenderer)
-    : m_cubemapRenderer(std::move(cubemapRenderer))
-    , m_modelRenderer(std::move(modelRenderer))
-    , m_particleRenderer(std::move(particleRenderer)) {
+RendererProxy::RendererProxy(renderer::lowlevel::LowLevelRenderer& lowLevelRenderer)
+    : m_lowLevelRenderer(lowLevelRenderer)
+    , m_cubemapRenderer(std::make_shared<renderer::CubemapRenderer>(lowLevelRenderer))
+    , m_modelRenderer(std::make_shared<renderer::ModelRenderer>(lowLevelRenderer))
+    , m_particleRenderer(std::make_shared<renderer::ParticleRenderer>(lowLevelRenderer)) {
 }
 
 void RendererProxy::renderCubemap(std::shared_ptr<platform::texture::Cubemap> cubemap,
@@ -26,11 +25,19 @@ void RendererProxy::renderModel(std::shared_ptr<platform::shader::Shader> shader
     m_modelRenderer->render(shader, modelData, transform);
 }
 
-std::shared_ptr<RendererProxy> RendererProxy::create(renderer::lowlevel::LowLevelRenderer& lowLevelRenderer) {
-    auto cubemapRenderer = std::make_shared<renderer::CubemapRenderer>(lowLevelRenderer);
-    auto modelRenderer = std::make_shared<renderer::ModelRenderer>(lowLevelRenderer);
-    auto particleRenderer = std::make_shared<renderer::ParticleRenderer>(lowLevelRenderer);
+void RendererProxy::beginParticleEffect(std::shared_ptr<platform::shader::Shader> shader) {
+    m_particleRenderer->begin(shader);
+}
 
-    return std::make_shared<RendererProxy>(std::move(cubemapRenderer), std::move(modelRenderer), std::move(particleRenderer));
+void RendererProxy::renderParticle() {
+    m_particleRenderer->render();
+}
+
+void RendererProxy::endParticleEffect() {
+    m_particleRenderer->end();
+}
+
+std::shared_ptr<RendererProxy> RendererProxy::create(renderer::lowlevel::LowLevelRenderer& lowLevelRenderer) {
+    return std::make_shared<RendererProxy>(lowLevelRenderer);
 }
 }

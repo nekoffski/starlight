@@ -25,7 +25,6 @@ public:
     explicit LowLevelRenderer(std::unique_ptr<platform::window::Window>& window)
         : m_graphicsContext(platform::gpu::GraphicsContext::create(window->getHandle()))
         , m_renderAPI(platform::gpu::RenderAPI::create())
-        , m_mainCamera(nullptr)
         , m_viewport(window->getParams().viewport) {
         calculateProjectionMatrix();
     }
@@ -37,6 +36,10 @@ public:
     void begin();
     void end();
 
+    void clearBuffers(unsigned buff) {
+        m_graphicsContext->clearBuffers(buff);
+    }
+
     const math::Mat4& getProjectionMatrix() {
         return m_projectionMatrix;
     }
@@ -44,7 +47,6 @@ public:
 private:
     std::unique_ptr<platform::gpu::GraphicsContext> m_graphicsContext;
     std::unique_ptr<platform::gpu::RenderAPI> m_renderAPI;
-    std::shared_ptr<camera::Camera> m_mainCamera;
     platform::window::Viewport m_viewport;
     math::Mat4 m_projectionMatrix;
 

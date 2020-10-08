@@ -21,7 +21,7 @@
 #include "sl/scene/components/DirectionalLightComponent.h"
 #include "sl/scene/components/MaterialComponent.h"
 #include "sl/scene/components/ModelComponent.h"
-#include "sl/scene/components/PFXComponent.h"
+#include "sl/scene/components/ParticleEffectComponent.h"
 #include "sl/scene/components/PointLightComponent.h"
 #include "sl/scene/components/RendererComponent.h"
 #include "sl/scene/components/TransformComponent.h"
@@ -76,12 +76,12 @@ public:
         // m_lightSource->addComponent<components::RendererComponent>(sshader);
         // m_lightSource->addComponent<components::PointLightComponent>();
 
-        auto pfxSource = m_scene->addEntity("PFX");
-        pfxSource->addComponent<components::TransformComponent>();
-        // pfxSource->addComponent<components::ModelComponent>(geometry::Geometry::getSquare());
+        auto ParticleEffectSource = m_scene->addEntity("ParticleEffect");
+        ParticleEffectSource->addComponent<components::TransformComponent>();
+        // ParticleEffectSource->addComponent<components::ModelComponent>(geometry::Geometry::getSquare());
         // TODO: renderer component need model, we should check if model compnent exist
-        // pfxSource->addComponent<components::RendererComponent>(sshader);
-        pfxSource->addComponent<components::PFXComponent>();
+        // ParticleEffectSource->addComponent<components::RendererComponent>(sshader);
+        ParticleEffectSource->addComponent<components::ParticleEffectComponent>();
     }
 
     void onAttach() override {

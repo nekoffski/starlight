@@ -12,6 +12,7 @@ public:
     void init() override;
     void swapBuffers() override;
     void clearBuffers(unsigned) override;
+    void setViewport(unsigned, unsigned) override;
 
 private:
     GLFWwindow* m_windowHandle;

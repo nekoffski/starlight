@@ -65,12 +65,18 @@ CubemapRenderer::CubemapRenderer(lowlevel::LowLevelRenderer& lowLevelRenderer)
 void CubemapRenderer::render(const std::shared_ptr<platform::texture::Cubemap>& cubemap,
     const std::shared_ptr<platform::shader::Shader>& cubemapShader,
     const std::shared_ptr<rendering::camera::Camera>& camera) {
+
     cubemapShader->enable();
     cubemapShader->setUniform("projection", m_lowLevelRenderer.getProjectionMatrix());
     cubemapShader->setUniform("view", camera->getViewMatrix());
-    cubemap->bind();
+
+    // cubemap->bind();
+    m_cubemapVertexArray->bind();
+
     m_lowLevelRenderer.renderVertexArrayWithDepthMaskDisabled(m_cubemapVertexArray);
-    cubemap->unbind();
+
+    m_cubemapVertexArray->unbind();
+    // cubemap->unbind();
     cubemapShader->disable();
 }
 }

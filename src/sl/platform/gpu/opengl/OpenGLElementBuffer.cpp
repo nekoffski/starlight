@@ -22,7 +22,6 @@ OpenGLElementBuffer::~OpenGLElementBuffer() {
 
 void OpenGLElementBuffer::bind() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bufferId);
-    // LOG(DEBUG) << "Binding EBO: " << m_bufferId;
 }
 
 void OpenGLElementBuffer::unbind() {

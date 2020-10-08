@@ -13,4 +13,5 @@ sudo apt-get install -y uuid-dev
 sudo apt-get install -y libassimp-dev
 sudo apt-get install -y libglfw3-dev
 sudo apt-get install -y libjsoncpp-dev
+sudo apt-get install -y libglm-dev
 

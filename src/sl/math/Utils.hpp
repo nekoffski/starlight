@@ -2,6 +2,10 @@
 
 #include <cmath>
 
+#ifndef GLM_ENABLE_EXPERIMENTAL
+#define GLM_ENABLE_EXPERIMENTAL
+#endif
+
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
 
@@ -24,7 +28,7 @@ inline const T circularRange(const T& value, const T min, const T max) {
 }
 
 template <typename T, glm::qualifier Q>
-inline glm::mat<4, 4, T, Q> quaternionToMat4(glm::qua<T, Q> const& x) {
+inline glm::mat<4, 4, T, Q> quaternionToMat4(glm::tquat<T, Q> const& x) {
     return mat4_cast(x);
 }
 

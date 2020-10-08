@@ -7,7 +7,7 @@
 #include "sl/rendering/renderer/ModelRenderer.h"
 #include "sl/scene/Scene.h"
 #include "systems/LightSystem.h"
-#include "systems/PFXSystem.h"
+#include "systems/ParticleEffectSystem.h"
 #include "systems/RendererSystem.h"
 
 namespace sl::scene {
@@ -29,7 +29,7 @@ private:
 
     systems::RendererSystem m_rendererSystem;
     systems::LightSystem m_lightSystem;
-    systems::PFXSystem m_pfxSystem;
+    systems::ParticleEffectSystem m_pfxSystem;
 
     std::weak_ptr<ecs::Entity> m_activeEntity;
 };

@@ -46,7 +46,7 @@ void Profiler::saveResults(std::string logdir) {
 }
 
 void Profiler::printResults() {
-// clang-format off
+    // clang-format off
     #ifdef PRF_PROFILER_ENABLED
         SL_WARN("\n{}\n", formatTimers()); // CREATE OTHER FORMATTER!
     #endif

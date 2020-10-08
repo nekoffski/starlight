@@ -1,18 +1,18 @@
 #pragma once
 
-#include "PFXComponent.h"
+#include "ParticleEffectComponent.h"
 #include "sl/ecs/ComponentWrapper.h"
 #include "sl/gui/Utils.hpp"
 
 namespace sl::scene::components {
 
-class PFXComponentWrapper : public ecs::ComponentWrapper {
+class ParticleEffectComponentWrapper : public ecs::ComponentWrapper {
 public:
     using ecs::ComponentWrapper::ComponentWrapper;
 
     void onGUI(gui::Window& window) override {
-        PFXComponent& component = static_cast<PFXComponent&>(m_component);
-        if (window.beginTreeNode("PFX")) {
+        ParticleEffectComponent& component = static_cast<ParticleEffectComponent&>(m_component);
+        if (window.beginTreeNode("ParticleEffect")) {
             window.displayText("Position");
             window.dragFloat3(gui::createHiddenLabel("pfxPositon"), component.position, 0.1f);
 
@@ -53,9 +53,9 @@ public:
     }
 };
 
-struct PFXComponentWrapperFactory : public ecs::ComponentWrapperFactory {
+struct ParticleEffectComponentWrapperFactory : public ecs::ComponentWrapperFactory {
     std::unique_ptr<ecs::ComponentWrapper> create(ecs::Component& component) override {
-        return std::make_unique<PFXComponentWrapper>(component);
+        return std::make_unique<ParticleEffectComponentWrapper>(component);
     }
 };
 }
