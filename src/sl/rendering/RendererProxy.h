@@ -12,9 +12,7 @@ namespace sl::rendering {
 
 class RendererProxy {
 public:
-    explicit RendererProxy(std::shared_ptr<renderer::CubemapRenderer> cubemapRenderer,
-        std::shared_ptr<renderer::ModelRenderer> modelRenderer,
-        std::shared_ptr<renderer::ParticleRenderer> particleRenderer);
+    explicit RendererProxy(renderer::lowlevel::LowLevelRenderer& lowLevelRenderer);
 
     void renderCubemap(std::shared_ptr<platform::texture::Cubemap> cubemap,
         std::shared_ptr<platform::shader::Shader> cubemapShader,
@@ -23,17 +21,20 @@ public:
     void renderModel(std::shared_ptr<platform::shader::Shader> shader, const data::ModelData& modelData,
         const math::Mat4& transform);
 
-    void beginPFX(std::shared_ptr<platform::shader::Shader> shader) {
-        m_particleRenderer->begin(shader);
+    void beginParticleEffect(std::shared_ptr<platform::shader::Shader> shader);
+    void renderParticle();
+    void endParticleEffect();
+
+    void beginDepthCapture() {
     }
 
-    void endPFX() {
-        m_particleRenderer->end();
+    void endDepthCapture() {
     }
 
     static std::shared_ptr<RendererProxy> create(renderer::lowlevel::LowLevelRenderer& lowLevelRenderer);
 
 private:
+    renderer::lowlevel::LowLevelRenderer& m_lowLevelRenderer;
     std::shared_ptr<renderer::CubemapRenderer> m_cubemapRenderer;
     std::shared_ptr<renderer::ModelRenderer> m_modelRenderer;
     std::shared_ptr<renderer::ParticleRenderer> m_particleRenderer;

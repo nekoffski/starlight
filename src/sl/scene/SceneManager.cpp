@@ -2,7 +2,7 @@
 
 #include "components/DirectionalLightComponent.h"
 #include "components/ModelComponent.h"
-#include "components/PFXComponent.h"
+#include "components/ParticleEffectComponent.h"
 #include "components/RendererComponent.h"
 
 namespace sl::scene {
@@ -15,7 +15,7 @@ SceneManager::SceneManager(std::shared_ptr<rendering::RendererProxy> renderer)
 
 void SceneManager::update(float deltaTime) {
     m_pfxSystem.update(
-        m_scene->m_ecsRegistry.getComponentView<components::PFXComponent>(), deltaTime);
+        m_scene->m_ecsRegistry.getComponentView<components::ParticleEffectComponent>(), deltaTime);
 }
 
 void SceneManager::setActiveScene(std::shared_ptr<Scene> scene) {
@@ -31,7 +31,14 @@ void SceneManager::render(const std::shared_ptr<rendering::camera::Camera> camer
     auto& directionalLights = m_scene->m_ecsRegistry.getComponentView<components::DirectionalLightComponent>();
     auto& pointLights = m_scene->m_ecsRegistry.getComponentView<components::PointLightComponent>();
 
-    for (auto& rendererComponent : m_scene->m_ecsRegistry.getComponentView<components::RendererComponent>()) {
+    auto& rendererComponents = m_scene->m_ecsRegistry.getComponentView<components::RendererComponent>();
+
+    // m_renderer->beginDepthCapture();
+    // for (auto& rendererComponent : rendererComponents)
+    //     m_rendererSystem.render(rendererComponent, camera);
+    // m_renderer->endDepthCapture();
+
+    for (auto& rendererComponent : rendererComponents) {
         rendererComponent.shader->enable();
         m_lightSystem.prepareDirectionalLights(directionalLights, rendererComponent.shader);
         m_lightSystem.preparePointsLights(pointLights, rendererComponent.shader);
@@ -39,12 +46,12 @@ void SceneManager::render(const std::shared_ptr<rendering::camera::Camera> camer
         rendererComponent.shader->disable();
     }
 
-    m_pfxSystem.renderPFXs(
-        m_scene->m_ecsRegistry.getComponentView<components::PFXComponent>(), camera);
+    m_pfxSystem.renderParticleEffects(
+        m_scene->m_ecsRegistry.getComponentView<components::ParticleEffectComponent>(), camera);
 
     if (skybox) {
-        skybox->cubemap->unbind();
         m_renderer->renderCubemap(skybox->cubemap, skybox->shader, camera);
+        skybox->cubemap->unbind();
     }
 }
 

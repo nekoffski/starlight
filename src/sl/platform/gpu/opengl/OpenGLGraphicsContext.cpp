@@ -30,6 +30,10 @@ void OpenGLGraphicsContext::init() {
     // glDebugMessageCallback(messageCallback, 0);
 }
 
+void OpenGLGraphicsContext::setViewport(unsigned w, unsigned h) {
+    glViewport(0, 0, w, h);
+}
+
 void OpenGLGraphicsContext::swapBuffers() {
     PRF_PROFILE_FUNCTION();
     glfwSwapBuffers(m_windowHandle);

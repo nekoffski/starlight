@@ -8,7 +8,7 @@
 
 #include "sl/scene/components/DirectionalLightComponentWrapper.h"
 #include "sl/scene/components/MaterialComponentWrapper.h"
-#include "sl/scene/components/PFXComponentWrapper.h"
+#include "sl/scene/components/ParticleEffectComponentWrapper.h"
 #include "sl/scene/components/PointLightComponentWrapper.h"
 #include "sl/scene/components/TransformComponentWrapper.h"
 
@@ -24,8 +24,8 @@ std::shared_ptr<Scene> Scene::create() {
         components::DirectionalLightComponentWrapperFactory>();
     scene->setComponentWrapperFactory<components::PointLightComponent,
         components::PointLightComponentWrapperFactory>();
-    scene->setComponentWrapperFactory<components::PFXComponent,
-        components::PFXComponentWrapperFactory>();
+    scene->setComponentWrapperFactory<components::ParticleEffectComponent,
+        components::ParticleEffectComponentWrapperFactory>();
     return scene;
 }
 

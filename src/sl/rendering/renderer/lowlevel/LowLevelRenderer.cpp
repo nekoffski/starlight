@@ -7,6 +7,7 @@ namespace sl::rendering::renderer::lowlevel {
 void LowLevelRenderer::init() {
     SL_INFO("initializing");
     m_graphicsContext->init();
+    m_graphicsContext->setViewport(m_viewport.width, m_viewport.height);
 
     m_renderAPI->enable(STARL_DEPTH_TEST);
     m_renderAPI->setDepthFunc(STARL_LEQUAL);
@@ -16,7 +17,7 @@ void LowLevelRenderer::init() {
 
 void LowLevelRenderer::renderVertexArray(std::shared_ptr<platform::gpu::VertexArray> vertexArray) {
     // TODO: this function should let call a lot of draw calls with same vao binded
-    vertexArray->bind();
+    // vertexArray->bind();
 
     // to optimize! -> BRANCHING!!!
     auto indices = vertexArray->getIndicesCount();
@@ -24,7 +25,7 @@ void LowLevelRenderer::renderVertexArray(std::shared_ptr<platform::gpu::VertexAr
         m_renderAPI->drawElements(STARL_TRIANGLES, indices, STARL_UNSIGNED_INT);
     else
         m_renderAPI->drawArrays(STARL_TRIANGLES, 0, vertexArray->getVerticesCount());
-    vertexArray->unbind();
+    // vertexArray->unbind();
 }
 
 void LowLevelRenderer::renderVertexArrayWithDepthMaskDisabled(std::shared_ptr<platform::gpu::VertexArray> vertexArray) {
