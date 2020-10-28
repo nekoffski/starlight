@@ -5,6 +5,8 @@
 #include "sl/platform/shader/Shader.h"
 #include "sl/scene/components/TransformComponent.h"
 
+#include "glad/glad.h"
+
 namespace sl::scene::systems {
 
 void LightSystem::prepareDirectionalLights(std::vector<components::DirectionalLightComponent>& lights,
@@ -31,6 +33,7 @@ void LightSystem::setDirectionalLight(std::shared_ptr<platform::shader::Shader> 
     components::DirectionalLightComponent light, unsigned int index) {
 
     std::string strIndex = std::to_string(index);
+	light.shadowMap->bind(1);	
 
     shader->setUniform("directionalLights[" + strIndex + "].direction", light.direction);
     shader->setUniform("directionalLights[" + strIndex + "].color", light.color);

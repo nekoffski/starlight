@@ -39,6 +39,7 @@ OpenGLTexture::OpenGLTexture(unsigned int w, unsigned int h)
     : m_w(w)
     , m_h(h) {
 
+
     glGenTextures(1, &m_textureId);
     glBindTexture(GL_TEXTURE_2D, m_textureId);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,

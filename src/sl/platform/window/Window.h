@@ -8,7 +8,7 @@ namespace sl::platform::window {
 
 class Window {
 public:
-    static std::unique_ptr<Window> create(WindowParams windowParams);
+    static std::shared_ptr<Window> create(WindowParams windowParams);
 
     explicit Window(WindowParams windowParams)
         : m_windowParams(std::move(windowParams)) {}

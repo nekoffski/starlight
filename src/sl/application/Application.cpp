@@ -20,8 +20,8 @@ void Application::init() {
 
     m_input = platform::input::Input::create(m_window->getHandle());
 
-    m_lowLevelRenderer = std::make_unique<rendering::renderer::lowlevel::LowLevelRenderer>(m_window);
-    m_lowLevelRenderer->init();
+    m_renderer = std::make_shared<rendering::Renderer>(m_window);
+    m_renderer->init();
 
     m_guiAdapter = std::make_shared<platform::gui::GUIAdapter>(m_window->getHandle());
     m_guiProxy = std::make_shared<gui::GUIProxy>(m_guiAdapter);
@@ -29,7 +29,6 @@ void Application::init() {
     platform::shader::ShaderCompiler::init();
     geometry::Geometry::init();
 
-    m_renderer = rendering::RendererProxy::create(*m_lowLevelRenderer);
     m_sceneManager = std::make_shared<scene::SceneManager>(m_renderer);
 }
 
@@ -43,10 +42,10 @@ void Application::update(float deltaTime, float time) {
 void Application::render() {
     PRF_PROFILE_FUNCTION();
 
-    m_lowLevelRenderer->begin();
+    m_renderer->begin();
     m_context->render();
     renderGUI();
-    m_lowLevelRenderer->end();
+    m_renderer->end();
 }
 
 void Application::renderGUI() {

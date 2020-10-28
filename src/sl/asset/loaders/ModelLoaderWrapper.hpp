@@ -5,6 +5,7 @@
 #include "sl/core/log/Logger.h"
 #include "sl/core/path/PathManager.hpp"
 #include "sl/platform/model/ModelLoader.h"
+#include "sl/geometry/Model.h"
 
 namespace sl::asset::loaders {
 
