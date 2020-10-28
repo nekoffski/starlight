@@ -7,8 +7,8 @@
 #include "sl/platform/gui/GUIAdapter.hpp"
 #include "sl/platform/input/Input.h"
 #include "sl/platform/window/Window.h"
+#include "sl/rendering/Renderer.h"
 #include "sl/rendering/RendererProxy.h"
-#include "sl/rendering/renderer/lowlevel/LowLevelRenderer.h"
 #include "sl/scene/SceneManager.h"
 
 namespace sl::application {
@@ -65,14 +65,12 @@ protected:
     }
 
 private:
-    std::unique_ptr<platform::window::Window> m_window;
+    std::shared_ptr<platform::window::Window> m_window;
     std::shared_ptr<platform::input::Input> m_input;
-    std::unique_ptr<rendering::renderer::lowlevel::LowLevelRenderer> m_lowLevelRenderer;
+	std::shared_ptr<rendering::Renderer> m_renderer;
     std::shared_ptr<platform::gui::GUIAdapter> m_guiAdapter;
     std::shared_ptr<context::ApplicationContext> m_context;
     std::shared_ptr<gui::GUIProxy> m_guiProxy;
-
-    std::shared_ptr<rendering::RendererProxy> m_renderer;
     std::shared_ptr<scene::SceneManager> m_sceneManager;
 };
 

@@ -60,28 +60,29 @@ public:
         entity->addComponent<components::TransformComponent>();
         entity->addComponent<components::MaterialComponent>();
 
-        // auto towerModel = asset::AssetManager::load<geometry::Model>("/tow/tower.obj");
-        // auto entity2 = m_scene->addEntity("Tower");
+        auto towerModel = asset::AssetManager::load<geometry::Model>("/tow/tower.obj");
+        auto entity2 = m_scene->addEntity("Tower");
 
-        // entity2->addComponent<components::ModelComponent>(towerModel);
-        // entity2->addComponent<components::RendererComponent>(m_shader);
-        // entity2->addComponent<components::TransformComponent>();
+        entity2->addComponent<components::ModelComponent>(towerModel);
+        entity2->addComponent<components::RendererComponent>(m_shader);
+        entity2->addComponent<components::TransformComponent>();
 
         auto sun = m_scene->addEntity("Sun");
         sun->addComponent<components::DirectionalLightComponent>(math::Vec3{ 1.0f, 1.0f, 1.0f });
+		
 
-        // m_lightSource = m_scene->addEntity("LightSource");
-        // m_lightSource->addComponent<components::TransformComponent>();
-        // m_lightSource->addComponent<components::ModelComponent>(geometry::Geometry::getSquare());
-        // m_lightSource->addComponent<components::RendererComponent>(sshader);
-        // m_lightSource->addComponent<components::PointLightComponent>();
+        m_lightSource = m_scene->addEntity("LightSource");
+        m_lightSource->addComponent<components::TransformComponent>();
+        m_lightSource->addComponent<components::ModelComponent>(geometry::Geometry::getSquare());
+        m_lightSource->addComponent<components::RendererComponent>(sshader);
+        m_lightSource->addComponent<components::PointLightComponent>();
 
-        auto ParticleEffectSource = m_scene->addEntity("ParticleEffect");
-        ParticleEffectSource->addComponent<components::TransformComponent>();
-        // ParticleEffectSource->addComponent<components::ModelComponent>(geometry::Geometry::getSquare());
-        // TODO: renderer component need model, we should check if model compnent exist
-        // ParticleEffectSource->addComponent<components::RendererComponent>(sshader);
-        ParticleEffectSource->addComponent<components::ParticleEffectComponent>();
+   /*      auto ParticleEffectSource = m_scene->addEntity("ParticleEffect");*/
+		 //ParticleEffectSource->addComponent<components::TransformComponent>();
+		 //ParticleEffectSource->addComponent<components::ModelComponent>(geometry::Geometry::getSquare());
+////		 TODO: renderer component need model, we should check if model compnent exist
+		 //ParticleEffectSource->addComponent<components::RendererComponent>(sshader);
+		 /*ParticleEffectSource->addComponent<components::ParticleEffectComponent>();*/
     }
 
     void onAttach() override {
@@ -127,7 +128,7 @@ public:
 
     void render() override {
         m_sceneManager->render(m_camera);
-    }
+   }
 
 private:
     std::shared_ptr<ecs::Entity> m_lightSource;

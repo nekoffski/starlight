@@ -3,8 +3,9 @@
 #include "sl/asset/AssetManager.hpp"
 #include "sl/core/perf/Profiler.h"
 #include "sl/core/task/CallScheduler.hpp"
+#include "sl/geometry/Geometry.hpp"
 #include "sl/platform/shader/Shader.h"
-#include "sl/rendering/RendererProxy.h"
+#include "sl/rendering/Renderer.h"
 #include "sl/rendering/camera/Camera.h"
 
 namespace sl::scene::systems {
@@ -16,19 +17,22 @@ static void cleanRetiredParticles(std::vector<rendering::pfx::Particle>& particl
     std::erase_if(particles, [](auto& particle) -> bool { return particle.scale <= 0 || particle.position.y >= 7.5f; });
 }
 
-ParticleEffectSystem::ParticleEffectSystem(std::shared_ptr<rendering::RendererProxy> renderer)
-    : m_renderer(renderer) {
+ParticleEffectSystem::ParticleEffectSystem(std::shared_ptr<rendering::Renderer> renderer)
+    : m_renderer(renderer)
+    , m_vao(geometry::Geometry::getSquareVAO()) {
+
     m_shader = asset::AssetManager::load<platform::shader::Shader>(
         "/particle.vert", "/particle.frag");
 }
 
-void ParticleEffectSystem::renderParticleEffects(std::vector<components::ParticleEffectComponent>& pfxs, std::shared_ptr<rendering::camera::Camera> camera) {
+void ParticleEffectSystem::renderParticleEffects(std::vector<components::ParticleEffectComponent>& pfxs,
+    std::shared_ptr<rendering::camera::Camera> camera) {
     PRF_PROFILE_FUNCTION();
 
     m_shader->enable();
     m_shader->setUniform("view", camera->getViewMatrix());
     m_shader->setUniform("viewPos", camera->getPosition());
-    m_renderer->beginParticleEffect(m_shader);
+    beginParticleEffect();
 
     for (auto& pfx : pfxs) {
         m_shader->setUniform("model", math::translate(pfx.position));
@@ -36,11 +40,11 @@ void ParticleEffectSystem::renderParticleEffects(std::vector<components::Particl
         for (auto& particle : pfx.particles) {
             m_shader->setUniform("localModel", math::translate(particle.position) * math::scale(particle.scale));
             m_shader->setUniform("color", particle.color);
-            m_renderer->renderParticle();
+            renderParticle();
         }
     }
 
-    m_renderer->endParticleEffect();
+    endParticleEffect();
     m_shader->disable();
 }
 
@@ -72,5 +76,18 @@ void ParticleEffectSystem::updateParticle(rendering::pfx::Particle& particle, fl
     particle.direction = math::normalize(particle.direction +
         particle.deltaDirection * particle.directionFactor);
     particle.scale -= deltaTime * particle.deltaScale;
+}
+
+void ParticleEffectSystem::beginParticleEffect() {
+    m_shader->setUniform("projection", m_renderer->getProjectionMatrix());
+    m_vao->bind();
+}
+
+void ParticleEffectSystem::renderParticle() {
+    m_renderer->renderVertexArray(m_vao);
+}
+
+void ParticleEffectSystem::endParticleEffect() {
+    m_vao->unbind();
 }
 }

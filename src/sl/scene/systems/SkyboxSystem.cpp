@@ -1,9 +1,10 @@
-#include "CubemapRenderer.h"
+#include "SkyboxSystem.h"
 
 #include "sl/platform/gpu/VertexArray.h"
 #include "sl/platform/gpu/VertexBuffer.h"
 #include "sl/platform/shader/Shader.h"
 #include "sl/platform/texture/Cubemap.h"
+#include "sl/rendering/Renderer.h"
 
 // clang-format off
 static float cubemapVertices[] = {
@@ -51,10 +52,11 @@ static float cubemapVertices[] = {
 };
 // clang-format on
 
-namespace sl::rendering::renderer {
+namespace sl::scene::systems {
 
-CubemapRenderer::CubemapRenderer(lowlevel::LowLevelRenderer& lowLevelRenderer)
-    : Renderer(lowLevelRenderer) {
+SkyboxSystem::SkyboxSystem(std::shared_ptr<rendering::Renderer> renderer)
+    : m_renderer(renderer) {
+
     auto vertexBuffer = platform::gpu::VertexBuffer::create(cubemapVertices, sizeof(cubemapVertices), 36);
     vertexBuffer->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
 
@@ -62,21 +64,16 @@ CubemapRenderer::CubemapRenderer(lowlevel::LowLevelRenderer& lowLevelRenderer)
     m_cubemapVertexArray->addVertexBuffer(vertexBuffer);
 }
 
-void CubemapRenderer::render(const std::shared_ptr<platform::texture::Cubemap>& cubemap,
-    const std::shared_ptr<platform::shader::Shader>& cubemapShader,
-    const std::shared_ptr<rendering::camera::Camera>& camera) {
+void SkyboxSystem::render(std::shared_ptr<platform::texture::Cubemap> cubemap, std::shared_ptr<platform::shader::Shader> cubemapShader,
+    std::shared_ptr<rendering::camera::Camera> camera) {
 
     cubemapShader->enable();
-    cubemapShader->setUniform("projection", m_lowLevelRenderer.getProjectionMatrix());
+    cubemapShader->setUniform("projection", m_renderer->getProjectionMatrix());
     cubemapShader->setUniform("view", camera->getViewMatrix());
 
-    // cubemap->bind();
     m_cubemapVertexArray->bind();
-
-    m_lowLevelRenderer.renderVertexArrayWithDepthMaskDisabled(m_cubemapVertexArray);
-
-    m_cubemapVertexArray->unbind();
-    // cubemap->unbind();
+	m_renderer->renderVertexArrayWithDepthMaskDisabled(m_cubemapVertexArray);
+    m_cubemapVertexArray->unbind(); 
     cubemapShader->disable();
 }
 }

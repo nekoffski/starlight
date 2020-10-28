@@ -4,14 +4,19 @@
 #include "components/ModelComponent.h"
 #include "components/ParticleEffectComponent.h"
 #include "components/RendererComponent.h"
+#include "sl/platform/texture/Texture.h"
+
+#include <imgui/imgui.h>
+
+#include <memory>
 
 namespace sl::scene {
 
-SceneManager::SceneManager(std::shared_ptr<rendering::RendererProxy> renderer)
+SceneManager::SceneManager(std::shared_ptr<rendering::Renderer> renderer)
     : m_renderer(renderer)
     , m_rendererSystem(m_renderer)
-    , m_pfxSystem(m_renderer) {
-}
+    , m_pfxSystem(m_renderer)
+    , m_skyboxSystem(m_renderer) {}
 
 void SceneManager::update(float deltaTime) {
     m_pfxSystem.update(
@@ -22,7 +27,7 @@ void SceneManager::setActiveScene(std::shared_ptr<Scene> scene) {
     m_scene = std::move(scene);
 }
 
-void SceneManager::render(const std::shared_ptr<rendering::camera::Camera> camera) {
+void SceneManager::render(std::shared_ptr<rendering::camera::Camera> camera) {
     const auto& skybox = m_scene->m_skybox;
 
     if (skybox)
@@ -32,14 +37,34 @@ void SceneManager::render(const std::shared_ptr<rendering::camera::Camera> camer
     auto& pointLights = m_scene->m_ecsRegistry.getComponentView<components::PointLightComponent>();
 
     auto& rendererComponents = m_scene->m_ecsRegistry.getComponentView<components::RendererComponent>();
+    // TO REFACTOR
 
-    // m_renderer->beginDepthCapture();
-    // for (auto& rendererComponent : rendererComponents)
-    //     m_rendererSystem.render(rendererComponent, camera);
-    // m_renderer->endDepthCapture();
+    /*auto lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);*/
+    //glm::mat4 lightView;
+    //glm::mat4 lightSpace;
+
+    /*m_renderer->beginDepthCapture();*/
+    //for (auto& directionalLight : directionalLights) {
+    //lightView = glm::lookAt(directionalLight.direction, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+    //m_renderer->setShadowMap(directionalLight.shadowMap);
+    //for (auto& rendererComponent : rendererComponents) {
+    //auto tmp = rendererComponent.shader;
+    //auto depthShader = m_renderer->getDepthShader();
+    //lightSpace = lightProjection * lightView;
+    //depthShader->setUniform("lightSpaceMatrix", lightProjection * lightView);
+    //rendererComponent.shader = depthShader;
+    //m_rendererSystem.render(rendererComponent, camera);
+    //rendererComponent.shader = tmp;
+    //}
+    //}
+
+    ////  m_renderer->restoreViewport();
+    //m_renderer->endDepthCapture();
 
     for (auto& rendererComponent : rendererComponents) {
         rendererComponent.shader->enable();
+        // rendererComponent.shader->setUniform("lightSpaceMatrix", lightSpace);
         m_lightSystem.prepareDirectionalLights(directionalLights, rendererComponent.shader);
         m_lightSystem.preparePointsLights(pointLights, rendererComponent.shader);
         m_rendererSystem.render(rendererComponent, camera);
@@ -50,7 +75,7 @@ void SceneManager::render(const std::shared_ptr<rendering::camera::Camera> camer
         m_scene->m_ecsRegistry.getComponentView<components::ParticleEffectComponent>(), camera);
 
     if (skybox) {
-        m_renderer->renderCubemap(skybox->cubemap, skybox->shader, camera);
+        m_skyboxSystem.render(skybox->cubemap, skybox->shader, camera);
         skybox->cubemap->unbind();
     }
 }

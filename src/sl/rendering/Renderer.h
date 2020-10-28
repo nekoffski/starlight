@@ -16,13 +16,11 @@
 
 #include "sl/geometry/Mesh.h"
 
-// TODO: create FWD and move implementations to .cpp
+namespace sl::rendering {
 
-namespace sl::rendering::renderer::lowlevel {
-
-class LowLevelRenderer {
+class Renderer {
 public:
-    explicit LowLevelRenderer(std::unique_ptr<platform::window::Window>& window)
+    explicit Renderer(std::shared_ptr<platform::window::Window> window)
         : m_graphicsContext(platform::gpu::GraphicsContext::create(window->getHandle()))
         , m_renderAPI(platform::gpu::RenderAPI::create())
         , m_viewport(window->getParams().viewport) {
@@ -42,6 +40,14 @@ public:
 
     const math::Mat4& getProjectionMatrix() {
         return m_projectionMatrix;
+    }
+
+    void setTemporaryViewport(unsigned w, unsigned h) {
+        m_graphicsContext->setViewport(w, h);
+    }
+
+    void restoreViewport() {
+        m_graphicsContext->setViewport(m_viewport.width, m_viewport.height);
     }
 
 private:
