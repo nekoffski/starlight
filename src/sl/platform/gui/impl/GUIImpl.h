@@ -19,14 +19,14 @@ public:
     virtual void endWindow() = 0;
     virtual void displayText(std::string) = 0;
     virtual void breakLine() = 0;
-    virtual void sliderFloat3(std::string, math::Vec3&, float, float) = 0;
-    virtual void sliderFloat(std::string, float&, float, float) = 0;
-    virtual void dragFloat3(std::string, math::Vec3&, float, float, float) = 0;
-    virtual void dragFloat(std::string, float&, float, float, float) = 0;
-    virtual void dragInt(std::string, int&, float, int, int) = 0;
+    virtual bool sliderFloat3(std::string, math::Vec3&, float, float) = 0;
+    virtual bool sliderFloat(std::string, float&, float, float) = 0;
+    virtual bool dragFloat3(std::string, math::Vec3&, float, float, float) = 0;
+    virtual bool dragFloat(std::string, float&, float, float, float) = 0;
+    virtual bool dragInt(std::string, int&, float, int, int) = 0;
     virtual bool beginTreeNode(std::string) = 0;
     virtual void popTreeNode() = 0;
     virtual bool isPreviousWidgetClicked() = 0;
-    virtual void colorPicker3(std::string, math::Vec3&) = 0;
+    virtual bool colorPicker3(std::string, math::Vec3&) = 0;
 };
 }

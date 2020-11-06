@@ -2,7 +2,7 @@
 
 #include "sl/math/Vector.hpp"
 
-namespace sl::rendering::pfx {
+namespace sl::physics::pfx {
 
 struct ParticleGeneratorSettings {
     float radius = 0.7f;

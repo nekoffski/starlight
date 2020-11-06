@@ -17,15 +17,15 @@ public:
 
     void displayText(std::string);
     void breakLine();
-    void sliderFloat3(std::string, math::Vec3&, float, float);
-    void sliderFloat(std::string, float&, float, float);
+	bool sliderFloat3(std::string, math::Vec3&, float, float);
+    bool sliderFloat(std::string, float&, float, float);
     bool beginTreeNode(std::string);
     void popTreeNode();
     bool isPreviousWidgetClicked();
-    void dragFloat3(std::string, math::Vec3&, float speed = 1.0f, float min = 0.0f, float max = 0.0f);
-    void dragFloat(std::string, float&, float speed = 1.0f, float min = 0.0f, float max = 0.0f);
-    void dragInt(std::string, int&, float speed = 1.0f, int min = 1, int max = 25);
-    void colorPicker3(std::string, math::Vec3&);
+    bool dragFloat3(std::string, math::Vec3&, float speed = 1.0f, float min = 0.0f, float max = 0.0f);
+    bool dragFloat(std::string, float&, float speed = 1.0f, float min = 0.0f, float max = 0.0f);
+    bool dragInt(std::string, int&, float speed = 1.0f, int min = 1, int max = 25);
+    bool colorPicker3(std::string, math::Vec3&);
 
 private:
     Window(std::string, math::Vec2, math::Vec2, std::shared_ptr<platform::gui::GUIAdapter>);

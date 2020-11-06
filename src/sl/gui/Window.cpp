@@ -25,24 +25,24 @@ void Window::breakLine() {
     m_guiAdapter->breakLine();
 }
 
-void Window::sliderFloat3(std::string label, math::Vec3& v, float min, float max) {
-    m_guiAdapter->sliderFloat3(std::move(label), v, min, max);
+bool Window::sliderFloat3(std::string label, math::Vec3& v, float min, float max) {
+    return m_guiAdapter->sliderFloat3(std::move(label), v, min, max);
 }
 
-void Window::sliderFloat(std::string label, float& v, float min, float max) {
-    m_guiAdapter->sliderFloat(std::move(label), v, min, max);
+bool Window::sliderFloat(std::string label, float& v, float min, float max) {
+    return m_guiAdapter->sliderFloat(std::move(label), v, min, max);
 }
 
-void Window::dragFloat3(std::string label, math::Vec3& v, float speed, float min, float max) {
-    m_guiAdapter->dragFloat3(std::move(label), v, speed, min, max);
+bool Window::dragFloat3(std::string label, math::Vec3& v, float speed, float min, float max) {
+    return m_guiAdapter->dragFloat3(std::move(label), v, speed, min, max);
 }
 
-void Window::dragFloat(std::string label, float& v, float speed, float min, float max) {
-    m_guiAdapter->dragFloat(std::move(label), v, speed, min, max);
+bool Window::dragFloat(std::string label, float& v, float speed, float min, float max) {
+    return m_guiAdapter->dragFloat(std::move(label), v, speed, min, max);
 }
 
-void Window::dragInt(std::string label, int& v, float speed, int min, int max) {
-    m_guiAdapter->dragInt(std::move(label), v, speed, min, max);
+bool Window::dragInt(std::string label, int& v, float speed, int min, int max) {
+    return m_guiAdapter->dragInt(std::move(label), v, speed, min, max);
 }
 
 bool Window::beginTreeNode(std::string label) {
@@ -57,7 +57,7 @@ bool Window::isPreviousWidgetClicked() {
     return m_guiAdapter->isPreviousWidgetClicked();
 }
 
-void Window::colorPicker3(std::string label, math::Vec3& color) {
-    m_guiAdapter->colorPicker3(std::move(label), color);
+bool Window::colorPicker3(std::string label, math::Vec3& color) {
+    return m_guiAdapter->colorPicker3(std::move(label), color);
 }
 }

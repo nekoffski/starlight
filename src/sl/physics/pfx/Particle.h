@@ -2,7 +2,7 @@
 
 #include "sl/math/Vector.hpp"
 
-namespace sl::rendering::pfx {
+namespace sl::physics::pfx {
 
 struct Particle {
     math::Vec3 position;

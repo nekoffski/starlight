@@ -13,7 +13,7 @@ namespace sl::scene::systems {
 constexpr float PARTICLE_CLEANER_PERIOD = 2.0f;
 constexpr int MAX_PARTICLE_PER_ITERATION = 100;
 
-static void cleanRetiredParticles(std::vector<rendering::pfx::Particle>& particles) {
+static void cleanRetiredParticles(std::vector<physics::pfx::Particle>& particles) {
     std::erase_if(particles, [](auto& particle) -> bool { return particle.scale <= 0 || particle.position.y >= 7.5f; });
 }
 
@@ -70,7 +70,7 @@ void ParticleEffectSystem::updateParticleEffect(components::ParticleEffectCompon
     }
 }
 
-void ParticleEffectSystem::updateParticle(rendering::pfx::Particle& particle, float deltaTime) {
+void ParticleEffectSystem::updateParticle(physics::pfx::Particle& particle, float deltaTime) {
     auto& pos = particle.position;
     pos += deltaTime * particle.speed * particle.direction;
     particle.direction = math::normalize(particle.direction +

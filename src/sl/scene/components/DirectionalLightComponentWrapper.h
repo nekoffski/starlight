@@ -3,6 +3,7 @@
 #include "DirectionalLightComponent.h"
 #include "sl/ecs/ComponentWrapper.h"
 #include "sl/gui/Utils.hpp"
+#include "sl/math/Utils.hpp"
 
 namespace sl::scene::components {
 
@@ -14,7 +15,12 @@ public:
         DirectionalLightComponent& component = static_cast<DirectionalLightComponent&>(m_component);
         if (window.beginTreeNode("Directional light")) {
             window.displayText("Position");
-            window.dragFloat3(gui::createHiddenLabel("dlcDirection"), component.direction, 0.01f, -1.0f, 1.0f);
+
+            if (window.dragFloat3(gui::createHiddenLabel("dlcDirection"), component.direction, 0.01f, -1.0f, 1.0f)) {
+                component.viewMatrix = math::lookAt(component.direction, math::Vec3{ 0.0f }, math::Vec3{ 0.0f, 1.0f, 0.0f });
+                component.spaceMatrix = LIGHT_PROJECTION * component.viewMatrix;
+            }
+
             window.displayText("Color");
             window.colorPicker3(gui::createHiddenLabel("dlcColor"), component.color);
 

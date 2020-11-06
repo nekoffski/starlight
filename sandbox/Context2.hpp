@@ -32,56 +32,23 @@ using namespace sl::scene;
 class Context : public application::context::ApplicationContext {
 public:
     void onInit() override {
-        m_cubemap = asset::AssetManager::load<platform::texture::Cubemap>("/skybox/right.jpg",
-            "/skybox/left.jpg",
-            "/skybox/top.jpg",
-            "/skybox/bottom.jpg",
-            "/skybox/front.jpg",
-            "/skybox/back.jpg");
-
-        m_cubemapShader = asset::AssetManager::load<platform::shader::Shader>("/cubemap.vert", "/cubemap.frag");
         auto sshader = asset::AssetManager::load<platform::shader::Shader>("/el.vert", "/el.frag");
-        m_camera = rendering::camera::EulerCamera::create(math::Vec3(0.0f), 1.0f, 8.0f);
-
+        
+		m_camera = rendering::camera::EulerCamera::create(math::Vec3(0.0f), 1.0f, 8.0f);
         m_shader = asset::AssetManager::load<platform::shader::Shader>("/t.vert", "/t.frag", "");
-        m_model = asset::AssetManager::load<geometry::Model>("/ground/untitled.obj");
 
-        m_skybox = scene::Skybox::create(m_cubemapShader, m_cubemap);
+
         m_scene = scene::Scene::create();
 
-        m_scene->setSkybox(m_skybox);
         m_sceneManager->setActiveScene(m_scene);
-
-        auto entity = m_scene->addEntity("Ground");
-
-        entity->addComponent<components::ModelComponent>(m_model);
-        entity->addComponent<components::RendererComponent>(m_shader);
-        entity->addComponent<components::TransformComponent>();
-        entity->addComponent<components::MaterialComponent>();
-
-        auto towerModel = asset::AssetManager::load<geometry::Model>("/tow/tower.obj");
-        auto entity2 = m_scene->addEntity("Tower");
-
-        entity2->addComponent<components::ModelComponent>(towerModel);
-        entity2->addComponent<components::RendererComponent>(m_shader);
-        entity2->addComponent<components::TransformComponent>();
-
-        auto sun = m_scene->addEntity("Sun");
-        sun->addComponent<components::DirectionalLightComponent>(math::Vec3{ 1.0f, 1.0f, 1.0f });
 		
 
-        m_lightSource = m_scene->addEntity("LightSource");
+		m_lightSource = m_scene->addEntity("LightSource");
         m_lightSource->addComponent<components::TransformComponent>();
         m_lightSource->addComponent<components::ModelComponent>(geometry::Geometry::getSquare());
         m_lightSource->addComponent<components::RendererComponent>(sshader);
         m_lightSource->addComponent<components::PointLightComponent>();
 
-   /*      auto ParticleEffectSource = m_scene->addEntity("ParticleEffect");*/
-		 //ParticleEffectSource->addComponent<components::TransformComponent>();
-		 //ParticleEffectSource->addComponent<components::ModelComponent>(geometry::Geometry::getSquare());
-////		 TODO: renderer component need model, we should check if model compnent exist
-		 //ParticleEffectSource->addComponent<components::RendererComponent>(sshader);
-		 /*ParticleEffectSource->addComponent<components::ParticleEffectComponent>();*/
     }
 
     void onAttach() override {

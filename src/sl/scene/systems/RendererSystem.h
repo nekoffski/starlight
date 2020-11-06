@@ -15,6 +15,8 @@ class RendererSystem {
 public:
     explicit RendererSystem(std::shared_ptr<rendering::Renderer> renderer);
     void render(components::RendererComponent& component, std::shared_ptr<rendering::camera::Camera> camera);
+    void render(components::RendererComponent& component, std::shared_ptr<rendering::camera::Camera> camera,
+        std::shared_ptr<platform::shader::Shader>);
 
 private:
     void setMaterial(const components::MaterialComponent& material, std::shared_ptr<platform::shader::Shader> shader);

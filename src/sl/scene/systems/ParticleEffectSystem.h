@@ -2,7 +2,7 @@
 
 #include "sl/platform/fwd.h"
 #include "sl/rendering/fwd.h"
-#include "sl/rendering/pfx/ParticleGenerator.h"
+#include "sl/physics/pfx/ParticleGenerator.h"
 #include "sl/scene/components/ParticleEffectComponent.h"
 
 namespace sl::scene::systems {
@@ -16,7 +16,7 @@ public:
 
 private:
     void updateParticleEffect(components::ParticleEffectComponent& pfx, float deltaTime);
-    void updateParticle(rendering::pfx::Particle& particle, float deltaTime);
+    void updateParticle(physics::pfx::Particle& particle, float deltaTime);
 
     void beginParticleEffect();
     void renderParticle();
@@ -24,7 +24,7 @@ private:
 
     std::shared_ptr<platform::gpu::VertexArray> m_vao;
 
-    rendering::pfx::ParticleGenerator m_particleGenerator;
+    physics::pfx::ParticleGenerator m_particleGenerator;
     std::shared_ptr<platform::shader::Shader> m_shader;
     std::shared_ptr<rendering::Renderer> m_renderer;
 };

@@ -42,10 +42,10 @@ void Application::update(float deltaTime, float time) {
 void Application::render() {
     PRF_PROFILE_FUNCTION();
 
-    m_renderer->begin();
+    m_renderer->clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
     m_context->render();
-    renderGUI();
-    m_renderer->end();
+	renderGUI();
+	m_renderer->swapBuffers();
 }
 
 void Application::renderGUI() {

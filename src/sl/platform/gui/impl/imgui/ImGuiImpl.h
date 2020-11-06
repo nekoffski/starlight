@@ -17,18 +17,18 @@ public:
     void displayText(std::string) override;
     void breakLine() override;
 
-    void sliderFloat3(std::string, math::Vec3&, float, float) override;
-    void sliderFloat(std::string, float&, float, float) override;
+    bool sliderFloat3(std::string, math::Vec3&, float, float) override;
+    bool sliderFloat(std::string, float&, float, float) override;
 
-    void dragInt(std::string, int&, float, int, int) override;
+    bool dragInt(std::string, int&, float, int, int) override;
 
-    void dragFloat3(std::string, math::Vec3&, float, float, float) override;
-    void dragFloat(std::string, float&, float, float, float) override;
+    bool dragFloat3(std::string, math::Vec3&, float, float, float) override;
+    bool dragFloat(std::string, float&, float, float, float) override;
 
     bool beginTreeNode(std::string) override;
     void popTreeNode() override;
     bool isPreviousWidgetClicked() override;
 
-    void colorPicker3(std::string, math::Vec3&) override;
+    bool colorPicker3(std::string, math::Vec3&) override;
 };
 }

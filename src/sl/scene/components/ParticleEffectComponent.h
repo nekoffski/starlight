@@ -4,8 +4,8 @@
 
 #include <memory>
 
-#include "sl/rendering/pfx/Particle.h"
-#include "sl/rendering/pfx/ParticleGeneratorSettings.h"
+#include "sl/physics/pfx/Particle.h"
+#include "sl/physics/pfx/ParticleGeneratorSettings.h"
 
 namespace sl::scene::components {
 
@@ -17,7 +17,7 @@ struct ParticleEffectComponent : public ecs::Component {
 
     math::Vec3 position;
     int maxParticles;
-    rendering::pfx::ParticleGeneratorSettings pfxGeneratorSettings;
-    std::vector<rendering::pfx::Particle> particles;
+    physics::pfx::ParticleGeneratorSettings pfxGeneratorSettings;
+    std::vector<physics::pfx::Particle> particles;
 };
 }

@@ -6,7 +6,7 @@
 #include "ParticleGeneratorSettings.h"
 #include "sl/math/Utils.hpp"
 
-namespace sl::rendering::pfx {
+namespace sl::physics::pfx {
 
 class ParticleGenerator {
 public:

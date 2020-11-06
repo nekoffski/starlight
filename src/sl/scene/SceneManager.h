@@ -8,6 +8,7 @@
 #include "systems/ParticleEffectSystem.h"
 #include "systems/RendererSystem.h"
 #include "systems/SkyboxSystem.h"
+#include "systems/ShadowSystem.h"
 
 namespace sl::scene {
 
@@ -30,6 +31,7 @@ private:
     systems::LightSystem m_lightSystem;
     systems::ParticleEffectSystem m_pfxSystem;
 	systems::SkyboxSystem m_skyboxSystem;
+	systems::ShadowSystem m_shadowSystem;
 
     std::weak_ptr<ecs::Entity> m_activeEntity;
 };

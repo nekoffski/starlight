@@ -8,7 +8,6 @@
 #include "sl/platform/input/Input.h"
 #include "sl/platform/window/Window.h"
 #include "sl/rendering/Renderer.h"
-#include "sl/rendering/RendererProxy.h"
 #include "sl/scene/SceneManager.h"
 
 namespace sl::application {

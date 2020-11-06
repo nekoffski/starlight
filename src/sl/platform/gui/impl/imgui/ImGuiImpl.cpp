@@ -59,24 +59,24 @@ void ImGuiImpl::endWindow() {
     ImGui::End();
 }
 
-void ImGuiImpl::sliderFloat3(std::string label, math::Vec3& v, float min, float max) {
-    ImGui::SliderFloat3(label.c_str(), &v.x, min, max);
+bool ImGuiImpl::sliderFloat3(std::string label, math::Vec3& v, float min, float max) {
+    return ImGui::SliderFloat3(label.c_str(), &v.x, min, max);
 }
 
-void ImGuiImpl::sliderFloat(std::string label, float& v, float min, float max) {
-    ImGui::SliderFloat(label.c_str(), &v, min, max);
+bool ImGuiImpl::sliderFloat(std::string label, float& v, float min, float max) {
+    return ImGui::SliderFloat(label.c_str(), &v, min, max);
 }
 
-void ImGuiImpl::dragFloat3(std::string label, math::Vec3& v, float speed, float min, float max) {
-    ImGui::DragFloat3(label.c_str(), &v.x, speed, min, max);
+bool ImGuiImpl::dragFloat3(std::string label, math::Vec3& v, float speed, float min, float max) {
+    return ImGui::DragFloat3(label.c_str(), &v.x, speed, min, max);
 }
 
-void ImGuiImpl::dragFloat(std::string label, float& v, float speed, float min, float max) {
-    ImGui::DragFloat(label.c_str(), &v, speed, min, max);
+bool ImGuiImpl::dragFloat(std::string label, float& v, float speed, float min, float max) {
+    return ImGui::DragFloat(label.c_str(), &v, speed, min, max);
 }
 
-void ImGuiImpl::dragInt(std::string label, int& v, float speed, int min, int max) {
-    ImGui::DragInt(label.c_str(), &v, speed, min, max);
+bool ImGuiImpl::dragInt(std::string label, int& v, float speed, int min, int max) {
+    return ImGui::DragInt(label.c_str(), &v, speed, min, max);
 }
 
 bool ImGuiImpl::beginTreeNode(std::string label) {
@@ -93,7 +93,7 @@ bool ImGuiImpl::isPreviousWidgetClicked() {
     return ImGui::IsItemClicked();
 }
 
-void ImGuiImpl::colorPicker3(std::string label, math::Vec3& color) {
-    ImGui::ColorPicker3(label.c_str(), &color[0]);
+bool ImGuiImpl::colorPicker3(std::string label, math::Vec3& color) {
+    return ImGui::ColorPicker3(label.c_str(), &color[0]);
 }
 }
