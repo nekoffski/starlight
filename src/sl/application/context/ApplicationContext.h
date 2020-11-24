@@ -4,6 +4,8 @@
 
 #include "sl/gui/GUIProxy.h"
 #include "sl/scene/SceneManager.h"
+#include "sl/scene/SceneManager3D.h"
+#include "sl/platform/window/Window.h"
 
 namespace sl::platform::input {
 class Input;
@@ -14,6 +16,11 @@ class Application;
 }
 
 namespace sl::application::context {
+
+enum ContextType {
+    CONTEXT_2D,
+    CONTEXT_3D
+};
 
 class ApplicationContext {
     friend class Application;
@@ -29,18 +36,21 @@ public:
 
     virtual void renderGUI(std::shared_ptr<gui::GUIProxy>) {}
 
-    ApplicationContext& setSceneManager(std::shared_ptr<scene::SceneManager> sceneManager) {
+    void setSceneManager(std::shared_ptr<scene::SceneManager> sceneManager) {
         m_sceneManager = sceneManager;
-        return *this;
     }
 
-    ApplicationContext& setViewport(platform::window::Viewport viewport) {
+	void setWindow(std::shared_ptr<platform::window::Window> window) {
+		m_window = window;
+	}
+
+    void setViewport(platform::window::Viewport viewport) {
         m_viewport = std::move(viewport);
-        return *this;
     }
 
 protected:
-    std::shared_ptr<scene::SceneManager> m_sceneManager;
+	std::shared_ptr<platform::window::Window> m_window;
+	std::shared_ptr<scene::SceneManager> m_sceneManager;
     platform::window::Viewport m_viewport;
 };
 }

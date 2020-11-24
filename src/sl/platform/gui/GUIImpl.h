@@ -5,7 +5,7 @@
 #include "sl/math/Vector.hpp"
 #include "sl/misc/types/NotNullPtr.hpp"
 
-namespace sl::platform::gui::impl {
+namespace sl::platform::gui {
 
 class GUIImpl {
 public:
@@ -28,5 +28,7 @@ public:
     virtual void popTreeNode() = 0;
     virtual bool isPreviousWidgetClicked() = 0;
     virtual bool colorPicker3(std::string, math::Vec3&) = 0;
+	virtual bool button(std::string, int xSize, int ySize) = 0;
+
 };
 }

@@ -25,10 +25,6 @@ EulerCamera::EulerCamera(math::Vec3 centre, float speed, float radius)
     : m_centre(centre)
     , m_speed(speed)
     , m_radius(radius)
-    , m_position(math::Vec3(0.0f))
-    , m_up(math::Vec3(0.0f))
-    , m_front(math::Vec3(0.0f))
-    , m_right(math::Vec3(0.0f))
     , m_fi(0.0f)
     , m_psi(0.0f) {
     calculateVectors();
@@ -69,25 +65,6 @@ void EulerCamera::calculateVectors() {
     m_up = math::cross(m_right, m_front);
 }
 
-const math::Mat4 EulerCamera::getViewMatrix() {
-    return math::lookAt(m_position, m_centre, m_up);
-}
-
-const math::Vec3& EulerCamera::getPosition() {
-    return m_position;
-}
-
-const math::Vec3& EulerCamera::getUp() {
-    return m_up;
-}
-
-const math::Vec3& EulerCamera::getFront() {
-    return m_front;
-}
-
-const math::Vec3& EulerCamera::getRight() {
-    return m_right;
-}
 
 void EulerCamera::handleInput(std::shared_ptr<platform::input::Input> input) {
     m_direction = DIR_NONE;

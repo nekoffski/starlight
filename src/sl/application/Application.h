@@ -1,14 +1,17 @@
 #pragma once
 
+#include <concepts>
 #include <iostream>
+#include <type_traits>
 
 #include "sl/application/context/ApplicationContext.h"
 #include "sl/gui/GUIProxy.h"
-#include "sl/platform/gui/GUIAdapter.hpp"
+#include "sl/platform/gui/fwd.h"
 #include "sl/platform/input/Input.h"
 #include "sl/platform/window/Window.h"
 #include "sl/rendering/Renderer.h"
-#include "sl/scene/SceneManager.h"
+#include "sl/scene/SceneManager3D.h"
+#include "sl/scene/SceneManager2D.h"
 
 namespace sl::application {
 
@@ -52,25 +55,28 @@ public:
     virtual void preInit() {}
 
 protected:
-    template <class T>
-    std::shared_ptr<T> createContext() {
+	template <typename T> requires std::derived_from<T, context::ApplicationContext>
+	std::shared_ptr<T> createContext(context::ContextType contextType) {
         auto context = std::make_shared<T>();
-        // TO REDESIGN - pretty ugly
-        std::static_pointer_cast<context::ApplicationContext>(context)
-            ->setViewport(m_window->getParams().viewport)
-            .setSceneManager(m_sceneManager);
-        context->onInit();
-        return context;
+
+        context->setViewport(m_window->getParams().viewport);
+        context->setSceneManager(contextType == context::CONTEXT_2D ? m_sceneManager2D : m_sceneManager3D);
+		context->setWindow(m_window);
+		context->onInit();
+
+        return std::dynamic_pointer_cast<T>(context);
     }
 
 private:
     std::shared_ptr<platform::window::Window> m_window;
     std::shared_ptr<platform::input::Input> m_input;
-	std::shared_ptr<rendering::Renderer> m_renderer;
-    std::shared_ptr<platform::gui::GUIAdapter> m_guiAdapter;
+    std::shared_ptr<rendering::Renderer> m_renderer;
+    std::shared_ptr<platform::gui::GUIImpl> m_guiImpl;
     std::shared_ptr<context::ApplicationContext> m_context;
     std::shared_ptr<gui::GUIProxy> m_guiProxy;
-    std::shared_ptr<scene::SceneManager> m_sceneManager;
+
+    std::shared_ptr<scene::SceneManager> m_sceneManager3D;
+    std::shared_ptr<scene::SceneManager> m_sceneManager2D;
 };
 
 class Application::Token {

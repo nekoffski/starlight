@@ -2,5 +2,5 @@
 
 namespace sl::platform::gui {
 
-class GUIAdapter;
+class GUIImpl;
 }

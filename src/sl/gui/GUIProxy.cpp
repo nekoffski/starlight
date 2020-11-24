@@ -4,6 +4,6 @@
 
 namespace sl::gui {
 Window GUIProxy::createWindow(std::string title, math::Vec2 pos, math::Vec2 size) {
-    return Window{ std::move(title), std::move(pos), std::move(size), m_guiAdapter };
+    return Window{ std::move(title), std::move(pos), std::move(size), m_guiImpl };
 }
 }

@@ -1,0 +1,91 @@
+Engine: proj
+InputVariable: FPS
+  enabled: true
+  range: 0.000 160.000
+  lock-range: false
+  term: VERY_LOW Triangle 0.000 0.000 25.000
+  term: LOW Triangle 0.000 25.000 50.000
+  term: MEDIUM Trapezoid 25.000 50.000 90.000 110.000
+  term: VERY_HIGH Trapezoid 90.000 110.000 160.000 160.000
+InputVariable: A
+  enabled: true
+  range: -1.000 1.000
+  lock-range: false
+  term: LOW Trapezoid -1.000 -1.000 -0.700 -0.200
+  term: MEDIUM Triangle -0.500 -0.100 0.300
+  term: HIGH SShape -0.100 0.300
+InputVariable: D
+  enabled: true
+  range: 0.000 30.000
+  lock-range: false
+  term: VERY_NEAR Triangle 0.000 0.000 6.000
+  term: NEAR Triangle 0.000 6.000 12.000
+  term: MEDIUM Triangle 6.000 12.000 21.000
+  term: FAR SShape 12.000 21.000
+OutputVariable: P
+  enabled: true
+  range: 1.000 15000.000
+  lock-range: false
+  aggregation: Maximum
+  defuzzifier: Centroid 100
+  default: nan
+  lock-previous: false
+  term: VERY_LOW ZShape 1.000 500.000
+  term: LOW Triangle 0.000 1000.000 2000.000
+  term: MEDIUM Triangle 1000.000 3000.000 5000.000
+  term: HIGH Trapezoid 3000.000 6500.000 7500.000 11000.000
+  term: VERY_HIGH Trapezoid 7500.000 11000.000 15000.000 15000.000
+RuleBlock: 
+  enabled: true
+  conjunction: Minimum
+  disjunction: Maximum
+  implication: Minimum
+  activation: General
+  rule: if FPS is VERY_LOW and A is LOW and D is VERY_NEAR then P is VERY_LOW
+  rule: if FPS is VERY_LOW and A is LOW and D is NEAR then P is VERY_LOW
+  rule: if FPS is VERY_LOW and A is LOW and D is MEDIUM then P is VERY_LOW
+  rule: if FPS is VERY_LOW and A is LOW and D is FAR then P is VERY_LOW
+  rule: if FPS is VERY_LOW and A is MEDIUM and D is VERY_NEAR then P is LOW
+  rule: if FPS is VERY_LOW and A is MEDIUM and D is NEAR then P is LOW
+  rule: if FPS is VERY_LOW and A is MEDIUM and D is MEDIUM then P is VERY_LOW
+  rule: if FPS is VERY_LOW and A is MEDIUM and D is FAR then P is VERY_LOW
+  rule: if FPS is VERY_LOW and A is HIGH and D is VERY_NEAR then P is LOW
+  rule: if FPS is VERY_LOW and A is HIGH and D is NEAR then P is LOW
+  rule: if FPS is VERY_LOW and A is HIGH and D is MEDIUM then P is LOW
+  rule: if FPS is VERY_LOW and A is HIGH and D is FAR then P is VERY_LOW
+  rule: if FPS is LOW and A is LOW and D is VERY_NEAR then P is LOW
+  rule: if FPS is LOW and A is LOW and D is NEAR then P is LOW
+  rule: if FPS is LOW and A is LOW and D is MEDIUM then P is LOW
+  rule: if FPS is LOW and A is LOW and D is FAR then P is VERY_LOW
+  rule: if FPS is LOW and A is MEDIUM and D is VERY_NEAR then P is MEDIUM
+  rule: if FPS is LOW and A is MEDIUM and D is NEAR then P is LOW
+  rule: if FPS is LOW and A is MEDIUM and D is MEDIUM then P is LOW
+  rule: if FPS is LOW and A is MEDIUM and D is FAR then P is VERY_LOW
+  rule: if FPS is LOW and A is HIGH and D is VERY_NEAR then P is HIGH
+  rule: if FPS is LOW and A is HIGH and D is NEAR then P is MEDIUM
+  rule: if FPS is LOW and A is HIGH and D is MEDIUM then P is LOW
+  rule: if FPS is LOW and A is HIGH and D is FAR then P is VERY_LOW
+  rule: if FPS is MEDIUM and A is LOW and D is VERY_NEAR then P is MEDIUM
+  rule: if FPS is MEDIUM and A is LOW and D is NEAR then P is LOW
+  rule: if FPS is MEDIUM and A is LOW and D is MEDIUM then P is LOW
+  rule: if FPS is MEDIUM and A is LOW and D is FAR then P is VERY_LOW
+  rule: if FPS is MEDIUM and A is MEDIUM and D is VERY_NEAR then P is HIGH
+  rule: if FPS is MEDIUM and A is MEDIUM and D is NEAR then P is MEDIUM
+  rule: if FPS is MEDIUM and A is MEDIUM and D is MEDIUM then P is LOW
+  rule: if FPS is MEDIUM and A is MEDIUM and D is FAR then P is LOW
+  rule: if FPS is MEDIUM and A is HIGH and D is VERY_NEAR then P is VERY_HIGH
+  rule: if FPS is MEDIUM and A is HIGH and D is NEAR then P is HIGH
+  rule: if FPS is MEDIUM and A is HIGH and D is MEDIUM then P is MEDIUM
+  rule: if FPS is MEDIUM and A is HIGH and D is FAR then P is LOW
+  rule: if FPS is VERY_HIGH and A is LOW and D is VERY_NEAR then P is HIGH
+  rule: if FPS is VERY_HIGH and A is LOW and D is NEAR then P is MEDIUM
+  rule: if FPS is VERY_HIGH and A is LOW and D is MEDIUM then P is MEDIUM
+  rule: if FPS is VERY_HIGH and A is LOW and D is FAR then P is LOW
+  rule: if FPS is VERY_HIGH and A is MEDIUM and D is VERY_NEAR then P is VERY_HIGH
+  rule: if FPS is VERY_HIGH and A is MEDIUM and D is NEAR then P is HIGH
+  rule: if FPS is VERY_HIGH and A is MEDIUM and D is MEDIUM then P is MEDIUM
+  rule: if FPS is VERY_HIGH and A is MEDIUM and D is FAR then P is MEDIUM
+  rule: if FPS is VERY_HIGH and A is HIGH and D is VERY_NEAR then P is VERY_HIGH
+  rule: if FPS is VERY_HIGH and A is HIGH and D is NEAR then P is VERY_HIGH
+  rule: if FPS is VERY_HIGH and A is HIGH and D is MEDIUM then P is HIGH
+  rule: if FPS is VERY_HIGH and A is HIGH and D is FAR then P is HIGH

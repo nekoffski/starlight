@@ -1,4 +1,4 @@
-#include "Scene.h"
+#include "Scene3D.h"
 
 #include <memory>
 #include <unordered_map>
@@ -14,8 +14,8 @@
 
 namespace sl::scene {
 
-std::shared_ptr<Scene> Scene::create() {
-    auto scene = std::make_shared<Scene>();
+std::shared_ptr<Scene3D> Scene3D::create() {
+    auto scene = std::make_shared<Scene3D>();
     scene->setComponentWrapperFactory<components::TransformComponent,
         components::TransformComponentWrapperFactory>();
     scene->setComponentWrapperFactory<components::MaterialComponent,
@@ -29,11 +29,8 @@ std::shared_ptr<Scene> Scene::create() {
     return scene;
 }
 
-void Scene::setSkybox(std::shared_ptr<Skybox> skybox) {
+void Scene3D::setSkybox(std::shared_ptr<Skybox> skybox) {
     m_skybox = std::move(skybox);
 }
 
-std::shared_ptr<ecs::Entity> Scene::addEntity(std::string name) {
-    return m_ecsRegistry.createEntity(std::move(name));
-}
 }

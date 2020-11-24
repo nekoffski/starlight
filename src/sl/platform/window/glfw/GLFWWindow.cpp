@@ -1,6 +1,7 @@
 #include "GLFWWindow.h"
 
 #include "sl/core/log/Logger.h"
+#include <GLFW/glfw3.h>
 
 namespace sl::platform::window::glfw {
 
@@ -39,6 +40,14 @@ bool GLFWWindow::getShouldClose() const {
 
 void GLFWWindow::setShouldClose(bool value) {
     glfwSetWindowShouldClose(m_windowHandle, value);
+}
+
+void GLFWWindow::enableCursor() {
+    glfwSetInputMode(m_windowHandle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+}
+
+void GLFWWindow::disableCursor() {
+    glfwSetInputMode(m_windowHandle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void GLFWWindow::update(float dtime) {

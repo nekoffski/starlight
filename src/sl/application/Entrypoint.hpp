@@ -7,10 +7,10 @@
 
 #include "Application.h"
 #include "sl/core/BaseError.h"
+#include "sl/core/async/AsyncEngine.hpp"
 #include "sl/core/log/Logger.h"
 #include "sl/core/perf/Profiler.h"
 #include "sl/core/sig/Signal.h"
-#include "sl/core/task/CallScheduler.hpp"
 #include "sl/platform/time/Clock.h"
 #include "sl/platform/time/impl/StdClockImpl.h"
 
@@ -35,6 +35,8 @@ public:
 
         platform::time::Clock::setClockImpl<platform::time::impl::StdClockImpl>();
 
+        m_profilerTimer = core::async::AsyncEngine::createTimer(PROFILER_PRINT_INTERVAL);
+
         // TODO: load config
 
         try {
@@ -55,12 +57,13 @@ public:
                     m_application->handleInput();
                     m_application->update(deltaTime, platform::time::Clock::now()->value());
                     m_application->render();
-                    core::task::CallScheduler::update(deltaTime);
+
+                    core::async::AsyncEngine::update(deltaTime);
                     platform::time::Clock::update();
                 }
 
-                core::task::CallScheduler::callIfExpired(
-                    PROFILER_PRINT_INTERVAL, "prfPrint", core::perf::Profiler::printResults);
+				if (not m_profilerTimer->asyncSleep())
+					core::perf::Profiler::printResults();
             }
 
             m_application->onStop();
@@ -82,6 +85,7 @@ public:
     }
 
 private:
+	std::shared_ptr<core::async::Timer> m_profilerTimer;
     std::unique_ptr<Application> m_application;
     int& m_argc;
     char**& m_argv;

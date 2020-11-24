@@ -18,7 +18,7 @@ public:
             window.displayText("Rotation");
             window.dragFloat3(gui::createHiddenLabel("rotation"), component.rotation, 0.5f, 0.0f, 360.0f);
             window.displayText("Scale");
-            window.dragFloat3(gui::createHiddenLabel("scale"), component.scale, 0.5f, 0.0f, 360.0f);
+			window.dragFloat3(gui::createHiddenLabel("scale"), component.scale, 0.5f, 0.0f, 360.0f);
 			window.popTreeNode();
         }
     }

@@ -21,6 +21,9 @@ public:
     virtual bool getShouldClose() const = 0;
     virtual void setShouldClose(bool) = 0;
 
+	virtual void enableCursor() = 0;
+	virtual void disableCursor() = 0;
+
     virtual void* getHandle() const = 0;
 
     const WindowParams& getParams() const {

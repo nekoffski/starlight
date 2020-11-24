@@ -3,6 +3,8 @@
 #include "sl/core/perf/Profiler.h"
 #include "sl/geometry/Geometry.hpp"
 #include "sl/platform/shader/ShaderCompiler.hpp"
+#include "sl/platform/gui/GUIImpl.h"
+
 
 namespace sl::application {
 
@@ -23,13 +25,14 @@ void Application::init() {
     m_renderer = std::make_shared<rendering::Renderer>(m_window);
     m_renderer->init();
 
-    m_guiAdapter = std::make_shared<platform::gui::GUIAdapter>(m_window->getHandle());
-    m_guiProxy = std::make_shared<gui::GUIProxy>(m_guiAdapter);
+    m_guiImpl = platform::gui::GUIImpl::create(m_window->getHandle());
+    m_guiProxy = std::make_shared<gui::GUIProxy>(m_guiImpl);
 
     platform::shader::ShaderCompiler::init();
     geometry::Geometry::init();
 
-    m_sceneManager = std::make_shared<scene::SceneManager>(m_renderer);
+    m_sceneManager3D = std::make_shared<scene::SceneManager3D>(m_renderer);	
+	m_sceneManager2D = std::make_shared<scene::SceneManager2D>(m_renderer);
 }
 
 void Application::update(float deltaTime, float time) {
@@ -49,14 +52,12 @@ void Application::render() {
 }
 
 void Application::renderGUI() {
-    m_guiAdapter->begin();
+    m_guiImpl->begin();
     m_context->renderGUI(m_guiProxy);
-    m_guiAdapter->end();
+    m_guiImpl->end();
 }
 
 void Application::handleInput() {
-    if (m_input->isKeyPressed(STARL_KEY_ESCAPE))
-        m_window->setShouldClose(true);
     m_context->handleInput(m_input);
 }
 

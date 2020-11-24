@@ -3,9 +3,10 @@
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
 
+#include "imgui/imgui.h"
 #include "sl/core/log/Logger.h"
 
-namespace sl::platform::gui::impl::imgui {
+namespace sl::platform::gui::imgui {
 
 ImGuiImpl::ImGuiImpl(void* windowHandle) {
     SL_INFO("creating imgui context");
@@ -96,4 +97,9 @@ bool ImGuiImpl::isPreviousWidgetClicked() {
 bool ImGuiImpl::colorPicker3(std::string label, math::Vec3& color) {
     return ImGui::ColorPicker3(label.c_str(), &color[0]);
 }
+
+bool ImGuiImpl::button(std::string label, int xSize, int ySize) {
+	return ImGui::Button(label.c_str(), ImVec2(xSize, ySize));
+}
+
 }

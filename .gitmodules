@@ -8,3 +8,6 @@
 [submodule "3rdparty/crossguid"]
 	path = 3rdparty/crossguid
 	url = https://github.com/graeme-hill/crossguid.git
+[submodule "3rdparty/fuzzylite"]
+	path = 3rdparty/fuzzylite
+	url = https://github.com/fuzzylite/fuzzylite.git

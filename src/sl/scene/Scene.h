@@ -7,25 +7,30 @@
 #include "Skybox.h"
 #include "sl/ecs/Registry.h"
 #include "sl/ecs/fwd.h"
+#include "sl/rendering/camera/Camera.h"
 
 namespace sl::scene {
 
 class Scene {
-    friend class SceneManager;
-
 public:
-    static std::shared_ptr<Scene> create();
+	virtual ~Scene() = default;
 
-    void setSkybox(std::shared_ptr<Skybox> skybox);
-    std::shared_ptr<ecs::Entity> addEntity(std::string name);
 
     template <typename Component, typename Factory>
     void setComponentWrapperFactory() {
         m_ecsRegistry.setComponentWrapperFactory<Component, Factory>();
     }
 
-private:
-    std::shared_ptr<Skybox> m_skybox;
+    std::shared_ptr<ecs::Entity> addEntity(std::string name) {
+        return m_ecsRegistry.createEntity(std::move(name));
+    }
+
+	void setCamera(std::shared_ptr<rendering::camera::Camera> camera) {
+		m_camera = std::move(camera);
+	}
+	
+protected:
+	std::shared_ptr<rendering::camera::Camera> m_camera;
     ecs::Registry m_ecsRegistry;
 };
 }

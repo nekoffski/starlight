@@ -1,17 +1,18 @@
 #include "ParticleEffectSystem.h"
 
 #include "sl/asset/AssetManager.hpp"
+#include "sl/core/async/AsyncEngine.hpp"
 #include "sl/core/perf/Profiler.h"
-#include "sl/core/task/CallScheduler.hpp"
 #include "sl/geometry/Geometry.hpp"
 #include "sl/platform/shader/Shader.h"
 #include "sl/rendering/Renderer.h"
 #include "sl/rendering/camera/Camera.h"
+#include "sl/scene/components/TransformComponent.h"
 
 namespace sl::scene::systems {
 
-constexpr float PARTICLE_CLEANER_PERIOD = 2.0f;
-constexpr int MAX_PARTICLE_PER_ITERATION = 100;
+constexpr float PARTICLE_CLEANER_SLEEP = 0.1f;
+constexpr int MAX_PARTICLE_PER_ITERATION = 1000;
 
 static void cleanRetiredParticles(std::vector<physics::pfx::Particle>& particles) {
     std::erase_if(particles, [](auto& particle) -> bool { return particle.scale <= 0 || particle.position.y >= 7.5f; });
@@ -23,6 +24,7 @@ ParticleEffectSystem::ParticleEffectSystem(std::shared_ptr<rendering::Renderer> 
 
     m_shader = asset::AssetManager::load<platform::shader::Shader>(
         "/particle.vert", "/particle.frag");
+    m_pfxTimer = core::async::AsyncEngine::createTimer(PARTICLE_CLEANER_SLEEP);
 }
 
 void ParticleEffectSystem::renderParticleEffects(std::vector<components::ParticleEffectComponent>& pfxs,
@@ -35,7 +37,8 @@ void ParticleEffectSystem::renderParticleEffects(std::vector<components::Particl
     beginParticleEffect();
 
     for (auto& pfx : pfxs) {
-        m_shader->setUniform("model", math::translate(pfx.position));
+        auto& transform = pfx.entity->getComponent<components::TransformComponent>();
+        m_shader->setUniform("model", math::translate(pfx.position) * transform());
 
         for (auto& particle : pfx.particles) {
             m_shader->setUniform("localModel", math::translate(particle.position) * math::scale(particle.scale));
@@ -48,21 +51,25 @@ void ParticleEffectSystem::renderParticleEffects(std::vector<components::Particl
     m_shader->disable();
 }
 
-void ParticleEffectSystem::update(std::vector<components::ParticleEffectComponent>& pfxs, float deltaTime) {
+void ParticleEffectSystem::update(std::vector<components::ParticleEffectComponent>& pfxs, float deltaTime, std::shared_ptr<rendering::camera::Camera> camera) {
     for (auto& pfx : pfxs)
-        updateParticleEffect(pfx, deltaTime);
+        updateParticleEffect(pfx, deltaTime, camera);
 }
 
-void ParticleEffectSystem::updateParticleEffect(components::ParticleEffectComponent& pfx, float deltaTime) {
+void ParticleEffectSystem::updateParticleEffect(components::ParticleEffectComponent& pfx, float deltaTime, std::shared_ptr<rendering::camera::Camera> camera) {
+	pfx.maxParticles = m_particlesFuzzyController.calculateParticlesCount(camera->getPosition(),
+		camera->getFront(), pfx.position, static_cast<unsigned int>(1.0f / deltaTime));
+
     auto& particles = pfx.particles;
     for (auto& particle : particles)
         updateParticle(particle, deltaTime);
 
-    core::task::CallScheduler::callIfExpired(
-        deltaTime * PARTICLE_CLEANER_PERIOD, "pfxCleaner", cleanRetiredParticles, particles);
+    if (not m_pfxTimer->asyncSleep())
+        std::erase_if(particles, [](auto& particle) -> bool { return particle.scale <= 0 || particle.position.y >= 7.5f; });
 
+	int maxParticlesPerIteration = std::max(1, pfx.maxParticles / 100);
     if (int delta = pfx.maxParticles - particles.size(); delta > 0) {
-        auto n = std::min(delta, MAX_PARTICLE_PER_ITERATION);
+        auto n = std::min(delta, maxParticlesPerIteration);
         auto generatedParticles = m_particleGenerator.generate(pfx.pfxGeneratorSettings, n);
 
         particles.reserve(n);
