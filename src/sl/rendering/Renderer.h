@@ -52,6 +52,10 @@ public:
 		m_graphicsContext->swapBuffers();
 	}
 
+	void setProjectionMatrix(const math::Mat4& projectionMatrix) {
+		m_projectionMatrix = projectionMatrix;
+	}
+
 private:
     std::unique_ptr<platform::gpu::GraphicsContext> m_graphicsContext;
     std::unique_ptr<platform::gpu::RenderAPI> m_renderAPI;

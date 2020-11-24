@@ -11,16 +11,12 @@ public:
     explicit EulerCamera(math::Vec3, float, float);
 
     void update(float) override;
-
-    const math::Vec3& getPosition() override;
-    const math::Vec3& getUp() override;
-    const math::Vec3& getFront() override;
-    const math::Vec3& getRight() override;
-
-    const math::Mat4 getViewMatrix() override;
-
     void handleInput(std::shared_ptr<platform::input::Input>) override;
     void onGUI(gui::Window&) override;
+	
+	const math::Mat4 getViewMatrix() override {
+        return math::lookAt(m_position, m_centre, m_up);
+    }
 
 private:
     void calculateVectors();

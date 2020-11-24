@@ -20,6 +20,9 @@ public:
         return static_cast<void*>(m_windowHandle);
     }
 
+    void enableCursor() override;
+    void disableCursor() override;
+
     bool getShouldClose() const override;
     void setShouldClose(bool) override;
 

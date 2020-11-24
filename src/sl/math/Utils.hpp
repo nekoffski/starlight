@@ -89,6 +89,10 @@ inline Mat4 createRotationMatrix(const math::Vec3& orientation) {
     return quaternionToMat4(Quaternion(orientation));
 }
 
+inline float distance(const math::Vec3& lhs, const math::Vec3& rhs) {
+	return glm::distance(lhs, rhs);
+}
+
 template <class T>
 inline float linInterpolate(const T& a, const T& b, float alfa) {
     return (1.0f - alfa) * a + alfa * b;

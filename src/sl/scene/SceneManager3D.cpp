@@ -1,4 +1,6 @@
-#include "SceneManager.h"
+#include "SceneManager3D.h"
+
+#include <exception>
 
 #include "components/DirectionalLightComponent.h"
 #include "components/ModelComponent.h"
@@ -12,23 +14,26 @@
 
 namespace sl::scene {
 
-SceneManager::SceneManager(std::shared_ptr<rendering::Renderer> renderer)
+SceneManager3D::SceneManager3D(std::shared_ptr<rendering::Renderer> renderer)
     : m_renderer(renderer)
     , m_rendererSystem(m_renderer)
     , m_pfxSystem(m_renderer)
     , m_skyboxSystem(m_renderer)
     , m_shadowSystem(renderer) {}
 
-void SceneManager::update(float deltaTime) {
-    m_pfxSystem.update(
-        m_scene->m_ecsRegistry.getComponentView<components::ParticleEffectComponent>(), deltaTime);
+void SceneManager3D::update(float deltaTime) {
+    auto& pfxs = m_scene->m_ecsRegistry.getComponentView<components::ParticleEffectComponent>();
+    m_pfxSystem.update(pfxs, deltaTime, m_scene->m_camera);
 }
 
-void SceneManager::setActiveScene(std::shared_ptr<Scene> scene) {
-    m_scene = std::move(scene);
+void SceneManager3D::setActiveScene(std::shared_ptr<Scene> scene) {
+    auto scene3d = std::dynamic_pointer_cast<Scene3D>(scene);
+
+	SL_ASSERT(scene3d != nullptr, "Invalid scene type!");
+    m_scene = std::move(scene3d);
 }
 
-void SceneManager::render(std::shared_ptr<rendering::camera::Camera> camera) {
+void SceneManager3D::render() {
     const auto& skybox = m_scene->m_skybox;
 
     if (skybox)
@@ -37,40 +42,40 @@ void SceneManager::render(std::shared_ptr<rendering::camera::Camera> camera) {
     auto& directionalLights = m_scene->m_ecsRegistry.getComponentView<components::DirectionalLightComponent>();
     auto& pointLights = m_scene->m_ecsRegistry.getComponentView<components::PointLightComponent>();
     auto& rendererComponents = m_scene->m_ecsRegistry.getComponentView<components::RendererComponent>();
-    
-	m_shadowSystem.beginDepthCapture();
-	auto depthShader = m_shadowSystem.getDepthShader();
+
+    m_shadowSystem.beginDepthCapture();
+    auto depthShader = m_shadowSystem.getDepthShader();
     for (auto& directionalLight : directionalLights) {
         m_shadowSystem.setShadowMap(directionalLight.shadowMap);
 
         for (auto& rendererComponent : rendererComponents) {
-			depthShader->setUniform("lightSpaceMatrix", directionalLight.spaceMatrix);
-            m_rendererSystem.render(rendererComponent, camera, depthShader);
+            depthShader->setUniform("lightSpaceMatrix", directionalLight.spaceMatrix);
+            m_rendererSystem.render(rendererComponent, m_scene->m_camera, depthShader);
         }
     }
     m_shadowSystem.endDepthCapture();
 
     for (auto& rendererComponent : rendererComponents) {
         rendererComponent.shader->enable();
-        
-		m_lightSystem.prepareDirectionalLights(directionalLights, rendererComponent.shader);
+
+        m_lightSystem.prepareDirectionalLights(directionalLights, rendererComponent.shader);
         m_lightSystem.preparePointsLights(pointLights, rendererComponent.shader);
-        
-		m_rendererSystem.render(rendererComponent, camera);
-    
-		rendererComponent.shader->disable();
+
+        m_rendererSystem.render(rendererComponent, m_scene->m_camera);
+
+        rendererComponent.shader->disable();
     }
 
     m_pfxSystem.renderParticleEffects(
-        m_scene->m_ecsRegistry.getComponentView<components::ParticleEffectComponent>(), camera);
+        m_scene->m_ecsRegistry.getComponentView<components::ParticleEffectComponent>(), m_scene->m_camera);
 
     if (skybox) {
-        m_skyboxSystem.render(skybox->cubemap, skybox->shader, camera);
+        m_skyboxSystem.render(skybox->cubemap, skybox->shader, m_scene->m_camera);
         skybox->cubemap->unbind();
     }
 }
 
-void SceneManager::renderSceneGUI(gui::Window& window) {
+void SceneManager3D::renderSceneGUI(gui::Window& window) {
     for (const auto& [name, id] : m_scene->m_ecsRegistry.getEntityNameToId()) {
         window.displayText(std::move(name));
         if (window.isPreviousWidgetClicked())
@@ -78,7 +83,7 @@ void SceneManager::renderSceneGUI(gui::Window& window) {
     }
 }
 
-void SceneManager::renderMainGUI(gui::Window& window) {
+void SceneManager3D::renderMainGUI(gui::Window& window) {
     if (auto entity = m_activeEntity.lock()) {
         if (window.beginTreeNode("Selected entity")) {
             entity->onGUI(window);

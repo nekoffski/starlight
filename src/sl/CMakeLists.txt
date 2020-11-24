@@ -9,6 +9,7 @@ add_subdirectory(rendering)
 add_subdirectory(scene)
 add_subdirectory(ecs)
 add_subdirectory(gui)
+add_subdirectory(ai)
 
 add_library(sl ${CMAKE_CURRENT_SOURCE_DIR}/dummy.cpp)
 set_property(TARGET sl PROPERTY CXX_STANDARD 20)

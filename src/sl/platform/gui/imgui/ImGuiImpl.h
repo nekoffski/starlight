@@ -1,8 +1,8 @@
 #pragma once
 
-#include "sl/platform/gui/impl/GUIImpl.h"
+#include "sl/platform/gui/GUIImpl.h"
 
-namespace sl::platform::gui::impl::imgui {
+namespace sl::platform::gui::imgui {
 class ImGuiImpl : public GUIImpl {
 public:
     explicit ImGuiImpl(void*);
@@ -30,5 +30,7 @@ public:
     bool isPreviousWidgetClicked() override;
 
     bool colorPicker3(std::string, math::Vec3&) override;
+
+	bool button(std::string, int xSize, int ySize) override;
 };
 }

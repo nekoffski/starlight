@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+#include "sl/core/log/Logger.h"
 #include "sl/gui/fwd.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
@@ -24,15 +25,43 @@ const math::Vec3 WORLD_RIGHT = { 1.0f, 0.0f, 0.0f };
 
 class Camera {
 public:
+    explicit Camera(math::Vec3 position = math::Vec3{ 0.0f }, math::Vec3 up = WORLD_UP,
+        math::Vec3 front = WORLD_FRONT, math::Vec3 right = WORLD_RIGHT)
+        : m_position(std::move(position))
+        , m_up(std::move(up))
+        , m_front(std::move(front))
+        , m_right(std::move(right)) {
+
+    }
+
     virtual void update(float) = 0;
 
-    virtual const math::Vec3& getPosition() = 0;
-    virtual const math::Vec3& getUp() = 0;
-    virtual const math::Vec3& getFront() = 0;
-    virtual const math::Vec3& getRight() = 0;
-
-    virtual const math::Mat4 getViewMatrix() = 0;
-
     virtual void onGUI(gui::Window&) {}
+
+    const math::Vec3& getPosition() {
+        return m_position;
+    }
+
+    const math::Vec3& getUp() {
+        return m_up;
+    }
+
+    const math::Vec3& getFront() {
+        return m_front;
+    }
+
+    const math::Vec3& getRight() {
+        return m_right;
+    }
+
+    virtual const math::Mat4 getViewMatrix() {
+        return math::lookAt(m_position, m_front, m_up);
+    }
+
+protected:
+    math::Vec3 m_position;
+    math::Vec3 m_up;
+    math::Vec3 m_front;
+    math::Vec3 m_right;
 };
 }
