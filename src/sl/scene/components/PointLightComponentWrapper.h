@@ -10,19 +10,19 @@ class PointLightComponentWrapper : public ecs::ComponentWrapper {
 public:
     using ecs::ComponentWrapper::ComponentWrapper;
 
-    void onGUI(gui::Window& window) override {
+    void onGUI(gui::Panel& panel) override {
         PointLightComponent& component = static_cast<PointLightComponent&>(m_component);
-        if (window.beginTreeNode("Point light")) {
-            window.displayText("Position");
-            window.dragFloat3(gui::createHiddenLabel("plcPositon"), component.position, 0.1f);
-            window.displayText("Color");
-            window.colorPicker3(gui::createHiddenLabel("plcColor"), component.color);
-            window.displayText("Attenuation A");
-            window.dragFloat(gui::createHiddenLabel("plcAttenuationA"), component.attenuationA, 0.001f, 0.0f, 10.0f);
-            window.displayText("Attenuation B");
-            window.dragFloat(gui::createHiddenLabel("plcAttenuationB"), component.attenuationB, 0.001f, 0.0f, 10.0f);
-            window.displayText("Attenuation C");
-            window.dragFloat(gui::createHiddenLabel("plcAttenuationC"), component.attenuationC, 0.001f, 0.0f, 10.0f);
+        if (panel.beginTreeNode("Point light")) {
+            panel.displayText("Position");
+            panel.dragFloat3(gui::createHiddenLabel("plcPositon"), component.position, 0.1f);
+            panel.displayText("Color");
+            panel.colorPicker3(gui::createHiddenLabel("plcColor"), component.color);
+            panel.displayText("Attenuation A");
+            panel.dragFloat(gui::createHiddenLabel("plcAttenuationA"), component.attenuationA, 0.001f, 0.0f, 10.0f);
+            panel.displayText("Attenuation B");
+            panel.dragFloat(gui::createHiddenLabel("plcAttenuationB"), component.attenuationB, 0.001f, 0.0f, 10.0f);
+            panel.displayText("Attenuation C");
+            panel.dragFloat(gui::createHiddenLabel("plcAttenuationC"), component.attenuationC, 0.001f, 0.0f, 10.0f);
         }
     }
 };

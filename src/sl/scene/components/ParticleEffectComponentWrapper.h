@@ -10,45 +10,45 @@ class ParticleEffectComponentWrapper : public ecs::ComponentWrapper {
 public:
     using ecs::ComponentWrapper::ComponentWrapper;
 
-    void onGUI(gui::Window& window) override {
+    void onGUI(gui::Panel& panel) override {
         ParticleEffectComponent& component = static_cast<ParticleEffectComponent&>(m_component);
-        if (window.beginTreeNode("ParticleEffect")) {
-            window.displayText("Position");
-            window.dragFloat3(gui::createHiddenLabel("pfxPositon"), component.position, 0.1f);
+        if (panel.beginTreeNode("ParticleEffect")) {
+            panel.displayText("Position");
+            panel.dragFloat3(gui::createHiddenLabel("pfxPositon"), component.position, 0.1f);
 
-            window.displayText("Max particles");
-            window.dragInt(gui::createHiddenLabel("pfxMaxParticles"), component.maxParticles, 1.0, 1, 12500);
+            panel.displayText("Max particles");
+            panel.dragInt(gui::createHiddenLabel("pfxMaxParticles"), component.maxParticles, 1.0, 1, 12500);
 
             auto& generatorSettings = component.pfxGeneratorSettings;
 
-            window.displayText("Radius");
-            window.dragFloat(gui::createHiddenLabel("pfxRadius"), generatorSettings.radius, 0.01f, 0.0f, 25.0f);
+            panel.displayText("Radius");
+            panel.dragFloat(gui::createHiddenLabel("pfxRadius"), generatorSettings.radius, 0.01f, 0.0f, 25.0f);
 
-            window.displayText("Min color");
-            window.dragFloat3(gui::createHiddenLabel("pfxMinColor"), generatorSettings.minColor, 0.01f, 0.0f, 1.0f);
+            panel.displayText("Min color");
+            panel.dragFloat3(gui::createHiddenLabel("pfxMinColor"), generatorSettings.minColor, 0.01f, 0.0f, 1.0f);
 
-            window.displayText("Max color");
-            window.dragFloat3(gui::createHiddenLabel("pfxMaxColor"), generatorSettings.maxColor, 0.01f, 0.0f, 1.0f);
+            panel.displayText("Max color");
+            panel.dragFloat3(gui::createHiddenLabel("pfxMaxColor"), generatorSettings.maxColor, 0.01f, 0.0f, 1.0f);
 
-            window.displayText("Min speed");
-            window.dragFloat(gui::createHiddenLabel("pfxMinSpeed"), generatorSettings.minSpeed, 0.005f, 0.0f, 15.0f);
+            panel.displayText("Min speed");
+            panel.dragFloat(gui::createHiddenLabel("pfxMinSpeed"), generatorSettings.minSpeed, 0.005f, 0.0f, 15.0f);
 
-            window.displayText("Max speed");
-            window.dragFloat(gui::createHiddenLabel("pfxMaxSpeed"), generatorSettings.maxSpeed, 0.005f, 0.0f, 15.0f);
+            panel.displayText("Max speed");
+            panel.dragFloat(gui::createHiddenLabel("pfxMaxSpeed"), generatorSettings.maxSpeed, 0.005f, 0.0f, 15.0f);
 
-            window.displayText("Min scale");
-            window.dragFloat(gui::createHiddenLabel("pfxMinScale"), generatorSettings.minScale, 0.005f, 0.0f, 1.0f);
+            panel.displayText("Min scale");
+            panel.dragFloat(gui::createHiddenLabel("pfxMinScale"), generatorSettings.minScale, 0.005f, 0.0f, 1.0f);
 
-            window.displayText("Max scale");
-            window.dragFloat(gui::createHiddenLabel("pfxMaxScale"), generatorSettings.maxScale, 0.005f, 0.0f, 1.0f);
+            panel.displayText("Max scale");
+            panel.dragFloat(gui::createHiddenLabel("pfxMaxScale"), generatorSettings.maxScale, 0.005f, 0.0f, 1.0f);
 
-            window.displayText("Delta scale");
-            window.dragFloat(gui::createHiddenLabel("pfxDeltaScale"), generatorSettings.deltaScale, 0.001f, 0.0f, 1.0f);
+            panel.displayText("Delta scale");
+            panel.dragFloat(gui::createHiddenLabel("pfxDeltaScale"), generatorSettings.deltaScale, 0.001f, 0.0f, 1.0f);
 
-            window.displayText("Direction factor");
-            window.dragFloat(gui::createHiddenLabel("pfxDirectionFactor"), generatorSettings.directionFactor, 0.01f, -5.0f, 5.0f);
+            panel.displayText("Direction factor");
+            panel.dragFloat(gui::createHiddenLabel("pfxDirectionFactor"), generatorSettings.directionFactor, 0.01f, -5.0f, 5.0f);
 
-            window.popTreeNode();
+            panel.popTreeNode();
         }
     }
 };

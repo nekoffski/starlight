@@ -1,15 +1,13 @@
 #include "sl/application/Entrypoint.hpp"
 
 
-#include "Context.hpp"
-#include "sl/application/context/ApplicationContext.h"
+#include "EditorContext.hpp"
 
-// rework profiler
 
 using namespace sl;
 using namespace sl::scene;
 
-class App : public sl::application::Application {
+class StarlightEditor : public sl::application::Application {
     using sl::application::Application::Application;
 
 public:
@@ -18,7 +16,7 @@ public:
     }
 
     virtual void onStart() override {
-		context = createContext<Context>(sl::application::context::CONTEXT_3D);
+		context = createContext<EditorContext>(sl::application::context::CONTEXT_3D);
         switchContext(context);
     }
 
@@ -30,10 +28,10 @@ public:
     }
 
 private:
-    std::shared_ptr<Context> context;
+    std::shared_ptr<EditorContext> context;
 };
 
-STARLIGHT_ENTRYPOINT(App);
+STARLIGHT_ENTRYPOINT(StarlightEditor);
 
 
 

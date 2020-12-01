@@ -75,19 +75,19 @@ void SceneManager3D::render() {
     }
 }
 
-void SceneManager3D::renderSceneGUI(gui::Window& window) {
+void SceneManager3D::renderSceneGUI(gui::Panel& panel) {
     for (const auto& [name, id] : m_scene->m_ecsRegistry.getEntityNameToId()) {
-        window.displayText(std::move(name));
-        if (window.isPreviousWidgetClicked())
+        panel.displayText(std::move(name));
+        if (panel.isPreviousWidgetClicked())
             m_activeEntity = m_scene->m_ecsRegistry.getEntityById(std::move(id));
     }
 }
 
-void SceneManager3D::renderMainGUI(gui::Window& window) {
+void SceneManager3D::renderMainGUI(gui::Panel& panel) {
     if (auto entity = m_activeEntity.lock()) {
-        if (window.beginTreeNode("Selected entity")) {
-            entity->onGUI(window);
-            window.popTreeNode();
+        if (panel.beginTreeNode("Selected entity")) {
+            entity->onGUI(panel);
+            panel.popTreeNode();
         }
     }
 }

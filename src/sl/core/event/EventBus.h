@@ -1,23 +1,44 @@
 #pragma once
 
 #include <memory>
-#include <queue>
 #include <unordered_map>
 #include <vector>
 
-#include "IEventObserver.h"
-#include "sl/core/Error.h"
-#include "sl/misc/types/NotNullPtr.hpp"
+#include "Event.h"
+#include "EventObserver.h"
+#include "EventPool.h"
 
 namespace sl::core::event {
 
 class EventBus {
+    using EventsObservers = std::vector<EventObserver*>;
+
 public:
-    void notifyAll(std::shared_ptr<Event>);
-    void notify(std::shared_ptr<Event>, const std::vector<EventObserverIdent>&);
-    void registerObserver(const misc::types::NotNullPtr<IEventObserver>&, EventObserverIdent);
+    static void handleEvents() {
+        EventPool eventPool{ m_eventsMap };
+
+        for (auto& observer : m_eventsObservers)
+            observer->handleEvents(eventPool);
+
+        reset();
+    }
+
+    static void registerEventObserver(EventObserver* observer) {
+        m_eventsObservers.push_back(observer);
+    }
+
+    template <typename T, typename... Args>
+    static void emitEvent(Args&&... args) {
+        auto event = std::make_shared<T>(std::forward<Args>(args)...);
+        m_eventsMap[event->getCategory()].push_back(event);
+    }
 
 private:
-    std::unordered_map<EventObserverIdent, IEventObserver*> m_observers;
+    static void reset() {
+        m_eventsMap.clear();
+    }
+
+    inline static EventsObservers m_eventsObservers;
+    inline static EventsMap m_eventsMap;
 };
-} // namespace sl::core::event
+}

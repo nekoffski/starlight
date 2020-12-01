@@ -85,7 +85,7 @@ public:
         return math::lookAt(m_position, m_position + m_front, m_up);
     }
 
-    void onGUI(gui::Window&) override {
+    void onGUI(gui::Panel&) override {
     }
 
 private:

@@ -1,10 +1,10 @@
 #include "Application.h"
 
+#include "sl/core/event/EventBus.h"
 #include "sl/core/perf/Profiler.h"
 #include "sl/geometry/Geometry.hpp"
-#include "sl/platform/shader/ShaderCompiler.hpp"
 #include "sl/platform/gui/GUIImpl.h"
-
+#include "sl/platform/shader/ShaderCompiler.hpp"
 
 namespace sl::application {
 
@@ -31,8 +31,8 @@ void Application::init() {
     platform::shader::ShaderCompiler::init();
     geometry::Geometry::init();
 
-    m_sceneManager3D = std::make_shared<scene::SceneManager3D>(m_renderer);	
-	m_sceneManager2D = std::make_shared<scene::SceneManager2D>(m_renderer);
+    m_sceneManager3D = std::make_shared<scene::SceneManager3D>(m_renderer);
+    m_sceneManager2D = std::make_shared<scene::SceneManager2D>(m_renderer);
 }
 
 void Application::update(float deltaTime, float time) {
@@ -47,13 +47,13 @@ void Application::render() {
 
     m_renderer->clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
     m_context->render();
-	renderGUI();
-	m_renderer->swapBuffers();
+    renderGUI();
+    m_renderer->swapBuffers();
 }
 
 void Application::renderGUI() {
     m_guiImpl->begin();
-    m_context->renderGUI(m_guiProxy);
+    m_context->renderGUI(*m_guiProxy);
     m_guiImpl->end();
 }
 

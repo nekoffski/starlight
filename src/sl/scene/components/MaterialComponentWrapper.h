@@ -10,18 +10,18 @@ class MaterialComponentWrapper : public ecs::ComponentWrapper {
 public:
     using ecs::ComponentWrapper::ComponentWrapper;
 
-    void onGUI(gui::Window& window) override {
+    void onGUI(gui::Panel& panel) override {
         MaterialComponent& component = static_cast<MaterialComponent&>(m_component);
-        if (window.beginTreeNode("Material")) {
-            window.displayText("Ambient color");
-            window.colorPicker3(gui::createHiddenLabel("Ambient color"), component.ambientColor);
-            window.displayText("Diffuse color");
-            window.colorPicker3(gui::createHiddenLabel("Diffuse color"), component.diffuseColor);
-            window.displayText("Specular color");
-            window.colorPicker3(gui::createHiddenLabel("Specular color"), component.specularColor);
-            window.displayText("Shininess");
-            window.dragFloat(gui::createHiddenLabel("rotation"), component.shininess, 0.5f, 0.0f, 128.0f);
-            window.popTreeNode();
+        if (panel.beginTreeNode("Material")) {
+            panel.displayText("Ambient color");
+            panel.colorPicker3(gui::createHiddenLabel("Ambient color"), component.ambientColor);
+            panel.displayText("Diffuse color");
+            panel.colorPicker3(gui::createHiddenLabel("Diffuse color"), component.diffuseColor);
+            panel.displayText("Specular color");
+            panel.colorPicker3(gui::createHiddenLabel("Specular color"), component.specularColor);
+            panel.displayText("Shininess");
+            panel.dragFloat(gui::createHiddenLabel("rotation"), component.shininess, 0.5f, 0.0f, 128.0f);
+            panel.popTreeNode();
         }
     }
 };

@@ -2,7 +2,9 @@
 
 #include <memory>
 
-#include "sl/gui/Window.h"
+namespace sl::gui {
+class Panel;
+}
 
 namespace sl::ecs {
 
@@ -14,7 +16,7 @@ public:
         : m_component(component) {
     }
 
-    virtual void onGUI(gui::Window& window) = 0;
+    virtual void onGUI(gui::Panel&) = 0;
 
 protected:
     Component& m_component;
@@ -27,7 +29,7 @@ struct ComponentWrapperFactory {
 struct NullComponentWrapper : ComponentWrapper {
     using ComponentWrapper::ComponentWrapper;
 
-    void onGUI(gui::Window& window) override {
+    void onGUI(gui::Panel&) override {
     }
 };
 }
