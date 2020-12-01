@@ -2,6 +2,6 @@
 
 namespace sl::gui {
 
-class Window;
+class Panel;
 class GUIProxy;
 }

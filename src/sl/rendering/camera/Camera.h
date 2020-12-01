@@ -36,7 +36,7 @@ public:
 
     virtual void update(float) = 0;
 
-    virtual void onGUI(gui::Window&) {}
+    virtual void onGUI(gui::Panel&) {}
 
     const math::Vec3& getPosition() {
         return m_position;

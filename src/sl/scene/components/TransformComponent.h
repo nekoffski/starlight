@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "sl/gui/Utils.hpp"
-#include "sl/gui/Window.h"
 #include "sl/math/Utils.hpp"
 #include "sl/math/Vector.hpp"
 

@@ -7,7 +7,7 @@
 #include "sl/asset/AssetManager.hpp"
 #include "sl/ecs/Entity.h"
 #include "sl/geometry/Geometry.hpp"
-#include "sl/gui/Window.h"
+#include "sl/gui/Panel.h"
 #include "sl/math/Vector.hpp"
 #include "sl/misc/colors.hpp"
 #include "sl/platform/shader/Shader.h"
@@ -33,9 +33,9 @@ public:
     void render() override {
     }
 
-    void renderSceneGUI(gui::Window& window) {
+    void renderSceneGUI(gui::Panel& panel) {
     }
-    void renderMainGUI(gui::Window& window) {
+    void renderMainGUI(gui::Panel& panel) {
     }
 
 private:

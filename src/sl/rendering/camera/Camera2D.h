@@ -42,10 +42,10 @@ public:
         }
     }
 
-    void onGUI(gui::Window& window) override {
-        if (window.beginTreeNode("Camera")) {
-            window.sliderFloat("Camera speed", m_speed, 0.01f, 2.5f);
-            window.popTreeNode();
+    void onGUI(gui::Panel& panel) override {
+        if (panel.beginTreeNode("Camera")) {
+            panel.sliderFloat("Camera speed", m_speed, 0.01f, 2.5f);
+            panel.popTreeNode();
         }
     }
 

@@ -8,6 +8,7 @@
 #include "Application.h"
 #include "sl/core/BaseError.h"
 #include "sl/core/async/AsyncEngine.hpp"
+#include "sl/core/event/EventBus.h"
 #include "sl/core/log/Logger.h"
 #include "sl/core/perf/Profiler.h"
 #include "sl/core/sig/Signal.h"
@@ -23,9 +24,6 @@ public:
         : m_argc(argc)
         , m_argv(argv)
         , m_application(nullptr) {
-        // TODO: replace with concept as soon as c++20 arrives
-        if (!std::is_base_of<Application, App>())
-            throw std::logic_error("App has to be derived from application::Application!");
     }
 
     int start() {
@@ -58,12 +56,13 @@ public:
                     m_application->update(deltaTime, platform::time::Clock::now()->value());
                     m_application->render();
 
+					core::event::EventBus::handleEvents();
                     core::async::AsyncEngine::update(deltaTime);
                     platform::time::Clock::update();
                 }
 
-				if (not m_profilerTimer->asyncSleep())
-					core::perf::Profiler::printResults();
+                if (not m_profilerTimer->asyncSleep())
+                    core::perf::Profiler::printResults();
             }
 
             m_application->onStop();
@@ -85,7 +84,7 @@ public:
     }
 
 private:
-	std::shared_ptr<core::async::Timer> m_profilerTimer;
+    std::shared_ptr<core::async::Timer> m_profilerTimer;
     std::unique_ptr<Application> m_application;
     int& m_argc;
     char**& m_argv;

@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-#include "sl/gui/Window.h"
+#include "sl/gui/Panel.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Utils.hpp"
 #include "sl/platform/input/Input.h"
@@ -82,12 +82,12 @@ void EulerCamera::handleInput(std::shared_ptr<platform::input::Input> input) {
         m_direction |= DIR_LEFT;
 }
 
-void EulerCamera::onGUI(gui::Window& window) {
-    if (window.beginTreeNode("Euler camera")) {
-        window.sliderFloat("Fi", m_fi, MIN_FI, MAX_FI);
-        window.sliderFloat("Psi", m_psi, MIN_PSI, MAX_PSI);
-        window.sliderFloat("R", m_radius, 1.0f, 25.0f);
-        window.popTreeNode();
+void EulerCamera::onGUI(gui::Panel& panel) {
+    if (panel.beginTreeNode("Euler camera")) {
+        panel.sliderFloat("Fi", m_fi, MIN_FI, MAX_FI);
+        panel.sliderFloat("Psi", m_psi, MIN_PSI, MAX_PSI);
+        panel.sliderFloat("R", m_radius, 1.0f, 25.0f);
+        panel.popTreeNode();
     }
 }
 }
