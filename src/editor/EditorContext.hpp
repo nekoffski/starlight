@@ -1,7 +1,7 @@
 #pragma once
 
 #include "editor/gui/Settings.h"
-#include "gui/EditorGUI.h"
+#include "gui/EditorGui.h"
 #include "res/ResourceManager.h"
 #include "sl/application/Entrypoint.hpp"
 #include "sl/application/context/ApplicationContext.h"
@@ -27,7 +27,7 @@ public:
     void onInit() override {
         m_activeCamera = rendering::camera::EulerCamera::create(math::Vec3(0.0f), 1.0f, 8.0f);
         m_scene = scene::Scene3D::create();
-        m_editorGUI = std::make_shared<editor::gui::EditorGUI>(createGuiSettings(), m_entities, m_resourceManager);
+        m_editorGui = std::make_shared<editor::gui::EditorGui>(createGuiSettings(), m_entities, m_resourceManager);
 
         m_scene->setCamera(m_activeCamera);
         m_sceneManager->setActiveScene(m_scene);
@@ -50,7 +50,7 @@ public:
     }
 
     void renderGUI(gui::GUIProxy& gui) override {
-        m_editorGUI->renderEditorGUI(gui);
+        m_editorGui->renderEditorGui(gui);
     }
 
     void handleInput(std::shared_ptr<platform::input::Input> input) override {
@@ -94,7 +94,7 @@ public:
 private:
     editor::res::ResourceManager m_resourceManager;
 
-    std::shared_ptr<editor::gui::EditorGUI> m_editorGUI;
+    std::shared_ptr<editor::gui::EditorGui> m_editorGui;
     std::vector<std::shared_ptr<ecs::Entity>> m_entities;
 
     std::shared_ptr<rendering::camera::UserControllableCamera> m_activeCamera;

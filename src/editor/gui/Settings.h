@@ -1,22 +1,36 @@
 #pragma once
 
+#include "Widget.h"
+
 namespace editor::gui {
 
 struct Settings {
     explicit Settings(int viewportWidth, int viewportHeight, float leftPanelWidthRatio,
-        float leftSideTopBottomRatio)
-        : viewportWidth(viewportWidth)
-        , viewportHeight(viewportHeight)
-        , leftPanelWidthRatio(leftPanelWidthRatio)
-        , leftSideTopBottomRatio(leftSideTopBottomRatio)
+        float leftSideTopBottomRatio) {
+        auto leftPanelWidth = viewportWidth * leftPanelWidthRatio;
+        auto scenePanelHeight = viewportHeight * leftSideTopBottomRatio;
+        auto propertiesPanelHeight = viewportHeight - scenePanelHeight;
 
-    {
+        scenePanelPosition = {
+            { 0, 0 },
+            { leftPanelWidth, scenePanelHeight }
+        };
+
+        propertiesPanelPosition = {
+            { 0, scenePanelHeight },
+            { leftPanelWidth, propertiesPanelHeight }
+        };
+
+        auto bottomPanelHeight = 0.3f * viewportHeight;
+
+        bottomPanelPosition = {
+            { leftPanelWidth, viewportHeight - bottomPanelHeight },
+            { viewportWidth - leftPanelWidth, bottomPanelHeight }
+        };
     }
 
-    int viewportWidth;
-    int viewportHeight;
-
-    float leftPanelWidthRatio;
-    float leftSideTopBottomRatio;
+    WidgetPosition scenePanelPosition;
+    WidgetPosition propertiesPanelPosition;
+    WidgetPosition bottomPanelPosition;
 };
 }
