@@ -11,7 +11,7 @@ namespace editor::gui {
 class BottomPanel : public Widget {
 public:
     explicit BottomPanel(const Settings& settings, res::ResourceManager& resourceManager);
-    void render(sl::gui::GUIProxy& gui) override;
+    void render(sl::gui::GuiProxy& gui) override;
 
 private:
     WidgetPosition m_position;

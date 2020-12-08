@@ -1,8 +1,9 @@
 #pragma once
 
-#include <string>
 #include <memory>
+#include <string>
 
+#include "sl/geometry/Model.h"
 #include "sl/platform/texture/Cubemap.h"
 
 namespace editor::res {
@@ -20,11 +21,10 @@ struct Resource : public std::enable_shared_from_this<Resource> {
 
     virtual ResourceType getType() = 0;
 
-	template<typename T>
-	std::shared_ptr<T> as () {
-		return std::dynamic_pointer_cast<T>(shared_from_this());
-	}
-
+    template <typename T>
+    std::shared_ptr<T> as() {
+        return std::dynamic_pointer_cast<T>(shared_from_this());
+    }
 
     std::string name;
 };
@@ -40,5 +40,15 @@ struct CubemapResource : public Resource {
         , cubemap(cubemap) {}
 
     std::shared_ptr<sl::platform::texture::Cubemap> cubemap;
+};
+
+struct ModelResource : public Resource {
+    SL_RESOURCE(ResourceType::MODEL);
+
+    explicit ModelResource(std::shared_ptr<sl::geometry::Model> model, std::string name)
+        : Resource(std::move(name))
+        , model(model) {}
+
+    std::shared_ptr<sl::geometry::Model> model;
 };
 }

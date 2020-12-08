@@ -8,10 +8,10 @@
 
 namespace sl::platform::gui {
 
-class GUIImpl {
+class GuiImpl {
 public:
-    static std::unique_ptr<GUIImpl> create(void*);
-    virtual ~GUIImpl();
+    static std::unique_ptr<GuiImpl> create(void*);
+    virtual ~GuiImpl();
 
     virtual void begin() = 0;
     virtual void end() = 0;
@@ -36,9 +36,9 @@ public:
     virtual void breakLine() = 0;
     virtual bool sliderFloat3(std::string, math::Vec3&, float, float) = 0;
     virtual bool sliderFloat(std::string, float&, float, float) = 0;
-    virtual bool dragFloat3(std::string, math::Vec3&, float, float, float) = 0;
-    virtual bool dragFloat(std::string, float&, float, float, float) = 0;
-    virtual bool dragInt(std::string, int&, float, int, int) = 0;
+    virtual bool dragFloat3(std::string, math::Vec3&, float = 1.0f, float = 0.0f, float = 0.0f) = 0;
+    virtual bool dragFloat(std::string, float&, float = 1.0f, float = 0.0f, float = 0.0f) = 0;
+    virtual bool dragInt(std::string, int&, float = 1.0f, int = 1, int = 25) = 0;
     virtual bool beginTreeNode(std::string, bool = true) = 0;
     virtual void popTreeNode() = 0;
     virtual bool isPreviousWidgetClicked() = 0;

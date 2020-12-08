@@ -19,8 +19,15 @@ public:
     }
 
     template <typename T>
+    static std::string get() {
+        if (not m_resourcePaths.contains(typeid(T)))
+            throw CoreException(ErrorCode::PATH_NOT_REGISTERED);
+        return m_resourcePaths.at(typeid(T)) + "/";
+    }
+
+    template <typename T>
     static std::string createGlobalPath(const std::string& path) {
-        if (0 >= m_resourcePaths.count(typeid(T)))
+        if (not m_resourcePaths.count(typeid(T)))
             throw CoreException(ErrorCode::PATH_NOT_REGISTERED);
         return m_resourcePaths.at(typeid(T)) + path;
     }

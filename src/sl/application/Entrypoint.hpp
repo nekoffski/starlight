@@ -7,13 +7,14 @@
 
 #include "Application.h"
 #include "sl/core/BaseError.h"
-#include "sl/core/async/AsyncEngine.hpp"
+#include "sl/async/AsyncEngine.hpp"
 #include "sl/core/event/EventBus.h"
 #include "sl/core/log/Logger.h"
 #include "sl/core/perf/Profiler.h"
 #include "sl/core/sig/Signal.h"
 #include "sl/platform/time/Clock.h"
 #include "sl/platform/time/impl/StdClockImpl.h"
+#include "sl/core/fs/FileSystem.h"
 
 namespace sl::application {
 
@@ -29,11 +30,13 @@ public:
     int start() {
         core::sig::setupSignalHandler(this);
         core::log::initLogging();
-        SL_INFO("Initialized logging");
+		core::fs::FS::init();
+		SL_INFO("Initialized logging");
 
         platform::time::Clock::setClockImpl<platform::time::impl::StdClockImpl>();
 
-        m_profilerTimer = core::async::AsyncEngine::createTimer(PROFILER_PRINT_INTERVAL);
+
+        m_profilerTimer = async::AsyncEngine::createTimer(PROFILER_PRINT_INTERVAL);
 
         // TODO: load config
 
@@ -57,7 +60,7 @@ public:
                     m_application->render();
 
 					core::event::EventBus::handleEvents();
-                    core::async::AsyncEngine::update(deltaTime);
+                    async::AsyncEngine::update(deltaTime);
                     platform::time::Clock::update();
                 }
 
@@ -84,7 +87,7 @@ public:
     }
 
 private:
-    std::shared_ptr<core::async::Timer> m_profilerTimer;
+    std::shared_ptr<async::timer::Timer> m_profilerTimer;
     std::unique_ptr<Application> m_application;
     int& m_argc;
     char**& m_argv;

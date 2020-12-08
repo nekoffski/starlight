@@ -11,20 +11,20 @@ class DirectionalLightComponentWrapper : public ecs::ComponentWrapper {
 public:
     using ecs::ComponentWrapper::ComponentWrapper;
 
-    void onGUI(gui::Panel& panel) override {
+    void onGui(gui::GuiProxy& gui) override {
         DirectionalLightComponent& component = static_cast<DirectionalLightComponent&>(m_component);
-        if (panel.beginTreeNode("Directional light")) {
-            panel.displayText("Position");
+        if (gui->beginTreeNode("Directional light")) {
+            gui->displayText("Position");
 
-            if (panel.dragFloat3(gui::createHiddenLabel("dlcDirection"), component.direction, 0.01f, -1.0f, 1.0f)) {
+            if (gui->dragFloat3(gui::createHiddenLabel("dlcDirection"), component.direction, 0.01f, -1.0f, 1.0f)) {
                 component.viewMatrix = math::lookAt(component.direction, math::Vec3{ 0.0f }, math::Vec3{ 0.0f, 1.0f, 0.0f });
                 component.spaceMatrix = LIGHT_PROJECTION * component.viewMatrix;
             }
 
-            panel.displayText("Color");
-            panel.colorPicker3(gui::createHiddenLabel("dlcColor"), component.color);
+            gui->displayText("Color");
+            gui->colorPicker3(gui::createHiddenLabel("dlcColor"), component.color);
 
-            panel.popTreeNode();
+            gui->popTreeNode();
         }
     }
 };

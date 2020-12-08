@@ -3,7 +3,7 @@
 #include <memory>
 
 namespace sl::gui {
-class Panel;
+class GuiProxy;
 }
 
 namespace sl::ecs {
@@ -16,7 +16,7 @@ public:
         : m_component(component) {
     }
 
-    virtual void onGUI(gui::Panel&) = 0;
+    virtual void onGui(gui::GuiProxy&) = 0;
 
 protected:
     Component& m_component;
@@ -29,7 +29,7 @@ struct ComponentWrapperFactory {
 struct NullComponentWrapper : ComponentWrapper {
     using ComponentWrapper::ComponentWrapper;
 
-    void onGUI(gui::Panel&) override {
+    void onGui(gui::GuiProxy&) override {
     }
 };
 }

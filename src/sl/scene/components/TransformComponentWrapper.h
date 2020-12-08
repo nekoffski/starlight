@@ -10,16 +10,16 @@ class TransformComponentWrapper : public ecs::ComponentWrapper {
 public:
     using ecs::ComponentWrapper::ComponentWrapper;
 
-    void onGUI(gui::Panel& panel) override {
+    void onGui(gui::GuiProxy& gui) override {
         TransformComponent& component = static_cast<TransformComponent&>(m_component);
-        if (panel.beginTreeNode("Transform")) {
-            panel.displayText("Translation");
-            panel.dragFloat3(gui::createHiddenLabel("translation"), component.position, 0.1f);
-            panel.displayText("Rotation");
-            panel.dragFloat3(gui::createHiddenLabel("rotation"), component.rotation, 0.5f, 0.0f, 360.0f);
-            panel.displayText("Scale");
-			panel.dragFloat3(gui::createHiddenLabel("scale"), component.scale, 0.5f, 0.0f, 360.0f);
-			panel.popTreeNode();
+        if (gui->beginTreeNode("Transform")) {
+            gui->displayText("Translation");
+            gui->dragFloat3(gui::createHiddenLabel("translation"), component.position, 0.1f);
+            gui->displayText("Rotation");
+            gui->dragFloat3(gui::createHiddenLabel("rotation"), component.rotation, 0.5f, 0.0f, 360.0f);
+            gui->displayText("Scale");
+            gui->dragFloat3(gui::createHiddenLabel("scale"), component.scale, 0.5f, 0.0f, 360.0f);
+            gui->popTreeNode();
         }
     }
 };

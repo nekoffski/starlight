@@ -10,7 +10,7 @@ namespace sl::scene::systems {
 ShadowSystem::ShadowSystem(std::shared_ptr<rendering::Renderer> renderer)
     : m_renderer(renderer)
     , m_shadowMapFrameBuffer(platform::gpu::FrameBuffer::create())
-    , m_depthShader(asset::AssetManager::load<platform::shader::Shader>("/depth_capture.vert", "/depth_capture.frag")) {
+    , m_depthShader(asset::AssetManager::loadLocalPath<platform::shader::Shader>("/depth_capture.vert", "/depth_capture.frag")) {
 }
 
 void ShadowSystem::beginDepthCapture() {

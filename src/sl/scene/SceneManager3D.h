@@ -3,7 +3,6 @@
 #include "SceneManager.h"
 
 #include "sl/ecs/Entity.h"
-#include "sl/gui/Panel.h"
 #include "sl/rendering/Renderer.h"
 #include "sl/scene/Scene3D.h"
 #include "systems/LightSystem.h"
@@ -22,8 +21,6 @@ public:
     void update(float) override;
     void setActiveScene(std::shared_ptr<Scene>) override;
     void render() override;
-    void renderSceneGUI(gui::Panel&) override;
-    void renderMainGUI(gui::Panel&) override;
 
 private:
     std::shared_ptr<Scene3D> m_scene;
@@ -35,6 +32,5 @@ private:
 	systems::SkyboxSystem m_skyboxSystem;
 	systems::ShadowSystem m_shadowSystem;
 
-    std::weak_ptr<ecs::Entity> m_activeEntity;
 };
 }

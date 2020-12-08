@@ -9,14 +9,16 @@
 #include "sl/core/event/EventBus.h"
 #include "sl/core/event/EventObserver.h"
 #include "sl/core/event/EventPool.h"
+#include "sl/core/fs/FileSystem.h"
 #include "sl/core/log/Logger.h"
 #include "sl/ecs/Entity.h"
-#include "sl/gui/GUIProxy.h"
-#include "sl/gui/Panel.h"
+#include "sl/gui/GuiProxy.h"
 #include "sl/gui/Utils.hpp"
 #include "sl/rendering/camera/EulerCamera.h"
 #include "sl/rendering/camera/FPSCamera.h"
 #include "sl/scene/Scene3D.h"
+
+#include <filesystem>
 
 using namespace sl;
 using namespace sl::scene;
@@ -33,7 +35,7 @@ public:
         m_sceneManager->setActiveScene(m_scene);
 
         event::EventBus::registerEventObserver(this);
-    }
+	}
 
     void onAttach() override {
     }
@@ -44,12 +46,12 @@ public:
     editor::gui::Settings createGuiSettings() {
         const auto viewport = m_window->getParams().viewport;
         const float leftPanelWidth = 0.2f;
-        const float leftPanelTopBottomRatio = 0.6f;
+        const float leftPanelTopBottomRatio = 0.5f;
 
         return editor::gui::Settings{ viewport.width, viewport.height, leftPanelWidth, leftPanelTopBottomRatio };
     }
 
-    void renderGUI(gui::GUIProxy& gui) override {
+    void renderGui(gui::GuiProxy& gui) override {
         m_editorGui->renderEditorGui(gui);
     }
 
@@ -81,7 +83,7 @@ public:
             case event::EventType::SET_SKYBOX: {
                 auto cubemap = event->as<event::SetSkyboxEvent>()->cubemap;
                 auto cubemapShader =
-                    asset::AssetManager::load<platform::shader::Shader>("/cubemap.vert", "/cubemap.frag");
+                    asset::AssetManager::loadLocalPath<platform::shader::Shader>("/cubemap.vert", "/cubemap.frag");
 				auto skybox = sl::scene::Skybox::create(cubemapShader, cubemap);	
                 m_scene->setSkybox(skybox);
 

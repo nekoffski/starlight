@@ -4,8 +4,8 @@
 
 #include "sl/core/log/Logger.h"
 #include "sl/core/path/PathManager.hpp"
-#include "sl/platform/model/ModelLoader.h"
 #include "sl/geometry/Model.h"
+#include "sl/platform/model/ModelLoader.h"
 
 namespace sl::asset::loaders {
 
@@ -20,10 +20,14 @@ struct AssetLoaderArgs<Model> {
 template <>
 class AssetLoader<Model> {
 public:
-    static std::shared_ptr<Model> load(AssetLoaderArgs<Model> args) {
+    static std::shared_ptr<Model> load(bool globalPath, AssetLoaderArgs<Model> args) {
+        std::string path = "";
+        if (not globalPath)
+            path += core::path::PathManager::get<Model>();
 
-        SL_DEBUG("loading model: {}", args.path);
-        return m_modelLoader->loadModel(core::path::PathManager::createGlobalPath<Model>(args.path));
+        path += args.path;
+        SL_DEBUG("loading model: {}", path);
+        return m_modelLoader->loadModel(path);
     }
 
 private:

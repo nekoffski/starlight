@@ -5,7 +5,7 @@
 #include <type_traits>
 
 #include "sl/application/context/ApplicationContext.h"
-#include "sl/gui/GUIProxy.h"
+#include "sl/gui/GuiProxy.h"
 #include "sl/platform/gui/fwd.h"
 #include "sl/platform/input/Input.h"
 #include "sl/platform/window/Window.h"
@@ -35,7 +35,7 @@ public:
     void update(float, float);
     void handleInput();
     void render();
-    void renderGUI();
+    void renderGui();
 
     std::shared_ptr<context::ApplicationContext> getActiveContext() const {
         return m_context;
@@ -71,9 +71,9 @@ private:
     std::shared_ptr<platform::window::Window> m_window;
     std::shared_ptr<platform::input::Input> m_input;
     std::shared_ptr<rendering::Renderer> m_renderer;
-    std::shared_ptr<platform::gui::GUIImpl> m_guiImpl;
+    std::shared_ptr<platform::gui::GuiImpl> m_guiImpl;
     std::shared_ptr<context::ApplicationContext> m_context;
-    std::shared_ptr<gui::GUIProxy> m_guiProxy;
+    std::shared_ptr<gui::GuiProxy> m_guiProxy;
 
     std::shared_ptr<scene::SceneManager> m_sceneManager3D;
     std::shared_ptr<scene::SceneManager> m_sceneManager2D;

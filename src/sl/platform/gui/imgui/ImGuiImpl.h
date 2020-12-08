@@ -1,9 +1,9 @@
 #pragma once
 
-#include "sl/platform/gui/GUIImpl.h"
+#include "sl/platform/gui/GuiImpl.h"
 
 namespace sl::platform::gui::imgui {
-class ImGuiImpl : public GUIImpl {
+class ImGuiImpl : public GuiImpl {
 public:
     explicit ImGuiImpl(void*);
     ~ImGuiImpl() override;

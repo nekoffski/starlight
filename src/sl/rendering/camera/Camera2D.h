@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UserControllableCamera.h"
+#include "sl/gui/GuiProxy.h"
 
 #include <memory>
 
@@ -42,10 +43,10 @@ public:
         }
     }
 
-    void onGUI(gui::Panel& panel) override {
-        if (panel.beginTreeNode("Camera")) {
-            panel.sliderFloat("Camera speed", m_speed, 0.01f, 2.5f);
-            panel.popTreeNode();
+    void onGui(gui::GuiProxy& gui) override {
+        if (gui.beginTreeNode("Camera")) {
+            gui.sliderFloat("Camera speed", m_speed, 0.01f, 2.5f);
+            gui.popTreeNode();
         }
     }
 

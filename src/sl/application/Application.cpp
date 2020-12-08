@@ -3,7 +3,7 @@
 #include "sl/core/event/EventBus.h"
 #include "sl/core/perf/Profiler.h"
 #include "sl/geometry/Geometry.hpp"
-#include "sl/platform/gui/GUIImpl.h"
+#include "sl/platform/gui/GuiImpl.h"
 #include "sl/platform/shader/ShaderCompiler.hpp"
 
 namespace sl::application {
@@ -25,8 +25,8 @@ void Application::init() {
     m_renderer = std::make_shared<rendering::Renderer>(m_window);
     m_renderer->init();
 
-    m_guiImpl = platform::gui::GUIImpl::create(m_window->getHandle());
-    m_guiProxy = std::make_shared<gui::GUIProxy>(m_guiImpl);
+    m_guiImpl = platform::gui::GuiImpl::create(m_window->getHandle());
+    m_guiProxy = std::make_shared<gui::GuiProxy>(m_guiImpl);
 
     platform::shader::ShaderCompiler::init();
     geometry::Geometry::init();
@@ -47,13 +47,13 @@ void Application::render() {
 
     m_renderer->clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
     m_context->render();
-    renderGUI();
+    renderGui();
     m_renderer->swapBuffers();
 }
 
-void Application::renderGUI() {
+void Application::renderGui() {
     m_guiImpl->begin();
-    m_context->renderGUI(*m_guiProxy);
+    m_context->renderGui(*m_guiProxy);
     m_guiImpl->end();
 }
 

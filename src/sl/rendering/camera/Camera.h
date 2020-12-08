@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "sl/core/log/Logger.h"
+#include "sl/gui/GuiProxy.h"
 #include "sl/gui/fwd.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
@@ -36,7 +37,7 @@ public:
 
     virtual void update(float) = 0;
 
-    virtual void onGUI(gui::Panel&) {}
+    virtual void onGui(gui::GuiProxy&) {}
 
     const math::Vec3& getPosition() {
         return m_position;

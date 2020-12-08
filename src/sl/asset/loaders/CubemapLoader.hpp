@@ -21,16 +21,16 @@ struct AssetLoaderArgs<Cubemap> {
 
 template <>
 struct AssetLoader<Cubemap> {
-    static std::shared_ptr<Cubemap> load(AssetLoaderArgs<Cubemap> args) {
+    static std::shared_ptr<Cubemap> load(bool globalPath, AssetLoaderArgs<Cubemap> args) {
         // clang-format off
-        SL_DEBUG("loading cubemap: \n {}/{}/{}/{}/{}/{} ", args.top, args.bottom , args.right, args.left, args.front, args.back);
+		std::string prefix = "";
+		if (not globalPath)
+            prefix += core::path::PathManager::get<Cubemap>();
+
+		SL_DEBUG("loading cubemap: \n {} - {}/{}/{}/{}/{}/{} ", prefix, args.top, args.bottom , args.right, args.left, args.front, args.back);
         return Cubemap::create({ 
-            core::path::PathManager::createGlobalPath<Cubemap>(args.top),
-            core::path::PathManager::createGlobalPath<Cubemap>(args.bottom),
-            core::path::PathManager::createGlobalPath<Cubemap>(args.right),
-            core::path::PathManager::createGlobalPath<Cubemap>(args.left),
-            core::path::PathManager::createGlobalPath<Cubemap>(args.front),
-            core::path::PathManager::createGlobalPath<Cubemap>(args.back) });
+            prefix + args.top, prefix + args.bottom, prefix + args.right,
+            prefix + args.left, prefix + args.front, prefix + args.back });
         // clang-format on
     }
 };

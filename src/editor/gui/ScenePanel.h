@@ -20,13 +20,14 @@ using EntitiesVector = std::vector<std::shared_ptr<sl::ecs::Entity>>;
 class ScenePanel : public Widget {
 
 public:
-    explicit ScenePanel(const WidgetPosition& position, EntitiesVector& entities)
+    explicit ScenePanel(const WidgetPosition& position, EntitiesVector& entities, std::shared_ptr<sl::ecs::Entity>& selectedEntity)
         : m_position(position)
         , m_entities(entities)
+        , m_selectedEntity(selectedEntity)
         , m_entityIndex(0) {
     }
 
-    void render(sl::gui::GUIProxy& gui) override {
+    void render(sl::gui::GuiProxy& gui) override {
         gui->beginPanel("Scene entities", m_position.origin, m_position.size);
         if (gui->button("Add entity", 150))
             event::EventBus::emitEvent<event::AddEntityEvent>("Entity" + std::to_string(m_entityIndex++));
@@ -34,6 +35,10 @@ public:
         gui->breakLine();
         for (auto& entity : m_entities) {
             if (gui->beginTreeNode(entity->getName(), false)) {
+                if (gui->isPreviousWidgetClicked()) {
+					SL_INFO("XD?");
+					m_selectedEntity = entity;
+				}
                 gui->popTreeNode();
             }
         }
@@ -41,11 +46,10 @@ public:
     }
 
 private:
-    int m_width;
-    int m_height;
-
     WidgetPosition m_position;
     EntitiesVector& m_entities;
+
+    std::shared_ptr<sl::ecs::Entity>& m_selectedEntity;
     int m_entityIndex;
 };
 }

@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "sl/gui/GUIProxy.h"
+#include "sl/gui/GuiProxy.h"
 #include "sl/scene/SceneManager.h"
 #include "sl/scene/SceneManager3D.h"
 #include "sl/platform/window/Window.h"
@@ -34,7 +34,7 @@ public:
     virtual void update(float, float) = 0;
     virtual void render() = 0;
 
-    virtual void renderGUI(gui::GUIProxy&) {}
+    virtual void renderGui(gui::GuiProxy&) {}
 
     void setSceneManager(std::shared_ptr<scene::SceneManager> sceneManager) {
         m_sceneManager = sceneManager;

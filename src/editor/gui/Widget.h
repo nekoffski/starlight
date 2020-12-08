@@ -1,13 +1,13 @@
 #pragma once
 
-#include "sl/gui/GUIProxy.h"
+#include "sl/gui/GuiProxy.h"
 #include "sl/math/Vector.hpp"
 
 namespace editor::gui {
 
 class Widget {
 public:
-    virtual void render(sl::gui::GUIProxy& gui) = 0;
+    virtual void render(sl::gui::GuiProxy& gui) = 0;
 };
 
 struct WidgetPosition {

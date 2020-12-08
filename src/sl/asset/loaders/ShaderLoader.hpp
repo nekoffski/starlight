@@ -20,10 +20,15 @@ struct AssetLoaderArgs<Shader> {
 
 template <>
 struct AssetLoader<Shader> {
-    static std::shared_ptr<Shader> load(AssetLoaderArgs<Shader> args) {
-        SL_DEBUG("loading shader: \n {}/{}/{}", args.vertexPath, args.fragmentPath, args.geometryPath);
-        auto shader = Shader::create(core::path::PathManager::createGlobalPath<Shader>(args.vertexPath),
-            core::path::PathManager::createGlobalPath<Shader>(args.fragmentPath), core::path::PathManager::createGlobalPath<Shader>(args.geometryPath));
+    static std::shared_ptr<Shader> load(bool globalPath, AssetLoaderArgs<Shader> args) {
+        std::string prefix = "";
+        if (not globalPath)
+            prefix += core::path::PathManager::get<Shader>();
+
+        SL_DEBUG("loading shader: \n {} - {}/{}/{}", prefix, args.vertexPath, args.fragmentPath, args.geometryPath);
+
+        auto shader = Shader::create(
+            prefix + args.vertexPath, prefix + args.fragmentPath, prefix + args.geometryPath);
         platform::shader::ShaderCompiler::compile(shader);
         return shader;
     }

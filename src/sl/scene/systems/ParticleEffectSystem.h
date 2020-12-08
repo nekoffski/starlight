@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "sl/core/async/AsyncEngine.hpp"
+#include "sl/async/AsyncEngine.hpp"
 #include "sl/physics/pfx/ParticleGenerator.h"
 #include "sl/physics/pfx/ParticlesFuzzyController.h"
 #include "sl/platform/fwd.h"
@@ -27,7 +27,7 @@ private:
     void endParticleEffect();
 
     std::shared_ptr<platform::gpu::VertexArray> m_vao;
-    std::shared_ptr<core::async::Timer> m_pfxTimer;
+    std::shared_ptr<async::timer::Timer> m_pfxTimer;
 
     physics::pfx::ParticleGenerator m_particleGenerator;
 	physics::pfx::ParticleFuzzyController m_particlesFuzzyController;
