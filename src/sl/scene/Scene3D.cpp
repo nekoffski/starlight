@@ -32,5 +32,4 @@ std::shared_ptr<Scene3D> Scene3D::create() {
 void Scene3D::setSkybox(std::shared_ptr<Skybox> skybox) {
     m_skybox = std::move(skybox);
 }
-
 }

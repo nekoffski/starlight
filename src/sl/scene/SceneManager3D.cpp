@@ -29,7 +29,7 @@ void SceneManager3D::update(float deltaTime) {
 void SceneManager3D::setActiveScene(std::shared_ptr<Scene> scene) {
     auto scene3d = std::dynamic_pointer_cast<Scene3D>(scene);
 
-	SL_ASSERT(scene3d != nullptr, "Invalid scene type!");
+    SL_ASSERT(scene3d != nullptr, "Invalid scene type!");
     m_scene = std::move(scene3d);
 }
 
@@ -74,5 +74,4 @@ void SceneManager3D::render() {
         skybox->cubemap->unbind();
     }
 }
-
 }

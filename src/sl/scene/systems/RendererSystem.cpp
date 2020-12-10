@@ -17,7 +17,7 @@ RendererSystem::RendererSystem(std::shared_ptr<rendering::Renderer> renderer)
 
 void RendererSystem::render(components::RendererComponent& component, std::shared_ptr<rendering::camera::Camera> camera,
     std::shared_ptr<platform::shader::Shader> shader) {
-    auto& entity = component.entity; 
+    auto& entity = component.entity;
 
     shader->setUniform("view", camera->getViewMatrix());
     shader->setUniform("viewPos", camera->getPosition());
@@ -36,7 +36,7 @@ void RendererSystem::render(components::RendererComponent& component, std::share
 }
 
 void RendererSystem::render(components::RendererComponent& component, std::shared_ptr<rendering::camera::Camera> camera) {
-	render(component, camera, component.shader);
+    render(component, camera, component.shader);
 }
 
 void RendererSystem::setMaterial(const components::MaterialComponent& material, std::shared_ptr<platform::shader::Shader> shader) {

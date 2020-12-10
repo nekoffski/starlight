@@ -1,8 +1,6 @@
 #include "sl/application/Entrypoint.hpp"
 
-
 #include "EditorContext.hpp"
-
 
 using namespace sl;
 using namespace sl::scene;
@@ -16,7 +14,7 @@ public:
     }
 
     virtual void onStart() override {
-		context = createContext<EditorContext>(sl::application::context::CONTEXT_3D);
+        context = createContext<EditorContext>(sl::application::context::CONTEXT_3D);
         switchContext(context);
     }
 
@@ -32,6 +30,3 @@ private:
 };
 
 STARLIGHT_ENTRYPOINT(StarlightEditor);
-
-
-

@@ -36,8 +36,8 @@ void ResourcesTab::render(sl::gui::GuiProxy& gui) {
 void ResourcesTab::showLoaderPopUp(sl::gui::GuiProxy& gui) {
     static int activeItem = 0;
     static const std::vector<std::string> labels = { "Cubemap", "Texture", "Model" };
-    
-	gui->combo(sl::gui::createHiddenLabel("ResourcesCombo"), activeItem, labels);
+
+    gui->combo(sl::gui::createHiddenLabel("ResourcesCombo"), activeItem, labels);
 
     m_loadClicked = false;
     if (gui->button("Load")) {

@@ -28,6 +28,4 @@ void Renderer::renderVertexArrayWithDepthMaskDisabled(std::shared_ptr<platform::
     renderVertexArray(vertexArray);
     m_renderAPI->enableDepthMask();
 }
-
-
 }

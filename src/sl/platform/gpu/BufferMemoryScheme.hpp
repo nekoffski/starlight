@@ -1,9 +1,9 @@
 #pragma once
 
 #include <cstdint>
+#include <numeric>
 #include <utility>
 #include <vector>
-#include <numeric>
 
 namespace sl::platform::gpu {
 

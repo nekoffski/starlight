@@ -35,7 +35,7 @@ public:
         m_sceneManager->setActiveScene(m_scene);
 
         event::EventBus::registerEventObserver(this);
-	}
+    }
 
     void onAttach() override {
     }
@@ -75,19 +75,19 @@ public:
             switch (event->getType()) {
             case event::EventType::ADD_ENTITY: {
                 auto entityName = event->as<event::AddEntityEvent>()->name;
-				m_entities.emplace_back(m_scene->addEntity(std::move(entityName)));
-				
-				break;
-			}
+                m_entities.emplace_back(m_scene->addEntity(std::move(entityName)));
+
+                break;
+            }
 
             case event::EventType::SET_SKYBOX: {
                 auto cubemap = event->as<event::SetSkyboxEvent>()->cubemap;
                 auto cubemapShader =
                     asset::AssetManager::loadLocalPath<platform::shader::Shader>("/cubemap.vert", "/cubemap.frag");
-				auto skybox = sl::scene::Skybox::create(cubemapShader, cubemap);	
+                auto skybox = sl::scene::Skybox::create(cubemapShader, cubemap);
                 m_scene->setSkybox(skybox);
 
-				break;
+                break;
             }
             }
         }

@@ -27,5 +27,4 @@ void BottomPanel::render(sl::gui::GuiProxy& gui) {
     gui->endTabBar();
     gui->endPanel();
 }
-
 }

@@ -57,8 +57,8 @@ void ParticleEffectSystem::update(std::vector<components::ParticleEffectComponen
 }
 
 void ParticleEffectSystem::updateParticleEffect(components::ParticleEffectComponent& pfx, float deltaTime, std::shared_ptr<rendering::camera::Camera> camera) {
-	pfx.maxParticles = m_particlesFuzzyController.calculateParticlesCount(camera->getPosition(),
-		camera->getFront(), pfx.position, static_cast<unsigned int>(1.0f / deltaTime));
+    pfx.maxParticles = m_particlesFuzzyController.calculateParticlesCount(camera->getPosition(),
+        camera->getFront(), pfx.position, static_cast<unsigned int>(1.0f / deltaTime));
 
     auto& particles = pfx.particles;
     for (auto& particle : particles)
@@ -67,7 +67,7 @@ void ParticleEffectSystem::updateParticleEffect(components::ParticleEffectCompon
     if (not m_pfxTimer->asyncSleep())
         std::erase_if(particles, [](auto& particle) -> bool { return particle.scale <= 0 || particle.position.y >= 7.5f; });
 
-	int maxParticlesPerIteration = std::max(1, pfx.maxParticles / 100);
+    int maxParticlesPerIteration = std::max(1, pfx.maxParticles / 100);
     if (int delta = pfx.maxParticles - particles.size(); delta > 0) {
         auto n = std::min(delta, maxParticlesPerIteration);
         auto generatedParticles = m_particleGenerator.generate(pfx.pfxGeneratorSettings, n);

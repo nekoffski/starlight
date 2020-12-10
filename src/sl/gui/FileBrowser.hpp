@@ -15,8 +15,8 @@ public:
         , m_path(nullptr) {} // TODO: add uuid here
 
     void open(std::string* path) {
-		m_path = path;
-		m_gui->openPopUp(m_id);
+        m_path = path;
+        m_gui->openPopUp(m_id);
     }
 
     void show() {

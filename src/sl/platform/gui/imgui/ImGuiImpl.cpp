@@ -191,11 +191,11 @@ void ImGuiImpl::popTreeNode() {
 }
 
 bool ImGuiImpl::isItemHovered() {
-	return ImGui::IsItemHovered();
+    return ImGui::IsItemHovered();
 }
 
 bool ImGuiImpl::isMouseClicked() {
-	return ImGui::IsMouseClicked(0);
+    return ImGui::IsMouseClicked(0);
 }
 
 bool ImGuiImpl::isPreviousWidgetClicked() {

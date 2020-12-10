@@ -26,12 +26,12 @@ void OpenGLFrameBuffer::unbind() {
 
 void OpenGLFrameBuffer::bindTexture(std::shared_ptr<texture::Texture> texture) {
     // TODO: make it configurable
-//    texture->bind();
-//	bind();
+    //    texture->bind();
+    //	bind();
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texture->getBuffer(), 0);
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
-  //  unbind();
-	//texture->unbind();
+    //  unbind();
+    //texture->unbind();
 }
 }

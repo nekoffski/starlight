@@ -6,15 +6,15 @@
 #include <type_traits>
 
 #include "Application.h"
-#include "sl/core/BaseError.h"
 #include "sl/async/AsyncEngine.hpp"
+#include "sl/core/BaseError.h"
 #include "sl/core/event/EventBus.h"
+#include "sl/core/fs/FileSystem.h"
 #include "sl/core/log/Logger.h"
 #include "sl/core/perf/Profiler.h"
 #include "sl/core/sig/Signal.h"
 #include "sl/platform/time/Clock.h"
 #include "sl/platform/time/impl/StdClockImpl.h"
-#include "sl/core/fs/FileSystem.h"
 
 namespace sl::application {
 
@@ -30,11 +30,10 @@ public:
     int start() {
         core::sig::setupSignalHandler(this);
         core::log::initLogging();
-		core::fs::FS::init();
-		SL_INFO("Initialized logging");
+        core::fs::FS::init();
+        SL_INFO("Initialized logging");
 
         platform::time::Clock::setClockImpl<platform::time::impl::StdClockImpl>();
-
 
         m_profilerTimer = async::AsyncEngine::createTimer(PROFILER_PRINT_INTERVAL);
 
@@ -59,7 +58,7 @@ public:
                     m_application->update(deltaTime, platform::time::Clock::now()->value());
                     m_application->render();
 
-					core::event::EventBus::handleEvents();
+                    core::event::EventBus::handleEvents();
                     async::AsyncEngine::update(deltaTime);
                     platform::time::Clock::update();
                 }

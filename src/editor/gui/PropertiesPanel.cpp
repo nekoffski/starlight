@@ -124,7 +124,7 @@ void PropertiesPanel::addModel(bool load, sl::gui::GuiProxy& gui) {
         auto& modelName = modelsNames[selectedValue];
         auto modelResource =
             m_resourceManager.getResourcesByType(res::ResourceType::MODEL)[modelName]->as<res::ModelResource>();
-		m_selectedEntity->addComponent<sl::scene::components::ModelComponent>(modelResource->model);
+        m_selectedEntity->addComponent<sl::scene::components::ModelComponent>(modelResource->model);
     }
 }
 

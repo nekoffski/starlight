@@ -90,7 +90,7 @@ inline Mat4 createRotationMatrix(const math::Vec3& orientation) {
 }
 
 inline float distance(const math::Vec3& lhs, const math::Vec3& rhs) {
-	return glm::distance(lhs, rhs);
+    return glm::distance(lhs, rhs);
 }
 
 template <class T>
