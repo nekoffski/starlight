@@ -8,12 +8,12 @@ public:
     explicit ImGuiImpl(void*);
     ~ImGuiImpl() override;
 
-	void combo(std::string, int&, std::vector<std::string> items) override;
+    void combo(std::string, int&, std::vector<std::string> items) override;
     void openPopUp(std::string) override;
     void closeCurrentPopUp() override;
     bool beginPopUp(std::string) override;
     void endPopUp() override;
-	void inputText(std::string, std::string&) override;
+    void inputText(std::string, std::string&) override;
 
     void beginGroup() override;
     void endGroup() override;
@@ -26,6 +26,9 @@ public:
 
     void begin() override;
     void end() override;
+
+    bool isItemHovered() override;
+    bool isMouseClicked() override;
 
     void beginPanel(std::string, math::Vec2, math::Vec2) override;
     void endPanel() override;

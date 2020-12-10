@@ -35,12 +35,13 @@ public:
         gui->breakLine();
         for (auto& entity : m_entities) {
             if (gui->beginTreeNode(entity->getName(), false)) {
-                if (gui->isPreviousWidgetClicked()) {
-					SL_INFO("XD?");
-					m_selectedEntity = entity;
-				}
+                if (gui->isPreviousWidgetClicked())
+                    m_selectedEntity = entity;
+
                 gui->popTreeNode();
             }
+            if (gui->isPreviousWidgetClicked())
+                m_selectedEntity = entity;
         }
         gui->endPanel();
     }

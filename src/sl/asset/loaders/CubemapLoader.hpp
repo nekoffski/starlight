@@ -29,8 +29,7 @@ struct AssetLoader<Cubemap> {
 
 		SL_DEBUG("loading cubemap: \n {} - {}/{}/{}/{}/{}/{} ", prefix, args.top, args.bottom , args.right, args.left, args.front, args.back);
         return Cubemap::create({ 
-            prefix + args.top, prefix + args.bottom, prefix + args.right,
-            prefix + args.left, prefix + args.front, prefix + args.back });
+            prefix + args.right, prefix + args.left, prefix + args.top, prefix + args.bottom, prefix + args.front, prefix + args.back });
         // clang-format on
     }
 };

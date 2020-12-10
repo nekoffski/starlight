@@ -9,6 +9,44 @@
 
 namespace sl::platform::gui::imgui {
 
+void setStyle() {
+    ImGuiStyle& style = ImGui::GetStyle();
+
+    // light style from Pacôme Danhiez (user itamago) https://github.com/ocornut/imgui/pull/511#issuecomment-175719267
+    style.Alpha = 0.8f;
+    style.WindowRounding = 0.0f;
+    style.FrameRounding = 0.0f;
+    auto& colors = ImGui::GetStyle().Colors;
+    colors[ImGuiCol_WindowBg] = ImVec4{ 0.1f, 0.105f, 0.11f, 1.0f };
+
+    // Headers
+    colors[ImGuiCol_Header] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
+    colors[ImGuiCol_HeaderHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
+    colors[ImGuiCol_HeaderActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+
+    // Buttons
+    colors[ImGuiCol_Button] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
+    colors[ImGuiCol_ButtonHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
+    colors[ImGuiCol_ButtonActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+
+    // Frame BG
+    colors[ImGuiCol_FrameBg] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
+    colors[ImGuiCol_FrameBgHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
+    colors[ImGuiCol_FrameBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+
+    // Tabs
+    colors[ImGuiCol_Tab] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+    colors[ImGuiCol_TabHovered] = ImVec4{ 0.38f, 0.3805f, 0.381f, 1.0f };
+    colors[ImGuiCol_TabActive] = ImVec4{ 0.28f, 0.2805f, 0.281f, 1.0f };
+    colors[ImGuiCol_TabUnfocused] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+    colors[ImGuiCol_TabUnfocusedActive] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
+
+    // Title
+    colors[ImGuiCol_TitleBg] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+    colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+    colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+}
+
 ImGuiImpl::ImGuiImpl(void* windowHandle) {
     SL_INFO("creating imgui context");
 
@@ -24,6 +62,8 @@ ImGuiImpl::ImGuiImpl(void* windowHandle) {
 
     SL_INFO("initializing opengl implementation");
     ImGui_ImplOpenGL3_Init("#version 330 core");
+
+    setStyle();
 }
 
 ImGuiImpl::~ImGuiImpl() {
@@ -40,10 +80,9 @@ void ImGuiImpl::endGroup() {
     ImGui::EndGroup();
 }
 
-
 void ImGuiImpl::inputText(std::string label, std::string& text) {
-	text.resize(256);
-	ImGui::InputText(label.c_str(), &text[0], text.size());
+    text.resize(256);
+    ImGui::InputText(label.c_str(), &text[0], text.size());
 }
 
 void ImGuiImpl::openPopUp(std::string label) {
@@ -51,14 +90,14 @@ void ImGuiImpl::openPopUp(std::string label) {
 }
 
 void ImGuiImpl::combo(std::string label, int& currentItem, std::vector<std::string> items) {
-	std::vector<const char*> imguiItems;
-	auto itemsSize = items.size();
-	imguiItems.reserve(itemsSize);
+    std::vector<const char*> imguiItems;
+    auto itemsSize = items.size();
+    imguiItems.reserve(itemsSize);
 
-	for (auto& item : items)
-		imguiItems.push_back(item.c_str());
+    for (auto& item : items)
+        imguiItems.push_back(item.c_str());
 
-	ImGui::Combo(label.c_str(), &currentItem, imguiItems.data(), itemsSize);
+    ImGui::Combo(label.c_str(), &currentItem, imguiItems.data(), itemsSize);
 }
 
 void ImGuiImpl::closeCurrentPopUp() {
@@ -94,7 +133,7 @@ void ImGuiImpl::endTabItem() {
 }
 
 void ImGuiImpl::displayText(std::string text) {
-    ImGui::Text(text.c_str());
+    ImGui::Text("%s", text.c_str());
 }
 
 void ImGuiImpl::breakLine() {
@@ -149,6 +188,14 @@ bool ImGuiImpl::beginTreeNode(std::string label, bool opened) {
 void ImGuiImpl::popTreeNode() {
     ImGui::Separator();
     ImGui::TreePop();
+}
+
+bool ImGuiImpl::isItemHovered() {
+	return ImGui::IsItemHovered();
+}
+
+bool ImGuiImpl::isMouseClicked() {
+	return ImGui::IsMouseClicked(0);
 }
 
 bool ImGuiImpl::isPreviousWidgetClicked() {
