@@ -30,9 +30,9 @@ public:
     void init();
     void renderVertexArray(std::shared_ptr<platform::gpu::VertexArray>);
     // wtf? xd
-	void renderVertexArrayWithDepthMaskDisabled(std::shared_ptr<platform::gpu::VertexArray>);
+    void renderVertexArrayWithDepthMaskDisabled(std::shared_ptr<platform::gpu::VertexArray>);
 
-	void clearBuffers(unsigned buff) {
+    void clearBuffers(unsigned buff) {
         m_graphicsContext->clearBuffers(buff);
     }
 
@@ -48,13 +48,13 @@ public:
         m_graphicsContext->setViewport(m_viewport.width, m_viewport.height);
     }
 
-	void swapBuffers() {
-		m_graphicsContext->swapBuffers();
-	}
+    void swapBuffers() {
+        m_graphicsContext->swapBuffers();
+    }
 
-	void setProjectionMatrix(const math::Mat4& projectionMatrix) {
-		m_projectionMatrix = projectionMatrix;
-	}
+    void setProjectionMatrix(const math::Mat4& projectionMatrix) {
+        m_projectionMatrix = projectionMatrix;
+    }
 
 private:
     std::unique_ptr<platform::gpu::GraphicsContext> m_graphicsContext;

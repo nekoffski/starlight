@@ -19,7 +19,6 @@ public:
 
     void setSkybox(std::shared_ptr<Skybox> skybox);
 
-
 private:
     std::shared_ptr<Skybox> m_skybox;
 };

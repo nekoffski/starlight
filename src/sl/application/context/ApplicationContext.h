@@ -3,9 +3,9 @@
 #include <memory>
 
 #include "sl/gui/GuiProxy.h"
+#include "sl/platform/window/Window.h"
 #include "sl/scene/SceneManager.h"
 #include "sl/scene/SceneManager3D.h"
-#include "sl/platform/window/Window.h"
 
 namespace sl::platform::input {
 class Input;
@@ -40,17 +40,17 @@ public:
         m_sceneManager = sceneManager;
     }
 
-	void setWindow(std::shared_ptr<platform::window::Window> window) {
-		m_window = window;
-	}
+    void setWindow(std::shared_ptr<platform::window::Window> window) {
+        m_window = window;
+    }
 
     void setViewport(platform::window::Viewport viewport) {
         m_viewport = std::move(viewport);
     }
 
 protected:
-	std::shared_ptr<platform::window::Window> m_window;
-	std::shared_ptr<scene::SceneManager> m_sceneManager;
+    std::shared_ptr<platform::window::Window> m_window;
+    std::shared_ptr<scene::SceneManager> m_sceneManager;
     platform::window::Viewport m_viewport;
 };
 }

@@ -15,14 +15,13 @@ public:
     void beginDepthCapture();
     void endDepthCapture();
 
-	void setShadowMap(std::shared_ptr<platform::texture::Texture>);
-
+    void setShadowMap(std::shared_ptr<platform::texture::Texture>);
 
     std::shared_ptr<platform::shader::Shader> getDepthShader();
 
 private:
     std::shared_ptr<rendering::Renderer> m_renderer;
-	std::shared_ptr<platform::gpu::FrameBuffer> m_shadowMapFrameBuffer;
-	std::shared_ptr<platform::shader::Shader> m_depthShader;
+    std::shared_ptr<platform::gpu::FrameBuffer> m_shadowMapFrameBuffer;
+    std::shared_ptr<platform::shader::Shader> m_depthShader;
 };
 }

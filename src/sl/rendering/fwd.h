@@ -5,5 +5,4 @@
 namespace sl::rendering {
 
 class Renderer;
-
 }

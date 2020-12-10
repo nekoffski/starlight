@@ -9,7 +9,7 @@ struct Particle {
     math::Vec3 direction;
     math::Vec3 deltaDirection;
 
-	float scale;
+    float scale;
     float deltaScale;
     float speed;
     float ttl;

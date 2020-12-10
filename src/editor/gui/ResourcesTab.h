@@ -14,10 +14,10 @@ public:
 
 private:
     void handleCubemapLoader(sl::gui::GuiProxy& gui);
-	void handleModelLoader(sl::gui::GuiProxy& gui);
-	void handleTextureLoader(sl::gui::GuiProxy& gui);
+    void handleModelLoader(sl::gui::GuiProxy& gui);
+    void handleTextureLoader(sl::gui::GuiProxy& gui);
 
-	void showLoaderPopUp(sl::gui::GuiProxy& gui);
+    void showLoaderPopUp(sl::gui::GuiProxy& gui);
 
     res::ResourceManager& m_resourceManager;
     bool m_loadClicked;

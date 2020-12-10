@@ -10,8 +10,8 @@
 #include "sl/platform/input/Input.h"
 #include "sl/platform/window/Window.h"
 #include "sl/rendering/Renderer.h"
-#include "sl/scene/SceneManager3D.h"
 #include "sl/scene/SceneManager2D.h"
+#include "sl/scene/SceneManager3D.h"
 
 namespace sl::application {
 
@@ -46,7 +46,7 @@ public:
             m_context->onDetach();
         m_context = context;
         m_context->onAttach();
-	}
+    }
 
     void init();
 
@@ -55,14 +55,15 @@ public:
     virtual void preInit() {}
 
 protected:
-	template <typename T> requires std::derived_from<T, context::ApplicationContext>
-	std::shared_ptr<T> createContext(context::ContextType contextType) {
+    template <typename T>
+    requires std::derived_from<T, context::ApplicationContext>
+        std::shared_ptr<T> createContext(context::ContextType contextType) {
         auto context = std::make_shared<T>();
 
         context->setViewport(m_window->getParams().viewport);
         context->setSceneManager(contextType == context::CONTEXT_2D ? m_sceneManager2D : m_sceneManager3D);
-		context->setWindow(m_window);
-		context->onInit();
+        context->setWindow(m_window);
+        context->onInit();
 
         return std::dynamic_pointer_cast<T>(context);
     }

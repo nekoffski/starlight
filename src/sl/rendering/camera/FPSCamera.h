@@ -28,7 +28,6 @@ public:
 
         if (m_direction & DIR_RIGHT)
             m_position += m_right * velocity;
-		
 
         if (m_direction & DIR_DOWN)
             m_position -= m_front * velocity;
@@ -45,8 +44,8 @@ public:
         m_prevX = m_x;
         m_prevY = m_y;
 
-		xoffset /= (360.0f * 4.0f);
-		yoffset /= (360.0f * 4.0f);
+        xoffset /= (360.0f * 4.0f);
+        yoffset /= (360.0f * 4.0f);
 
         m_yaw += xoffset;
         m_pitch = math::circularRange(m_pitch - yoffset, -3.13f, 3.13f);
@@ -55,11 +54,10 @@ public:
             std::cos(m_yaw) * std::cos(m_pitch),
             std::sin(m_pitch),
             std::sin(m_yaw) * std::cos(m_pitch) });
-		
-		m_right = math::cross(m_front, WORLD_UP);
-		m_up = math::cross(m_right, m_front);
 
-	}
+        m_right = math::cross(m_front, WORLD_UP);
+        m_up = math::cross(m_right, m_front);
+    }
 
     void handleInput(std::shared_ptr<platform::input::Input> input) override {
         m_direction = DIR_NONE;

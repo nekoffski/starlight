@@ -2,8 +2,8 @@
 
 #include "Widget.h"
 
-#include "Settings.h"
 #include "ResourcesTab.h"
+#include "Settings.h"
 #include "editor/res/ResourceManager.h"
 
 namespace editor::gui {

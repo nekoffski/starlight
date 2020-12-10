@@ -8,8 +8,8 @@
 #include "systems/LightSystem.h"
 #include "systems/ParticleEffectSystem.h"
 #include "systems/RendererSystem.h"
-#include "systems/SkyboxSystem.h"
 #include "systems/ShadowSystem.h"
+#include "systems/SkyboxSystem.h"
 
 namespace sl::scene {
 
@@ -29,8 +29,7 @@ private:
     systems::RendererSystem m_rendererSystem;
     systems::LightSystem m_lightSystem;
     systems::ParticleEffectSystem m_pfxSystem;
-	systems::SkyboxSystem m_skyboxSystem;
-	systems::ShadowSystem m_shadowSystem;
-
+    systems::SkyboxSystem m_skyboxSystem;
+    systems::ShadowSystem m_shadowSystem;
 };
 }

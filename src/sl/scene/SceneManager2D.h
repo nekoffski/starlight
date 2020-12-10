@@ -14,7 +14,6 @@
 #include "sl/scene/Scene2D.h"
 #include <memory>
 
-
 namespace sl::scene {
 
 class SceneManager2D : public SceneManager {

@@ -5,7 +5,6 @@
 #include "Scene.h"
 #include "sl/rendering/fwd.h"
 
-
 namespace sl::scene {
 
 class SceneManager {

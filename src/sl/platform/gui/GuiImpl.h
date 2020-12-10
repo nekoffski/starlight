@@ -22,9 +22,8 @@ public:
     virtual bool beginPopUp(std::string) = 0;
     virtual void endPopUp() = 0;
     virtual void inputText(std::string, std::string&) = 0;
-	virtual bool isItemHovered() = 0;
-	virtual bool isMouseClicked() = 0;
-
+    virtual bool isItemHovered() = 0;
+    virtual bool isMouseClicked() = 0;
 
     virtual void beginGroup() = 0;
     virtual void endGroup() = 0;

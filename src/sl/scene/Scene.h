@@ -13,8 +13,7 @@ namespace sl::scene {
 
 class Scene {
 public:
-	virtual ~Scene() = default;
-
+    virtual ~Scene() = default;
 
     template <typename Component, typename Factory>
     void setComponentWrapperFactory() {
@@ -25,12 +24,12 @@ public:
         return m_ecsRegistry.createEntity(std::move(name));
     }
 
-	void setCamera(std::shared_ptr<rendering::camera::Camera> camera) {
-		m_camera = std::move(camera);
-	}
-	
+    void setCamera(std::shared_ptr<rendering::camera::Camera> camera) {
+        m_camera = std::move(camera);
+    }
+
 protected:
-	std::shared_ptr<rendering::camera::Camera> m_camera;
+    std::shared_ptr<rendering::camera::Camera> m_camera;
     ecs::Registry m_ecsRegistry;
 };
 }

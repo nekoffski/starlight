@@ -30,7 +30,7 @@ private:
     std::shared_ptr<async::timer::Timer> m_pfxTimer;
 
     physics::pfx::ParticleGenerator m_particleGenerator;
-	physics::pfx::ParticleFuzzyController m_particlesFuzzyController;
+    physics::pfx::ParticleFuzzyController m_particlesFuzzyController;
     std::shared_ptr<platform::shader::Shader> m_shader;
     std::shared_ptr<rendering::Renderer> m_renderer;
 };

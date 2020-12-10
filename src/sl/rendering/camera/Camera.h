@@ -32,7 +32,6 @@ public:
         , m_up(std::move(up))
         , m_front(std::move(front))
         , m_right(std::move(right)) {
-
     }
 
     virtual void update(float) = 0;

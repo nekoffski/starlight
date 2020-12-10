@@ -9,4 +9,3 @@ struct EventObserver {
     virtual void handleEvents(EventPool&) = 0;
 };
 }
-
