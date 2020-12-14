@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <functional>
 
 #include "WindowParams.h"
 
@@ -8,12 +9,16 @@ namespace sl::platform::window {
 
 class Window {
 public:
-    static std::shared_ptr<Window> create(WindowParams windowParams);
+	using ResizeCallback = std::function<void(int, int)>;
+
+	static std::shared_ptr<Window> create(WindowParams windowParams);
 
     explicit Window(WindowParams windowParams)
         : m_windowParams(std::move(windowParams)) {}
 
     virtual ~Window() = default;
+
+	virtual void setResizeCallback(ResizeCallback) {}
 
     virtual void init() = 0;
     virtual void update(float) = 0;

@@ -5,13 +5,14 @@
 #include "res/ResourceManager.h"
 #include "sl/application/Entrypoint.hpp"
 #include "sl/application/context/ApplicationContext.h"
-#include "sl/core/event/Event.h"
-#include "sl/core/event/EventBus.h"
-#include "sl/core/event/EventObserver.h"
-#include "sl/core/event/EventPool.h"
+#include "sl/asset/AssetManager.hpp"
 #include "sl/core/fs/FileSystem.h"
 #include "sl/core/log/Logger.h"
 #include "sl/ecs/Entity.h"
+#include "sl/event/Event.h"
+#include "sl/event/EventBus.h"
+#include "sl/event/EventObserver.h"
+#include "sl/event/EventPool.h"
 #include "sl/gui/GuiProxy.h"
 #include "sl/gui/Utils.hpp"
 #include "sl/rendering/camera/EulerCamera.h"
@@ -35,6 +36,7 @@ public:
         m_sceneManager->setActiveScene(m_scene);
 
         event::EventBus::registerEventObserver(this);
+        loadBaseShaders();
     }
 
     void onAttach() override {
@@ -45,7 +47,7 @@ public:
 
     editor::gui::Settings createGuiSettings() {
         const auto viewport = m_window->getParams().viewport;
-        const float leftPanelWidth = 0.2f;
+        const float leftPanelWidth = 0.15f;
         const float leftPanelTopBottomRatio = 0.5f;
 
         return editor::gui::Settings{ viewport.width, viewport.height, leftPanelWidth, leftPanelTopBottomRatio };
@@ -69,14 +71,13 @@ public:
     }
 
     void handleEvents(event::EventPool& eventPool) override {
-        auto& editorEvents = eventPool.getEventsByCategory(event::EventCategory::EDITOR);
+        auto events = eventPool.getEventsByCategory({ event::EventCategory::EDITOR, event::EventCategory::CORE });
 
-        for (auto& event : editorEvents) {
+        for (auto& event : events) {
             switch (event->getType()) {
             case event::EventType::ADD_ENTITY: {
                 auto entityName = event->as<event::AddEntityEvent>()->name;
                 m_entities.emplace_back(m_scene->addEntity(std::move(entityName)));
-
                 break;
             }
 
@@ -86,7 +87,17 @@ public:
                     asset::AssetManager::loadLocalPath<platform::shader::Shader>("/cubemap.vert", "/cubemap.frag");
                 auto skybox = sl::scene::Skybox::create(cubemapShader, cubemap);
                 m_scene->setSkybox(skybox);
+                break;
+            }
 
+            case event::EventType::WINDOW_RESIZED: {
+                const float leftPanelWidth = 0.2f;
+                const float leftPanelTopBottomRatio = 0.5f;
+
+                auto windowResizedEvent = event->as<event::WindowResizedEvent>();
+
+                editor::gui::Settings settings{ windowResizedEvent->width, windowResizedEvent->height, leftPanelWidth, leftPanelTopBottomRatio };
+                m_editorGui->setSettings(settings);
                 break;
             }
             }
@@ -94,6 +105,19 @@ public:
     }
 
 private:
+    void loadBaseShaders() {
+        const std::vector<std::string> shadersToLoad = {
+            "/t"
+        };
+
+        for (auto& shaderToLoad : shadersToLoad) {
+            auto shader = sl::asset::AssetManager::loadLocalPath<sl::platform::shader::Shader>(
+                shaderToLoad + ".vert", shaderToLoad + ".frag");
+            auto shaderResource = std::make_shared<editor::res::ShaderResource>(shader, shaderToLoad);
+            m_resourceManager.addResource(shaderResource);
+        }
+    }
+
     editor::res::ResourceManager m_resourceManager;
 
     std::shared_ptr<editor::gui::EditorGui> m_editorGui;

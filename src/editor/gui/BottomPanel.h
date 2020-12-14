@@ -13,6 +13,10 @@ public:
     explicit BottomPanel(const Settings& settings, res::ResourceManager& resourceManager);
     void render(sl::gui::GuiProxy& gui) override;
 
+	void setSettings(const Settings& settings) {
+		m_position = settings.bottomPanelPosition;
+	}
+
 private:
     WidgetPosition m_position;
     ResourcesTab m_resourcesTab;

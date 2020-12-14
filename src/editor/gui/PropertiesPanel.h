@@ -16,6 +16,10 @@ public:
     explicit PropertiesPanel(const WidgetPosition& position, res::ResourceManager& resourceManager, std::shared_ptr<sl::ecs::Entity>&);
     void render(sl::gui::GuiProxy& gui) override;
 
+	void setPosition(const WidgetPosition& position) {
+        m_position = position;
+    }
+
 private:
     void showSceneProperties(sl::gui::GuiProxy& gui);
     void showEntityProperties(sl::gui::GuiProxy& gui);
@@ -23,6 +27,8 @@ private:
     void addModel(bool load, sl::gui::GuiProxy& gui);
     void addRenderer(bool load, sl::gui::GuiProxy& gui);
     void addTransform(bool load, sl::gui::GuiProxy& gui);
+    void addPointLight(bool load, sl::gui::GuiProxy& gui);
+    void addDirectionalLight(bool load, sl::gui::GuiProxy& gui);
 
     WidgetPosition m_position;
     res::ResourceManager& m_resourceManager;

@@ -3,9 +3,9 @@
 #include <memory>
 #include <string>
 
-#include "sl/core/event/Event.h"
-#include "sl/core/event/EventBus.h"
 #include "sl/ecs/Entity.h"
+#include "sl/event/Event.h"
+#include "sl/event/EventBus.h"
 #include "sl/math/Vector.hpp"
 
 #include "Settings.h"
@@ -13,7 +13,7 @@
 
 namespace editor::gui {
 
-using namespace sl::core;
+using namespace sl;
 
 using EntitiesVector = std::vector<std::shared_ptr<sl::ecs::Entity>>;
 
@@ -26,6 +26,10 @@ public:
         , m_selectedEntity(selectedEntity)
         , m_entityIndex(0) {
     }
+
+	void setPosition(const WidgetPosition& position) {
+		m_position = position;
+	}
 
     void render(sl::gui::GuiProxy& gui) override {
         gui->beginPanel("Scene entities", m_position.origin, m_position.size);

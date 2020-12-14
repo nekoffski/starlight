@@ -22,6 +22,11 @@ public:
         m_propertiesPanel.render(gui);
     }
 
+	void setSettings(const Settings& settings) {
+		m_scenePanel.setPosition(settings.scenePanelPosition);
+		m_propertiesPanel.setPosition(settings.propertiesPanelPosition);
+	}
+
 private:
     std::shared_ptr<sl::ecs::Entity> m_selectedEntity;
 

@@ -1,7 +1,7 @@
 #include "Application.h"
 
-#include "sl/core/event/EventBus.h"
 #include "sl/core/perf/Profiler.h"
+#include "sl/event/EventBus.h"
 #include "sl/geometry/Geometry.hpp"
 #include "sl/platform/gui/GuiImpl.h"
 #include "sl/platform/shader/ShaderCompiler.hpp"
@@ -19,8 +19,15 @@ void Application::init() {
     m_window = platform::window::Window::create(platform::window::WindowParams{
         platform::window::Viewport{ 1600, 900 }, "title" });
     m_window->init();
+    m_window->setResizeCallback([](int width, int height) {
+        SL_DEBUG("Window resized to: {}/{}", width, height);
+		event::EventBus::emitEvent<event::WindowResizedEvent>(width, height);
+    });
 
-    m_input = platform::input::Input::create(m_window->getHandle());
+	auto& windowHandle = m_window->getHandle();
+
+	m_graphicsContext = platform::gpu::GraphicsContext::create(windowHandle);
+    m_input = platform::input::Input::create(windowHandle);
 
     m_renderer = std::make_shared<rendering::Renderer>(m_window);
     m_renderer->init();
@@ -33,6 +40,8 @@ void Application::init() {
 
     m_sceneManager3D = std::make_shared<scene::SceneManager3D>(m_renderer);
     m_sceneManager2D = std::make_shared<scene::SceneManager2D>(m_renderer);
+
+	event::EventBus::registerEventObserver(this);
 }
 
 void Application::update(float deltaTime, float time) {

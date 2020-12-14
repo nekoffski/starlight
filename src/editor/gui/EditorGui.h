@@ -12,7 +12,9 @@ class EditorGui {
 
 public:
     explicit EditorGui(const Settings& settings, EntitiesVector& entities, res::ResourceManager& resourceManager);
-    void renderEditorGui(sl::gui::GuiProxy& gui);
+	void setSettings(const Settings& settings);
+	void renderEditorGui(sl::gui::GuiProxy& gui);
+
 
 private:
     LeftPanel m_leftPanel;

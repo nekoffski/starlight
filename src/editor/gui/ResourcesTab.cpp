@@ -1,14 +1,12 @@
 #include "ResourcesTab.h"
 
 #include "sl/asset/AssetManager.hpp"
-#include "sl/core/event/EventBus.h"
+#include "sl/event/EventBus.h"
 #include "sl/gui/FileBrowser.hpp"
 #include "sl/gui/GuiProxy.h"
 #include "sl/gui/Utils.hpp"
 
 namespace editor::gui {
-
-using namespace sl::core;
 
 constexpr int padding = 65;
 

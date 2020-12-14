@@ -1,9 +1,27 @@
 #include "GLFWWindow.h"
 
-#include "sl/core/log/Logger.h"
+#include <optional>
+
 #include <GLFW/glfw3.h>
 
+#include "sl/core/log/Logger.h"
+#include "sl/platform/window/WindowParams.h"
+
 namespace sl::platform::window::glfw {
+
+// TODO: this cannot look like this
+static std::optional<Window::ResizeCallback> gResizeCallback;
+
+void executeResizeCallback(GLFWwindow* w, int width, int height) {
+    if (gResizeCallback.has_value()) {
+        auto windowParams = (WindowParams*)glfwGetWindowUserPointer(w);
+
+        windowParams->viewport.width = width;
+        windowParams->viewport.height = height;
+
+        (*gResizeCallback)(width, height);
+    }
+}
 
 GLFWWindow::~GLFWWindow() {
     if (m_windowHandle != nullptr) {
@@ -28,10 +46,17 @@ void GLFWWindow::init() {
     m_windowHandle = glfwCreateWindow(m_windowParams.viewport.width, m_windowParams.viewport.height,
         m_windowParams.title.c_str(), nullptr, nullptr);
 
+    glfwSetWindowUserPointer(m_windowHandle, (void*)&m_windowParams);
+
     if (m_windowHandle == nullptr) {
         SL_ERROR("could not raw window instance");
         throw PlatformException(ErrorCode::COULD_NOT_CREATE_WINDOW_INSTANCE, "Could not create GLFW window instance");
     }
+}
+
+void GLFWWindow::setResizeCallback(Window::ResizeCallback resizeCallback) {
+    gResizeCallback = resizeCallback;
+    glfwSetWindowSizeCallback(m_windowHandle, executeResizeCallback);
 }
 
 bool GLFWWindow::getShouldClose() const {

@@ -8,13 +8,13 @@
 #include "EventObserver.h"
 #include "EventPool.h"
 
-namespace sl::core::event {
+namespace sl::event {
 
 class EventBus {
     using EventsObservers = std::vector<EventObserver*>;
 
 public:
-    static void handleEvents() {
+    static void spreadEvents() {
         EventPool eventPool{ m_eventsMap };
 
         for (auto& observer : m_eventsObservers)

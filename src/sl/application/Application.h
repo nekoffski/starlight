@@ -5,7 +5,10 @@
 #include <type_traits>
 
 #include "sl/application/context/ApplicationContext.h"
+#include "sl/event/Event.h"
+#include "sl/event/EventObserver.h"
 #include "sl/gui/GuiProxy.h"
+#include "sl/platform/gpu/GraphicsContext.h"
 #include "sl/platform/gui/fwd.h"
 #include "sl/platform/input/Input.h"
 #include "sl/platform/window/Window.h"
@@ -23,7 +26,7 @@ concept Applicable = std::derived_from<T, Application>;
 template <Applicable App>
 class Entrypoint;
 
-class Application {
+class Application : public event::EventObserver {
     class Token;
 
 public:
@@ -39,6 +42,20 @@ public:
 
     std::shared_ptr<context::ApplicationContext> getActiveContext() const {
         return m_context;
+    }
+
+    void handleEvents(event::EventPool& eventPool) {
+        for (auto& event : eventPool.getEventsByCategory({ event::EventCategory::CORE })) {
+            switch (event->getType()) {
+            case event::EventType::WINDOW_RESIZED: {
+
+                auto windowResizeEvent = event->as<event::WindowResizedEvent>();
+                SL_INFO("{}/{}", windowResizeEvent->width, windowResizeEvent->height);
+                m_renderer->setTemporaryViewport(windowResizeEvent->width, windowResizeEvent->height); // TODO: whhy temporary?
+                break;
+            }
+            }
+        }
     }
 
     void switchContext(std::shared_ptr<context::ApplicationContext> context) {
@@ -73,7 +90,8 @@ private:
     std::shared_ptr<platform::input::Input> m_input;
     std::shared_ptr<rendering::Renderer> m_renderer;
     std::shared_ptr<platform::gui::GuiImpl> m_guiImpl;
-    std::shared_ptr<context::ApplicationContext> m_context;
+	std::shared_ptr<platform::gpu::GraphicsContext> m_graphicsContext;
+	std::shared_ptr<context::ApplicationContext> m_context;
     std::shared_ptr<gui::GuiProxy> m_guiProxy;
 
     std::shared_ptr<scene::SceneManager> m_sceneManager3D;

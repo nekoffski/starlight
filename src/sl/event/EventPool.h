@@ -7,7 +7,7 @@
 #include "Event.h"
 #include "sl/core/log/Logger.h"
 
-namespace sl::core::event {
+namespace sl::event {
 
 using EventsVector = std::vector<std::shared_ptr<Event>>;
 using EventsMap = std::unordered_map<EventCategory, EventsVector>;
@@ -17,10 +17,17 @@ public:
     explicit EventPool(EventsMap& eventsMap)
         : m_eventsMap(eventsMap) {}
 
-    EventsVector& getEventsByCategory(EventCategory category) {
-        if (m_eventsMap.count(category) > 0)
-            return m_eventsMap[category];
-        return m_emptyEventsVector;
+    EventsVector getEventsByCategory(std::vector<EventCategory> categories) {
+        EventsVector events;
+
+		for (auto& category : categories) {
+			if (m_eventsMap.contains(category)) {
+				auto categoryEvents = m_eventsMap[category];
+				events.insert(events.end(), categoryEvents.begin(), categoryEvents.end());
+			}
+		}
+
+        return events;
     }
 
 private:

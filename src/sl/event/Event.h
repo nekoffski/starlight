@@ -3,15 +3,17 @@
 #include "sl/platform/texture/Cubemap.h"
 #include <memory>
 
-namespace sl::core::event {
+namespace sl::event {
 
 enum class EventCategory : unsigned char {
-    EDITOR
+    EDITOR,
+    CORE
 };
 
 enum class EventType : unsigned char {
     ADD_ENTITY,
-    SET_SKYBOX
+    SET_SKYBOX,
+    WINDOW_RESIZED
 };
 
 struct Event : public std::enable_shared_from_this<Event> {
@@ -49,5 +51,17 @@ struct SetSkyboxEvent : Event {
     }
 
     std::shared_ptr<sl::platform::texture::Cubemap> cubemap;
+};
+
+struct WindowResizedEvent : Event {
+    SL_EVENT(EventCategory::CORE, EventType::WINDOW_RESIZED);
+
+    WindowResizedEvent(int width, int height)
+        : width(width)
+        , height(height) {
+    }
+
+    int width;
+    int height;
 };
 }

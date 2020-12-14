@@ -20,10 +20,9 @@ namespace sl::rendering {
 
 class Renderer {
 public:
-    explicit Renderer(std::shared_ptr<platform::window::Window> window)
-        : m_graphicsContext(platform::gpu::GraphicsContext::create(window->getHandle()))
-        , m_renderAPI(platform::gpu::RenderAPI::create())
-        , m_viewport(window->getParams().viewport) {
+    explicit Renderer(std::shared_ptr<platform::gpu::GraphicsContext> graphicsContext, std::unique_ptr<platform::gpu::RenderAPI> renderApi)
+        : m_graphicsContext(graphicsContext)
+        , m_renderApi(std::move(renderApi)) {
         calculateProjectionMatrix();
     }
 
@@ -38,6 +37,10 @@ public:
 
     const math::Mat4& getProjectionMatrix() {
         return m_projectionMatrix;
+    }
+
+    void setViewport(const platform::window::Viewport& viewport) {
+        m_viewport = viewport;
     }
 
     void setTemporaryViewport(unsigned w, unsigned h) {
@@ -57,8 +60,8 @@ public:
     }
 
 private:
-    std::unique_ptr<platform::gpu::GraphicsContext> m_graphicsContext;
-    std::unique_ptr<platform::gpu::RenderAPI> m_renderAPI;
+    std::shared_ptr<platform::gpu::GraphicsContext> m_graphicsContext;
+    std::unique_ptr<platform::gpu::RenderAPI> m_renderApi;
     platform::window::Viewport m_viewport;
     math::Mat4 m_projectionMatrix;
 

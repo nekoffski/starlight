@@ -21,7 +21,7 @@ struct Settings {
             { leftPanelWidth, propertiesPanelHeight }
         };
 
-        auto bottomPanelHeight = 0.3f * viewportHeight;
+        auto bottomPanelHeight = 0.2f * viewportHeight;
 
         bottomPanelPosition = {
             { leftPanelWidth, viewportHeight - bottomPanelHeight },

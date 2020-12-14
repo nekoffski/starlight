@@ -9,23 +9,23 @@ void Renderer::init() {
     m_graphicsContext->init();
     m_graphicsContext->setViewport(m_viewport.width, m_viewport.height);
 
-    m_renderAPI->enable(STARL_DEPTH_TEST);
-    m_renderAPI->setDepthFunc(STARL_LEQUAL);
-    m_renderAPI->enable(STARL_BLEND);
-    m_renderAPI->setBlendFunc(STARL_SRC_ALPHA, STARL_ONE_MINUS_SRC_ALPHA);
+    m_renderApi->enable(STARL_DEPTH_TEST);
+    m_renderApi->setDepthFunc(STARL_LEQUAL);
+    m_renderApi->enable(STARL_BLEND);
+    m_renderApi->setBlendFunc(STARL_SRC_ALPHA, STARL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Renderer::renderVertexArray(std::shared_ptr<platform::gpu::VertexArray> vertexArray) {
     // to optimize! -> BRANCHING!!!
     if (auto indices = vertexArray->getIndicesCount(); indices != 0u)
-        m_renderAPI->drawElements(STARL_TRIANGLES, indices, STARL_UNSIGNED_INT);
+        m_renderApi->drawElements(STARL_TRIANGLES, indices, STARL_UNSIGNED_INT);
     else
-        m_renderAPI->drawArrays(STARL_TRIANGLES, 0, vertexArray->getVerticesCount());
+        m_renderApi->drawArrays(STARL_TRIANGLES, 0, vertexArray->getVerticesCount());
 }
 
 void Renderer::renderVertexArrayWithDepthMaskDisabled(std::shared_ptr<platform::gpu::VertexArray> vertexArray) {
-    m_renderAPI->disableDepthMask();
+    m_renderApi->disableDepthMask();
     renderVertexArray(vertexArray);
-    m_renderAPI->enableDepthMask();
+    m_renderApi->enableDepthMask();
 }
 }

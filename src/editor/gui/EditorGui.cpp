@@ -9,6 +9,11 @@ EditorGui::EditorGui(const Settings& settings, EntitiesVector& entities, res::Re
     , m_bottomPanel(settings, resourceManager) {
 }
 
+void EditorGui::setSettings(const Settings& settings) {
+	m_leftPanel.setSettings(settings);
+	m_bottomPanel.setSettings(settings);
+}
+
 void EditorGui::renderEditorGui(sl::gui::GuiProxy& gui) {
     m_leftPanel.render(gui);
     m_bottomPanel.render(gui);

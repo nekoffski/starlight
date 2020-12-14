@@ -20,6 +20,8 @@ public:
         return static_cast<void*>(m_windowHandle);
     }
 
+    void setResizeCallback(ResizeCallback) override;
+
     void enableCursor() override;
     void disableCursor() override;
 

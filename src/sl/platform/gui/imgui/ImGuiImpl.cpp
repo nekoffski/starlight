@@ -13,7 +13,7 @@ void setStyle() {
     ImGuiStyle& style = ImGui::GetStyle();
 
     // light style from Pacôme Danhiez (user itamago) https://github.com/ocornut/imgui/pull/511#issuecomment-175719267
-    style.Alpha = 0.8f;
+    style.Alpha = 0.85f;
     style.WindowRounding = 0.0f;
     style.FrameRounding = 0.0f;
     auto& colors = ImGui::GetStyle().Colors;

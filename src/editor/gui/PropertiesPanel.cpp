@@ -1,12 +1,16 @@
 #include "PropertiesPanel.h"
 
-#include "sl/core/event/EventBus.h"
+#include "sl/event/EventBus.h"
 #include "sl/gui/Utils.hpp"
+#include "sl/scene/components/DirectionalLightComponent.h"
+#include "sl/scene/components/PointLightComponent.h"
 #include "sl/scene/components/ModelComponent.h"
+#include "sl/scene/components/RendererComponent.h"
+#include "sl/scene/components/TransformComponent.h"
 
 namespace editor::gui {
 
-using namespace sl::core;
+using namespace sl;
 
 PropertiesPanel::PropertiesPanel(const WidgetPosition& position, res::ResourceManager& resourceManager,
     std::shared_ptr<sl::ecs::Entity>& selectedEntity)
@@ -67,7 +71,7 @@ void PropertiesPanel::showEntityProperties(sl::gui::GuiProxy& gui) {
 
         if (gui->beginPopUp("AddComponentPopUp")) {
             static std::vector<std::string> componentsNames = {
-                "Model", "Renderer", "RigidBody", "ParticleEffect", "Transform"
+                "Model", "Renderer", "Rigid body", "Particle effect", "Transform", "Point light", "Directional light"
             };
 
             gui->beginGroup();
@@ -94,8 +98,11 @@ void PropertiesPanel::showEntityProperties(sl::gui::GuiProxy& gui) {
                 break;
             }
 
-            case 2:
+            case 2: {
+                addRenderer(load, gui);
                 break;
+            }
+
             case 3:
                 break;
 
@@ -103,8 +110,20 @@ void PropertiesPanel::showEntityProperties(sl::gui::GuiProxy& gui) {
                 addTransform(load, gui);
                 break;
             }
+
+			case 5: {
+				addPointLight(load, gui);
+				break;
+			}
+
+			case 6: {
+				addDirectionalLight(load, gui);
+				break;
+			}
+
             }
             gui->endGroup();
+            gui->endPopUp();
         }
 
         m_selectedEntity->onGui(gui);
@@ -115,7 +134,7 @@ void PropertiesPanel::addModel(bool load, sl::gui::GuiProxy& gui) {
     auto modelsNames = m_resourceManager.getNamesByType(res::ResourceType::MODEL);
     modelsNames.insert(modelsNames.begin(), "None");
 
-    int selectedValue = 0;
+    static int selectedValue = 0;
     gui->displayText("Model");
     gui->sameLine();
     gui->combo(sl::gui::createHiddenLabel("Model"), selectedValue, modelsNames);
@@ -128,9 +147,36 @@ void PropertiesPanel::addModel(bool load, sl::gui::GuiProxy& gui) {
     }
 }
 
+void PropertiesPanel::addPointLight(bool load, sl::gui::GuiProxy& gui) {
+	if (load) 
+		m_selectedEntity->addComponent<sl::scene::components::PointLightComponent>();
+}
+
+void PropertiesPanel::addDirectionalLight(bool load, sl::gui::GuiProxy& gui) {
+	if (load) 
+		m_selectedEntity->addComponent<sl::scene::components::DirectionalLightComponent>();
+}
+
 void PropertiesPanel::addRenderer(bool load, sl::gui::GuiProxy& gui) {
+    auto shadersNames = m_resourceManager.getNamesByType(res::ResourceType::SHADER);
+    shadersNames.insert(shadersNames.begin(), "None");
+
+    static int selectedValue = 0;
+    gui->displayText("Shader");
+    gui->sameLine();
+    gui->combo(sl::gui::createHiddenLabel("Shader"), selectedValue, shadersNames);
+
+    if (load && selectedValue != 0) {
+        auto& shaderName = shadersNames[selectedValue];
+        auto shaderResource =
+            m_resourceManager.getResourcesByType(res::ResourceType::SHADER)[shaderName]->as<res::ShaderResource>();
+        m_selectedEntity->addComponent<sl::scene::components::RendererComponent>(shaderResource->shader);
+    }
 }
 
 void PropertiesPanel::addTransform(bool load, sl::gui::GuiProxy& gui) {
+    if (load) {
+        m_selectedEntity->addComponent<sl::scene::components::TransformComponent>();
+    }
 }
 }

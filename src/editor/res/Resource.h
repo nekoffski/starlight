@@ -4,6 +4,7 @@
 #include <string>
 
 #include "sl/geometry/Model.h"
+#include "sl/platform/shader/Shader.h"
 #include "sl/platform/texture/Cubemap.h"
 
 namespace editor::res {
@@ -11,7 +12,8 @@ namespace editor::res {
 enum class ResourceType {
     CUBEMAP,
     TEXTURE,
-    MODEL
+    MODEL,
+    SHADER
 };
 
 struct Resource : public std::enable_shared_from_this<Resource> {
@@ -31,6 +33,16 @@ struct Resource : public std::enable_shared_from_this<Resource> {
 
 #define SL_RESOURCE(type) \
     ResourceType getType() override { return type; }
+
+struct ShaderResource : public Resource {
+    SL_RESOURCE(ResourceType::SHADER);
+
+    explicit ShaderResource(std::shared_ptr<sl::platform::shader::Shader> shader, std::string name)
+        : Resource(std::move(name))
+        , shader(shader) {}
+
+    std::shared_ptr<sl::platform::shader::Shader> shader;
+};
 
 struct CubemapResource : public Resource {
     SL_RESOURCE(ResourceType::CUBEMAP);
