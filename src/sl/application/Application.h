@@ -20,10 +20,9 @@ namespace sl::application {
 
 class Application;
 
-template <typename T>
-concept Applicable = std::derived_from<T, Application>;
+/*template <typename T>*/
+//concept Applicable = std::derived_from<T, Application>;
 
-template <Applicable App>
 class Entrypoint;
 
 class Application : public event::EventObserver {
@@ -99,7 +98,6 @@ private:
 };
 
 class Application::Token {
-    template <Applicable App>
     friend class Entrypoint;
     Token() = default;
 };

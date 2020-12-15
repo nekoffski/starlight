@@ -1,4 +1,4 @@
-#include "sl/application/Entrypoint.hpp"
+#include "sl/application/Entrypoint.h"
 
 #include "EditorContext.hpp"
 

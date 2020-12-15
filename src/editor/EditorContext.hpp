@@ -3,7 +3,6 @@
 #include "editor/gui/Settings.h"
 #include "gui/EditorGui.h"
 #include "res/ResourceManager.h"
-#include "sl/application/Entrypoint.hpp"
 #include "sl/application/context/ApplicationContext.h"
 #include "sl/asset/AssetManager.hpp"
 #include "sl/core/fs/FileSystem.h"

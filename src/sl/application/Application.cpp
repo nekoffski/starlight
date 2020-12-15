@@ -12,8 +12,6 @@ namespace sl::application {
 Application::Application(Application::Token&&) {
 }
 
-// TODO: refactor this, it left object in invalid state but as we need to define some actions by end user
-// we cannot do it ctor as we can't call overriden methods there :<
 void Application::init() {
     preInit();
 
