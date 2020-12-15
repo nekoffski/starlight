@@ -25,10 +25,11 @@ Entrypoint::Entrypoint(int& argc, char**& argv, std::unique_ptr<Application> app
 
 int Entrypoint::start() {
     core::sig::setupSignalHandler(this);
-    core::log::initLogging();
-    core::fs::FS::init();
 
+    core::log::initLogging();
     SL_INFO("Initialized logging");
+
+    core::fs::FS::init();
 
     platform::time::Clock::setClockImpl<platform::time::impl::StdClockImpl>();
     m_profilerTimer = async::AsyncEngine::createTimer(PROFILER_PRINT_INTERVAL);

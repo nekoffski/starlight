@@ -1,5 +1,6 @@
 #include "Application.h"
 
+#include "sl/core/path/PathManager.hpp"
 #include "sl/core/perf/Profiler.h"
 #include "sl/event/EventBus.h"
 #include "sl/geometry/Geometry.hpp"
@@ -9,11 +10,18 @@
 
 namespace sl::application {
 
+static void initPaths() {
+    sl::core::path::PathManager::registerResourcePath<sl::platform::shader::Shader>(SHADERS_DIR);
+    sl::core::path::PathManager::registerResourcePath<sl::platform::texture::Texture>(TEXTURES_DIR);
+    sl::core::path::PathManager::registerResourcePath<sl::platform::texture::Cubemap>(CUBEMAPS_DIR);
+    sl::core::path::PathManager::registerResourcePath<sl::geometry::Model>(MODELS_DIR);
+}
+
 Application::Application(Application::Token&&) {
 }
 
 void Application::init() {
-    preInit();
+    initPaths();
 
     m_window = platform::window::Window::create(platform::window::WindowParams{
         platform::window::Viewport{ 1600, 900 }, "title" });
@@ -25,20 +33,23 @@ void Application::init() {
 
     auto windowHandle = m_window->getHandle();
 
-    m_graphicsContext = platform::gpu::GraphicsContext::create(windowHandle);
     m_input = platform::input::Input::create(windowHandle);
 
+    m_graphicsContext = platform::gpu::GraphicsContext::create(windowHandle);
+    m_graphicsContext->init();
+    m_graphicsContext->setViewport(1600, 900);
+
     m_renderer = std::make_shared<rendering::Renderer>(m_graphicsContext, platform::gpu::RenderAPI::create());
+    m_renderer->setViewport(m_window->getParams().viewport);
     m_renderer->init();
 
-    m_guiImpl = platform::gui::GuiImpl::create(m_window->getHandle());
+    m_guiImpl = platform::gui::GuiImpl::create(windowHandle);
     m_guiProxy = std::make_shared<gui::GuiProxy>(m_guiImpl);
 
     platform::shader::ShaderCompiler::init();
     geometry::Geometry::init();
 
-    m_sceneManager3D = std::make_shared<scene::SceneManager3D>(m_renderer);
-    m_sceneManager2D = std::make_shared<scene::SceneManager2D>(m_renderer);
+    m_sceneSystems = std::make_shared<scene::SceneSystems>(m_renderer);
 
     event::EventBus::registerEventObserver(this);
 }
@@ -54,7 +65,7 @@ void Application::render() {
     PRF_PROFILE_FUNCTION();
 
     m_renderer->clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
-    m_context->render();
+    m_context->render(*m_sceneSystems);
     renderGui();
     m_renderer->swapBuffers();
 }
@@ -67,6 +78,30 @@ void Application::renderGui() {
 
 void Application::handleInput() {
     m_context->handleInput(m_input);
+}
+
+std::shared_ptr<ApplicationContext> Application::getActiveContext() const {
+    return m_context;
+}
+
+void Application::handleEvents(event::EventPool& eventPool) {
+    for (auto& event : eventPool.getEventsByCategory({ event::EventCategory::CORE })) {
+        switch (event->getType()) {
+        case event::EventType::WINDOW_RESIZED: {
+            auto windowResizeEvent = event->as<event::WindowResizedEvent>();
+            SL_INFO("{}/{}", windowResizeEvent->width, windowResizeEvent->height);
+            m_renderer->setTemporaryViewport(windowResizeEvent->width, windowResizeEvent->height); // TODO: whhy temporary?
+            break;
+        }
+        }
+    }
+}
+
+void Application::switchContext(std::shared_ptr<ApplicationContext> context) {
+    if (m_context)
+        m_context->onDetach();
+    m_context = context;
+    m_context->onAttach();
 }
 
 bool Application::isRunning() const {

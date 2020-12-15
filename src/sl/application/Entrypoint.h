@@ -29,7 +29,7 @@ private:
 };
 }
 
-#define STARLIGHT_ENTRYPOINT(App)                                             \
+#define SL_ENTRYPOINT(App)                                                    \
     int main(int argc, char** argv) {                                         \
         return sl::application::Entrypoint::create<App>(argc, argv)->start(); \
     }

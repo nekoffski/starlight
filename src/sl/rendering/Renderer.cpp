@@ -6,8 +6,9 @@ namespace sl::rendering {
 
 void Renderer::init() {
     SL_INFO("initializing");
-    m_graphicsContext->init();
-    m_graphicsContext->setViewport(m_viewport.width, m_viewport.height);
+	//m_graphicsContext->init();
+    //m_graphicsContext->setViewport(m_viewport.width, m_viewport.height);
+    calculateProjectionMatrix();
 
     m_renderApi->enable(STARL_DEPTH_TEST);
     m_renderApi->setDepthFunc(STARL_LEQUAL);

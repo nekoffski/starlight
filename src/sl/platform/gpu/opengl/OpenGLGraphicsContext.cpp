@@ -26,8 +26,8 @@ void OpenGLGraphicsContext::init() {
         throw PlatformException(ErrorCode::COULD_NOT_LOAD_GRAPHICS_HANDLE, "Could not load glad proc addr", status);
 
     // TODO: make it configurable
-    // glEnable(GL_DEBUG_OUTPUT);
-    // glDebugMessageCallback(messageCallback, 0);
+    //glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageCallback(messageCallback, 0);
 }
 
 void OpenGLGraphicsContext::setViewport(unsigned w, unsigned h) {

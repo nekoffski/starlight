@@ -23,7 +23,6 @@ public:
     explicit Renderer(std::shared_ptr<platform::gpu::GraphicsContext> graphicsContext, std::unique_ptr<platform::gpu::RenderAPI> renderApi)
         : m_graphicsContext(graphicsContext)
         , m_renderApi(std::move(renderApi)) {
-        calculateProjectionMatrix();
     }
 
     void init();
