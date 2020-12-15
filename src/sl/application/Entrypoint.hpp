@@ -34,7 +34,6 @@ public:
         SL_INFO("Initialized logging");
 
         platform::time::Clock::setClockImpl<platform::time::impl::StdClockImpl>();
-
         m_profilerTimer = async::AsyncEngine::createTimer(PROFILER_PRINT_INTERVAL);
 
         // TODO: load config
