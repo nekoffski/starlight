@@ -4,8 +4,8 @@
 #include "sl/core/Profiler.h"
 #include "sl/event/EventBus.h"
 #include "sl/geometry/Geometry.hpp"
+#include "sl/platform/Platform.h"
 #include "sl/platform/gpu/RenderAPI.h"
-#include "sl/platform/gui/GuiImpl.h"
 #include "sl/platform/shader/ShaderCompiler.hpp"
 
 namespace sl::application {
@@ -43,8 +43,7 @@ void Application::init() {
     m_renderer->setViewport(m_window->getParams().viewport);
     m_renderer->init();
 
-    m_guiImpl = platform::gui::GuiImpl::create(windowHandle);
-    m_guiProxy = std::make_shared<gui::GuiProxy>(m_guiImpl);
+    m_guiApi = platform::createGuiApi(windowHandle);
 
     platform::shader::ShaderCompiler::init();
     geometry::Geometry::init();
@@ -71,9 +70,9 @@ void Application::render() {
 }
 
 void Application::renderGui() {
-    m_guiImpl->begin();
-    m_context->renderGui(*m_guiProxy);
-    m_guiImpl->end();
+    m_guiApi->begin();
+    m_context->renderGui(*m_guiApi);
+    m_guiApi->end();
 }
 
 void Application::handleInput() {

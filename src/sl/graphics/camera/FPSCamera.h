@@ -3,7 +3,7 @@
 #include "UserControllableCamera.h"
 
 #include "sl/core/Logger.h"
-#include "sl/gui/GuiProxy.h"
+#include "sl/gui/GuiApi.h"
 #include "sl/math/Utils.hpp"
 #include "sl/math/Vector.hpp"
 #include "sl/graphics/camera/Camera.h"
@@ -84,7 +84,7 @@ public:
         return math::lookAt(m_position, m_position + m_front, m_up);
     }
 
-    void onGui(gui::GuiProxy&) override {
+    void onGui(gui::GuiApi&) override {
     }
 
 private:

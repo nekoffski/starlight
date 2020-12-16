@@ -10,21 +10,21 @@ BottomPanel::BottomPanel(const Settings& settings, res::ResourceManager& resourc
     , m_resourcesTab(resourceManager) {
 }
 
-void BottomPanel::render(sl::gui::GuiProxy& gui) {
-    gui->beginPanel(sl::gui::createHiddenLabel("BottomMenu"), m_position.origin, m_position.size);
+void BottomPanel::render(sl::gui::GuiApi& gui) {
+    gui.beginPanel(sl::gui::createHiddenLabel("BottomMenu"), m_position.origin, m_position.size);
 
-    gui->beginTabBar("bottomTabBar");
+    gui.beginTabBar("bottomTabBar");
 
-    if (gui->beginTabItem("Resources")) {
+    if (gui.beginTabItem("Resources")) {
         m_resourcesTab.render(gui);
-        gui->endTabItem();
+        gui.endTabItem();
     }
 
-    if (gui->beginTabItem("Debug console")) {
-        gui->endTabItem();
+    if (gui.beginTabItem("Debug console")) {
+        gui.endTabItem();
     }
 
-    gui->endTabBar();
-    gui->endPanel();
+    gui.endTabBar();
+    gui.endPanel();
 }
 }

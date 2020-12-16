@@ -1,7 +1,6 @@
 #pragma once
 
 #include "gpu/fwd.h"
-#include "gui/fwd.h"
 #include "img/fwd.h"
 #include "input/fwd.h"
 #include "shader/fwd.h"

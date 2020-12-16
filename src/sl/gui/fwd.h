@@ -2,5 +2,5 @@
 
 namespace sl::gui {
 
-class GuiProxy;
+class GuiApi;
 }

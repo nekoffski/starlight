@@ -1,4 +1,4 @@
-#include "ImGuiImpl.h"
+#include "ImGuiApi.h"
 
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
@@ -7,7 +7,7 @@
 #include "imgui/imgui.h"
 #include "sl/core/Logger.h"
 
-namespace sl::platform::gui::imgui {
+namespace sl::platform::gui::detail {
 
 void setStyle() {
     ImGuiStyle& style = ImGui::GetStyle();
@@ -47,7 +47,7 @@ void setStyle() {
     colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 }
 
-ImGuiImpl::ImGuiImpl(void* windowHandle) {
+ImGuiApi::ImGuiApi(void* windowHandle) {
     SL_INFO("creating imgui context");
 
     ImGui::CreateContext();
@@ -66,30 +66,30 @@ ImGuiImpl::ImGuiImpl(void* windowHandle) {
     setStyle();
 }
 
-ImGuiImpl::~ImGuiImpl() {
+ImGuiApi::~ImGuiApi() {
     SL_INFO("cleaning up");
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 }
 
-void ImGuiImpl::beginGroup() {
+void ImGuiApi::beginGroup() {
     ImGui::BeginGroup();
 }
-void ImGuiImpl::endGroup() {
+void ImGuiApi::endGroup() {
     ImGui::EndGroup();
 }
 
-void ImGuiImpl::inputText(std::string label, std::string& text) {
+void ImGuiApi::inputText(std::string label, std::string& text) {
     text.resize(256);
     ImGui::InputText(label.c_str(), &text[0], text.size());
 }
 
-void ImGuiImpl::openPopUp(std::string label) {
+void ImGuiApi::openPopUp(std::string label) {
     ImGui::OpenPopup(label.c_str());
 }
 
-void ImGuiImpl::combo(std::string label, int& currentItem, std::vector<std::string> items) {
+void ImGuiApi::combo(std::string label, int& currentItem, std::vector<std::string> items) {
     std::vector<const char*> imguiItems;
     auto itemsSize = items.size();
     imguiItems.reserve(itemsSize);
@@ -100,113 +100,113 @@ void ImGuiImpl::combo(std::string label, int& currentItem, std::vector<std::stri
     ImGui::Combo(label.c_str(), &currentItem, imguiItems.data(), itemsSize);
 }
 
-void ImGuiImpl::closeCurrentPopUp() {
+void ImGuiApi::closeCurrentPopUp() {
     ImGui::CloseCurrentPopup();
 }
 
-bool ImGuiImpl::beginPopUp(std::string label) {
+bool ImGuiApi::beginPopUp(std::string label) {
     return ImGui::BeginPopupModal(label.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 }
 
-void ImGuiImpl::endPopUp() {
+void ImGuiApi::endPopUp() {
     ImGui::EndPopup();
 }
 
-bool ImGuiImpl::beginTabBar(std::string id) {
+bool ImGuiApi::beginTabBar(std::string id) {
     return ImGui::BeginTabBar(id.c_str());
 }
 
-void ImGuiImpl::endTabBar() {
+void ImGuiApi::endTabBar() {
     ImGui::EndTabBar();
 }
 
-void ImGuiImpl::sameLine(float offset) {
+void ImGuiApi::sameLine(float offset) {
     ImGui::SameLine(offset);
 }
 
-bool ImGuiImpl::beginTabItem(std::string label) {
+bool ImGuiApi::beginTabItem(std::string label) {
     return ImGui::BeginTabItem(label.c_str());
 }
 
-void ImGuiImpl::endTabItem() {
+void ImGuiApi::endTabItem() {
     ImGui::EndTabItem();
 }
 
-void ImGuiImpl::displayText(std::string text) {
+void ImGuiApi::displayText(std::string text) {
     ImGui::Text("%s", text.c_str());
 }
 
-void ImGuiImpl::breakLine() {
+void ImGuiApi::breakLine() {
     ImGui::Separator();
 }
 
-void ImGuiImpl::begin() {
+void ImGuiApi::begin() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 }
-void ImGuiImpl::end() {
+void ImGuiApi::end() {
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void ImGuiImpl::beginPanel(std::string title, math::Vec2 pos, math::Vec2 size) {
+void ImGuiApi::beginPanel(std::string title, math::Vec2 pos, math::Vec2 size) {
     ImGui::SetNextWindowPos(ImVec2(pos.x, pos.y));
     ImGui::SetNextWindowSize(ImVec2(size.x, size.y));
     ImGui::Begin(title.c_str());
 }
 
-void ImGuiImpl::endPanel() {
+void ImGuiApi::endPanel() {
     ImGui::End();
 }
 
-bool ImGuiImpl::sliderFloat3(std::string label, math::Vec3& v, float min, float max) {
+bool ImGuiApi::sliderFloat3(std::string label, math::Vec3& v, float min, float max) {
     return ImGui::SliderFloat3(label.c_str(), &v.x, min, max);
 }
 
-bool ImGuiImpl::sliderFloat(std::string label, float& v, float min, float max) {
+bool ImGuiApi::sliderFloat(std::string label, float& v, float min, float max) {
     return ImGui::SliderFloat(label.c_str(), &v, min, max);
 }
 
-bool ImGuiImpl::dragFloat3(std::string label, math::Vec3& v, float speed, float min, float max) {
+bool ImGuiApi::dragFloat3(std::string label, math::Vec3& v, float speed, float min, float max) {
     return ImGui::DragFloat3(label.c_str(), &v.x, speed, min, max);
 }
 
-bool ImGuiImpl::dragFloat(std::string label, float& v, float speed, float min, float max) {
+bool ImGuiApi::dragFloat(std::string label, float& v, float speed, float min, float max) {
     return ImGui::DragFloat(label.c_str(), &v, speed, min, max);
 }
 
-bool ImGuiImpl::dragInt(std::string label, int& v, float speed, int min, int max) {
+bool ImGuiApi::dragInt(std::string label, int& v, float speed, int min, int max) {
     return ImGui::DragInt(label.c_str(), &v, speed, min, max);
 }
 
-bool ImGuiImpl::beginTreeNode(std::string label, bool opened) {
+bool ImGuiApi::beginTreeNode(std::string label, bool opened) {
     ImGui::SetNextTreeNodeOpen(opened, ImGuiCond_Once);
     return ImGui::TreeNode(label.c_str());
 }
 
-void ImGuiImpl::popTreeNode() {
+void ImGuiApi::popTreeNode() {
     ImGui::Separator();
     ImGui::TreePop();
 }
 
-bool ImGuiImpl::isItemHovered() {
+bool ImGuiApi::isItemHovered() {
     return ImGui::IsItemHovered();
 }
 
-bool ImGuiImpl::isMouseClicked() {
+bool ImGuiApi::isMouseClicked() {
     return ImGui::IsMouseClicked(0);
 }
 
-bool ImGuiImpl::isPreviousWidgetClicked() {
+bool ImGuiApi::isPreviousWidgetClicked() {
     return ImGui::IsItemClicked();
 }
 
-bool ImGuiImpl::colorPicker3(std::string label, math::Vec3& color) {
+bool ImGuiApi::colorPicker3(std::string label, math::Vec3& color) {
     return ImGui::ColorPicker3(label.c_str(), &color[0]);
 }
 
-bool ImGuiImpl::button(std::string label, int xSize, int ySize) {
+bool ImGuiApi::button(std::string label, int xSize, int ySize) {
     return ImGui::Button(label.c_str(), ImVec2(xSize, ySize));
 }
 }

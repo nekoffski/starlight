@@ -12,7 +12,7 @@
 #include "sl/event/EventBus.h"
 #include "sl/event/EventObserver.h"
 #include "sl/event/EventPool.h"
-#include "sl/gui/GuiProxy.h"
+#include "sl/gui/GuiApi.h"
 #include "sl/gui/Utils.hpp"
 #include "sl/graphics/camera/EulerCamera.h"
 #include "sl/graphics/camera/FPSCamera.h"
@@ -51,7 +51,7 @@ public:
         return editor::gui::Settings{ 1600, 900, leftPanelWidth, leftPanelTopBottomRatio };
     }
 
-    void renderGui(gui::GuiProxy& gui) override {
+    void renderGui(gui::GuiApi& gui) override {
         m_editorGui->renderEditorGui(gui);
     }
 

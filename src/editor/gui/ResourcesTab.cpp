@@ -3,7 +3,7 @@
 #include "sl/asset/AssetManager.hpp"
 #include "sl/event/EventBus.h"
 #include "sl/gui/FileBrowser.hpp"
-#include "sl/gui/GuiProxy.h"
+#include "sl/gui/GuiApi.h"
 #include "sl/gui/Utils.hpp"
 
 namespace editor::gui {
@@ -14,41 +14,41 @@ ResourcesTab::ResourcesTab(res::ResourceManager& resourceManager)
     : m_resourceManager(resourceManager) {
 }
 
-void ResourcesTab::render(sl::gui::GuiProxy& gui) {
-    gui->beginGroup();
-    if (gui->button("+"))
-        gui->openPopUp("ResourceLoadPopUp");
+void ResourcesTab::render(sl::gui::GuiApi& gui) {
+    gui.beginGroup();
+    if (gui.button("+"))
+        gui.openPopUp("ResourceLoadPopUp");
 
-    if (gui->beginPopUp("ResourceLoadPopUp")) {
+    if (gui.beginPopUp("ResourceLoadPopUp")) {
         showLoaderPopUp(gui);
-        gui->endPopUp();
+        gui.endPopUp();
     }
 
-    gui->endGroup();
+    gui.endGroup();
 
     for (auto& [_, namesVector] : m_resourceManager.getAllNames())
         for (auto& resourceName : namesVector)
-            gui->displayText(resourceName);
+            gui.displayText(resourceName);
 }
 
-void ResourcesTab::showLoaderPopUp(sl::gui::GuiProxy& gui) {
+void ResourcesTab::showLoaderPopUp(sl::gui::GuiApi& gui) {
     static int activeItem = 0;
     static const std::vector<std::string> labels = { "Cubemap", "Texture", "Model" };
 
-    gui->combo(sl::gui::createHiddenLabel("ResourcesCombo"), activeItem, labels);
+    gui.combo(sl::gui::createHiddenLabel("ResourcesCombo"), activeItem, labels);
 
     m_loadClicked = false;
-    if (gui->button("Load")) {
-        gui->closeCurrentPopUp();
+    if (gui.button("Load")) {
+        gui.closeCurrentPopUp();
         m_loadClicked = true;
     }
 
-    gui->sameLine(250);
-    gui->beginGroup();
+    gui.sameLine(250);
+    gui.beginGroup();
 
-    gui->displayText("Name");
-    gui->sameLine(padding);
-    gui->inputText(sl::gui::createHiddenLabel("Name"), m_resourceName);
+    gui.displayText("Name");
+    gui.sameLine(padding);
+    gui.inputText(sl::gui::createHiddenLabel("Name"), m_resourceName);
 
     switch (activeItem) {
     case 0: {
@@ -67,10 +67,10 @@ void ResourcesTab::showLoaderPopUp(sl::gui::GuiProxy& gui) {
     }
     }
 
-    gui->endGroup();
+    gui.endGroup();
 }
 
-void ResourcesTab::handleCubemapLoader(sl::gui::GuiProxy& gui) {
+void ResourcesTab::handleCubemapLoader(sl::gui::GuiApi& gui) {
     static std::array<std::string, 6> faces = {
         "/skybox/top.jpg", "/skybox/bottom.jpg", "/skybox/right.jpg", "/skybox/left.jpg", "/skybox/front.jpg", "/skybox/back.jpg"
     };
@@ -78,27 +78,27 @@ void ResourcesTab::handleCubemapLoader(sl::gui::GuiProxy& gui) {
     static sl::gui::FileBrowser fileBrowser{ gui, "cubemapLoaderPopUp" };
 
     sl::gui::labeledTextInput(gui, "Top", faces[0], padding);
-    if (gui->isPreviousWidgetClicked())
+    if (gui.isPreviousWidgetClicked())
         fileBrowser.open(&faces[0]);
 
     sl::gui::labeledTextInput(gui, "Bottom", faces[1], padding);
-    if (gui->isPreviousWidgetClicked())
+    if (gui.isPreviousWidgetClicked())
         fileBrowser.open(&faces[1]);
 
     sl::gui::labeledTextInput(gui, "Right", faces[2], padding);
-    if (gui->isPreviousWidgetClicked())
+    if (gui.isPreviousWidgetClicked())
         fileBrowser.open(&faces[2]);
 
     sl::gui::labeledTextInput(gui, "Left", faces[3], padding);
-    if (gui->isPreviousWidgetClicked())
+    if (gui.isPreviousWidgetClicked())
         fileBrowser.open(&faces[3]);
 
     sl::gui::labeledTextInput(gui, "Front", faces[4], padding);
-    if (gui->isPreviousWidgetClicked())
+    if (gui.isPreviousWidgetClicked())
         fileBrowser.open(&faces[4]);
 
     sl::gui::labeledTextInput(gui, "Back", faces[5], padding);
-    if (gui->isPreviousWidgetClicked())
+    if (gui.isPreviousWidgetClicked())
         fileBrowser.open(&faces[5]);
 
     fileBrowser.show();
@@ -111,12 +111,12 @@ void ResourcesTab::handleCubemapLoader(sl::gui::GuiProxy& gui) {
     }
 }
 
-void ResourcesTab::handleModelLoader(sl::gui::GuiProxy& gui) {
+void ResourcesTab::handleModelLoader(sl::gui::GuiApi& gui) {
     static std::string modelName = "/tow/tower.obj";
     static sl::gui::FileBrowser fileBrowser{ gui, "modelLoaderPopUp" };
 
     sl::gui::labeledTextInput(gui, "Model", modelName, padding);
-    if (gui->isPreviousWidgetClicked())
+    if (gui.isPreviousWidgetClicked())
         fileBrowser.open(&modelName);
 
     fileBrowser.show();
@@ -128,6 +128,6 @@ void ResourcesTab::handleModelLoader(sl::gui::GuiProxy& gui) {
     }
 }
 
-void ResourcesTab::handleTextureLoader(sl::gui::GuiProxy& gui) {
+void ResourcesTab::handleTextureLoader(sl::gui::GuiApi& gui) {
 }
 }

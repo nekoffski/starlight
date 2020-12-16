@@ -1,12 +1,13 @@
 #pragma once
 
-#include "sl/platform/gui/GuiImpl.h"
+#include "sl/gui/GuiApi.h"
 
-namespace sl::platform::gui::imgui {
-class ImGuiImpl : public GuiImpl {
+namespace sl::platform::gui::detail {
+
+class ImGuiApi : public sl::gui::GuiApi {
 public:
-    explicit ImGuiImpl(void*);
-    ~ImGuiImpl() override;
+    explicit ImGuiApi(void*);
+    ~ImGuiApi() override;
 
     void combo(std::string, int&, std::vector<std::string> items) override;
     void openPopUp(std::string) override;

@@ -6,12 +6,11 @@
 #include "sl/math/Vector.hpp"
 #include "sl/misc/types/NotNullPtr.hpp"
 
-namespace sl::platform::gui {
+namespace sl::gui {
 
-class GuiImpl {
+class GuiApi {
 public:
-    static std::unique_ptr<GuiImpl> create(void*);
-    virtual ~GuiImpl();
+    virtual ~GuiApi() = default;
 
     virtual void begin() = 0;
     virtual void end() = 0;

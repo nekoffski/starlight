@@ -12,7 +12,7 @@ public:
 
     void update(float) override;
     void handleInput(std::shared_ptr<platform::input::Input>) override;
-    void onGui(gui::GuiProxy&) override;
+    void onGui(gui::GuiApi&) override;
 
     const math::Mat4 getViewMatrix() override {
         return math::lookAt(m_position, m_centre, m_up);

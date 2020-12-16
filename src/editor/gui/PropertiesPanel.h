@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "sl/ecs/Entity.h"
-#include "sl/gui/GuiProxy.h"
+#include "sl/gui/GuiApi.h"
 #include "sl/platform/texture/Cubemap.h"
 
 #include "Widget.h"
@@ -14,21 +14,21 @@ namespace editor::gui {
 class PropertiesPanel : public Widget {
 public:
     explicit PropertiesPanel(const WidgetPosition& position, res::ResourceManager& resourceManager, std::shared_ptr<sl::ecs::Entity>&);
-    void render(sl::gui::GuiProxy& gui) override;
+    void render(sl::gui::GuiApi& gui) override;
 
 	void setPosition(const WidgetPosition& position) {
         m_position = position;
     }
 
 private:
-    void showSceneProperties(sl::gui::GuiProxy& gui);
-    void showEntityProperties(sl::gui::GuiProxy& gui);
+    void showSceneProperties(sl::gui::GuiApi& gui);
+    void showEntityProperties(sl::gui::GuiApi& gui);
 
-    void addModel(bool load, sl::gui::GuiProxy& gui);
-    void addRenderer(bool load, sl::gui::GuiProxy& gui);
-    void addTransform(bool load, sl::gui::GuiProxy& gui);
-    void addPointLight(bool load, sl::gui::GuiProxy& gui);
-    void addDirectionalLight(bool load, sl::gui::GuiProxy& gui);
+    void addModel(bool load, sl::gui::GuiApi& gui);
+    void addRenderer(bool load, sl::gui::GuiApi& gui);
+    void addTransform(bool load, sl::gui::GuiApi& gui);
+    void addPointLight(bool load, sl::gui::GuiApi& gui);
+    void addDirectionalLight(bool load, sl::gui::GuiApi& gui);
 
     WidgetPosition m_position;
     res::ResourceManager& m_resourceManager;

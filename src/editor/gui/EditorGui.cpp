@@ -14,7 +14,7 @@ void EditorGui::setSettings(const Settings& settings) {
 	m_bottomPanel.setSettings(settings);
 }
 
-void EditorGui::renderEditorGui(sl::gui::GuiProxy& gui) {
+void EditorGui::renderEditorGui(sl::gui::GuiApi& gui) {
     m_leftPanel.render(gui);
     m_bottomPanel.render(gui);
 }

@@ -7,12 +7,11 @@
 #include "sl/application/ApplicationContext.h"
 #include "sl/event/Event.h"
 #include "sl/event/EventObserver.h"
-#include "sl/gui/GuiProxy.h"
+#include "sl/graphics/Renderer.h"
+#include "sl/gui/GuiApi.h"
 #include "sl/platform/gpu/GraphicsContext.h"
-#include "sl/platform/gui/fwd.h"
 #include "sl/platform/input/Input.h"
 #include "sl/platform/window/Window.h"
-#include "sl/graphics/Renderer.h"
 #include "sl/scene/SceneSystems.hpp"
 
 namespace sl::application {
@@ -57,10 +56,9 @@ private:
     std::shared_ptr<platform::window::Window> m_window;
     std::shared_ptr<platform::input::Input> m_input;
     std::shared_ptr<graphics::Renderer> m_renderer;
-    std::shared_ptr<platform::gui::GuiImpl> m_guiImpl;
+    std::shared_ptr<gui::GuiApi> m_guiApi;
     std::shared_ptr<platform::gpu::GraphicsContext> m_graphicsContext;
     std::shared_ptr<ApplicationContext> m_context;
-    std::shared_ptr<gui::GuiProxy> m_guiProxy;
     std::shared_ptr<scene::SceneSystems> m_sceneSystems;
 };
 

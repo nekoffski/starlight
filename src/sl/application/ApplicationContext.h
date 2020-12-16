@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "fwd.h"
-#include "sl/gui/GuiProxy.h"
+#include "sl/gui/GuiApi.h"
 #include "sl/scene/SceneSystems.hpp"
 
 namespace sl::platform::input {
@@ -24,6 +24,6 @@ public:
     virtual void update(float, float) = 0;
     virtual void render(scene::SceneSystems& sceneSystems) = 0;
 
-    virtual void renderGui(gui::GuiProxy&) {}
+    virtual void renderGui(gui::GuiApi&) {}
 };
 }
