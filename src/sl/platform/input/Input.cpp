@@ -1,6 +1,6 @@
 #include "Input.h"
 
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 #include "sl/platform/input/glfw/GLFWInput.h"
 
 namespace sl::platform::input {

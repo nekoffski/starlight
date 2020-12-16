@@ -4,7 +4,7 @@
 
 #include <chrono>
 
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 
 namespace sl::platform::time::impl {
 

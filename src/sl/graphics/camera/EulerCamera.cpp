@@ -7,9 +7,9 @@
 #include "sl/math/Utils.hpp"
 #include "sl/platform/input/Input.h"
 
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 
-namespace sl::rendering::camera {
+namespace sl::graphics::camera {
 
 const float EulerCamera::MIN_PSI = -math::PI / 2.0f;
 const float EulerCamera::MAX_PSI = math::PI / 2.0f;

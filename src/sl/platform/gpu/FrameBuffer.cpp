@@ -1,7 +1,7 @@
 #include "FrameBuffer.h"
 
 #include "opengl/OpenGLFrameBuffer.h"
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 
 namespace sl::platform::gpu {
 std::shared_ptr<FrameBuffer> FrameBuffer::create() {

@@ -1,7 +1,7 @@
 #include "Cubemap.h"
 
 #include "opengl/OpenGLCubemap.h"
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 
 namespace sl::platform::texture {
 

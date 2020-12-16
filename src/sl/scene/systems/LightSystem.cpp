@@ -1,7 +1,7 @@
 
 #include "LightSystem.h"
 
-#include "sl/core/perf/Profiler.h"
+#include "sl/core/Profiler.h"
 #include "sl/platform/shader/Shader.h"
 #include "sl/scene/components/TransformComponent.h"
 

@@ -2,7 +2,7 @@
 
 #include "camera/fwd.h"
 
-namespace sl::rendering {
+namespace sl::graphics {
 
 class Renderer;
 }

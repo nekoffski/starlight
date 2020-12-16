@@ -5,7 +5,7 @@
 
 #include <memory>
 
-namespace sl::rendering::camera {
+namespace sl::graphics::camera {
 
 class Camera2D : public UserControllableCamera {
 public:

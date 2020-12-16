@@ -12,7 +12,7 @@
 #include "sl/platform/gui/fwd.h"
 #include "sl/platform/input/Input.h"
 #include "sl/platform/window/Window.h"
-#include "sl/rendering/Renderer.h"
+#include "sl/graphics/Renderer.h"
 #include "sl/scene/SceneSystems.hpp"
 
 namespace sl::application {
@@ -56,7 +56,7 @@ protected:
 private:
     std::shared_ptr<platform::window::Window> m_window;
     std::shared_ptr<platform::input::Input> m_input;
-    std::shared_ptr<rendering::Renderer> m_renderer;
+    std::shared_ptr<graphics::Renderer> m_renderer;
     std::shared_ptr<platform::gui::GuiImpl> m_guiImpl;
     std::shared_ptr<platform::gpu::GraphicsContext> m_graphicsContext;
     std::shared_ptr<ApplicationContext> m_context;

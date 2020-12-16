@@ -1,6 +1,6 @@
 #include "Logger.h"
 
-namespace sl::core::log {
+namespace sl::core {
 
 void initLogging() {
     spdlog::set_pattern("%^[%d-%m-%Y %T] [Th: %t] %-7l [starlight]: %v - [%s:%#]%$");

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sl/rendering/Renderer.h"
+#include "sl/graphics/Renderer.h"
 
 #include "systems/LightSystem.h"
 #include "systems/ParticleEffectSystem.h"
@@ -11,7 +11,7 @@
 namespace sl::scene {
 
 struct SceneSystems {
-    SceneSystems(std::shared_ptr<rendering::Renderer> renderer)
+    SceneSystems(std::shared_ptr<graphics::Renderer> renderer)
         : rendererSystem(renderer)
         , pfxSystem(renderer)
         , skyboxSystem(renderer)

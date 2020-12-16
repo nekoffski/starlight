@@ -1,6 +1,6 @@
 #include "Shader.h"
 
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 #include "sl/platform/PlatformDetector.h"
 
 #ifdef STARL_USE_OPENGL

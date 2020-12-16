@@ -1,7 +1,7 @@
 #include "GraphicsContext.h"
 
 #include "opengl/OpenGLGraphicsContext.h"
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 #include "sl/platform/PlatformDetector.h"
 
 namespace sl::platform::gpu {

@@ -7,7 +7,7 @@
 #include <glad/glad.h>
 
 #include "OpenGLShader.h"
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 #include "sl/platform/Error.h"
 
 #define INFO_BUFFER 1024

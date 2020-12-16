@@ -11,7 +11,7 @@
 #include <spdlog/sinks/ostream_sink.h>
 #include <spdlog/spdlog.h>
 
-namespace sl::core::log {
+namespace sl::core {
 
 extern void initLogging();
 }

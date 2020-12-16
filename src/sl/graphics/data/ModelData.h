@@ -5,7 +5,7 @@
 #include "sl/geometry/Model.h"
 #include "sl/math/Vector.hpp"
 
-namespace sl::rendering::data {
+namespace sl::graphics::data {
 
 struct ModelData {
     explicit ModelData(std::shared_ptr<geometry::Model> model)

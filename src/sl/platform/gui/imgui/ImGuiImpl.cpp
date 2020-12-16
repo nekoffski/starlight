@@ -5,7 +5,7 @@
 #include <sys/ucontext.h>
 
 #include "imgui/imgui.h"
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 
 namespace sl::platform::gui::imgui {
 

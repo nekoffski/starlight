@@ -3,7 +3,7 @@
 #include <fstream>
 #include <unordered_map>
 
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 #include "sl/math/Utils.hpp"
 #include "sl/platform/time/Clock.h"
 
@@ -11,7 +11,7 @@ constexpr float ETA = 0.3f;
 
 #define PRF_PROFILER_ENABLED 1
 
-namespace sl::core::perf {
+namespace sl::core {
 
 std::unordered_map<std::string, float> Profiler::m_times;
 
@@ -46,7 +46,7 @@ void Profiler::saveResults(std::string logdir) {
 }
 
 void Profiler::printResults() {
-    // clang-format off
+// clang-format off
     #ifdef PRF_PROFILER_ENABLED
         SL_WARN("\n{}\n", formatTimers()); // CREATE OTHER FORMATTER!
     #endif

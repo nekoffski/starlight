@@ -3,7 +3,7 @@
 #include <string>
 
 #include "GuiProxy.h"
-#include "sl/core/fs/FileSystem.h"
+#include "sl/core/FileSystem.h"
 
 namespace sl::gui {
 
@@ -36,9 +36,9 @@ public:
 
 private:
     void processDirectory(const std::string& root) {
-        for (auto& entry : core::fs::FS::listDirectory(root)) {
+        for (auto& entry : core::FS::listDirectory(root)) {
             auto entryName = extractNameFromPath(entry);
-            if (core::fs::FS::isDirectory(entry)) {
+            if (core::FS::isDirectory(entry)) {
                 if (m_gui->beginTreeNode(entryName, false)) {
                     processDirectory(entry);
                     m_gui->popTreeNode();

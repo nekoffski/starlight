@@ -2,13 +2,13 @@
 
 #include <cstdint>
 
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 #include "sl/gui/GuiProxy.h"
 #include "sl/gui/fwd.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
 
-namespace sl::rendering::camera {
+namespace sl::graphics::camera {
 
 using Direction = u_int8_t;
 

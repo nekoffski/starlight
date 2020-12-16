@@ -1,7 +1,7 @@
 #include "VertexBuffer.h"
 
 #include "opengl/OpenGLVertexBuffer.h"
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 
 namespace sl::platform::gpu {
 std::shared_ptr<VertexBuffer> VertexBuffer::create(misc::types::NotNullPtr<void> data, int size, int verticesCount) {

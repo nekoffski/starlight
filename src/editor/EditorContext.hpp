@@ -5,8 +5,8 @@
 #include "res/ResourceManager.h"
 #include "sl/application/ApplicationContext.h"
 #include "sl/asset/AssetManager.hpp"
-#include "sl/core/fs/FileSystem.h"
-#include "sl/core/log/Logger.h"
+#include "sl/core/FileSystem.h"
+#include "sl/core/Logger.h"
 #include "sl/ecs/Entity.h"
 #include "sl/event/Event.h"
 #include "sl/event/EventBus.h"
@@ -14,8 +14,8 @@
 #include "sl/event/EventPool.h"
 #include "sl/gui/GuiProxy.h"
 #include "sl/gui/Utils.hpp"
-#include "sl/rendering/camera/EulerCamera.h"
-#include "sl/rendering/camera/FPSCamera.h"
+#include "sl/graphics/camera/EulerCamera.h"
+#include "sl/graphics/camera/FPSCamera.h"
 #include "sl/scene/Scene.h"
 
 #include <filesystem>
@@ -27,7 +27,7 @@ using namespace sl::core;
 class EditorContext : public event::EventObserver, public application::ApplicationContext {
 public:
     void onInit() override {
-        m_activeCamera = rendering::camera::EulerCamera::create(math::Vec3(0.0f), 1.0f, 8.0f);
+        m_activeCamera = graphics::camera::EulerCamera::create(math::Vec3(0.0f), 1.0f, 8.0f);
         m_scene = scene::Scene::create();
         m_editorGui = std::make_shared<editor::gui::EditorGui>(createGuiSettings(), m_entities, m_resourceManager);
 
@@ -160,6 +160,6 @@ private:
     std::shared_ptr<editor::gui::EditorGui> m_editorGui;
     std::vector<std::shared_ptr<ecs::Entity>> m_entities;
 
-    std::shared_ptr<rendering::camera::UserControllableCamera> m_activeCamera;
+    std::shared_ptr<graphics::camera::UserControllableCamera> m_activeCamera;
     std::shared_ptr<scene::Scene> m_scene;
 };

@@ -2,7 +2,7 @@
 
 #include <unordered_map>
 
-#include "sl/rendering/camera/Camera.h"
+#include "sl/graphics/camera/Camera.h"
 
 #include "sl/platform/gpu/GraphicsContext.h"
 #include "sl/platform/gpu/RenderAPI.h"
@@ -16,7 +16,7 @@
 
 #include "sl/geometry/Mesh.h"
 
-namespace sl::rendering {
+namespace sl::graphics {
 
 class Renderer {
 public:

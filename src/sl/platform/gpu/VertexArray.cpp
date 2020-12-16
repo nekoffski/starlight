@@ -1,7 +1,7 @@
 #include "VertexArray.h"
 
 #include "opengl/OpenGLVertexArray.h"
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 
 namespace sl::platform::gpu {
 

@@ -2,11 +2,11 @@
 
 #include "sl/asset/AssetManager.hpp"
 #include "sl/async/AsyncEngine.hpp"
-#include "sl/core/perf/Profiler.h"
+#include "sl/core/Profiler.h"
 #include "sl/geometry/Geometry.hpp"
 #include "sl/platform/shader/Shader.h"
-#include "sl/rendering/Renderer.h"
-#include "sl/rendering/camera/Camera.h"
+#include "sl/graphics/Renderer.h"
+#include "sl/graphics/camera/Camera.h"
 #include "sl/scene/components/TransformComponent.h"
 
 namespace sl::scene::systems {
@@ -18,7 +18,7 @@ static void cleanRetiredParticles(std::vector<physics::pfx::Particle>& particles
     std::erase_if(particles, [](auto& particle) -> bool { return particle.scale <= 0 || particle.position.y >= 7.5f; });
 }
 
-ParticleEffectSystem::ParticleEffectSystem(std::shared_ptr<rendering::Renderer> renderer)
+ParticleEffectSystem::ParticleEffectSystem(std::shared_ptr<graphics::Renderer> renderer)
     : m_renderer(renderer)
     , m_vao(geometry::Geometry::getSquareVAO()) {
 
@@ -28,7 +28,7 @@ ParticleEffectSystem::ParticleEffectSystem(std::shared_ptr<rendering::Renderer> 
 }
 
 void ParticleEffectSystem::renderParticleEffects(std::vector<components::ParticleEffectComponent>& pfxs,
-    std::shared_ptr<rendering::camera::Camera> camera) {
+    std::shared_ptr<graphics::camera::Camera> camera) {
     PRF_PROFILE_FUNCTION();
 
     m_shader->enable();
@@ -51,12 +51,12 @@ void ParticleEffectSystem::renderParticleEffects(std::vector<components::Particl
     m_shader->disable();
 }
 
-void ParticleEffectSystem::update(std::vector<components::ParticleEffectComponent>& pfxs, float deltaTime, std::shared_ptr<rendering::camera::Camera> camera) {
+void ParticleEffectSystem::update(std::vector<components::ParticleEffectComponent>& pfxs, float deltaTime, std::shared_ptr<graphics::camera::Camera> camera) {
     for (auto& pfx : pfxs)
         updateParticleEffect(pfx, deltaTime, camera);
 }
 
-void ParticleEffectSystem::updateParticleEffect(components::ParticleEffectComponent& pfx, float deltaTime, std::shared_ptr<rendering::camera::Camera> camera) {
+void ParticleEffectSystem::updateParticleEffect(components::ParticleEffectComponent& pfx, float deltaTime, std::shared_ptr<graphics::camera::Camera> camera) {
     pfx.maxParticles = m_particlesFuzzyController.calculateParticlesCount(camera->getPosition(),
         camera->getFront(), pfx.position, static_cast<unsigned int>(1.0f / deltaTime));
 

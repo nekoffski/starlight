@@ -1,8 +1,8 @@
 #pragma once
 
 #include "sl/asset/loaders/AssetLoader.h"
-#include "sl/core/log/Logger.h"
-#include "sl/core/path/PathManager.hpp"
+#include "sl/core/Logger.h"
+#include "sl/core/PathManager.hpp"
 #include "sl/platform/texture/Cubemap.h"
 
 namespace sl::asset::loaders {
@@ -25,7 +25,7 @@ struct AssetLoader<Cubemap> {
         // clang-format off
 		std::string prefix = "";
 		if (not globalPath)
-            prefix += core::path::PathManager::get<Cubemap>();
+            prefix += core::PathManager::get<Cubemap>();
 
 		SL_DEBUG("loading cubemap: \n {} - {}/{}/{}/{}/{}/{} ", prefix, args.top, args.bottom , args.right, args.left, args.front, args.back);
         return Cubemap::create({ 

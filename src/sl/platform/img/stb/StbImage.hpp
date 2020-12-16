@@ -5,7 +5,7 @@
 
 #include <stb/stb.h>
 
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 #include "sl/platform/Error.h"
 
 namespace sl::platform::img::stb {

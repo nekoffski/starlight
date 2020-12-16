@@ -8,7 +8,7 @@
 #define PRF_PROFILER_ENABLED 1
 constexpr float PROFILER_PRINT_INTERVAL = 5.0f;
 
-namespace sl::core::perf {
+namespace sl::core {
 
 class Profiler {
     class RegionBasedTimer {
@@ -34,8 +34,8 @@ private:
 
 // clang-format off
 #ifdef PRF_PROFILER_ENABLED
-    #define PRF_PROFILE_REGION(name) auto __sl_prf_region_timer = core::perf::Profiler::createRegionBasedTimer(name); 
-    #define PRF_PROFILE_FUNCTION() auto __sl_prf_func_timer = core::perf::Profiler::createRegionBasedTimer(__PRETTY_FUNCTION__);
+    #define PRF_PROFILE_REGION(name) auto __sl_prf_region_timer = core::Profiler::createRegionBasedTimer(name); 
+    #define PRF_PROFILE_FUNCTION() auto __sl_prf_func_timer = core::Profiler::createRegionBasedTimer(__PRETTY_FUNCTION__);
 #else
     #define PRF_PROFILE_REGION(name)
     #define PRF_PROFILE_FUNCTION

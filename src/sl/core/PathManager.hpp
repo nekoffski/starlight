@@ -4,9 +4,9 @@
 #include <unordered_map>
 
 #include "sl/core/Error.h"
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 
-namespace sl::core::path {
+namespace sl::core {
 
 class PathManager {
 public:

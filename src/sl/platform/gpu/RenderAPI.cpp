@@ -1,7 +1,7 @@
 #include "RenderAPI.h"
 
 #include "opengl/OpenGLRenderAPI.h"
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 
 namespace sl::platform::gpu {
 

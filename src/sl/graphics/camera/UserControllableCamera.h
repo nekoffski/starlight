@@ -4,7 +4,7 @@
 
 #include "sl/platform/input/InputHandler.h"
 
-namespace sl::rendering::camera {
+namespace sl::graphics::camera {
 
 class UserControllableCamera : public Camera, public platform::input::InputHandler {
 public:

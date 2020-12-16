@@ -1,12 +1,9 @@
 #pragma once
 
-#include <limits>
-#include <map>
-#include <string>
-#include <vector>
+#include <memory>
 
-#include "timer/Timer.hpp"
-#include "timer/TimerEngine.hpp"
+#include "Timer.h"
+#include "TimerEngine.h"
 
 namespace sl::async {
 
@@ -16,11 +13,11 @@ public:
         m_timerEngine.update(dtime);
     }
 
-    static std::shared_ptr<timer::Timer> createTimer(float sleepTime) {
+    static std::shared_ptr<Timer> createTimer(float sleepTime) {
         return m_timerEngine.createTimer(sleepTime);
     }
 
 private:
-    inline static timer::TimerEngine m_timerEngine;
+    inline static detail::TimerEngine m_timerEngine;
 };
 }

@@ -7,9 +7,9 @@
 
 #include "sl/async/AsyncEngine.hpp"
 #include "sl/core/BaseError.h"
-#include "sl/core/fs/FileSystem.h"
-#include "sl/core/log/Logger.h"
-#include "sl/core/perf/Profiler.h"
+#include "sl/core/FileSystem.h"
+#include "sl/core/Logger.h"
+#include "sl/core/Profiler.h"
 #include "sl/core/sig/Signal.h"
 #include "sl/event/EventBus.h"
 #include "sl/platform/time/Clock.h"
@@ -25,11 +25,8 @@ Entrypoint::Entrypoint(int& argc, char**& argv, std::unique_ptr<Application> app
 
 int Entrypoint::start() {
     core::sig::setupSignalHandler(this);
-
-    core::log::initLogging();
+    core::initLogging();
     SL_INFO("Initialized logging");
-
-    core::fs::FS::init();
 
     platform::time::Clock::setClockImpl<platform::time::impl::StdClockImpl>();
     m_profilerTimer = async::AsyncEngine::createTimer(PROFILER_PRINT_INTERVAL);
@@ -59,7 +56,7 @@ int Entrypoint::start() {
             }
 
             if (not m_profilerTimer->asyncSleep())
-                core::perf::Profiler::printResults();
+                core::Profiler::printResults();
         }
 
         m_application->onStop();
@@ -69,7 +66,7 @@ int Entrypoint::start() {
         return e.getGlobalCode();
     }
 
-    core::perf::Profiler::saveResults("./logs/");
+    core::Profiler::saveResults("./logs/");
     SL_INFO("shutdown gracefully");
     return 0;
 }

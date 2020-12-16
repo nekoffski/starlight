@@ -2,8 +2,8 @@
 
 #include "sl/asset/loaders/AssetLoader.h"
 
-#include "sl/core/log/Logger.h"
-#include "sl/core/path/PathManager.hpp"
+#include "sl/core/Logger.h"
+#include "sl/core/PathManager.hpp"
 #include "sl/platform/shader/Shader.h"
 #include "sl/platform/shader/ShaderCompiler.hpp"
 
@@ -23,7 +23,7 @@ struct AssetLoader<Shader> {
     static std::shared_ptr<Shader> load(bool globalPath, AssetLoaderArgs<Shader> args) {
         std::string prefix = "";
         if (not globalPath)
-            prefix += core::path::PathManager::get<Shader>();
+            prefix += core::PathManager::get<Shader>();
 
         SL_DEBUG("loading shader: \n {} - {}/{}/{}", prefix, args.vertexPath, args.fragmentPath, args.geometryPath);
 

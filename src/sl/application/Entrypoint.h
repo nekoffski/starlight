@@ -22,7 +22,7 @@ public:
     void onSignal(int sig);
 
 private:
-    std::shared_ptr<async::timer::Timer> m_profilerTimer;
+    std::shared_ptr<async::Timer> m_profilerTimer;
     std::unique_ptr<Application> m_application;
     int& m_argc;
     char**& m_argv;

@@ -4,7 +4,7 @@
 
 #include <GLFW/glfw3.h>
 
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 #include "sl/platform/window/WindowParams.h"
 
 namespace sl::platform::window::glfw {

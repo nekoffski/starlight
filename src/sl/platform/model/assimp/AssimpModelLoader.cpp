@@ -1,6 +1,6 @@
 #include "AssimpModelLoader.h"
 
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 #include "sl/geometry/Model.h"
 #include "sl/platform/Error.h"
 #include "sl/platform/model/assimp/AssimpMeshProcessor.h"

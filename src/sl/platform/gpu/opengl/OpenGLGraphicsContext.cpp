@@ -2,8 +2,8 @@
 
 #include "OpenGLGraphicsContext.h"
 
-#include "sl/core/log/Logger.h"
-#include "sl/core/perf/Profiler.h"
+#include "sl/core/Logger.h"
+#include "sl/core/Profiler.h"
 
 static void GLAPIENTRY messageCallback(GLenum source, GLenum type, GLuint id,
     GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {

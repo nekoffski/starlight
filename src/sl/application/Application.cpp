@@ -1,7 +1,7 @@
 #include "Application.h"
 
-#include "sl/core/path/PathManager.hpp"
-#include "sl/core/perf/Profiler.h"
+#include "sl/core/PathManager.hpp"
+#include "sl/core/Profiler.h"
 #include "sl/event/EventBus.h"
 #include "sl/geometry/Geometry.hpp"
 #include "sl/platform/gpu/RenderAPI.h"
@@ -11,10 +11,10 @@
 namespace sl::application {
 
 static void initPaths() {
-    sl::core::path::PathManager::registerResourcePath<sl::platform::shader::Shader>(SHADERS_DIR);
-    sl::core::path::PathManager::registerResourcePath<sl::platform::texture::Texture>(TEXTURES_DIR);
-    sl::core::path::PathManager::registerResourcePath<sl::platform::texture::Cubemap>(CUBEMAPS_DIR);
-    sl::core::path::PathManager::registerResourcePath<sl::geometry::Model>(MODELS_DIR);
+    sl::core::PathManager::registerResourcePath<sl::platform::shader::Shader>(SHADERS_DIR);
+    sl::core::PathManager::registerResourcePath<sl::platform::texture::Texture>(TEXTURES_DIR);
+    sl::core::PathManager::registerResourcePath<sl::platform::texture::Cubemap>(CUBEMAPS_DIR);
+    sl::core::PathManager::registerResourcePath<sl::geometry::Model>(MODELS_DIR);
 }
 
 Application::Application(Application::Token&&) {
@@ -39,7 +39,7 @@ void Application::init() {
     m_graphicsContext->init();
     m_graphicsContext->setViewport(1600, 900);
 
-    m_renderer = std::make_shared<rendering::Renderer>(m_graphicsContext, platform::gpu::RenderAPI::create());
+    m_renderer = std::make_shared<graphics::Renderer>(m_graphicsContext, platform::gpu::RenderAPI::create());
     m_renderer->setViewport(m_window->getParams().viewport);
     m_renderer->init();
 

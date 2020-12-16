@@ -2,13 +2,13 @@
 
 #include "UserControllableCamera.h"
 
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 #include "sl/gui/GuiProxy.h"
 #include "sl/math/Utils.hpp"
 #include "sl/math/Vector.hpp"
-#include "sl/rendering/camera/Camera.h"
+#include "sl/graphics/camera/Camera.h"
 
-namespace sl::rendering::camera {
+namespace sl::graphics::camera {
 
 class FPSCamera : public UserControllableCamera {
 public:

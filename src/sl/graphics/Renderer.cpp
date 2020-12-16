@@ -1,8 +1,8 @@
 #include "Renderer.h"
 
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 
-namespace sl::rendering {
+namespace sl::graphics {
 
 void Renderer::init() {
     SL_INFO("initializing");

@@ -1,6 +1,6 @@
 #include "Image.h"
 
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 #include "sl/platform/img/stb/StbImage.hpp"
 
 namespace sl::platform::img {

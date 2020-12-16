@@ -4,7 +4,7 @@
 #include "sl/platform/gpu/VertexBuffer.h"
 #include "sl/platform/shader/Shader.h"
 #include "sl/platform/texture/Cubemap.h"
-#include "sl/rendering/Renderer.h"
+#include "sl/graphics/Renderer.h"
 
 // clang-format off
 static float cubemapVertices[] = {
@@ -54,7 +54,7 @@ static float cubemapVertices[] = {
 
 namespace sl::scene::systems {
 
-SkyboxSystem::SkyboxSystem(std::shared_ptr<rendering::Renderer> renderer)
+SkyboxSystem::SkyboxSystem(std::shared_ptr<graphics::Renderer> renderer)
     : m_renderer(renderer) {
 
     auto vertexBuffer = platform::gpu::VertexBuffer::create(cubemapVertices, sizeof(cubemapVertices), 36);
@@ -65,7 +65,7 @@ SkyboxSystem::SkyboxSystem(std::shared_ptr<rendering::Renderer> renderer)
 }
 
 void SkyboxSystem::render(std::shared_ptr<platform::texture::Cubemap> cubemap, std::shared_ptr<platform::shader::Shader> cubemapShader,
-    std::shared_ptr<rendering::camera::Camera> camera) {
+    std::shared_ptr<graphics::camera::Camera> camera) {
 
     cubemapShader->enable();
     cubemapShader->setUniform("projection", m_renderer->getProjectionMatrix());

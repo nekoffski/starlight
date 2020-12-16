@@ -1,7 +1,7 @@
 #include "RendererSystem.h"
 
-#include "sl/core/perf/Profiler.h"
-#include "sl/rendering/Renderer.h"
+#include "sl/core/Profiler.h"
+#include "sl/graphics/Renderer.h"
 #include "sl/scene/components/MaterialComponent.h"
 #include "sl/scene/components/ModelComponent.h"
 #include "sl/scene/components/RendererComponent.h"
@@ -11,11 +11,11 @@ namespace sl::scene::systems {
 
 const components::MaterialComponent DEFAULT_MATERIAL = components::MaterialComponent();
 
-RendererSystem::RendererSystem(std::shared_ptr<rendering::Renderer> renderer)
+RendererSystem::RendererSystem(std::shared_ptr<graphics::Renderer> renderer)
     : m_renderer(renderer) {
 }
 
-void RendererSystem::render(components::RendererComponent& component, std::shared_ptr<rendering::camera::Camera> camera,
+void RendererSystem::render(components::RendererComponent& component, std::shared_ptr<graphics::camera::Camera> camera,
     std::shared_ptr<platform::shader::Shader> shader) {
     auto& entity = component.entity;
 
@@ -35,7 +35,7 @@ void RendererSystem::render(components::RendererComponent& component, std::share
     renderModelComposite(shader, model.modelData, transformComponent());
 }
 
-void RendererSystem::render(components::RendererComponent& component, std::shared_ptr<rendering::camera::Camera> camera) {
+void RendererSystem::render(components::RendererComponent& component, std::shared_ptr<graphics::camera::Camera> camera) {
     render(component, camera, component.shader);
 }
 
@@ -46,7 +46,7 @@ void RendererSystem::setMaterial(const components::MaterialComponent& material, 
     shader->setUniform("material.shininess", material.shininess);
 }
 
-void RendererSystem::renderModelComposite(std::shared_ptr<platform::shader::Shader> shader, const rendering::data::ModelData& modelData,
+void RendererSystem::renderModelComposite(std::shared_ptr<platform::shader::Shader> shader, const graphics::data::ModelData& modelData,
     const math::Mat4& transform) {
 
     float t = platform::time::Clock::now()->value();

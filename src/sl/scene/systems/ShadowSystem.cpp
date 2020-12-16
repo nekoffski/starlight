@@ -3,11 +3,11 @@
 #include "sl/asset/AssetManager.hpp"
 #include "sl/platform/gpu/FrameBuffer.h"
 #include "sl/platform/shader/Shader.h"
-#include "sl/rendering/Renderer.h"
+#include "sl/graphics/Renderer.h"
 
 namespace sl::scene::systems {
 
-ShadowSystem::ShadowSystem(std::shared_ptr<rendering::Renderer> renderer)
+ShadowSystem::ShadowSystem(std::shared_ptr<graphics::Renderer> renderer)
     : m_renderer(renderer)
     , m_shadowMapFrameBuffer(platform::gpu::FrameBuffer::create())
     , m_depthShader(asset::AssetManager::loadLocalPath<platform::shader::Shader>("/depth_capture.vert", "/depth_capture.frag")) {
