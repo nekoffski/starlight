@@ -17,7 +17,7 @@ public:
 // TODO: FIX REMOVING COMPONENTS!
 // TODO: add CONCEPTS
 
-template <typename Component, template <typename> typename Container = std::vector>
+template <typename Component>
 class ComponentContainer : public IComponentContainer {
 public:
     static std::shared_ptr<IComponentContainer> create() {
@@ -36,7 +36,7 @@ public:
         return component;
     }
 
-    Container<Component>& getAll() {
+	std::vector<Component>& getAll() {
         return m_components;
     }
 
@@ -49,7 +49,7 @@ public:
     }
 
 private:
-    Container<Component> m_components; // this shoud be possible replaced with array as vector realocates memory every push
+	std::vector<Component> m_components; // this shoud be possible replaced with array as vector realocates memory every push
     std::unordered_map<std::string, Component*> m_entityIdToComponent;
 };
 }

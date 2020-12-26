@@ -1,7 +1,7 @@
 #pragma once
 
 #include "sl/ai/FuzzyController.hpp"
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 #include "sl/math/Utils.hpp"
 #include "sl/math/Vector.hpp"
 

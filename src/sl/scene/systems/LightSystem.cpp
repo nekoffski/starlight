@@ -1,8 +1,8 @@
 
 #include "LightSystem.h"
 
-#include "sl/core/perf/Profiler.h"
-#include "sl/platform/shader/Shader.h"
+#include "sl/core/Profiler.h"
+#include "sl/graphics/Shader.h"
 #include "sl/scene/components/TransformComponent.h"
 
 #include "glad/glad.h"
@@ -10,7 +10,7 @@
 namespace sl::scene::systems {
 
 void LightSystem::prepareDirectionalLights(std::vector<components::DirectionalLightComponent>& lights,
-    std::shared_ptr<platform::shader::Shader> shader) {
+    std::shared_ptr<graphics::Shader> shader) {
 
     unsigned int directionalLightsNum = lights.size();
     shader->setUniform("directionalLightsNum", directionalLightsNum);
@@ -20,7 +20,7 @@ void LightSystem::prepareDirectionalLights(std::vector<components::DirectionalLi
 }
 
 void LightSystem::preparePointsLights(std::vector<components::PointLightComponent>& lights,
-    std::shared_ptr<platform::shader::Shader> shader) {
+    std::shared_ptr<graphics::Shader> shader) {
 
     unsigned int pointLightsNum = lights.size();
     shader->setUniform("pointLightsNum", pointLightsNum);
@@ -29,7 +29,7 @@ void LightSystem::preparePointsLights(std::vector<components::PointLightComponen
         setPointLight(shader, lights[i], i);
 }
 
-void LightSystem::setDirectionalLight(std::shared_ptr<platform::shader::Shader> shader,
+void LightSystem::setDirectionalLight(std::shared_ptr<graphics::Shader> shader,
     components::DirectionalLightComponent light, unsigned int index) {
 
     std::string strIndex = std::to_string(index);
@@ -40,7 +40,7 @@ void LightSystem::setDirectionalLight(std::shared_ptr<platform::shader::Shader> 
     shader->setUniform("directionalLights[" + strIndex + "].color", light.color);
 }
 
-void LightSystem::setPointLight(std::shared_ptr<platform::shader::Shader> shader,
+void LightSystem::setPointLight(std::shared_ptr<graphics::Shader> shader,
     components::PointLightComponent light, unsigned int index) {
 
     auto& transform = light.entity->getComponent<components::TransformComponent>();

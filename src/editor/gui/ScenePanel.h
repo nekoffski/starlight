@@ -31,23 +31,23 @@ public:
 		m_position = position;
 	}
 
-    void render(sl::gui::GuiProxy& gui) override {
-        gui->beginPanel("Scene entities", m_position.origin, m_position.size);
-        if (gui->button("Add entity", 150))
+    void render(sl::gui::GuiApi& gui) override {
+        gui.beginPanel("Scene entities", m_position.origin, m_position.size);
+        if (gui.button("Add entity", 150))
             event::EventBus::emitEvent<event::AddEntityEvent>("Entity" + std::to_string(m_entityIndex++));
 
-        gui->breakLine();
+        gui.breakLine();
         for (auto& entity : m_entities) {
-            if (gui->beginTreeNode(entity->getName(), false)) {
-                if (gui->isPreviousWidgetClicked())
+            if (gui.beginTreeNode(entity->getName(), false)) {
+                if (gui.isPreviousWidgetClicked())
                     m_selectedEntity = entity;
 
-                gui->popTreeNode();
+                gui.popTreeNode();
             }
-            if (gui->isPreviousWidgetClicked())
+            if (gui.isPreviousWidgetClicked())
                 m_selectedEntity = entity;
         }
-        gui->endPanel();
+        gui.endPanel();
     }
 
 private:

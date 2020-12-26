@@ -2,15 +2,15 @@
 
 #include "sl/ecs/Component.h"
 
-#include "sl/platform/shader/Shader.h"
+#include "sl/graphics/Shader.h"
 
 namespace sl::scene::components {
 
 struct RendererComponent : public ecs::Component {
-    explicit RendererComponent(std::shared_ptr<platform::shader::Shader> shader)
+    explicit RendererComponent(std::shared_ptr<graphics::Shader> shader)
         : shader(shader) {
     }
 
-    std::shared_ptr<platform::shader::Shader> shader;
+    std::shared_ptr<graphics::Shader> shader;
 };
 }

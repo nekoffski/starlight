@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sl/gui/GuiProxy.h"
+#include "sl/gui/GuiApi.h"
 
 #include "PropertiesPanel.h"
 #include "ScenePanel.h"
@@ -17,7 +17,7 @@ public:
         , m_propertiesPanel(settings.propertiesPanelPosition, resourceManager, m_selectedEntity) {
     }
 
-    void render(sl::gui::GuiProxy& gui) override {
+    void render(sl::gui::GuiApi& gui) override {
         m_scenePanel.render(gui);
         m_propertiesPanel.render(gui);
     }

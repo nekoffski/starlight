@@ -4,8 +4,8 @@
 #include <string>
 
 #include "sl/geometry/Model.h"
-#include "sl/platform/shader/Shader.h"
-#include "sl/platform/texture/Cubemap.h"
+#include "sl/graphics/Shader.h"
+#include "sl/graphics/Cubemap.h"
 
 namespace editor::res {
 
@@ -37,21 +37,21 @@ struct Resource : public std::enable_shared_from_this<Resource> {
 struct ShaderResource : public Resource {
     SL_RESOURCE(ResourceType::SHADER);
 
-    explicit ShaderResource(std::shared_ptr<sl::platform::shader::Shader> shader, std::string name)
+    explicit ShaderResource(std::shared_ptr<sl::graphics::Shader> shader, std::string name)
         : Resource(std::move(name))
         , shader(shader) {}
 
-    std::shared_ptr<sl::platform::shader::Shader> shader;
+    std::shared_ptr<sl::graphics::Shader> shader;
 };
 
 struct CubemapResource : public Resource {
     SL_RESOURCE(ResourceType::CUBEMAP);
 
-    explicit CubemapResource(std::shared_ptr<sl::platform::texture::Cubemap> cubemap, std::string name)
+    explicit CubemapResource(std::shared_ptr<sl::graphics::Cubemap> cubemap, std::string name)
         : Resource(std::move(name))
         , cubemap(cubemap) {}
 
-    std::shared_ptr<sl::platform::texture::Cubemap> cubemap;
+    std::shared_ptr<sl::graphics::Cubemap> cubemap;
 };
 
 struct ModelResource : public Resource {

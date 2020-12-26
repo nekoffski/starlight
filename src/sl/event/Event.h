@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sl/platform/texture/Cubemap.h"
+#include "sl/graphics/Cubemap.h"
 #include <memory>
 
 namespace sl::event {
@@ -46,11 +46,11 @@ struct AddEntityEvent : Event {
 struct SetSkyboxEvent : Event {
     SL_EVENT(EventCategory::EDITOR, EventType::SET_SKYBOX);
 
-    SetSkyboxEvent(std::shared_ptr<sl::platform::texture::Cubemap> cubemap)
+    SetSkyboxEvent(std::shared_ptr<sl::graphics::Cubemap> cubemap)
         : cubemap(cubemap) {
     }
 
-    std::shared_ptr<sl::platform::texture::Cubemap> cubemap;
+    std::shared_ptr<sl::graphics::Cubemap> cubemap;
 };
 
 struct WindowResizedEvent : Event {

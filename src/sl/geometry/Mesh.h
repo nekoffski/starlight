@@ -4,24 +4,16 @@
 #include <vector>
 
 #include "Vertex.h"
-
-namespace sl::platform {
-namespace texture {
-    class Texture;
-}
-
-namespace gpu {
-    class VertexArray;
-}
-}
+#include "sl/graphics/Texture.h"
+#include "sl/graphics/buffer/VertexArray.h"
 
 namespace sl::geometry {
 
 struct Mesh {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
-    std::vector<std::shared_ptr<platform::texture::Texture>> textures{};
-    std::shared_ptr<platform::gpu::VertexArray> vertexArray;
+    std::vector<std::shared_ptr<sl::graphics::Texture>> textures{};
+    std::shared_ptr<graphics::buffer::VertexArray> vertexArray;
 };
 
 using MeshPtr = std::shared_ptr<Mesh>;

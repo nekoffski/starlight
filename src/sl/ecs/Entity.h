@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "Registry.h"
-#include "sl/gui/GuiProxy.h"
+#include "sl/gui/GuiApi.h"
 
 namespace sl::ecs {
 
@@ -41,7 +41,7 @@ public:
         return m_registry.hasComponent<Component>(m_id);
     }
 
-    void onGui(sl::gui::GuiProxy& gui) {
+    void onGui(sl::gui::GuiApi& gui) {
         for (const auto& index : m_componentsIndexes)
             m_registry.wrapComponentByIndex(index, m_id)->onGui(gui);
     }

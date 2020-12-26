@@ -13,7 +13,7 @@ class EditorGui {
 public:
     explicit EditorGui(const Settings& settings, EntitiesVector& entities, res::ResourceManager& resourceManager);
 	void setSettings(const Settings& settings);
-	void renderEditorGui(sl::gui::GuiProxy& gui);
+	void renderEditorGui(sl::gui::GuiApi& gui);
 
 
 private:

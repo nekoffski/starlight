@@ -2,26 +2,27 @@
 
 #include <memory>
 
+#include "sl/graphics/Shader.h"
+#include "sl/graphics/buffer/FrameBuffer.h"
+#include "sl/graphics/fwd.h"
 #include "sl/platform/fwd.h"
-#include "sl/platform/shader/Shader.h"
-#include "sl/rendering/fwd.h"
 
 namespace sl::scene::systems {
 
 class ShadowSystem {
 public:
-    explicit ShadowSystem(std::shared_ptr<rendering::Renderer> renderer);
+    explicit ShadowSystem(std::shared_ptr<graphics::Renderer> renderer);
 
     void beginDepthCapture();
     void endDepthCapture();
 
-    void setShadowMap(std::shared_ptr<platform::texture::Texture>);
+    void setShadowMap(std::shared_ptr<sl::graphics::Texture>);
 
-    std::shared_ptr<platform::shader::Shader> getDepthShader();
+    std::shared_ptr<graphics::Shader> getDepthShader();
 
 private:
-    std::shared_ptr<rendering::Renderer> m_renderer;
-    std::shared_ptr<platform::gpu::FrameBuffer> m_shadowMapFrameBuffer;
-    std::shared_ptr<platform::shader::Shader> m_depthShader;
+    std::shared_ptr<graphics::Renderer> m_renderer;
+    std::shared_ptr<graphics::buffer::FrameBuffer> m_shadowMapFrameBuffer;
+    std::shared_ptr<graphics::Shader> m_depthShader;
 };
 }

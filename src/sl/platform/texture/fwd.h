@@ -1,6 +1,6 @@
 #pragma once
 
-namespace sl::platform::texture {
+namespace sl::graphics {
 
 class Texture;
 class Cubemap;

@@ -10,18 +10,18 @@ class MaterialComponentWrapper : public ecs::ComponentWrapper {
 public:
     using ecs::ComponentWrapper::ComponentWrapper;
 
-    void onGui(gui::GuiProxy& gui) override {
+    void onGui(gui::GuiApi& gui) override {
         MaterialComponent& component = static_cast<MaterialComponent&>(m_component);
-        if (gui->beginTreeNode("Material")) {
-            gui->displayText("Ambient color");
-            gui->colorPicker3(gui::createHiddenLabel("Ambient color"), component.ambientColor);
-            gui->displayText("Diffuse color");
-            gui->colorPicker3(gui::createHiddenLabel("Diffuse color"), component.diffuseColor);
-            gui->displayText("Specular color");
-            gui->colorPicker3(gui::createHiddenLabel("Specular color"), component.specularColor);
-            gui->displayText("Shininess");
-            gui->dragFloat(gui::createHiddenLabel("rotation"), component.shininess, 0.5f, 0.0f, 128.0f);
-            gui->popTreeNode();
+        if (gui.beginTreeNode("Material")) {
+            gui.displayText("Ambient color");
+            gui.colorPicker3(gui::createHiddenLabel("Ambient color"), component.ambientColor);
+            gui.displayText("Diffuse color");
+            gui.colorPicker3(gui::createHiddenLabel("Diffuse color"), component.diffuseColor);
+            gui.displayText("Specular color");
+            gui.colorPicker3(gui::createHiddenLabel("Specular color"), component.specularColor);
+            gui.displayText("Shininess");
+            gui.dragFloat(gui::createHiddenLabel("rotation"), component.shininess, 0.5f, 0.0f, 128.0f);
+            gui.popTreeNode();
         }
     }
 };

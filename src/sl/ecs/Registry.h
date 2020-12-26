@@ -8,7 +8,7 @@
 #include "ComponentContainer.hpp"
 #include "ComponentWrapper.h"
 #include "ComponentsMap.hpp"
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 
 namespace sl::ecs {
 

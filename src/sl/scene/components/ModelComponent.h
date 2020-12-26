@@ -4,8 +4,8 @@
 
 #include <memory>
 
-#include "sl/platform/shader/Shader.h"
-#include "sl/rendering/data/ModelData.h"
+#include "sl/graphics/Shader.h"
+#include "sl/graphics/data/ModelData.h"
 
 namespace sl::scene::components {
 
@@ -15,6 +15,6 @@ struct ModelComponent : public ecs::Component {
         modelData.positions.push_back(math::Vec4(0.0f));
     }
 
-    rendering::data::ModelData modelData;
+    graphics::data::ModelData modelData;
 };
 }

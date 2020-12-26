@@ -3,9 +3,10 @@
 #include "Mesh.h"
 #include "Model.h"
 
-#include "sl/platform/gpu/ElementBuffer.h"
-#include "sl/platform/gpu/VertexArray.h"
-#include "sl/platform/gpu/VertexBuffer.h"
+#include "sl/graphics/buffer/ElementBuffer.h"
+#include "sl/graphics/buffer/VertexArray.h"
+#include "sl/graphics/buffer/VertexBuffer.h"
+#include "sl/platform/gpu/fwd.h"
 
 namespace sl::geometry {
 
@@ -19,7 +20,7 @@ public:
         return m_square;
     }
 
-    static std::shared_ptr<platform::gpu::VertexArray> getSquareVAO() {
+    static std::shared_ptr<graphics::buffer::VertexArray> getSquareVAO() {
         return m_squareVAO;
     }
 
@@ -46,9 +47,9 @@ private:
         mesh->vertices = std::move(vertices);
 
         // TODO: move this logic to mesh contstructor
-        m_squareVAO = platform::gpu::VertexArray::create();
-        auto vbo = platform::gpu::VertexBuffer::create(&mesh->vertices[0], mesh->vertices.size() * sizeof(Vertex), mesh->vertices.size());
-        auto ebo = platform::gpu::ElementBuffer::create(&mesh->indices[0], mesh->indices.size() * sizeof(unsigned), mesh->indices.size());
+        m_squareVAO = graphics::buffer::VertexArray::factory->create();
+        auto vbo = graphics::buffer::VertexBuffer::factory->create(&mesh->vertices[0], mesh->vertices.size() * sizeof(Vertex), mesh->vertices.size());
+        auto ebo = graphics::buffer::ElementBuffer::factory->create(&mesh->indices[0], mesh->indices.size() * sizeof(unsigned), mesh->indices.size());
 
         // vertices
         vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
@@ -69,7 +70,7 @@ private:
         m_square->meshes.emplace_back(std::move(mesh));
     }
 
-    inline static std::shared_ptr<platform::gpu::VertexArray> m_squareVAO;
+    inline static std::shared_ptr<graphics::buffer::VertexArray> m_squareVAO;
     inline static std::shared_ptr<Model> m_square;
 };
 }

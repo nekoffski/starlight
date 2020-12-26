@@ -1,6 +1,6 @@
 #include "Signal.h"
 
-#include "sl/core/log/Logger.h"
+#include "sl/core/Logger.h"
 
 static sl::core::sig::SignalHandler* signalHandler{ nullptr };
 
