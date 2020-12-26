@@ -3,9 +3,9 @@
 #include <fstream>
 #include <unordered_map>
 
+#include "sl/core/Clock.h"
 #include "sl/core/Logger.h"
 #include "sl/math/Utils.hpp"
-#include "sl/platform/time/Clock.h"
 
 constexpr float ETA = 0.3f;
 
@@ -17,11 +17,11 @@ std::unordered_map<std::string, float> Profiler::m_times;
 
 Profiler::RegionBasedTimer::RegionBasedTimer(float& value)
     : m_value(value)
-    , m_start(platform::time::Clock::now()) {
+    , m_start(core::Clock::now()) {
 }
 
 Profiler::RegionBasedTimer::~RegionBasedTimer() {
-    float tmp = platform::time::Clock::now()->substract(m_start);
+    float tmp = core::Clock::now()->substract(m_start);
     m_value = math::linInterpolate(m_value, tmp, ETA);
 }
 
@@ -32,7 +32,7 @@ Profiler::RegionBasedTimer Profiler::createRegionBasedTimer(std::string name) {
 }
 
 void Profiler::saveResults(std::string logdir) {
-    std::string logfile = logdir + platform::time::Clock::getTimeString("%d-%m-%Y_%H:%M:%S") + ".perf";
+    std::string logfile = logdir + core::Clock::getTimeString("%d-%m-%Y_%H:%M:%S") + ".perf";
     std::ofstream log(logfile);
 
     if (!log.good()) {
@@ -46,7 +46,7 @@ void Profiler::saveResults(std::string logdir) {
 }
 
 void Profiler::printResults() {
-// clang-format off
+    // clang-format off
     #ifdef PRF_PROFILER_ENABLED
         SL_WARN("\n{}\n", formatTimers()); // CREATE OTHER FORMATTER!
     #endif

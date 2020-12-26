@@ -1,11 +1,11 @@
 #pragma once
 
-namespace sl::platform::gpu {
+namespace sl::graphics {
 
 class FrameBuffer;
 class ElementBuffer;
 class GraphicsContext;
-class RenderAPI;
+class RenderApi;
 class VertexArray;
 class VertexBuffer;
 }

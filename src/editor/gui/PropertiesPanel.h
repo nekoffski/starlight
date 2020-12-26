@@ -4,7 +4,7 @@
 
 #include "sl/ecs/Entity.h"
 #include "sl/gui/GuiApi.h"
-#include "sl/platform/texture/Cubemap.h"
+#include "sl/graphics/Cubemap.h"
 
 #include "Widget.h"
 #include "editor/res/ResourceManager.h"
@@ -32,7 +32,7 @@ private:
 
     WidgetPosition m_position;
     res::ResourceManager& m_resourceManager;
-    std::weak_ptr<sl::platform::texture::Cubemap> m_selectedCubemap;
+    std::weak_ptr<sl::graphics::Cubemap> m_selectedCubemap;
     std::shared_ptr<sl::ecs::Entity>& m_selectedEntity;
 };
 }

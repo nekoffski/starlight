@@ -4,7 +4,7 @@
 #include "sl/async/AsyncEngine.hpp"
 #include "sl/core/Profiler.h"
 #include "sl/geometry/Geometry.hpp"
-#include "sl/platform/shader/Shader.h"
+#include "sl/graphics/Shader.h"
 #include "sl/graphics/Renderer.h"
 #include "sl/graphics/camera/Camera.h"
 #include "sl/scene/components/TransformComponent.h"
@@ -22,7 +22,7 @@ ParticleEffectSystem::ParticleEffectSystem(std::shared_ptr<graphics::Renderer> r
     : m_renderer(renderer)
     , m_vao(geometry::Geometry::getSquareVAO()) {
 
-    m_shader = asset::AssetManager::loadLocalPath<platform::shader::Shader>(
+    m_shader = asset::AssetManager::loadLocalPath<graphics::Shader>(
         "/particle.vert", "/particle.frag");
     m_pfxTimer = async::AsyncEngine::createTimer(PARTICLE_CLEANER_SLEEP);
 }

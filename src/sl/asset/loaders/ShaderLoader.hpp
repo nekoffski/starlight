@@ -4,12 +4,12 @@
 
 #include "sl/core/Logger.h"
 #include "sl/core/PathManager.hpp"
-#include "sl/platform/shader/Shader.h"
-#include "sl/platform/shader/ShaderCompiler.hpp"
+#include "sl/graphics/Shader.h"
+#include "sl/graphics/ShaderCompiler.hpp"
 
 namespace sl::asset::loaders {
 
-using platform::shader::Shader;
+using graphics::Shader;
 
 template <>
 struct AssetLoaderArgs<Shader> {
@@ -27,9 +27,9 @@ struct AssetLoader<Shader> {
 
         SL_DEBUG("loading shader: \n {} - {}/{}/{}", prefix, args.vertexPath, args.fragmentPath, args.geometryPath);
 
-        auto shader = Shader::create(
+        auto shader = graphics::Shader::factory->create(
             prefix + args.vertexPath, prefix + args.fragmentPath, prefix + args.geometryPath);
-        platform::shader::ShaderCompiler::compile(shader);
+        graphics::ShaderCompiler::compile(shader);
         return shader;
     }
 };

@@ -3,7 +3,7 @@
 #include <sstream>
 #include <unordered_map>
 
-#include "sl/platform/time/Clock.h"
+#include "sl/core/Clock.h"
 
 #define PRF_PROFILER_ENABLED 1
 constexpr float PROFILER_PRINT_INTERVAL = 5.0f;
@@ -18,7 +18,7 @@ class Profiler {
 
     private:
         float& m_value;
-        std::shared_ptr<platform::time::impl::ITimestamp> m_start;
+        std::shared_ptr<core::ITimestamp> m_start;
     };
 
 public:

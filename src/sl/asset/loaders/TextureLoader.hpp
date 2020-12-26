@@ -4,11 +4,11 @@
 
 #include "sl/core/Logger.h"
 #include "sl/core/PathManager.hpp"
-#include "sl/platform/texture/Texture.h"
+#include "sl/graphics/Texture.h"
 
 namespace sl::asset::loaders {
 
-using platform::texture::Texture;
+using sl::graphics::Texture;
 
 template <>
 struct AssetLoaderArgs<Texture> {
@@ -24,7 +24,7 @@ struct AssetLoader<Texture> {
         path += args.path;
 
         SL_DEBUG("loading texture: {}", path);
-        return Texture::create(path);
+        return graphics::Texture::factory->create(path);
     }
 };
 }

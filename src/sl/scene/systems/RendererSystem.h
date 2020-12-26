@@ -16,11 +16,11 @@ public:
     explicit RendererSystem(std::shared_ptr<graphics::Renderer> renderer);
     void render(components::RendererComponent& component, std::shared_ptr<graphics::camera::Camera> camera);
     void render(components::RendererComponent& component, std::shared_ptr<graphics::camera::Camera> camera,
-        std::shared_ptr<platform::shader::Shader>);
+        std::shared_ptr<graphics::Shader>);
 
 private:
-    void setMaterial(const components::MaterialComponent& material, std::shared_ptr<platform::shader::Shader> shader);
-    void renderModelComposite(std::shared_ptr<platform::shader::Shader> shader, const graphics::data::ModelData& modelData,
+    void setMaterial(const components::MaterialComponent& material, std::shared_ptr<graphics::Shader> shader);
+    void renderModelComposite(std::shared_ptr<graphics::Shader> shader, const graphics::data::ModelData& modelData,
         const math::Mat4& transform);
     void renderModel(std::shared_ptr<geometry::Model>);
     void renderMesh(std::shared_ptr<geometry::Mesh>);

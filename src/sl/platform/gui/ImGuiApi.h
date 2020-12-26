@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sl/gui/GuiApi.h"
+#include "sl/misc/types/NotNullPtr.hpp"
 
 namespace sl::platform::gui::detail {
 
@@ -52,5 +53,11 @@ public:
     bool colorPicker3(std::string, math::Vec3&) override;
 
     bool button(std::string, int xSize, int ySize) override;
+};
+
+struct ImGuiApiFactory : sl::gui::GuiApi::Factory {
+    std::shared_ptr<sl::gui::GuiApi> create(misc::types::NotNullPtr<void> windowHandle) override {
+        return std::make_shared<ImGuiApi>(windowHandle);
+    }
 };
 }

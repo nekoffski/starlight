@@ -4,31 +4,34 @@
 
 #include "sl/graphics/camera/Camera.h"
 
-#include "sl/platform/gpu/GraphicsContext.h"
-#include "sl/platform/gpu/RenderAPI.h"
-#include "sl/platform/gpu/VertexArray.h"
-#include "sl/platform/shader/Shader.h"
-#include "sl/platform/texture/Texture.h"
-#include "sl/platform/window/Window.h"
+#include "sl/graphics/GraphicsContext.h"
+#include "sl/graphics/RenderApi.h"
+#include "sl/graphics/buffer/VertexArray.h"
+#include "sl/graphics/Shader.h"
+#include "sl/graphics/Texture.h"
 
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Utils.hpp"
 
 #include "sl/geometry/Mesh.h"
 
+#include "Viewport.h"
+
 namespace sl::graphics {
 
 class Renderer {
 public:
-    explicit Renderer(std::shared_ptr<platform::gpu::GraphicsContext> graphicsContext, std::unique_ptr<platform::gpu::RenderAPI> renderApi)
+    explicit Renderer(std::shared_ptr<graphics::GraphicsContext> graphicsContext,
+        std::unique_ptr<graphics::RenderApi> renderApi, Viewport viewport)
         : m_graphicsContext(graphicsContext)
-        , m_renderApi(std::move(renderApi)) {
+        , m_renderApi(std::move(renderApi))
+        , m_viewport(std::move(viewport)) {
     }
 
     void init();
-    void renderVertexArray(std::shared_ptr<platform::gpu::VertexArray>);
+    void renderVertexArray(std::shared_ptr<graphics::buffer::VertexArray>);
     // wtf? xd
-    void renderVertexArrayWithDepthMaskDisabled(std::shared_ptr<platform::gpu::VertexArray>);
+    void renderVertexArrayWithDepthMaskDisabled(std::shared_ptr<graphics::buffer::VertexArray>);
 
     void clearBuffers(unsigned buff) {
         m_graphicsContext->clearBuffers(buff);
@@ -38,16 +41,20 @@ public:
         return m_projectionMatrix;
     }
 
-    void setViewport(const platform::window::Viewport& viewport) {
-        m_viewport = viewport;
-    }
-
-    void setTemporaryViewport(unsigned w, unsigned h) {
-        m_graphicsContext->setViewport(w, h);
+    void setTemporaryViewport(const Viewport& viewport) {
+        m_graphicsContext->setViewport(viewport.width, viewport.height);
+        calculateProjectionMatrix(viewport);
     }
 
     void restoreViewport() {
         m_graphicsContext->setViewport(m_viewport.width, m_viewport.height);
+        calculateProjectionMatrix();
+    }
+
+    void setViewport(const Viewport& viewport) {
+        m_viewport = viewport;
+        restoreViewport();
+        calculateProjectionMatrix();
     }
 
     void swapBuffers() {
@@ -59,14 +66,18 @@ public:
     }
 
 private:
-    std::shared_ptr<platform::gpu::GraphicsContext> m_graphicsContext;
-    std::unique_ptr<platform::gpu::RenderAPI> m_renderApi;
-    platform::window::Viewport m_viewport;
+    std::shared_ptr<graphics::GraphicsContext> m_graphicsContext;
+    std::unique_ptr<graphics::RenderApi> m_renderApi;
     math::Mat4 m_projectionMatrix;
+    Viewport m_viewport;
 
     void calculateProjectionMatrix() {
-        float aspect = static_cast<float>(m_viewport.width) / m_viewport.height;
-        m_projectionMatrix = math::perspective(m_viewport.fov, aspect, m_viewport.nearZ, m_viewport.farZ);
+        calculateProjectionMatrix(m_viewport);
+    }
+
+    void calculateProjectionMatrix(const Viewport& viewport) {
+        float aspect = static_cast<float>(viewport.width) / m_viewport.height;
+        m_projectionMatrix = math::perspective(viewport.fieldOfView, aspect, viewport.nearZ, viewport.farZ);
     }
 };
 }

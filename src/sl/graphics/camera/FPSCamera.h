@@ -59,7 +59,7 @@ public:
         m_up = math::cross(m_right, m_front);
     }
 
-    void handleInput(std::shared_ptr<platform::input::Input> input) override {
+    void handleInput(std::shared_ptr<core::Input> input) override {
         m_direction = DIR_NONE;
 
         if (input->isKeyPressed(STARL_KEY_UP))

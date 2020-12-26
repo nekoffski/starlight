@@ -3,11 +3,11 @@
 #include "sl/asset/loaders/AssetLoader.h"
 #include "sl/core/Logger.h"
 #include "sl/core/PathManager.hpp"
-#include "sl/platform/texture/Cubemap.h"
+#include "sl/graphics/Cubemap.h"
 
 namespace sl::asset::loaders {
 
-using platform::texture::Cubemap;
+using sl::graphics::Cubemap;
 
 template <>
 struct AssetLoaderArgs<Cubemap> {
@@ -28,7 +28,7 @@ struct AssetLoader<Cubemap> {
             prefix += core::PathManager::get<Cubemap>();
 
 		SL_DEBUG("loading cubemap: \n {} - {}/{}/{}/{}/{}/{} ", prefix, args.top, args.bottom , args.right, args.left, args.front, args.back);
-        return Cubemap::create({ 
+        return graphics::Cubemap::factory->create({ 
             prefix + args.right, prefix + args.left, prefix + args.top, prefix + args.bottom, prefix + args.front, prefix + args.back });
         // clang-format on
     }

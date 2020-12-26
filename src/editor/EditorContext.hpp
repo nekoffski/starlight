@@ -55,7 +55,7 @@ public:
         m_editorGui->renderEditorGui(gui);
     }
 
-    void handleInput(std::shared_ptr<platform::input::Input> input) override {
+    void handleInput(std::shared_ptr<core::Input> input) override {
         m_activeCamera->handleInput(input);
     }
 
@@ -121,7 +121,7 @@ public:
             case event::EventType::SET_SKYBOX: {
                 auto cubemap = event->as<event::SetSkyboxEvent>()->cubemap;
                 auto cubemapShader =
-                    asset::AssetManager::loadLocalPath<platform::shader::Shader>("/cubemap.vert", "/cubemap.frag");
+                    asset::AssetManager::loadLocalPath<graphics::Shader>("/cubemap.vert", "/cubemap.frag");
                 auto skybox = sl::scene::Skybox::create(cubemapShader, cubemap);
                 m_scene->skybox = skybox;
                 break;
@@ -148,7 +148,7 @@ private:
         };
 
         for (auto& shaderToLoad : shadersToLoad) {
-            auto shader = sl::asset::AssetManager::loadLocalPath<sl::platform::shader::Shader>(
+            auto shader = sl::asset::AssetManager::loadLocalPath<sl::graphics::Shader>(
                 shaderToLoad + ".vert", shaderToLoad + ".frag");
             auto shaderResource = std::make_shared<editor::res::ShaderResource>(shader, shaderToLoad);
             m_resourceManager.addResource(shaderResource);

@@ -7,13 +7,13 @@
 
 #include "sl/async/AsyncEngine.hpp"
 #include "sl/core/BaseError.h"
+#include "sl/core/Clock.h"
 #include "sl/core/FileSystem.h"
 #include "sl/core/Logger.h"
 #include "sl/core/Profiler.h"
 #include "sl/core/sig/Signal.h"
 #include "sl/event/EventBus.h"
-#include "sl/platform/time/Clock.h"
-#include "sl/platform/time/impl/StdClockImpl.h"
+#include "sl/platform/clock/StdClockImpl.h"
 
 namespace sl::application {
 
@@ -28,7 +28,7 @@ int Entrypoint::start() {
     core::initLogging();
     SL_INFO("Initialized logging");
 
-    platform::time::Clock::setClockImpl<platform::time::impl::StdClockImpl>();
+    core::Clock::setClockImpl<platform::clock::StdClockImpl>();
     m_profilerTimer = async::AsyncEngine::createTimer(PROFILER_PRINT_INTERVAL);
 
     // TODO: load config
@@ -44,15 +44,15 @@ int Entrypoint::start() {
             {
                 PRF_PROFILE_REGION("main-loop");
 
-                float deltaTime = platform::time::Clock::getDeltaTime();
+                float deltaTime = core::Clock::getDeltaTime();
 
                 m_application->handleInput();
-                m_application->update(deltaTime, platform::time::Clock::now()->value());
+                m_application->update(deltaTime, core::Clock::now()->value());
                 m_application->render();
 
                 event::EventBus::spreadEvents();
                 async::AsyncEngine::update(deltaTime);
-                platform::time::Clock::update();
+                core::Clock::update();
             }
 
             if (not m_profilerTimer->asyncSleep())

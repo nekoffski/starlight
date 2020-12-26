@@ -1,10 +1,11 @@
 #include "SkyboxSystem.h"
 
-#include "sl/platform/gpu/VertexArray.h"
-#include "sl/platform/gpu/VertexBuffer.h"
-#include "sl/platform/shader/Shader.h"
-#include "sl/platform/texture/Cubemap.h"
+#include "sl/graphics/Cubemap.h"
 #include "sl/graphics/Renderer.h"
+#include "sl/graphics/Shader.h"
+#include "sl/graphics/buffer/VertexArray.h"
+#include "sl/graphics/buffer/VertexBuffer.h"
+#include "sl/platform/gpu/fwd.h"
 
 // clang-format off
 static float cubemapVertices[] = {
@@ -57,14 +58,14 @@ namespace sl::scene::systems {
 SkyboxSystem::SkyboxSystem(std::shared_ptr<graphics::Renderer> renderer)
     : m_renderer(renderer) {
 
-    auto vertexBuffer = platform::gpu::VertexBuffer::create(cubemapVertices, sizeof(cubemapVertices), 36);
+    auto vertexBuffer = graphics::buffer::VertexBuffer::factory->create(cubemapVertices, sizeof(cubemapVertices), 36);
     vertexBuffer->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
 
-    m_cubemapVertexArray = platform::gpu::VertexArray::create();
+    m_cubemapVertexArray = graphics::buffer::VertexArray::factory->create();
     m_cubemapVertexArray->addVertexBuffer(vertexBuffer);
 }
 
-void SkyboxSystem::render(std::shared_ptr<platform::texture::Cubemap> cubemap, std::shared_ptr<platform::shader::Shader> cubemapShader,
+void SkyboxSystem::render(std::shared_ptr<sl::graphics::Cubemap> cubemap, std::shared_ptr<graphics::Shader> cubemapShader,
     std::shared_ptr<graphics::camera::Camera> camera) {
 
     cubemapShader->enable();

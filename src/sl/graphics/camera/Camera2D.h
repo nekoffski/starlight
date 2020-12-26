@@ -18,7 +18,7 @@ public:
     void update(float) override {
     }
 
-    void handleInput(std::shared_ptr<platform::input::Input> input) override {
+    void handleInput(std::shared_ptr<core::Input> input) override {
         const math::Vec3 up{ 0.0f, 1.0f, 0.0f };
         const math::Vec3 right{ 1.0f, 0.0f, 0.0f };
 

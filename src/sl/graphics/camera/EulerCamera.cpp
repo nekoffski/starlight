@@ -5,7 +5,7 @@
 #include "sl/gui/GuiApi.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Utils.hpp"
-#include "sl/platform/input/Input.h"
+#include "sl/core/Input.h"
 
 #include "sl/core/Logger.h"
 
@@ -65,7 +65,7 @@ void EulerCamera::calculateVectors() {
     m_up = math::cross(m_right, m_front);
 }
 
-void EulerCamera::handleInput(std::shared_ptr<platform::input::Input> input) {
+void EulerCamera::handleInput(std::shared_ptr<core::Input> input) {
     m_direction = DIR_NONE;
 
     if (input->isKeyPressed(STARL_KEY_UP))

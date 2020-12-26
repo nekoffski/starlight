@@ -2,10 +2,10 @@
 
 #include "sl/core/Logger.h"
 #include "sl/geometry/Mesh.h"
-#include "sl/platform/gpu/ElementBuffer.h"
-#include "sl/platform/gpu/VertexArray.h"
-#include "sl/platform/gpu/VertexBuffer.h"
-#include "sl/platform/texture/Texture.h"
+#include "sl/graphics/Texture.h"
+#include "sl/graphics/buffer/ElementBuffer.h"
+#include "sl/graphics/buffer/VertexArray.h"
+#include "sl/graphics/buffer/VertexBuffer.h"
 
 namespace sl::platform::model::assimp {
 
@@ -22,9 +22,9 @@ std::shared_ptr<geometry::Mesh> AssimpMeshProcessor::processMesh(aiMesh* assimpM
 }
 
 void AssimpMeshProcessor::initVertexArray(std::shared_ptr<geometry::Mesh>& mesh) {
-    auto vao = platform::gpu::VertexArray::create();
-    auto vbo = platform::gpu::VertexBuffer::create(&mesh->vertices[0], mesh->vertices.size() * sizeof(Vertex), mesh->vertices.size());
-    auto ebo = platform::gpu::ElementBuffer::create(&mesh->indices[0], mesh->indices.size() * sizeof(unsigned), mesh->indices.size());
+    auto vao = graphics::buffer::VertexArray::factory->create();
+    auto vbo = graphics::buffer::VertexBuffer::factory->create(&mesh->vertices[0], mesh->vertices.size() * sizeof(Vertex), mesh->vertices.size());
+    auto ebo = graphics::buffer::ElementBuffer::factory->create(&mesh->indices[0], mesh->indices.size() * sizeof(unsigned), mesh->indices.size());
 
     // vertices
     vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
@@ -43,8 +43,8 @@ void AssimpMeshProcessor::initVertexArray(std::shared_ptr<geometry::Mesh>& mesh)
     mesh->vertexArray = vao;
 }
 
-std::vector<std::shared_ptr<texture::Texture>> AssimpMeshProcessor::loadTextures(aiMaterial* material, std::string directory) {
-    std::vector<std::shared_ptr<texture::Texture>> textures;
+std::vector<std::shared_ptr<sl::graphics::Texture>> AssimpMeshProcessor::loadTextures(aiMaterial* material, std::string directory) {
+    std::vector<std::shared_ptr<sl::graphics::Texture>> textures;
 
     auto diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse", directory);
     auto specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular", directory);
@@ -113,15 +113,15 @@ std::vector<geometry::Vertex> AssimpMeshProcessor::loadVertices(aiMesh* assimpMe
     return vertices;
 }
 
-std::vector<std::shared_ptr<texture::Texture>>
+std::vector<std::shared_ptr<sl::graphics::Texture>>
 AssimpMeshProcessor::loadMaterialTextures(aiMaterial* material, aiTextureType textureType, std::string typeName, std::string directory) {
-    std::vector<std::shared_ptr<texture::Texture>> textures;
+    std::vector<std::shared_ptr<sl::graphics::Texture>> textures;
     for (unsigned i = 0; i < material->GetTextureCount(textureType); ++i) {
         aiString str;
         material->GetTexture(textureType, i, &str);
 
         // TODO: OPTIMIZE, store texture in models as most of mesh reuse them!
-        textures.push_back(texture::Texture::create(directory + "/" + str.C_Str()));
+        textures.push_back(graphics::Texture::factory->create(directory + "/" + str.C_Str()));
     }
     return textures;
 }

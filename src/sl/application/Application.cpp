@@ -1,19 +1,47 @@
 #include "Application.h"
 
+#include "sl/core/Input.h"
 #include "sl/core/PathManager.hpp"
 #include "sl/core/Profiler.h"
 #include "sl/event/EventBus.h"
 #include "sl/geometry/Geometry.hpp"
+#include "sl/graphics/Cubemap.h"
+#include "sl/graphics/GraphicsContext.h"
+#include "sl/graphics/Image.h"
+#include "sl/graphics/RenderApi.h"
+#include "sl/graphics/ShaderCompiler.hpp"
+#include "sl/graphics/ShaderCompilerImpl.h"
+#include "sl/graphics/Viewport.h"
+#include "sl/graphics/buffer/ElementBuffer.h"
+#include "sl/graphics/buffer/FrameBuffer.h"
+#include "sl/graphics/buffer/VertexArray.h"
+#include "sl/graphics/buffer/VertexBuffer.h"
+#include "sl/gui/GuiApi.h"
 #include "sl/platform/Platform.h"
-#include "sl/platform/gpu/RenderAPI.h"
-#include "sl/platform/shader/ShaderCompiler.hpp"
 
 namespace sl::application {
 
+static void initFactories() {
+    graphics::Image::factory = platform::createImageFactory();
+
+    graphics::buffer::VertexArray::factory = platform::createVertexArrayFactory();
+    graphics::buffer::VertexBuffer::factory = platform::createVertexBufferFactory();
+    graphics::buffer::FrameBuffer::factory = platform::createFrameBufferFactory();
+    graphics::buffer::ElementBuffer::factory = platform::createElementBufferFactory();
+
+    graphics::Texture::factory = platform::createTextureFactory();
+    graphics::Cubemap::factory = platform::crateCubemapFactory();
+    graphics::Shader::factory = platform::createShaderFactory();
+    graphics::ShaderCompilerImpl::factory = platform::createShaderCompilerImplFactory();
+    graphics::GraphicsContext::factory = platform::createGraphicsContextFactory();
+
+    gui::GuiApi::factory = platform::createGuiApiFactory();
+}
+
 static void initPaths() {
-    sl::core::PathManager::registerResourcePath<sl::platform::shader::Shader>(SHADERS_DIR);
-    sl::core::PathManager::registerResourcePath<sl::platform::texture::Texture>(TEXTURES_DIR);
-    sl::core::PathManager::registerResourcePath<sl::platform::texture::Cubemap>(CUBEMAPS_DIR);
+    sl::core::PathManager::registerResourcePath<sl::graphics::Shader>(SHADERS_DIR);
+    sl::core::PathManager::registerResourcePath<sl::graphics::Texture>(TEXTURES_DIR);
+    sl::core::PathManager::registerResourcePath<sl::graphics::Cubemap>(CUBEMAPS_DIR);
     sl::core::PathManager::registerResourcePath<sl::geometry::Model>(MODELS_DIR);
 }
 
@@ -22,9 +50,10 @@ Application::Application(Application::Token&&) {
 
 void Application::init() {
     initPaths();
+    initFactories();
 
-    m_window = platform::window::Window::create(platform::window::WindowParams{
-        platform::window::Viewport{ 1600, 900 }, "title" });
+    auto windowSize = core::Window::Size{ 1600, 900 };
+    m_window = core::Window::factory->create(windowSize, "title");
     m_window->init();
     m_window->setResizeCallback([](int width, int height) {
         SL_DEBUG("Window resized to: {}/{}", width, height);
@@ -33,19 +62,18 @@ void Application::init() {
 
     auto windowHandle = m_window->getHandle();
 
-    m_input = platform::input::Input::create(windowHandle);
+    m_input = core::Input::factory->create(windowHandle);
 
-    m_graphicsContext = platform::gpu::GraphicsContext::create(windowHandle);
+    m_graphicsContext = graphics::GraphicsContext::factory->create(windowHandle);
     m_graphicsContext->init();
-    m_graphicsContext->setViewport(1600, 900);
 
-    m_renderer = std::make_shared<graphics::Renderer>(m_graphicsContext, platform::gpu::RenderAPI::create());
-    m_renderer->setViewport(m_window->getParams().viewport);
+    auto viewport = graphics::Viewport{ windowSize.width, windowSize.height };
+    m_renderer = std::make_shared<graphics::Renderer>(m_graphicsContext, graphics::RenderApi::factory->create(), viewport);
     m_renderer->init();
 
-    m_guiApi = platform::createGuiApi(windowHandle);
+    m_guiApi = gui::GuiApi::factory->create(windowHandle);
 
-    platform::shader::ShaderCompiler::init();
+    graphics::ShaderCompiler::impl = graphics::ShaderCompilerImpl::factory->create();
     geometry::Geometry::init();
 
     m_sceneSystems = std::make_shared<scene::SceneSystems>(m_renderer);
@@ -89,7 +117,8 @@ void Application::handleEvents(event::EventPool& eventPool) {
         case event::EventType::WINDOW_RESIZED: {
             auto windowResizeEvent = event->as<event::WindowResizedEvent>();
             SL_INFO("{}/{}", windowResizeEvent->width, windowResizeEvent->height);
-            m_renderer->setTemporaryViewport(windowResizeEvent->width, windowResizeEvent->height); // TODO: whhy temporary?
+            m_renderer->setViewport(
+                graphics::Viewport{ windowResizeEvent->width, windowResizeEvent->height });
             break;
         }
         }

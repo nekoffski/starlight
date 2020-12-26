@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include "sl/platform/shader/Shader.h"
+#include "sl/graphics/Shader.h"
 #include "sl/graphics/data/ModelData.h"
 
 namespace sl::scene::components {

@@ -10,6 +10,12 @@ namespace sl::gui {
 
 class GuiApi {
 public:
+    struct Factory {
+        virtual std::shared_ptr<GuiApi> create(misc::types::NotNullPtr<void> windowHandle) = 0;
+    };
+
+    inline static std::unique_ptr<Factory> factory = nullptr;
+
     virtual ~GuiApi() = default;
 
     virtual void begin() = 0;
