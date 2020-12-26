@@ -7,9 +7,10 @@
 #include "sl/graphics/buffer/VertexArray.h"
 #include "sl/graphics/buffer/VertexBuffer.h"
 
-namespace sl::platform::model::assimp {
+namespace sl::platform::model {
 
 using geometry::Vertex;
+
 std::shared_ptr<geometry::Mesh> AssimpMeshProcessor::processMesh(aiMesh* assimpMesh, const aiScene* scene, std::string directory) {
     auto mesh = std::make_shared<geometry::Mesh>();
 

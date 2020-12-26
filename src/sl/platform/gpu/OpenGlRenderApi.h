@@ -21,5 +21,10 @@ public:
     void disable(unsigned) override;
 };
 
+struct OpenGlRenderApiFactory : graphics::RenderApi::Factory {
+	std::unique_ptr<graphics::RenderApi> create() override {
+		return std::make_unique<OpenGlRenderApi>();
+	}
+};
 
 }

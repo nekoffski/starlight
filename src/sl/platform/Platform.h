@@ -4,6 +4,7 @@
 
 #include "sl/core/Input.h"
 #include "sl/core/Window.h"
+#include "sl/geometry/ModelLoaderImpl.h"
 #include "sl/graphics/Cubemap.h"
 #include "sl/graphics/GraphicsContext.h"
 #include "sl/graphics/Image.h"
@@ -31,4 +32,6 @@ std::unique_ptr<core::Input::Factory> createInputFactory();
 std::unique_ptr<sl::gui::GuiApi::Factory> createGuiApiFactory();
 std::unique_ptr<graphics::GraphicsContext::Factory> createGraphicsContextFactory();
 std::unique_ptr<graphics::ShaderCompilerImpl::Factory> createShaderCompilerImplFactory();
+std::unique_ptr<geometry::ModelLoaderImpl::Factory> createModelLoaderImplFactory();
+std::unique_ptr<graphics::RenderApi::Factory> createRenderApiFactory();
 }

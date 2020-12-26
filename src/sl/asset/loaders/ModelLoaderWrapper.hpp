@@ -1,16 +1,15 @@
 #pragma once
 
-#include "sl/asset/loaders/AssetLoader.h"
+#include "AssetLoader.h"
 
 #include "sl/core/Logger.h"
 #include "sl/core/PathManager.hpp"
 #include "sl/geometry/Model.h"
-#include "sl/platform/model/ModelLoader.h"
+#include "sl/geometry/ModelLoader.hpp"
 
 namespace sl::asset::loaders {
 
 using geometry::Model;
-using platform::model::ModelLoader;
 
 template <>
 struct AssetLoaderArgs<Model> {
@@ -27,10 +26,7 @@ public:
 
         path += args.path;
         SL_DEBUG("loading model: {}", path);
-        return m_modelLoader->loadModel(path);
+        return geometry::ModelLoader::loadModel(path);
     }
-
-private:
-    inline static auto m_modelLoader{ ModelLoader::create() };
 };
 }

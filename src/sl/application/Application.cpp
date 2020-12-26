@@ -5,6 +5,8 @@
 #include "sl/core/Profiler.h"
 #include "sl/event/EventBus.h"
 #include "sl/geometry/Geometry.hpp"
+#include "sl/geometry/ModelLoader.hpp"
+#include "sl/geometry/ModelLoaderImpl.h"
 #include "sl/graphics/Cubemap.h"
 #include "sl/graphics/GraphicsContext.h"
 #include "sl/graphics/Image.h"
@@ -34,8 +36,14 @@ static void initFactories() {
     graphics::Shader::factory = platform::createShaderFactory();
     graphics::ShaderCompilerImpl::factory = platform::createShaderCompilerImplFactory();
     graphics::GraphicsContext::factory = platform::createGraphicsContextFactory();
+	graphics::RenderApi::factory = platform::createRenderApiFactory();
+
+    core::Window::factory = platform::createWindowFactory();
+    core::Input::factory = platform::createInputFactory();
 
     gui::GuiApi::factory = platform::createGuiApiFactory();
+
+    geometry::ModelLoaderImpl::factory = platform::createModelLoaderImplFactory();
 }
 
 static void initPaths() {
@@ -72,6 +80,8 @@ void Application::init() {
     m_renderer->init();
 
     m_guiApi = gui::GuiApi::factory->create(windowHandle);
+
+    geometry::ModelLoader::impl = geometry::ModelLoaderImpl::factory->create();
 
     graphics::ShaderCompiler::impl = graphics::ShaderCompilerImpl::factory->create();
     geometry::Geometry::init();

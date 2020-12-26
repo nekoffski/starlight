@@ -11,6 +11,7 @@
 #include "gui/ImGuiApi.h"
 #include "img/StbImage.hpp"
 #include "input/GlfwInput.h"
+#include "model/AssimpModelLoaderImpl.h"
 #include "shader/OpenGlShader.h"
 #include "shader/OpenGlShaderCompilerImpl.h"
 #include "sl/core/Logger.h"
@@ -23,6 +24,14 @@
 #include "window/GlfwWindow.h"
 
 namespace sl::platform {
+
+std::unique_ptr<graphics::RenderApi::Factory> createRenderApiFactory() {
+    return std::make_unique<gpu::OpenGlRenderApiFactory>();
+}
+
+std::unique_ptr<geometry::ModelLoaderImpl::Factory> createModelLoaderImplFactory() {
+    return std::make_unique<model::AssimpModelLoaderImplFactory>();
+}
 
 std::unique_ptr<graphics::ShaderCompilerImpl::Factory> createShaderCompilerImplFactory() {
     return std::make_unique<shader::OpenGlShaderCompilerImplFactory>();

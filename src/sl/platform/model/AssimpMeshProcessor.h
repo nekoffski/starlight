@@ -12,7 +12,7 @@ namespace sl::graphics {
 class Texture;
 }
 
-namespace sl::platform::model::assimp {
+namespace sl::platform::model {
 
 class AssimpMeshProcessor {
 public:
