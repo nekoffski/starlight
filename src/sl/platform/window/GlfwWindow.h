@@ -3,7 +3,6 @@
 #include <GLFW/glfw3.h>
 
 #include "sl/core/Window.h"
-#include "sl/platform/Error.h"
 
 namespace sl::platform::window {
 

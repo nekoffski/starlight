@@ -6,11 +6,11 @@
 #include <type_traits>
 
 #include "sl/async/AsyncEngine.hpp"
-#include "sl/core/BaseError.h"
 #include "sl/core/Clock.h"
 #include "sl/core/FileSystem.h"
 #include "sl/core/Logger.h"
 #include "sl/core/Profiler.h"
+#include "sl/core/error/Errors.hpp"
 #include "sl/core/sig/Signal.h"
 #include "sl/event/EventBus.h"
 #include "sl/platform/clock/StdClockImpl.h"
@@ -61,9 +61,9 @@ int Entrypoint::start() {
 
         m_application->onStop();
 
-    } catch (err::Exception& e) {
-        SL_ERROR("entrypoint catched unhandled error: {}", e.toStr());
-        return e.getGlobalCode();
+    } catch (core::error::Error& e) {
+        SL_ERROR("entrypoint catched unhandled error: {}", e.toString());
+        return e.getErrorCode<int>();
     }
 
     core::Profiler::saveResults("./logs/");

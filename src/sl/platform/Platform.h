@@ -19,6 +19,7 @@
 #include "sl/gui/GuiApi.h"
 
 namespace sl::platform {
+
 std::unique_ptr<graphics::buffer::VertexArray::Factory> createVertexArrayFactory();
 std::unique_ptr<graphics::buffer::ElementBuffer::Factory> createElementBufferFactory();
 std::unique_ptr<graphics::buffer::VertexBuffer::Factory> createVertexBufferFactory();

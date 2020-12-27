@@ -8,9 +8,12 @@
 
 #include "OpenGlShader.h"
 #include "sl/core/Logger.h"
-#include "sl/platform/Error.h"
+#include "sl/core/error/ErrorCode.h"
+#include "sl/core/error/Errors.hpp"
 
-#define INFO_BUFFER 1024
+constexpr int InfoBufferSize = 1024;
+
+using namespace sl::core::error;
 
 namespace sl::platform::shader {
 
@@ -44,7 +47,7 @@ void OpenGlShaderCompilerImpl::compileImpl(std::shared_ptr<OpenGlShader> shader)
     if (!linked) {
         glGetProgramInfoLog(_shader_program, infoBufferSize, nullptr, info_buffer);
         SL_ERROR("could not link: ", info_buffer);
-        throw PlatformException(ErrorCode::COULD_NOT_LINK_SHADER, std::string(info_buffer));
+        throw core::error::ShaderError{ core::error::ErrorCode::CouldNotLinkShaderProgram };
     }
 
     glDeleteShader(vertexShader);
@@ -59,8 +62,8 @@ unsigned int OpenGlShaderCompilerImpl::compileShader(const std::string& path, un
 
     if (!shaderSource.good()) {
         SL_ERROR("could not find source: {}", path);
-        throw PlatformException(type == GL_VERTEX_SHADER ? ErrorCode::COULD_NOT_OPEN_VERTEX_SHADER : ErrorCode::COULD_NOT_OPEN_FRAGMENT_SHADER,
-            "Could not load glsl shader source");
+        auto code = type == GL_VERTEX_SHADER ? ErrorCode::CouldNotReadVertexShader : ErrorCode::CouldNotReadFragmentShader;
+        throw ShaderError{ code };
     }
 
     std::stringstream vertex_data;
@@ -84,8 +87,8 @@ unsigned int OpenGlShaderCompilerImpl::compileShader(const std::string& path, un
     if (!compiled) {
         glGetShaderInfoLog(shader, infoBufferSize, nullptr, info_buffer);
         SL_ERROR("could not compile: {}", info_buffer);
-        throw PlatformException(type == GL_VERTEX_SHADER ? ErrorCode::COULD_NOT_COMPILE_VERTEX_SHADER : ErrorCode::COULD_NOT_COMPILE_FRAGMENT_SHADER,
-            std::string(info_buffer));
+        auto code = type == GL_VERTEX_SHADER ? ErrorCode::CouldNotCompileVertexShader : ErrorCode::CouldNotCompileFragmentShader;
+        throw ShaderError{ code };
     }
 
     return shader;

@@ -2,8 +2,8 @@
 
 #include "AssimpMeshProcessor.h"
 #include "sl/core/Logger.h"
+#include "sl/core/error/Errors.hpp"
 #include "sl/geometry/Model.h"
-#include "sl/platform/Error.h"
 
 namespace sl::platform::model {
 
@@ -17,7 +17,7 @@ std::shared_ptr<geometry::Model> AssimpModelLoaderImpl::loadModel(std::string pa
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         SL_ERROR("could not load scene");
-        throw PlatformException(ErrorCode::COULD_NOT_LOAD_MODEL, "failed to load assimp scene: " + path);
+        throw core::error::ModelError{ core::error::ErrorCode::CouldNotLoadModel };
     }
 
     AssimpMeshProcessor meshProcessor;

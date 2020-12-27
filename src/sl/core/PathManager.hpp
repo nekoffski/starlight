@@ -3,8 +3,9 @@
 #include <typeindex>
 #include <unordered_map>
 
-#include "sl/core/Error.h"
 #include "sl/core/Logger.h"
+#include "sl/core/error/ErrorCode.h"
+#include "sl/core/error/Errors.hpp"
 
 namespace sl::core {
 
@@ -14,21 +15,21 @@ public:
     static void registerResourcePath(const std::string& path) {
         SL_INFO("registering path: {} - {}", typeid(T).name(), path);
         if (0 < m_resourcePaths.count(typeid(T)))
-            throw CoreException(ErrorCode::PATH_ALREADY_REGISTERED);
+            throw core::error::CoreError{ core::error::ErrorCode::PathAlreadyRegistered };
         m_resourcePaths[typeid(T)] = path;
     }
 
     template <typename T>
     static std::string get() {
         if (not m_resourcePaths.contains(typeid(T)))
-            throw CoreException(ErrorCode::PATH_NOT_REGISTERED);
+            throw core::error::CoreError{ core::error::ErrorCode::PathNotRegistered };
         return m_resourcePaths.at(typeid(T)) + "/";
     }
 
     template <typename T>
     static std::string createGlobalPath(const std::string& path) {
         if (not m_resourcePaths.count(typeid(T)))
-            throw CoreException(ErrorCode::PATH_NOT_REGISTERED);
+            throw core::error::CoreError{ core::error::ErrorCode::PathNotRegistered };
         return m_resourcePaths.at(typeid(T)) + path;
     }
 

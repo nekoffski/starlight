@@ -3,7 +3,6 @@
 #include <memory>
 
 #include "sl/misc/types/NotNullPtr.hpp"
-#include "sl/platform/Error.h"
 
 namespace sl::graphics {
 

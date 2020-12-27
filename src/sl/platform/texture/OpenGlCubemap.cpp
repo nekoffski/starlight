@@ -1,8 +1,8 @@
 #include "OpenGlCubemap.h"
 
 #include "Utils.hpp"
+#include "sl/core/error/Errors.hpp"
 #include "sl/graphics/Image.h"
-#include "sl/platform/Error.h"
 
 #include <glad/glad.h>
 
@@ -18,7 +18,7 @@ OpenGlCubemap::OpenGlCubemap(const graphics::CubemapArgs faces)
         const auto img = graphics::Image::factory->create(faces[i]);
         const auto format = channelsToFormat.find(img->getChannels());
         if (format == channelsToFormat.end())
-            throw PlatformException(ErrorCode::UNKNOWN_TEXTURE_FORMAT);
+            throw core::error::TextureError{ core::error::ErrorCode::UnknownTextureFormat };
         const auto& size = img->getSize();
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format->second, size.width, size.height,
             0, format->second, GL_UNSIGNED_BYTE, img->getRaw());

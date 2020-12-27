@@ -4,6 +4,7 @@
 
 #include "sl/core/Logger.h"
 #include "sl/core/Profiler.h"
+#include "sl/core/error/Errors.hpp"
 
 static void GLAPIENTRY messageCallback(GLenum source, GLenum type, GLuint id,
     GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
@@ -23,7 +24,7 @@ void OpenGlGraphicsContext::init() {
 
     SL_INFO("loading glad memory proc");
     if (auto status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress); status <= 0)
-        throw PlatformException(ErrorCode::COULD_NOT_LOAD_GRAPHICS_HANDLE, "Could not load glad proc addr", status);
+        throw core::error::GraphicsError{ core::error::ErrorCode::CouldNotLoadGraphicsApi };
 
     // TODO: make it configurable
     //glEnable(GL_DEBUG_OUTPUT);

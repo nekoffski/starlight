@@ -106,6 +106,7 @@ void ResourcesTab::handleCubemapLoader(sl::gui::GuiApi& gui) {
     if (m_loadClicked) {
         auto cubemap = sl::asset::AssetManager::loadLocalPath<sl::graphics::Cubemap>(
             faces[0], faces[1], faces[2], faces[3], faces[4], faces[5]);
+
         auto cubemapResource = std::make_shared<res::CubemapResource>(cubemap, m_resourceName);
         m_resourceManager.addResource(cubemapResource);
     }
