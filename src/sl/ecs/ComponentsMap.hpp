@@ -13,7 +13,7 @@ class ComponentsMap {
 public:
     template <typename Component>
     std::shared_ptr<Container<Component>> get() {
-        auto id = TYPE_INDEX(Component);
+        auto id = core::misc::typeIndex<Component>();
         if (m_componentsContainers.count(id) < 1)
             m_componentsContainers[id] = Container<Component>::create();
         return std::static_pointer_cast<Container<Component>>(m_componentsContainers[id]);
@@ -26,7 +26,7 @@ public:
 
     template <typename Component>
     bool exists() {
-        auto id = TYPE_INDEX(Component);
+        auto id = core::misc::typeIndex<Component>();
         return m_componentsContainers.count(id) > 0;
     }
 

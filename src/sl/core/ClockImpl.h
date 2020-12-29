@@ -1,20 +1,21 @@
 #pragma once
 
 #include <memory>
+#include <string_view>
 
 namespace sl::core {
 
-class ITimestamp {
+class Timestamp {
 public:
-    virtual float substract(const std::shared_ptr<ITimestamp>& rhs) = 0;
+    virtual float substract(std::shared_ptr<Timestamp> rhs) = 0;
     virtual float value() = 0;
 };
 
-class IClockImpl {
+class ClockImpl {
 public:
-    virtual std::string getTimeString(std::string) = 0;
+    virtual std::string getTimeString(std::string_view) = 0;
     virtual float getDeltaTime() = 0;
     virtual void update() = 0;
-    virtual std::shared_ptr<ITimestamp> now() = 0;
+    virtual std::shared_ptr<Timestamp> now() = 0;
 };
 }

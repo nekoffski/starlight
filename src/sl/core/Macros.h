@@ -1,6 +1,6 @@
 #pragma once
 
-#define STARL_STATIC_CLASS(T)        \
+#define SL_STATIC_CLASS(T)           \
 public:                              \
     T() = delete;                    \
     T(const T&) = delete;            \

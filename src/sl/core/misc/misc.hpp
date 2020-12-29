@@ -3,4 +3,10 @@
 #include <typeindex>
 #include <typeinfo>
 
-#define TYPE_INDEX(T) std::type_index(typeid(T))
+namespace sl::core::misc {
+
+template <typename T>
+inline constexpr std::type_index typeIndex() {
+    return std::type_index{ typeid(T) };
+}
+}

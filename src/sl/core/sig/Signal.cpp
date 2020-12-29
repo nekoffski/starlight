@@ -2,9 +2,10 @@
 
 #include "sl/core/Logger.h"
 
-static sl::core::sig::SignalHandler* signalHandler{ nullptr };
+static sl::core::sig::SignalHandler* signalHandler = nullptr;
 
 static inline void signalHandlerWrapper(int signal) {
+    SL_ASSERT(signalHandler != nullptr, "Signal handler is not set up");
     SL_INFO("received signal: {}", signal);
     signalHandler->onSignal(signal);
 }
@@ -13,10 +14,8 @@ namespace sl::core::sig {
 
 void setupSignalHandler(core::types::NotNullPtr<SignalHandler> sigHandler) {
     SL_INFO("setting up signal handler");
-    if (signalHandler != nullptr) {
-        SL_ERROR("could not set signal handle twice");
-        throw std::logic_error("signal handler instance already exists");
-    }
+    SL_ASSERT(signalHandler == nullptr, "Could not set signal handler twice");
+
     signalHandler = sigHandler;
 
     std::signal(SIGINT, signalHandlerWrapper);

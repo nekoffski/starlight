@@ -30,6 +30,8 @@ public:
         auto batch = iterations / threadCount;
 
         std::vector<Future<void>> futures;
+        futures.reserve(threadCount);
+
         for (int i = 0; i < threadCount; ++i) {
             int beg = i * batch;
             int end = (i + 1) * batch;

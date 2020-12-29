@@ -2,9 +2,9 @@
 
 #include <memory>
 
-namespace sl::core {
+#include "fwd.h"
 
-class Input;
+namespace sl::core {
 
 class InputHandler {
 public:

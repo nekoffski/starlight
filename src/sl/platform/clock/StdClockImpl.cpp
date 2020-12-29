@@ -25,7 +25,7 @@ float StdTimestamp::value() {
 }
 
 // could be possibly optimized
-float StdTimestamp::substract(const std::shared_ptr<ITimestamp>& rhs) {
+float StdTimestamp::substract(std::shared_ptr<Timestamp> rhs) {
     auto ptr = std::static_pointer_cast<StdTimestamp>(rhs);
     return std::chrono::duration_cast<TimeUnit>(m_time - ptr->m_time).count() / DIVIDER;
 }
@@ -34,12 +34,14 @@ float StdTimestamp::substract(const StdTimestamp& rhs) {
     return std::chrono::duration_cast<TimeUnit>(m_time - rhs.m_time).count() / DIVIDER;
 }
 
-std::string StdClockImpl::getTimeString(std::string format) {
+std::string StdClockImpl::getTimeString(std::string_view format) {
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);
 
     std::ostringstream oss;
-    oss << std::put_time(&tm, format.c_str());
+
+    // TODO: write some helper to check if string_view is null terminated instead of casting it to string everytime
+    oss << std::put_time(&tm, std::string{ format }.c_str());
     return oss.str();
 }
 
@@ -53,7 +55,7 @@ void StdClockImpl::update() {
     m_previous = now;
 }
 
-std::shared_ptr<core::ITimestamp> StdClockImpl::now() {
+std::shared_ptr<core::Timestamp> StdClockImpl::now() {
     return std::make_shared<StdTimestamp>();
 }
 }

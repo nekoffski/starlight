@@ -7,9 +7,7 @@
 #include "sl/core/Logger.h"
 #include "sl/math/Utils.hpp"
 
-constexpr float ETA = 0.3f;
-
-#define PRF_PROFILER_ENABLED 1
+constexpr float EtaFactor = 0.3f;
 
 namespace sl::core {
 
@@ -22,7 +20,7 @@ Profiler::RegionBasedTimer::RegionBasedTimer(float& value)
 
 Profiler::RegionBasedTimer::~RegionBasedTimer() {
     float tmp = core::Clock::now()->substract(m_start);
-    m_value = math::linInterpolate(m_value, tmp, ETA);
+    m_value = math::linInterpolate(m_value, tmp, EtaFactor);
 }
 
 Profiler::RegionBasedTimer Profiler::createRegionBasedTimer(std::string name) {
@@ -46,8 +44,8 @@ void Profiler::saveResults(std::string logdir) {
 }
 
 void Profiler::printResults() {
-    // clang-format off
-    #ifdef PRF_PROFILER_ENABLED
+// clang-format off
+    #ifdef SL_PROFILER_ENABLED
         SL_WARN("\n{}\n", formatTimers()); // CREATE OTHER FORMATTER!
     #endif
     // clang-format on

@@ -5,8 +5,8 @@
 
 #include "sl/core/Clock.h"
 
-#define PRF_PROFILER_ENABLED 1
-constexpr float PROFILER_PRINT_INTERVAL = 5.0f;
+#define SL_PROFILER_ENABLED 1
+constexpr float ProfilerPrintInterval = 5.0f;
 
 namespace sl::core {
 
@@ -18,7 +18,7 @@ class Profiler {
 
     private:
         float& m_value;
-        std::shared_ptr<core::ITimestamp> m_start;
+        std::shared_ptr<core::Timestamp> m_start;
     };
 
 public:
@@ -33,11 +33,11 @@ private:
 }
 
 // clang-format off
-#ifdef PRF_PROFILER_ENABLED
-    #define PRF_PROFILE_REGION(name) auto __sl_prf_region_timer = core::Profiler::createRegionBasedTimer(name); 
-    #define PRF_PROFILE_FUNCTION() auto __sl_prf_func_timer = core::Profiler::createRegionBasedTimer(__PRETTY_FUNCTION__);
+#ifdef SL_PROFILER_ENABLED
+    #define SL_PROFILE_REGION(name) auto __sl_prf_region_timer = core::Profiler::createRegionBasedTimer(name); 
+    #define SL_PROFILE_FUNCTION() auto __sl_prf_func_timer = core::Profiler::createRegionBasedTimer(__PRETTY_FUNCTION__);
 #else
-    #define PRF_PROFILE_REGION(name)
-    #define PRF_PROFILE_FUNCTION
+    #define SL_PROFILE_REGION(name)
+    #define SL_PROFILE_FUNCTION
 #endif
 // clang-format on

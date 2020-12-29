@@ -25,9 +25,9 @@ public:
             m_threads.emplace_back(Thread{ &ThreadPool::threadWorker, this });
     }
 
-	std::size_t getSize() const {
-		return m_size;
-	}
+    std::size_t getSize() const {
+        return m_size;
+    }
 
     template <typename F, typename... Args>
     Future<typename std::result_of<F(Args...)>::type> callAsync(F&& func, Args&&... args) {

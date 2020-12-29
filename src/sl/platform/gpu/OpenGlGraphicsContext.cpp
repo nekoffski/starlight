@@ -36,7 +36,7 @@ void OpenGlGraphicsContext::setViewport(unsigned w, unsigned h) {
 }
 
 void OpenGlGraphicsContext::swapBuffers() {
-    PRF_PROFILE_FUNCTION();
+    SL_PROFILE_FUNCTION();
     glfwSwapBuffers(m_windowHandle);
 }
 

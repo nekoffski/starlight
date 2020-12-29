@@ -92,14 +92,14 @@ void Application::init() {
 }
 
 void Application::update(float deltaTime, float time) {
-    PRF_PROFILE_FUNCTION();
+    SL_PROFILE_FUNCTION();
 
     m_window->update(deltaTime);
     m_context->update(deltaTime, time);
 }
 
 void Application::render() {
-    PRF_PROFILE_FUNCTION();
+    SL_PROFILE_FUNCTION();
 
     m_renderer->clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
     m_context->render(*m_sceneSystems);

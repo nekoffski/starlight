@@ -11,6 +11,7 @@ public:
         int width;
         int height;
     };
+
     using ResizeCallback = std::function<void(int, int)>;
 
     struct Factory {

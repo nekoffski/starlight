@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string_view>
 
 #include "ClockImpl.h"
 
@@ -21,15 +22,15 @@ public:
         m_pimpl->update();
     }
 
-    static std::string getTimeString(std::string format) {
-        return m_pimpl->getTimeString(std::move(format));
+    static std::string getTimeString(std::string_view format) {
+        return m_pimpl->getTimeString(format);
     }
 
-    static std::shared_ptr<ITimestamp> now() {
+    static std::shared_ptr<Timestamp> now() {
         return m_pimpl->now();
     }
 
 private:
-    static inline std::unique_ptr<IClockImpl> m_pimpl;
+    static inline std::unique_ptr<ClockImpl> m_pimpl;
 };
 }

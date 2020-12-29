@@ -14,7 +14,7 @@ public:
     template <typename T>
     static void registerResourcePath(const std::string& path) {
         SL_INFO("registering path: {} - {}", typeid(T).name(), path);
-        if (0 < m_resourcePaths.count(typeid(T)))
+        if (m_resourcePaths.contains(typeid(T)))
             throw core::error::CoreError{ core::error::ErrorCode::PathAlreadyRegistered };
         m_resourcePaths[typeid(T)] = path;
     }
@@ -28,7 +28,7 @@ public:
 
     template <typename T>
     static std::string createGlobalPath(const std::string& path) {
-        if (not m_resourcePaths.count(typeid(T)))
+        if (not m_resourcePaths.contains(typeid(T)))
             throw core::error::CoreError{ core::error::ErrorCode::PathNotRegistered };
         return m_resourcePaths.at(typeid(T)) + path;
     }

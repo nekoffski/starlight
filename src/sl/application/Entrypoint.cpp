@@ -30,7 +30,7 @@ int Entrypoint::start() {
         SL_INFO("Initialized logging");
 
         core::Clock::setClockImpl<platform::clock::StdClockImpl>();
-        m_profilerTimer = async::AsyncEngine::createTimer(PROFILER_PRINT_INTERVAL);
+        m_profilerTimer = async::AsyncEngine::createTimer(ProfilerPrintInterval);
 
         async::AsyncEngine::init();
 
@@ -44,7 +44,7 @@ int Entrypoint::start() {
 
         while (m_application->isRunning()) {
             {
-                PRF_PROFILE_REGION("main-loop");
+                SL_PROFILE_REGION("main-loop");
 
                 float deltaTime = core::Clock::getDeltaTime();
 

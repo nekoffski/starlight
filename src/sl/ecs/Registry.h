@@ -9,6 +9,7 @@
 #include "ComponentWrapper.h"
 #include "ComponentsMap.hpp"
 #include "sl/core/Logger.h"
+#include "sl/core/misc/misc.hpp"
 
 namespace sl::ecs {
 
@@ -23,12 +24,12 @@ public:
     void addComponent(std::string entityId, Args&&... args) {
         auto& component = m_componentsMap.get<Component>()->add(entityId, std::forward<Args>(args)...);
         component.entity = m_entities[std::move(entityId)];
-        component.entity->m_componentsIndexes.push_back(TYPE_INDEX(Component));
+        component.entity->m_componentsIndexes.push_back(core::misc::typeIndex<Component>());
     }
 
     template <typename Component, typename Factory>
     void setComponentWrapperFactory() {
-        m_componentToWrapperFactory[TYPE_INDEX(Component)] =
+        m_componentToWrapperFactory[core::misc::typeIndex<Component>()] =
             std::make_unique<Factory>();
     }
 

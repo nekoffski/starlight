@@ -29,7 +29,7 @@ ParticleEffectSystem::ParticleEffectSystem(std::shared_ptr<graphics::Renderer> r
 
 void ParticleEffectSystem::renderParticleEffects(std::vector<components::ParticleEffectComponent>& pfxs,
     std::shared_ptr<graphics::camera::Camera> camera) {
-    PRF_PROFILE_FUNCTION();
+    SL_PROFILE_FUNCTION();
 
     m_shader->enable();
     m_shader->setUniform("view", camera->getViewMatrix());
