@@ -28,8 +28,8 @@ struct AssetLoader<Cubemap> {
             prefix += core::PathManager::get<Cubemap>();
 
 		SL_DEBUG("loading cubemap: \n {} - {}/{}/{}/{}/{}/{} ", prefix, args.top, args.bottom , args.right, args.left, args.front, args.back);
-        return graphics::Cubemap::factory->create({ 
-            prefix + args.right, prefix + args.left, prefix + args.top, prefix + args.bottom, prefix + args.front, prefix + args.back });
+		return graphics::Cubemap::factory->create({ 
+			prefix + args.right, prefix + args.left, prefix + args.top, prefix + args.bottom, prefix + args.front, prefix + args.back });
         // clang-format on
     }
 };

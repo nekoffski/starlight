@@ -3,9 +3,9 @@
 #include <csignal>
 
 #include "SignalHandler.h"
-#include "sl/misc/types/NotNullPtr.hpp"
+#include "sl/core/types/NotNullPtr.hpp"
 
 namespace sl::core::sig {
 
-extern void setupSignalHandler(misc::types::NotNullPtr<SignalHandler>);
+extern void setupSignalHandler(core::types::NotNullPtr<SignalHandler>);
 }

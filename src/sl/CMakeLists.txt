@@ -2,7 +2,6 @@
 add_subdirectory(platform)
 add_subdirectory(core)
 add_subdirectory(application)
-add_subdirectory(misc)
 add_subdirectory(asset)
 add_subdirectory(math)
 add_subdirectory(graphics)

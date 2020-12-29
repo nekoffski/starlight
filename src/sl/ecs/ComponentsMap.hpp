@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "sl/misc/misc.hpp"
+#include "sl/core/misc/misc.hpp"
 
 namespace sl::ecs {
 

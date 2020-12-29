@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-namespace sl::misc::types {
+namespace sl::core::types {
 
 template <typename T>
 class NotNullPtrBase {

@@ -57,7 +57,7 @@ std::unique_ptr<graphics::Texture::Factory> createTextureFactory() {
     return std::make_unique<texture::OpenGlTextureFactory>();
 }
 
-std::unique_ptr<graphics::Cubemap::Factory> crateCubemapFactory() {
+std::unique_ptr<graphics::Cubemap::Factory> createCubemapFactory() {
     return std::make_unique<texture::OpenGlCubemapFactory>();
 }
 

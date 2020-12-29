@@ -2,7 +2,7 @@
 
 #include "sl/math/Vector.hpp"
 
-namespace sl::misc {
+namespace sl::core::misc {
 
 inline const math::Vec3 COL_WHITE = { 1.0f, 1.0f, 1.0f };
 inline const math::Vec3 COL_BLACK = { 0.0f, 0.0f, 0.0f };

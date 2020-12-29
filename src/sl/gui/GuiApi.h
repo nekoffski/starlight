@@ -4,14 +4,14 @@
 #include <vector>
 
 #include "sl/math/Vector.hpp"
-#include "sl/misc/types/NotNullPtr.hpp"
+#include "sl/core/types/NotNullPtr.hpp"
 
 namespace sl::gui {
 
 class GuiApi {
 public:
     struct Factory {
-        virtual std::shared_ptr<GuiApi> create(misc::types::NotNullPtr<void> windowHandle) = 0;
+        virtual std::shared_ptr<GuiApi> create(core::types::NotNullPtr<void> windowHandle) = 0;
     };
 
     inline static std::unique_ptr<Factory> factory = nullptr;

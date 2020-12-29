@@ -6,7 +6,7 @@
 #include <functional>
 #include <optional>
 
-namespace sl::misc::containers {
+namespace sl::core::containers {
 
 template <typename T, std::size_t N>
 class CircularBuffer {

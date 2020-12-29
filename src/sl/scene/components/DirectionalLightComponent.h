@@ -5,14 +5,14 @@
 #include "sl/graphics/Texture.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
-#include "sl/misc/colors.hpp"
+#include "sl/core/misc/colors.hpp"
 
 namespace sl::scene::components {
 
 static const auto LIGHT_PROJECTION = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
 
 struct DirectionalLightComponent : public ecs::Component {
-    explicit DirectionalLightComponent(math::Vec3 direction = math::Vec3{ 1.0f, 1.0f, 1.0f }, math::Vec3 color = misc::COL_WHITE)
+    explicit DirectionalLightComponent(math::Vec3 direction = math::Vec3{ 1.0f, 1.0f, 1.0f }, math::Vec3 color = core::misc::COL_WHITE)
         : direction(direction)
         , color(color)
         , shadowMap(graphics::Texture::factory->create(1024u, 1024u))

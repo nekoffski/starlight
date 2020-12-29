@@ -6,6 +6,7 @@
 #include "sl/asset/loaders/ModelLoaderWrapper.hpp"
 #include "sl/asset/loaders/ShaderLoader.hpp"
 #include "sl/asset/loaders/TextureLoader.hpp"
+#include "sl/async/AsyncEngine.hpp"
 #include "sl/core/error/ErrorCode.h"
 #include "sl/core/error/Errors.hpp"
 

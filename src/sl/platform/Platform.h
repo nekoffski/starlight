@@ -26,7 +26,7 @@ std::unique_ptr<graphics::buffer::VertexBuffer::Factory> createVertexBufferFacto
 std::unique_ptr<graphics::buffer::FrameBuffer::Factory> createFrameBufferFactory();
 std::unique_ptr<graphics::Image::Factory> createImageFactory();
 std::unique_ptr<graphics::Texture::Factory> createTextureFactory();
-std::unique_ptr<graphics::Cubemap::Factory> crateCubemapFactory();
+std::unique_ptr<graphics::Cubemap::Factory> createCubemapFactory();
 std::unique_ptr<graphics::Shader::Factory> createShaderFactory();
 std::unique_ptr<core::Window::Factory> createWindowFactory();
 std::unique_ptr<core::Input::Factory> createInputFactory();

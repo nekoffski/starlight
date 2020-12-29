@@ -1,7 +1,7 @@
 #pragma once
 
 #include "sl/graphics/buffer/ElementBuffer.h"
-#include "sl/misc/types/NotNullPtr.hpp"
+#include "sl/core/types/NotNullPtr.hpp"
 
 namespace sl::platform::gpu {
 
@@ -23,7 +23,7 @@ private:
 };
 
 struct OpenGlElementBufferFactory : graphics::buffer::ElementBuffer::Factory {
-    std::shared_ptr<graphics::buffer::ElementBuffer> create(misc::types::NotNullPtr<void> data, int size, unsigned int indicesCount) override {
+    std::shared_ptr<graphics::buffer::ElementBuffer> create(core::types::NotNullPtr<void> data, int size, unsigned int indicesCount) override {
         return std::make_shared<OpenGlElementBuffer>(data, size, indicesCount);
     }
 };

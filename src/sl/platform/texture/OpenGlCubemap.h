@@ -2,6 +2,8 @@
 
 #include "sl/graphics/Cubemap.h"
 
+#include "sl/core/Logger.h"
+
 namespace sl::platform::texture {
 
 class OpenGlCubemap : public graphics::Cubemap {
@@ -19,7 +21,8 @@ private:
 
 struct OpenGlCubemapFactory : graphics::Cubemap::Factory {
     std::shared_ptr<graphics::Cubemap> create(const graphics::CubemapArgs& args) override {
-        return std::make_shared<OpenGlCubemap>(args);
+		SL_INFO("XD??");
+		return std::make_shared<OpenGlCubemap>(args);
     }
 };
 }

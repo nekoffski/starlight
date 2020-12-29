@@ -32,7 +32,7 @@ static void initFactories() {
     graphics::buffer::ElementBuffer::factory = platform::createElementBufferFactory();
 
     graphics::Texture::factory = platform::createTextureFactory();
-    graphics::Cubemap::factory = platform::crateCubemapFactory();
+    graphics::Cubemap::factory = platform::createCubemapFactory();
     graphics::Shader::factory = platform::createShaderFactory();
     graphics::ShaderCompilerImpl::factory = platform::createShaderCompilerImplFactory();
     graphics::GraphicsContext::factory = platform::createGraphicsContextFactory();

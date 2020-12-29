@@ -20,7 +20,7 @@ private:
 };
 
 struct OpenGlVertexBufferFactory : graphics::buffer::VertexBuffer::Factory {
-    std::shared_ptr<graphics::buffer::VertexBuffer> create(misc::types::NotNullPtr<void> data, int size, int verticesCount) override {
+    std::shared_ptr<graphics::buffer::VertexBuffer> create(core::types::NotNullPtr<void> data, int size, int verticesCount) override {
         return std::make_shared<OpenGlVertexBuffer>(data, size, verticesCount);
     }
 };

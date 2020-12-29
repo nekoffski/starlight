@@ -2,14 +2,14 @@
 
 #include <memory>
 
-#include "sl/misc/types/NotNullPtr.hpp"
+#include "sl/core/types/NotNullPtr.hpp"
 
 namespace sl::graphics::buffer {
 
 class ElementBuffer {
 public:
 	struct Factory {
-		virtual std::shared_ptr<ElementBuffer> create(misc::types::NotNullPtr<void>, int, unsigned int) = 0;
+		virtual std::shared_ptr<ElementBuffer> create(core::types::NotNullPtr<void>, int, unsigned int) = 0;
 	};
 
 	inline static std::unique_ptr<Factory> factory = nullptr;

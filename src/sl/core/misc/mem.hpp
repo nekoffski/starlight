@@ -3,5 +3,5 @@
 #include <memory>
 #include <utility>
 
-namespace sl::misc {
+namespace sl::core::misc {
 }

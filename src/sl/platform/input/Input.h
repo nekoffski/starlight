@@ -4,7 +4,7 @@
 #include <memory>
 #include <tuple>
 
-#include "sl/misc/types/NotNullPtr.hpp"
+#include "sl/core/types/NotNullPtr.hpp"
 #include "sl/platform/PlatformDetector.h"
 
 #ifdef STARL_USE_GLFW

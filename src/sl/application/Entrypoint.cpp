@@ -24,16 +24,18 @@ Entrypoint::Entrypoint(int& argc, char**& argv, std::unique_ptr<Application> app
 }
 
 int Entrypoint::start() {
-    core::sig::setupSignalHandler(this);
-    core::initLogging();
-    SL_INFO("Initialized logging");
-
-    core::Clock::setClockImpl<platform::clock::StdClockImpl>();
-    m_profilerTimer = async::AsyncEngine::createTimer(PROFILER_PRINT_INTERVAL);
-
-    // TODO: load config
-
     try {
+        core::sig::setupSignalHandler(this);
+        core::initLogging();
+        SL_INFO("Initialized logging");
+
+        core::Clock::setClockImpl<platform::clock::StdClockImpl>();
+        m_profilerTimer = async::AsyncEngine::createTimer(PROFILER_PRINT_INTERVAL);
+
+        async::AsyncEngine::init();
+
+        // TODO: load config
+
         SL_INFO("creating and starting application instance");
         m_application->init();
         m_application->onStart();
@@ -60,6 +62,8 @@ int Entrypoint::start() {
         }
 
         m_application->onStop();
+
+        async::AsyncEngine::deinit();
 
     } catch (core::error::Error& e) {
         SL_ERROR("entrypoint catched unhandled error: {}", e.toString());
