@@ -8,7 +8,7 @@
 
 namespace sl::core::containers {
 
-template <typename T, std::size_t N>
+template <class T, std::size_t N>
 class CircularBuffer {
     using Callback = std::function<void(T&)>;
 

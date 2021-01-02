@@ -20,7 +20,7 @@ Profiler::RegionBasedTimer::RegionBasedTimer(float& value)
 
 Profiler::RegionBasedTimer::~RegionBasedTimer() {
     float tmp = core::Clock::now()->substract(m_start);
-    m_value = math::linInterpolate(m_value, tmp, EtaFactor);
+    m_value = math::lerp(m_value, tmp, EtaFactor);
 }
 
 Profiler::RegionBasedTimer Profiler::createRegionBasedTimer(std::string name) {

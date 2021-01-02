@@ -15,7 +15,7 @@ public:
         particles.reserve(n);
 
         std::mt19937 rand(m_rd());
-        static std::uniform_real_distribution<> fiDist(0.0f, 2 * math::PI);
+        static std::uniform_real_distribution<> fiDist(0.0f, 2 * std::numbers::pi);
         std::uniform_real_distribution<> radiusDist(0.0f, settings.radius);
 
         std::uniform_real_distribution<> speedDist(settings.minSpeed, settings.maxSpeed);

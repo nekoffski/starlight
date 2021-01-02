@@ -1,7 +1,7 @@
 #pragma once
 
-#include "sl/gui/GuiApi.h"
 #include "sl/core/types/NotNullPtr.hpp"
+#include "sl/gui/GuiApi.h"
 
 namespace sl::platform::gui::detail {
 
@@ -9,6 +9,17 @@ class ImGuiApi : public sl::gui::GuiApi {
 public:
     explicit ImGuiApi(void*);
     ~ImGuiApi() override;
+
+    bool beginMenuBar() override;
+    void endMenuBar() override;
+
+    bool beginMainMenuBar() override;
+    void endMainMenuBar() override;
+
+    bool beginMenu(const std::string&) override;
+    void endMenu() override;
+
+    bool menuItem(const std::string&) override;
 
     void combo(std::string, int&, std::vector<std::string> items) override;
     void openPopUp(std::string) override;

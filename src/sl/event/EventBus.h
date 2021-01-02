@@ -27,7 +27,7 @@ public:
         m_eventsObservers.push_back(observer);
     }
 
-    template <typename T, typename... Args>
+    template <class T, typename... Args>
     static void emitEvent(Args&&... args) {
         auto event = std::make_shared<T>(std::forward<Args>(args)...);
         m_eventsMap[event->getCategory()].push_back(event);

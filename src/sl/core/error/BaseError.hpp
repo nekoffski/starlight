@@ -19,7 +19,7 @@ public:
     }
 
     // clang-format off
-	template<typename T = ErrorCode>
+	template<class T = ErrorCode>
  	T getErrorCode() const {
         return static_cast<T>(m_errorCode);
     }

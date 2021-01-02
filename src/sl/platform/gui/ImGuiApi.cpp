@@ -209,4 +209,32 @@ bool ImGuiApi::colorPicker3(std::string label, math::Vec3& color) {
 bool ImGuiApi::button(std::string label, int xSize, int ySize) {
     return ImGui::Button(label.c_str(), ImVec2(xSize, ySize));
 }
+
+bool ImGuiApi::beginMenuBar() {
+    return ImGui::BeginMenuBar();
+}
+
+void ImGuiApi::endMenuBar() {
+    ImGui::EndMenuBar();
+}
+
+bool ImGuiApi::beginMainMenuBar() {
+    return ImGui::BeginMainMenuBar();
+}
+
+void ImGuiApi::endMainMenuBar() {
+    ImGui::EndMainMenuBar();
+}
+
+bool ImGuiApi::beginMenu(const std::string& label) {
+    return ImGui::BeginMenu(label.c_str());
+}
+
+void ImGuiApi::endMenu() {
+    ImGui::EndMenu();
+}
+
+bool ImGuiApi::menuItem(const std::string& label) {
+    return ImGui::MenuItem(label.c_str());
+}
 }

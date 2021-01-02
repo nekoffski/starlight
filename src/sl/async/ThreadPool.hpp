@@ -12,7 +12,7 @@
 
 namespace sl::async {
 
-template <typename Thread = std::jthread>
+template <class Thread = std::jthread>
 class ThreadPool {
     using Job = std::function<void()>;
 

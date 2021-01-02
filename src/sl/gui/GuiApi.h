@@ -3,8 +3,8 @@
 #include <memory>
 #include <vector>
 
-#include "sl/math/Vector.hpp"
 #include "sl/core/types/NotNullPtr.hpp"
+#include "sl/math/Vector.hpp"
 
 namespace sl::gui {
 
@@ -20,6 +20,18 @@ public:
 
     virtual void begin() = 0;
     virtual void end() = 0;
+
+    virtual bool beginMenuBar() = 0;
+    virtual void endMenuBar() = 0;
+	
+	virtual bool beginMainMenuBar() = 0;
+    virtual void endMainMenuBar() = 0;
+
+	virtual bool beginMenu(const std::string&) = 0;
+	virtual void endMenu() = 0;
+
+	virtual bool menuItem(const std::string&) = 0;
+
 
     virtual void combo(std::string, int&, std::vector<std::string> items) = 0;
     virtual void openPopUp(std::string) = 0;

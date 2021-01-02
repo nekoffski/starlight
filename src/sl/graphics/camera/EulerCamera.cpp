@@ -11,10 +11,10 @@
 
 namespace sl::graphics::camera {
 
-const float EulerCamera::MIN_PSI = -math::PI / 2.0f;
-const float EulerCamera::MAX_PSI = math::PI / 2.0f;
+const float EulerCamera::MIN_PSI = -std::numbers::pi / 2.0f;
+const float EulerCamera::MAX_PSI = std::numbers::pi / 2.0f;
 const float EulerCamera::MIN_FI = 0.0f;
-const float EulerCamera::MAX_FI = 2.0f * math::PI;
+const float EulerCamera::MAX_FI = 2.0f * std::numbers::pi;
 
 std::shared_ptr<EulerCamera> EulerCamera::create(math::Vec3 centre, float speed, float radius) {
     SL_INFO("creating instance, speed: {}, radius: {} ", speed, radius);

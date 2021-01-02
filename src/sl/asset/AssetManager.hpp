@@ -14,18 +14,18 @@ namespace sl::asset {
 
 class AssetManager {
 public:
-    template <typename T, typename... Args>
+    template <class T, typename... Args>
     static std::shared_ptr<T> loadGlobalPath(Args&&... args) {
         return load<T>(true, std::forward<Args>(args)...);
     }
 
-    template <typename T, typename... Args>
+    template <class T, typename... Args>
     static std::shared_ptr<T> loadLocalPath(Args&&... args) {
         return load<T>(false, std::forward<Args>(args)...);
     }
 
 private:
-    template <typename T, typename... Args>
+    template <class T, typename... Args>
     static std::shared_ptr<T> load(bool globalPath, Args&&... args) {
         if (loaders::IsSpecializedFor<loaders::AssetLoader<T>>::value)
             return loaders::AssetLoader<T>::load(globalPath,

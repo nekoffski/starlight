@@ -12,8 +12,8 @@ struct Settings {
         auto propertiesPanelHeight = viewportHeight - scenePanelHeight;
 
         scenePanelPosition = {
-            { 0, 0 },
-            { leftPanelWidth, scenePanelHeight }
+            { 0, 35 },
+            { leftPanelWidth, scenePanelHeight - 35 }
         };
 
         propertiesPanelPosition = {

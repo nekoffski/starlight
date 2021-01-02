@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <numbers>
 
 #ifndef GLM_ENABLE_EXPERIMENTAL
 #define GLM_ENABLE_EXPERIMENTAL
@@ -16,8 +17,6 @@
 
 namespace sl::math {
 
-const double PI = std::atan(1.0f) * 4.0f;
-
 template <typename T>
 inline const T circularRange(const T& value, const T min, const T max) {
     if (value < min)
@@ -27,27 +26,27 @@ inline const T circularRange(const T& value, const T min, const T max) {
     return value;
 }
 
-template <typename T, glm::qualifier Q>
+template <class T, glm::qualifier Q>
 inline glm::mat<4, 4, T, Q> quaternionToMat4(glm::tquat<T, Q> const& x) {
     return mat4_cast(x);
 }
 
-template <typename T, glm::qualifier Q>
+template <class T, glm::qualifier Q>
 inline T const* valuePtr(glm::mat<3, 3, T, Q> const& m) {
     return &(m[0].x);
 }
 
-template <typename T, glm::qualifier Q>
+template <class T, glm::qualifier Q>
 inline T* valuePtr(glm::mat<3, 3, T, Q>& m) {
     return &(m[0].x);
 }
 
-template <typename T, glm::qualifier Q>
+template <class T, glm::qualifier Q>
 inline T const* valuePtr(glm::mat<4, 4, T, Q> const& m) {
     return &(m[0].x);
 }
 
-template <typename T, glm::qualifier Q>
+template <class T, glm::qualifier Q>
 inline T* valuePtr(glm::mat<4, 4, T, Q>& m) {
     return &(m[0].x);
 }
@@ -93,12 +92,12 @@ inline float distance(const math::Vec3& lhs, const math::Vec3& rhs) {
     return glm::distance(lhs, rhs);
 }
 
-template <class T>
-inline float linInterpolate(const T& a, const T& b, float alfa) {
-    return (1.0f - alfa) * a + alfa * b;
+template <typename T>
+inline float lerp(const T& a, const T& b, float alfa) {
+    return std::lerp(a, b, alfa);
 }
 
-template <class T>
+template <typename T>
 inline T ReLU(const T& lhs) {
     return std::max(0, lhs);
 }
