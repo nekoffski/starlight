@@ -1,7 +1,6 @@
 #include "ResourcesTab.h"
 
 #include "sl/asset/AssetManager.hpp"
-#include "sl/event/EventBus.h"
 #include "sl/gui/FileBrowser.hpp"
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/Utils.hpp"

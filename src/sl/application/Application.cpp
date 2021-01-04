@@ -3,7 +3,9 @@
 #include "sl/core/Input.h"
 #include "sl/core/PathManager.hpp"
 #include "sl/core/Profiler.h"
-#include "sl/event/EventBus.h"
+#include "sl/event/Categories.h"
+#include "sl/event/Emitter.hpp"
+#include "sl/event/Event.h"
 #include "sl/geometry/Geometry.hpp"
 #include "sl/geometry/ModelLoader.hpp"
 #include "sl/geometry/ModelLoaderImpl.h"
@@ -36,7 +38,7 @@ static void initFactories() {
     graphics::Shader::factory = platform::createShaderFactory();
     graphics::ShaderCompilerImpl::factory = platform::createShaderCompilerImplFactory();
     graphics::GraphicsContext::factory = platform::createGraphicsContextFactory();
-	graphics::RenderApi::factory = platform::createRenderApiFactory();
+    graphics::RenderApi::factory = platform::createRenderApiFactory();
 
     core::Window::factory = platform::createWindowFactory();
     core::Input::factory = platform::createInputFactory();
@@ -53,7 +55,11 @@ static void initPaths() {
     sl::core::PathManager::registerResourcePath<sl::geometry::Model>(MODELS_DIR);
 }
 
-Application::Application(Application::Token&&) {
+Application::Application(Application::Token&&)
+    : xvent::EventListener("Application")
+    , m_eventEmitter(m_eventEngine.createEmitter()) {
+
+    event::Emitter::init(m_eventEngine.createEmitter());
 }
 
 void Application::init() {
@@ -61,11 +67,11 @@ void Application::init() {
     initFactories();
 
     auto windowSize = core::Window::Size{ 1600, 900 };
-    m_window = core::Window::factory->create(windowSize, "title");
+    m_window = core::Window::factory->create(windowSize, "Starlight");
     m_window->init();
     m_window->setResizeCallback([](int width, int height) {
         SL_DEBUG("Window resized to: {}/{}", width, height);
-        event::EventBus::emitEvent<event::WindowResizedEvent>(width, height);
+        event::Emitter::m_xventEmitter->emit<event::WindowResizedEvent>(width, height);
     });
 
     auto windowHandle = m_window->getHandle();
@@ -88,7 +94,7 @@ void Application::init() {
 
     m_sceneSystems = std::make_shared<scene::SceneSystems>(m_renderer);
 
-    event::EventBus::registerEventObserver(this);
+    m_eventEngine.registerEventListener(shared_from_this());
 }
 
 void Application::update(float deltaTime, float time) {
@@ -96,6 +102,8 @@ void Application::update(float deltaTime, float time) {
 
     m_window->update(deltaTime);
     m_context->update(deltaTime, time);
+
+    m_eventEngine.spreadEvents();
 }
 
 void Application::render() {
@@ -121,17 +129,18 @@ std::shared_ptr<ApplicationContext> Application::getActiveContext() const {
     return m_context;
 }
 
-void Application::handleEvents(event::EventPool& eventPool) {
-    for (auto& event : eventPool.getEventsByCategory({ event::EventCategory::CORE })) {
-        switch (event->getType()) {
-        case event::EventType::WINDOW_RESIZED: {
+void Application::handleEvents(const xvent::EventProvider& eventProvider) {
+    for (auto event : eventProvider.getByCategories<event::CoreCategory>()) {
+        if (event->is<event::WindowResizedEvent>()) {
             auto windowResizeEvent = event->as<event::WindowResizedEvent>();
             SL_INFO("{}/{}", windowResizeEvent->width, windowResizeEvent->height);
             m_renderer->setViewport(
                 graphics::Viewport{ windowResizeEvent->width, windowResizeEvent->height });
             break;
         }
-        }
+
+        if (event->is<event::QuitEvent>())
+            m_window->setShouldClose(true);
     }
 }
 

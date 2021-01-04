@@ -11,3 +11,7 @@
 [submodule "3rdparty/fuzzylite"]
 	path = 3rdparty/fuzzylite
 	url = https://github.com/fuzzylite/fuzzylite.git
+[submodule "3rdparty/xvent"]
+	path = 3rdparty/xvent
+	url = https://github.com/nekoffski/xvent.git
+	branch = dev

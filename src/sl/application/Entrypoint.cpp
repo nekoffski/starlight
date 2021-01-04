@@ -12,12 +12,11 @@
 #include "sl/core/Profiler.h"
 #include "sl/core/error/Errors.hpp"
 #include "sl/core/sig/Signal.h"
-#include "sl/event/EventBus.h"
 #include "sl/platform/clock/StdClockImpl.h"
 
 namespace sl::application {
 
-Entrypoint::Entrypoint(int& argc, char**& argv, std::unique_ptr<Application> application)
+Entrypoint::Entrypoint(int& argc, char**& argv, std::shared_ptr<Application> application)
     : m_argc(argc)
     , m_argv(argv)
     , m_application(std::move(application)) {
@@ -52,7 +51,6 @@ int Entrypoint::start() {
                 m_application->update(deltaTime, core::Clock::now()->value());
                 m_application->render();
 
-                event::EventBus::spreadEvents();
                 async::AsyncEngine::update(deltaTime);
                 core::Clock::update();
             }

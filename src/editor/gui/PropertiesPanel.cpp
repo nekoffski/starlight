@@ -1,6 +1,7 @@
 #include "PropertiesPanel.h"
 
-#include "sl/event/EventBus.h"
+#include "sl/event/Emitter.hpp"
+#include "sl/event/Event.h"
 #include "sl/gui/Utils.hpp"
 #include "sl/scene/components/DirectionalLightComponent.h"
 #include "sl/scene/components/PointLightComponent.h"
@@ -54,7 +55,7 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
                 m_resourceManager.getResourcesByType(res::ResourceType::CUBEMAP)[cubemapName]->as<res::CubemapResource>()->cubemap;
 
             m_selectedCubemap = cubemap;
-            event::EventBus::emitEvent<event::SetSkyboxEvent>(cubemap);
+			event::Emitter::emit<event::SetSkyboxEvent>(cubemap);
         }
         gui.popTreeNode();
     }

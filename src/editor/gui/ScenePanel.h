@@ -4,8 +4,8 @@
 #include <string>
 
 #include "sl/ecs/Entity.h"
+#include "sl/event/Emitter.hpp"
 #include "sl/event/Event.h"
-#include "sl/event/EventBus.h"
 #include "sl/math/Vector.hpp"
 
 #include "Settings.h"
@@ -27,14 +27,15 @@ public:
         , m_entityIndex(0) {
     }
 
-	void setPosition(const WidgetPosition& position) {
-		m_position = position;
-	}
+    void setPosition(const WidgetPosition& position) {
+        m_position = position;
+    }
 
     void render(sl::gui::GuiApi& gui) override {
         gui.beginPanel("Scene entities", m_position.origin, m_position.size);
-        if (gui.button("Add entity", 150))
-            event::EventBus::emitEvent<event::AddEntityEvent>("Entity" + std::to_string(m_entityIndex++));
+        if (gui.button("Add entity", 150)) {
+            event::Emitter::emit<event::AddEntityEvent>("Entity" + std::to_string(m_entityIndex++));
+        }
 
         gui.breakLine();
         for (auto& entity : m_entities) {

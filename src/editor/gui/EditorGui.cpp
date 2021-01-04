@@ -1,4 +1,5 @@
 #include "EditorGui.h"
+#include "sl/event/Event.h"
 
 using namespace sl::core;
 
@@ -23,8 +24,8 @@ void EditorGui::renderEditorGui(sl::gui::GuiApi& gui) {
             if (gui.menuItem("Import scene")) {
             }
 
-            if (gui.menuItem("Quit")) {
-            }
+            if (gui.menuItem("Quit"))
+                event::Emitter::emit<event::QuitEvent>();
 
             gui.endMenu();
         }

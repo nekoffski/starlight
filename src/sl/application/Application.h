@@ -2,23 +2,26 @@
 
 #include <concepts>
 #include <iostream>
+#include <memory>
 #include <type_traits>
 
+#include <xvent/EventEngine.h>
+#include <xvent/EventEmitter.h>
+#include <xvent/EventListener.h>
+
 #include "sl/application/ApplicationContext.h"
-#include "sl/event/Event.h"
-#include "sl/event/EventObserver.h"
-#include "sl/graphics/Renderer.h"
-#include "sl/gui/GuiApi.h"
-#include "sl/graphics/GraphicsContext.h"
 #include "sl/core/Input.h"
 #include "sl/core/Window.h"
+#include "sl/graphics/GraphicsContext.h"
+#include "sl/graphics/Renderer.h"
+#include "sl/gui/GuiApi.h"
 #include "sl/scene/SceneSystems.hpp"
 
 namespace sl::application {
 
 class Entrypoint;
 
-class Application : public event::EventObserver {
+class Application : public xvent::EventListener, public std::enable_shared_from_this<Application> {
     class Token;
 
 public:
@@ -33,7 +36,7 @@ public:
     void renderGui();
 
     std::shared_ptr<ApplicationContext> getActiveContext() const;
-    void handleEvents(event::EventPool& eventPool);
+    void handleEvents(const xvent::EventProvider& eventProvider) override;
     void switchContext(std::shared_ptr<ApplicationContext> context);
 
     void init();
@@ -45,9 +48,11 @@ public:
 protected:
     template <typename T>
     requires std::derived_from<T, ApplicationContext>
-        std::shared_ptr<T> createContext() {
-        auto context = std::make_shared<T>();
+        std::shared_ptr<T> createContext(const std::string& ident) {
+        auto context = std::make_shared<T>(ident);
         context->onInit();
+		
+		m_eventEngine.registerEventListener(context);
 
         return std::dynamic_pointer_cast<T>(context);
     }
@@ -60,6 +65,10 @@ private:
     std::shared_ptr<graphics::GraphicsContext> m_graphicsContext;
     std::shared_ptr<ApplicationContext> m_context;
     std::shared_ptr<scene::SceneSystems> m_sceneSystems;
+
+    xvent::EventEngine m_eventEngine;
+	xvent::EventEmitter m_eventEmitter;
+
 };
 
 class Application::Token {

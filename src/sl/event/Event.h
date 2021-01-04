@@ -1,51 +1,24 @@
 #pragma once
 
-#include "sl/graphics/Cubemap.h"
 #include <memory>
+
+#include <xvent/Event.h>
+
+#include "Categories.h"
+#include "sl/graphics/Cubemap.h"
 
 namespace sl::event {
 
-enum class EventCategory : unsigned char {
-    EDITOR,
-    CORE
-};
+#define DECLARE_EVENT(Event, Category) struct Event : xvent::EventBase<Event, Category>
 
-enum class EventType : unsigned char {
-    ADD_ENTITY,
-    SET_SKYBOX,
-    WINDOW_RESIZED
-};
-
-struct Event : public std::enable_shared_from_this<Event> {
-    virtual EventCategory getCategory() = 0;
-    virtual EventType getType() = 0;
-
-    bool isHandled = false;
-
-    template <typename T>
-    std::shared_ptr<T> as() {
-        return std::dynamic_pointer_cast<T>(shared_from_this());
-    }
-};
-
-// clang-format off
-#define SL_EVENT(category, type)\
-	EventCategory getCategory() { return category; }\
-	EventType getType() { return type; }
-// clang-format on
-
-struct AddEntityEvent : Event {
-    SL_EVENT(EventCategory::EDITOR, EventType::ADD_ENTITY);
-
+DECLARE_EVENT(AddEntityEvent, EditorCategory) {
     AddEntityEvent(std::string name)
         : name(std::move(name)) {}
 
     std::string name;
 };
 
-struct SetSkyboxEvent : Event {
-    SL_EVENT(EventCategory::EDITOR, EventType::SET_SKYBOX);
-
+DECLARE_EVENT(SetSkyboxEvent, EditorCategory) {
     SetSkyboxEvent(std::shared_ptr<sl::graphics::Cubemap> cubemap)
         : cubemap(cubemap) {
     }
@@ -53,9 +26,7 @@ struct SetSkyboxEvent : Event {
     std::shared_ptr<sl::graphics::Cubemap> cubemap;
 };
 
-struct WindowResizedEvent : Event {
-    SL_EVENT(EventCategory::CORE, EventType::WINDOW_RESIZED);
-
+DECLARE_EVENT(WindowResizedEvent, CoreCategory) {
     WindowResizedEvent(int width, int height)
         : width(width)
         , height(height) {
@@ -64,4 +35,6 @@ struct WindowResizedEvent : Event {
     int width;
     int height;
 };
+
+DECLARE_EVENT(QuitEvent, CoreCategory){};
 }

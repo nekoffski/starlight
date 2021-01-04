@@ -8,14 +8,12 @@
 #include "sl/core/FileSystem.h"
 #include "sl/core/Logger.h"
 #include "sl/ecs/Entity.h"
+#include "sl/event/Categories.h"
 #include "sl/event/Event.h"
-#include "sl/event/EventBus.h"
-#include "sl/event/EventObserver.h"
-#include "sl/event/EventPool.h"
-#include "sl/gui/GuiApi.h"
-#include "sl/gui/Utils.hpp"
 #include "sl/graphics/camera/EulerCamera.h"
 #include "sl/graphics/camera/FPSCamera.h"
+#include "sl/gui/GuiApi.h"
+#include "sl/gui/Utils.hpp"
 #include "sl/scene/Scene.h"
 
 #include <filesystem>
@@ -24,7 +22,9 @@ using namespace sl;
 using namespace sl::scene;
 using namespace sl::core;
 
-class EditorContext : public event::EventObserver, public application::ApplicationContext {
+class EditorContext : public application::ApplicationContext {
+    SL_CONTEXT;
+
 public:
     void onInit() override {
         m_activeCamera = graphics::camera::EulerCamera::create(math::Vec3(0.0f), 1.0f, 8.0f);
@@ -33,7 +33,6 @@ public:
 
         m_scene->camera = m_activeCamera;
 
-        event::EventBus::registerEventObserver(this);
         loadBaseShaders();
     }
 
@@ -107,18 +106,17 @@ public:
         }
     }
 
-    void handleEvents(event::EventPool& eventPool) override {
-        auto events = eventPool.getEventsByCategory({ event::EventCategory::EDITOR, event::EventCategory::CORE });
+    void handleEvents(const xvent::EventProvider& eventProvider) override {
+        auto events = eventProvider.getByCategories<event::CoreCategory, event::EditorCategory>();
 
-        for (auto& event : events) {
-            switch (event->getType()) {
-            case event::EventType::ADD_ENTITY: {
+        for (auto event : events) {
+            if (event->is<event::AddEntityEvent>()) {
                 auto entityName = event->as<event::AddEntityEvent>()->name;
                 m_entities.emplace_back(m_scene->addEntity(std::move(entityName)));
                 break;
             }
 
-            case event::EventType::SET_SKYBOX: {
+            if (event->is<event::SetSkyboxEvent>()) {
                 auto cubemap = event->as<event::SetSkyboxEvent>()->cubemap;
                 auto cubemapShader =
                     asset::AssetManager::loadLocalPath<graphics::Shader>("/cubemap.vert", "/cubemap.frag");
@@ -127,7 +125,7 @@ public:
                 break;
             }
 
-            case event::EventType::WINDOW_RESIZED: {
+            if (event->is<event::WindowResizedEvent>()) {
                 const float leftPanelWidth = 0.2f;
                 const float leftPanelTopBottomRatio = 0.5f;
 
@@ -136,7 +134,6 @@ public:
                 editor::gui::Settings settings{ windowResizedEvent->width, windowResizedEvent->height, leftPanelWidth, leftPanelTopBottomRatio };
                 m_editorGui->setSettings(settings);
                 break;
-            }
             }
         }
     }

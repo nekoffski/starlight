@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include <xvent/EventListener.h>
+
 #include "fwd.h"
 #include "sl/gui/GuiApi.h"
 #include "sl/scene/SceneSystems.hpp"
@@ -12,10 +14,13 @@ class Input;
 
 namespace sl::application {
 
-class ApplicationContext {
+class ApplicationContext : public xvent::EventListener {
     friend class Application;
 
 public:
+    explicit ApplicationContext(const std::string& ident)
+        : xvent::EventListener(ident) {}
+
     virtual void onInit() = 0;
     virtual void onAttach() = 0;
     virtual void onDetach() = 0;
@@ -25,5 +30,8 @@ public:
     virtual void render(scene::SceneSystems& sceneSystems) = 0;
 
     virtual void renderGui(gui::GuiApi&) {}
+
 };
 }
+
+#define SL_CONTEXT using sl::application::ApplicationContext::ApplicationContext

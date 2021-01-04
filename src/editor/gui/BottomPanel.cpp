@@ -1,6 +1,5 @@
 #include "BottomPanel.h"
 
-#include "sl/event/EventBus.h"
 #include "sl/gui/Utils.hpp"
 
 namespace editor::gui {

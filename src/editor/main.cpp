@@ -10,7 +10,7 @@ class StarlightEditor : public sl::application::Application {
 
 public:
     virtual void onStart() override {
-        context = createContext<EditorContext>();
+        context = createContext<EditorContext>("EditorContext");
         switchContext(context);
     }
 
