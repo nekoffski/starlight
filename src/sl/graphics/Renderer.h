@@ -6,15 +6,16 @@
 
 #include "sl/graphics/GraphicsContext.h"
 #include "sl/graphics/RenderApi.h"
-#include "sl/graphics/buffer/VertexArray.h"
 #include "sl/graphics/Shader.h"
 #include "sl/graphics/Texture.h"
+#include "sl/graphics/buffer/VertexArray.h"
 
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Utils.hpp"
 
 #include "sl/geometry/Mesh.h"
 
+#include "RendererSettings.h"
 #include "Viewport.h"
 
 namespace sl::graphics {
@@ -22,20 +23,30 @@ namespace sl::graphics {
 class Renderer {
 public:
     explicit Renderer(std::shared_ptr<graphics::GraphicsContext> graphicsContext,
-        std::unique_ptr<graphics::RenderApi> renderApi, Viewport viewport)
-        : m_graphicsContext(graphicsContext)
-        , m_renderApi(std::move(renderApi))
-        , m_viewport(std::move(viewport)) {
-    }
+        std::unique_ptr<graphics::RenderApi> renderApi, Viewport viewport);
 
-    void init();
     void renderVertexArray(std::shared_ptr<graphics::buffer::VertexArray>);
-    // wtf? xd
-    void renderVertexArrayWithDepthMaskDisabled(std::shared_ptr<graphics::buffer::VertexArray>);
 
     void clearBuffers(unsigned buff) {
         m_graphicsContext->clearBuffers(buff);
     }
+
+    void setSettings(const RendererSettings& settings) {
+		m_settings = settings;
+		applySettings(settings);
+	}
+
+    void setTemporarySettings(const RendererSettings& settings) {
+		applySettings(settings);
+	}
+
+    void restoreSettings() {
+		applySettings(m_settings); 
+	}
+
+    const RendererSettings& getSettings() {
+		return m_settings;
+	}
 
     const math::Mat4& getProjectionMatrix() {
         return m_projectionMatrix;
@@ -66,12 +77,12 @@ public:
     }
 
 private:
-    std::shared_ptr<graphics::GraphicsContext> m_graphicsContext;
-    std::unique_ptr<graphics::RenderApi> m_renderApi;
-    math::Mat4 m_projectionMatrix;
-    Viewport m_viewport;
+	void applySettings(const RendererSettings& settings) {
+		m_renderApi->depthMask(settings.enableDepthMask);
+		m_renderApi->setPolygonMode(settings.polygonMode);
+	}
 
-    void calculateProjectionMatrix() {
+	void calculateProjectionMatrix() {
         calculateProjectionMatrix(m_viewport);
     }
 
@@ -79,5 +90,11 @@ private:
         float aspect = static_cast<float>(viewport.width) / m_viewport.height;
         m_projectionMatrix = math::perspective(viewport.fieldOfView, aspect, viewport.nearZ, viewport.farZ);
     }
+
+    std::shared_ptr<graphics::GraphicsContext> m_graphicsContext;
+    std::unique_ptr<graphics::RenderApi> m_renderApi;
+    math::Mat4 m_projectionMatrix;
+    Viewport m_viewport;
+    RendererSettings m_settings;
 };
 }

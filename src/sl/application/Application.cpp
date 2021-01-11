@@ -6,7 +6,6 @@
 #include "sl/event/Categories.h"
 #include "sl/event/Emitter.hpp"
 #include "sl/event/Event.h"
-#include "sl/geometry/Geometry.hpp"
 #include "sl/geometry/ModelLoader.hpp"
 #include "sl/geometry/ModelLoaderImpl.h"
 #include "sl/graphics/Cubemap.h"
@@ -22,6 +21,7 @@
 #include "sl/graphics/buffer/VertexBuffer.h"
 #include "sl/gui/GuiApi.h"
 #include "sl/platform/Platform.h"
+#include "sl/utils/Globals.h"
 
 namespace sl::application {
 
@@ -79,18 +79,16 @@ void Application::init() {
     m_input = core::Input::factory->create(windowHandle);
 
     m_graphicsContext = graphics::GraphicsContext::factory->create(windowHandle);
-    m_graphicsContext->init();
 
     auto viewport = graphics::Viewport{ windowSize.width, windowSize.height };
     m_renderer = std::make_shared<graphics::Renderer>(m_graphicsContext, graphics::RenderApi::factory->create(), viewport);
-    m_renderer->init();
-
+ 
     m_guiApi = gui::GuiApi::factory->create(windowHandle);
 
     geometry::ModelLoader::impl = geometry::ModelLoaderImpl::factory->create();
 
     graphics::ShaderCompiler::impl = graphics::ShaderCompilerImpl::factory->create();
-    geometry::Geometry::init();
+	utils::Globals::init();
 
     m_sceneSystems = std::make_shared<scene::SceneSystems>(m_renderer);
 

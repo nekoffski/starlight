@@ -18,12 +18,12 @@ void OpenGlRenderApi::clearColor(float r, float g, float b, float a) {
     glClearColor(r, g, b, a);
 }
 
-void OpenGlRenderApi::enableDepthMask() {
-    glDepthMask(GL_TRUE);
+void OpenGlRenderApi::depthMask(bool value) {
+    glDepthMask(value);
 }
 
-void OpenGlRenderApi::disableDepthMask() {
-    glDepthMask(GL_FALSE);
+void OpenGlRenderApi::setPolygonMode(unsigned value) {
+    glPolygonMode(GL_FRONT_AND_BACK, value);
 }
 
 void OpenGlRenderApi::setDepthFunc(unsigned func) {

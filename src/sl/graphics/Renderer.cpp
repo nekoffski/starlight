@@ -4,7 +4,12 @@
 
 namespace sl::graphics {
 
-void Renderer::init() {
+Renderer::Renderer(std::shared_ptr<graphics::GraphicsContext> graphicsContext,
+    std::unique_ptr<graphics::RenderApi> renderApi, Viewport viewport)
+    : m_graphicsContext(graphicsContext)
+    , m_renderApi(std::move(renderApi))
+    , m_viewport(std::move(viewport)) {
+
     SL_INFO("initializing");
     m_graphicsContext->setViewport(m_viewport.width, m_viewport.height);
     calculateProjectionMatrix();
@@ -21,11 +26,5 @@ void Renderer::renderVertexArray(std::shared_ptr<graphics::buffer::VertexArray> 
         m_renderApi->drawElements(STARL_TRIANGLES, indices, STARL_UNSIGNED_INT);
     else
         m_renderApi->drawArrays(STARL_TRIANGLES, 0, vertexArray->getVerticesCount());
-}
-
-void Renderer::renderVertexArrayWithDepthMaskDisabled(std::shared_ptr<graphics::buffer::VertexArray> vertexArray) {
-    m_renderApi->disableDepthMask();
-    renderVertexArray(vertexArray);
-    m_renderApi->enableDepthMask();
 }
 }

@@ -16,9 +16,7 @@ static void GLAPIENTRY messageCallback(GLenum source, GLenum type, GLuint id,
 namespace sl::platform::gpu {
 
 OpenGlGraphicsContext::OpenGlGraphicsContext(void* windowHandle)
-    : m_windowHandle(static_cast<GLFWwindow*>(windowHandle)) {}
-
-void OpenGlGraphicsContext::init() {
+    : m_windowHandle(static_cast<GLFWwindow*>(windowHandle)) {
     SL_INFO("setting context");
     glfwMakeContextCurrent(m_windowHandle);
 

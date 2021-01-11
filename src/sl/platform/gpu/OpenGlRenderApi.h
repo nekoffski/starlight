@@ -11,8 +11,8 @@ public:
 
     void clearColor(float, float, float, float) override;
 
-    void enableDepthMask() override;
-    void disableDepthMask() override;
+	void depthMask(bool) override;
+	void setPolygonMode(unsigned) override;
 
     void setDepthFunc(unsigned) override;
     void setBlendFunc(unsigned, unsigned) override;

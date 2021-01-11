@@ -15,6 +15,7 @@
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/Utils.hpp"
 #include "sl/scene/Scene.h"
+#include "sl/utils/Globals.h"
 
 #include <filesystem>
 
@@ -33,7 +34,7 @@ public:
 
         m_scene->camera = m_activeCamera;
 
-        loadBaseShaders();
+        loadDefaultShaders();
     }
 
     void onAttach() override {
@@ -118,9 +119,7 @@ public:
 
             if (event->is<event::SetSkyboxEvent>()) {
                 auto cubemap = event->as<event::SetSkyboxEvent>()->cubemap;
-                auto cubemapShader =
-                    asset::AssetManager::loadLocalPath<graphics::Shader>("/cubemap.vert", "/cubemap.frag");
-                auto skybox = sl::scene::Skybox::create(cubemapShader, cubemap);
+                auto skybox = sl::scene::Skybox::create(sl::utils::Globals::shaders->defaultCubemapShader, cubemap);
                 m_scene->skybox = skybox;
                 break;
             }
@@ -139,17 +138,10 @@ public:
     }
 
 private:
-    void loadBaseShaders() {
-        const std::vector<std::string> shadersToLoad = {
-            "/t"
-        };
-
-        for (auto& shaderToLoad : shadersToLoad) {
-            auto shader = sl::asset::AssetManager::loadLocalPath<sl::graphics::Shader>(
-                shaderToLoad + ".vert", shaderToLoad + ".frag");
-            auto shaderResource = std::make_shared<editor::res::ShaderResource>(shader, shaderToLoad);
-            m_resourceManager.addResource(shaderResource);
-        }
+    void loadDefaultShaders() {
+        auto shaderResource = std::make_shared<editor::res::ShaderResource>(sl::utils::Globals::shaders->defaultModelShader,
+            "defaultShader");
+        m_resourceManager.addResource(shaderResource);
     }
 
     editor::res::ResourceManager m_resourceManager;

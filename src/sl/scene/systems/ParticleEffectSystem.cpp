@@ -3,11 +3,11 @@
 #include "sl/asset/AssetManager.hpp"
 #include "sl/async/AsyncEngine.hpp"
 #include "sl/core/Profiler.h"
-#include "sl/geometry/Geometry.hpp"
-#include "sl/graphics/Shader.h"
 #include "sl/graphics/Renderer.h"
+#include "sl/graphics/Shader.h"
 #include "sl/graphics/camera/Camera.h"
 #include "sl/scene/components/TransformComponent.h"
+#include "sl/utils/Globals.h"
 
 namespace sl::scene::systems {
 
@@ -20,7 +20,7 @@ static void cleanRetiredParticles(std::vector<physics::pfx::Particle>& particles
 
 ParticleEffectSystem::ParticleEffectSystem(std::shared_ptr<graphics::Renderer> renderer)
     : m_renderer(renderer)
-    , m_vao(geometry::Geometry::getSquareVAO()) {
+    , m_vao(utils::Globals::geometry->squareVAO) {
 
     m_shader = asset::AssetManager::loadLocalPath<graphics::Shader>(
         "/particle.vert", "/particle.frag");

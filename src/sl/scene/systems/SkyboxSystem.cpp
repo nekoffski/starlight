@@ -73,7 +73,14 @@ void SkyboxSystem::render(std::shared_ptr<sl::graphics::Cubemap> cubemap, std::s
     cubemapShader->setUniform("view", camera->getViewMatrix());
 
     m_cubemapVertexArray->bind();
-    m_renderer->renderVertexArrayWithDepthMaskDisabled(m_cubemapVertexArray);
+
+    auto settings = m_renderer->getSettings();
+    settings.enableDepthMask = false;
+
+    m_renderer->setTemporarySettings(settings);
+    m_renderer->renderVertexArray(m_cubemapVertexArray);
+    m_renderer->restoreSettings();
+
     m_cubemapVertexArray->unbind();
     cubemapShader->disable();
 }

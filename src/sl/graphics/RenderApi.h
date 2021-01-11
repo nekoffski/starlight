@@ -19,8 +19,8 @@ public:
     virtual void drawElements(unsigned, unsigned, unsigned) = 0;
     virtual void clearColor(float, float, float, float) = 0;
 
-    virtual void enableDepthMask() = 0;
-    virtual void disableDepthMask() = 0;
+    virtual void depthMask(bool) = 0;
+	virtual void setPolygonMode(unsigned) = 0;
 
     virtual void setDepthFunc(unsigned) = 0;
     virtual void setBlendFunc(unsigned, unsigned) = 0;

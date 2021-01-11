@@ -11,7 +11,6 @@ class OpenGlGraphicsContext : public graphics::GraphicsContext {
 public:
     explicit OpenGlGraphicsContext(void*);
 
-    void init() override;
     void swapBuffers() override;
     void clearBuffers(unsigned) override;
     void setViewport(unsigned, unsigned) override;
