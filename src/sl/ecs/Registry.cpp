@@ -6,11 +6,11 @@
 
 namespace sl::ecs {
 
-std::shared_ptr<Entity> Registry::createEntity(std::string name) {
+std::shared_ptr<Entity> Registry::createEntity(const std::string& name) {
     auto id = xg::newGuid().str();
     auto entity = std::make_shared<Entity>(id, name, *this);
     m_entities[id] = entity;
-    m_entityNameToId[std::move(name)] = std::move(id);
+    m_entityNameToId[name] = id;
     return entity;
 }
 }

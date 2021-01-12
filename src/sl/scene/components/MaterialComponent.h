@@ -2,8 +2,8 @@
 
 #include "sl/ecs/Component.h"
 
-#include "sl/math/Vector.hpp"
 #include "sl/core/misc/colors.hpp"
+#include "sl/math/Vector.hpp"
 
 namespace sl::scene::components {
 
@@ -14,6 +14,20 @@ struct MaterialComponent : public ecs::Component {
         , diffuseColor(diffuseColor)
         , specularColor(specularColor)
         , shininess(shininess) {
+    }
+
+    void onGui(gui::GuiApi& gui) override {
+        if (gui.beginTreeNode("Material")) {
+            gui.displayText("Ambient color");
+            gui.colorPicker3(gui::createHiddenLabel("Ambient color"), ambientColor);
+            gui.displayText("Diffuse color");
+            gui.colorPicker3(gui::createHiddenLabel("Diffuse color"), diffuseColor);
+            gui.displayText("Specular color");
+            gui.colorPicker3(gui::createHiddenLabel("Specular color"), specularColor);
+            gui.displayText("Shininess");
+            gui.dragFloat(gui::createHiddenLabel("rotation"), shininess, 0.5f, 0.0f, 128.0f);
+            gui.popTreeNode();
+        }
     }
 
     math::Vec3 ambientColor;

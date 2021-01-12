@@ -3,7 +3,9 @@
 #include <string>
 #include <vector>
 
+#include "Component.h"
 #include "Registry.h"
+#include "sl/core/misc/misc.hpp"
 #include "sl/gui/GuiApi.h"
 
 namespace sl::ecs {
@@ -12,9 +14,9 @@ class Entity {
     friend class Registry;
 
 public:
-    explicit Entity(std::string id, std::string name, Registry& registry)
-        : m_id(std::move(id))
-        , m_name(std::move(name))
+    explicit Entity(const std::string& id, const std::string& name, Registry& registry)
+        : m_id(id)
+        , m_name(name)
         , m_registry(registry) {
     }
 
@@ -26,24 +28,25 @@ public:
         return m_name;
     }
 
-    template <typename Component, typename... Args>
+    template <typename T, typename... Args>
     void addComponent(Args&&... args) {
-        m_registry.addComponent<Component>(m_id, std::forward<Args>(args)...);
+        m_componentsIndexes.emplace_back(core::misc::typeIndex<T>());
+        m_registry.addComponent<T>(m_id, std::forward<Args>(args)...);
     }
 
-    template <typename Component>
+    template <typename T>
     Component& getComponent() {
-        return m_registry.getComponent<Component>(m_id);
+        return m_registry.getComponent<T>(m_id);
     }
 
-    template <typename Component>
+    template <typename T>
     bool hasComponent() {
-        return m_registry.hasComponent<Component>(m_id);
+        return m_registry.hasComponent<T>(m_id);
     }
 
     void onGui(sl::gui::GuiApi& gui) {
         for (const auto& index : m_componentsIndexes)
-            m_registry.wrapComponentByIndex(index, m_id)->onGui(gui);
+            m_registry.getComponentByIndex(m_id, index).onGui(gui);
     }
 
 private:

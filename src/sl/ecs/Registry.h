@@ -6,8 +6,8 @@
 #include <vector>
 
 #include "ComponentContainer.hpp"
-#include "ComponentWrapper.h"
-#include "ComponentsMap.hpp"
+#include "ComponentMap.hpp"
+#include "ComponentView.hpp"
 #include "sl/core/Logger.h"
 #include "sl/core/misc/misc.hpp"
 
@@ -18,52 +18,41 @@ class Component;
 
 class Registry {
 public:
-    std::shared_ptr<Entity> createEntity(std::string);
+    std::shared_ptr<Entity> createEntity(const std::string&);
 
-    template <typename Component, typename... Args>
-    void addComponent(std::string entityId, Args&&... args) {
-        auto& component = m_componentsMap.get<Component>()->add(entityId, std::forward<Args>(args)...);
-        component.entity = m_entities[std::move(entityId)];
-        component.entity->m_componentsIndexes.push_back(core::misc::typeIndex<Component>());
+    template <typename T, typename... Args>
+    void addComponent(const std::string& entityId, Args&&... args) {
+        auto& component = m_componentMap.get<T>()->add(entityId, std::forward<Args>(args)...);
+        component.ownerEntityId = entityId;
     }
 
-    template <typename Component, typename Factory>
-    void setComponentWrapperFactory() {
-        m_componentToWrapperFactory[core::misc::typeIndex<Component>()] =
-            std::make_unique<Factory>();
+    template <typename T>
+    T& getComponent(const std::string& entityId) {
+        return m_componentMap.get<T>()->getByEntityId(entityId);
     }
 
-    std::unique_ptr<ComponentWrapper> wrapComponentByIndex(std::type_index index, std::string id) {
-        auto& component = m_componentsMap.getByIndex<Component>(index)->getByEntityId(id);
-        if (m_componentToWrapperFactory.count(index) == 0)
-            return std::make_unique<NullComponentWrapper>(component);
-        auto& factory = m_componentToWrapperFactory[index];
-        return factory->create(component);
+    Component& getComponentByIndex(const std::string& entityId, std::type_index index) {
+        return m_componentMap.getByIndex<Component>(index)->getByEntityId(entityId);
     }
 
-    template <typename Component>
-    Component& getComponent(std::string entityId) {
-        return m_componentsMap.get<Component>()->getByEntityId(std::move(entityId));
-    }
-
-    template <typename Component>
-    bool hasComponent(std::string entityId) {
-        if (not m_componentsMap.exists<Component>())
+    template <typename T>
+    bool hasComponent(const std::string& entityId) {
+        if (not m_componentMap.exists<T>())
             return false;
-        return m_componentsMap.get<Component>()->isEntityOwner(std::move(entityId));
+        return m_componentMap.get<T>()->isEntityOwner(entityId);
     }
 
-    template <typename Component>
-    std::vector<Component>& getComponentView() {
-        return m_componentsMap.get<Component>()->getAll();
+    template <typename T>
+    ComponentView<T> getComponentView() {
+        return ComponentView<T>{ m_componentMap.get<T>() };
     }
 
-    std::shared_ptr<Entity> getEntityByName(std::string name) {
-        return getEntityById(m_entityNameToId[std::move(name)]);
+    std::shared_ptr<Entity> getEntityByName(const std::string& name) {
+        return getEntityById(m_entityNameToId[name]);
     }
 
-    std::shared_ptr<Entity> getEntityById(std::string id) {
-        return m_entities[std::move(id)];
+    std::shared_ptr<Entity> getEntityById(const std::string& id) {
+        return m_entities[id];
     }
 
     const std::unordered_map<std::string, std::string>& getEntityNameToId() {
@@ -71,9 +60,8 @@ public:
     }
 
 private:
-    ComponentsMap<IComponentContainer, ComponentContainer> m_componentsMap;
+    ComponentMap<IComponentContainer, ComponentContainer> m_componentMap;
     std::unordered_map<std::string, std::shared_ptr<Entity>> m_entities;
     std::unordered_map<std::string, std::string> m_entityNameToId;
-    std::unordered_map<std::type_index, std::unique_ptr<ComponentWrapperFactory>> m_componentToWrapperFactory;
 };
 }
