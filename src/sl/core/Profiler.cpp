@@ -23,13 +23,13 @@ Profiler::RegionBasedTimer::~RegionBasedTimer() {
     m_value = math::lerp(m_value, tmp, EtaFactor);
 }
 
-Profiler::RegionBasedTimer Profiler::createRegionBasedTimer(std::string name) {
+Profiler::RegionBasedTimer Profiler::createRegionBasedTimer(const std::string& name) {
     if (m_times.count(name) == 0)
         m_times[name] = 0.0f;
     return RegionBasedTimer{ m_times[name] };
 }
 
-void Profiler::saveResults(std::string logdir) {
+void Profiler::saveResults(const std::string& logdir) {
     std::string logfile = logdir + core::Clock::getTimeString("%d-%m-%Y_%H:%M:%S") + ".perf";
     std::ofstream log(logfile);
 

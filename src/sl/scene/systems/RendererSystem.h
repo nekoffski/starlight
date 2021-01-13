@@ -18,11 +18,11 @@ class RendererSystem {
 public:
     explicit RendererSystem(std::shared_ptr<graphics::Renderer> renderer);
 
-    void render(components::RendererComponent& component, ecs::ComponentView<components::MaterialComponent>&, ecs::ComponentView<components::ModelComponent>&,
-        ecs::ComponentView<components::TransformComponent>&, std::shared_ptr<graphics::camera::Camera> camera);
+    void render(components::RendererComponent& component, ecs::ComponentView<components::MaterialComponent>, ecs::ComponentView<components::ModelComponent>,
+        ecs::ComponentView<components::TransformComponent>, std::shared_ptr<graphics::camera::Camera> camera);
 
-    void render(components::RendererComponent& component, ecs::ComponentView<components::MaterialComponent>&, ecs::ComponentView<components::ModelComponent>&,
-        ecs::ComponentView<components::TransformComponent>&, std::shared_ptr<graphics::camera::Camera> camera, std::shared_ptr<graphics::Shader>);
+    void render(components::RendererComponent& component, ecs::ComponentView<components::MaterialComponent>, ecs::ComponentView<components::ModelComponent>,
+        ecs::ComponentView<components::TransformComponent>, std::shared_ptr<graphics::camera::Camera> camera, std::shared_ptr<graphics::Shader>);
 
 private:
     void setMaterial(const components::MaterialComponent& material, std::shared_ptr<graphics::Shader> shader);

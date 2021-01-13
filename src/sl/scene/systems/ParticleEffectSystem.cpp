@@ -29,7 +29,7 @@ ParticleEffectSystem::ParticleEffectSystem(std::shared_ptr<graphics::Renderer> r
 }
 
 void ParticleEffectSystem::renderParticleEffects(ecs::ComponentView<components::ParticleEffectComponent> pfxs,
-    ecs::ComponentView<components::TransformComponent>& transforms, std::shared_ptr<graphics::camera::Camera> camera) {
+    ecs::ComponentView<components::TransformComponent> transforms, std::shared_ptr<graphics::camera::Camera> camera) {
     SL_PROFILE_FUNCTION();
 
     m_shader->enable();

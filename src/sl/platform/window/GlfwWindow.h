@@ -32,7 +32,7 @@ private:
 };
 
 struct GlfwWindowFactory : core::Window::Factory {
-    std::shared_ptr<core::Window> create(core::Window::Size windowSize, std::string title) {
+    std::shared_ptr<core::Window> create(core::Window::Size windowSize, const std::string& title) {
         return std::make_shared<GlfwWindow>(windowSize, title);
     }
 };

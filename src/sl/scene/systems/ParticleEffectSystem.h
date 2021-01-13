@@ -19,7 +19,7 @@ public:
     explicit ParticleEffectSystem(std::shared_ptr<graphics::Renderer> renderer);
 
     void renderParticleEffects(ecs::ComponentView<components::ParticleEffectComponent> pfxs,
-        ecs::ComponentView<components::TransformComponent>& transforms, std::shared_ptr<graphics::camera::Camera> camera);
+        ecs::ComponentView<components::TransformComponent> transforms, std::shared_ptr<graphics::camera::Camera> camera);
     void update(ecs::ComponentView<components::ParticleEffectComponent>& pfxs, float deltaTime, std::shared_ptr<graphics::camera::Camera>);
 
 private:

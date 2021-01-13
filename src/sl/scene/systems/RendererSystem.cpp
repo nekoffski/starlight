@@ -15,8 +15,9 @@ RendererSystem::RendererSystem(std::shared_ptr<graphics::Renderer> renderer)
     : m_renderer(renderer) {
 }
 
-void RendererSystem::render(components::RendererComponent& component, ecs::ComponentView<components::MaterialComponent>& materials, ecs::ComponentView<components::ModelComponent>& models,
-    ecs::ComponentView<components::TransformComponent>& transforms, std::shared_ptr<graphics::camera::Camera> camera, std::shared_ptr<graphics::Shader> shader) {
+void RendererSystem::render(components::RendererComponent& component, ecs::ComponentView<components::MaterialComponent> materials,
+    ecs::ComponentView<components::ModelComponent> models, ecs::ComponentView<components::TransformComponent> transforms,
+    std::shared_ptr<graphics::camera::Camera> camera, std::shared_ptr<graphics::Shader> shader) {
 
     shader->setUniform("view", camera->getViewMatrix());
     shader->setUniform("viewPos", camera->getPosition());
@@ -34,8 +35,9 @@ void RendererSystem::render(components::RendererComponent& component, ecs::Compo
     renderModelComposite(shader, model.modelData, transformComponent());
 }
 
-void RendererSystem::render(components::RendererComponent& component, ecs::ComponentView<components::MaterialComponent>& materials, ecs::ComponentView<components::ModelComponent>& models,
-    ecs::ComponentView<components::TransformComponent>& transforms, std::shared_ptr<graphics::camera::Camera> camera) {
+void RendererSystem::render(components::RendererComponent& component, ecs::ComponentView<components::MaterialComponent> materials,
+    ecs::ComponentView<components::ModelComponent> models, ecs::ComponentView<components::TransformComponent> transforms,
+    std::shared_ptr<graphics::camera::Camera> camera) {
 
     render(component, materials, models, transforms, camera, component.shader);
 }

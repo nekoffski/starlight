@@ -7,10 +7,10 @@
 
 namespace sl::platform::shader {
 
-OpenGlShader::OpenGlShader(std::string vertexPath, std::string fragmentPath, std::string geometryPath)
-    : m_vertexPath(std::move(vertexPath))
-    , m_fragmentPath(std::move(fragmentPath))
-    , m_geometryPath(std::move(geometryPath)) {
+OpenGlShader::OpenGlShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath)
+    : m_vertexPath(vertexPath)
+    , m_fragmentPath(fragmentPath)
+    , m_geometryPath(geometryPath) {
 }
 
 void OpenGlShader::enable() {

@@ -13,7 +13,7 @@ class Shader {
 
 public:
     struct Factory {
-        virtual std::shared_ptr<Shader> create(std::string, std::string, std::string = "") = 0;
+        virtual std::shared_ptr<Shader> create(const std::string&, const std::string&, const std::string& = "") = 0;
     };
 
     inline static std::unique_ptr<Factory> factory = nullptr;

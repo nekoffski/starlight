@@ -10,7 +10,7 @@
 
 namespace sl::scene::systems {
 
-void LightSystem::prepareDirectionalLights(ecs::ComponentView<components::DirectionalLightComponent>& lights,
+void LightSystem::prepareDirectionalLights(ecs::ComponentView<components::DirectionalLightComponent> lights,
     std::shared_ptr<graphics::Shader> shader) {
 
     unsigned int directionalLightsNum = lights.size();
@@ -20,8 +20,8 @@ void LightSystem::prepareDirectionalLights(ecs::ComponentView<components::Direct
         setDirectionalLight(shader, lights[i], i);
 }
 
-void LightSystem::preparePointsLights(ecs::ComponentView<components::PointLightComponent>& lights,
-    ecs::ComponentView<components::TransformComponent>& transforms, std::shared_ptr<graphics::Shader> shader) {
+void LightSystem::preparePointsLights(ecs::ComponentView<components::PointLightComponent> lights,
+    ecs::ComponentView<components::TransformComponent> transforms, std::shared_ptr<graphics::Shader> shader) {
 
     unsigned int pointLightsNum = lights.size();
     shader->setUniform("pointLightsNum", pointLightsNum);

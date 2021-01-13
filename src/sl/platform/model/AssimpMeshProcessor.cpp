@@ -11,7 +11,7 @@ namespace sl::platform::model {
 
 using geometry::Vertex;
 
-std::shared_ptr<geometry::Mesh> AssimpMeshProcessor::processMesh(aiMesh* assimpMesh, const aiScene* scene, std::string directory) {
+std::shared_ptr<geometry::Mesh> AssimpMeshProcessor::processMesh(aiMesh* assimpMesh, const aiScene* scene, const std::string& directory) {
     auto mesh = std::make_shared<geometry::Mesh>();
 
     mesh->vertices = loadVertices(assimpMesh);
@@ -44,7 +44,7 @@ void AssimpMeshProcessor::initVertexArray(std::shared_ptr<geometry::Mesh>& mesh)
     mesh->vertexArray = vao;
 }
 
-std::vector<std::shared_ptr<sl::graphics::Texture>> AssimpMeshProcessor::loadTextures(aiMaterial* material, std::string directory) {
+std::vector<std::shared_ptr<sl::graphics::Texture>> AssimpMeshProcessor::loadTextures(aiMaterial* material, const std::string& directory) {
     std::vector<std::shared_ptr<sl::graphics::Texture>> textures;
 
     auto diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse", directory);
@@ -115,7 +115,7 @@ std::vector<geometry::Vertex> AssimpMeshProcessor::loadVertices(aiMesh* assimpMe
 }
 
 std::vector<std::shared_ptr<sl::graphics::Texture>>
-AssimpMeshProcessor::loadMaterialTextures(aiMaterial* material, aiTextureType textureType, std::string typeName, std::string directory) {
+AssimpMeshProcessor::loadMaterialTextures(aiMaterial* material, aiTextureType textureType, const std::string& typeName, const std::string& directory) {
     std::vector<std::shared_ptr<sl::graphics::Texture>> textures;
     for (unsigned i = 0; i < material->GetTextureCount(textureType); ++i) {
         aiString str;

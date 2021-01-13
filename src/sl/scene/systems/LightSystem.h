@@ -12,11 +12,11 @@ namespace sl::scene::systems {
 
 class LightSystem {
 public:
-    void prepareDirectionalLights(ecs::ComponentView<components::DirectionalLightComponent>& lights,
+    void prepareDirectionalLights(ecs::ComponentView<components::DirectionalLightComponent> lights,
         std::shared_ptr<graphics::Shader> shader);
 
-    void preparePointsLights(ecs::ComponentView<components::PointLightComponent>& lights,
-        ecs::ComponentView<components::TransformComponent>& transforms, std::shared_ptr<graphics::Shader> shader);
+    void preparePointsLights(ecs::ComponentView<components::PointLightComponent> lights,
+        ecs::ComponentView<components::TransformComponent> transforms, std::shared_ptr<graphics::Shader> shader);
 
 private:
     void setDirectionalLight(std::shared_ptr<graphics::Shader> shader,

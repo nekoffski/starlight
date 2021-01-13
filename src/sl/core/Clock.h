@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <string_view>
+#include <string>
 
 #include "ClockImpl.h"
 
@@ -22,7 +22,7 @@ public:
         m_pimpl->update();
     }
 
-    static std::string getTimeString(std::string_view format) {
+    static std::string getTimeString(const std::string& format) {
         return m_pimpl->getTimeString(format);
     }
 

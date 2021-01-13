@@ -26,7 +26,7 @@ private:
 
 class StdClockImpl : public core::ClockImpl {
 public:
-    std::string getTimeString(std::string_view format) override;
+    std::string getTimeString(const std::string& format) override;
     float getDeltaTime() override;
     void update() override;
     std::shared_ptr<core::Timestamp> now() override;

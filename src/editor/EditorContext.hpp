@@ -77,7 +77,7 @@ public:
         auto directionalLights = m_scene->ecsRegistry.getComponentView<components::DirectionalLightComponent>();
         auto pointLights = m_scene->ecsRegistry.getComponentView<components::PointLightComponent>();
         auto rendererComponents = m_scene->ecsRegistry.getComponentView<components::RendererComponent>();
-        auto transformComponents = m_scene->ecsRegistry.getComponentView<components::TransformComponent>();
+        auto transforms = m_scene->ecsRegistry.getComponentView<components::TransformComponent>();
 	    auto models = m_scene->ecsRegistry.getComponentView<components::ModelComponent>();
         auto materials = m_scene->ecsRegistry.getComponentView<components::MaterialComponent>();
 
@@ -88,7 +88,7 @@ public:
 
             for (auto& rendererComponent : rendererComponents) {
                 depthShader->setUniform("lightSpaceMatrix", directionalLight.spaceMatrix);
-                sceneSystems.rendererSystem.render(rendererComponent, materials, models, transformComponents, m_scene->camera, depthShader);
+                sceneSystems.rendererSystem.render(rendererComponent, materials, models, transforms, m_scene->camera, depthShader);
             }
         }
         sceneSystems.shadowSystem.endDepthCapture();
@@ -98,15 +98,15 @@ public:
             rendererComponent.shader->enable();
 
             sceneSystems.lightSystem.prepareDirectionalLights(directionalLights, rendererComponent.shader);
-            sceneSystems.lightSystem.preparePointsLights(pointLights, transformComponents, rendererComponent.shader);
+            sceneSystems.lightSystem.preparePointsLights(pointLights, transforms, rendererComponent.shader);
 
-            sceneSystems.rendererSystem.render(rendererComponent, materials, models, transformComponents, m_scene->camera);
+            sceneSystems.rendererSystem.render(rendererComponent, materials, models, transforms, m_scene->camera);
 
             rendererComponent.shader->disable();
         }
 
         sceneSystems.pfxSystem.renderParticleEffects(
-            m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>(), transformComponents, m_scene->camera);
+            m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>(), transforms, m_scene->camera);
 
         if (skybox) {
             sceneSystems.skyboxSystem.render(skybox->cubemap, skybox->shader, m_scene->camera);

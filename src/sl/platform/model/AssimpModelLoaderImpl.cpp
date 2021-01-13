@@ -7,7 +7,7 @@
 
 namespace sl::platform::model {
 
-std::shared_ptr<geometry::Model> AssimpModelLoaderImpl::loadModel(std::string path) {
+std::shared_ptr<geometry::Model> AssimpModelLoaderImpl::loadModel(const std::string& path) {
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenNormals);
 

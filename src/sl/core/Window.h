@@ -15,14 +15,14 @@ public:
     using ResizeCallback = std::function<void(int, int)>;
 
     struct Factory {
-        virtual std::shared_ptr<Window> create(Size windowSize, std::string title) = 0;
+        virtual std::shared_ptr<Window> create(Size windowSize, const std::string& title) = 0;
     };
 
     inline static std::unique_ptr<Factory> factory = nullptr;
 
-    explicit Window(Size windowSize, std::string title)
+    explicit Window(Size windowSize, const std::string& title)
         : m_windowSize(std::move(windowSize))
-        , m_title(std::move(title)) {}
+        , m_title(title) {}
 
     virtual ~Window() = default;
 

@@ -14,6 +14,6 @@ public:
 
     inline static std::unique_ptr<Factory> factory = nullptr;
 
-    virtual std::shared_ptr<geometry::Model> loadModel(std::string) = 0;
+    virtual std::shared_ptr<geometry::Model> loadModel(const std::string&) = 0;
 };
 }
