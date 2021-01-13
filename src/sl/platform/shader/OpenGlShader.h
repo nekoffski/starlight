@@ -10,7 +10,7 @@ class OpenGlShader : public graphics::Shader {
     friend class OpenGlShaderCompilerImpl;
 
 public:
-    explicit OpenGlShader(std::string, std::string, std::string);
+    explicit OpenGlShader(const std::string&, const std::string&, const std::string&);
 
     ~OpenGlShader() override;
 
@@ -34,7 +34,7 @@ private:
 };
 
 struct OpenGlShaderFactory : graphics::Shader::Factory {
-	std::shared_ptr<graphics::Shader> create(std::string vertex, std::string fragment, std::string geometry) {
+	std::shared_ptr<graphics::Shader> create(const std::string& vertex, const std::string& fragment, const std::string& geometry) {
 		return std::make_shared<OpenGlShader>(vertex, fragment, geometry);
 	}
 };

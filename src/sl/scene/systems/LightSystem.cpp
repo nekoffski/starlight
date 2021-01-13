@@ -2,6 +2,7 @@
 #include "LightSystem.h"
 
 #include "sl/core/Profiler.h"
+#include "sl/ecs/ComponentView.hpp"
 #include "sl/graphics/Shader.h"
 #include "sl/scene/components/TransformComponent.h"
 
@@ -9,7 +10,7 @@
 
 namespace sl::scene::systems {
 
-void LightSystem::prepareDirectionalLights(std::vector<components::DirectionalLightComponent>& lights,
+void LightSystem::prepareDirectionalLights(ecs::ComponentView<components::DirectionalLightComponent> lights,
     std::shared_ptr<graphics::Shader> shader) {
 
     unsigned int directionalLightsNum = lights.size();
@@ -19,18 +20,20 @@ void LightSystem::prepareDirectionalLights(std::vector<components::DirectionalLi
         setDirectionalLight(shader, lights[i], i);
 }
 
-void LightSystem::preparePointsLights(std::vector<components::PointLightComponent>& lights,
-    std::shared_ptr<graphics::Shader> shader) {
+void LightSystem::preparePointsLights(ecs::ComponentView<components::PointLightComponent> lights,
+    ecs::ComponentView<components::TransformComponent> transforms, std::shared_ptr<graphics::Shader> shader) {
 
     unsigned int pointLightsNum = lights.size();
     shader->setUniform("pointLightsNum", pointLightsNum);
 
-    for (unsigned int i = 0; i < pointLightsNum; ++i)
-        setPointLight(shader, lights[i], i);
+    for (unsigned int i = 0; i < pointLightsNum; ++i) {
+        auto& transform = transforms.getByEntityId(lights[i].ownerEntityId);
+        setPointLight(shader, lights[i], transform, i);
+    }
 }
 
 void LightSystem::setDirectionalLight(std::shared_ptr<graphics::Shader> shader,
-    components::DirectionalLightComponent light, unsigned int index) {
+    components::DirectionalLightComponent& light, unsigned int index) {
 
     std::string strIndex = std::to_string(index);
     light.shadowMap->bind(1);
@@ -41,9 +44,8 @@ void LightSystem::setDirectionalLight(std::shared_ptr<graphics::Shader> shader,
 }
 
 void LightSystem::setPointLight(std::shared_ptr<graphics::Shader> shader,
-    components::PointLightComponent light, unsigned int index) {
+    components::PointLightComponent& light, components::TransformComponent& transform, unsigned int index) {
 
-    auto& transform = light.entity->getComponent<components::TransformComponent>();
     std::string strIndex = std::to_string(index);
 
     shader->setUniform("pointLights[" + strIndex + "].position", light.position);

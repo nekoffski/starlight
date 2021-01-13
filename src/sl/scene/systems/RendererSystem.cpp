@@ -15,28 +15,31 @@ RendererSystem::RendererSystem(std::shared_ptr<graphics::Renderer> renderer)
     : m_renderer(renderer) {
 }
 
-void RendererSystem::render(components::RendererComponent& component, std::shared_ptr<graphics::camera::Camera> camera,
-    std::shared_ptr<graphics::Shader> shader) {
-    auto& entity = component.entity;
+void RendererSystem::render(components::RendererComponent& component, ecs::ComponentView<components::MaterialComponent> materials,
+    ecs::ComponentView<components::ModelComponent> models, ecs::ComponentView<components::TransformComponent> transforms,
+    std::shared_ptr<graphics::camera::Camera> camera, std::shared_ptr<graphics::Shader> shader) {
 
     shader->setUniform("view", camera->getViewMatrix());
     shader->setUniform("viewPos", camera->getPosition());
 
-    // POSSIBLE BRANCHING
-    auto& material = entity->hasComponent<components::MaterialComponent>()
-        ? entity->getComponent<components::MaterialComponent>()
-        : DEFAULT_MATERIAL;
+    auto& entityId = component.ownerEntityId;
+
+    // TODO: POSSIBLE BRANCHING
+    auto& material = materials.isEntityOwner(entityId) ? materials.getByEntityId(entityId) : DEFAULT_MATERIAL;
 
     setMaterial(material, shader);
 
-    auto& model = entity->getComponent<components::ModelComponent>();
-    auto transformComponent = entity->getComponent<components::TransformComponent>();
+    auto& model = models.getByEntityId(entityId);
+    auto transformComponent = transforms.getByEntityId(entityId);
 
     renderModelComposite(shader, model.modelData, transformComponent());
 }
 
-void RendererSystem::render(components::RendererComponent& component, std::shared_ptr<graphics::camera::Camera> camera) {
-    render(component, camera, component.shader);
+void RendererSystem::render(components::RendererComponent& component, ecs::ComponentView<components::MaterialComponent> materials,
+    ecs::ComponentView<components::ModelComponent> models, ecs::ComponentView<components::TransformComponent> transforms,
+    std::shared_ptr<graphics::camera::Camera> camera) {
+
+    render(component, materials, models, transforms, camera, component.shader);
 }
 
 void RendererSystem::setMaterial(const components::MaterialComponent& material, std::shared_ptr<graphics::Shader> shader) {

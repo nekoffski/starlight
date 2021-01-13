@@ -15,6 +15,9 @@
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/Utils.hpp"
 #include "sl/scene/Scene.h"
+#include "sl/scene/components/MaterialComponent.h"
+#include "sl/scene/components/ModelComponent.h"
+#include "sl/scene/components/TransformComponent.h"
 #include "sl/utils/Globals.h"
 
 #include <filesystem>
@@ -71,9 +74,12 @@ public:
         if (skybox)
             skybox->cubemap->bind();
 
-        auto& directionalLights = m_scene->ecsRegistry.getComponentView<components::DirectionalLightComponent>();
-        auto& pointLights = m_scene->ecsRegistry.getComponentView<components::PointLightComponent>();
-        auto& rendererComponents = m_scene->ecsRegistry.getComponentView<components::RendererComponent>();
+        auto directionalLights = m_scene->ecsRegistry.getComponentView<components::DirectionalLightComponent>();
+        auto pointLights = m_scene->ecsRegistry.getComponentView<components::PointLightComponent>();
+        auto rendererComponents = m_scene->ecsRegistry.getComponentView<components::RendererComponent>();
+        auto transforms = m_scene->ecsRegistry.getComponentView<components::TransformComponent>();
+	    auto models = m_scene->ecsRegistry.getComponentView<components::ModelComponent>();
+        auto materials = m_scene->ecsRegistry.getComponentView<components::MaterialComponent>();
 
         sceneSystems.shadowSystem.beginDepthCapture();
         auto depthShader = sceneSystems.shadowSystem.getDepthShader();
@@ -82,24 +88,25 @@ public:
 
             for (auto& rendererComponent : rendererComponents) {
                 depthShader->setUniform("lightSpaceMatrix", directionalLight.spaceMatrix);
-                sceneSystems.rendererSystem.render(rendererComponent, m_scene->camera, depthShader);
+                sceneSystems.rendererSystem.render(rendererComponent, materials, models, transforms, m_scene->camera, depthShader);
             }
         }
         sceneSystems.shadowSystem.endDepthCapture();
 
+ 
         for (auto& rendererComponent : rendererComponents) {
             rendererComponent.shader->enable();
 
             sceneSystems.lightSystem.prepareDirectionalLights(directionalLights, rendererComponent.shader);
-            sceneSystems.lightSystem.preparePointsLights(pointLights, rendererComponent.shader);
+            sceneSystems.lightSystem.preparePointsLights(pointLights, transforms, rendererComponent.shader);
 
-            sceneSystems.rendererSystem.render(rendererComponent, m_scene->camera);
+            sceneSystems.rendererSystem.render(rendererComponent, materials, models, transforms, m_scene->camera);
 
             rendererComponent.shader->disable();
         }
 
         sceneSystems.pfxSystem.renderParticleEffects(
-            m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>(), m_scene->camera);
+            m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>(), transforms, m_scene->camera);
 
         if (skybox) {
             sceneSystems.skyboxSystem.render(skybox->cubemap, skybox->shader, m_scene->camera);

@@ -22,8 +22,8 @@ class Profiler {
     };
 
 public:
-    static RegionBasedTimer createRegionBasedTimer(std::string name);
-    static void saveResults(std::string logfile);
+    static RegionBasedTimer createRegionBasedTimer(const std::string& name);
+    static void saveResults(const std::string& logfile);
     static void printResults();
 
 private:

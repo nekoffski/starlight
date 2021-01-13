@@ -34,14 +34,12 @@ float StdTimestamp::substract(const StdTimestamp& rhs) {
     return std::chrono::duration_cast<TimeUnit>(m_time - rhs.m_time).count() / DIVIDER;
 }
 
-std::string StdClockImpl::getTimeString(std::string_view format) {
+std::string StdClockImpl::getTimeString(const std::string& format) {
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);
 
     std::ostringstream oss;
-
-    // TODO: write some helper to check if string_view is null terminated instead of casting it to string everytime
-    oss << std::put_time(&tm, std::string{ format }.c_str());
+    oss << std::put_time(&tm, format.c_str());
     return oss.str();
 }
 

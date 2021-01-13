@@ -80,16 +80,16 @@ void ImGuiApi::endGroup() {
     ImGui::EndGroup();
 }
 
-void ImGuiApi::inputText(std::string label, std::string& text) {
+void ImGuiApi::inputText(const std::string& label, std::string& text) {
     text.resize(256);
     ImGui::InputText(label.c_str(), &text[0], text.size());
 }
 
-void ImGuiApi::openPopUp(std::string label) {
+void ImGuiApi::openPopUp(const std::string& label) {
     ImGui::OpenPopup(label.c_str());
 }
 
-void ImGuiApi::combo(std::string label, int& currentItem, std::vector<std::string> items) {
+void ImGuiApi::combo(const std::string& label, int& currentItem, std::vector<std::string> items) {
     std::vector<const char*> imguiItems;
     auto itemsSize = items.size();
     imguiItems.reserve(itemsSize);
@@ -104,7 +104,7 @@ void ImGuiApi::closeCurrentPopUp() {
     ImGui::CloseCurrentPopup();
 }
 
-bool ImGuiApi::beginPopUp(std::string label) {
+bool ImGuiApi::beginPopUp(const std::string& label) {
     return ImGui::BeginPopupModal(label.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 }
 
@@ -112,7 +112,7 @@ void ImGuiApi::endPopUp() {
     ImGui::EndPopup();
 }
 
-bool ImGuiApi::beginTabBar(std::string id) {
+bool ImGuiApi::beginTabBar(const std::string& id) {
     return ImGui::BeginTabBar(id.c_str());
 }
 
@@ -124,7 +124,7 @@ void ImGuiApi::sameLine(float offset) {
     ImGui::SameLine(offset);
 }
 
-bool ImGuiApi::beginTabItem(std::string label) {
+bool ImGuiApi::beginTabItem(const std::string& label) {
     return ImGui::BeginTabItem(label.c_str());
 }
 
@@ -132,7 +132,7 @@ void ImGuiApi::endTabItem() {
     ImGui::EndTabItem();
 }
 
-void ImGuiApi::displayText(std::string text) {
+void ImGuiApi::displayText(const std::string& text) {
     ImGui::Text("%s", text.c_str());
 }
 
@@ -150,7 +150,7 @@ void ImGuiApi::end() {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void ImGuiApi::beginPanel(std::string title, math::Vec2 pos, math::Vec2 size) {
+void ImGuiApi::beginPanel(const std::string& title, math::Vec2 pos, math::Vec2 size) {
     ImGui::SetNextWindowPos(ImVec2(pos.x, pos.y));
     ImGui::SetNextWindowSize(ImVec2(size.x, size.y));
     ImGui::Begin(title.c_str());
@@ -160,27 +160,27 @@ void ImGuiApi::endPanel() {
     ImGui::End();
 }
 
-bool ImGuiApi::sliderFloat3(std::string label, math::Vec3& v, float min, float max) {
+bool ImGuiApi::sliderFloat3(const std::string& label, math::Vec3& v, float min, float max) {
     return ImGui::SliderFloat3(label.c_str(), &v.x, min, max);
 }
 
-bool ImGuiApi::sliderFloat(std::string label, float& v, float min, float max) {
+bool ImGuiApi::sliderFloat(const std::string& label, float& v, float min, float max) {
     return ImGui::SliderFloat(label.c_str(), &v, min, max);
 }
 
-bool ImGuiApi::dragFloat3(std::string label, math::Vec3& v, float speed, float min, float max) {
+bool ImGuiApi::dragFloat3(const std::string& label, math::Vec3& v, float speed, float min, float max) {
     return ImGui::DragFloat3(label.c_str(), &v.x, speed, min, max);
 }
 
-bool ImGuiApi::dragFloat(std::string label, float& v, float speed, float min, float max) {
+bool ImGuiApi::dragFloat(const std::string& label, float& v, float speed, float min, float max) {
     return ImGui::DragFloat(label.c_str(), &v, speed, min, max);
 }
 
-bool ImGuiApi::dragInt(std::string label, int& v, float speed, int min, int max) {
+bool ImGuiApi::dragInt(const std::string& label, int& v, float speed, int min, int max) {
     return ImGui::DragInt(label.c_str(), &v, speed, min, max);
 }
 
-bool ImGuiApi::beginTreeNode(std::string label, bool opened) {
+bool ImGuiApi::beginTreeNode(const std::string& label, bool opened) {
     ImGui::SetNextTreeNodeOpen(opened, ImGuiCond_Once);
     return ImGui::TreeNode(label.c_str());
 }
@@ -202,11 +202,11 @@ bool ImGuiApi::isPreviousWidgetClicked() {
     return ImGui::IsItemClicked();
 }
 
-bool ImGuiApi::colorPicker3(std::string label, math::Vec3& color) {
+bool ImGuiApi::colorPicker3(const std::string& label, math::Vec3& color) {
     return ImGui::ColorPicker3(label.c_str(), &color[0]);
 }
 
-bool ImGuiApi::button(std::string label, int xSize, int ySize) {
+bool ImGuiApi::button(const std::string& label, int xSize, int ySize) {
     return ImGui::Button(label.c_str(), ImVec2(xSize, ySize));
 }
 

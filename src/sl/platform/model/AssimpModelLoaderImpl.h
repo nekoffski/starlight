@@ -15,7 +15,7 @@ class AssimpMeshProcessor;
 class AssimpModelLoaderImpl : public geometry::ModelLoaderImpl {
 
 public:
-    std::shared_ptr<geometry::Model> loadModel(std::string) override;
+    std::shared_ptr<geometry::Model> loadModel(const std::string&) override;
 
 private:
     void processNode(aiNode*, const aiScene*, AssimpMeshProcessor&, std::shared_ptr<geometry::Model>&);

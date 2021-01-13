@@ -13,11 +13,6 @@ namespace sl::scene {
 struct Scene {
     static std::shared_ptr<Scene> create();
 
-    template <typename Component, typename Factory>
-    void setComponentWrapperFactory() {
-        ecsRegistry.setComponentWrapperFactory<Component, Factory>();
-    }
-
     std::shared_ptr<ecs::Entity> addEntity(std::string name) {
         return ecsRegistry.createEntity(std::move(name));
     }

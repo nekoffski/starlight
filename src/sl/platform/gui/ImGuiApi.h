@@ -21,20 +21,20 @@ public:
 
     bool menuItem(const std::string&) override;
 
-    void combo(std::string, int&, std::vector<std::string> items) override;
-    void openPopUp(std::string) override;
+    void combo(const std::string&, int&, std::vector<std::string> items) override;
+    void openPopUp(const std::string&) override;
     void closeCurrentPopUp() override;
-    bool beginPopUp(std::string) override;
+    bool beginPopUp(const std::string&) override;
     void endPopUp() override;
-    void inputText(std::string, std::string&) override;
+    void inputText(const std::string&, std::string&) override;
 
     void beginGroup() override;
     void endGroup() override;
     void sameLine(float) override;
 
-    bool beginTabBar(std::string) override;
+    bool beginTabBar(const std::string&) override;
     void endTabBar() override;
-    bool beginTabItem(std::string) override;
+    bool beginTabItem(const std::string&) override;
     void endTabItem() override;
 
     void begin() override;
@@ -43,27 +43,27 @@ public:
     bool isItemHovered() override;
     bool isMouseClicked() override;
 
-    void beginPanel(std::string, math::Vec2, math::Vec2) override;
+    void beginPanel(const std::string&, math::Vec2, math::Vec2) override;
     void endPanel() override;
 
-    void displayText(std::string) override;
+    void displayText(const std::string&) override;
     void breakLine() override;
 
-    bool sliderFloat3(std::string, math::Vec3&, float, float) override;
-    bool sliderFloat(std::string, float&, float, float) override;
+    bool sliderFloat3(const std::string&, math::Vec3&, float, float) override;
+    bool sliderFloat(const std::string&, float&, float, float) override;
 
-    bool dragInt(std::string, int&, float, int, int) override;
+    bool dragInt(const std::string&, int&, float, int, int) override;
 
-    bool dragFloat3(std::string, math::Vec3&, float, float, float) override;
-    bool dragFloat(std::string, float&, float, float, float) override;
+    bool dragFloat3(const std::string&, math::Vec3&, float, float, float) override;
+    bool dragFloat(const std::string&, float&, float, float, float) override;
 
-    bool beginTreeNode(std::string, bool) override;
+    bool beginTreeNode(const std::string&, bool) override;
     void popTreeNode() override;
     bool isPreviousWidgetClicked() override;
 
-    bool colorPicker3(std::string, math::Vec3&) override;
+    bool colorPicker3(const std::string&, math::Vec3&) override;
 
-    bool button(std::string, int xSize, int ySize) override;
+    bool button(const std::string&, int xSize, int ySize) override;
 };
 
 struct ImGuiApiFactory : sl::gui::GuiApi::Factory {

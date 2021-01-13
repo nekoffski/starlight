@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
-static constexpr int CONTAINER_SIZE = 1000;
+static constexpr int defaultContainerSize = 1000;
 
 namespace sl::ecs {
 
@@ -17,39 +17,39 @@ public:
 // TODO: FIX REMOVING COMPONENTS!
 // TODO: add CONCEPTS
 
-template <typename Component>
+template <typename T>
 class ComponentContainer : public IComponentContainer {
 public:
     static std::shared_ptr<IComponentContainer> create() {
-        return std::make_shared<ComponentContainer<Component>>();
+        return std::make_shared<ComponentContainer<T>>();
     }
 
     explicit ComponentContainer() {
-        m_components.reserve(CONTAINER_SIZE);
+        m_components.reserve(defaultContainerSize);
     }
 
     template <typename... Args>
-    Component& add(std::string entityId, Args&&... args) {
-        m_components.emplace_back(Component(std::forward<Args>(args)...));
+    T& add(const std::string& entityId, Args&&... args) {
+        m_components.emplace_back(T(std::forward<Args>(args)...));
         auto& component = m_components.back();
-        m_entityIdToComponent[std::move(entityId)] = &component;
+        m_entityIdToComponent[entityId] = &component;
         return component;
     }
 
-	std::vector<Component>& getAll() {
+    std::vector<T>& getAll() {
         return m_components;
     }
 
-    Component& getByEntityId(std::string entityId) {
-        return *m_entityIdToComponent[std::move(entityId)];
+    T& getByEntityId(const std::string& entityId) {
+        return *m_entityIdToComponent[entityId];
     }
 
-    bool isEntityOwner(std::string entityId) {
-        return m_entityIdToComponent.count(std::move(entityId)) > 0;
+    bool isEntityOwner(const std::string& entityId) {
+        return m_entityIdToComponent.contains(entityId);
     }
 
 private:
-	std::vector<Component> m_components; // this shoud be possible replaced with array as vector realocates memory every push
-    std::unordered_map<std::string, Component*> m_entityIdToComponent;
+    std::vector<T> m_components; 
+    std::unordered_map<std::string, T*> m_entityIdToComponent;
 };
 }

@@ -3,6 +3,7 @@
 #include "sl/asset/AssetManager.hpp"
 #include "sl/async/AsyncEngine.hpp"
 #include "sl/core/Profiler.h"
+#include "sl/ecs/ComponentView.hpp"
 #include "sl/graphics/Renderer.h"
 #include "sl/graphics/Shader.h"
 #include "sl/graphics/camera/Camera.h"
@@ -27,8 +28,8 @@ ParticleEffectSystem::ParticleEffectSystem(std::shared_ptr<graphics::Renderer> r
     m_pfxTimer = async::AsyncEngine::createTimer(PARTICLE_CLEANER_SLEEP);
 }
 
-void ParticleEffectSystem::renderParticleEffects(std::vector<components::ParticleEffectComponent>& pfxs,
-    std::shared_ptr<graphics::camera::Camera> camera) {
+void ParticleEffectSystem::renderParticleEffects(ecs::ComponentView<components::ParticleEffectComponent> pfxs,
+    ecs::ComponentView<components::TransformComponent> transforms, std::shared_ptr<graphics::camera::Camera> camera) {
     SL_PROFILE_FUNCTION();
 
     m_shader->enable();
@@ -37,7 +38,7 @@ void ParticleEffectSystem::renderParticleEffects(std::vector<components::Particl
     beginParticleEffect();
 
     for (auto& pfx : pfxs) {
-        auto& transform = pfx.entity->getComponent<components::TransformComponent>();
+        auto& transform = transforms.getByEntityId(pfx.ownerEntityId);
         m_shader->setUniform("model", math::translate(pfx.position) * transform());
 
         for (auto& particle : pfx.particles) {
@@ -51,7 +52,7 @@ void ParticleEffectSystem::renderParticleEffects(std::vector<components::Particl
     m_shader->disable();
 }
 
-void ParticleEffectSystem::update(std::vector<components::ParticleEffectComponent>& pfxs, float deltaTime, std::shared_ptr<graphics::camera::Camera> camera) {
+void ParticleEffectSystem::update(ecs::ComponentView<components::ParticleEffectComponent>& pfxs, float deltaTime, std::shared_ptr<graphics::camera::Camera> camera) {
     for (auto& pfx : pfxs)
         updateParticleEffect(pfx, deltaTime, camera);
 }

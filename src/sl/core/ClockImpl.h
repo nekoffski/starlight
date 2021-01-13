@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <string_view>
+#include <string>
 
 namespace sl::core {
 
@@ -13,7 +13,7 @@ public:
 
 class ClockImpl {
 public:
-    virtual std::string getTimeString(std::string_view) = 0;
+    virtual std::string getTimeString(const std::string&) = 0;
     virtual float getDeltaTime() = 0;
     virtual void update() = 0;
     virtual std::shared_ptr<Timestamp> now() = 0;
