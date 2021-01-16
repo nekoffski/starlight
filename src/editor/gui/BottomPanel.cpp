@@ -20,7 +20,8 @@ void BottomPanel::render(sl::gui::GuiApi& gui) {
     }
 
     if (gui.beginTabItem("Debug console")) {
-        gui.endTabItem();
+		m_debugConsoleTab.render(gui);
+		gui.endTabItem();
     }
 
     gui.endTabBar();

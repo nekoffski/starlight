@@ -19,8 +19,8 @@
 #include "sl/scene/components/ModelComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 #include "sl/utils/Globals.h"
+#include "DebugConsole.hpp"
 
-#include <filesystem>
 
 using namespace sl;
 using namespace sl::scene;
@@ -39,6 +39,8 @@ public:
 		m_editorGui->setActiveScene(m_scene);
 
         loadDefaultShaders();
+
+		WRITE_DEBUG("%s", "Editor context initialized");
     }
 
     void onAttach() override {

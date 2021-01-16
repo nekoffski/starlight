@@ -3,6 +3,7 @@
 #include "Widget.h"
 
 #include "ResourcesTab.h"
+#include "DebugConsoleTab.h"
 #include "Settings.h"
 #include "editor/res/ResourceManager.h"
 
@@ -20,5 +21,7 @@ public:
 private:
     WidgetPosition m_position;
     ResourcesTab m_resourcesTab;
+	DebugConsoleTab m_debugConsoleTab;
+
 };
 }
