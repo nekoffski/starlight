@@ -36,6 +36,7 @@ public:
         m_editorGui = std::make_shared<editor::gui::EditorGui>(createGuiSettings(), m_entities, m_resourceManager);
 
         m_scene->camera = m_activeCamera;
+		m_editorGui->setActiveScene(m_scene);
 
         loadDefaultShaders();
     }

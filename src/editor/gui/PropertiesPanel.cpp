@@ -4,8 +4,8 @@
 #include "sl/event/Event.h"
 #include "sl/gui/Utils.hpp"
 #include "sl/scene/components/DirectionalLightComponent.h"
-#include "sl/scene/components/PointLightComponent.h"
 #include "sl/scene/components/ModelComponent.h"
+#include "sl/scene/components/PointLightComponent.h"
 #include "sl/scene/components/RendererComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 
@@ -55,10 +55,16 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
                 m_resourceManager.getResourcesByType(res::ResourceType::CUBEMAP)[cubemapName]->as<res::CubemapResource>()->cubemap;
 
             m_selectedCubemap = cubemap;
-			event::Emitter::emit<event::SetSkyboxEvent>(cubemap);
+            event::Emitter::emit<event::SetSkyboxEvent>(cubemap);
         }
         gui.popTreeNode();
     }
+
+    if (gui.beginTreeNode("Camera")) {
+        if (auto scene = m_activeScene.lock(); scene)
+            scene->camera->onGui(gui);
+		gui.popTreeNode();
+	}
 }
 
 void PropertiesPanel::showEntityProperties(sl::gui::GuiApi& gui) {
@@ -112,16 +118,15 @@ void PropertiesPanel::showEntityProperties(sl::gui::GuiApi& gui) {
                 break;
             }
 
-			case 5: {
-				addPointLight(load, gui);
-				break;
-			}
+            case 5: {
+                addPointLight(load, gui);
+                break;
+            }
 
-			case 6: {
-				addDirectionalLight(load, gui);
-				break;
-			}
-
+            case 6: {
+                addDirectionalLight(load, gui);
+                break;
+            }
             }
             gui.endGroup();
             gui.endPopUp();
@@ -149,13 +154,13 @@ void PropertiesPanel::addModel(bool load, sl::gui::GuiApi& gui) {
 }
 
 void PropertiesPanel::addPointLight(bool load, sl::gui::GuiApi& gui) {
-	if (load) 
-		m_selectedEntity->addComponent<sl::scene::components::PointLightComponent>();
+    if (load)
+        m_selectedEntity->addComponent<sl::scene::components::PointLightComponent>();
 }
 
 void PropertiesPanel::addDirectionalLight(bool load, sl::gui::GuiApi& gui) {
-	if (load) 
-		m_selectedEntity->addComponent<sl::scene::components::DirectionalLightComponent>();
+    if (load)
+        m_selectedEntity->addComponent<sl::scene::components::DirectionalLightComponent>();
 }
 
 void PropertiesPanel::addRenderer(bool load, sl::gui::GuiApi& gui) {

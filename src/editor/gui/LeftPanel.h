@@ -27,6 +27,13 @@ public:
 		m_propertiesPanel.setPosition(settings.propertiesPanelPosition);
 	}
 
+	void setActiveScene(std::shared_ptr<sl::scene::Scene> scene) override {
+		Widget::setActiveScene(scene);
+		m_scenePanel.setActiveScene(scene);
+		m_propertiesPanel.setActiveScene(scene);
+
+	}
+
 private:
     std::shared_ptr<sl::ecs::Entity> m_selectedEntity;
 
