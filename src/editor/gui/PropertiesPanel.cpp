@@ -5,6 +5,7 @@
 #include "sl/gui/Utils.hpp"
 #include "sl/scene/components/DirectionalLightComponent.h"
 #include "sl/scene/components/ModelComponent.h"
+#include "sl/scene/components/ParticleEffectComponent.h"
 #include "sl/scene/components/PointLightComponent.h"
 #include "sl/scene/components/RendererComponent.h"
 #include "sl/scene/components/TransformComponent.h"
@@ -63,8 +64,8 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
     if (gui.beginTreeNode("Camera")) {
         if (auto scene = m_activeScene.lock(); scene)
             scene->camera->onGui(gui);
-		gui.popTreeNode();
-	}
+        gui.popTreeNode();
+    }
 }
 
 void PropertiesPanel::showEntityProperties(sl::gui::GuiApi& gui) {
@@ -110,8 +111,10 @@ void PropertiesPanel::showEntityProperties(sl::gui::GuiApi& gui) {
                 break;
             }
 
-            case 3:
+            case 3: {
+                addParticleEffect(load, gui);
                 break;
+            }
 
             case 4: {
                 addTransform(load, gui);
@@ -151,6 +154,11 @@ void PropertiesPanel::addModel(bool load, sl::gui::GuiApi& gui) {
             m_resourceManager.getResourcesByType(res::ResourceType::MODEL)[modelName]->as<res::ModelResource>();
         m_selectedEntity->addComponent<sl::scene::components::ModelComponent>(modelResource->model);
     }
+}
+
+void PropertiesPanel::addParticleEffect(bool load, sl::gui::GuiApi& gui) {
+    if (load)
+        m_selectedEntity->addComponent<scene::components::ParticleEffectComponent>();
 }
 
 void PropertiesPanel::addPointLight(bool load, sl::gui::GuiApi& gui) {

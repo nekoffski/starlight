@@ -29,6 +29,7 @@ private:
     void addTransform(bool load, sl::gui::GuiApi& gui);
     void addPointLight(bool load, sl::gui::GuiApi& gui);
     void addDirectionalLight(bool load, sl::gui::GuiApi& gui);
+	void addParticleEffect(bool load, sl::gui::GuiApi& gui);
 
     WidgetPosition m_position;
     res::ResourceManager& m_resourceManager;

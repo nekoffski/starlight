@@ -82,13 +82,13 @@ void Application::init() {
 
     auto viewport = graphics::Viewport{ windowSize.width, windowSize.height };
     m_renderer = std::make_shared<graphics::Renderer>(m_graphicsContext, graphics::RenderApi::factory->create(), viewport);
- 
+
     m_guiApi = gui::GuiApi::factory->create(windowHandle);
 
     geometry::ModelLoader::impl = geometry::ModelLoaderImpl::factory->create();
 
     graphics::ShaderCompiler::impl = graphics::ShaderCompilerImpl::factory->create();
-	utils::Globals::init();
+    utils::Globals::init();
 
     m_sceneSystems = std::make_shared<scene::SceneSystems>(m_renderer);
 
@@ -99,7 +99,7 @@ void Application::update(float deltaTime, float time) {
     SL_PROFILE_FUNCTION();
 
     m_window->update(deltaTime);
-    m_context->update(deltaTime, time);
+    m_context->update(*m_sceneSystems, deltaTime, time);
 
     m_eventEngine.spreadEvents();
 }

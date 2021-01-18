@@ -65,10 +65,10 @@ public:
         m_activeCamera->handleInput(input);
     }
 
-    void update(float deltaTime, float time) override {
+    void update(scene::SceneSystems& sceneSystems, float deltaTime, float time) override {
         m_activeCamera->update(deltaTime);
-        //auto& pfxs = m_scene->m_ecsRegistry.getComponentView<components::ParticleEffectComponent>();
-        //pfxSystem.update(pfxs, deltaTime, m_scene->m_camera);
+        auto pfxs = m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>();
+        sceneSystems.pfxSystem.update(pfxs, deltaTime, m_scene->camera);
     }
 
     void render(scene::SceneSystems& sceneSystems) override {
