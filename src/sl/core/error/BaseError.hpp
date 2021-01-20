@@ -18,19 +18,17 @@ public:
         , m_details(details) {
     }
 
+    template <typename T>
+    T as() {
+        return asImpl(std::type_identity<T>());
+    }
+
     // clang-format off
 	template<class T = ErrorCode>
  	T getErrorCode() const {
         return static_cast<T>(m_errorCode);
     }
     // clang-format on
-
-    std::string toString() const {
-        std::stringstream errorStream;
-        errorStream << getName() << " - " << m_details << " - " << static_cast<int>(m_errorCode);
-
-        return errorStream.str();
-    }
 
     std::string getDetails() const {
         return m_details;
@@ -44,6 +42,22 @@ public:
     }
 
 private:
+    template <typename T>
+    T asImpl(std::type_identity<T>) {
+        return T(m_errorCode, m_details);
+    }
+
+    std::string asImpl(std::type_identity<std::string>) {
+        return toString();
+    }
+
+    std::string toString() const {
+        std::stringstream errorStream;
+        errorStream << getName() << " - " << m_details << " - " << static_cast<int>(m_errorCode);
+
+        return errorStream.str();
+    }
+
     ErrorCode m_errorCode;
     std::string m_details;
 

@@ -27,9 +27,14 @@ public:
 private:
     template <class T, typename... Args>
     static std::shared_ptr<T> load(bool globalPath, Args&&... args) {
-        if (loaders::IsSpecializedFor<loaders::AssetLoader<T>>::value)
-            return loaders::AssetLoader<T>::load(globalPath,
-                loaders::AssetLoaderArgs<T>{ std::forward<Args>(args)... });
+        try {
+            if (loaders::IsSpecializedFor<loaders::AssetLoader<T>>::value)
+                return loaders::AssetLoader<T>::load(globalPath,
+                    loaders::AssetLoaderArgs<T>{ std::forward<Args>(args)... });
+        } catch (core::error::Error& e) {
+            throw e.as<core::error::AssetError>();
+        }
+
         throw core::error::AssetError{ core::error::ErrorCode::CouldNotFindAssetLoader };
     }
 };

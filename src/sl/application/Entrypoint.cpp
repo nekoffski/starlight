@@ -64,7 +64,7 @@ int Entrypoint::start() {
         async::AsyncEngine::deinit();
 
     } catch (core::error::Error& e) {
-        SL_ERROR("entrypoint catched unhandled error: {}", e.toString());
+        SL_ERROR("entrypoint catched unhandled error: {}", e.as<std::string>());
         return e.getErrorCode<int>();
     }
 

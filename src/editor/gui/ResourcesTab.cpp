@@ -1,6 +1,9 @@
 #include "ResourcesTab.h"
 
+#include "editor/DebugConsole.hpp"
 #include "sl/asset/AssetManager.hpp"
+#include "sl/core/error/Errors.hpp"
+#include "sl/gui/ErrorDialog.hpp"
 #include "sl/gui/FileBrowser.hpp"
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/Utils.hpp"
@@ -33,12 +36,17 @@ void ResourcesTab::render(sl::gui::GuiApi& gui) {
 void ResourcesTab::showLoaderPopUp(sl::gui::GuiApi& gui) {
     static int activeItem = 0;
     static const std::vector<std::string> labels = { "Cubemap", "Texture", "Model" };
+    static sl::gui::ErrorDialog errorDialog;
 
     gui.combo(sl::gui::createHiddenLabel("ResourcesCombo"), activeItem, labels);
 
     m_loadClicked = false;
-    if (gui.button("Load")) {
+
+    if (gui.button("Quit"))
         gui.closeCurrentPopUp();
+
+    gui.sameLine();
+    if (gui.button("Load")) {
         m_loadClicked = true;
     }
 
@@ -49,24 +57,36 @@ void ResourcesTab::showLoaderPopUp(sl::gui::GuiApi& gui) {
     gui.sameLine(padding);
     gui.inputText(sl::gui::createHiddenLabel("Name"), m_resourceName);
 
-    switch (activeItem) {
-    case 0: {
-        handleCubemapLoader(gui);
-        break;
-    }
+    try {
+        switch (activeItem) {
+        case 0: {
+            handleCubemapLoader(gui);
+            break;
+        }
 
-    case 1: {
-        handleTextureLoader(gui);
-        break;
-    }
+        case 1: {
+            handleTextureLoader(gui);
+            break;
+        }
 
-    case 2: {
-        handleModelLoader(gui);
-        break;
-    }
-    }
+        case 2: {
+            handleModelLoader(gui);
+            break;
+        }
+        }
+    } catch (sl::core::error::AssetError& err) {
+        errorDialog.setErrorMessage(err.getDetails(), gui);
+        WRITE_DEBUG(err.as<std::string>());
+		m_loadClicked = false;
+	}
+
+	if (m_loadClicked) {
+		gui.closeCurrentPopUp();
+	}
 
     gui.endGroup();
+
+    errorDialog.show(gui);
 }
 
 void ResourcesTab::handleCubemapLoader(sl::gui::GuiApi& gui) {
