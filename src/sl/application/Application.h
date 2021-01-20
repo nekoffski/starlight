@@ -5,15 +5,16 @@
 #include <memory>
 #include <type_traits>
 
-#include <xvent/EventEngine.h>
 #include <xvent/EventEmitter.h>
+#include <xvent/EventEngine.h>
 #include <xvent/EventListener.h>
 
 #include "sl/application/ApplicationContext.h"
 #include "sl/core/Input.h"
 #include "sl/core/Window.h"
 #include "sl/graphics/GraphicsContext.h"
-#include "sl/graphics/Renderer.h"
+#include "sl/graphics/LowLevelRenderer.h"
+#include "sl/graphics/RendererComposite.hpp"
 #include "sl/gui/GuiApi.h"
 #include "sl/scene/SceneSystems.hpp"
 
@@ -51,8 +52,8 @@ protected:
         std::shared_ptr<T> createContext(const std::string& ident) {
         auto context = std::make_shared<T>(ident);
         context->onInit();
-		
-		m_eventEngine.registerEventListener(context);
+
+        m_eventEngine.registerEventListener(context);
 
         return std::dynamic_pointer_cast<T>(context);
     }
@@ -60,15 +61,15 @@ protected:
 private:
     std::shared_ptr<core::Window> m_window;
     std::shared_ptr<core::Input> m_input;
-    std::shared_ptr<graphics::Renderer> m_renderer;
+    std::shared_ptr<graphics::LowLevelRenderer> m_renderer;
     std::shared_ptr<gui::GuiApi> m_guiApi;
     std::shared_ptr<graphics::GraphicsContext> m_graphicsContext;
     std::shared_ptr<ApplicationContext> m_context;
     std::shared_ptr<scene::SceneSystems> m_sceneSystems;
+    std::shared_ptr<graphics::RendererComposite> m_rendererComposite;
 
     xvent::EventEngine m_eventEngine;
-	xvent::EventEmitter m_eventEmitter;
-
+    xvent::EventEmitter m_eventEmitter;
 };
 
 class Application::Token {

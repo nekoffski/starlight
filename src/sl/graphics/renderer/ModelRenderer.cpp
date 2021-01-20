@@ -1,22 +1,22 @@
-#include "RendererSystem.h"
+#include "ModelRenderer.h"
 
 #include "sl/core/Profiler.h"
-#include "sl/graphics/Renderer.h"
+#include "sl/graphics/LowLevelRenderer.h"
 #include "sl/scene/components/MaterialComponent.h"
 #include "sl/scene/components/ModelComponent.h"
 #include "sl/scene/components/RendererComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 
-namespace sl::scene::systems {
+namespace sl::graphics::renderer {
 
-const components::MaterialComponent DEFAULT_MATERIAL = components::MaterialComponent();
+const scene::components::MaterialComponent DEFAULT_MATERIAL = scene::components::MaterialComponent();
 
-RendererSystem::RendererSystem(std::shared_ptr<graphics::Renderer> renderer)
+ModelRenderer::ModelRenderer(std::shared_ptr<graphics::LowLevelRenderer> renderer)
     : m_renderer(renderer) {
 }
 
-void RendererSystem::render(components::RendererComponent& component, ecs::ComponentView<components::MaterialComponent> materials,
-    ecs::ComponentView<components::ModelComponent> models, ecs::ComponentView<components::TransformComponent> transforms,
+void ModelRenderer::render(scene::components::RendererComponent& component, ecs::ComponentView<scene::components::MaterialComponent> materials,
+    ecs::ComponentView<scene::components::ModelComponent> models, ecs::ComponentView<scene::components::TransformComponent> transforms,
     std::shared_ptr<graphics::camera::Camera> camera, std::shared_ptr<graphics::Shader> shader) {
 
     shader->setUniform("view", camera->getViewMatrix());
@@ -35,21 +35,21 @@ void RendererSystem::render(components::RendererComponent& component, ecs::Compo
     renderModelComposite(shader, model.modelData, transformComponent());
 }
 
-void RendererSystem::render(components::RendererComponent& component, ecs::ComponentView<components::MaterialComponent> materials,
-    ecs::ComponentView<components::ModelComponent> models, ecs::ComponentView<components::TransformComponent> transforms,
+void ModelRenderer::render(scene::components::RendererComponent& component, ecs::ComponentView<scene::components::MaterialComponent> materials,
+    ecs::ComponentView<scene::components::ModelComponent> models, ecs::ComponentView<scene::components::TransformComponent> transforms,
     std::shared_ptr<graphics::camera::Camera> camera) {
 
     render(component, materials, models, transforms, camera, component.shader);
 }
 
-void RendererSystem::setMaterial(const components::MaterialComponent& material, std::shared_ptr<graphics::Shader> shader) {
+void ModelRenderer::setMaterial(const scene::components::MaterialComponent& material, std::shared_ptr<graphics::Shader> shader) {
     shader->setUniform("material.ambientColor", material.ambientColor);
     shader->setUniform("material.diffuseColor", material.diffuseColor);
     shader->setUniform("material.specularColor", material.specularColor);
     shader->setUniform("material.shininess", material.shininess);
 }
 
-void RendererSystem::renderModelComposite(std::shared_ptr<graphics::Shader> shader, const graphics::data::ModelData& modelData,
+void ModelRenderer::renderModelComposite(std::shared_ptr<graphics::Shader> shader, const graphics::data::ModelData& modelData,
     const math::Mat4& transform) {
 
     float t = core::Clock::now()->value();
@@ -62,12 +62,12 @@ void RendererSystem::renderModelComposite(std::shared_ptr<graphics::Shader> shad
     }
 }
 
-void RendererSystem::renderModel(std::shared_ptr<geometry::Model> model) {
+void ModelRenderer::renderModel(std::shared_ptr<geometry::Model> model) {
     for (const auto& mesh : model->meshes)
         renderMesh(mesh);
 }
 
-void RendererSystem::renderMesh(std::shared_ptr<geometry::Mesh> mesh) {
+void ModelRenderer::renderMesh(std::shared_ptr<geometry::Mesh> mesh) {
     int i = 0;
     for (const auto& texture : mesh->textures)
         texture->bind(i++);

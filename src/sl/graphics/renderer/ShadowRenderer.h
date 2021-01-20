@@ -7,11 +7,11 @@
 #include "sl/graphics/fwd.h"
 #include "sl/platform/fwd.h"
 
-namespace sl::scene::systems {
+namespace sl::graphics::renderer {
 
-class ShadowSystem {
+class ShadowRenderer {
 public:
-    explicit ShadowSystem(std::shared_ptr<graphics::Renderer> renderer);
+    explicit ShadowRenderer(std::shared_ptr<graphics::LowLevelRenderer> renderer);
 
     void beginDepthCapture();
     void endDepthCapture();
@@ -21,7 +21,7 @@ public:
     std::shared_ptr<graphics::Shader> getDepthShader();
 
 private:
-    std::shared_ptr<graphics::Renderer> m_renderer;
+    std::shared_ptr<graphics::LowLevelRenderer> m_renderer;
     std::shared_ptr<graphics::buffer::FrameBuffer> m_shadowMapFrameBuffer;
     std::shared_ptr<graphics::Shader> m_depthShader;
 };

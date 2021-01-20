@@ -5,6 +5,7 @@
 #include <xvent/EventListener.h>
 
 #include "fwd.h"
+#include "sl/graphics/RendererComposite.hpp"
 #include "sl/gui/GuiApi.h"
 #include "sl/scene/SceneSystems.hpp"
 
@@ -26,8 +27,8 @@ public:
     virtual void onDetach() = 0;
 
     virtual void handleInput(std::shared_ptr<core::Input>) = 0;
-    virtual void update(scene::SceneSystems& sceneSystems, float, float) = 0;
-    virtual void render(scene::SceneSystems& sceneSystems) = 0;
+    virtual void update(std::shared_ptr<scene::SceneSystems> sceneSystems, float, float) = 0;
+    virtual void render(std::shared_ptr<graphics::RendererComposite>) = 0;
 
     virtual void renderGui(gui::GuiApi&) {}
 };

@@ -1,5 +1,5 @@
 
-#include "LightSystem.h"
+#include "LightRenderer.h"
 
 #include "sl/core/Profiler.h"
 #include "sl/ecs/ComponentView.hpp"
@@ -8,9 +8,9 @@
 
 #include "glad/glad.h"
 
-namespace sl::scene::systems {
+namespace sl::graphics::renderer {
 
-void LightSystem::prepareDirectionalLights(ecs::ComponentView<components::DirectionalLightComponent> lights,
+void LightRenderer::prepareDirectionalLights(ecs::ComponentView<scene::components::DirectionalLightComponent> lights,
     std::shared_ptr<graphics::Shader> shader) {
 
     unsigned int directionalLightsNum = lights.size();
@@ -20,8 +20,8 @@ void LightSystem::prepareDirectionalLights(ecs::ComponentView<components::Direct
         setDirectionalLight(shader, lights[i], i);
 }
 
-void LightSystem::preparePointsLights(ecs::ComponentView<components::PointLightComponent> lights,
-    ecs::ComponentView<components::TransformComponent> transforms, std::shared_ptr<graphics::Shader> shader) {
+void LightRenderer::preparePointsLights(ecs::ComponentView<scene::components::PointLightComponent> lights,
+    ecs::ComponentView<scene::components::TransformComponent> transforms, std::shared_ptr<graphics::Shader> shader) {
 
     unsigned int pointLightsNum = lights.size();
     shader->setUniform("pointLightsNum", pointLightsNum);
@@ -32,8 +32,8 @@ void LightSystem::preparePointsLights(ecs::ComponentView<components::PointLightC
     }
 }
 
-void LightSystem::setDirectionalLight(std::shared_ptr<graphics::Shader> shader,
-    components::DirectionalLightComponent& light, unsigned int index) {
+void LightRenderer::setDirectionalLight(std::shared_ptr<graphics::Shader> shader,
+    scene::components::DirectionalLightComponent& light, unsigned int index) {
 
     std::string strIndex = std::to_string(index);
     light.shadowMap->bind(1);
@@ -43,8 +43,8 @@ void LightSystem::setDirectionalLight(std::shared_ptr<graphics::Shader> shader,
     shader->setUniform("directionalLights[" + strIndex + "].color", light.color);
 }
 
-void LightSystem::setPointLight(std::shared_ptr<graphics::Shader> shader,
-    components::PointLightComponent& light, components::TransformComponent& transform, unsigned int index) {
+void LightRenderer::setPointLight(std::shared_ptr<graphics::Shader> shader,
+    scene::components::PointLightComponent& light, scene::components::TransformComponent& transform, unsigned int index) {
 
     std::string strIndex = std::to_string(index);
 

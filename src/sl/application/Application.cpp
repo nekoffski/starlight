@@ -12,6 +12,7 @@
 #include "sl/graphics/GraphicsContext.h"
 #include "sl/graphics/Image.h"
 #include "sl/graphics/RenderApi.h"
+#include "sl/graphics/RendererComposite.hpp"
 #include "sl/graphics/ShaderCompiler.hpp"
 #include "sl/graphics/ShaderCompilerImpl.h"
 #include "sl/graphics/Viewport.h"
@@ -81,7 +82,7 @@ void Application::init() {
     m_graphicsContext = graphics::GraphicsContext::factory->create(windowHandle);
 
     auto viewport = graphics::Viewport{ windowSize.width, windowSize.height };
-    m_renderer = std::make_shared<graphics::Renderer>(m_graphicsContext, graphics::RenderApi::factory->create(), viewport);
+    m_renderer = std::make_shared<graphics::LowLevelRenderer>(m_graphicsContext, graphics::RenderApi::factory->create(), viewport);
 
     m_guiApi = gui::GuiApi::factory->create(windowHandle);
 
@@ -90,7 +91,8 @@ void Application::init() {
     graphics::ShaderCompiler::impl = graphics::ShaderCompilerImpl::factory->create();
     utils::Globals::init();
 
-    m_sceneSystems = std::make_shared<scene::SceneSystems>(m_renderer);
+    m_rendererComposite = std::make_shared<graphics::RendererComposite>(m_renderer);
+    m_sceneSystems = std::make_shared<scene::SceneSystems>();
 
     m_eventEngine.registerEventListener(shared_from_this());
 }
@@ -99,7 +101,7 @@ void Application::update(float deltaTime, float time) {
     SL_PROFILE_FUNCTION();
 
     m_window->update(deltaTime);
-    m_context->update(*m_sceneSystems, deltaTime, time);
+    m_context->update(m_sceneSystems, deltaTime, time);
 
     m_eventEngine.spreadEvents();
 }
@@ -108,7 +110,7 @@ void Application::render() {
     SL_PROFILE_FUNCTION();
 
     m_renderer->clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
-    m_context->render(*m_sceneSystems);
+    m_context->render(m_rendererComposite);
     renderGui();
     m_renderer->swapBuffers();
 }

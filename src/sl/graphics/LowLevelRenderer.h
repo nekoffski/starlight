@@ -15,14 +15,18 @@
 
 #include "sl/geometry/Mesh.h"
 
-#include "RendererSettings.h"
 #include "Viewport.h"
 
 namespace sl::graphics {
 
-class Renderer {
+struct RendererSettings {
+    bool enableDepthMask = true;
+    unsigned int polygonMode = STARL_FILL;
+};
+
+class LowLevelRenderer {
 public:
-    explicit Renderer(std::shared_ptr<graphics::GraphicsContext> graphicsContext,
+    explicit LowLevelRenderer(std::shared_ptr<graphics::GraphicsContext> graphicsContext,
         std::unique_ptr<graphics::RenderApi> renderApi, Viewport viewport);
 
     void renderVertexArray(std::shared_ptr<graphics::buffer::VertexArray>);
@@ -32,21 +36,21 @@ public:
     }
 
     void setSettings(const RendererSettings& settings) {
-		m_settings = settings;
-		applySettings(settings);
-	}
+        m_settings = settings;
+        applySettings(settings);
+    }
 
     void setTemporarySettings(const RendererSettings& settings) {
-		applySettings(settings);
-	}
+        applySettings(settings);
+    }
 
     void restoreSettings() {
-		applySettings(m_settings); 
-	}
+        applySettings(m_settings);
+    }
 
     const RendererSettings& getSettings() {
-		return m_settings;
-	}
+        return m_settings;
+    }
 
     const math::Mat4& getProjectionMatrix() {
         return m_projectionMatrix;
@@ -77,12 +81,12 @@ public:
     }
 
 private:
-	void applySettings(const RendererSettings& settings) {
-		m_renderApi->depthMask(settings.enableDepthMask);
-		m_renderApi->setPolygonMode(settings.polygonMode);
-	}
+    void applySettings(const RendererSettings& settings) {
+        m_renderApi->depthMask(settings.enableDepthMask);
+        m_renderApi->setPolygonMode(settings.polygonMode);
+    }
 
-	void calculateProjectionMatrix() {
+    void calculateProjectionMatrix() {
         calculateProjectionMatrix(m_viewport);
     }
 
