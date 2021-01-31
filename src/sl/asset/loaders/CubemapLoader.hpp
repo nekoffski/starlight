@@ -11,6 +11,25 @@ using sl::graphics::Cubemap;
 
 template <>
 struct AssetLoaderArgs<Cubemap> {
+    explicit AssetLoaderArgs(const std::string& top, const std::string& bottom, const std::string& right,
+        const std::string& left, const std::string& front, const std::string& back)
+        : top(top)
+        , bottom(bottom)
+        , right(right)
+        , left(left)
+        , front(front)
+        , back(back) {
+    }
+
+    explicit AssetLoaderArgs(const std::array<std::string, 6>& faces)
+        : top(faces[0])
+        , bottom(faces[1])
+        , right(faces[2])
+        , left(faces[3])
+        , front(faces[4])
+        , back(faces[5]) {
+    }
+
     std::string top;
     std::string bottom;
     std::string right;

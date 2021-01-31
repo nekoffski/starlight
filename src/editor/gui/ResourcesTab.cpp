@@ -3,7 +3,7 @@
 #include "editor/DebugConsole.hpp"
 #include "sl/asset/AssetManager.hpp"
 #include "sl/core/error/Errors.hpp"
-#include "sl/gui/ErrorDialog.hpp"
+#include "sl/core/utils/String.hpp"
 #include "sl/gui/FileBrowser.hpp"
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/Utils.hpp"
@@ -12,14 +12,24 @@ namespace editor::gui {
 
 constexpr int padding = 65;
 
+static void validateResourceName(const std::string& name) {
+    using namespace sl::core::error;
+
+    SL_INFO("?? {}", name.size());
+    if (sl::core::utils::isStringEmpty(name))
+        throw AssetError(ErrorCode::AssetError, "Asset name cannot be empty");
+}
+
 ResourcesTab::ResourcesTab(res::ResourceManager& resourceManager)
     : m_resourceManager(resourceManager) {
 }
 
 void ResourcesTab::render(sl::gui::GuiApi& gui) {
     gui.beginGroup();
-    if (gui.button("+"))
+    if (gui.button("+")) {
+        resetArgs();
         gui.openPopUp("ResourceLoadPopUp");
+    }
 
     if (gui.beginPopUp("ResourceLoadPopUp")) {
         showLoaderPopUp(gui);
@@ -33,12 +43,19 @@ void ResourcesTab::render(sl::gui::GuiApi& gui) {
             gui.displayText(resourceName);
 }
 
-void ResourcesTab::showLoaderPopUp(sl::gui::GuiApi& gui) {
-    static int activeItem = 0;
-    static const std::vector<std::string> labels = { "Cubemap", "Texture", "Model" };
-    static sl::gui::ErrorDialog errorDialog;
+void ResourcesTab::resetArgs() {
+    m_resourcesArgs.resourceName = "";
+    m_resourcesArgs.activeItem = 0;
+    m_resourcesArgs.modelName = "/tow/tower.obj";
+    m_resourcesArgs.faces = {
+        "/skybox/top.jpg", "/skybox/bottom.jpg", "/skybox/right.jpg", "/skybox/left.jpg", "/skybox/front.jpg", "/skybox/back.jpg"
+    };
+}
 
-    gui.combo(sl::gui::createHiddenLabel("ResourcesCombo"), activeItem, labels);
+void ResourcesTab::showLoaderPopUp(sl::gui::GuiApi& gui) {
+    static const std::vector<std::string> labels = { "Cubemap", "Texture", "Model" };
+
+    gui.combo(sl::gui::createHiddenLabel("ResourcesCombo"), m_resourcesArgs.activeItem, labels);
 
     m_loadClicked = false;
 
@@ -55,10 +72,10 @@ void ResourcesTab::showLoaderPopUp(sl::gui::GuiApi& gui) {
 
     gui.displayText("Name");
     gui.sameLine(padding);
-    gui.inputText(sl::gui::createHiddenLabel("Name"), m_resourceName);
+    gui.inputText(sl::gui::createHiddenLabel("Name"), m_resourcesArgs.resourceName);
 
     try {
-        switch (activeItem) {
+        switch (m_resourcesArgs.activeItem) {
         case 0: {
             handleCubemapLoader(gui);
             break;
@@ -75,76 +92,72 @@ void ResourcesTab::showLoaderPopUp(sl::gui::GuiApi& gui) {
         }
         }
     } catch (sl::core::error::AssetError& err) {
-        errorDialog.setErrorMessage(err.getDetails(), gui);
+        m_errorDialog.setErrorMessage(err.getDetails(), gui);
         WRITE_DEBUG(err.as<std::string>());
-		m_loadClicked = false;
-	}
+        m_loadClicked = false;
+    }
 
-	if (m_loadClicked) {
-		gui.closeCurrentPopUp();
-	}
+    if (m_loadClicked) {
+        gui.closeCurrentPopUp();
+    }
 
     gui.endGroup();
 
-    errorDialog.show(gui);
+    m_errorDialog.show(gui);
 }
 
 void ResourcesTab::handleCubemapLoader(sl::gui::GuiApi& gui) {
-    static std::array<std::string, 6> faces = {
-        "/skybox/top.jpg", "/skybox/bottom.jpg", "/skybox/right.jpg", "/skybox/left.jpg", "/skybox/front.jpg", "/skybox/back.jpg"
-    };
+    sl::gui::FileBrowser fileBrowser{ gui, "cubemapLoaderPopUp" };
 
-    static sl::gui::FileBrowser fileBrowser{ gui, "cubemapLoaderPopUp" };
-
-    sl::gui::labeledTextInput(gui, "Top", faces[0], padding);
+    sl::gui::labeledTextInput(gui, "Top", m_resourcesArgs.faces[0], padding);
     if (gui.isPreviousWidgetClicked())
         fileBrowser.open(&faces[0]);
 
-    sl::gui::labeledTextInput(gui, "Bottom", faces[1], padding);
+    sl::gui::labeledTextInput(gui, "Bottom", m_resourcesArgs.faces[1], padding);
     if (gui.isPreviousWidgetClicked())
         fileBrowser.open(&faces[1]);
 
-    sl::gui::labeledTextInput(gui, "Right", faces[2], padding);
+    sl::gui::labeledTextInput(gui, "Right", m_resourcesArgs.faces[2], padding);
     if (gui.isPreviousWidgetClicked())
         fileBrowser.open(&faces[2]);
 
-    sl::gui::labeledTextInput(gui, "Left", faces[3], padding);
+    sl::gui::labeledTextInput(gui, "Left", m_resourcesArgs.faces[3], padding);
     if (gui.isPreviousWidgetClicked())
         fileBrowser.open(&faces[3]);
 
-    sl::gui::labeledTextInput(gui, "Front", faces[4], padding);
+    sl::gui::labeledTextInput(gui, "Front", m_resourcesArgs.faces[4], padding);
     if (gui.isPreviousWidgetClicked())
         fileBrowser.open(&faces[4]);
 
-    sl::gui::labeledTextInput(gui, "Back", faces[5], padding);
+    sl::gui::labeledTextInput(gui, "Back", m_resourcesArgs.faces[5], padding);
     if (gui.isPreviousWidgetClicked())
         fileBrowser.open(&faces[5]);
 
     fileBrowser.show();
 
     if (m_loadClicked) {
+        validateResourceName(m_resourcesArgs.resourceName);
 
-        auto cubemap = sl::asset::AssetManager::loadLocalPath<sl::graphics::Cubemap>(
-            faces[0], faces[1], faces[2], faces[3], faces[4], faces[5]);
-
-        auto cubemapResource = std::make_shared<res::CubemapResource>(cubemap, m_resourceName);
+        auto cubemap = sl::asset::AssetManager::loadLocalPath<sl::graphics::Cubemap>(m_resourcesArgs.faces);
+        auto cubemapResource = std::make_shared<res::CubemapResource>(cubemap, m_resourcesArgs.resourceName);
         m_resourceManager.addResource(cubemapResource);
     }
 }
 
 void ResourcesTab::handleModelLoader(sl::gui::GuiApi& gui) {
-    static std::string modelName = "/tow/tower.obj";
-    static sl::gui::FileBrowser fileBrowser{ gui, "modelLoaderPopUp" };
+    sl::gui::FileBrowser fileBrowser{ gui, "modelLoaderPopUp" };
 
-    sl::gui::labeledTextInput(gui, "Model", modelName, padding);
+    sl::gui::labeledTextInput(gui, "Model", m_resourcesArgs.modelName, padding);
     if (gui.isPreviousWidgetClicked())
         fileBrowser.open(&modelName);
 
     fileBrowser.show();
 
     if (m_loadClicked) {
-        auto model = sl::asset::AssetManager::loadGlobalPath<sl::geometry::Model>(modelName);
-        auto modelResource = std::make_shared<res::ModelResource>(model, m_resourceName);
+        validateResourceName(m_resourcesArgs.resourceName);
+
+        auto model = sl::asset::AssetManager::loadGlobalPath<sl::geometry::Model>(m_resourcesArgs.modelName);
+        auto modelResource = std::make_shared<res::ModelResource>(model, m_resourcesArgs.resourceName);
         m_resourceManager.addResource(modelResource);
     }
 }

@@ -9,13 +9,12 @@ namespace sl::gui {
 
 class FileBrowser {
 public:
-    explicit FileBrowser(GuiApi& gui, std::string id)
+    explicit FileBrowser(GuiApi& gui, std::string id, std::string& path)
         : m_gui(gui)
         , m_id(std::move(id))
-        , m_path(nullptr) {} // TODO: add uuid here
+        , m_path(path) {} // TODO: add uuid here
 
-    void open(std::string* path) {
-        m_path = path;
+    void open() {
         m_gui.openPopUp(m_id);
     }
 
@@ -25,7 +24,7 @@ public:
             processDirectory(root);
 
             m_gui.breakLine();
-            m_gui.displayText(*m_path);
+            m_gui.displayText(m_path);
 
             if (m_gui.button("Pick"))
                 m_gui.closeCurrentPopUp();
@@ -46,7 +45,7 @@ private:
             } else {
                 m_gui.displayText(entryName);
                 if (m_gui.isPreviousWidgetClicked())
-                    *m_path = entry;
+                    m_path = entry;
             }
         }
     }
@@ -58,6 +57,6 @@ private:
 
     GuiApi& m_gui;
     std::string m_id;
-    std::string* m_path;
+    std::string& m_path;
 };
 }

@@ -25,5 +25,7 @@ enum class ErrorCode : int {
     PathAlreadyRegistered = 800,
     PathNotRegistered = 801,
 
+    AssetError = 900
+
 };
 }
