@@ -111,27 +111,27 @@ void ResourcesTab::handleCubemapLoader(sl::gui::GuiApi& gui) {
 
     sl::gui::labeledTextInput(gui, "Top", m_resourcesArgs.faces[0], padding);
     if (gui.isPreviousWidgetClicked())
-        fileBrowser.open(&faces[0]);
+        fileBrowser.open(&m_resourcesArgs.faces[0]);
 
     sl::gui::labeledTextInput(gui, "Bottom", m_resourcesArgs.faces[1], padding);
     if (gui.isPreviousWidgetClicked())
-        fileBrowser.open(&faces[1]);
+        fileBrowser.open(&m_resourcesArgs.faces[1]);
 
     sl::gui::labeledTextInput(gui, "Right", m_resourcesArgs.faces[2], padding);
     if (gui.isPreviousWidgetClicked())
-        fileBrowser.open(&faces[2]);
+        fileBrowser.open(&m_resourcesArgs.faces[2]);
 
     sl::gui::labeledTextInput(gui, "Left", m_resourcesArgs.faces[3], padding);
     if (gui.isPreviousWidgetClicked())
-        fileBrowser.open(&faces[3]);
+        fileBrowser.open(&m_resourcesArgs.faces[3]);
 
     sl::gui::labeledTextInput(gui, "Front", m_resourcesArgs.faces[4], padding);
     if (gui.isPreviousWidgetClicked())
-        fileBrowser.open(&faces[4]);
+        fileBrowser.open(&m_resourcesArgs.faces[4]);
 
     sl::gui::labeledTextInput(gui, "Back", m_resourcesArgs.faces[5], padding);
     if (gui.isPreviousWidgetClicked())
-        fileBrowser.open(&faces[5]);
+        fileBrowser.open(&m_resourcesArgs.faces[5]);
 
     fileBrowser.show();
 
@@ -149,7 +149,7 @@ void ResourcesTab::handleModelLoader(sl::gui::GuiApi& gui) {
 
     sl::gui::labeledTextInput(gui, "Model", m_resourcesArgs.modelName, padding);
     if (gui.isPreviousWidgetClicked())
-        fileBrowser.open(&modelName);
+        fileBrowser.open(&m_resourcesArgs.modelName);
 
     fileBrowser.show();
 
