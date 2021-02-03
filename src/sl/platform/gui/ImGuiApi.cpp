@@ -150,6 +150,22 @@ void ImGuiApi::end() {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
+void ImGuiApi::setNextWindowPosition(math::Vec2 position) {
+    ImGui::SetNextWindowPos(ImVec2(position.x, position.y));
+}
+
+void ImGuiApi::setNextWindowSize(math::Vec2 size) {
+    ImGui::SetNextWindowSize(ImVec2(size.x, size.y));
+}
+
+void ImGuiApi::beginChild(const std::string& id) {
+	ImGui::BeginChild(id.c_str());
+}
+
+void ImGuiApi::endChild() {
+	ImGui::EndChild();
+}
+
 void ImGuiApi::beginPanel(const std::string& title, math::Vec2 pos, math::Vec2 size) {
     ImGui::SetNextWindowPos(ImVec2(pos.x, pos.y));
     ImGui::SetNextWindowSize(ImVec2(size.x, size.y));

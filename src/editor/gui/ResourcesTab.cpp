@@ -4,7 +4,6 @@
 #include "sl/asset/AssetManager.hpp"
 #include "sl/core/error/Errors.hpp"
 #include "sl/core/utils/String.hpp"
-#include "sl/gui/FileBrowser.hpp"
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/Utils.hpp"
 
@@ -15,13 +14,13 @@ constexpr int padding = 65;
 static void validateResourceName(const std::string& name) {
     using namespace sl::core::error;
 
-    SL_INFO("?? {}", name.size());
     if (sl::core::utils::isStringEmpty(name))
         throw AssetError(ErrorCode::AssetError, "Asset name cannot be empty");
 }
 
 ResourcesTab::ResourcesTab(res::ResourceManager& resourceManager)
-    : m_resourceManager(resourceManager) {
+    : m_resourceManager(resourceManager)
+    , m_fileBrowser("Resources file browser") {
 }
 
 void ResourcesTab::render(sl::gui::GuiApi& gui) {
@@ -107,33 +106,31 @@ void ResourcesTab::showLoaderPopUp(sl::gui::GuiApi& gui) {
 }
 
 void ResourcesTab::handleCubemapLoader(sl::gui::GuiApi& gui) {
-    sl::gui::FileBrowser fileBrowser{ gui, "cubemapLoaderPopUp" };
-
     sl::gui::labeledTextInput(gui, "Top", m_resourcesArgs.faces[0], padding);
     if (gui.isPreviousWidgetClicked())
-        fileBrowser.open(&m_resourcesArgs.faces[0]);
+        m_fileBrowser.open(&m_resourcesArgs.faces[0], gui);
 
     sl::gui::labeledTextInput(gui, "Bottom", m_resourcesArgs.faces[1], padding);
     if (gui.isPreviousWidgetClicked())
-        fileBrowser.open(&m_resourcesArgs.faces[1]);
+        m_fileBrowser.open(&m_resourcesArgs.faces[1], gui);
 
     sl::gui::labeledTextInput(gui, "Right", m_resourcesArgs.faces[2], padding);
     if (gui.isPreviousWidgetClicked())
-        fileBrowser.open(&m_resourcesArgs.faces[2]);
+        m_fileBrowser.open(&m_resourcesArgs.faces[2], gui);
 
     sl::gui::labeledTextInput(gui, "Left", m_resourcesArgs.faces[3], padding);
     if (gui.isPreviousWidgetClicked())
-        fileBrowser.open(&m_resourcesArgs.faces[3]);
+        m_fileBrowser.open(&m_resourcesArgs.faces[3], gui);
 
     sl::gui::labeledTextInput(gui, "Front", m_resourcesArgs.faces[4], padding);
     if (gui.isPreviousWidgetClicked())
-        fileBrowser.open(&m_resourcesArgs.faces[4]);
+        m_fileBrowser.open(&m_resourcesArgs.faces[4], gui);
 
     sl::gui::labeledTextInput(gui, "Back", m_resourcesArgs.faces[5], padding);
     if (gui.isPreviousWidgetClicked())
-        fileBrowser.open(&m_resourcesArgs.faces[5]);
+        m_fileBrowser.open(&m_resourcesArgs.faces[5], gui);
 
-    fileBrowser.show();
+    m_fileBrowser.show(gui);
 
     if (m_loadClicked) {
         validateResourceName(m_resourcesArgs.resourceName);
@@ -145,13 +142,11 @@ void ResourcesTab::handleCubemapLoader(sl::gui::GuiApi& gui) {
 }
 
 void ResourcesTab::handleModelLoader(sl::gui::GuiApi& gui) {
-    sl::gui::FileBrowser fileBrowser{ gui, "modelLoaderPopUp" };
-
     sl::gui::labeledTextInput(gui, "Model", m_resourcesArgs.modelName, padding);
     if (gui.isPreviousWidgetClicked())
-        fileBrowser.open(&m_resourcesArgs.modelName);
+        m_fileBrowser.open(&m_resourcesArgs.modelName, gui);
 
-    fileBrowser.show();
+    m_fileBrowser.show(gui);
 
     if (m_loadClicked) {
         validateResourceName(m_resourcesArgs.resourceName);

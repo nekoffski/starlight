@@ -4,6 +4,7 @@
 
 #include "editor/res/ResourceManager.h"
 #include "sl/gui/ErrorDialog.hpp"
+#include "sl/gui/FileBrowser.hpp"
 #include "sl/gui/GuiApi.h"
 
 namespace editor::gui {
@@ -11,10 +12,10 @@ namespace editor::gui {
 class ResourcesTab : public Widget {
     struct ResourcesArgs {
         std::string resourceName;
-	    std::string modelName; 
-		int activeItem;
-		std::array<std::string, 6> faces; 
-	};
+        std::string modelName;
+        int activeItem;
+        std::array<std::string, 6> faces;
+    };
 
 public:
     explicit ResourcesTab(res::ResourceManager& resourceManager);
@@ -33,7 +34,7 @@ private:
     bool m_loadClicked;
 
     sl::gui::ErrorDialog m_errorDialog;
-
-	ResourcesArgs m_resourcesArgs;
+	sl::gui::FileBrowser m_fileBrowser;
+    ResourcesArgs m_resourcesArgs;
 };
 }

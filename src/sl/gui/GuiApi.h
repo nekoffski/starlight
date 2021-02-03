@@ -23,15 +23,20 @@ public:
 
     virtual bool beginMenuBar() = 0;
     virtual void endMenuBar() = 0;
-	
-	virtual bool beginMainMenuBar() = 0;
+
+    virtual bool beginMainMenuBar() = 0;
     virtual void endMainMenuBar() = 0;
 
-	virtual bool beginMenu(const std::string&) = 0;
-	virtual void endMenu() = 0;
+	virtual void beginChild(const std::string&) = 0;
+	virtual void endChild() = 0;
 
-	virtual bool menuItem(const std::string&) = 0;
+    virtual bool beginMenu(const std::string&) = 0;
+    virtual void endMenu() = 0;
 
+    virtual bool menuItem(const std::string&) = 0;
+
+    virtual void setNextWindowSize(math::Vec2) = 0;
+    virtual void setNextWindowPosition(math::Vec2) = 0;
 
     virtual void combo(const std::string&, int&, std::vector<std::string> items) = 0;
     virtual void openPopUp(const std::string&) = 0;
