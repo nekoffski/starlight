@@ -12,7 +12,7 @@
 
 namespace sl::asset {
 
-class AssetManager {
+class AssetLoader {
 public:
     template <class T, typename... Args>
     static std::shared_ptr<T> loadGlobalPath(Args&&... args) {
@@ -28,9 +28,9 @@ private:
     template <class T, typename... Args>
     static std::shared_ptr<T> load(bool globalPath, Args&&... args) {
         try {
-            if (loaders::IsSpecializedFor<loaders::AssetLoader<T>>::value)
-                return loaders::AssetLoader<T>::load(globalPath,
-                    loaders::AssetLoaderArgs<T>{ std::forward<Args>(args)... });
+            if (loaders::IsSpecializedFor<loaders::Loader<T>>::value)
+                return loaders::Loader<T>::load(globalPath,
+                    loaders::LoaderArgs<T>{ std::forward<Args>(args)... });
         } catch (core::error::Error& e) {
             throw e.as<core::error::AssetError>();
         }

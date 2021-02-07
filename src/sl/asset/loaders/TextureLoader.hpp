@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sl/asset/loaders/AssetLoader.h"
+#include "sl/asset/loaders/Loader.h"
 
 #include "sl/core/Logger.h"
 #include "sl/core/PathManager.hpp"
@@ -11,13 +11,13 @@ namespace sl::asset::loaders {
 using sl::graphics::Texture;
 
 template <>
-struct AssetLoaderArgs<Texture> {
+struct LoaderArgs<Texture> {
     std::string path;
 };
 
 template <>
-struct AssetLoader<Texture> {
-    static std::shared_ptr<Texture> load(bool globalPath, AssetLoaderArgs<Texture> args) {
+struct Loader<Texture> {
+    static std::shared_ptr<Texture> load(bool globalPath, LoaderArgs<Texture> args) {
         std::string path = "";
         if (not globalPath)
             path += core::PathManager::get<Texture>();

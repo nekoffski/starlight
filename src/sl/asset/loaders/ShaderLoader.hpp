@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sl/asset/loaders/AssetLoader.h"
+#include "sl/asset/loaders/Loader.h"
 
 #include "sl/core/Logger.h"
 #include "sl/core/PathManager.hpp"
@@ -12,15 +12,15 @@ namespace sl::asset::loaders {
 using graphics::Shader;
 
 template <>
-struct AssetLoaderArgs<Shader> {
+struct LoaderArgs<Shader> {
     std::string vertexPath;
     std::string fragmentPath;
     std::string geometryPath;
 };
 
 template <>
-struct AssetLoader<Shader> {
-    static std::shared_ptr<Shader> load(bool globalPath, AssetLoaderArgs<Shader> args) {
+struct Loader<Shader> {
+    static std::shared_ptr<Shader> load(bool globalPath, LoaderArgs<Shader> args) {
         std::string prefix = "";
         if (not globalPath)
             prefix += core::PathManager::get<Shader>();

@@ -1,6 +1,6 @@
 #include "ParticleEffectRenderer.h"
 
-#include "sl/asset/AssetManager.hpp"
+#include "sl/asset/AssetLoader.hpp"
 #include "sl/async/AsyncEngine.hpp"
 #include "sl/core/Profiler.h"
 #include "sl/ecs/ComponentView.hpp"
@@ -16,7 +16,7 @@ ParticleEffectRenderer::ParticleEffectRenderer(std::shared_ptr<graphics::LowLeve
     : m_renderer(renderer)
     , m_vao(utils::Globals::geometry->squareVAO) {
 
-    m_shader = asset::AssetManager::loadLocalPath<graphics::Shader>(
+    m_shader = asset::AssetLoader::loadLocalPath<graphics::Shader>(
         "/particle.vert", "/particle.frag");
 }
 

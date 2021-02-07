@@ -4,48 +4,48 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Resource.h"
+#include "Asset.h"
 
-namespace editor::res {
+namespace sl::asset {
 
-class ResourceManager {
-    using NameToResourceMap = std::unordered_map<std::string, std::shared_ptr<Resource>>;
-    using TypeToResourceMapMap = std::unordered_map<ResourceType, NameToResourceMap>;
+class AssetManager {
+    using NameToAssetMap = std::unordered_map<std::string, std::shared_ptr<Asset>>;
+    using TypeToAssetMapMap = std::unordered_map<AssetType, NameToAssetMap>;
     using NamesVector = std::vector<std::string>;
-    using TypeToNamesMap = std::unordered_map<ResourceType, NamesVector>;
+    using TypeToNamesMap = std::unordered_map<AssetType, NamesVector>;
 
 public:
-    TypeToResourceMapMap& getAllResources() {
+    TypeToAssetMapMap& getAllAssets() {
         return m_resources;
     }
 
-    NameToResourceMap& getResourcesByType(ResourceType type) {
+    NameToAssetMap& getAssetsByType(AssetType type) {
         if (m_resources.contains(type))
             return m_resources[type];
-        return m_emptyResourceMap;
+        return m_emptyAssetMap;
     }
 
     TypeToNamesMap& getAllNames() {
         return m_resourceNames;
     }
 
-    NamesVector& getNamesByType(ResourceType type) {
+    NamesVector& getNamesByType(AssetType type) {
         if (m_resourceNames.contains(type))
             return m_resourceNames[type];
         return m_emptyNamesVector;
     }
 
-    void addResource(std::shared_ptr<Resource> resource) {
+    void addAsset(std::shared_ptr<Asset> resource) {
         auto type = resource->getType();
         m_resourceNames[type].push_back(resource->name);
         m_resources[type][resource->name] = resource;
     }
 
 private:
-    TypeToResourceMapMap m_resources;
+    TypeToAssetMapMap m_resources;
     TypeToNamesMap m_resourceNames;
 
     inline static NamesVector m_emptyNamesVector;
-    inline static NameToResourceMap m_emptyResourceMap;
+    inline static NameToAssetMap m_emptyAssetMap;
 };
 }

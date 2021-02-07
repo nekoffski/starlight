@@ -11,10 +11,10 @@ namespace editor::gui {
 
 class LeftPanel : public Widget {
 public:
-    explicit LeftPanel(const Settings& settings, EntitiesVector& entities, res::ResourceManager& resourceManager)
+    explicit LeftPanel(const Settings& settings, EntitiesVector& entities, sl::asset::AssetManager& assetManager)
         : m_selectedEntity(nullptr)
         , m_scenePanel(settings.scenePanelPosition, entities, m_selectedEntity)
-        , m_propertiesPanel(settings.propertiesPanelPosition, resourceManager, m_selectedEntity) {
+        , m_propertiesPanel(settings.propertiesPanelPosition, assetManager, m_selectedEntity) {
     }
 
     void render(sl::gui::GuiApi& gui) override {
@@ -22,17 +22,16 @@ public:
         m_propertiesPanel.render(gui);
     }
 
-	void setSettings(const Settings& settings) {
-		m_scenePanel.setPosition(settings.scenePanelPosition);
-		m_propertiesPanel.setPosition(settings.propertiesPanelPosition);
-	}
+    void setSettings(const Settings& settings) {
+        m_scenePanel.setPosition(settings.scenePanelPosition);
+        m_propertiesPanel.setPosition(settings.propertiesPanelPosition);
+    }
 
-	void setActiveScene(std::shared_ptr<sl::scene::Scene> scene) override {
-		Widget::setActiveScene(scene);
-		m_scenePanel.setActiveScene(scene);
-		m_propertiesPanel.setActiveScene(scene);
-
-	}
+    void setActiveScene(std::shared_ptr<sl::scene::Scene> scene) override {
+        Widget::setActiveScene(scene);
+        m_scenePanel.setActiveScene(scene);
+        m_propertiesPanel.setActiveScene(scene);
+    }
 
 private:
     std::shared_ptr<sl::ecs::Entity> m_selectedEntity;

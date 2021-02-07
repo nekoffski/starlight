@@ -3,9 +3,9 @@
 #include "DebugConsole.hpp"
 #include "editor/gui/Settings.h"
 #include "gui/EditorGui.h"
-#include "res/ResourceManager.h"
+#include "sl/asset/AssetManager.h"
 #include "sl/application/ApplicationContext.h"
-#include "sl/asset/AssetManager.hpp"
+#include "sl/asset/AssetLoader.hpp"
 #include "sl/core/FileSystem.h"
 #include "sl/core/Logger.h"
 #include "sl/ecs/Entity.h"
@@ -32,7 +32,7 @@ public:
     void onInit() override {
         m_activeCamera = graphics::camera::EulerCamera::create(math::Vec3(0.0f), 1.0f, 8.0f);
         m_scene = scene::Scene::create();
-        m_editorGui = std::make_shared<editor::gui::EditorGui>(createGuiSettings(), m_entities, m_resourceManager);
+        m_editorGui = std::make_shared<editor::gui::EditorGui>(createGuiSettings(), m_entities, m_assetManager);
 
         m_scene->camera = m_activeCamera;
         m_editorGui->setActiveScene(m_scene);
@@ -148,12 +148,13 @@ public:
 
 private:
     void loadDefaultShaders() {
-        auto shaderResource = std::make_shared<editor::res::ShaderResource>(sl::utils::Globals::shaders->defaultModelShader,
+        auto shaderAsset = std::make_shared<sl::asset::ShaderAsset>(sl::utils::Globals::shaders->defaultModelShader,
             "defaultShader");
-        m_resourceManager.addResource(shaderResource);
+        m_assetManager.addAsset(shaderAsset);
     }
 
-    editor::res::ResourceManager m_resourceManager;
+
+	sl::asset::AssetManager m_assetManager;
 
     std::shared_ptr<editor::gui::EditorGui> m_editorGui;
     std::vector<std::shared_ptr<ecs::Entity>> m_entities;

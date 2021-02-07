@@ -14,10 +14,10 @@ namespace editor::gui {
 
 using namespace sl;
 
-PropertiesPanel::PropertiesPanel(const WidgetPosition& position, res::ResourceManager& resourceManager,
+PropertiesPanel::PropertiesPanel(const WidgetPosition& position, sl::asset::AssetManager& assetManager,
     std::shared_ptr<sl::ecs::Entity>& selectedEntity)
     : m_position(position)
-    , m_resourceManager(resourceManager)
+    , m_assetManager(assetManager)
     , m_selectedEntity(selectedEntity) {
 }
 
@@ -42,7 +42,7 @@ void PropertiesPanel::render(sl::gui::GuiApi& gui) {
 
 void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
     if (gui.beginTreeNode("Skybox")) {
-        auto cubemapsNames = m_resourceManager.getNamesByType(res::ResourceType::CUBEMAP);
+        auto cubemapsNames = m_assetManager.getNamesByType(sl::asset::AssetType::cubemap);
         cubemapsNames.insert(cubemapsNames.begin(), "None");
 
         int selectedValue = 0;
@@ -53,7 +53,7 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
         if (selectedValue != 0) {
             auto& cubemapName = cubemapsNames[selectedValue];
             auto cubemap =
-                m_resourceManager.getResourcesByType(res::ResourceType::CUBEMAP)[cubemapName]->as<res::CubemapResource>()->cubemap;
+                m_assetManager.getAssetsByType(sl::asset::AssetType::cubemap)[cubemapName]->as<sl::asset::CubemapAsset>()->cubemap;
 
             m_selectedCubemap = cubemap;
             event::Emitter::emit<event::SetSkyboxEvent>(cubemap);
@@ -140,7 +140,7 @@ void PropertiesPanel::showEntityProperties(sl::gui::GuiApi& gui) {
 }
 
 void PropertiesPanel::addModel(bool load, sl::gui::GuiApi& gui) {
-    auto modelsNames = m_resourceManager.getNamesByType(res::ResourceType::MODEL);
+    auto modelsNames = m_assetManager.getNamesByType(sl::asset::AssetType::model);
     modelsNames.insert(modelsNames.begin(), "None");
 
     static int selectedValue = 0;
@@ -150,9 +150,9 @@ void PropertiesPanel::addModel(bool load, sl::gui::GuiApi& gui) {
 
     if (load && selectedValue != 0) {
         auto& modelName = modelsNames[selectedValue];
-        auto modelResource =
-            m_resourceManager.getResourcesByType(res::ResourceType::MODEL)[modelName]->as<res::ModelResource>();
-        m_selectedEntity->addComponent<sl::scene::components::ModelComponent>(modelResource->model);
+        auto modelAsset =
+            m_assetManager.getAssetsByType(sl::asset::AssetType::model)[modelName]->as<sl::asset::ModelAsset>();
+        m_selectedEntity->addComponent<sl::scene::components::ModelComponent>(modelAsset->model);
     }
 }
 
@@ -172,7 +172,7 @@ void PropertiesPanel::addDirectionalLight(bool load, sl::gui::GuiApi& gui) {
 }
 
 void PropertiesPanel::addRenderer(bool load, sl::gui::GuiApi& gui) {
-    auto shadersNames = m_resourceManager.getNamesByType(res::ResourceType::SHADER);
+    auto shadersNames = m_assetManager.getNamesByType(sl::asset::AssetType::shader);
     shadersNames.insert(shadersNames.begin(), "None");
 
     static int selectedValue = 0;
@@ -182,9 +182,9 @@ void PropertiesPanel::addRenderer(bool load, sl::gui::GuiApi& gui) {
 
     if (load && selectedValue != 0) {
         auto& shaderName = shadersNames[selectedValue];
-        auto shaderResource =
-            m_resourceManager.getResourcesByType(res::ResourceType::SHADER)[shaderName]->as<res::ShaderResource>();
-        m_selectedEntity->addComponent<sl::scene::components::RendererComponent>(shaderResource->shader);
+        auto shaderAsset =
+            m_assetManager.getAssetsByType(sl::asset::AssetType::shader)[shaderName]->as<sl::asset::ShaderAsset>();
+        m_selectedEntity->addComponent<sl::scene::components::RendererComponent>(shaderAsset->shader);
     }
 }
 

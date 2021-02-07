@@ -5,9 +5,9 @@ using namespace sl::core;
 
 namespace editor::gui {
 
-EditorGui::EditorGui(const Settings& settings, EntitiesVector& entities, res::ResourceManager& resourceManager)
-    : m_leftPanel(settings, entities, resourceManager)
-    , m_bottomPanel(settings, resourceManager) {
+EditorGui::EditorGui(const Settings& settings, EntitiesVector& entities, sl::asset::AssetManager& assetManager)
+    : m_leftPanel(settings, entities, assetManager)
+    , m_bottomPanel(settings, assetManager) {
 }
 
 void EditorGui::setSettings(const Settings& settings) {

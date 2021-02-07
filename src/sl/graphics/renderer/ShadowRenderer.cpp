@@ -1,6 +1,6 @@
 #include "ShadowRenderer.h"
 
-#include "sl/asset/AssetManager.hpp"
+#include "sl/asset/AssetLoader.hpp"
 #include "sl/graphics/LowLevelRenderer.h"
 #include "sl/graphics/Shader.h"
 #include "sl/graphics/Viewport.h"
@@ -12,7 +12,7 @@ namespace sl::graphics::renderer {
 ShadowRenderer::ShadowRenderer(std::shared_ptr<graphics::LowLevelRenderer> renderer)
     : m_renderer(renderer)
     , m_shadowMapFrameBuffer(graphics::buffer::FrameBuffer::factory->create())
-    , m_depthShader(asset::AssetManager::loadLocalPath<graphics::Shader>("/depth_capture.vert", "/depth_capture.frag")) {
+    , m_depthShader(asset::AssetLoader::loadLocalPath<graphics::Shader>("/depth_capture.vert", "/depth_capture.frag")) {
 }
 
 void ShadowRenderer::beginDepthCapture() {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sl/asset/loaders/AssetLoader.h"
+#include "sl/asset/loaders/Loader.h"
 #include "sl/core/Logger.h"
 #include "sl/core/PathManager.hpp"
 #include "sl/graphics/Cubemap.h"
@@ -10,8 +10,8 @@ namespace sl::asset::loaders {
 using sl::graphics::Cubemap;
 
 template <>
-struct AssetLoaderArgs<Cubemap> {
-    explicit AssetLoaderArgs(const std::string& top, const std::string& bottom, const std::string& right,
+struct LoaderArgs<Cubemap> {
+    explicit LoaderArgs(const std::string& top, const std::string& bottom, const std::string& right,
         const std::string& left, const std::string& front, const std::string& back)
         : top(top)
         , bottom(bottom)
@@ -21,7 +21,7 @@ struct AssetLoaderArgs<Cubemap> {
         , back(back) {
     }
 
-    explicit AssetLoaderArgs(const std::array<std::string, 6>& faces)
+    explicit LoaderArgs(const std::array<std::string, 6>& faces)
         : top(faces[0])
         , bottom(faces[1])
         , right(faces[2])
@@ -39,8 +39,8 @@ struct AssetLoaderArgs<Cubemap> {
 };
 
 template <>
-struct AssetLoader<Cubemap> {
-    static std::shared_ptr<Cubemap> load(bool globalPath, AssetLoaderArgs<Cubemap> args) {
+struct Loader<Cubemap> {
+    static std::shared_ptr<Cubemap> load(bool globalPath, LoaderArgs<Cubemap> args) {
         // clang-format off
 		std::string prefix = "";
 		if (not globalPath)

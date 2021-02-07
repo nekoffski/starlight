@@ -1,6 +1,6 @@
 #include "ParticleEffectSystem.h"
 
-#include "sl/asset/AssetManager.hpp"
+#include "sl/asset/AssetLoader.hpp"
 #include "sl/async/AsyncEngine.hpp"
 #include "sl/core/Profiler.h"
 #include "sl/ecs/ComponentView.hpp"

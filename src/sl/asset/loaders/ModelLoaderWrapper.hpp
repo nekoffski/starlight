@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AssetLoader.h"
+#include "Loader.h"
 
 #include "sl/core/Logger.h"
 #include "sl/core/PathManager.hpp"
@@ -12,14 +12,14 @@ namespace sl::asset::loaders {
 using geometry::Model;
 
 template <>
-struct AssetLoaderArgs<Model> {
+struct LoaderArgs<Model> {
     std::string path;
 };
 
 template <>
-class AssetLoader<Model> {
+class Loader<Model> {
 public:
-    static std::shared_ptr<Model> load(bool globalPath, AssetLoaderArgs<Model> args) {
+    static std::shared_ptr<Model> load(bool globalPath, LoaderArgs<Model> args) {
         std::string path = "";
         if (not globalPath)
             path += core::PathManager::get<Model>();
