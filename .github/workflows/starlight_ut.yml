@@ -8,37 +8,37 @@ jobs:
     strategy:
       matrix:
         compiler: [gcc-10]
-        steps:
-          - uses: actions/checkout@v2
-          - name: Set scripts permissions
-            run: chmod +x ./bin/*
-          - name: Install dependencies
-            run: |
-              ./bin/install_deps.sh
-          - name: Pull submodules
-            run: git submodule update --init --recursive
-          - name: Build
-            run: |
-              rm -f build && mkdir build && pushd build && cmake .. && make -j16 && popd
-            env:
-              CC: /usr/bin/gcc-10
-              CXX: /usr/bin/g++-10
-          - name: Run unit tests
-            run: |
-              pushd build && make test && popd
-          - name: Build with coverage
-            run: |
-              mkdir cov_build && pushd cov_build && cmake .. -DCOV_BUILD=1 && make -j16 && popd
-            env:
-              CC: /usr/bin/gcc-10
-              CXX: /usr/bin/g++-10
-          - name: Run unit tests on coverage build
-            run: |
-              pushd cov_build && make test && popd
-          - name: Generate unit tests coverage
-            run: |
-              ./bin/generate_ut_cov.sh
-          - name: Send raport to Codecov
-            uses: codecov/codecov-action@v1
-            with:
-              files: ./coverage.xml
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set scripts permissions
+        run: chmod +x ./bin/*
+      - name: Install dependencies
+        run: |
+          ./bin/install_deps.sh
+      - name: Pull submodules
+        run: git submodule update --init --recursive
+      - name: Build
+        run: |
+          rm -f build && mkdir build && pushd build && cmake .. && make -j16 && popd
+        env:
+          CC: /usr/bin/gcc-10
+          CXX: /usr/bin/g++-10
+      - name: Run unit tests
+        run: |
+          pushd build && make test && popd
+      - name: Build with coverage
+        run: |
+          mkdir cov_build && pushd cov_build && cmake .. -DCOV_BUILD=1 && make -j16 && popd
+        env:
+          CC: /usr/bin/gcc-10
+          CXX: /usr/bin/g++-10
+      - name: Run unit tests on coverage build
+        run: |
+          pushd cov_build && make test && popd
+      - name: Generate unit tests coverage
+        run: |
+          ./bin/generate_ut_cov.sh
+      - name: Send raport to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          files: ./coverage.xml
