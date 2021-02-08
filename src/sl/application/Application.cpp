@@ -60,7 +60,7 @@ Application::Application(Application::Token&&)
     : xvent::EventListener("Application")
     , m_eventEmitter(m_eventEngine.createEmitter()) {
 
-    event::Emitter::init(m_eventEngine.createEmitter());
+    event::Emitter::init(m_eventEmitter->clone());
 }
 
 void Application::init() {
