@@ -4,11 +4,6 @@ if [ -d ./build ]; then
     rm build -rf
 fi
 
-cd 3rdparty/fuzzylite
-cmake ./fuzzylite
-make -j 16
-cd ../..
-
 mkdir ./build
 cd ./build
 

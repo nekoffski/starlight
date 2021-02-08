@@ -59,6 +59,10 @@ public:
         return m_entityNameToId;
     }
 
+    std::unordered_map<std::string, std::shared_ptr<Entity>> getEntities() {
+        return m_entities;
+    }
+
 private:
     ComponentMap<IComponentContainer, ComponentContainer> m_componentMap;
     std::unordered_map<std::string, std::shared_ptr<Entity>> m_entities;

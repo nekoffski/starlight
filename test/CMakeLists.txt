@@ -8,21 +8,17 @@ target_include_directories(manual_test PUBLIC ${STARLIGHT_HEADERS})
 
 include(GoogleTest)
 
-
-function(sl_add_test bin files)
-	add_executable(${bin} ${files})
-	target_link_libraries(${bin} PUBLIC sl ${GTEST_LINK})
-	target_include_directories(${bin} PUBLIC ${STARLIGHT_HEADERS})
-	gtest_add_tests(TARGET ${bin})
+function(sl_add_test module)
+	file (GLOB_RECURSE src ${CMAKE_CURRENT_SOURCE_DIR}/${module}/*.cpp)
+	add_executable(${module}_tests ${src})
+	target_link_libraries(${module}_tests PUBLIC sl ${GTEST_LINK})
+	target_include_directories(${module}_tests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+	set_property(TARGET ${module}_tests PROPERTY CXX_STANDARD 20)
+	gtest_add_tests(TARGET ${module}_tests)
 endfunction()
 
-file (GLOB_RECURSE SL_TEST_CORE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/core/*.cpp)
 file (GLOB_RECURSE SL_TEST_PLATFORM_SRC ${CMAKE_CURRENT_SOURCE_DIR}/platform/*.cpp)
 file (GLOB_RECURSE SL_TEST_MISC_SRC ${CMAKE_CURRENT_SOURCE_DIR}/misc/*.cpp)
 
-
-# sl_add_test(core_tests "${SL_TEST_CORE_SRC}")
-# sl_add_test(platform_tests ${SL_TEST_PLATFORM_SRC})
-# sl_add_test(misc_tests "${SL_TEST_MISC_SRC}")
-
+sl_add_test(core)
 

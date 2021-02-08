@@ -3,6 +3,7 @@
 #include "BottomPanel.h"
 #include "LeftPanel.h"
 #include "Settings.h"
+#include "sl/asset/AssetManager.h"
 
 using namespace sl::core;
 
@@ -23,5 +24,6 @@ public:
 private:
     LeftPanel m_leftPanel;
     BottomPanel m_bottomPanel;
+	sl::asset::AssetManager& m_assetManager;
 };
 }

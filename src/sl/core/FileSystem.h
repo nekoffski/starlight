@@ -1,5 +1,6 @@
 #pragma once
 
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -12,6 +13,7 @@ public:
     static bool isFile(const Path& path);
     static bool isDirectory(const Path& path);
     static std::vector<Path> listDirectory(const Path& path);
+    static void writeFile(const Path& path, const std::string& buffer);
 };
 
 using FS = FileSystem;

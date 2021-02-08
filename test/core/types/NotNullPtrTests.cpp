@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "sl/misc/types/NotNullPtr.hpp"
+#include "sl/core/types/NotNullPtr.hpp"
 
-using namespace sl::misc::types;
+using namespace sl::core::types;
 
 class NotNullPtrTests : public testing::Test {
 protected:

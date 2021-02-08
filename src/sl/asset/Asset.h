@@ -10,10 +10,10 @@
 namespace sl::asset {
 
 enum class AssetType {
-    cubemap,
-    texture,
-    model,
-    shader
+    cubemap = 0,
+    texture = 1,
+    model = 2,
+    shader = 3
 };
 
 struct Asset : public std::enable_shared_from_this<Asset> {
@@ -28,14 +28,15 @@ struct Asset : public std::enable_shared_from_this<Asset> {
         return std::dynamic_pointer_cast<T>(shared_from_this());
     }
 
+    int id = 0;
     std::string name;
 };
 
-#define SL_RESOURCE(type) \
+#define SL_ASSET(type) \
     AssetType getType() override { return type; }
 
 struct ShaderAsset : public Asset {
-    SL_RESOURCE(AssetType::shader);
+    SL_ASSET(AssetType::shader);
 
     explicit ShaderAsset(std::shared_ptr<sl::graphics::Shader> shader, const std::string& name)
         : Asset(name)
@@ -45,7 +46,7 @@ struct ShaderAsset : public Asset {
 };
 
 struct CubemapAsset : public Asset {
-    SL_RESOURCE(AssetType::cubemap);
+    SL_ASSET(AssetType::cubemap);
 
     explicit CubemapAsset(std::shared_ptr<sl::graphics::Cubemap> cubemap, const std::string& name)
         : Asset(name)
@@ -55,7 +56,7 @@ struct CubemapAsset : public Asset {
 };
 
 struct ModelAsset : public Asset {
-    SL_RESOURCE(AssetType::model);
+    SL_ASSET(AssetType::model);
 
     explicit ModelAsset(std::shared_ptr<sl::geometry::Model> model, const std::string& name)
         : Asset(name)

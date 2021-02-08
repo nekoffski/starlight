@@ -69,7 +69,7 @@ private:
     std::shared_ptr<graphics::RendererComposite> m_rendererComposite;
 
     xvent::EventEngine m_eventEngine;
-    xvent::EventEmitter m_eventEmitter;
+	std::shared_ptr<xvent::EventEmitter> m_eventEmitter;
 };
 
 class Application::Token {

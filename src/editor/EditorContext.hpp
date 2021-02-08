@@ -3,9 +3,10 @@
 #include "DebugConsole.hpp"
 #include "editor/gui/Settings.h"
 #include "gui/EditorGui.h"
-#include "sl/asset/AssetManager.h"
 #include "sl/application/ApplicationContext.h"
+#include "sl/application/Serializer.h"
 #include "sl/asset/AssetLoader.hpp"
+#include "sl/asset/AssetManager.h"
 #include "sl/core/FileSystem.h"
 #include "sl/core/Logger.h"
 #include "sl/ecs/Entity.h"
@@ -143,6 +144,11 @@ public:
                 m_editorGui->setSettings(settings);
                 break;
             }
+
+            if (event->is<event::SerializeSceneEvent>()) {
+                sl::application::Serializer serializer{ ".", "scene" };
+                serializer.serialize(m_assetManager, m_scene);
+            }
         }
     }
 
@@ -153,8 +159,7 @@ private:
         m_assetManager.addAsset(shaderAsset);
     }
 
-
-	sl::asset::AssetManager m_assetManager;
+    sl::asset::AssetManager m_assetManager;
 
     std::shared_ptr<editor::gui::EditorGui> m_editorGui;
     std::vector<std::shared_ptr<ecs::Entity>> m_entities;

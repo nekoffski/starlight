@@ -14,4 +14,4 @@
 [submodule "3rdparty/xvent"]
 	path = 3rdparty/xvent
 	url = https://github.com/nekoffski/xvent.git
-	branch = dev
+	branch = mt
