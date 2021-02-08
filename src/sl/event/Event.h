@@ -26,6 +26,10 @@ DECLARE_EVENT(SetSkyboxEvent, EditorCategory) {
     std::shared_ptr<sl::graphics::Cubemap> cubemap;
 };
 
+DECLARE_EVENT(SerializeSceneEvent, EditorCategory){};
+
+DECLARE_EVENT(DeserializeSceneEvent, EditorCategory){};
+
 DECLARE_EVENT(WindowResizedEvent, CoreCategory) {
     WindowResizedEvent(int width, int height)
         : width(width)

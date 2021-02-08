@@ -17,4 +17,5 @@ SL_DEFINE_SUB_ERROR(TextureError, GraphicsError);
 SL_DEFINE_SUB_ERROR(ImageError, GraphicsError);
 
 SL_DEFINE_SUB_ERROR(WindowError, CoreError);
+SL_DEFINE_SUB_ERROR(JsonError, CoreError);
 }

@@ -3,6 +3,8 @@
 namespace sl::core::error {
 
 enum class ErrorCode : int {
+    InvalidJsonString = 30,
+
     UnknownTextureFormat = 100,
 
     CouldNotInitializeWindowLibrary = 200,

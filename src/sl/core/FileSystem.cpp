@@ -1,5 +1,6 @@
 #include "FileSystem.h"
 
+#include <iostream>
 #include <filesystem>
 
 namespace sl::core {
@@ -20,5 +21,12 @@ std::vector<std::string> FileSystem::listDirectory(const Path& path) {
         entries.emplace_back(entry.path());
 
     return entries;
+}
+
+void FileSystem::writeFile(const Path& path, const std::string& buffer) {
+    std::ofstream fs;
+    fs.open(path);
+	fs << buffer;
+	fs.close();
 }
 }
