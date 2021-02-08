@@ -8,7 +8,6 @@ add_subdirectory(graphics)
 add_subdirectory(scene)
 add_subdirectory(ecs)
 add_subdirectory(gui)
-add_subdirectory(ai)
 add_subdirectory(async)
 
 

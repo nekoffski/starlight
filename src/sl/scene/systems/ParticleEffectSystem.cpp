@@ -29,8 +29,7 @@ void ParticleEffectSystem::update(ecs::ComponentView<components::ParticleEffectC
 }
 
 void ParticleEffectSystem::updateParticleEffect(components::ParticleEffectComponent& pfx, float deltaTime, std::shared_ptr<graphics::camera::Camera> camera) {
-    pfx.maxParticles = m_particlesFuzzyController.calculateParticlesCount(camera->getPosition(),
-        camera->getFront(), pfx.position, static_cast<unsigned int>(1.0f / deltaTime));
+    pfx.maxParticles = MAX_PARTICLE_PER_ITERATION; 
 
     auto& particles = pfx.particles;
     for (auto& particle : particles)
