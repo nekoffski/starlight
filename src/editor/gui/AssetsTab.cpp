@@ -37,7 +37,7 @@ void AssetsTab::render(sl::gui::GuiApi& gui) {
 
     gui.endGroup();
 
-    for (auto& [_, namesVector] : m_assetManager.getAllNames())
+    for (auto& [_, namesVector] : m_assetManager.getAssetsNames())
         for (auto& assetName : namesVector)
             gui.displayText(assetName);
 }
