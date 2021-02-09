@@ -42,3 +42,7 @@ jobs:
         uses: codecov/codecov-action@v1
         with:
           files: ./coverage.xml
+          verbose: true
+          status:
+            project: off
+            patch: off
