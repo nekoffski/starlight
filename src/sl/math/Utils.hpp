@@ -17,6 +17,7 @@
 
 namespace sl::math {
 
+// TODO: this one seems broken
 template <typename T>
 inline const T circularRange(const T& value, const T min, const T max) {
     if (value < min)

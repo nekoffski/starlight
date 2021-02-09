@@ -9,8 +9,9 @@ namespace sl::gui {
 
 class FileBrowser {
 public:
-    explicit FileBrowser(const std::string& id)
-        : m_id(id) {}
+    explicit FileBrowser(const std::string& id, const core::FileSystem& fileSystem = core::FileSystem{})
+        : m_id(id)
+        , m_fileSystem(fileSystem) {}
 
     void open(std::string* path, GuiApi& gui) {
         m_path = path;
@@ -45,9 +46,9 @@ public:
 
 private:
     void processDirectory(const std::string& root, GuiApi& gui) {
-        for (auto& entry : core::FS::listDirectory(root)) {
+        for (auto& entry : m_fileSystem.listDirectory(root)) {
             auto entryName = extractNameFromPath(entry);
-            if (core::FS::isDirectory(entry)) {
+            if (m_fileSystem.isDirectory(entry)) {
                 if (gui.beginTreeNode(entryName, false)) {
                     processDirectory(entry, gui);
                     gui.popTreeNode();
@@ -68,5 +69,7 @@ private:
     std::string m_id;
     std::string m_currentSelection = "";
     std::string* m_path;
+
+    const core::FileSystem& m_fileSystem;
 };
 }

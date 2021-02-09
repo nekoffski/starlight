@@ -4,26 +4,29 @@
 #include "sl/core/FileSystem.h"
 #include "sl/core/Json.h"
 #include "sl/core/Logger.h"
+#include "sl/ecs/Entity.h"
 #include "sl/scene/Scene.h"
 
 namespace sl::application {
 
 class Serializer {
 public:
-    explicit Serializer(const std::string& path, const std::string& filename)
+    explicit Serializer(const std::string& path, const std::string& filename, const core::FileSystem& fileSystem = core::FileSystem{})
         : m_path(path)
-        , m_filename(filename) {
+        , m_filename(filename)
+        , m_fileSystem(fileSystem) {
     }
 
     void serialize(asset::AssetManager& assetManager, std::shared_ptr<scene::Scene> scene) {
-        const std::string extension = ".starscene";
         auto filePath = m_path + "/" + m_filename + extension;
 
         serializeAssets(assetManager);
         serializeScene(scene);
 
-        core::FileSystem::writeFile(filePath, m_jsonBuilder.asString());
+        m_fileSystem.writeFile(filePath, m_jsonBuilder.asString());
     }
+
+    inline static const std::string extension = ".starscene";
 
 private:
     void serializeAssets(asset::AssetManager& assetManager) {
@@ -61,5 +64,7 @@ private:
 
     std::string m_path;
     std::string m_filename;
+
+    const core::FileSystem& m_fileSystem;
 };
 }
