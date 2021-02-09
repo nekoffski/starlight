@@ -39,6 +39,10 @@ protected:
     }
 };
 
+TEST_F(SerializerTests, whenCreatingSerializerWithDefaultFileSystem_shouldBeCreatedWell) {
+    Serializer serializer{ m_path, m_filename };
+}
+
 TEST_F(SerializerTests, givenEmptySceneAndEmptyAssetManager_whenSerializing_shouldReturnEmptyAssetsAndEntities) {
     EXPECT_CALL(m_fsMock, writeFile(_, _)).Times(1).WillOnce(Invoke(writeFileArgsHijacker));
 
