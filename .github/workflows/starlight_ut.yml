@@ -43,6 +43,3 @@ jobs:
         with:
           files: ./coverage.xml
           verbose: true
-          status:
-            project: off
-            patch: off
