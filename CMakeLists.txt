@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(STARLIGHT_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(THIRDPARTY ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty)
 
-set(GCC_COVERAGE_COMPILE_FLAGS "--coverage -O0 -fprofile-arcs -ftest-coverage")
+set(GCC_COVERAGE_COMPILE_FLAGS "--coverage -O1 -fprofile-arcs -ftest-coverage -fno-elide-constructors")
 set(GCC_COVERAGE_LINK_FLAGS    "-lgcov")
 
 add_subdirectory(3rdparty)
