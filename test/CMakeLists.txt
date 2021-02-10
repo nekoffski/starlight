@@ -1,6 +1,6 @@
 set(GTEST_LINK gtest gtest_main gmock gmock_main)
-set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fconcepts")
-set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -fconcepts")
+# set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fconcepts")
+# set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -fconcepts")
 
 add_executable(manual_test manual_test.cpp)
 target_link_libraries(manual_test PUBLIC sl)
