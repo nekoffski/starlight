@@ -45,7 +45,7 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
         auto cubemapsNames = m_assetManager.getNamesByType(sl::asset::AssetType::cubemap);
         cubemapsNames.insert(cubemapsNames.begin(), "None");
 
-        int selectedValue = 0;
+        static int selectedValue = 0;
         gui.displayText("Cubemap");
         gui.sameLine();
         gui.combo(sl::gui::createHiddenLabel("Cubemap"), selectedValue, cubemapsNames);

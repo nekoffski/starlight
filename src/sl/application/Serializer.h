@@ -2,14 +2,15 @@
 
 #include "sl/asset/AssetManager.h"
 #include "sl/core/FileSystem.h"
-#include "sl/scene/Scene.h"
 #include "sl/core/Json.h"
+#include "sl/scene/Scene.h"
 
 namespace sl::application {
 
 class Serializer {
 public:
-    explicit Serializer(const std::string& path, const std::string& filename, const core::FileSystem& fileSystem = core::FileSystem{});
+    explicit Serializer(const std::string& path, const std::string& filename,
+        std::shared_ptr<core::FileSystem> fileSystem = std::make_shared<core::FileSystem>());
 
     void serialize(asset::AssetManager& assetManager, std::shared_ptr<scene::Scene> scene);
 
@@ -24,6 +25,6 @@ private:
     std::string m_path;
     std::string m_filename;
 
-    const core::FileSystem& m_fileSystem;
+    std::shared_ptr<core::FileSystem> m_fileSystem;
 };
 }

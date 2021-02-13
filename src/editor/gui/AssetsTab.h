@@ -6,6 +6,7 @@
 #include "sl/gui/ErrorDialog.hpp"
 #include "sl/gui/FileBrowser.hpp"
 #include "sl/gui/GuiApi.h"
+#include <exception>
 
 namespace editor::gui {
 
@@ -25,6 +26,7 @@ private:
     void handleCubemapLoader(sl::gui::GuiApi& gui);
     void handleModelLoader(sl::gui::GuiApi& gui);
     void handleTextureLoader(sl::gui::GuiApi& gui);
+	void handleShaderLoader(sl::gui::GuiApi& gui);
 
     void resetArgs();
 

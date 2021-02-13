@@ -20,4 +20,8 @@ std::string format(const std::string& format, Args... args) {
 }
 
 bool isStringEmpty(const std::string& s);
+
+inline void stripString(std::string& str) {
+    str.erase(std::find(str.begin(), str.end(), '\0'), str.end());
+}
 }

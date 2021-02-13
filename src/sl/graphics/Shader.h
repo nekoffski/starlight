@@ -2,13 +2,14 @@
 
 #include <memory>
 
+#include "sl/core/Countable.hpp"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
 
 namespace sl::graphics {
 class ShaderCompilerImpl;
 
-class Shader {
+class Shader : public core::GameObject {
     friend class ShaderCompilerImpl;
 
 public:
@@ -30,5 +31,9 @@ public:
     virtual void setUniform(const std::string&, math::Mat3) = 0;
     virtual void setUniform(const std::string&, math::Vec4) = 0;
     virtual void setUniform(const std::string&, math::Vec3) = 0;
+
+    virtual std::string getVertexShaderPath() = 0;
+    virtual std::string getFragmentShaderPath() = 0;
+    virtual std::string getGeometryShaderPath() = 0;
 };
 }

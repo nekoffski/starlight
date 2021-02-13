@@ -26,5 +26,6 @@ void AssetManager::addAsset(std::shared_ptr<Asset> asset) {
     auto type = asset->getType();
     m_assetsNames[type].push_back(asset->name);
     m_assets[type][asset->name] = asset;
+    m_idToAsset[asset->getId()] = asset;
 }
 }

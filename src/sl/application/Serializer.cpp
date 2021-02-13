@@ -5,7 +5,7 @@
 
 namespace sl::application {
 
-Serializer::Serializer(const std::string& path, const std::string& filename, const core::FileSystem& fileSystem)
+Serializer::Serializer(const std::string& path, const std::string& filename, std::shared_ptr<core::FileSystem> fileSystem)
     : m_path(path)
     , m_filename(filename)
     , m_fileSystem(fileSystem) {
@@ -17,7 +17,7 @@ void Serializer::serialize(asset::AssetManager& assetManager, std::shared_ptr<sc
     serializeAssets(assetManager);
     serializeScene(scene);
 
-    m_fileSystem.writeFile(filePath, m_jsonBuilder.asString());
+    m_fileSystem->writeFile(filePath, m_jsonBuilder.asString());
 }
 
 void Serializer::serializeAssets(asset::AssetManager& assetManager) {
@@ -26,8 +26,12 @@ void Serializer::serializeAssets(asset::AssetManager& assetManager) {
     for (auto& [assetType, assetMap] : assetManager.getAllAssets()) {
         auto iAssetType = static_cast<int>(assetType);
         for (auto& [assetName, asset] : assetMap) {
+            if (not asset->shouldSerialize)
+                continue;
+
             m_jsonBuilder.beginObject();
-            m_jsonBuilder.addField("name", assetName).addField("type", iAssetType).addField("id", asset->id);
+            m_jsonBuilder.addField("name", assetName).addField("type", iAssetType).addField("id", asset->getId());
+            m_jsonBuilder.addField("paths", asset->getResourceLocation());
             m_jsonBuilder.endObject();
         }
     }
@@ -44,10 +48,14 @@ void Serializer::serializeScene(std::shared_ptr<scene::Scene> scene) {
         m_jsonBuilder.beginArray("components");
 
         m_jsonBuilder.endArray();
+
         m_jsonBuilder.endObject();
     }
-
     m_jsonBuilder.endArray();
+
+    if (scene->skybox != nullptr)
+        m_jsonBuilder.addField("skybox-id", scene->skybox->cubemap->id);
+
     m_jsonBuilder.endObject();
 }
 }
