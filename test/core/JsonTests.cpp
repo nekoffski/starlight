@@ -158,4 +158,30 @@ TEST_F(JsonTests, givenJsonBuilder_whenCreatingArrayWithIntElements_shouldGiveCo
     ASSERT_EQ(arr[0], 1);
     ASSERT_EQ(arr[1], 2);
 }
+
+TEST_F(JsonTests, givenJsonBuilder_whenCreatingArrayFromStringVector_shouldGiveCorrectResults) {
+    auto stringVector = std::vector<std::string>{ "abcd"s, "efgh"s };
+    auto jsonString = jsonBuilder.addField("array", stringVector).asString();
+    auto json = parseJson(jsonString);
+
+    ASSERT_TRUE(json.isMember("array"));
+    auto& arr = json["array"];
+
+    ASSERT_EQ(arr.size(), stringVector.size());
+    for (int i = 0; i < stringVector.size(); ++i)
+        EXPECT_EQ(arr[i], stringVector[i]);
+}
+
+TEST_F(JsonTests, givenJsonBuilder_whenCreatingArrayFromIntVector_shouldGiveCorrectResults) {
+    auto intVector = std::vector<int>{ 1, 2, 3, 4 };
+    auto jsonString = jsonBuilder.addField("array", intVector).asString();
+    auto json = parseJson(jsonString);
+
+    ASSERT_TRUE(json.isMember("array"));
+    auto& arr = json["array"];
+
+    ASSERT_EQ(arr.size(), intVector.size());
+    for (int i = 0; i < intVector.size(); ++i)
+        EXPECT_EQ(arr[i], intVector[i]);
+}
 }

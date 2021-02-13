@@ -21,7 +21,7 @@ namespace {
 
 class SerializerTests : public Test {
 protected:
-    FileSystemMock m_fsMock;
+	std::shared_ptr<FileSystemMock> m_fsMock = std::make_shared<FileSystemMock>();
 
     const std::string m_filename = "exampleFilename";
     const std::string m_path = "/path/";
@@ -39,8 +39,12 @@ protected:
     }
 };
 
+TEST_F(SerializerTests, whenCreatingSerializerWithDefaultFileSystem_shouldBeCreatedWell) {
+    Serializer serializer{ m_path, m_filename };
+}
+
 TEST_F(SerializerTests, givenEmptySceneAndEmptyAssetManager_whenSerializing_shouldReturnEmptyAssetsAndEntities) {
-    EXPECT_CALL(m_fsMock, writeFile(_, _)).Times(1).WillOnce(Invoke(writeFileArgsHijacker));
+    EXPECT_CALL(*m_fsMock, writeFile(_, _)).Times(1).WillOnce(Invoke(writeFileArgsHijacker));
 
     m_serializer.serialize(m_assetManager, m_scene);
 

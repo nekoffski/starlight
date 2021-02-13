@@ -18,7 +18,8 @@ cscope.out
 cscope.in.out
 cscope.po.out
 
-
+cov_build
+*.xml
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles

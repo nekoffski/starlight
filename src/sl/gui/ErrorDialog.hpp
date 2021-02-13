@@ -7,30 +7,36 @@
 namespace sl::gui {
 
 const std::string id = "ErrorPopUp";
+static int idGenerator = 0;
 
 class ErrorDialog {
 public:
-    void setErrorMessage(const std::string& errorMessage, GuiApi& gui) {
+    void setErrorMessage(const std::string& errorMessage) {
         m_errorMessage = errorMessage;
-        gui.openPopUp(id);
     }
 
     void show(GuiApi& gui) {
-        gui.beginGroup();
-        if (gui.beginPopUp(id)) {
+        if (m_errorMessage.has_value() && not m_showed) {
+            m_showed = true;
+            gui.openPopUp(m_id);
+        }
+
+        if (gui.beginPopUp(m_id)) {
             gui.displayText(m_errorMessage.value());
 
             if (gui.button("OK")) {
                 m_errorMessage = std::nullopt;
-				gui.closeCurrentPopUp();
+                m_showed = false;
+                gui.closeCurrentPopUp();
             }
 
             gui.endPopUp();
         }
-        gui.endGroup();
     }
 
 private:
+    std::string m_id = id + std::to_string(idGenerator++);
+    bool m_showed = false;
     std::optional<std::string> m_errorMessage = std::nullopt;
 };
 }

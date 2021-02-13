@@ -18,4 +18,7 @@ SL_DEFINE_SUB_ERROR(ImageError, GraphicsError);
 
 SL_DEFINE_SUB_ERROR(WindowError, CoreError);
 SL_DEFINE_SUB_ERROR(JsonError, CoreError);
+
+SL_DEFINE_SUB_ERROR(SerializationError, ApplicationError);
+SL_DEFINE_SUB_ERROR(DeserializationError, ApplicationError);
 }

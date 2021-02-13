@@ -4,16 +4,19 @@
 #include "editor/gui/Settings.h"
 #include "gui/EditorGui.h"
 #include "sl/application/ApplicationContext.h"
+#include "sl/application/Deserializer.h"
 #include "sl/application/Serializer.h"
 #include "sl/asset/AssetLoader.hpp"
 #include "sl/asset/AssetManager.h"
 #include "sl/core/FileSystem.h"
 #include "sl/core/Logger.h"
+#include "sl/core/error/BaseError.hpp"
 #include "sl/ecs/Entity.h"
 #include "sl/event/Categories.h"
 #include "sl/event/Event.h"
 #include "sl/graphics/camera/EulerCamera.h"
 #include "sl/graphics/camera/FPSCamera.h"
+#include "sl/gui/ErrorDialog.hpp"
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/Utils.hpp"
 #include "sl/scene/Scene.h"
@@ -59,6 +62,7 @@ public:
 
     void renderGui(gui::GuiApi& gui) override {
         m_editorGui->renderEditorGui(gui);
+        m_errorDialog.show(gui);
     }
 
     void handleInput(std::shared_ptr<core::Input> input) override {
@@ -145,9 +149,18 @@ public:
                 break;
             }
 
-            if (event->is<event::SerializeSceneEvent>()) {
-                sl::application::Serializer serializer{ ".", "scene" };
-                serializer.serialize(m_assetManager, m_scene);
+            try {
+                if (event->is<event::SerializeSceneEvent>()) {
+                    sl::application::Serializer serializer{ ".", "scene" };
+                    serializer.serialize(m_assetManager, m_scene);
+                }
+
+                if (event->is<event::DeserializeSceneEvent>()) {
+                    sl::application::Deserializer deserializer{ "./scene.starscene" };
+                    deserializer.deserialize(m_assetManager, m_scene);
+                }
+            } catch (sl::core::error::Error& err) {
+                m_errorDialog.setErrorMessage(err.getDetails());
             }
         }
     }
@@ -156,6 +169,7 @@ private:
     void loadDefaultShaders() {
         auto shaderAsset = std::make_shared<sl::asset::ShaderAsset>(sl::utils::Globals::shaders->defaultModelShader,
             "defaultShader");
+        shaderAsset->shouldSerialize = false;
         m_assetManager.addAsset(shaderAsset);
     }
 
@@ -166,4 +180,6 @@ private:
 
     std::shared_ptr<graphics::camera::UserControllableCamera> m_activeCamera;
     std::shared_ptr<scene::Scene> m_scene;
+
+    sl::gui::ErrorDialog m_errorDialog;
 };

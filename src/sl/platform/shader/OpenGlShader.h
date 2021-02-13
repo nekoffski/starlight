@@ -25,6 +25,18 @@ public:
     void setUniform(const std::string&, math::Vec4) override;
     void setUniform(const std::string&, math::Vec3) override;
 
+    std::string getVertexShaderPath() override {
+        return m_vertexPath;
+    }
+
+    std::string getFragmentShaderPath() override {
+        return m_fragmentPath;
+    }
+
+    std::string getGeometryShaderPath() override {
+        return m_geometryPath;
+    }
+
 private:
     unsigned int m_shaderProgram{ 0 };
 
@@ -34,9 +46,8 @@ private:
 };
 
 struct OpenGlShaderFactory : graphics::Shader::Factory {
-	std::shared_ptr<graphics::Shader> create(const std::string& vertex, const std::string& fragment, const std::string& geometry) {
-		return std::make_shared<OpenGlShader>(vertex, fragment, geometry);
-	}
+    std::shared_ptr<graphics::Shader> create(const std::string& vertex, const std::string& fragment, const std::string& geometry) {
+        return std::make_shared<OpenGlShader>(vertex, fragment, geometry);
+    }
 };
-
 }

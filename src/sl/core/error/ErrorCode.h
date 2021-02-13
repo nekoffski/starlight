@@ -14,6 +14,11 @@ enum class ErrorCode : int {
 
     CouldNotLoadImage = 400,
 
+    FileDoesNotExist = 450,
+    CouldNotReadFile = 451,
+
+    ProjectJsonIsInvalid = 475,
+
     CouldNotLinkShaderProgram = 500,
     CouldNotReadVertexShader = 501,
     CouldNotReadFragmentShader = 502,

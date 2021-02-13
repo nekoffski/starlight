@@ -37,7 +37,7 @@ void AssetsTab::render(sl::gui::GuiApi& gui) {
 
     gui.endGroup();
 
-    for (auto& [_, namesVector] : m_assetManager.getAllNames())
+    for (auto& [_, namesVector] : m_assetManager.getAssetsNames())
         for (auto& assetName : namesVector)
             gui.displayText(assetName);
 }
@@ -47,12 +47,12 @@ void AssetsTab::resetArgs() {
     m_assetsArgs.activeItem = 0;
     m_assetsArgs.modelName = "/tow/tower.obj";
     m_assetsArgs.faces = {
-        "/skybox/top.jpg", "/skybox/bottom.jpg", "/skybox/right.jpg", "/skybox/left.jpg", "/skybox/front.jpg", "/skybox/back.jpg"
+        "/skybox/right.jpg", "/skybox/left.jpg", "/skybox/top.jpg", "/skybox/bottom.jpg", "/skybox/front.jpg", "/skybox/back.jpg"
     };
 }
 
 void AssetsTab::showLoaderPopUp(sl::gui::GuiApi& gui) {
-    static const std::vector<std::string> labels = { "Cubemap", "Texture", "Model" };
+    static const std::vector<std::string> labels = { "Cubemap", "Texture", "Model", "Shader" };
 
     gui.combo(sl::gui::createHiddenLabel("AssetsCombo"), m_assetsArgs.activeItem, labels);
 
@@ -89,9 +89,14 @@ void AssetsTab::showLoaderPopUp(sl::gui::GuiApi& gui) {
             handleModelLoader(gui);
             break;
         }
+
+        case 3: {
+            handleShaderLoader(gui);
+            break;
+        }
         }
     } catch (sl::core::error::AssetError& err) {
-        m_errorDialog.setErrorMessage(err.getDetails(), gui);
+        m_errorDialog.setErrorMessage(err.getDetails());
         WRITE_DEBUG(err.as<std::string>());
         m_loadClicked = false;
     }
@@ -101,24 +106,48 @@ void AssetsTab::showLoaderPopUp(sl::gui::GuiApi& gui) {
     }
 
     gui.endGroup();
-
     m_errorDialog.show(gui);
 }
 
-void AssetsTab::handleCubemapLoader(sl::gui::GuiApi& gui) {
-    sl::gui::labeledTextInput(gui, "Top", m_assetsArgs.faces[0], padding);
+void AssetsTab::handleShaderLoader(sl::gui::GuiApi& gui) {
+    sl::gui::labeledTextInput(gui, "Vertex shader", m_assetsArgs.faces[0], padding);
     if (gui.isPreviousWidgetClicked())
         m_fileBrowser.open(&m_assetsArgs.faces[0], gui);
 
-    sl::gui::labeledTextInput(gui, "Bottom", m_assetsArgs.faces[1], padding);
+    sl::gui::labeledTextInput(gui, "Fragment shader", m_assetsArgs.faces[1], padding);
     if (gui.isPreviousWidgetClicked())
         m_fileBrowser.open(&m_assetsArgs.faces[1], gui);
 
-    sl::gui::labeledTextInput(gui, "Right", m_assetsArgs.faces[2], padding);
+    sl::gui::labeledTextInput(gui, "Geometry shader", m_assetsArgs.faces[2], padding);
     if (gui.isPreviousWidgetClicked())
         m_fileBrowser.open(&m_assetsArgs.faces[2], gui);
 
-    sl::gui::labeledTextInput(gui, "Left", m_assetsArgs.faces[3], padding);
+    m_fileBrowser.show(gui);
+
+    if (m_loadClicked) {
+        validateAssetName(m_assetsArgs.assetName);
+
+        auto shader = sl::asset::AssetLoader::loadGlobalPath<sl::graphics::Shader>(
+            m_assetsArgs.faces[0], m_assetsArgs.faces[1], m_assetsArgs.faces[2]);
+        auto shaderAsset = std::make_shared<sl::asset::ShaderAsset>(shader, m_assetsArgs.assetName);
+        m_assetManager.addAsset(shaderAsset);
+    }
+}
+
+void AssetsTab::handleCubemapLoader(sl::gui::GuiApi& gui) {
+    sl::gui::labeledTextInput(gui, "Right", m_assetsArgs.faces[0], padding);
+    if (gui.isPreviousWidgetClicked())
+        m_fileBrowser.open(&m_assetsArgs.faces[0], gui);
+
+    sl::gui::labeledTextInput(gui, "Left", m_assetsArgs.faces[1], padding);
+    if (gui.isPreviousWidgetClicked())
+        m_fileBrowser.open(&m_assetsArgs.faces[1], gui);
+
+    sl::gui::labeledTextInput(gui, "Top", m_assetsArgs.faces[2], padding);
+    if (gui.isPreviousWidgetClicked())
+        m_fileBrowser.open(&m_assetsArgs.faces[2], gui);
+
+    sl::gui::labeledTextInput(gui, "Bottom", m_assetsArgs.faces[3], padding);
     if (gui.isPreviousWidgetClicked())
         m_fileBrowser.open(&m_assetsArgs.faces[3], gui);
 

@@ -11,29 +11,29 @@ using sl::graphics::Cubemap;
 
 template <>
 struct LoaderArgs<Cubemap> {
-    explicit LoaderArgs(const std::string& top, const std::string& bottom, const std::string& right,
-        const std::string& left, const std::string& front, const std::string& back)
-        : top(top)
-        , bottom(bottom)
-        , right(right)
+    explicit LoaderArgs(const std::string& right, const std::string& left, const std::string& top,
+        const std::string& bottom, const std::string& front, const std::string& back)
+        : right(right)
         , left(left)
+        , top(top)
+        , bottom(bottom)
         , front(front)
         , back(back) {
     }
 
     explicit LoaderArgs(const std::array<std::string, 6>& faces)
-        : top(faces[0])
-        , bottom(faces[1])
-        , right(faces[2])
-        , left(faces[3])
+        : right(faces[0])
+        , left(faces[1])
+        , top(faces[2])
+        , bottom(faces[3])
         , front(faces[4])
         , back(faces[5]) {
     }
 
-    std::string top;
-    std::string bottom;
     std::string right;
     std::string left;
+    std::string top;
+    std::string bottom;
     std::string front;
     std::string back;
 };
@@ -46,7 +46,7 @@ struct Loader<Cubemap> {
 		if (not globalPath)
             prefix += core::PathManager::get<Cubemap>();
 
-		SL_DEBUG("loading cubemap: \n {} - {}/{}/{}/{}/{}/{} ", prefix, args.top, args.bottom , args.right, args.left, args.front, args.back);
+		SL_DEBUG("loading cubemap: \n {} - {}/{}/{}/{}/{}/{} ", prefix, args.right, args.left , args.top, args.bottom, args.front, args.back);
 		return graphics::Cubemap::factory->create({ 
 			prefix + args.right, prefix + args.left, prefix + args.top, prefix + args.bottom, prefix + args.front, prefix + args.back });
         // clang-format on

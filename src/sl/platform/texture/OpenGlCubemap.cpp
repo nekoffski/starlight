@@ -8,8 +8,9 @@
 
 namespace sl::platform::texture {
 
-OpenGlCubemap::OpenGlCubemap(const graphics::CubemapArgs faces)
-    : m_cubemapId(0u) {
+OpenGlCubemap::OpenGlCubemap(const graphics::CubemapArgs& faces)
+    : m_faces(faces)
+    , m_cubemapId(0u) {
     glGenTextures(1, &m_cubemapId);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemapId);
 

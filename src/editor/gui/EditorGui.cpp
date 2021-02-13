@@ -19,17 +19,20 @@ void EditorGui::setSettings(const Settings& settings) {
 }
 
 void EditorGui::renderEditorGui(sl::gui::GuiApi& gui) {
+    using namespace event;
+
     if (gui.beginMainMenuBar()) {
         if (gui.beginMenu("File")) {
             if (gui.menuItem("Export scene")) {
-				event::Emitter::emit<event::SerializeSceneEvent>();
-			}
+                Emitter::emit<SerializeSceneEvent>();
+            }
 
             if (gui.menuItem("Import scene")) {
+                Emitter::emit<DeserializeSceneEvent>();
             }
 
             if (gui.menuItem("Quit"))
-                event::Emitter::emit<event::QuitEvent>();
+                Emitter::emit<QuitEvent>();
 
             gui.endMenu();
         }

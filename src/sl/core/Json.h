@@ -39,6 +39,14 @@ public:
         return addFieldImpl(key, value);
     }
 
+    template <typename T>
+    JsonBuilder& addField(const std::string& key, const std::vector<T>& values) {
+        beginArray(key);
+        for (const auto& value : values)
+            addField(value);
+        return endArray();
+    }
+
 private:
     template <typename T>
     JsonBuilder& addFieldImpl(const T& value) {

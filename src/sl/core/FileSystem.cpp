@@ -1,7 +1,8 @@
 #include "FileSystem.h"
 
-#include <iostream>
 #include <filesystem>
+#include <iostream>
+#include <sstream>
 
 namespace sl::core {
 
@@ -19,14 +20,24 @@ std::vector<std::string> FileSystem::listDirectory(const Path& path) const {
     std::vector<std::string> entries;
     for (auto& entry : fsys::directory_iterator(path))
         entries.emplace_back(entry.path());
-
     return entries;
 }
 
 void FileSystem::writeFile(const Path& path, const std::string& buffer) const {
     std::ofstream fs;
     fs.open(path);
-	fs << buffer;
-	fs.close();
+    fs << buffer;
+    fs.close();
+}
+
+std::string FileSystem::readFile(const Path& path) const {
+    std::ostringstream fileContentStream;
+    std::ifstream fs;
+
+    fs.open(path);
+    fileContentStream << fs.rdbuf();
+    fs.close();
+
+    return fileContentStream.str();
 }
 }

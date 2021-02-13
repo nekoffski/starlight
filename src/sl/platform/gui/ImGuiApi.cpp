@@ -6,6 +6,7 @@
 
 #include "imgui/imgui.h"
 #include "sl/core/Logger.h"
+#include "sl/core/utils/String.hpp"
 
 namespace sl::platform::gui::detail {
 
@@ -83,6 +84,7 @@ void ImGuiApi::endGroup() {
 void ImGuiApi::inputText(const std::string& label, std::string& text) {
     text.resize(256);
     ImGui::InputText(label.c_str(), &text[0], text.size());
+    core::utils::stripString(text);
 }
 
 void ImGuiApi::openPopUp(const std::string& label) {
@@ -159,11 +161,11 @@ void ImGuiApi::setNextWindowSize(math::Vec2 size) {
 }
 
 void ImGuiApi::beginChild(const std::string& id) {
-	ImGui::BeginChild(id.c_str());
+    ImGui::BeginChild(id.c_str());
 }
 
 void ImGuiApi::endChild() {
-	ImGui::EndChild();
+    ImGui::EndChild();
 }
 
 void ImGuiApi::beginPanel(const std::string& title, math::Vec2 pos, math::Vec2 size) {
