@@ -3,24 +3,26 @@
 #include "sl/asset/Asset.h"
 #include "sl/asset/AssetLoader.hpp"
 #include "sl/core/Json.h"
+#include "sl/core/Logger.h"
 #include "sl/core/error/Errors.hpp"
 #include "sl/graphics/Cubemap.h"
+#include "sl/scene/components/ComponentsDeserializers.hpp"
 #include "sl/utils/Globals.h"
 
 using namespace sl::core::error;
 
 namespace sl::application {
 
-Deserializer::Deserializer(const std::string& path, std::shared_ptr<core::FileSystem> fileSystem)
-    : m_path(path)
-    , m_fileSystem(fileSystem) {
+Deserializer::Deserializer(asset::AssetManager& assetManager, std::shared_ptr<scene::Scene> scene)
+    : m_assetManager(assetManager)
+    , m_scene(scene) {
 }
 
-void Deserializer::deserialize(asset::AssetManager& assetManager, std::shared_ptr<scene::Scene> scene) {
-    if (not m_fileSystem->isFile(m_path))
-        throw DeserializationError{ ErrorCode::FileDoesNotExist, "Could not find file: " + m_path };
+void Deserializer::deserialize(const std::string& path, std::shared_ptr<core::FileSystem> fileSystem) {
+    if (not fileSystem->isFile(path))
+        throw DeserializationError{ ErrorCode::FileDoesNotExist, "Could not find file: " + path };
 
-    auto fileContent = m_fileSystem->readFile(m_path);
+    auto fileContent = fileSystem->readFile(path);
 
     try {
         auto json = core::parseJson(fileContent);
@@ -28,8 +30,8 @@ void Deserializer::deserialize(asset::AssetManager& assetManager, std::shared_pt
         if (not json.isMember("assets") || not json.isMember("scene"))
             throw DeserializationError{ ErrorCode::ProjectJsonIsInvalid };
 
-        deserializeAssets(assetManager, json["assets"]);
-        deserializeScene(scene, assetManager, json["scene"]);
+        deserializeAssets(json["assets"]);
+        deserializeScene(json["scene"]);
 
     } catch (JsonError& e) {
         throw DeserializationError{ ErrorCode::InvalidJsonString, e.getDetails() };
@@ -38,7 +40,9 @@ void Deserializer::deserialize(asset::AssetManager& assetManager, std::shared_pt
     }
 }
 
-void Deserializer::deserializeAssets(asset::AssetManager& assetManager, Json::Value& assetsJson) {
+void Deserializer::deserializeAssets(Json::Value& assetsJson) {
+    SL_INFO("Deserializing assets");
+
     for (auto& asset : assetsJson) {
         auto assetType = asset["type"].asInt();
         if (assetType > asset::AssetTypeMax) {
@@ -46,6 +50,8 @@ void Deserializer::deserializeAssets(asset::AssetManager& assetManager, Json::Va
 
         auto name = asset["name"].asString();
         auto id = asset["id"].asUInt();
+
+        SL_INFO("Deserializing asset: {}/{}/{}", name, assetType, id);
 
         using asset::AssetType;
 
@@ -56,7 +62,7 @@ void Deserializer::deserializeAssets(asset::AssetManager& assetManager, Json::Va
                 paths[0].asString(), paths[1].asString(), paths[2].asString());
             shader->setId(id);
             auto shaderAsset = std::make_shared<asset::ShaderAsset>(shader, name);
-            assetManager.addAsset(shaderAsset);
+            m_assetManager.addAsset(shaderAsset);
 
             break;
         }
@@ -66,7 +72,7 @@ void Deserializer::deserializeAssets(asset::AssetManager& assetManager, Json::Va
             auto model = asset::AssetLoader::loadGlobalPath<geometry::Model>(path);
             model->setId(id);
             auto modelAsset = std::make_shared<asset::ModelAsset>(model, name);
-            assetManager.addAsset(modelAsset);
+            m_assetManager.addAsset(modelAsset);
 
             break;
         }
@@ -81,7 +87,7 @@ void Deserializer::deserializeAssets(asset::AssetManager& assetManager, Json::Va
             auto cubemap = asset::AssetLoader::loadGlobalPath<graphics::Cubemap>(faces);
             cubemap->setId(id);
             auto cubemapAsset = std::make_shared<asset::CubemapAsset>(cubemap, name);
-            assetManager.addAsset(cubemapAsset);
+            m_assetManager.addAsset(cubemapAsset);
 
             break;
         }
@@ -89,14 +95,38 @@ void Deserializer::deserializeAssets(asset::AssetManager& assetManager, Json::Va
     }
 }
 
-void Deserializer::deserializeScene(std::shared_ptr<scene::Scene> scene, asset::AssetManager& assetManager, Json::Value& sceneJson) {
+void Deserializer::deserializeScene(Json::Value& sceneJson) {
+    SL_INFO("Deserializing scene");
+
     if (sceneJson.isMember("skybox-id")) {
         auto skyboxId = sceneJson["skybox-id"].asUInt();
-        auto cubemapAsset = assetManager.getAssetById(skyboxId)->as<asset::CubemapAsset>();
+        auto cubemapAsset = m_assetManager.getAssetById(skyboxId)->as<asset::CubemapAsset>();
         auto skybox = scene::Skybox::create(utils::Globals::shaders->defaultCubemapShader, cubemapAsset->cubemap);
-        scene->skybox = skybox;
+        m_scene->skybox = skybox;
+        SL_INFO("Setting skybox: {}", skyboxId);
     }
 
-    auto& entities = sceneJson["entities"];
+    SL_INFO("Deserializing entities");
+    for (auto& entityDescription : sceneJson["entities"]) {
+        auto name = entityDescription["name"].asString();
+        auto entity = m_scene->addEntity(name);
+
+        SL_INFO("Deserializing entity: {}", name);
+        SL_INFO("Deserializing components");
+
+        for (auto& componentDescription : entityDescription["components"]) {
+            auto componentName = componentDescription["name"].asString();
+
+            using scene::components::componentsDeserializers;
+
+            if (not componentsDeserializers.contains(componentName)) {
+                SL_WARN("Could not find deserializer for component: {}, skipping", componentName);
+                continue;
+            }
+
+            SL_INFO("Loading component: {} for entity: {}", componentName, name);
+            (componentsDeserializers[componentName])(entity, m_assetManager, componentDescription);
+        }
+    }
 }
 }

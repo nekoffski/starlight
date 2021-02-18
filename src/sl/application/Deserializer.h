@@ -12,15 +12,15 @@ namespace sl::application {
 
 class Deserializer {
 public:
-    explicit Deserializer(const std::string& path, std::shared_ptr<core::FileSystem> fileSystem = std::make_shared<core::FileSystem>());
+    explicit Deserializer(asset::AssetManager& assetManager, std::shared_ptr<scene::Scene> scene);
 
-    void deserialize(asset::AssetManager& assetManager, std::shared_ptr<scene::Scene> scene);
+    void deserialize(const std::string& path, std::shared_ptr<core::FileSystem> fileSystem = std::make_shared<core::FileSystem>());
 
 private:
-    void deserializeAssets(asset::AssetManager& assetManager, Json::Value&);
-    void deserializeScene(std::shared_ptr<scene::Scene> scene, asset::AssetManager& assetManager, Json::Value&);
-
-    std::string m_path;
-    std::shared_ptr<core::FileSystem> m_fileSystem;
+    void deserializeAssets(Json::Value&);
+    void deserializeScene(Json::Value&);
+ 
+    asset::AssetManager& m_assetManager;
+    std::shared_ptr<scene::Scene> m_scene;
 };
 }

@@ -75,7 +75,7 @@ public:
         sceneSystems->pfxSystem.update(pfxs, deltaTime, m_scene->camera);
     }
 
-    void render(std::shared_ptr<graphics::RendererComposite> rendererComposite) override {
+    void render(std::shared_ptr<graphics::Renderer> renderer) override {
         const auto& skybox = m_scene->skybox;
 
         if (skybox)
@@ -88,35 +88,35 @@ public:
         auto models = m_scene->ecsRegistry.getComponentView<components::ModelComponent>();
         auto materials = m_scene->ecsRegistry.getComponentView<components::MaterialComponent>();
 
-        rendererComposite->beginDepthCapture();
-        auto depthShader = rendererComposite->getDepthShader();
+        renderer->beginDepthCapture();
+        auto depthShader = renderer->getDepthShader();
 
         for (auto& directionalLight : directionalLights) {
-            rendererComposite->setShadowMap(directionalLight.shadowMap);
+            renderer->setShadowMap(directionalLight.shadowMap);
 
             for (auto& rendererComponent : rendererComponents) {
                 depthShader->setUniform("lightSpaceMatrix", directionalLight.spaceMatrix);
-                rendererComposite->renderModel(rendererComponent, materials, models, transforms, m_scene->camera, depthShader);
+                renderer->renderModel(rendererComponent, materials, models, transforms, m_scene->camera, depthShader);
             }
         }
-        rendererComposite->endDepthCapture();
+        renderer->endDepthCapture();
 
         for (auto& rendererComponent : rendererComponents) {
             rendererComponent.shader->enable();
 
-            rendererComposite->prepareDirectionalLights(directionalLights, rendererComponent.shader);
-            rendererComposite->preparePointsLights(pointLights, transforms, rendererComponent.shader);
+            renderer->prepareDirectionalLights(directionalLights, rendererComponent.shader);
+            renderer->preparePointsLights(pointLights, transforms, rendererComponent.shader);
 
-            rendererComposite->renderModel(rendererComponent, materials, models, transforms, m_scene->camera);
+            renderer->renderModel(rendererComponent, materials, models, transforms, m_scene->camera);
 
             rendererComponent.shader->disable();
         }
 
-        rendererComposite->renderParticleEffects(
+        renderer->renderParticleEffects(
             m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>(), transforms, m_scene->camera);
 
         if (skybox) {
-            rendererComposite->renderCubemap(skybox->cubemap, skybox->shader, m_scene->camera);
+            renderer->renderCubemap(skybox->cubemap, skybox->shader, m_scene->camera);
             skybox->cubemap->unbind();
         }
     }
@@ -156,11 +156,11 @@ public:
                 }
 
                 if (event->is<event::DeserializeSceneEvent>()) {
-                    sl::application::Deserializer deserializer{ "./scene.starscene" };
-                    deserializer.deserialize(m_assetManager, m_scene);
+                    sl::application::Deserializer deserializer{ m_assetManager, m_scene };
+                    deserializer.deserialize("./scene.starscene");
                 }
             } catch (sl::core::error::Error& err) {
-                m_errorDialog.setErrorMessage(err.getDetails());
+                m_errorDialog.setErrorMessage(err.as<std::string>());
             }
         }
     }

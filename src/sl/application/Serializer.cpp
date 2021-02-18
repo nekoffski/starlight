@@ -47,8 +47,13 @@ void Serializer::serializeScene(std::shared_ptr<scene::Scene> scene) {
         m_jsonBuilder.addField("id", entityId).addField("name", entity->getName());
         m_jsonBuilder.beginArray("components");
 
-        m_jsonBuilder.endArray();
+        for (auto& componentIndex : entity->getComponentsIndexes()) {
+            m_jsonBuilder.beginObject();
+            entity->getComponent(componentIndex).serialize(m_jsonBuilder);
+            m_jsonBuilder.endObject();
+        }
 
+        m_jsonBuilder.endArray();
         m_jsonBuilder.endObject();
     }
     m_jsonBuilder.endArray();

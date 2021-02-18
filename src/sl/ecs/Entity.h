@@ -34,9 +34,17 @@ public:
         m_registry.addComponent<T>(m_id, std::forward<Args>(args)...);
     }
 
+    std::vector<std::type_index> getComponentsIndexes() {
+        return m_componentsIndexes;
+    }
+
     template <typename T>
     Component& getComponent() {
         return m_registry.getComponent<T>(m_id);
+    }
+
+    Component& getComponent(std::type_index index) {
+        return m_registry.getComponentByIndex(m_id, index);
     }
 
     template <typename T>

@@ -14,7 +14,7 @@
 #include "sl/core/Window.h"
 #include "sl/graphics/GraphicsContext.h"
 #include "sl/graphics/LowLevelRenderer.h"
-#include "sl/graphics/RendererComposite.hpp"
+#include "sl/graphics/Renderer.hpp"
 #include "sl/gui/GuiApi.h"
 #include "sl/scene/SceneSystems.hpp"
 
@@ -61,12 +61,12 @@ protected:
 private:
     std::shared_ptr<core::Window> m_window;
     std::shared_ptr<core::Input> m_input;
-    std::shared_ptr<graphics::LowLevelRenderer> m_renderer;
+    std::shared_ptr<graphics::LowLevelRenderer> m_lowlLevelRenderer;
     std::shared_ptr<gui::GuiApi> m_guiApi;
     std::shared_ptr<graphics::GraphicsContext> m_graphicsContext;
     std::shared_ptr<ApplicationContext> m_context;
     std::shared_ptr<scene::SceneSystems> m_sceneSystems;
-    std::shared_ptr<graphics::RendererComposite> m_rendererComposite;
+    std::shared_ptr<graphics::Renderer> m_renderer;
 
     xvent::EventEngine m_eventEngine;
 	std::shared_ptr<xvent::EventEmitter> m_eventEmitter;

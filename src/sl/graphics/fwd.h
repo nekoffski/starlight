@@ -5,7 +5,7 @@
 namespace sl::graphics {
 
 class LowLevelRenderer;
-class RendererComposite;
+class Renderer;
 class Shader;
 class ShaderCompilerImpl;
 }

@@ -9,7 +9,7 @@
 
 namespace sl::scene::components {
 
-struct ParticleEffectComponent : public ecs::Component {
+struct ParticleEffectComponent : ecs::Component {
     explicit ParticleEffectComponent(math::Vec3 position = math::VEC_ZEROS, int maxParticles = 2500)
         : position(position)
         , maxParticles(maxParticles) {

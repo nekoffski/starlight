@@ -12,9 +12,9 @@
 
 namespace sl::graphics {
 
-class RendererComposite {
+class Renderer {
 public:
-    explicit RendererComposite(std::shared_ptr<LowLevelRenderer> renderer)
+    explicit Renderer(std::shared_ptr<LowLevelRenderer> renderer)
         : m_modelRenderer(renderer)
         , m_shadowRenderer(renderer)
         , m_cubemapRenderer(renderer)

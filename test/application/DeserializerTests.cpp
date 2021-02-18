@@ -30,13 +30,13 @@ protected:
     std::shared_ptr<Scene> m_scene = std::make_shared<Scene>();
     AssetManager m_assetManager;
 
-    Deserializer deserializer = Deserializer{ m_filename, m_fsMock };
+    Deserializer deserializer = Deserializer{ m_assetManager, m_scene };
 };
 
 TEST_F(DeserializerTests, whenFileDoesNotExists_shouldThrow) {
     EXPECT_CALL(*m_fsMock, isFile(_)).Times(1).WillOnce(Return(false));
 
-    EXPECT_THROW(deserializer.deserialize(m_assetManager, m_scene), error::DeserializationError);
+    EXPECT_THROW(deserializer.deserialize(m_filename, m_fsMock), error::DeserializationError);
 }
 
 class DeserializerTestsInvalidJson : public DeserializerTests, public WithParamInterface<std::string> {};
@@ -45,7 +45,7 @@ TEST_P(DeserializerTestsInvalidJson, givenInvalidJson_whenDeserializing_shouldTh
     EXPECT_CALL(*m_fsMock, isFile(_)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(*m_fsMock, readFile(_)).Times(1).WillOnce(Return(GetParam()));
 
-    EXPECT_THROW(deserializer.deserialize(m_assetManager, m_scene), error::DeserializationError);
+    EXPECT_THROW(deserializer.deserialize(m_filename, m_fsMock), error::DeserializationError);
 };
 
 static const std::vector<std::string> invalidJsonTestData = {

@@ -1,17 +1,18 @@
 #pragma once
 
-#include "sl/ecs/Component.h"
-
 #include <memory>
 
+#include "sl/core/Json.h"
+#include "sl/ecs/Component.h"
+#include "sl/ecs/Entity.h"
 #include "sl/gui/Utils.hpp"
 #include "sl/math/Utils.hpp"
 #include "sl/math/Vector.hpp"
 
 namespace sl::scene::components {
 
-struct TransformComponent : public ecs::Component {
-    TransformComponent(math::Vec3 position = math::Vec3{ 0.0f },
+struct TransformComponent : ecs::Component {
+    explicit TransformComponent(math::Vec3 position = math::Vec3{ 0.0f },
         math::Vec3 rotation = math::Vec3{ 0.0f }, math::Vec3 scale = math::Vec3{ 1.0f })
         : position(position)
         , rotation(rotation)
@@ -28,6 +29,20 @@ struct TransformComponent : public ecs::Component {
             gui.dragFloat3(gui::createHiddenLabel("scale"), scale, 0.5f, 0.0f, 360.0f);
             gui.popTreeNode();
         }
+    }
+
+    void serialize(core::JsonBuilder& builder) override {
+        builder.addField("name", "TransformComponent"s);
+        serializeVector(builder, "position", position);
+        serializeVector(builder, "rotation", rotation);
+        serializeVector(builder, "scale", scale);
+    }
+
+    static void deserialize(std::shared_ptr<ecs::Entity> entity, asset::AssetManager& assetManager, Json::Value& componentDescription) {
+        entity->addComponent<TransformComponent>(
+            deserializeVector3(componentDescription["position"]),
+            deserializeVector3(componentDescription["rotation"]),
+            deserializeVector3(componentDescription["scale"]));
     }
 
     math::Vec3 position;

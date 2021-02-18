@@ -37,18 +37,20 @@ public:
             event::Emitter::emit<event::AddEntityEvent>("Entity" + std::to_string(m_entityIndex++));
         }
 
-        gui.breakLine();
-        for (auto& entity : m_entities) {
-            if (gui.beginTreeNode(entity->getName(), false)) {
+        if (auto scene = m_activeScene.lock(); scene) {
+            gui.breakLine();
+            for (auto& [entityId, entity] : scene->ecsRegistry.getEntities()) {
+                if (gui.beginTreeNode(entity->getName(), false)) {
+                    if (gui.isPreviousWidgetClicked())
+                        m_selectedEntity = entity;
+
+                    gui.popTreeNode();
+                }
                 if (gui.isPreviousWidgetClicked())
                     m_selectedEntity = entity;
-
-                gui.popTreeNode();
             }
-            if (gui.isPreviousWidgetClicked())
-                m_selectedEntity = entity;
+            gui.endPanel();
         }
-        gui.endPanel();
     }
 
 private:

@@ -12,7 +12,7 @@
 #include "sl/graphics/GraphicsContext.h"
 #include "sl/graphics/Image.h"
 #include "sl/graphics/RenderApi.h"
-#include "sl/graphics/RendererComposite.hpp"
+#include "sl/graphics/Renderer.hpp"
 #include "sl/graphics/ShaderCompiler.hpp"
 #include "sl/graphics/ShaderCompilerImpl.h"
 #include "sl/graphics/Viewport.h"
@@ -82,7 +82,8 @@ void Application::init() {
     m_graphicsContext = graphics::GraphicsContext::factory->create(windowHandle);
 
     auto viewport = graphics::Viewport{ windowSize.width, windowSize.height };
-    m_renderer = std::make_shared<graphics::LowLevelRenderer>(m_graphicsContext, graphics::RenderApi::factory->create(), viewport);
+    m_lowlLevelRenderer = std::make_shared<graphics::LowLevelRenderer>(m_graphicsContext,
+        graphics::RenderApi::factory->create(), viewport);
 
     m_guiApi = gui::GuiApi::factory->create(windowHandle);
 
@@ -91,7 +92,7 @@ void Application::init() {
     graphics::ShaderCompiler::impl = graphics::ShaderCompilerImpl::factory->create();
     utils::Globals::init();
 
-    m_rendererComposite = std::make_shared<graphics::RendererComposite>(m_renderer);
+    m_renderer = std::make_shared<graphics::Renderer>(m_lowlLevelRenderer);
     m_sceneSystems = std::make_shared<scene::SceneSystems>();
 
     m_eventEngine.registerEventListener(shared_from_this());
@@ -109,10 +110,10 @@ void Application::update(float deltaTime, float time) {
 void Application::render() {
     SL_PROFILE_FUNCTION();
 
-    m_renderer->clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
-    m_context->render(m_rendererComposite);
+    m_lowlLevelRenderer->clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
+    m_context->render(m_renderer);
     renderGui();
-    m_renderer->swapBuffers();
+    m_lowlLevelRenderer->swapBuffers();
 }
 
 void Application::renderGui() {
@@ -134,7 +135,7 @@ void Application::handleEvents(const xvent::EventProvider& eventProvider) {
         if (event->is<event::WindowResizedEvent>()) {
             auto windowResizeEvent = event->as<event::WindowResizedEvent>();
             SL_INFO("{}/{}", windowResizeEvent->width, windowResizeEvent->height);
-            m_renderer->setViewport(
+            m_lowlLevelRenderer->setViewport(
                 graphics::Viewport{ windowResizeEvent->width, windowResizeEvent->height });
             break;
         }

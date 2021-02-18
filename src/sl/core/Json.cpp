@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "Logger.h"
 #include "error/Errors.hpp"
 
 namespace sl::core {
@@ -31,7 +32,9 @@ std::string JsonBuilder::asString() {
     JSONCPP_STRING errors;
 
     if (!Json::parseFromStream(builder, m_jsonStream, &root, &errors)) {
-        throw error::JsonError(error::ErrorCode::InvalidJsonString);
+        auto msg = std::string{ errors } + "\n" + m_jsonStream.str();
+        SL_WARN(msg);
+        throw error::JsonError(error::ErrorCode::InvalidJsonString, msg);
     }
 
     reset();
