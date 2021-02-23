@@ -6,6 +6,7 @@
 
 #include "Categories.h"
 #include "sl/graphics/Cubemap.h"
+#include "sl/math/Vector.hpp"
 
 namespace sl::event {
 
@@ -29,6 +30,13 @@ DECLARE_EVENT(SetSkyboxEvent, EditorCategory) {
 DECLARE_EVENT(SerializeSceneEvent, EditorCategory){};
 
 DECLARE_EVENT(DeserializeSceneEvent, EditorCategory){};
+
+DECLARE_EVENT(ChangeSceneCenterEvent, EditorCategory) {
+    ChangeSceneCenterEvent(math::Vec3 center)
+        : center(center) {}
+
+    math::Vec3 center;
+};
 
 DECLARE_EVENT(WindowResizedEvent, CoreCategory) {
     WindowResizedEvent(int width, int height)

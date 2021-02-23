@@ -1,15 +1,15 @@
 #pragma once
 
-#include "sl/ecs/Component.h"
-
 #include "sl/core/misc/colors.hpp"
+#include "sl/ecs/Component.h"
+#include "sl/ecs/Entity.h"
 #include "sl/graphics/Texture.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
 
 namespace sl::scene::components {
 
-static const auto LIGHT_PROJECTION = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
+static const auto lightProjectionMatrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
 
 struct DirectionalLightComponent : ecs::Component {
     explicit DirectionalLightComponent(math::Vec3 direction = math::Vec3{ 1.0f, 1.0f, 1.0f }, math::Vec3 color = core::misc::COL_WHITE)
@@ -17,7 +17,7 @@ struct DirectionalLightComponent : ecs::Component {
         , color(color)
         , shadowMap(graphics::Texture::factory->create(1024u, 1024u))
         , viewMatrix(math::lookAt(direction, math::Vec3{ 0.0f }, math::Vec3{ 0.0f, 1.0f, 0.0f }))
-        , spaceMatrix(LIGHT_PROJECTION * viewMatrix) {
+        , spaceMatrix(lightProjectionMatrix * viewMatrix) {
     }
 
     void onGui(gui::GuiApi& gui) override {
@@ -26,7 +26,7 @@ struct DirectionalLightComponent : ecs::Component {
 
             if (gui.dragFloat3(gui::createHiddenLabel("dlcDirection"), direction, 0.01f, -1.0f, 1.0f)) {
                 viewMatrix = math::lookAt(direction, math::Vec3{ 0.0f }, math::Vec3{ 0.0f, 1.0f, 0.0f });
-                spaceMatrix = LIGHT_PROJECTION * viewMatrix;
+                spaceMatrix = lightProjectionMatrix * viewMatrix;
             }
 
             gui.displayText("Color");
@@ -34,6 +34,18 @@ struct DirectionalLightComponent : ecs::Component {
 
             gui.popTreeNode();
         }
+    }
+
+    void serialize(core::JsonBuilder& builder) override {
+        builder.addField("name", "DirectionalLightComponent"s);
+        serializeVector(builder, "direction", direction);
+        serializeVector(builder, "color", color);
+    }
+
+    static void deserialize(std::shared_ptr<ecs::Entity> entity, asset::AssetManager& assetManager, Json::Value& componentDescription) {
+        entity->addComponent<DirectionalLightComponent>(
+            deserializeVector3(componentDescription["direction"]),
+            deserializeVector3(componentDescription["color"]));
     }
 
     math::Vec3 direction;

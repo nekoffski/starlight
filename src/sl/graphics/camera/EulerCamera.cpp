@@ -2,27 +2,27 @@
 
 #include <algorithm>
 
+#include "sl/core/Input.h"
 #include "sl/gui/GuiApi.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Utils.hpp"
-#include "sl/core/Input.h"
 
 #include "sl/core/Logger.h"
 
 namespace sl::graphics::camera {
 
-const float EulerCamera::MIN_PSI = -std::numbers::pi / 2.0f;
-const float EulerCamera::MAX_PSI = std::numbers::pi / 2.0f;
-const float EulerCamera::MIN_FI = 0.0f;
-const float EulerCamera::MAX_FI = 2.0f * std::numbers::pi;
+const float EulerCamera::minPsi = -std::numbers::pi / 2.0f;
+const float EulerCamera::maxPsi = std::numbers::pi / 2.0f;
+const float EulerCamera::minFi = 0.0f;
+const float EulerCamera::maxFi = 2.0f * std::numbers::pi;
 
-std::shared_ptr<EulerCamera> EulerCamera::create(math::Vec3 centre, float speed, float radius) {
+std::shared_ptr<EulerCamera> EulerCamera::create(math::Vec3 center, float speed, float radius) {
     SL_INFO("creating instance, speed: {}, radius: {} ", speed, radius);
-    return std::make_shared<EulerCamera>(centre, speed, radius);
+    return std::make_shared<EulerCamera>(center, speed, radius);
 }
 
-EulerCamera::EulerCamera(math::Vec3 centre, float speed, float radius)
-    : m_centre(centre)
+EulerCamera::EulerCamera(math::Vec3 center, float speed, float radius)
+    : m_center(center)
     , m_speed(speed)
     , m_radius(radius)
     , m_fi(0.0f)
@@ -31,60 +31,76 @@ EulerCamera::EulerCamera(math::Vec3 centre, float speed, float radius)
 }
 
 void EulerCamera::update(float deltaTime) {
-    float velocity = deltaTime * m_speed;
+    if (m_isInAnimation) {
+        m_alpha += deltaTime * 2.0f;
 
-    if (m_direction & DIR_UP)
-        m_psi += velocity;
+        if (m_alpha >= 1.0f) {
+            m_alpha = 0.0f;
+            m_isInAnimation = false;
+        }
+    } else {
+        float velocity = deltaTime * m_speed;
 
-    if (m_direction & DIR_RIGHT)
-        m_fi += velocity;
+        if (m_direction & directionUp)
+            m_psi += velocity;
 
-    if (m_direction & DIR_DOWN)
-        m_psi -= velocity;
+        if (m_direction & directionRight)
+            m_fi += velocity;
 
-    if (m_direction & DIR_LEFT)
-        m_fi -= velocity;
+        if (m_direction & directionDown)
+            m_psi -= velocity;
 
-    m_fi = math::circularRange(m_fi, MIN_FI, MAX_FI);
+        if (m_direction & directionLeft)
+            m_fi -= velocity;
 
-    // TODO: FIX
-    m_psi = std::clamp(m_psi, MIN_PSI, MAX_PSI);
+        m_fi = math::circularRange(m_fi, minFi, maxFi);
 
+        // TODO: FIX
+        m_psi = std::clamp(m_psi, minPsi, maxPsi);
+    }
     calculateVectors();
 }
 
 void EulerCamera::calculateVectors() {
+    if (m_isInAnimation)
+        m_center = math::lerp(m_previousCenter, m_targetCenter, m_alpha);
+
     m_position = {
         m_radius * std::cos(m_psi) * std::cos(m_fi),
         m_radius * std::sin(m_psi),
         m_radius * std::cos(m_psi) * std::sin(m_fi)
     };
 
-    m_front = math::normalize(m_position - m_centre);
-    m_right = math::cross(m_front, WORLD_UP);
-    m_up = math::cross(m_right, m_front);
+    m_position += m_center;
+
+    m_front = math::normalize(-m_position + m_center);
+    m_right = math::normalize(math::cross(m_front, worldUp));
+    m_up = math::normalize(math::cross(m_right, m_front));
 }
 
 void EulerCamera::handleInput(std::shared_ptr<core::Input> input) {
-    m_direction = DIR_NONE;
+    if (m_isInAnimation)
+        return;
+
+    m_direction = directionNone;
 
     if (input->isKeyPressed(STARL_KEY_UP))
-        m_direction |= DIR_UP;
+        m_direction |= directionUp;
 
     if (input->isKeyPressed(STARL_KEY_RIGHT))
-        m_direction |= DIR_RIGHT;
+        m_direction |= directionRight;
 
     if (input->isKeyPressed(STARL_KEY_DOWN))
-        m_direction |= DIR_DOWN;
+        m_direction |= directionDown;
 
     if (input->isKeyPressed(STARL_KEY_LEFT))
-        m_direction |= DIR_LEFT;
+        m_direction |= directionLeft;
 }
 
 void EulerCamera::onGui(gui::GuiApi& gui) {
     if (gui.beginTreeNode("Euler camera")) {
-        gui.sliderFloat("Fi", m_fi, MIN_FI, MAX_FI);
-        gui.sliderFloat("Psi", m_psi, MIN_PSI, MAX_PSI);
+        gui.sliderFloat("Fi", m_fi, minFi, maxFi);
+        gui.sliderFloat("Psi", m_psi, minPsi, maxPsi);
         gui.sliderFloat("R", m_radius, 1.0f, 25.0f);
         gui.popTreeNode();
     }

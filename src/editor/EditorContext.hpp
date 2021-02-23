@@ -24,6 +24,7 @@
 #include "sl/scene/components/ModelComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 #include "sl/utils/Globals.h"
+#include <memory>
 
 using namespace sl;
 using namespace sl::scene;
@@ -147,6 +148,15 @@ public:
                 editor::gui::Settings settings{ windowResizedEvent->width, windowResizedEvent->height, leftPanelWidth, leftPanelTopBottomRatio };
                 m_editorGui->setSettings(settings);
                 break;
+            }
+
+            if (event->is<event::ChangeSceneCenterEvent>()) {
+                auto& newCenter = event->as<event::ChangeSceneCenterEvent>()->center;
+                auto sceneCamera = std::dynamic_pointer_cast<sl::graphics::camera::EulerCamera>(m_activeCamera);
+                if (sceneCamera) {
+                    sceneCamera->setCenter(newCenter);
+                    sceneCamera->calculateVectors();
+                }
             }
 
             try {

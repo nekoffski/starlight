@@ -13,21 +13,21 @@ namespace sl::graphics::camera {
 using Direction = u_int8_t;
 
 // clang-format off
-constexpr Direction DIR_NONE   = 0b0000;
-constexpr Direction DIR_UP     = 0b0001;
-constexpr Direction DIR_RIGHT  = 0b0010;
-constexpr Direction DIR_DOWN   = 0b0100;
-constexpr Direction DIR_LEFT   = 0b1000;
+constexpr Direction directionNone   = 0b0000;
+constexpr Direction directionUp     = 0b0001;
+constexpr Direction directionRight  = 0b0010;
+constexpr Direction directionDown   = 0b0100;
+constexpr Direction directionLeft   = 0b1000;
 
-const math::Vec3 WORLD_UP    = { 0.0f, 1.0f, 0.0f };
-const math::Vec3 WORLD_FRONT = { 0.0f, 0.0f, 1.0f };
-const math::Vec3 WORLD_RIGHT = { 1.0f, 0.0f, 0.0f };
+const math::Vec3 worldUp    = { 0.0f, 1.0f, 0.0f };
+const math::Vec3 worldFront = { 0.0f, 0.0f, 1.0f };
+const math::Vec3 worldRight = { 1.0f, 0.0f, 0.0f };
 // clang-format on
 
 class Camera {
 public:
-    explicit Camera(math::Vec3 position = math::Vec3{ 0.0f }, math::Vec3 up = WORLD_UP,
-        math::Vec3 front = WORLD_FRONT, math::Vec3 right = WORLD_RIGHT)
+    explicit Camera(math::Vec3 position = math::Vec3{ 0.0f }, math::Vec3 up = worldUp,
+        math::Vec3 front = worldFront, math::Vec3 right = worldRight)
         : m_position(std::move(position))
         , m_up(std::move(up))
         , m_front(std::move(front))

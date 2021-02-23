@@ -39,7 +39,7 @@ public:
     }
 
     template <typename T>
-    Component& getComponent() {
+    T& getComponent() {
         return m_registry.getComponent<T>(m_id);
     }
 

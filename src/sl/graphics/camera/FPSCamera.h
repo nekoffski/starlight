@@ -23,16 +23,16 @@ public:
     void update(float deltaTime) override {
         float velocity = deltaTime * m_speed;
 
-        if (m_direction & DIR_UP)
+        if (m_direction & directionUp)
             m_position += m_front * velocity;
 
-        if (m_direction & DIR_RIGHT)
+        if (m_direction & directionRight)
             m_position += m_right * velocity;
 
-        if (m_direction & DIR_DOWN)
+        if (m_direction & directionDown)
             m_position -= m_front * velocity;
 
-        if (m_direction & DIR_LEFT)
+        if (m_direction & directionLeft)
             m_position -= m_right * velocity;
 
         if (m_x == 0.0f && m_y == 0.0f)
@@ -55,24 +55,24 @@ public:
             std::sin(m_pitch),
             std::sin(m_yaw) * std::cos(m_pitch) });
 
-        m_right = math::cross(m_front, WORLD_UP);
+        m_right = math::cross(m_front, worldUp);
         m_up = math::cross(m_right, m_front);
     }
 
     void handleInput(std::shared_ptr<core::Input> input) override {
-        m_direction = DIR_NONE;
+        m_direction = directionNone;
 
         if (input->isKeyPressed(STARL_KEY_UP))
-            m_direction |= DIR_UP;
+            m_direction |= directionUp;
 
         if (input->isKeyPressed(STARL_KEY_RIGHT))
-            m_direction |= DIR_RIGHT;
+            m_direction |= directionRight;
 
         if (input->isKeyPressed(STARL_KEY_DOWN))
-            m_direction |= DIR_DOWN;
+            m_direction |= directionDown;
 
         if (input->isKeyPressed(STARL_KEY_LEFT))
-            m_direction |= DIR_LEFT;
+            m_direction |= directionLeft;
 
         auto [mouseX, mouseY] = input->getMousePosition();
         m_x = mouseX;

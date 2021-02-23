@@ -98,6 +98,10 @@ inline float lerp(const T& a, const T& b, float alfa) {
     return std::lerp(a, b, alfa);
 }
 
+inline math::Vec3 lerp(const math::Vec3& a, const math::Vec3& b, float alfa) {
+    return (1.0f - alfa) * a + alfa * b;
+}
+
 template <typename T>
 inline T ReLU(const T& lhs) {
     return std::max(0, lhs);

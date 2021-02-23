@@ -7,6 +7,7 @@
 #include "sl/event/Emitter.hpp"
 #include "sl/event/Event.h"
 #include "sl/math/Vector.hpp"
+#include "sl/scene/components/TransformComponent.h"
 
 #include "Settings.h"
 #include "Widget.h"
@@ -40,14 +41,24 @@ public:
         if (auto scene = m_activeScene.lock(); scene) {
             gui.breakLine();
             for (auto& [entityId, entity] : scene->ecsRegistry.getEntities()) {
+                auto onEntityClick = [&]() {
+                    m_selectedEntity = entity;
+
+                    using sl::scene::components::TransformComponent;
+                    if (entity->hasComponent<TransformComponent>()) {
+                        auto& transform = entity->getComponent<TransformComponent>();
+                        event::Emitter::emit<event::ChangeSceneCenterEvent>(transform.position);
+                    }
+                };
+
                 if (gui.beginTreeNode(entity->getName(), false)) {
                     if (gui.isPreviousWidgetClicked())
-                        m_selectedEntity = entity;
+                        onEntityClick();
 
                     gui.popTreeNode();
                 }
                 if (gui.isPreviousWidgetClicked())
-                    m_selectedEntity = entity;
+                    onEntityClick();
             }
             gui.endPanel();
         }

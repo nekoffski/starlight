@@ -15,15 +15,30 @@ public:
     void onGui(gui::GuiApi&) override;
 
     const math::Mat4 getViewMatrix() override {
-        return math::lookAt(m_position, m_centre, m_up);
+        return math::lookAt(m_position, m_center, m_up);
     }
 
-private:
+    void setCenter(const math::Vec3& center) {
+        m_previousCenter = m_center;
+        m_previousPosition = m_position;
+        m_targetCenter = center;
+
+        m_isInAnimation = true;
+    }
+
     void calculateVectors();
+
+private:
+    bool m_isInAnimation = false;
+    float m_alpha = 0.0f;
 
     Direction m_direction;
 
-    math::Vec3 m_centre;
+    math::Vec3 m_center;
+    math::Vec3 m_previousCenter;
+    math::Vec3 m_targetCenter;
+    math::Vec3 m_previousPosition;
+
     float m_radius;
     float m_speed;
 
@@ -35,9 +50,9 @@ private:
     math::Vec3 m_front;
     math::Vec3 m_right;
 
-    static const float MIN_PSI;
-    static const float MAX_PSI;
-    static const float MIN_FI;
-    static const float MAX_FI;
+    static const float minPsi;
+    static const float maxPsi;
+    static const float minFi;
+    static const float maxFi;
 };
 }

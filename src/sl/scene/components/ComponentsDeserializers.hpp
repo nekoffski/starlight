@@ -7,7 +7,10 @@
 #include "sl/core/Json.h"
 #include "sl/ecs/Entity.h"
 
+#include "DirectionalLightComponent.h"
+#include "MaterialComponent.h"
 #include "ModelComponent.h"
+#include "PointLightComponent.h"
 #include "RendererComponent.h"
 #include "TransformComponent.h"
 
@@ -18,6 +21,9 @@ using DeserializeCallback = std::function<void(std::shared_ptr<ecs::Entity>, ass
 static std::unordered_map<std::string, DeserializeCallback> componentsDeserializers{
     { "TransformComponent", &TransformComponent::deserialize },
     { "ModelComponent", &ModelComponent::deserialize },
-    { "RendererComponent", &RendererComponent::deserialize }
+    { "RendererComponent", &RendererComponent::deserialize },
+    { "DirectionalLightComponent", &DirectionalLightComponent::deserialize },
+    { "MaterialComponent", &MaterialComponent::deserialize },
+    { "PointLightComponent", &PointLightComponent::deserialize }
 };
 }
