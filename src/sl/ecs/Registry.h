@@ -39,7 +39,7 @@ public:
     bool hasComponent(const std::string& entityId) {
         if (not m_componentMap.exists<T>())
             return false;
-        return m_componentMap.get<T>()->isEntityOwner(entityId);
+        return m_componentMap.get<T>()->doesEntityOwnComponent(entityId);
     }
 
     template <typename T>

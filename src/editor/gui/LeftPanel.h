@@ -11,9 +11,9 @@ namespace editor::gui {
 
 class LeftPanel : public Widget {
 public:
-    explicit LeftPanel(const Settings& settings, EntitiesVector& entities, sl::asset::AssetManager& assetManager)
+    explicit LeftPanel(const Settings& settings, sl::asset::AssetManager& assetManager)
         : m_selectedEntity(nullptr)
-        , m_scenePanel(settings.scenePanelPosition, entities, m_selectedEntity)
+        , m_scenePanel(settings.scenePanelPosition, m_selectedEntity)
         , m_propertiesPanel(settings.propertiesPanelPosition, assetManager, m_selectedEntity) {
     }
 

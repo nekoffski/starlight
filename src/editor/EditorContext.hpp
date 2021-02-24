@@ -37,7 +37,7 @@ public:
     void onInit() override {
         m_activeCamera = graphics::camera::EulerCamera::create(math::Vec3(0.0f), 1.0f, 8.0f);
         m_scene = scene::Scene::create();
-        m_editorGui = std::make_shared<editor::gui::EditorGui>(createGuiSettings(), m_entities, m_assetManager);
+        m_editorGui = std::make_shared<editor::gui::EditorGui>(createGuiSettings(), m_assetManager);
 
         m_scene->camera = m_activeCamera;
         m_editorGui->setActiveScene(m_scene);
@@ -126,12 +126,6 @@ public:
         auto events = eventProvider.getByCategories<event::CoreCategory, event::EditorCategory>();
 
         for (auto event : events) {
-            if (event->is<event::AddEntityEvent>()) {
-                auto entityName = event->as<event::AddEntityEvent>()->name;
-                m_entities.emplace_back(m_scene->addEntity(std::move(entityName)));
-                break;
-            }
-
             if (event->is<event::SetSkyboxEvent>()) {
                 auto cubemap = event->as<event::SetSkyboxEvent>()->cubemap;
                 auto skybox = sl::scene::Skybox::create(sl::utils::Globals::shaders->defaultCubemapShader, cubemap);
@@ -155,7 +149,6 @@ public:
                 auto sceneCamera = std::dynamic_pointer_cast<sl::graphics::camera::EulerCamera>(m_activeCamera);
                 if (sceneCamera) {
                     sceneCamera->setCenter(newCenter);
-                    sceneCamera->calculateVectors();
                 }
             }
 
@@ -186,8 +179,6 @@ private:
     sl::asset::AssetManager m_assetManager;
 
     std::shared_ptr<editor::gui::EditorGui> m_editorGui;
-    std::vector<std::shared_ptr<ecs::Entity>> m_entities;
-
     std::shared_ptr<graphics::camera::UserControllableCamera> m_activeCamera;
     std::shared_ptr<scene::Scene> m_scene;
 

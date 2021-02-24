@@ -33,7 +33,7 @@ public:
 	}
 
 	bool isEntityOwner(const std::string& entityId) {
-		return m_componentContainer->isEntityOwner(entityId);
+		return m_componentContainer->doesEntityOwnComponent(entityId);
 	}
 
 private:

@@ -37,6 +37,7 @@ layout (binding = 0) uniform sampler2D textureSampler;
 
 uniform unsigned int directionalLightsNum;
 uniform unsigned int pointLightsNum;
+
 uniform DirectionalLights directionalLights[MAX_DIRECTIONAL_LIGHTS];
 uniform PointLights pointLights[MAX_POINT_LIGHTS];
 uniform Material material;
@@ -99,7 +100,7 @@ vec4 calculatePointLights(vec3 viewDirection, float shadow) {
 	vec3 lightSum = vec3(0.0f);
 
 	for (unsigned int i = 0u; i < pointLightsNum; ++i) {
-		PointLights light = pointLights[0];
+		PointLights light = pointLights[i];
 		vec3 lightPosition = vec3(light.modelMatrix * vec4(light.position, 1.0f));
 		vec3 lightDirection = normalize(lightPosition - fragmentPosition);
 

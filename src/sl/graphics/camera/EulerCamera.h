@@ -20,7 +20,6 @@ public:
 
     void setCenter(const math::Vec3& center) {
         m_previousCenter = m_center;
-        m_previousPosition = m_position;
         m_targetCenter = center;
 
         m_isInAnimation = true;
@@ -37,7 +36,6 @@ private:
     math::Vec3 m_center;
     math::Vec3 m_previousCenter;
     math::Vec3 m_targetCenter;
-    math::Vec3 m_previousPosition;
 
     float m_radius;
     float m_speed;

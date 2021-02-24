@@ -12,7 +12,7 @@ namespace editor::gui {
 class EditorGui {
 
 public:
-    explicit EditorGui(const Settings& settings, EntitiesVector& entities, sl::asset::AssetManager& assetManager);
+    explicit EditorGui(const Settings& settings, sl::asset::AssetManager& assetManager);
     void setSettings(const Settings& settings);
     void renderEditorGui(sl::gui::GuiApi& gui);
 
@@ -24,6 +24,6 @@ public:
 private:
     LeftPanel m_leftPanel;
     BottomPanel m_bottomPanel;
-	sl::asset::AssetManager& m_assetManager;
+    sl::asset::AssetManager& m_assetManager;
 };
 }
