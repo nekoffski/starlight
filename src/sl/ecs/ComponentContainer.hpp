@@ -12,9 +12,6 @@ public:
     virtual ~IComponentContainer() = default;
 };
 
-// TODO: FIX REMOVING COMPONENTS!
-// TODO: add CONCEPTS
-
 template <typename T>
 class ComponentContainer : public IComponentContainer {
 public:
@@ -37,6 +34,12 @@ public:
         m_entityIdToComponent[entityId] = &component;
 
         return component;
+    }
+
+    void remove(const std::string& entityId) {
+        m_entityIdToComponent.erase(entityId);
+        std::erase_if(m_components, [&entityId](T& component) { return component.ownerEntityId == entityId; });
+        rebuildMap();
     }
 
     std::size_t size() const {
@@ -63,7 +66,7 @@ private:
     void rebuildMap() {
         m_entityIdToComponent.clear();
         for (auto& component : m_components)
-            m_entityIdToComponent[component->ownerEntityId] = &component;
+            m_entityIdToComponent[component.ownerEntityId] = &component;
     }
 
     std::vector<T> m_components;
