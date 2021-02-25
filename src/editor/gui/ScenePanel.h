@@ -16,14 +16,10 @@ namespace editor::gui {
 
 using namespace sl;
 
-using EntitiesVector = std::vector<std::shared_ptr<sl::ecs::Entity>>;
-
 class ScenePanel : public Widget {
-
 public:
-    explicit ScenePanel(const WidgetPosition& position, EntitiesVector& entities, std::shared_ptr<sl::ecs::Entity>& selectedEntity)
+    explicit ScenePanel(const WidgetPosition& position, std::shared_ptr<sl::ecs::Entity>& selectedEntity)
         : m_position(position)
-        , m_entities(entities)
         , m_selectedEntity(selectedEntity)
         , m_entityIndex(0) {
     }
@@ -34,9 +30,9 @@ public:
 
     void render(sl::gui::GuiApi& gui) override {
         gui.beginPanel("Scene entities", m_position.origin, m_position.size);
-        if (gui.button("Add entity", 150)) {
-            event::Emitter::emit<event::AddEntityEvent>("Entity" + std::to_string(m_entityIndex++));
-        }
+        if (gui.button("Add entity", 150))
+            if (auto scene = m_activeScene.lock(); scene)
+                scene->addEntity("Entity" + std::to_string(m_entityIndex++));
 
         if (auto scene = m_activeScene.lock(); scene) {
             gui.breakLine();
@@ -66,7 +62,6 @@ public:
 
 private:
     WidgetPosition m_position;
-    EntitiesVector& m_entities;
 
     std::shared_ptr<sl::ecs::Entity>& m_selectedEntity;
     int m_entityIndex;

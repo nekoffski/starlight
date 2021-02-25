@@ -5,8 +5,6 @@
 #include <unordered_map>
 #include <vector>
 
-static constexpr int defaultContainerSize = 1000;
-
 namespace sl::ecs {
 
 class IComponentContainer {
@@ -14,26 +12,42 @@ public:
     virtual ~IComponentContainer() = default;
 };
 
-// TODO: FIX REMOVING COMPONENTS!
-// TODO: add CONCEPTS
-
 template <typename T>
 class ComponentContainer : public IComponentContainer {
 public:
+    inline static constexpr int defaultCapacity = 1000;
+
     static std::shared_ptr<IComponentContainer> create() {
         return std::make_shared<ComponentContainer<T>>();
     }
 
-    explicit ComponentContainer() {
-        m_components.reserve(defaultContainerSize);
+    explicit ComponentContainer(const int capacity = defaultCapacity) {
+        m_components.reserve(capacity);
     }
 
     template <typename... Args>
     T& add(const std::string& entityId, Args&&... args) {
-        m_components.emplace_back(T(std::forward<Args>(args)...));
+        m_components.emplace_back(T{ std::forward<Args>(args)... });
         auto& component = m_components.back();
+
+        component.ownerEntityId = entityId;
         m_entityIdToComponent[entityId] = &component;
+
         return component;
+    }
+
+    void remove(const std::string& entityId) {
+        m_entityIdToComponent.erase(entityId);
+        std::erase_if(m_components, [&entityId](T& component) { return component.ownerEntityId == entityId; });
+        rebuildMap();
+    }
+
+    std::size_t size() const {
+        return m_components.size();
+    }
+
+    std::size_t capacity() const {
+        return m_components.capacity();
     }
 
     std::vector<T>& getAll() {
@@ -44,12 +58,18 @@ public:
         return *m_entityIdToComponent[entityId];
     }
 
-    bool isEntityOwner(const std::string& entityId) {
+    bool doesEntityOwnComponent(const std::string& entityId) {
         return m_entityIdToComponent.contains(entityId);
     }
 
 private:
-    std::vector<T> m_components; 
+    void rebuildMap() {
+        m_entityIdToComponent.clear();
+        for (auto& component : m_components)
+            m_entityIdToComponent[component.ownerEntityId] = &component;
+    }
+
+    std::vector<T> m_components;
     std::unordered_map<std::string, T*> m_entityIdToComponent;
 };
 }

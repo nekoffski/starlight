@@ -32,8 +32,8 @@ public:
 		return m_componentContainer->getByEntityId(entityId);
 	}
 
-	bool isEntityOwner(const std::string& entityId) {
-		return m_componentContainer->isEntityOwner(entityId);
+	bool doesEntityOwnComponent(const std::string& entityId) {
+		return m_componentContainer->doesEntityOwnComponent(entityId);
 	}
 
 private:

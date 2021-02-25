@@ -17,10 +17,9 @@ function(sl_add_test module)
 	gtest_add_tests(TARGET ${module}_tests)
 endfunction()
 
-file (GLOB_RECURSE SL_TEST_PLATFORM_SRC ${CMAKE_CURRENT_SOURCE_DIR}/platform/*.cpp)
-file (GLOB_RECURSE SL_TEST_MISC_SRC ${CMAKE_CURRENT_SOURCE_DIR}/misc/*.cpp)
 
 sl_add_test(core)
 sl_add_test(math)
 sl_add_test(application)
 sl_add_test(asset)
+sl_add_test(ecs)

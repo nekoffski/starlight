@@ -39,7 +39,7 @@ public:
     bool hasComponent(const std::string& entityId) {
         if (not m_componentMap.exists<T>())
             return false;
-        return m_componentMap.get<T>()->isEntityOwner(entityId);
+        return m_componentMap.get<T>()->doesEntityOwnComponent(entityId);
     }
 
     template <typename T>
@@ -64,7 +64,7 @@ public:
     }
 
 private:
-    ComponentMap<IComponentContainer, ComponentContainer> m_componentMap;
+    ComponentMap m_componentMap;
     std::unordered_map<std::string, std::shared_ptr<Entity>> m_entities;
     std::unordered_map<std::string, std::string> m_entityNameToId;
 };

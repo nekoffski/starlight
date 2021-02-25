@@ -25,7 +25,7 @@ void ModelRenderer::render(scene::components::RendererComponent& component, ecs:
     auto& entityId = component.ownerEntityId;
 
     // TODO: POSSIBLE BRANCHING
-    auto& material = materials.isEntityOwner(entityId) ? materials.getByEntityId(entityId) : DEFAULT_MATERIAL;
+    auto& material = materials.doesEntityOwnComponent(entityId) ? materials.getByEntityId(entityId) : DEFAULT_MATERIAL;
 
     setMaterial(material, shader);
 

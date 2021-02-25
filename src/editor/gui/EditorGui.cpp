@@ -7,8 +7,8 @@ using namespace sl::core;
 
 namespace editor::gui {
 
-EditorGui::EditorGui(const Settings& settings, EntitiesVector& entities, sl::asset::AssetManager& assetManager)
-    : m_leftPanel(settings, entities, assetManager)
+EditorGui::EditorGui(const Settings& settings, sl::asset::AssetManager& assetManager)
+    : m_leftPanel(settings, assetManager)
     , m_bottomPanel(settings, assetManager)
     , m_assetManager(assetManager) {
 }
