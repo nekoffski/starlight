@@ -5,23 +5,23 @@
 #include <unordered_map>
 
 #include "sl/core/misc/misc.hpp"
+#include "sl/ecs/ComponentContainer.hpp"
 
 namespace sl::ecs {
 
-template <typename IContainer, template <typename> typename Container>
 class ComponentMap {
 public:
     template <typename T>
-    std::shared_ptr<Container<T>> get() {
+    std::shared_ptr<ComponentContainer<T>> get() {
         auto id = core::misc::typeIndex<T>();
         if (not m_componentContainers.contains(id))
-            m_componentContainers[id] = Container<T>::create();
-        return std::static_pointer_cast<Container<T>>(m_componentContainers[id]);
+            m_componentContainers[id] = std::make_shared<ComponentContainer<T>>();
+        return std::static_pointer_cast<ComponentContainer<T>>(m_componentContainers[id]);
     }
 
     template <typename T>
-    std::shared_ptr<Container<T>> getByIndex(std::type_index id) {
-        return std::static_pointer_cast<Container<T>>(m_componentContainers[id]);
+    std::shared_ptr<ComponentContainer<T>> getByIndex(std::type_index id) {
+        return std::static_pointer_cast<ComponentContainer<T>>(m_componentContainers[id]);
     }
 
     template <typename T>
@@ -30,6 +30,6 @@ public:
     }
 
 private:
-	std::unordered_map<std::type_index, std::shared_ptr<IContainer>> m_componentContainers;
+    std::unordered_map<std::type_index, std::shared_ptr<IComponentContainer>> m_componentContainers;
 };
 }

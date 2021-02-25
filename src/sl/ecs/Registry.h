@@ -64,7 +64,7 @@ public:
     }
 
 private:
-    ComponentMap<IComponentContainer, ComponentContainer> m_componentMap;
+    ComponentMap m_componentMap;
     std::unordered_map<std::string, std::shared_ptr<Entity>> m_entities;
     std::unordered_map<std::string, std::string> m_entityNameToId;
 };

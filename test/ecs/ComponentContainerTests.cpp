@@ -3,20 +3,12 @@
 #include <gtest/gtest.h>
 
 #include "sl/ecs/Component.h"
+#include "mocks/TestComponent.h"
 
 using namespace testing;
 using namespace sl::ecs;
 
 namespace {
-
-struct TestComponent : public Component {
-    explicit TestComponent(int x, float y)
-        : x(x)
-        , y(y) {}
-
-    int x;
-    float y;
-};
 
 struct ComponentContainerTests : public Test {
     ComponentContainer<TestComponent> m_container;
