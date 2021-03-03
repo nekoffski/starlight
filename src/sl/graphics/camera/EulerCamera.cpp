@@ -95,6 +95,21 @@ void EulerCamera::handleInput(std::shared_ptr<core::Input> input) {
 
     if (input->isKeyPressed(STARL_KEY_LEFT))
         m_direction |= directionLeft;
+
+    m_isMouseMiddlePressed = input->isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE);
+
+    if (m_isMouseMiddlePressed) {
+        constexpr float mouseSpeed = 0.0015f;
+
+        auto [deltaX, deltaY] = input->getMousePositonDelta();
+
+        m_psi += deltaY * mouseSpeed;
+        m_fi += deltaX * mouseSpeed;
+    }
+
+    auto scrollDelta = input->getScrollDelta();
+    const float scrollDeltaSpeed = 5.0f;
+    m_radius += scrollDelta * scrollDeltaSpeed;
 }
 
 void EulerCamera::onGui(gui::GuiApi& gui) {

@@ -33,6 +33,10 @@ public:
         m_propertiesPanel.setActiveScene(scene);
     }
 
+	std::shared_ptr<sl::ecs::Entity> getSelectedEntity() {
+		return m_selectedEntity;
+	}
+
 private:
     std::shared_ptr<sl::ecs::Entity> m_selectedEntity;
 

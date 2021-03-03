@@ -2,9 +2,13 @@
 
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
+
 #include <sys/ucontext.h>
 
-#include "imgui/imgui.h"
+// #include "imgui/imgui.h"
+
+#include <ImGuizmo.h>
+
 #include "sl/core/Logger.h"
 #include "sl/core/utils/String.hpp"
 
@@ -64,7 +68,7 @@ ImGuiApi::ImGuiApi(void* windowHandle) {
     SL_INFO("initializing opengl implementation");
     ImGui_ImplOpenGL3_Init("#version 330 core");
 
-    setStyle();
+    //setStyle();
 }
 
 ImGuiApi::~ImGuiApi() {
@@ -146,6 +150,7 @@ void ImGuiApi::begin() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+    ImGuizmo::BeginFrame();
 }
 void ImGuiApi::end() {
     ImGui::Render();

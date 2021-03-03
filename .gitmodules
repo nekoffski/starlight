@@ -15,3 +15,6 @@
 	path = 3rdparty/xvent
 	url = https://github.com/nekoffski/xvent.git
 	branch = mt
+[submodule "3rdparty/ImGuizmo"]
+	path = 3rdparty/ImGuizmo
+	url = https://github.com/CedricGuillemet/ImGuizmo.git

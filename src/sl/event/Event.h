@@ -5,12 +5,12 @@
 #include <xvent/Event.h>
 
 #include "Categories.h"
+#include "Util.h"
+
 #include "sl/graphics/Cubemap.h"
 #include "sl/math/Vector.hpp"
 
 namespace sl::event {
-
-#define DECLARE_EVENT(Event, Category) struct Event : xvent::EventBase<Event, Category>
 
 DECLARE_EVENT(AddEntityEvent, EditorCategory) {
     AddEntityEvent(std::string name)

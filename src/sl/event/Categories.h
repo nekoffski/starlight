@@ -6,4 +6,5 @@ namespace sl::event {
 
 struct CoreCategory : xvent::Category {};
 struct EditorCategory : xvent::Category {};
+struct InputCategory : xvent::Category {};
 }

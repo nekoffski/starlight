@@ -23,10 +23,14 @@ public:
 
     inline static std::unique_ptr<Factory> factory = nullptr;
 
+    virtual void update() = 0;
     virtual void setKeyCallback(InputCallback){};
 
     virtual bool isKeyPressed(int) const = 0;
     virtual bool isMouseButtonPressed(int) const = 0;
+
     virtual std::pair<double, double> getMousePosition() const = 0;
+    virtual std::pair<double, double> getMousePositonDelta() const = 0;
+    virtual double getScrollDelta() const = 0;
 };
 } // namespace sl::core

@@ -5,3 +5,8 @@ add_subdirectory(imgui)
 add_subdirectory(crossguid)
 add_subdirectory(spdlog)
 add_subdirectory(xvent)
+
+add_library(imguizmo STATIC ${CMAKE_CURRENT_SOURCE_DIR}/ImGuizmo/ImGuizmo.cpp)
+target_include_directories(imguizmo PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/imgui/imgui)
+target_include_directories(imguizmo PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/ImGuizmo ${CMAKE_CURRENT_SOURCE_DIR}/imgui/imgui)
+target_link_libraries(imguizmo PUBLIC imgui dl) 

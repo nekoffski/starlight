@@ -105,6 +105,8 @@ void Application::update(float deltaTime, float time) {
     m_context->update(m_sceneSystems, deltaTime, time);
 
     m_eventEngine.spreadEvents();
+
+    m_input->update();
 }
 
 void Application::render() {
@@ -124,6 +126,11 @@ void Application::renderGui() {
 
 void Application::handleInput() {
     m_context->handleInput(m_input);
+
+    if (m_input->isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE))
+        m_window->disableCursor();
+    else
+        m_window->enableCursor();
 }
 
 std::shared_ptr<ApplicationContext> Application::getActiveContext() const {

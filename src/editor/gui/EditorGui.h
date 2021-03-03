@@ -21,6 +21,10 @@ public:
         m_bottomPanel.setActiveScene(scene);
     }
 
+    std::shared_ptr<sl::ecs::Entity> getSelectedEntity() {
+        return m_leftPanel.getSelectedEntity();
+    }
+
 private:
     LeftPanel m_leftPanel;
     BottomPanel m_bottomPanel;

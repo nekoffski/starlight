@@ -9,6 +9,7 @@
 #include "sl/asset/AssetLoader.hpp"
 #include "sl/asset/AssetManager.h"
 #include "sl/core/FileSystem.h"
+#include "sl/core/Input.h"
 #include "sl/core/Logger.h"
 #include "sl/core/error/BaseError.hpp"
 #include "sl/ecs/Entity.h"
@@ -24,6 +25,7 @@
 #include "sl/scene/components/ModelComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 #include "sl/utils/Globals.h"
+
 #include <memory>
 
 using namespace sl;
@@ -64,6 +66,32 @@ public:
     void renderGui(gui::GuiApi& gui) override {
         m_editorGui->renderEditorGui(gui);
         m_errorDialog.show(gui);
+
+        using sl::scene::components::TransformComponent;
+        auto selectedEntity = m_editorGui->getSelectedEntity();
+        if (selectedEntity != nullptr && selectedEntity->hasComponent<TransformComponent>()) {
+            auto& transform = selectedEntity->getComponent<TransformComponent>();
+
+            // Gizmo
+            ImGuizmo::SetOrthographic(false);
+            ImGuizmo::SetDrawlist();
+            ImGuiIO& io = ImGui::GetIO();
+            ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+
+            auto cameraView = m_scene->camera->getViewMatrix();
+
+            float aspect = static_cast<float>(1600.0f) / 900.0f;
+            auto projectionMatrix = math::perspective(45.0f, aspect, 0.1f, 100.0f);
+
+            auto& transformationMatrix = transform.transformation;
+
+            ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(projectionMatrix), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL,
+                glm::value_ptr(transformationMatrix));
+
+            auto id = glm::mat4(1.0f);
+            //ImGuizmo::DrawGrid(glm::value_ptr(cameraView), glm::value_ptr(projectionMatrix), glm::value_ptr(id), 100.f);
+
+        }
     }
 
     void handleInput(std::shared_ptr<core::Input> input) override {

@@ -48,7 +48,9 @@ private:
     math::Vec3 m_front;
     math::Vec3 m_right;
 
-    static const float minPsi;
+    bool m_isMouseMiddlePressed = false;
+
+	static const float minPsi;
     static const float maxPsi;
     static const float minFi;
     static const float maxFi;

@@ -12,6 +12,10 @@
 #include "Settings.h"
 #include "Widget.h"
 
+#include "imgui/imgui.h"
+
+#include "ImGuizmo.h"
+
 namespace editor::gui {
 
 using namespace sl;
@@ -34,7 +38,9 @@ public:
             if (auto scene = m_activeScene.lock(); scene)
                 scene->addEntity("Entity" + std::to_string(m_entityIndex++));
 
-        if (auto scene = m_activeScene.lock(); scene) {
+        using sl::scene::components::TransformComponent;
+        auto scene = m_activeScene.lock();
+        if (scene) {
             gui.breakLine();
             for (auto& [entityId, entity] : scene->ecsRegistry.getEntities()) {
                 auto onEntityClick = [&]() {
@@ -56,8 +62,8 @@ public:
                 if (gui.isPreviousWidgetClicked())
                     onEntityClick();
             }
-            gui.endPanel();
         }
+        gui.endPanel();
     }
 
 private:
