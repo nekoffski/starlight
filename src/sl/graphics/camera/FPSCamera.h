@@ -3,20 +3,18 @@
 #include "UserControllableCamera.h"
 
 #include "sl/core/Logger.h"
+#include "sl/graphics/ViewFrustum.h"
+#include "sl/graphics/camera/Camera.h"
 #include "sl/gui/GuiApi.h"
 #include "sl/math/Utils.hpp"
 #include "sl/math/Vector.hpp"
-#include "sl/graphics/camera/Camera.h"
 
 namespace sl::graphics::camera {
 
 class FPSCamera : public UserControllableCamera {
 public:
-    static std::shared_ptr<FPSCamera> create() {
-        return std::make_shared<FPSCamera>();
-    }
-
-    explicit FPSCamera() {
+    explicit FPSCamera(const ViewFrustum& viewFrustum)
+        : UserControllableCamera(viewFrustum) {
         m_position = math::Vec3{ 0.0f, 5.0f, 0.0f };
     }
 

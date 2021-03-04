@@ -15,6 +15,7 @@
 #include "sl/ecs/Entity.h"
 #include "sl/event/Categories.h"
 #include "sl/event/Event.h"
+#include "sl/graphics/ViewFrustum.h"
 #include "sl/graphics/camera/EulerCamera.h"
 #include "sl/graphics/camera/FPSCamera.h"
 #include "sl/gui/ErrorDialog.hpp"
@@ -37,7 +38,8 @@ class EditorContext : public application::ApplicationContext {
 
 public:
     void onInit() override {
-        m_activeCamera = graphics::camera::EulerCamera::create(math::Vec3(0.0f), 1.0f, 8.0f);
+        auto viewFrustum = graphics::ViewFrustum{ 1600, 900 };
+        m_activeCamera = std::make_shared<graphics::camera::EulerCamera>(viewFrustum, math::Vec3(0.0f), 1.0f, 8.0f);
         m_scene = scene::Scene::create();
         m_editorGui = std::make_shared<editor::gui::EditorGui>(createGuiSettings(), m_assetManager);
 
@@ -74,7 +76,7 @@ public:
 
             // Gizmo
             ImGuizmo::SetOrthographic(false);
-            ImGuizmo::SetDrawlist();
+            //           ImGuizmo::SetDrawlist();
             ImGuiIO& io = ImGui::GetIO();
             ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 
@@ -83,14 +85,21 @@ public:
             float aspect = static_cast<float>(1600.0f) / 900.0f;
             auto projectionMatrix = math::perspective(45.0f, aspect, 0.1f, 100.0f);
 
-            auto& transformationMatrix = transform.transformation;
+            auto transformationMatrix = transform.transformation;
 
             ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(projectionMatrix), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL,
                 glm::value_ptr(transformationMatrix));
 
-            auto id = glm::mat4(1.0f);
+            //auto id = glm::mat4(1.0f);
             //ImGuizmo::DrawGrid(glm::value_ptr(cameraView), glm::value_ptr(projectionMatrix), glm::value_ptr(id), 100.f);
 
+            if (ImGuizmo::IsUsing()) {
+                math::Vec3 rotation;
+
+                ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transformationMatrix), &transform.position[0], &rotation[0], &transform.scale[0]);
+                transform.rotation += rotation;
+                transform.recalculate();
+            }
         }
     }
 

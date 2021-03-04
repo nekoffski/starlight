@@ -66,9 +66,9 @@ ImGuiApi::ImGuiApi(void* windowHandle) {
     // TODO: this string should be defined somewhere
 
     SL_INFO("initializing opengl implementation");
-    ImGui_ImplOpenGL3_Init("#version 330 core");
+    ImGui_ImplOpenGL3_Init("#version 440 core");
 
-    //setStyle();
+    setStyle();
 }
 
 ImGuiApi::~ImGuiApi() {

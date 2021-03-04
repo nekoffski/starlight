@@ -27,7 +27,7 @@ void ParticleEffectRenderer::renderParticleEffects(ecs::ComponentView<scene::com
     m_shader->enable();
     m_shader->setUniform("view", camera->getViewMatrix());
     m_shader->setUniform("viewPos", camera->getPosition());
-    beginParticleEffect();
+    beginParticleEffect(camera);
 
     for (auto& pfx : pfxs) {
         auto& transform = transforms.getByEntityId(pfx.ownerEntityId);
@@ -44,8 +44,8 @@ void ParticleEffectRenderer::renderParticleEffects(ecs::ComponentView<scene::com
     m_shader->disable();
 }
 
-void ParticleEffectRenderer::beginParticleEffect() {
-    m_shader->setUniform("projection", m_renderer->getProjectionMatrix());
+void ParticleEffectRenderer::beginParticleEffect(std::shared_ptr<graphics::camera::Camera> camera) {
+    m_shader->setUniform("projection", camera->getProjectionMatrix());
     m_vao->bind();
 }
 

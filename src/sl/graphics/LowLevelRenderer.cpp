@@ -5,14 +5,13 @@
 namespace sl::graphics {
 
 LowLevelRenderer::LowLevelRenderer(std::shared_ptr<graphics::GraphicsContext> graphicsContext,
-    std::unique_ptr<graphics::RenderApi> renderApi, Viewport viewport)
+    std::unique_ptr<graphics::RenderApi> renderApi, ViewFrustum::Viewport viewport)
     : m_graphicsContext(graphicsContext)
     , m_renderApi(std::move(renderApi))
     , m_viewport(std::move(viewport)) {
 
     SL_INFO("initializing");
     m_graphicsContext->setViewport(m_viewport.width, m_viewport.height);
-    calculateProjectionMatrix();
 
     m_renderApi->enable(STARL_DEPTH_TEST);
     m_renderApi->setDepthFunc(STARL_LEQUAL);

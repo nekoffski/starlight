@@ -61,7 +61,7 @@ protected:
 private:
     std::shared_ptr<core::Window> m_window;
     std::shared_ptr<core::Input> m_input;
-    std::shared_ptr<graphics::LowLevelRenderer> m_lowlLevelRenderer;
+    std::shared_ptr<graphics::LowLevelRenderer> m_lowLevelRenderer;
     std::shared_ptr<gui::GuiApi> m_guiApi;
     std::shared_ptr<graphics::GraphicsContext> m_graphicsContext;
     std::shared_ptr<ApplicationContext> m_context;

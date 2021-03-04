@@ -3,7 +3,7 @@
 #include "sl/asset/AssetLoader.hpp"
 #include "sl/graphics/LowLevelRenderer.h"
 #include "sl/graphics/Shader.h"
-#include "sl/graphics/Viewport.h"
+#include "sl/graphics/ViewFrustum.h"
 #include "sl/graphics/buffer/FrameBuffer.h"
 #include "sl/platform/gpu/fwd.h"
 
@@ -16,7 +16,7 @@ ShadowRenderer::ShadowRenderer(std::shared_ptr<graphics::LowLevelRenderer> rende
 }
 
 void ShadowRenderer::beginDepthCapture() {
-    m_renderer->setTemporaryViewport(graphics::Viewport{ 1024u, 1024u });
+    m_renderer->setTemporaryViewport(graphics::ViewFrustum::Viewport{ 1024u, 1024u });
     m_shadowMapFrameBuffer->bind();
     m_renderer->clearBuffers(STARL_DEPTH_BUFFER_BIT);
     m_depthShader->enable();
