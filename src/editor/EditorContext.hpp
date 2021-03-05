@@ -68,39 +68,6 @@ public:
     void renderGui(gui::GuiApi& gui) override {
         m_editorGui->renderEditorGui(gui);
         m_errorDialog.show(gui);
-
-        using sl::scene::components::TransformComponent;
-        auto selectedEntity = m_editorGui->getSelectedEntity();
-        if (selectedEntity != nullptr && selectedEntity->hasComponent<TransformComponent>()) {
-            auto& transform = selectedEntity->getComponent<TransformComponent>();
-
-            // Gizmo
-            ImGuizmo::SetOrthographic(false);
-            //           ImGuizmo::SetDrawlist();
-            ImGuiIO& io = ImGui::GetIO();
-            ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-
-            auto cameraView = m_scene->camera->getViewMatrix();
-
-            float aspect = static_cast<float>(1600.0f) / 900.0f;
-            auto projectionMatrix = math::perspective(45.0f, aspect, 0.1f, 100.0f);
-
-            auto transformationMatrix = transform.transformation;
-
-            ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(projectionMatrix), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL,
-                glm::value_ptr(transformationMatrix));
-
-            //auto id = glm::mat4(1.0f);
-            //ImGuizmo::DrawGrid(glm::value_ptr(cameraView), glm::value_ptr(projectionMatrix), glm::value_ptr(id), 100.f);
-
-            if (ImGuizmo::IsUsing()) {
-                math::Vec3 rotation;
-
-                ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transformationMatrix), &transform.position[0], &rotation[0], &transform.scale[0]);
-                transform.rotation += rotation;
-                transform.recalculate();
-            }
-        }
     }
 
     void handleInput(std::shared_ptr<core::Input> input) override {
@@ -175,6 +142,10 @@ public:
                 const float leftPanelTopBottomRatio = 0.5f;
 
                 auto windowResizedEvent = event->as<event::WindowResizedEvent>();
+
+                m_activeCamera->viewFrustum.viewport.width = windowResizedEvent->width;
+                m_activeCamera->viewFrustum.viewport.height = windowResizedEvent->height;
+                m_activeCamera->calculateProjectionMatrix();
 
                 editor::gui::Settings settings{ windowResizedEvent->width, windowResizedEvent->height, leftPanelWidth, leftPanelTopBottomRatio };
                 m_editorGui->setSettings(settings);

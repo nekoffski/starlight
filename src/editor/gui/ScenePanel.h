@@ -9,6 +9,8 @@
 #include "sl/math/Vector.hpp"
 #include "sl/scene/components/TransformComponent.h"
 
+#include "editor/DebugConsole.hpp"
+
 #include "Settings.h"
 #include "Widget.h"
 
@@ -62,8 +64,38 @@ public:
                 if (gui.isPreviousWidgetClicked())
                     onEntityClick();
             }
+
+            gui.endPanel();
+
+            if (scene) {
+                using sl::scene::components::TransformComponent;
+                if (m_selectedEntity != nullptr && m_selectedEntity->hasComponent<TransformComponent>()) {
+                    auto& transform = m_selectedEntity->getComponent<TransformComponent>();
+
+                    // Gizmo
+                    gui.setupGizmo(scene->camera->viewFrustum.viewport);
+
+                    auto cameraView = scene->camera->getViewMatrix();
+                    auto projectionMatrix = scene->camera->getProjectionMatrix();
+
+                    auto transformationMatrix = transform.transformation;
+
+                    ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(projectionMatrix), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL,
+                        glm::value_ptr(transformationMatrix));
+
+                    //auto id = glm::mat4(1.0f);
+                    //ImGuizmo::DrawGrid(glm::value_ptr(cameraView), glm::value_ptr(projectionMatrix), glm::value_ptr(id), 100.f);
+
+                    if (gui.isUsingGizmo()) {
+                        math::Vec3 rotation;
+
+                        ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transformationMatrix), &transform.position[0], &rotation[0], &transform.scale[0]);
+                        transform.rotation += rotation;
+                        transform.recalculate();
+                    }
+                }
+            }
         }
-        gui.endPanel();
     }
 
 private:

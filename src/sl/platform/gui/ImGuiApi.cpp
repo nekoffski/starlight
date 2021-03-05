@@ -5,8 +5,6 @@
 
 #include <sys/ucontext.h>
 
-// #include "imgui/imgui.h"
-
 #include <ImGuizmo.h>
 
 #include "sl/core/Logger.h"
@@ -259,5 +257,14 @@ void ImGuiApi::endMenu() {
 
 bool ImGuiApi::menuItem(const std::string& label) {
     return ImGui::MenuItem(label.c_str());
+}
+
+void ImGuiApi::setupGizmo(const graphics::ViewFrustum::Viewport& viewport) {
+    ImGuizmo::SetOrthographic(false);
+    ImGuizmo::SetRect(0, 0, viewport.width, viewport.height);
+}
+
+bool ImGuiApi::isUsingGizmo() {
+    return ImGuizmo::IsUsing();
 }
 }

@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 
+#include "sl/graphics/ViewFrustum.h"
 #include "sl/core/types/NotNullPtr.hpp"
 #include "sl/math/Vector.hpp"
 
@@ -68,5 +69,9 @@ public:
     virtual bool isPreviousWidgetClicked() = 0;
     virtual bool colorPicker3(const std::string&, math::Vec3&) = 0;
     virtual bool button(const std::string&, int xSize = 0, int ySize = 0) = 0;
+
+	virtual void setupGizmo(const graphics::ViewFrustum::Viewport&) = 0;
+	virtual bool isUsingGizmo() = 0;
+
 };
 }

@@ -68,6 +68,9 @@ public:
     bool colorPicker3(const std::string&, math::Vec3&) override;
 
     bool button(const std::string&, int xSize, int ySize) override;
+
+    void setupGizmo(const graphics::ViewFrustum::Viewport&) override;
+    bool isUsingGizmo() override;
 };
 
 struct ImGuiApiFactory : sl::gui::GuiApi::Factory {
