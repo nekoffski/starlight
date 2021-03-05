@@ -10,6 +10,9 @@ public:
     explicit ImGuiApi(void*);
     ~ImGuiApi() override;
 
+    void manipulateGizmo(math::Mat4& viewMatrix, math::Mat4& projectionMatrix, math::Mat4& transformation,
+        sl::gui::GizmoOperation op, sl::gui::GizmoSystem system) override;
+
     bool beginMenuBar() override;
     void endMenuBar() override;
 
@@ -68,6 +71,9 @@ public:
     bool colorPicker3(const std::string&, math::Vec3&) override;
 
     bool button(const std::string&, int xSize, int ySize) override;
+
+    void setupGizmo(const graphics::ViewFrustum::Viewport&) override;
+    bool isUsingGizmo() override;
 };
 
 struct ImGuiApiFactory : sl::gui::GuiApi::Factory {

@@ -16,7 +16,7 @@ jobs:
         run: |
           ./bin/install_deps.sh
       - name: Pull submodules
-        run: git submodule update --init --recursive
+        run: ./bin/pull_submodules.sh
       - name: Build
         run: |
           rm -f build && mkdir build && pushd build && cmake .. && make -j16 && popd

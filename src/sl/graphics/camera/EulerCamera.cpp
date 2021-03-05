@@ -3,6 +3,8 @@
 #include <algorithm>
 
 #include "sl/core/Input.h"
+#include "sl/graphics/ViewFrustum.h"
+#include "sl/graphics/camera/UserControllableCamera.h"
 #include "sl/gui/GuiApi.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Utils.hpp"
@@ -16,18 +18,15 @@ const float EulerCamera::maxPsi = std::numbers::pi / 2.0f;
 const float EulerCamera::minFi = 0.0f;
 const float EulerCamera::maxFi = 2.0f * std::numbers::pi;
 
-std::shared_ptr<EulerCamera> EulerCamera::create(math::Vec3 center, float speed, float radius) {
-    SL_INFO("creating instance, speed: {}, radius: {} ", speed, radius);
-    return std::make_shared<EulerCamera>(center, speed, radius);
-}
-
-EulerCamera::EulerCamera(math::Vec3 center, float speed, float radius)
-    : m_center(center)
+EulerCamera::EulerCamera(const ViewFrustum& viewFrustum, math::Vec3 center, float speed, float radius)
+    : UserControllableCamera(viewFrustum)
+    , m_center(center)
     , m_speed(speed)
     , m_radius(radius)
     , m_fi(0.0f)
     , m_psi(0.0f) {
     calculateVectors();
+    calculateProjectionMatrix();
 }
 
 void EulerCamera::update(float deltaTime) {
@@ -95,6 +94,21 @@ void EulerCamera::handleInput(std::shared_ptr<core::Input> input) {
 
     if (input->isKeyPressed(STARL_KEY_LEFT))
         m_direction |= directionLeft;
+
+    m_isMouseMiddlePressed = input->isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE);
+
+    if (m_isMouseMiddlePressed) {
+        constexpr float mouseSpeed = 0.0015f;
+
+        auto [deltaX, deltaY] = input->getMousePositonDelta();
+
+        m_psi += deltaY * mouseSpeed;
+        m_fi += deltaX * mouseSpeed;
+    }
+
+    auto scrollDelta = input->getScrollDelta();
+    const float scrollDeltaSpeed = 5.0f;
+    m_radius += scrollDelta * scrollDeltaSpeed;
 }
 
 void EulerCamera::onGui(gui::GuiApi& gui) {

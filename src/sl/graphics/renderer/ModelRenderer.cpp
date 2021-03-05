@@ -32,7 +32,7 @@ void ModelRenderer::render(scene::components::RendererComponent& component, ecs:
     auto& model = models.getByEntityId(entityId);
     auto transformComponent = transforms.getByEntityId(entityId);
 
-    renderModelComposite(shader, model.modelData, transformComponent());
+    renderModelComposite(shader, model.modelData, transformComponent.transformation, camera);
 }
 
 void ModelRenderer::render(scene::components::RendererComponent& component, ecs::ComponentView<scene::components::MaterialComponent> materials,
@@ -50,11 +50,11 @@ void ModelRenderer::setMaterial(const scene::components::MaterialComponent& mate
 }
 
 void ModelRenderer::renderModelComposite(std::shared_ptr<graphics::Shader> shader, const graphics::data::ModelData& modelData,
-    const math::Mat4& transform) {
+    const math::Mat4& transform, std::shared_ptr<graphics::camera::Camera> camera) {
 
     float t = core::Clock::now()->value();
     shader->setUniform("t", t);
-    shader->setUniform("projection", m_renderer->getProjectionMatrix());
+    shader->setUniform("projection", camera->getProjectionMatrix());
 
     for (const auto& position : modelData.positions) {
         shader->setUniform("model", transform * math::translate(position));

@@ -35,8 +35,8 @@ struct Material {
 layout (binding = 1) uniform sampler2D shadowMap;
 layout (binding = 0) uniform sampler2D textureSampler;
 
-uniform unsigned int directionalLightsNum;
-uniform unsigned int pointLightsNum;
+uniform uint directionalLightsNum;
+uniform uint pointLightsNum;
 
 uniform DirectionalLights directionalLights[MAX_DIRECTIONAL_LIGHTS];
 uniform PointLights pointLights[MAX_POINT_LIGHTS];
@@ -84,7 +84,7 @@ vec3 calculateSpecular(vec3 viewDirection, vec3 lightDirection, vec3 lightColor)
 vec4 calculateDirectionalLights(vec3 viewDirection, float shadow) {
 	vec3 lightSum = vec3(0.0f);
 
-	for (unsigned int i = 0u; i < directionalLightsNum; ++i) {
+	for (uint i = 0u; i < directionalLightsNum; ++i) {
 		DirectionalLights light = directionalLights[i];
 
 		vec3 ambient = calculateAmbient(light.color);
@@ -99,7 +99,7 @@ vec4 calculateDirectionalLights(vec3 viewDirection, float shadow) {
 vec4 calculatePointLights(vec3 viewDirection, float shadow) {
 	vec3 lightSum = vec3(0.0f);
 
-	for (unsigned int i = 0u; i < pointLightsNum; ++i) {
+	for (uint i = 0u; i < pointLightsNum; ++i) {
 		PointLights light = pointLights[i];
 		vec3 lightPosition = vec3(light.modelMatrix * vec4(light.position, 1.0f));
 		vec3 lightDirection = normalize(lightPosition - fragmentPosition);

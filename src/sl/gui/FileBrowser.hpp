@@ -22,7 +22,7 @@ public:
     void show(GuiApi& gui) {
         gui.setNextWindowSize({ 700.0f, 450.0f });
         if (gui.beginPopUp(m_id)) {
-            const std::string root = "/home/neko/kapik/projects/starlight";
+            const std::string root = "/home/nek0/kapik/projects/starlight";
 
             if (gui.button("Quit"))
                 gui.closeCurrentPopUp();

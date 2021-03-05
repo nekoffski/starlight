@@ -69,7 +69,7 @@ void CubemapRenderer::render(std::shared_ptr<Cubemap> cubemap, std::shared_ptr<S
     std::shared_ptr<camera::Camera> camera) {
 
     cubemapShader->enable();
-    cubemapShader->setUniform("projection", m_renderer->getProjectionMatrix());
+    cubemapShader->setUniform("projection", camera->getProjectionMatrix());
     cubemapShader->setUniform("view", camera->getViewMatrix());
 
     m_cubemapVertexArray->bind();

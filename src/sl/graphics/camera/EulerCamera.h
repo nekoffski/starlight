@@ -1,14 +1,14 @@
 #pragma once
 
 #include "UserControllableCamera.h"
+#include "sl/graphics/ViewFrustum.h"
+#include "sl/math/Utils.hpp"
 
 namespace sl::graphics::camera {
 
 class EulerCamera : public UserControllableCamera {
 public:
-    static std::shared_ptr<EulerCamera> create(math::Vec3, float, float);
-
-    explicit EulerCamera(math::Vec3, float, float);
+    explicit EulerCamera(const ViewFrustum& viewFrustum, math::Vec3, float, float);
 
     void update(float) override;
     void handleInput(std::shared_ptr<core::Input>) override;
@@ -26,6 +26,11 @@ public:
     }
 
     void calculateVectors();
+
+    void calculateProjectionMatrix() override {
+        float aspect = static_cast<float>(viewFrustum.viewport.width) / viewFrustum.viewport.height;
+        m_projectionMatrix = math::perspective(viewFrustum.fieldOfView, aspect, viewFrustum.nearZ, viewFrustum.farZ);
+    }
 
 private:
     bool m_isInAnimation = false;
@@ -47,6 +52,8 @@ private:
     math::Vec3 m_up;
     math::Vec3 m_front;
     math::Vec3 m_right;
+
+    bool m_isMouseMiddlePressed = false;
 
     static const float minPsi;
     static const float maxPsi;

@@ -15,7 +15,7 @@
 #include "sl/graphics/Renderer.hpp"
 #include "sl/graphics/ShaderCompiler.hpp"
 #include "sl/graphics/ShaderCompilerImpl.h"
-#include "sl/graphics/Viewport.h"
+#include "sl/graphics/ViewFrustum.h"
 #include "sl/graphics/buffer/ElementBuffer.h"
 #include "sl/graphics/buffer/FrameBuffer.h"
 #include "sl/graphics/buffer/VertexArray.h"
@@ -81,8 +81,8 @@ void Application::init() {
 
     m_graphicsContext = graphics::GraphicsContext::factory->create(windowHandle);
 
-    auto viewport = graphics::Viewport{ windowSize.width, windowSize.height };
-    m_lowlLevelRenderer = std::make_shared<graphics::LowLevelRenderer>(m_graphicsContext,
+    auto viewport = graphics::ViewFrustum::Viewport{ windowSize.width, windowSize.height };
+    m_lowLevelRenderer = std::make_shared<graphics::LowLevelRenderer>(m_graphicsContext,
         graphics::RenderApi::factory->create(), viewport);
 
     m_guiApi = gui::GuiApi::factory->create(windowHandle);
@@ -92,7 +92,7 @@ void Application::init() {
     graphics::ShaderCompiler::impl = graphics::ShaderCompilerImpl::factory->create();
     utils::Globals::init();
 
-    m_renderer = std::make_shared<graphics::Renderer>(m_lowlLevelRenderer);
+    m_renderer = std::make_shared<graphics::Renderer>(m_lowLevelRenderer);
     m_sceneSystems = std::make_shared<scene::SceneSystems>();
 
     m_eventEngine.registerEventListener(shared_from_this());
@@ -105,15 +105,17 @@ void Application::update(float deltaTime, float time) {
     m_context->update(m_sceneSystems, deltaTime, time);
 
     m_eventEngine.spreadEvents();
+
+    m_input->update();
 }
 
 void Application::render() {
     SL_PROFILE_FUNCTION();
 
-    m_lowlLevelRenderer->clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
+    m_lowLevelRenderer->clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
     m_context->render(m_renderer);
     renderGui();
-    m_lowlLevelRenderer->swapBuffers();
+    m_lowLevelRenderer->swapBuffers();
 }
 
 void Application::renderGui() {
@@ -124,6 +126,11 @@ void Application::renderGui() {
 
 void Application::handleInput() {
     m_context->handleInput(m_input);
+
+    if (m_input->isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE))
+        m_window->disableCursor();
+    else
+        m_window->enableCursor();
 }
 
 std::shared_ptr<ApplicationContext> Application::getActiveContext() const {
@@ -135,8 +142,8 @@ void Application::handleEvents(const xvent::EventProvider& eventProvider) {
         if (event->is<event::WindowResizedEvent>()) {
             auto windowResizeEvent = event->as<event::WindowResizedEvent>();
             SL_INFO("{}/{}", windowResizeEvent->width, windowResizeEvent->height);
-            m_lowlLevelRenderer->setViewport(
-                graphics::Viewport{ windowResizeEvent->width, windowResizeEvent->height });
+            m_lowLevelRenderer->setViewport(
+                graphics::ViewFrustum::Viewport{ windowResizeEvent->width, windowResizeEvent->height });
             break;
         }
 

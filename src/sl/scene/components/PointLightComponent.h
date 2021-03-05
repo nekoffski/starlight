@@ -8,7 +8,7 @@
 namespace sl::scene::components {
 
 struct PointLightComponent : ecs::Component {
-    explicit PointLightComponent(math::Vec3 position = math::Vec3{ 0.0f, 0.0f, 0.0f }, math::Vec3 color = core::misc::COL_WHITE,
+    explicit PointLightComponent(math::Vec3 position = math::Vec3 { 0.0f, 0.0f, 0.0f }, math::Vec3 color = core::misc::COL_WHITE,
         float attenuationA = 0.05f, float attenuationB = 0.1f, float attenuationC = 0.3f)
         : position(position)
         , color(color)
@@ -29,6 +29,8 @@ struct PointLightComponent : ecs::Component {
             gui.dragFloat(gui::createHiddenLabel("plcAttenuationB"), attenuationB, 0.001f, 0.0f, 10.0f);
             gui.displayText("Attenuation C");
             gui.dragFloat(gui::createHiddenLabel("plcAttenuationC"), attenuationC, 0.001f, 0.0f, 10.0f);
+
+            gui.popTreeNode();
         }
     }
 

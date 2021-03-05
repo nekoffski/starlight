@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "sl/core/Logger.h"
+#include "sl/graphics/ViewFrustum.h"
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/fwd.h"
 #include "sl/math/Matrix.hpp"
@@ -26,9 +27,10 @@ const math::Vec3 worldRight = { 1.0f, 0.0f, 0.0f };
 
 class Camera {
 public:
-    explicit Camera(math::Vec3 position = math::Vec3{ 0.0f }, math::Vec3 up = worldUp,
-        math::Vec3 front = worldFront, math::Vec3 right = worldRight)
-        : m_position(std::move(position))
+    explicit Camera(const ViewFrustum& viewFrustum, const math::Vec3& position = math::Vec3{ 0.0f }, const math::Vec3& up = worldUp,
+        const math::Vec3& front = worldFront, const math::Vec3& right = worldRight)
+        : viewFrustum(viewFrustum)
+        , m_position(std::move(position))
         , m_up(std::move(up))
         , m_front(std::move(front))
         , m_right(std::move(right)) {
@@ -54,14 +56,24 @@ public:
         return m_right;
     }
 
+    const math::Mat4& getProjectionMatrix() {
+        return m_projectionMatrix;
+    }
+
+    virtual void calculateProjectionMatrix() = 0;
+
     virtual const math::Mat4 getViewMatrix() {
         return math::lookAt(m_position, m_front, m_up);
     }
+
+    ViewFrustum viewFrustum;
 
 protected:
     math::Vec3 m_position;
     math::Vec3 m_up;
     math::Vec3 m_front;
     math::Vec3 m_right;
+
+    math::Mat4 m_projectionMatrix;
 };
 }

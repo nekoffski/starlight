@@ -19,7 +19,7 @@ public:
         ecs::ComponentView<scene::components::TransformComponent> transforms, std::shared_ptr<graphics::camera::Camera> camera);
 
 private:
-    void beginParticleEffect();
+    void beginParticleEffect(std::shared_ptr<graphics::camera::Camera>);
     void renderParticle();
     void endParticleEffect();
 

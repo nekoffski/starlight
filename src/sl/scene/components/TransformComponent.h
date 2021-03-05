@@ -17,17 +17,23 @@ struct TransformComponent : ecs::Component {
         : position(position)
         , rotation(rotation)
         , scale(scale) {
+        recalculate();
     }
 
     void onGui(gui::GuiApi& gui) override {
         if (gui.beginTreeNode("Transform")) {
+            int trigerred = 0;
+
             gui.displayText("Translation");
-            gui.dragFloat3(gui::createHiddenLabel("translation"), position, 0.1f);
+            trigerred += gui.dragFloat3(gui::createHiddenLabel("translation"), position, 0.1f);
             gui.displayText("Rotation");
-            gui.dragFloat3(gui::createHiddenLabel("rotation"), rotation, 0.5f, 0.0f, 360.0f);
+            trigerred += gui.dragFloat3(gui::createHiddenLabel("rotation"), rotation, 0.5f, 0.0f, 360.0f);
             gui.displayText("Scale");
-            gui.dragFloat3(gui::createHiddenLabel("scale"), scale, 0.5f, 0.0f, 360.0f);
+            trigerred += gui.dragFloat3(gui::createHiddenLabel("scale"), scale, 0.5f, 0.0f, 360.0f);
             gui.popTreeNode();
+
+            if (trigerred > 0)
+                recalculate();
         }
     }
 
@@ -49,8 +55,14 @@ struct TransformComponent : ecs::Component {
     math::Vec3 rotation;
     math::Vec3 scale;
 
+    math::Mat4 transformation;
+
+    void recalculate() {
+        transformation = math::scale(scale) * math::translate(position) * math::createRotationMatrix(math::toRadians(rotation));
+    }
+
     math::Mat4 operator()() {
-        return math::scale(scale) * math::translate(position) * math::createRotationMatrix(math::toRadians(rotation));
+        return transformation;
     }
 };
 }

@@ -15,7 +15,12 @@ public:
 
     bool isKeyPressed(int) const override;
     bool isMouseButtonPressed(int) const override;
+
+    void update() override;
+
     std::pair<double, double> getMousePosition() const override;
+    std::pair<double, double> getMousePositonDelta() const override;
+    double getScrollDelta() const override;
 
 private:
     using Input::Input;
@@ -24,9 +29,8 @@ private:
 };
 
 struct GlfwInputFactory : core::Input::Factory {
-	virtual std::shared_ptr<core::Input> create(core::types::NotNullPtr<void> windowHandle) {
-		return std::make_shared<GlfwInput>(windowHandle);
-	}
+    virtual std::shared_ptr<core::Input> create(core::types::NotNullPtr<void> windowHandle) {
+        return std::make_shared<GlfwInput>(windowHandle);
+    }
 };
-
 }

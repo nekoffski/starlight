@@ -28,7 +28,7 @@ private:
     void setMaterial(const scene::components::MaterialComponent& material, std::shared_ptr<graphics::Shader> shader);
 
     void renderModelComposite(std::shared_ptr<graphics::Shader> shader, const graphics::data::ModelData& modelData,
-        const math::Mat4& transform);
+        const math::Mat4& transform, std::shared_ptr<graphics::camera::Camera>);
 
     void renderModel(std::shared_ptr<geometry::Model>);
 
