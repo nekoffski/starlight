@@ -6,6 +6,7 @@
 #include "sl/ecs/Entity.h"
 #include "sl/event/Emitter.hpp"
 #include "sl/event/Event.h"
+#include "sl/math/Utils.hpp"
 #include "sl/math/Vector.hpp"
 #include "sl/scene/components/TransformComponent.h"
 
@@ -13,10 +14,6 @@
 
 #include "Settings.h"
 #include "Widget.h"
-
-#include "imgui/imgui.h"
-
-#include "ImGuizmo.h"
 
 namespace editor::gui {
 
@@ -48,7 +45,6 @@ public:
                 auto onEntityClick = [&]() {
                     m_selectedEntity = entity;
 
-                    using sl::scene::components::TransformComponent;
                     if (entity->hasComponent<TransformComponent>()) {
                         auto& transform = entity->getComponent<TransformComponent>();
                         event::Emitter::emit<event::ChangeSceneCenterEvent>(transform.position);
@@ -64,35 +60,29 @@ public:
                 if (gui.isPreviousWidgetClicked())
                     onEntityClick();
             }
+        }
+        gui.endPanel();
 
-            gui.endPanel();
+        if (scene) {
+            if (m_selectedEntity != nullptr && m_selectedEntity->hasComponent<TransformComponent>()) {
+                auto& transform = m_selectedEntity->getComponent<TransformComponent>();
 
-            if (scene) {
-                using sl::scene::components::TransformComponent;
-                if (m_selectedEntity != nullptr && m_selectedEntity->hasComponent<TransformComponent>()) {
-                    auto& transform = m_selectedEntity->getComponent<TransformComponent>();
+                gui.setupGizmo(scene->camera->viewFrustum.viewport);
 
-                    // Gizmo
-                    gui.setupGizmo(scene->camera->viewFrustum.viewport);
+                auto viewMatrix = scene->camera->getViewMatrix();
+                auto projectionMatrix = scene->camera->getProjectionMatrix();
 
-                    auto cameraView = scene->camera->getViewMatrix();
-                    auto projectionMatrix = scene->camera->getProjectionMatrix();
+                auto transformationMatrix = transform.transformation;
 
-                    auto transformationMatrix = transform.transformation;
+                gui.manipulateGizmo(viewMatrix, projectionMatrix, transformationMatrix,
+                    sl::gui::GizmoOperation::translate, sl::gui::GizmoSystem::world);
 
-                    ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(projectionMatrix), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL,
-                        glm::value_ptr(transformationMatrix));
+                if (gui.isUsingGizmo()) {
+                    math::Vec3 rotation;
+                    math::decomposeMatrix(transformationMatrix, transform.position, rotation, transform.scale);
 
-                    //auto id = glm::mat4(1.0f);
-                    //ImGuizmo::DrawGrid(glm::value_ptr(cameraView), glm::value_ptr(projectionMatrix), glm::value_ptr(id), 100.f);
-
-                    if (gui.isUsingGizmo()) {
-                        math::Vec3 rotation;
-
-                        ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transformationMatrix), &transform.position[0], &rotation[0], &transform.scale[0]);
-                        transform.rotation += rotation;
-                        transform.recalculate();
-                    }
+                    transform.rotation += rotation;
+                    transform.recalculate();
                 }
             }
         }

@@ -3,11 +3,23 @@
 #include <memory>
 #include <vector>
 
-#include "sl/graphics/ViewFrustum.h"
 #include "sl/core/types/NotNullPtr.hpp"
+#include "sl/graphics/ViewFrustum.h"
+#include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
 
 namespace sl::gui {
+
+enum class GizmoOperation {
+    translate,
+    rotate,
+    scale
+};
+
+enum class GizmoSystem {
+    local,
+    world
+};
 
 class GuiApi {
 public:
@@ -19,6 +31,9 @@ public:
 
     virtual ~GuiApi() = default;
 
+    virtual void manipulateGizmo(math::Mat4& viewMatrix, math::Mat4& projectionMatrix, math::Mat4& transformation,
+        GizmoOperation op, GizmoSystem system) = 0;
+
     virtual void begin() = 0;
     virtual void end() = 0;
 
@@ -28,8 +43,8 @@ public:
     virtual bool beginMainMenuBar() = 0;
     virtual void endMainMenuBar() = 0;
 
-	virtual void beginChild(const std::string&) = 0;
-	virtual void endChild() = 0;
+    virtual void beginChild(const std::string&) = 0;
+    virtual void endChild() = 0;
 
     virtual bool beginMenu(const std::string&) = 0;
     virtual void endMenu() = 0;
@@ -70,8 +85,7 @@ public:
     virtual bool colorPicker3(const std::string&, math::Vec3&) = 0;
     virtual bool button(const std::string&, int xSize = 0, int ySize = 0) = 0;
 
-	virtual void setupGizmo(const graphics::ViewFrustum::Viewport&) = 0;
-	virtual bool isUsingGizmo() = 0;
-
+    virtual void setupGizmo(const graphics::ViewFrustum::Viewport&) = 0;
+    virtual bool isUsingGizmo() = 0;
 };
 }

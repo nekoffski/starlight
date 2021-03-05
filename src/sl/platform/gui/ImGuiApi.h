@@ -10,6 +10,9 @@ public:
     explicit ImGuiApi(void*);
     ~ImGuiApi() override;
 
+    void manipulateGizmo(math::Mat4& viewMatrix, math::Mat4& projectionMatrix, math::Mat4& transformation,
+        sl::gui::GizmoOperation op, sl::gui::GizmoSystem system) override;
+
     bool beginMenuBar() override;
     void endMenuBar() override;
 

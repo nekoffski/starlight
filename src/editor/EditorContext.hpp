@@ -38,7 +38,7 @@ class EditorContext : public application::ApplicationContext {
 
 public:
     void onInit() override {
-        auto viewFrustum = graphics::ViewFrustum{ 1600, 900 };
+        auto viewFrustum = graphics::ViewFrustum { 1600, 900 };
         m_activeCamera = std::make_shared<graphics::camera::EulerCamera>(viewFrustum, math::Vec3(0.0f), 1.0f, 8.0f);
         m_scene = scene::Scene::create();
         m_editorGui = std::make_shared<editor::gui::EditorGui>(createGuiSettings(), m_assetManager);
@@ -59,10 +59,10 @@ public:
 
     editor::gui::Settings createGuiSettings() {
         // const auto viewport = m_window->getParams().viewport;
-        const float leftPanelWidth = 0.15f;
+        const float leftPanelWidth = 0.2f;
         const float leftPanelTopBottomRatio = 0.5f;
 
-        return editor::gui::Settings{ 1600, 900, leftPanelWidth, leftPanelTopBottomRatio };
+        return editor::gui::Settings { 1600, 900, leftPanelWidth, leftPanelTopBottomRatio };
     }
 
     void renderGui(gui::GuiApi& gui) override {
@@ -147,7 +147,7 @@ public:
                 m_activeCamera->viewFrustum.viewport.height = windowResizedEvent->height;
                 m_activeCamera->calculateProjectionMatrix();
 
-                editor::gui::Settings settings{ windowResizedEvent->width, windowResizedEvent->height, leftPanelWidth, leftPanelTopBottomRatio };
+                editor::gui::Settings settings { windowResizedEvent->width, windowResizedEvent->height, leftPanelWidth, leftPanelTopBottomRatio };
                 m_editorGui->setSettings(settings);
                 break;
             }
@@ -162,12 +162,12 @@ public:
 
             try {
                 if (event->is<event::SerializeSceneEvent>()) {
-                    sl::application::Serializer serializer{ ".", "scene" };
+                    sl::application::Serializer serializer { ".", "scene" };
                     serializer.serialize(m_assetManager, m_scene);
                 }
 
                 if (event->is<event::DeserializeSceneEvent>()) {
-                    sl::application::Deserializer deserializer{ m_assetManager, m_scene };
+                    sl::application::Deserializer deserializer { m_assetManager, m_scene };
                     deserializer.deserialize("./scene.starscene");
                 }
             } catch (sl::core::error::Error& err) {
