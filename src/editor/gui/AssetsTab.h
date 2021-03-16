@@ -2,11 +2,12 @@
 
 #include "Widget.h"
 
+#include <exception>
+
 #include "sl/asset/AssetManager.h"
 #include "sl/gui/ErrorDialog.hpp"
 #include "sl/gui/FileBrowser.hpp"
 #include "sl/gui/GuiApi.h"
-#include <exception>
 
 namespace editor::gui {
 
@@ -19,20 +20,19 @@ class AssetsTab : public Widget {
     };
 
 public:
-    explicit AssetsTab(sl::asset::AssetManager& assetManager);
+    explicit AssetsTab(std::shared_ptr<SharedState>);
     void render(sl::gui::GuiApi& gui) override;
 
 private:
     void handleCubemapLoader(sl::gui::GuiApi& gui);
     void handleModelLoader(sl::gui::GuiApi& gui);
     void handleTextureLoader(sl::gui::GuiApi& gui);
-	void handleShaderLoader(sl::gui::GuiApi& gui);
+    void handleShaderLoader(sl::gui::GuiApi& gui);
 
     void resetArgs();
 
     void showLoaderPopUp(sl::gui::GuiApi& gui);
 
-    sl::asset::AssetManager& m_assetManager;
     bool m_loadClicked;
 
     sl::gui::ErrorDialog m_errorDialog;

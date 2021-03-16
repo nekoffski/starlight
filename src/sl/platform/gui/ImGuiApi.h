@@ -22,6 +22,11 @@ public:
     bool beginMenu(const std::string&) override;
     void endMenu() override;
 
+    bool isCapturingMouse() override;
+    bool isCapturingKeyboard() override;
+
+    void addFont(const std::string&, short unsigned, short unsigned) override;
+
     bool menuItem(const std::string&) override;
 
     void beginChild(const std::string&) override;

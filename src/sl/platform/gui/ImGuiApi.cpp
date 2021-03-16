@@ -12,13 +12,16 @@
 
 #include "sl/math/Utils.hpp"
 
+#define ICON_MIN_FA 0xe005
+#define ICON_MAX_FA 0xf8ff
+
 namespace sl::platform::gui::detail {
 
 static void setStyle() {
     ImGuiStyle& style = ImGui::GetStyle();
 
     // light style from Pacôme Danhiez (user itamago) https://github.com/ocornut/imgui/pull/511#issuecomment-175719267
-    style.Alpha = 0.85f;
+    // style.Alpha = 0.85f;
     style.WindowRounding = 0.0f;
     style.FrameRounding = 0.0f;
     auto& colors = ImGui::GetStyle().Colors;
@@ -66,7 +69,8 @@ ImGuiApi::ImGuiApi(void* windowHandle) {
     // TODO: this string should be defined somewhere
 
     SL_INFO("initializing opengl implementation");
-    ImGui_ImplOpenGL3_Init("#version 440 core");
+    const std::string openGlVersionString = "#version 440 core";
+    ImGui_ImplOpenGL3_Init(openGlVersionString.c_str());
 
     setStyle();
 }
@@ -76,6 +80,28 @@ ImGuiApi::~ImGuiApi() {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+}
+
+bool ImGuiApi::isCapturingMouse() {
+    return ImGui::GetIO().WantCaptureMouse;
+}
+
+bool ImGuiApi::isCapturingKeyboard() {
+    return ImGui::GetIO().WantCaptureKeyboard;
+}
+
+void ImGuiApi::addFont(const std::string& path, short unsigned min, short unsigned max) {
+    ImGuiIO& io = ImGui::GetIO();
+    io.Fonts->AddFontDefault();
+
+    ImFontConfig config;
+    config.MergeMode = true;
+    config.GlyphMinAdvanceX = 11.0f;
+    config.GlyphMaxAdvanceX = 15.0f;
+
+    // TODO: THIS CAN'T BE STATIC!!
+    static const ImWchar iconRanges[] = { min, max, 0 };
+    io.Fonts->AddFontFromFileTTF(path.c_str(), 11.0f, &config, iconRanges);
 }
 
 void ImGuiApi::manipulateGizmo(math::Mat4& viewMatrix, math::Mat4& projectionMatrix, math::Mat4& transformation,
@@ -227,7 +253,6 @@ bool ImGuiApi::beginTreeNode(const std::string& label, bool opened) {
 }
 
 void ImGuiApi::popTreeNode() {
-    ImGui::Separator();
     ImGui::TreePop();
 }
 
@@ -281,7 +306,7 @@ bool ImGuiApi::menuItem(const std::string& label) {
 
 void ImGuiApi::setupGizmo(const graphics::ViewFrustum::Viewport& viewport) {
     ImGuizmo::SetOrthographic(false);
-    ImGuizmo::SetRect(0, 0, viewport.width, viewport.height);
+    ImGuizmo::SetRect(viewport.beginX, 0, viewport.width, viewport.height);
 }
 
 bool ImGuiApi::isUsingGizmo() {

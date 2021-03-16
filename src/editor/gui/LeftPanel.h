@@ -4,17 +4,16 @@
 
 #include "PropertiesPanel.h"
 #include "ScenePanel.h"
-#include "Settings.h"
 #include "Widget.h"
 
 namespace editor::gui {
 
 class LeftPanel : public Widget {
 public:
-    explicit LeftPanel(const Settings& settings, sl::asset::AssetManager& assetManager)
-        : m_selectedEntity(nullptr)
-        , m_scenePanel(settings.scenePanelPosition, m_selectedEntity)
-        , m_propertiesPanel(settings.propertiesPanelPosition, assetManager, m_selectedEntity) {
+    explicit LeftPanel(std::shared_ptr<SharedState> sharedState)
+        : Widget(sharedState)
+        , m_scenePanel(sharedState)
+        , m_propertiesPanel(sharedState) {
     }
 
     void render(sl::gui::GuiApi& gui) override {
@@ -22,24 +21,7 @@ public:
         m_propertiesPanel.render(gui);
     }
 
-    void setSettings(const Settings& settings) {
-        m_scenePanel.setPosition(settings.scenePanelPosition);
-        m_propertiesPanel.setPosition(settings.propertiesPanelPosition);
-    }
-
-    void setActiveScene(std::shared_ptr<sl::scene::Scene> scene) override {
-        Widget::setActiveScene(scene);
-        m_scenePanel.setActiveScene(scene);
-        m_propertiesPanel.setActiveScene(scene);
-    }
-
-	std::shared_ptr<sl::ecs::Entity> getSelectedEntity() {
-		return m_selectedEntity;
-	}
-
 private:
-    std::shared_ptr<sl::ecs::Entity> m_selectedEntity;
-
     ScenePanel m_scenePanel;
     PropertiesPanel m_propertiesPanel;
 };

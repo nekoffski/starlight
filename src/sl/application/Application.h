@@ -48,9 +48,15 @@ public:
 
 protected:
     template <typename T>
-    requires std::derived_from<T, ApplicationContext>
+    requires std::derived_from<T, ApplicationContext>&& std::constructible_from<T, const std::string&>
         std::shared_ptr<T> createContext(const std::string& ident) {
+
         auto context = std::make_shared<T>(ident);
+
+        context->setGuiApiProxy(std::make_shared<gui::GuiApiProxy>(m_guiApi));
+        context->setLowLevelRendererProxy(std::make_shared<graphics::LowLevelRendererProxy>(m_lowLevelRenderer));
+        context->setWindowProxy(std::make_shared<core::WindowProxy>(m_window));
+
         context->onInit();
 
         m_eventEngine.registerEventListener(context);
@@ -69,7 +75,7 @@ private:
     std::shared_ptr<graphics::Renderer> m_renderer;
 
     xvent::EventEngine m_eventEngine;
-	std::shared_ptr<xvent::EventEmitter> m_eventEmitter;
+    std::shared_ptr<xvent::EventEmitter> m_eventEmitter;
 };
 
 class Application::Token {

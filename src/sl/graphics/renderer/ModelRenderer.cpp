@@ -78,7 +78,6 @@ void ModelRenderer::renderMesh(std::shared_ptr<geometry::Mesh> mesh) {
     m_renderer->renderVertexArray(vao);
     vao->unbind();
 
-    // is it neccessary?
     for (const auto& texture : mesh->textures)
         texture->unbind();
 }

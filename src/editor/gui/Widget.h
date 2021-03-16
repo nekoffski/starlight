@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include "SharedState.hpp"
+#include "editor/fonts/FontAwesome.h"
 #include "sl/gui/GuiApi.h"
 #include "sl/math/Vector.hpp"
 #include "sl/scene/Scene.h"
@@ -10,14 +12,14 @@ namespace editor::gui {
 
 class Widget {
 public:
-    virtual void render(sl::gui::GuiApi& gui) = 0;
-
-    virtual void setActiveScene(std::shared_ptr<sl::scene::Scene> scene) {
-        m_activeScene = scene;
+    explicit Widget(std::shared_ptr<SharedState> sharedState)
+        : m_sharedState(sharedState) {
     }
 
+    virtual void render(sl::gui::GuiApi& gui) = 0;
+
 protected:
-    std::weak_ptr<sl::scene::Scene> m_activeScene;
+    std::shared_ptr<SharedState> m_sharedState;
 };
 
 struct WidgetPosition {

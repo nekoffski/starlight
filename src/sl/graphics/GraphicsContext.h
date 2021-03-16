@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "ViewFrustum.h"
 #include "sl/core/types/NotNullPtr.hpp"
 
 namespace sl::graphics {
@@ -15,7 +16,7 @@ public:
     inline static std::unique_ptr<Factory> factory = nullptr;
 
     virtual void swapBuffers() = 0;
-    virtual void setViewport(unsigned, unsigned) = 0;
+    virtual void setViewport(ViewFrustum::Viewport) = 0;
     virtual void clearBuffers(unsigned) = 0;
 };
 

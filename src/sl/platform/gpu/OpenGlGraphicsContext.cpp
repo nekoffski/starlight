@@ -22,15 +22,15 @@ OpenGlGraphicsContext::OpenGlGraphicsContext(void* windowHandle)
 
     SL_INFO("loading glad memory proc");
     if (auto status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress); status <= 0)
-        throw core::error::GraphicsError{ core::error::ErrorCode::CouldNotLoadGraphicsApi };
+        throw core::error::GraphicsError { core::error::ErrorCode::CouldNotLoadGraphicsApi };
 
     // TODO: make it configurable
     //glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(messageCallback, 0);
 }
 
-void OpenGlGraphicsContext::setViewport(unsigned w, unsigned h) {
-    glViewport(0, 0, w, h);
+void OpenGlGraphicsContext::setViewport(graphics::ViewFrustum::Viewport viewport) {
+    glViewport(viewport.beginX, viewport.beginY, viewport.width, viewport.height);
 }
 
 void OpenGlGraphicsContext::swapBuffers() {

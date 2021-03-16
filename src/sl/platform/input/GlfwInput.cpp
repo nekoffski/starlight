@@ -1,5 +1,7 @@
 #include "GlfwInput.h"
 
+#include "sl/utils/Globals.h"
+
 namespace sl::platform::input {
 
 namespace {
@@ -53,11 +55,11 @@ void GlfwInput::setKeyCallback(core::InputCallback callback) {
 }
 
 bool GlfwInput::isKeyPressed(int keycode) const {
-    return glfwGetKey(m_windowHandle, keycode);
+    return glfwGetKey(m_windowHandle, keycode) && not utils::Globals::flags.disableKeyboardInput;
 }
 
 bool GlfwInput::isMouseButtonPressed(int button) const {
-    return glfwGetMouseButton(m_windowHandle, button);
+    return glfwGetMouseButton(m_windowHandle, button) && not utils::Globals::flags.disableMouseInput;
 }
 
 std::pair<double, double> GlfwInput::getMousePosition() const {
@@ -71,6 +73,6 @@ std::pair<double, double> GlfwInput::getMousePositonDelta() const {
 }
 
 double GlfwInput::getScrollDelta() const {
-    return mouseScrollDelta;
+    return mouseScrollDelta * not utils::Globals::flags.disableMouseInput;
 }
 }

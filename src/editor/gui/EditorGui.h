@@ -2,7 +2,8 @@
 
 #include "BottomPanel.h"
 #include "LeftPanel.h"
-#include "Settings.h"
+#include "RightPanel.h"
+#include "SharedState.hpp"
 #include "sl/asset/AssetManager.h"
 
 using namespace sl::core;
@@ -12,22 +13,14 @@ namespace editor::gui {
 class EditorGui {
 
 public:
-    explicit EditorGui(const Settings& settings, sl::asset::AssetManager& assetManager);
-    void setSettings(const Settings& settings);
+    explicit EditorGui(std::shared_ptr<SharedState> sharedState);
     void renderEditorGui(sl::gui::GuiApi& gui);
 
-    void setActiveScene(std::shared_ptr<sl::scene::Scene> scene) {
-        m_leftPanel.setActiveScene(scene);
-        m_bottomPanel.setActiveScene(scene);
-    }
-
-    std::shared_ptr<sl::ecs::Entity> getSelectedEntity() {
-        return m_leftPanel.getSelectedEntity();
-    }
+    std::shared_ptr<SharedState> sharedState;
 
 private:
     LeftPanel m_leftPanel;
     BottomPanel m_bottomPanel;
-    sl::asset::AssetManager& m_assetManager;
+    RightPanel m_rightPanel;
 };
 }
