@@ -1,7 +1,7 @@
 // that header must be included first due to GLAD
 
-#include "sl/graphics/GraphicsContext.h"
 #include "sl/core/types/NotNullPtr.hpp"
+#include "sl/graphics/GraphicsContext.h"
 
 #include <GLFW/glfw3.h>
 
@@ -13,7 +13,7 @@ public:
 
     void swapBuffers() override;
     void clearBuffers(unsigned) override;
-    void setViewport(unsigned, unsigned) override;
+    void setViewport(graphics::ViewFrustum::Viewport) override;
 
 private:
     GLFWwindow* m_windowHandle;

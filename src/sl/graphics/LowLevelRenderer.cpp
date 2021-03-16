@@ -11,7 +11,7 @@ LowLevelRenderer::LowLevelRenderer(std::shared_ptr<graphics::GraphicsContext> gr
     , m_viewport(std::move(viewport)) {
 
     SL_INFO("initializing");
-    m_graphicsContext->setViewport(m_viewport.width, m_viewport.height);
+    m_graphicsContext->setViewport(m_viewport);
 
     m_renderApi->enable(STARL_DEPTH_TEST);
     m_renderApi->setDepthFunc(STARL_LEQUAL);

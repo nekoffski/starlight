@@ -8,6 +8,7 @@
 #include "sl/gui/GuiApi.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Utils.hpp"
+#include "sl/utils/Globals.h"
 
 #include "sl/core/Logger.h"
 

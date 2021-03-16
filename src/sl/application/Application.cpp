@@ -67,7 +67,7 @@ void Application::init() {
     initPaths();
     initFactories();
 
-    auto windowSize = core::Window::Size{ 1600, 900 };
+    auto windowSize = core::Window::Size { 1600, 900 };
     m_window = core::Window::factory->create(windowSize, "Starlight");
     m_window->init();
     m_window->setResizeCallback([](int width, int height) {
@@ -78,10 +78,9 @@ void Application::init() {
     auto windowHandle = m_window->getHandle();
 
     m_input = core::Input::factory->create(windowHandle);
-
     m_graphicsContext = graphics::GraphicsContext::factory->create(windowHandle);
 
-    auto viewport = graphics::ViewFrustum::Viewport{ windowSize.width, windowSize.height };
+    auto viewport = graphics::ViewFrustum::Viewport { windowSize.width, windowSize.height };
     m_lowLevelRenderer = std::make_shared<graphics::LowLevelRenderer>(m_graphicsContext,
         graphics::RenderApi::factory->create(), viewport);
 
@@ -125,6 +124,9 @@ void Application::renderGui() {
 }
 
 void Application::handleInput() {
+    utils::Globals::flags.disableKeyboardInput = m_guiApi->isCapturingKeyboard();
+    utils::Globals::flags.disableMouseInput = m_guiApi->isCapturingMouse();
+
     m_context->handleInput(m_input);
 
     if (m_input->isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE))
@@ -139,14 +141,6 @@ std::shared_ptr<ApplicationContext> Application::getActiveContext() const {
 
 void Application::handleEvents(const xvent::EventProvider& eventProvider) {
     for (auto event : eventProvider.getByCategories<event::CoreCategory>()) {
-        if (event->is<event::WindowResizedEvent>()) {
-            auto windowResizeEvent = event->as<event::WindowResizedEvent>();
-            SL_INFO("{}/{}", windowResizeEvent->width, windowResizeEvent->height);
-            m_lowLevelRenderer->setViewport(
-                graphics::ViewFrustum::Viewport{ windowResizeEvent->width, windowResizeEvent->height });
-            break;
-        }
-
         if (event->is<event::QuitEvent>())
             m_window->setShouldClose(true);
     }

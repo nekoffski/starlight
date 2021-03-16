@@ -4,13 +4,15 @@
 
 namespace editor::gui {
 
-BottomPanel::BottomPanel(const Settings& settings, sl::asset::AssetManager& assetManager)
-    : m_position(settings.bottomPanelPosition)
-    , m_assetsTab(assetManager) {
+BottomPanel::BottomPanel(std::shared_ptr<SharedState> sharedState)
+    : Widget(sharedState)
+    , m_assetsTab(sharedState)
+    , m_debugConsoleTab(sharedState) {
 }
 
 void BottomPanel::render(sl::gui::GuiApi& gui) {
-    gui.beginPanel(sl::gui::createHiddenLabel("BottomMenu"), m_position.origin, m_position.size);
+    auto& widgetProperties = m_sharedState->guiProperties.bottomPanelProperties;
+    gui.beginPanel(sl::gui::createHiddenLabel("BottomMenu"), widgetProperties.origin, widgetProperties.size);
 
     gui.beginTabBar("bottomTabBar");
 

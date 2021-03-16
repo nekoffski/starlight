@@ -18,8 +18,8 @@ static void validateAssetName(const std::string& name) {
         throw AssetError(ErrorCode::AssetError, "Asset name cannot be empty");
 }
 
-AssetsTab::AssetsTab(sl::asset::AssetManager& assetManager)
-    : m_assetManager(assetManager)
+AssetsTab::AssetsTab(std::shared_ptr<SharedState> sharedState)
+    : Widget(sharedState)
     , m_fileBrowser("Assets file browser") {
 }
 
@@ -37,7 +37,7 @@ void AssetsTab::render(sl::gui::GuiApi& gui) {
 
     gui.endGroup();
 
-    for (auto& [_, namesVector] : m_assetManager.getAssetsNames())
+    for (auto& [_, namesVector] : m_sharedState->assetManager.getAssetsNames())
         for (auto& assetName : namesVector)
             gui.displayText(assetName);
 }
@@ -130,7 +130,7 @@ void AssetsTab::handleShaderLoader(sl::gui::GuiApi& gui) {
         auto shader = sl::asset::AssetLoader::loadGlobalPath<sl::graphics::Shader>(
             m_assetsArgs.faces[0], m_assetsArgs.faces[1], m_assetsArgs.faces[2]);
         auto shaderAsset = std::make_shared<sl::asset::ShaderAsset>(shader, m_assetsArgs.assetName);
-        m_assetManager.addAsset(shaderAsset);
+        m_sharedState->assetManager.addAsset(shaderAsset);
     }
 }
 
@@ -166,7 +166,7 @@ void AssetsTab::handleCubemapLoader(sl::gui::GuiApi& gui) {
 
         auto cubemap = sl::asset::AssetLoader::loadLocalPath<sl::graphics::Cubemap>(m_assetsArgs.faces);
         auto cubemapAsset = std::make_shared<sl::asset::CubemapAsset>(cubemap, m_assetsArgs.assetName);
-        m_assetManager.addAsset(cubemapAsset);
+        m_sharedState->assetManager.addAsset(cubemapAsset);
     }
 }
 
@@ -182,7 +182,7 @@ void AssetsTab::handleModelLoader(sl::gui::GuiApi& gui) {
 
         auto model = sl::asset::AssetLoader::loadGlobalPath<sl::geometry::Model>(m_assetsArgs.modelName);
         auto modelAsset = std::make_shared<sl::asset::ModelAsset>(model, m_assetsArgs.assetName);
-        m_assetManager.addAsset(modelAsset);
+        m_sharedState->assetManager.addAsset(modelAsset);
     }
 }
 

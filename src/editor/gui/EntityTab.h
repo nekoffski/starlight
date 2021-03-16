@@ -2,7 +2,6 @@
 
 #include <memory>
 
-#include "sl/asset/AssetManager.h"
 #include "sl/ecs/Entity.h"
 #include "sl/graphics/Cubemap.h"
 #include "sl/gui/GuiApi.h"
@@ -11,13 +10,12 @@
 
 namespace editor::gui {
 
-class PropertiesPanel : public Widget {
+class EntityTab : public Widget {
 public:
-    explicit PropertiesPanel(std::shared_ptr<SharedState> sharedState);
+    explicit EntityTab(std::shared_ptr<SharedState> sharedState);
     void render(sl::gui::GuiApi& gui) override;
 
 private:
-    void showSceneProperties(sl::gui::GuiApi& gui);
     void showEntityProperties(sl::gui::GuiApi& gui);
 
     void addModel(bool load, sl::gui::GuiApi& gui);

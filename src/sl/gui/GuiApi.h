@@ -40,6 +40,11 @@ public:
     virtual bool beginMenuBar() = 0;
     virtual void endMenuBar() = 0;
 
+    virtual bool isCapturingMouse() = 0;
+    virtual bool isCapturingKeyboard() = 0;
+
+    virtual void addFont(const std::string&, short unsigned, short unsigned) = 0;
+
     virtual bool beginMainMenuBar() = 0;
     virtual void endMainMenuBar() = 0;
 

@@ -7,22 +7,18 @@ using namespace sl::core;
 
 namespace editor::gui {
 
-EditorGui::EditorGui(const Settings& settings, sl::asset::AssetManager& assetManager)
-    : m_leftPanel(settings, assetManager)
-    , m_bottomPanel(settings, assetManager)
-    , m_assetManager(assetManager) {
-}
-
-void EditorGui::setSettings(const Settings& settings) {
-    m_leftPanel.setSettings(settings);
-    m_bottomPanel.setSettings(settings);
+EditorGui::EditorGui(std::shared_ptr<SharedState> sharedState)
+    : m_leftPanel(sharedState)
+    , m_bottomPanel(sharedState)
+    , m_rightPanel(sharedState)
+    , sharedState(sharedState) {
 }
 
 void EditorGui::renderEditorGui(sl::gui::GuiApi& gui) {
     using namespace event;
 
     if (gui.beginMainMenuBar()) {
-        if (gui.beginMenu("File")) {
+        if (gui.beginMenu(ICON_FA_BARS " File")) {
             if (gui.menuItem("Export scene")) {
                 Emitter::emit<SerializeSceneEvent>();
             }
@@ -42,5 +38,6 @@ void EditorGui::renderEditorGui(sl::gui::GuiApi& gui) {
 
     m_leftPanel.render(gui);
     m_bottomPanel.render(gui);
+    m_rightPanel.render(gui);
 }
 }

@@ -109,9 +109,8 @@ inline T ReLU(const T& lhs) {
     return std::max(0, lhs);
 }
 
-inline bool decomposeMatrix(const Mat4& transform, Vec3 translation, Vec3 rotation, Vec3 scale) {
+inline bool decomposeMatrix(const Mat4& transform, Vec3& translation, Vec3& rotation, Vec3& scale) {
     // From glm::decompose in matrix_decompose.inl
-
     using namespace glm;
     using T = float;
 

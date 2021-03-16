@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DebugConsole.hpp"
-#include "editor/gui/Settings.h"
+#include "fonts/FontAwesome.h"
 #include "gui/EditorGui.h"
 #include "sl/application/ApplicationContext.h"
 #include "sl/application/Deserializer.h"
@@ -38,15 +38,24 @@ class EditorContext : public application::ApplicationContext {
 
 public:
     void onInit() override {
-        auto viewFrustum = graphics::ViewFrustum { 1600, 900 };
+        auto [windowWidth, windowHeight] = m_windowProxy->getSize();
+
+        auto viewFrustum = graphics::ViewFrustum { windowWidth, windowHeight };
         m_activeCamera = std::make_shared<graphics::camera::EulerCamera>(viewFrustum, math::Vec3(0.0f), 1.0f, 8.0f);
         m_scene = scene::Scene::create();
-        m_editorGui = std::make_shared<editor::gui::EditorGui>(createGuiSettings(), m_assetManager);
+
+        // TODO: remove!
+        auto& viewport = m_activeCamera->viewFrustum.viewport;
+        auto guiSharedState = std::make_shared<editor::gui::SharedState>(m_assetManager, viewport.width, viewport.height);
+        m_editorGui = std::make_shared<editor::gui::EditorGui>(guiSharedState);
 
         m_scene->camera = m_activeCamera;
-        m_editorGui->setActiveScene(m_scene);
+        m_editorGui->sharedState->activeScene = m_scene;
 
         loadDefaultShaders();
+
+        m_guiApiProxy->addFont("/home/nek0/kapik/projects/starlight/res/fonts/fa-solid-900.ttf",
+            ICON_MIN_FA, ICON_MAX_FA);
 
         WRITE_DEBUG("%s", "Editor context initialized");
     }
@@ -55,14 +64,6 @@ public:
     }
 
     void onDetach() override {
-    }
-
-    editor::gui::Settings createGuiSettings() {
-        // const auto viewport = m_window->getParams().viewport;
-        const float leftPanelWidth = 0.2f;
-        const float leftPanelTopBottomRatio = 0.5f;
-
-        return editor::gui::Settings { 1600, 900, leftPanelWidth, leftPanelTopBottomRatio };
     }
 
     void renderGui(gui::GuiApi& gui) override {
@@ -129,47 +130,54 @@ public:
     void handleEvents(const xvent::EventProvider& eventProvider) override {
         auto events = eventProvider.getByCategories<event::CoreCategory, event::EditorCategory>();
 
-        for (auto event : events) {
-            if (event->is<event::SetSkyboxEvent>()) {
-                auto cubemap = event->as<event::SetSkyboxEvent>()->cubemap;
+        using namespace sl::event;
+
+        for (auto& event : events) {
+            if (event->is<SetSkyboxEvent>()) {
+                auto cubemap = event->as<SetSkyboxEvent>()->cubemap;
                 auto skybox = sl::scene::Skybox::create(sl::utils::Globals::shaders->defaultCubemapShader, cubemap);
                 m_scene->skybox = skybox;
                 break;
             }
 
-            if (event->is<event::WindowResizedEvent>()) {
-                const float leftPanelWidth = 0.2f;
-                const float leftPanelTopBottomRatio = 0.5f;
+            if (event->is<WindowResizedEvent>()) {
+                auto windowResizedEvent = event->as<WindowResizedEvent>();
+                auto [width, height] = windowResizedEvent->getSize();
 
-                auto windowResizedEvent = event->as<event::WindowResizedEvent>();
+                editor::gui::GuiProperties guiProperties { width, height };
+                m_editorGui->sharedState->guiProperties = guiProperties;
 
-                m_activeCamera->viewFrustum.viewport.width = windowResizedEvent->width;
-                m_activeCamera->viewFrustum.viewport.height = windowResizedEvent->height;
+                graphics::ViewFrustum::Viewport newViewport {
+                    width - guiProperties.scenePanelProperties.size.x - guiProperties.rightPanelProperties.size.x,
+                    height - guiProperties.bottomPanelProperties.size.y,
+                    guiProperties.scenePanelProperties.size.x,
+                    guiProperties.bottomPanelProperties.size.y
+                };
+
+                m_activeCamera->viewFrustum.viewport = newViewport;
                 m_activeCamera->calculateProjectionMatrix();
 
-                editor::gui::Settings settings { windowResizedEvent->width, windowResizedEvent->height, leftPanelWidth, leftPanelTopBottomRatio };
-                m_editorGui->setSettings(settings);
+                m_lowLevelRendererProxy->setViewport(newViewport);
+
                 break;
             }
 
-            if (event->is<event::ChangeSceneCenterEvent>()) {
-                auto& newCenter = event->as<event::ChangeSceneCenterEvent>()->center;
+            if (event->is<ChangeSceneCenterEvent>()) {
+                auto& newCenter = event->as<ChangeSceneCenterEvent>()->center;
                 auto sceneCamera = std::dynamic_pointer_cast<sl::graphics::camera::EulerCamera>(m_activeCamera);
-                if (sceneCamera) {
+                if (sceneCamera)
                     sceneCamera->setCenter(newCenter);
-                }
             }
 
             try {
-                if (event->is<event::SerializeSceneEvent>()) {
-                    sl::application::Serializer serializer { ".", "scene" };
-                    serializer.serialize(m_assetManager, m_scene);
-                }
+                using namespace sl::application;
 
-                if (event->is<event::DeserializeSceneEvent>()) {
-                    sl::application::Deserializer deserializer { m_assetManager, m_scene };
-                    deserializer.deserialize("./scene.starscene");
-                }
+                if (event->is<SerializeSceneEvent>())
+                    Serializer { ".", "scene" }.serialize(m_assetManager, m_scene);
+
+                if (event->is<DeserializeSceneEvent>())
+                    Deserializer { m_assetManager, m_scene }.deserialize("./scene.starscene");
+
             } catch (sl::core::error::Error& err) {
                 m_errorDialog.setErrorMessage(err.as<std::string>());
             }

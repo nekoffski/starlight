@@ -12,7 +12,6 @@
 
 #include "editor/DebugConsole.hpp"
 
-#include "Settings.h"
 #include "Widget.h"
 
 namespace editor::gui {
@@ -21,51 +20,50 @@ using namespace sl;
 
 class ScenePanel : public Widget {
 public:
-    explicit ScenePanel(const WidgetPosition& position, std::shared_ptr<sl::ecs::Entity>& selectedEntity)
-        : m_position(position)
-        , m_selectedEntity(selectedEntity)
+    explicit ScenePanel(std::shared_ptr<SharedState> sharedState)
+        : Widget(sharedState)
         , m_entityIndex(0) {
     }
 
-    void setPosition(const WidgetPosition& position) {
-        m_position = position;
-    }
-
     void render(sl::gui::GuiApi& gui) override {
-        gui.beginPanel("Scene entities", m_position.origin, m_position.size);
-        if (gui.button("Add entity", 150))
-            if (auto scene = m_activeScene.lock(); scene)
+        auto& widgetProperties = m_sharedState->guiProperties.scenePanelProperties;
+
+        gui.beginPanel("Scene entities", widgetProperties.origin, widgetProperties.size);
+        if (gui.button(ICON_FA_PLUS " Add entity", 150))
+            if (auto scene = m_sharedState->activeScene.lock(); scene)
                 scene->addEntity("Entity" + std::to_string(m_entityIndex++));
 
         using sl::scene::components::TransformComponent;
-        auto scene = m_activeScene.lock();
+        auto scene = m_sharedState->activeScene.lock();
         if (scene) {
             gui.breakLine();
-            for (auto& [entityId, entity] : scene->ecsRegistry.getEntities()) {
-                auto onEntityClick = [&]() {
-                    m_selectedEntity = entity;
+            if (gui.beginTreeNode(" " ICON_FA_CUBES " Scene")) {
+                for (auto& [entityId, entity] : scene->ecsRegistry.getEntities()) {
+                    auto onEntityClick = [&]() {
+                        m_sharedState->selectedEntity = entity;
 
-                    if (entity->hasComponent<TransformComponent>()) {
-                        auto& transform = entity->getComponent<TransformComponent>();
-                        event::Emitter::emit<event::ChangeSceneCenterEvent>(transform.position);
+                        if (entity->hasComponent<TransformComponent>()) {
+                            auto& transform = entity->getComponent<TransformComponent>();
+                            event::Emitter::emit<event::ChangeSceneCenterEvent>(transform.position);
+                        }
+                    };
+
+                    if (gui.beginTreeNode(" " ICON_FA_CUBE " "s + entity->getName(), false)) {
+                        if (gui.isPreviousWidgetClicked())
+                            onEntityClick();
+
+                        gui.popTreeNode();
                     }
-                };
-
-                if (gui.beginTreeNode(entity->getName(), false)) {
                     if (gui.isPreviousWidgetClicked())
                         onEntityClick();
-
-                    gui.popTreeNode();
                 }
-                if (gui.isPreviousWidgetClicked())
-                    onEntityClick();
             }
         }
         gui.endPanel();
 
         if (scene) {
-            if (m_selectedEntity != nullptr && m_selectedEntity->hasComponent<TransformComponent>()) {
-                auto& transform = m_selectedEntity->getComponent<TransformComponent>();
+            if (m_sharedState->selectedEntity != nullptr && m_sharedState->selectedEntity->hasComponent<TransformComponent>()) {
+                auto& transform = m_sharedState->selectedEntity->getComponent<TransformComponent>();
 
                 gui.setupGizmo(scene->camera->viewFrustum.viewport);
 
@@ -89,9 +87,6 @@ public:
     }
 
 private:
-    WidgetPosition m_position;
-
-    std::shared_ptr<sl::ecs::Entity>& m_selectedEntity;
     int m_entityIndex;
 };
 }

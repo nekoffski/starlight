@@ -53,11 +53,11 @@ public:
     }
 
     void setTemporaryViewport(const ViewFrustum::Viewport& viewport) {
-        m_graphicsContext->setViewport(viewport.width, viewport.height);
+        m_graphicsContext->setViewport(viewport);
     }
 
     void restoreViewport() {
-        m_graphicsContext->setViewport(m_viewport.width, m_viewport.height);
+        m_graphicsContext->setViewport(m_viewport);
     }
 
     void setViewport(const ViewFrustum::Viewport& viewport) {
