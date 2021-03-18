@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "GuiStyle.h"
 #include "SharedState.hpp"
 #include "editor/fonts/FontAwesome.h"
 #include "sl/gui/GuiApi.h"

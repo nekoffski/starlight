@@ -35,8 +35,16 @@ float distance(glm::vec<3, T, Q> const& x, glm::vec<3, T, Q> const& y) {
     return glm::distance(x, y);
 }
 
-inline const math::Vec3 VEC_ONES = math::Vec3{ 1.0f, 1.0f, 1.0f };
-inline const math::Vec3 VEC_ZEROS = math::Vec3{ 0.0f, 0.0f, 0.0f };
+inline Vec4 asColor(const Vec3& vec) {
+    return Vec4 { vec.x / 255.0f, vec.y / 255.0f, vec.z / 255.0f, 1.0f };
+}
+
+inline Vec4 asColor(const Vec4& vec) {
+    return Vec4 { vec.x / 255.0f, vec.y / 255.0f, vec.z / 255.0f, vec.w / 255.0f };
+}
+
+inline const math::Vec3 VEC_ONES = math::Vec3 { 1.0f, 1.0f, 1.0f };
+inline const math::Vec3 VEC_ZEROS = math::Vec3 { 0.0f, 0.0f, 0.0f };
 }
 
 inline std::ostream& operator<<(std::ostream& ss, const sl::math::Vec4& v) {

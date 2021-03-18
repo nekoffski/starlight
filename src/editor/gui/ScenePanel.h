@@ -35,8 +35,10 @@ public:
 
         using sl::scene::components::TransformComponent;
         auto scene = m_sharedState->activeScene.lock();
+
         if (scene) {
             gui.breakLine();
+
             if (gui.beginTreeNode(" " ICON_FA_CUBES " Scene")) {
                 for (auto& [entityId, entity] : scene->ecsRegistry.getEntities()) {
                     auto onEntityClick = [&]() {
@@ -48,12 +50,24 @@ public:
                         }
                     };
 
+                    bool isSelectedEntity = m_sharedState->selectedEntity != nullptr &&
+                        m_sharedState->selectedEntity->getId() == entityId;
+
+                    if (isSelectedEntity)
+                        gui.pushTextColor(selectedEntryColor);
+
                     if (gui.beginTreeNode(" " ICON_FA_CUBE " "s + entity->getName(), false)) {
+                        gui.pushTextColor(guiDefaultTextColor);
                         if (gui.isPreviousWidgetClicked())
                             onEntityClick();
 
+                        gui.popColor();
                         gui.popTreeNode();
                     }
+
+                    if (isSelectedEntity)
+                        gui.popColor();
+
                     if (gui.isPreviousWidgetClicked())
                         onEntityClick();
                 }

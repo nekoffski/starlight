@@ -13,6 +13,9 @@ public:
     void manipulateGizmo(math::Mat4& viewMatrix, math::Mat4& projectionMatrix, math::Mat4& transformation,
         sl::gui::GizmoOperation op, sl::gui::GizmoSystem system) override;
 
+    void pushTextColor(const math::Vec4&) override;
+    void popColor(int count = 1) override;
+
     bool beginMenuBar() override;
     void endMenuBar() override;
 

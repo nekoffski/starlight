@@ -66,7 +66,6 @@ ImGuiApi::ImGuiApi(void* windowHandle) {
 
     SL_INFO("initializing glfw implementation");
     ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(windowHandle), true);
-    // TODO: this string should be defined somewhere
 
     SL_INFO("initializing opengl implementation");
     const std::string openGlVersionString = "#version 440 core";
@@ -80,6 +79,14 @@ ImGuiApi::~ImGuiApi() {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+}
+
+void ImGuiApi::pushTextColor(const math::Vec4& color) {
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(color.x, color.y, color.z, color.w));
+}
+
+void ImGuiApi::popColor(int count) {
+    ImGui::PopStyleColor(count);
 }
 
 bool ImGuiApi::isCapturingMouse() {

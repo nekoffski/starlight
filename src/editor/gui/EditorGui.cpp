@@ -17,6 +17,8 @@ EditorGui::EditorGui(std::shared_ptr<SharedState> sharedState)
 void EditorGui::renderEditorGui(sl::gui::GuiApi& gui) {
     using namespace event;
 
+    gui.pushTextColor(guiDefaultTextColor);
+
     if (gui.beginMainMenuBar()) {
         if (gui.beginMenu(ICON_FA_BARS " File")) {
             if (gui.menuItem("Export scene")) {
@@ -39,5 +41,7 @@ void EditorGui::renderEditorGui(sl::gui::GuiApi& gui) {
     m_leftPanel.render(gui);
     m_bottomPanel.render(gui);
     m_rightPanel.render(gui);
+
+    gui.popColor();
 }
 }

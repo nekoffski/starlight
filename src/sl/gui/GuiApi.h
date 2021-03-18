@@ -34,6 +34,9 @@ public:
     virtual void manipulateGizmo(math::Mat4& viewMatrix, math::Mat4& projectionMatrix, math::Mat4& transformation,
         GizmoOperation op, GizmoSystem system) = 0;
 
+    virtual void pushTextColor(const math::Vec4&) = 0;
+    virtual void popColor(int count = 1) = 0;
+
     virtual void begin() = 0;
     virtual void end() = 0;
 

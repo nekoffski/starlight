@@ -1,19 +1,30 @@
 #pragma once
 
+#include <algorithm>
+
 #include "WidgetProperties.h"
 
 namespace editor::gui {
 
 struct GuiProperties {
     explicit GuiProperties(int windowWidth, int windowHeight) {
-        constexpr float leftPanelWidthRatio = 0.2f;
-        constexpr float leftPanelTopBottomRatio = 0.5f;
+        constexpr float f = 1600.0f;
+        constexpr float u = 900.0f;
+
+        constexpr float maxFactor = 1.25f;
+        constexpr float minFactor = 0.75f;
+
+        const float factorX = std::clamp((float)f / windowWidth, minFactor, maxFactor);
+        const float factorY = std::clamp((float)u / windowHeight, minFactor, maxFactor);
+
+        const float leftPanelWidthRatio = 0.2f * factorX;
+        const float leftPanelTopBottomRatio = 0.5f;
 
         const float scenePanelHeight = leftPanelTopBottomRatio * windowHeight;
         const float propertiesPanelHeight = windowHeight - scenePanelHeight;
         const float leftPanelWidth = windowWidth * leftPanelWidthRatio;
 
-        constexpr float bottomPanelHeightRatio = 0.2f;
+        const float bottomPanelHeightRatio = 0.2f * factorY;
 
         scenePanelProperties = {
             { 0, 35 },
@@ -32,7 +43,7 @@ struct GuiProperties {
             { windowWidth - leftPanelWidth, bottomPanelHeight }
         };
 
-        constexpr float rightPanelWidthRatio = 0.2f;
+        const float rightPanelWidthRatio = 0.22f * factorX;
         const float rightPanelWidth = windowWidth * rightPanelWidthRatio;
 
         rightPanelProperties = {
