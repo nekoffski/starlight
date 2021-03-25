@@ -17,6 +17,10 @@ struct Scene {
         return ecsRegistry.createEntity(std::move(name));
     }
 
+    int getEntitiesCount() const {
+        return ecsRegistry.getEntitiesCount();
+    }
+
     std::shared_ptr<graphics::camera::Camera> camera;
     ecs::Registry ecsRegistry;
     std::shared_ptr<Skybox> skybox;

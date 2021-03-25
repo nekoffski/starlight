@@ -28,13 +28,14 @@ public:
     void render(sl::gui::GuiApi& gui) override {
         auto& widgetProperties = m_sharedState->guiProperties.scenePanelProperties;
 
+        auto scene = m_sharedState->activeScene.lock();
+
         gui.beginPanel("Scene entities", widgetProperties.origin, widgetProperties.size);
         if (gui.button(ICON_FA_PLUS " Add entity", 150))
-            if (auto scene = m_sharedState->activeScene.lock(); scene)
-                scene->addEntity("Entity" + std::to_string(m_entityIndex++));
+            if (scene)
+                scene->addEntity("Entity" + std::to_string(scene->getEntitiesCount()));
 
         using sl::scene::components::TransformComponent;
-        auto scene = m_sharedState->activeScene.lock();
 
         if (scene) {
             gui.breakLine();

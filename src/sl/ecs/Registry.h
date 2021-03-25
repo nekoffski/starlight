@@ -44,7 +44,7 @@ public:
 
     template <typename T>
     ComponentView<T> getComponentView() {
-        return ComponentView<T>{ m_componentMap.get<T>() };
+        return ComponentView<T> { m_componentMap.get<T>() };
     }
 
     std::shared_ptr<Entity> getEntityByName(const std::string& name) {
@@ -57,6 +57,10 @@ public:
 
     const std::unordered_map<std::string, std::string>& getEntityNameToId() {
         return m_entityNameToId;
+    }
+
+    int getEntitiesCount() const {
+        return m_entities.size();
     }
 
     std::unordered_map<std::string, std::shared_ptr<Entity>>& getEntities() {
