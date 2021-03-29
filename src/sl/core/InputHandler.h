@@ -8,6 +8,6 @@ namespace sl::core {
 
 class InputHandler {
 public:
-    virtual void handleInput(std::shared_ptr<Input>) = 0;
+    virtual void handleInput(Input&) = 0;
 };
 }

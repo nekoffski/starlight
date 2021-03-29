@@ -101,7 +101,7 @@ void Application::update(float deltaTime, float time) {
     SL_PROFILE_FUNCTION();
 
     m_window->update(deltaTime);
-    m_context->update(m_sceneSystems, deltaTime, time);
+    m_context->update(*m_sceneSystems, deltaTime, time);
 
     m_eventEngine.spreadEvents();
 
@@ -112,7 +112,7 @@ void Application::render() {
     SL_PROFILE_FUNCTION();
 
     m_lowLevelRenderer->clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
-    m_context->render(m_renderer);
+    m_context->render(*m_renderer);
     renderGui();
     m_lowLevelRenderer->swapBuffers();
 }
@@ -127,7 +127,7 @@ void Application::handleInput() {
     utils::Globals::flags.disableKeyboardInput = m_guiApi->isCapturingKeyboard();
     utils::Globals::flags.disableMouseInput = m_guiApi->isCapturingMouse();
 
-    m_context->handleInput(m_input);
+    m_context->handleInput(*m_input);
 
     if (m_input->isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE))
         m_window->disableCursor();

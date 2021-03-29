@@ -23,17 +23,17 @@ class ApplicationContext : public xvent::EventListener {
 
 public:
     explicit ApplicationContext(const std::string& ident)
-        : xvent::EventListener(ident) {}
+        : xvent::EventListener(ident) { }
 
     virtual void onInit() = 0;
     virtual void onAttach() = 0;
     virtual void onDetach() = 0;
 
-    virtual void handleInput(std::shared_ptr<core::Input>) = 0;
-    virtual void update(std::shared_ptr<scene::SceneSystems> sceneSystems, float, float) = 0;
-    virtual void render(std::shared_ptr<graphics::Renderer>) = 0;
+    virtual void handleInput(core::Input&) = 0;
+    virtual void update(scene::SceneSystems& sceneSystems, float, float) = 0;
+    virtual void render(graphics::Renderer&) = 0;
 
-    virtual void renderGui(gui::GuiApi&) {}
+    virtual void renderGui(gui::GuiApi&) { }
 
 protected:
     std::shared_ptr<gui::GuiApiProxy> m_guiApiProxy;

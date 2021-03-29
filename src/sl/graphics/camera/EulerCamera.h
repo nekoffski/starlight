@@ -11,7 +11,7 @@ public:
     explicit EulerCamera(const ViewFrustum& viewFrustum, math::Vec3, float, float);
 
     void update(float) override;
-    void handleInput(std::shared_ptr<core::Input>) override;
+    void handleInput(core::Input&) override;
     void onGui(gui::GuiApi&) override;
 
     const math::Mat4 getViewMatrix() override {

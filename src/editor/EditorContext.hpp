@@ -71,17 +71,17 @@ public:
         m_errorDialog.show(gui);
     }
 
-    void handleInput(std::shared_ptr<core::Input> input) override {
+    void handleInput(core::Input& input) override {
         m_activeCamera->handleInput(input);
     }
 
-    void update(std::shared_ptr<scene::SceneSystems> sceneSystems, float deltaTime, float time) override {
+    void update(scene::SceneSystems& sceneSystems, float deltaTime, float time) override {
         m_activeCamera->update(deltaTime);
         auto pfxs = m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>();
-        sceneSystems->pfxSystem.update(pfxs, deltaTime, m_scene->camera);
+        sceneSystems.pfxSystem.update(pfxs, deltaTime, m_scene->camera);
     }
 
-    void render(std::shared_ptr<graphics::Renderer> renderer) override {
+    void render(graphics::Renderer& renderer) override {
         const auto& skybox = m_scene->skybox;
 
         if (skybox)
@@ -94,35 +94,35 @@ public:
         auto models = m_scene->ecsRegistry.getComponentView<components::ModelComponent>();
         auto materials = m_scene->ecsRegistry.getComponentView<components::MaterialComponent>();
 
-        renderer->beginDepthCapture();
-        auto depthShader = renderer->getDepthShader();
+        renderer.beginDepthCapture();
+        auto depthShader = renderer.getDepthShader();
 
         for (auto& directionalLight : directionalLights) {
-            renderer->setShadowMap(directionalLight.shadowMap);
+            renderer.setShadowMap(directionalLight.shadowMap);
 
             for (auto& rendererComponent : rendererComponents) {
                 depthShader->setUniform("lightSpaceMatrix", directionalLight.spaceMatrix);
-                renderer->renderModel(rendererComponent, materials, models, transforms, m_scene->camera, depthShader);
+                renderer.renderModel(rendererComponent, materials, models, transforms, m_scene->camera, depthShader);
             }
         }
-        renderer->endDepthCapture();
+        renderer.endDepthCapture();
 
         for (auto& rendererComponent : rendererComponents) {
             rendererComponent.shader->enable();
 
-            renderer->prepareDirectionalLights(directionalLights, rendererComponent.shader);
-            renderer->preparePointsLights(pointLights, transforms, rendererComponent.shader);
+            renderer.prepareDirectionalLights(directionalLights, rendererComponent.shader);
+            renderer.preparePointsLights(pointLights, transforms, rendererComponent.shader);
 
-            renderer->renderModel(rendererComponent, materials, models, transforms, m_scene->camera);
+            renderer.renderModel(rendererComponent, materials, models, transforms, m_scene->camera);
 
             rendererComponent.shader->disable();
         }
 
-        renderer->renderParticleEffects(
+        renderer.renderParticleEffects(
             m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>(), transforms, m_scene->camera);
 
         if (skybox) {
-            renderer->renderCubemap(skybox->cubemap, skybox->shader, m_scene->camera);
+            renderer.renderCubemap(skybox->cubemap, skybox->shader, m_scene->camera);
             skybox->cubemap->unbind();
         }
     }

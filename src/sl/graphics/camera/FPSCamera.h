@@ -15,7 +15,7 @@ class FPSCamera : public UserControllableCamera {
 public:
     explicit FPSCamera(const ViewFrustum& viewFrustum)
         : UserControllableCamera(viewFrustum) {
-        m_position = math::Vec3{ 0.0f, 5.0f, 0.0f };
+        m_position = math::Vec3 { 0.0f, 5.0f, 0.0f };
     }
 
     void update(float deltaTime) override {
@@ -48,7 +48,7 @@ public:
         m_yaw += xoffset;
         m_pitch = math::circularRange(m_pitch - yoffset, -3.13f, 3.13f);
 
-        m_front = math::normalize(-math::Vec3{
+        m_front = math::normalize(-math::Vec3 {
             std::cos(m_yaw) * std::cos(m_pitch),
             std::sin(m_pitch),
             std::sin(m_yaw) * std::cos(m_pitch) });
@@ -57,25 +57,24 @@ public:
         m_up = math::cross(m_right, m_front);
     }
 
-    void handleInput(std::shared_ptr<core::Input> input) override {
+    void handleInput(core::Input& input) override {
         m_direction = directionNone;
 
-        if (input->isKeyPressed(STARL_KEY_UP))
+        if (input.isKeyPressed(STARL_KEY_UP))
             m_direction |= directionUp;
 
-        if (input->isKeyPressed(STARL_KEY_RIGHT))
+        if (input.isKeyPressed(STARL_KEY_RIGHT))
             m_direction |= directionRight;
 
-        if (input->isKeyPressed(STARL_KEY_DOWN))
+        if (input.isKeyPressed(STARL_KEY_DOWN))
             m_direction |= directionDown;
 
-        if (input->isKeyPressed(STARL_KEY_LEFT))
+        if (input.isKeyPressed(STARL_KEY_LEFT))
             m_direction |= directionLeft;
 
-        auto [mouseX, mouseY] = input->getMousePosition();
+        auto [mouseX, mouseY] = input.getMousePosition();
         m_x = mouseX;
         m_y = mouseY;
-        //        SL_INFO("{}/{}", mouseX, mouseY);
     }
 
     virtual const math::Mat4 getViewMatrix() {
@@ -86,11 +85,11 @@ public:
     }
 
 private:
-    float m_x{ 0.0f };
-    float m_y{ 0.0f };
+    float m_x { 0.0f };
+    float m_y { 0.0f };
 
-    float m_pitch{ 0.0f };
-    float m_yaw{ 0.0f };
+    float m_pitch { 0.0f };
+    float m_yaw { 0.0f };
 
     float m_prevX;
     float m_prevY;
