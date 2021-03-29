@@ -10,22 +10,27 @@ namespace sl::application {
 
 class Entrypoint : public core::sig::SignalHandler {
 public:
-    template <typename App>
-    requires std::derived_from<App, Application> static std::shared_ptr<Entrypoint> create(int& argc, char**& argv) {
+    // clang-format off
+    template <typename Application> 
+    requires std::derived_from<Application, application::Application> && std::default_initializable<Application>
+    static std::shared_ptr<Entrypoint> create(int argc, char** argv) {
         return std::make_unique<Entrypoint>(
-            argc, argv, std::make_shared<App>(Application::Token{}));
+            argc, argv, std::make_unique<Application>());
     }
+    // clang-format on
 
-    explicit Entrypoint(int& argc, char**& argv, std::shared_ptr<Application> application);
+    explicit Entrypoint(int argc, char** argv, std::unique_ptr<Application> application);
 
     int start();
-    void onSignal(int sig);
+    void onSignal(int sig) override;
 
 private:
-    std::shared_ptr<async::Timer> m_profilerTimer;
-    std::shared_ptr<Application> m_application;
-    int& m_argc;
-    char**& m_argv;
+    void loopStep();
+
+    std::unique_ptr<Application> m_application;
+
+    int m_argc;
+    char** m_argv;
 };
 }
 

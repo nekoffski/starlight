@@ -34,9 +34,11 @@ using namespace sl::scene;
 using namespace sl::core;
 
 class EditorContext : public application::ApplicationContext {
-    SL_CONTEXT;
-
 public:
+    explicit EditorContext(const std::string& ident)
+        : ApplicationContext(ident) {
+    }
+
     void onInit() override {
         auto [windowWidth, windowHeight] = m_windowProxy->getSize();
 
@@ -56,7 +58,6 @@ public:
 
         m_guiApiProxy->addFont("/home/nek0/kapik/projects/starlight/res/fonts/fa-solid-900.ttf",
             ICON_MIN_FA, ICON_MAX_FA);
-
         WRITE_DEBUG("%s", "Editor context initialized");
     }
 
@@ -139,6 +140,9 @@ public:
                 m_scene->skybox = skybox;
                 break;
             }
+
+            if (event->is<QuitEvent>())
+                m_windowProxy->quit();
 
             if (event->is<WindowResizedEvent>()) {
                 auto windowResizedEvent = event->as<WindowResizedEvent>();

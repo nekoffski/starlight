@@ -22,11 +22,9 @@ namespace sl::application {
 
 class Entrypoint;
 
-class Application : public xvent::EventListener, public std::enable_shared_from_this<Application> {
-    class Token;
-
+class Application {
 public:
-    explicit Application(Token&&);
+    explicit Application();
 
     void forceStop();
     bool isRunning() const;
@@ -37,32 +35,32 @@ public:
     void renderGui();
 
     std::shared_ptr<ApplicationContext> getActiveContext() const;
-    void handleEvents(const xvent::EventProvider& eventProvider) override;
+
     void switchContext(std::shared_ptr<ApplicationContext> context);
 
     void init();
 
     // for custom user initialization
-    virtual void onStart() {}
-    virtual void onStop() {}
+    virtual void onStart() { }
+    virtual void onStop() { }
 
 protected:
+    // clang-format off
     template <typename T>
-    requires std::derived_from<T, ApplicationContext>&& std::constructible_from<T, const std::string&>
-        std::shared_ptr<T> createContext(const std::string& ident) {
-
+    requires std::derived_from<T, ApplicationContext> && std::constructible_from<T, const std::string&>
+    std::shared_ptr<T> createContext(const std::string& ident) {
         auto context = std::make_shared<T>(ident);
 
-        context->setGuiApiProxy(std::make_shared<gui::GuiApiProxy>(m_guiApi));
-        context->setLowLevelRendererProxy(std::make_shared<graphics::LowLevelRendererProxy>(m_lowLevelRenderer));
-        context->setWindowProxy(std::make_shared<core::WindowProxy>(m_window));
+        context->m_guiApiProxy = std::make_shared<gui::GuiApiProxy>(m_guiApi);
+        context->m_lowLevelRendererProxy = std::make_shared<graphics::LowLevelRendererProxy>(m_lowLevelRenderer);
+        context->m_windowProxy = std::make_shared<core::WindowProxy>(m_window);
 
         context->onInit();
-
         m_eventEngine.registerEventListener(context);
 
         return std::dynamic_pointer_cast<T>(context);
     }
+    // clang-format on
 
 private:
     std::shared_ptr<core::Window> m_window;
@@ -77,11 +75,4 @@ private:
     xvent::EventEngine m_eventEngine;
     std::shared_ptr<xvent::EventEmitter> m_eventEmitter;
 };
-
-class Application::Token {
-    friend class Entrypoint;
-    Token() = default;
-};
 }
-
-#define SL_APPLICATION using sl::application::Application::Application;

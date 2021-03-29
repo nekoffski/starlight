@@ -16,6 +16,10 @@ public:
         return m_window->getSize();
     }
 
+    void quit() {
+        m_window->setShouldClose(true);
+    }
+
 private:
     std::shared_ptr<core::Window> m_window;
 };

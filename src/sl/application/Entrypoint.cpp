@@ -16,7 +16,7 @@
 
 namespace sl::application {
 
-Entrypoint::Entrypoint(int& argc, char**& argv, std::shared_ptr<Application> application)
+Entrypoint::Entrypoint(int argc, char** argv, std::unique_ptr<Application> application)
     : m_argc(argc)
     , m_argv(argv)
     , m_application(std::move(application)) {
@@ -24,57 +24,60 @@ Entrypoint::Entrypoint(int& argc, char**& argv, std::shared_ptr<Application> app
 
 int Entrypoint::start() {
     try {
-        core::sig::setupSignalHandler(this);
         core::initLogging();
-        SL_INFO("Initialized logging");
+        SL_INFO("Initialized logging.");
 
+        SL_INFO("Setting up signal handler.");
+        core::sig::setupSignalHandler(this);
+
+        SL_INFO("Setting up clock implementation.");
         core::Clock::setClockImpl<platform::clock::StdClockImpl>();
-        m_profilerTimer = async::AsyncEngine::createTimer(ProfilerPrintInterval);
 
+        SL_INFO("Setting up async engine.");
         async::AsyncEngine::init();
 
         // TODO: load config
 
-        SL_INFO("creating and starting application instance");
+        auto profilerTimer = async::AsyncEngine::createTimer(ProfilerPrintInterval);
+
+        SL_INFO("Initializing and starting application.");
         m_application->init();
         m_application->onStart();
 
-        SL_ASSERT(m_application->getActiveContext(), "Application context is null");
+        SL_ASSERT(m_application->getActiveContext(), "Application context is null.");
 
-        while (m_application->isRunning()) {
-            {
-                SL_PROFILE_REGION("main-loop");
-
-                float deltaTime = core::Clock::getDeltaTime();
-
-                m_application->handleInput();
-                m_application->update(deltaTime, core::Clock::now()->value());
-                m_application->render();
-
-                async::AsyncEngine::update(deltaTime);
-                core::Clock::update();
-            }
-
-            if (not m_profilerTimer->asyncSleep())
-                core::Profiler::printResults();
-        }
+        SL_INFO("Starting starlight main loop.");
+        while (m_application->isRunning())
+            loopStep();
 
         m_application->onStop();
-
         async::AsyncEngine::deinit();
 
     } catch (core::error::Error& e) {
-        SL_ERROR("entrypoint catched unhandled error: {}", e.as<std::string>());
+        SL_ERROR("Entrypoint catched unhandled error: {}.", e.as<std::string>());
         return e.getErrorCode<int>();
     }
 
     core::Profiler::saveResults("./logs/");
-    SL_INFO("shutdown gracefully");
+    SL_INFO("Shutdown gracefully.");
     return 0;
 }
 
+void Entrypoint::loopStep() {
+    SL_PROFILE_REGION("main-loop-step");
+
+    float deltaTime = core::Clock::getDeltaTime();
+
+    m_application->handleInput();
+    m_application->update(deltaTime, core::Clock::now()->value());
+    m_application->render();
+
+    async::AsyncEngine::update(deltaTime);
+    core::Clock::update();
+}
+
 void Entrypoint::onSignal(int sig) {
-    SL_WARN("received signal, forcing application to stop");
+    SL_WARN("Received signal, forcing starlight application to stop.");
     if (m_application)
         m_application->forceStop();
 }

@@ -50,16 +50,14 @@ static void initFactories() {
 }
 
 static void initPaths() {
-    sl::core::PathManager::registerResourcePath<sl::graphics::Shader>(SHADERS_DIR);
-    sl::core::PathManager::registerResourcePath<sl::graphics::Texture>(TEXTURES_DIR);
-    sl::core::PathManager::registerResourcePath<sl::graphics::Cubemap>(CUBEMAPS_DIR);
-    sl::core::PathManager::registerResourcePath<sl::geometry::Model>(MODELS_DIR);
+    core::PathManager::registerResourcePath<sl::graphics::Shader>(SHADERS_DIR);
+    core::PathManager::registerResourcePath<sl::graphics::Texture>(TEXTURES_DIR);
+    core::PathManager::registerResourcePath<sl::graphics::Cubemap>(CUBEMAPS_DIR);
+    core::PathManager::registerResourcePath<sl::geometry::Model>(MODELS_DIR);
 }
 
-Application::Application(Application::Token&&)
-    : xvent::EventListener("Application")
-    , m_eventEmitter(m_eventEngine.createEmitter()) {
-
+Application::Application()
+    : m_eventEmitter(m_eventEngine.createEmitter()) {
     event::Emitter::init(m_eventEmitter->clone());
 }
 
@@ -67,6 +65,7 @@ void Application::init() {
     initPaths();
     initFactories();
 
+    SL_INFO("Creating and initializing window instance.");
     auto windowSize = core::Window::Size { 1600, 900 };
     m_window = core::Window::factory->create(windowSize, "Starlight");
     m_window->init();
@@ -77,24 +76,35 @@ void Application::init() {
 
     auto windowHandle = m_window->getHandle();
 
+    SL_INFO("Creating input instance.");
     m_input = core::Input::factory->create(windowHandle);
+
+    SL_INFO("Creating graphics context instance.");
     m_graphicsContext = graphics::GraphicsContext::factory->create(windowHandle);
 
     auto viewport = graphics::ViewFrustum::Viewport { windowSize.width, windowSize.height };
+
+    SL_INFO("Creating low level renderer instance.");
     m_lowLevelRenderer = std::make_shared<graphics::LowLevelRenderer>(m_graphicsContext,
         graphics::RenderApi::factory->create(), viewport);
 
+    SL_INFO("Creating GUI API instance.");
     m_guiApi = gui::GuiApi::factory->create(windowHandle);
 
+    SL_INFO("Creating model loader impl instance.");
     geometry::ModelLoader::impl = geometry::ModelLoaderImpl::factory->create();
 
+    SL_INFO("Creating shader compiler impl instance.");
     graphics::ShaderCompiler::impl = graphics::ShaderCompilerImpl::factory->create();
+
+    SL_INFO("Initializing global utils.");
     utils::Globals::init();
 
+    SL_INFO("Creating renderer instance.");
     m_renderer = std::make_shared<graphics::Renderer>(m_lowLevelRenderer);
-    m_sceneSystems = std::make_shared<scene::SceneSystems>();
 
-    m_eventEngine.registerEventListener(shared_from_this());
+    SL_INFO("Creating scene systems instance");
+    m_sceneSystems = std::make_shared<scene::SceneSystems>();
 }
 
 void Application::update(float deltaTime, float time) {
@@ -137,13 +147,6 @@ void Application::handleInput() {
 
 std::shared_ptr<ApplicationContext> Application::getActiveContext() const {
     return m_context;
-}
-
-void Application::handleEvents(const xvent::EventProvider& eventProvider) {
-    for (auto event : eventProvider.getByCategories<event::CoreCategory>()) {
-        if (event->is<event::QuitEvent>())
-            m_window->setShouldClose(true);
-    }
 }
 
 void Application::switchContext(std::shared_ptr<ApplicationContext> context) {

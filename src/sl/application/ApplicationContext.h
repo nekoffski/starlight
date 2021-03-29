@@ -39,20 +39,5 @@ protected:
     std::shared_ptr<gui::GuiApiProxy> m_guiApiProxy;
     std::shared_ptr<graphics::LowLevelRendererProxy> m_lowLevelRendererProxy;
     std::shared_ptr<core::WindowProxy> m_windowProxy;
-
-private:
-    void setGuiApiProxy(std::shared_ptr<gui::GuiApiProxy> guiApiProxy) {
-        m_guiApiProxy = guiApiProxy;
-    }
-
-    void setLowLevelRendererProxy(std::shared_ptr<graphics::LowLevelRendererProxy> lowLevelRendererProxy) {
-        m_lowLevelRendererProxy = lowLevelRendererProxy;
-    }
-
-    void setWindowProxy(std::shared_ptr<core::WindowProxy> windowProxy) {
-        m_windowProxy = windowProxy;
-    }
 };
 }
-
-#define SL_CONTEXT using sl::application::ApplicationContext::ApplicationContext

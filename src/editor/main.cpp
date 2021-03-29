@@ -6,8 +6,6 @@ using namespace sl;
 using namespace sl::scene;
 
 class StarlightEditor : public sl::application::Application {
-    SL_APPLICATION;
-
 public:
     virtual void onStart() override {
         context = createContext<EditorContext>("EditorContext");
