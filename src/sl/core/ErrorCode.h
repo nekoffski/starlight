@@ -5,6 +5,8 @@ namespace sl::core {
 enum class ErrorCode : int {
     InvalidJsonString = 30,
 
+    CorruptedConfig = 50,
+
     UnknownTextureFormat = 100,
 
     CouldNotInitializeWindowLibrary = 200,
