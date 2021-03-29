@@ -2,7 +2,7 @@
 
 #include "editor/DebugConsole.hpp"
 #include "sl/asset/AssetLoader.hpp"
-#include "sl/core/error/Errors.hpp"
+#include "sl/core/Errors.hpp"
 #include "sl/core/utils/String.hpp"
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/Utils.hpp"
@@ -12,7 +12,7 @@ namespace editor::gui {
 constexpr int padding = 65;
 
 static void validateAssetName(const std::string& name) {
-    using namespace sl::core::error;
+    using namespace sl::core;
 
     if (sl::core::utils::isStringEmpty(name))
         throw AssetError(ErrorCode::AssetError, "Asset name cannot be empty");
@@ -95,7 +95,7 @@ void AssetsTab::showLoaderPopUp(sl::gui::GuiApi& gui) {
             break;
         }
         }
-    } catch (sl::core::error::AssetError& err) {
+    } catch (sl::core::AssetError& err) {
         m_errorDialog.setErrorMessage(err.getDetails());
         WRITE_DEBUG(err.as<std::string>());
         m_loadClicked = false;

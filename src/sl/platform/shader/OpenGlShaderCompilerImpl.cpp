@@ -8,12 +8,12 @@
 
 #include "OpenGlShader.h"
 #include "sl/core/Logger.h"
-#include "sl/core/error/ErrorCode.h"
-#include "sl/core/error/Errors.hpp"
+#include "sl/core/ErrorCode.h"
+#include "sl/core/Errors.hpp"
 
 constexpr int InfoBufferSize = 1024;
 
-using namespace sl::core::error;
+using namespace sl::core;
 
 namespace sl::platform::shader {
 
@@ -47,7 +47,7 @@ void OpenGlShaderCompilerImpl::compileImpl(std::shared_ptr<OpenGlShader> shader)
     if (!linked) {
         glGetProgramInfoLog(_shader_program, infoBufferSize, nullptr, info_buffer);
         SL_ERROR("could not link: ", info_buffer);
-        throw core::error::ShaderError{ core::error::ErrorCode::CouldNotLinkShaderProgram };
+        throw core::ShaderError{ core::ErrorCode::CouldNotLinkShaderProgram };
     }
 
     glDeleteShader(vertexShader);

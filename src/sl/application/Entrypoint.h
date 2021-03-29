@@ -26,6 +26,7 @@ public:
 
 private:
     void loopStep();
+    void loadConfig();
 
     std::unique_ptr<Application> m_application;
 

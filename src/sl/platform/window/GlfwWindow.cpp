@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 
 #include "sl/core/Logger.h"
-#include "sl/core/error/Errors.hpp"
+#include "sl/core/Errors.hpp"
 
 namespace sl::platform::window {
 
@@ -34,7 +34,7 @@ void GlfwWindow::init() {
     SL_INFO("initializing glfw");
     if (auto status = glfwInit(); status < 0) {
         SL_ERROR("could not initialize glfw: {]", status);
-        throw core::error::WindowError{ core::error::ErrorCode::CouldNotInitializeWindowLibrary };
+        throw core::WindowError{ core::ErrorCode::CouldNotInitializeWindowLibrary };
     }
 
     SL_INFO("setting window hints");
@@ -50,7 +50,7 @@ void GlfwWindow::init() {
 
     if (m_windowHandle == nullptr) {
         SL_ERROR("could not raw window instance");
-        throw core::error::WindowError{ core::error::ErrorCode::CouldNotCreateWindowInstance };
+        throw core::WindowError{ core::ErrorCode::CouldNotCreateWindowInstance };
     }
 }
 

@@ -9,7 +9,7 @@
 
 #include "ErrorCode.h"
 
-namespace sl::core::error {
+namespace sl::core {
 
 class Error : public std::exception {
 public:

@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
 #include "sl/core/Json.h"
-#include "sl/core/error/Errors.hpp"
+#include "sl/core/Errors.hpp"
 
 using namespace sl::core;
-using namespace sl::core::error;
+using namespace sl::core;
 using namespace testing;
 
 namespace {

@@ -3,8 +3,8 @@
 #include <glad/glad.h>
 
 #include "Utils.hpp"
-#include "sl/core/error/ErrorCode.h"
-#include "sl/core/error/Errors.hpp"
+#include "sl/core/ErrorCode.h"
+#include "sl/core/Errors.hpp"
 
 namespace sl::platform::texture {
 
@@ -23,7 +23,7 @@ OpenGlTexture::OpenGlTexture(const std::string& path)
     const auto& format = channelsToFormat.find(m_textureImage->getChannels());
 
     if (format == channelsToFormat.end())
-        throw core::error::TextureError{ core::error::ErrorCode::UnknownTextureFormat };
+        throw core::TextureError{ core::ErrorCode::UnknownTextureFormat };
 
     glTexImage2D(GL_TEXTURE_2D, 0, format->second, s.width, s.height, 0, format->second,
         GL_UNSIGNED_BYTE, m_textureImage->getRaw());

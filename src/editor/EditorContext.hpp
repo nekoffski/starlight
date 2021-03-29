@@ -11,7 +11,7 @@
 #include "sl/core/FileSystem.h"
 #include "sl/core/Input.h"
 #include "sl/core/Logger.h"
-#include "sl/core/error/BaseError.hpp"
+#include "sl/core/BaseError.hpp"
 #include "sl/ecs/Entity.h"
 #include "sl/event/Categories.h"
 #include "sl/event/Event.h"
@@ -182,7 +182,7 @@ public:
                 if (event->is<DeserializeSceneEvent>())
                     Deserializer { m_assetManager, m_scene }.deserialize("./scene.starscene");
 
-            } catch (sl::core::error::Error& err) {
+            } catch (sl::core::Error& err) {
                 m_errorDialog.setErrorMessage(err.as<std::string>());
             }
         }

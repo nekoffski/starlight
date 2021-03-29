@@ -1,6 +1,6 @@
 #pragma once
 
-namespace sl::core::error {
+namespace sl::core {
 
 enum class ErrorCode : int {
     InvalidJsonString = 30,

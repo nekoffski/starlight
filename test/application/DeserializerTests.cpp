@@ -7,7 +7,7 @@
 #include "sl/application/Deserializer.h"
 #include "sl/asset/AssetManager.h"
 #include "sl/core/Json.h"
-#include "sl/core/error/Errors.hpp"
+#include "sl/core/Errors.hpp"
 #include "sl/scene/Scene.h"
 
 #include "mocks/FileSystemMock.hpp"
@@ -36,7 +36,7 @@ protected:
 TEST_F(DeserializerTests, whenFileDoesNotExists_shouldThrow) {
     EXPECT_CALL(*m_fsMock, isFile(_)).Times(1).WillOnce(Return(false));
 
-    EXPECT_THROW(deserializer.deserialize(m_filename, m_fsMock), error::DeserializationError);
+    EXPECT_THROW(deserializer.deserialize(m_filename, m_fsMock), DeserializationError);
 }
 
 class DeserializerTestsInvalidJson : public DeserializerTests, public WithParamInterface<std::string> {};
@@ -45,7 +45,7 @@ TEST_P(DeserializerTestsInvalidJson, givenInvalidJson_whenDeserializing_shouldTh
     EXPECT_CALL(*m_fsMock, isFile(_)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(*m_fsMock, readFile(_)).Times(1).WillOnce(Return(GetParam()));
 
-    EXPECT_THROW(deserializer.deserialize(m_filename, m_fsMock), error::DeserializationError);
+    EXPECT_THROW(deserializer.deserialize(m_filename, m_fsMock), DeserializationError);
 };
 
 static const std::vector<std::string> invalidJsonTestData = {

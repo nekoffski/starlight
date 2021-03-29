@@ -5,6 +5,7 @@
 
 #include "sl/core/Macros.h"
 
+#include "globals/Config.h"
 #include "globals/Flags.h"
 #include "globals/Geometry.h"
 #include "globals/Shaders.h"
@@ -19,6 +20,7 @@ struct Globals {
         geometry = std::make_unique<globals::Geometry>();
     }
 
+    inline static globals::Config config;
     inline static globals::Flags flags;
     inline static std::unique_ptr<globals::Shaders> shaders;
     inline static std::unique_ptr<globals::Geometry> geometry;

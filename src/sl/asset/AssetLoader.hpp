@@ -7,8 +7,8 @@
 #include "sl/asset/loaders/ShaderLoader.hpp"
 #include "sl/asset/loaders/TextureLoader.hpp"
 #include "sl/async/AsyncEngine.hpp"
-#include "sl/core/error/ErrorCode.h"
-#include "sl/core/error/Errors.hpp"
+#include "sl/core/ErrorCode.h"
+#include "sl/core/Errors.hpp"
 
 namespace sl::asset {
 
@@ -31,11 +31,11 @@ private:
             if (loaders::IsSpecializedFor<loaders::Loader<T>>::value)
                 return loaders::Loader<T>::load(globalPath,
                     loaders::LoaderArgs<T>{ std::forward<Args>(args)... });
-        } catch (core::error::Error& e) {
-            throw e.as<core::error::AssetError>();
+        } catch (core::Error& e) {
+            throw e.as<core::AssetError>();
         }
 
-        throw core::error::AssetError{ core::error::ErrorCode::CouldNotFindAssetLoader };
+        throw core::AssetError{ core::ErrorCode::CouldNotFindAssetLoader };
     }
 };
 }

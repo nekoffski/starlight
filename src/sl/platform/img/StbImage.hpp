@@ -6,7 +6,7 @@
 #include <stb/stb.h>
 
 #include "sl/core/Logger.h"
-#include "sl/core/error/Errors.hpp"
+#include "sl/core/Errors.hpp"
 
 namespace sl::platform::img {
 
@@ -17,7 +17,7 @@ public:
 
         if (!m_data) {
             SL_ERROR("Could not load {}", path);
-            throw core::error::ImageError{ core::error::ErrorCode::CouldNotLoadImage };
+            throw core::ImageError{ core::ErrorCode::CouldNotLoadImage };
         }
     }
 

@@ -5,14 +5,16 @@
 #include <thread>
 #include <type_traits>
 
+#include "ConfigLoader.h"
 #include "sl/async/AsyncEngine.hpp"
 #include "sl/core/Clock.h"
 #include "sl/core/FileSystem.h"
 #include "sl/core/Logger.h"
 #include "sl/core/Profiler.h"
-#include "sl/core/error/Errors.hpp"
+#include "sl/core/Errors.hpp"
 #include "sl/core/sig/Signal.h"
 #include "sl/platform/clock/StdClockImpl.h"
+#include "sl/utils/Globals.h"
 
 namespace sl::application {
 
@@ -29,6 +31,8 @@ int Entrypoint::start() {
 
         SL_INFO("Setting up signal handler.");
         core::sig::setupSignalHandler(this);
+
+        loadConfig();
 
         SL_INFO("Setting up clock implementation.");
         core::Clock::setClockImpl<platform::clock::StdClockImpl>();
@@ -53,7 +57,7 @@ int Entrypoint::start() {
         m_application->onStop();
         async::AsyncEngine::deinit();
 
-    } catch (core::error::Error& e) {
+    } catch (core::Error& e) {
         SL_ERROR("Entrypoint catched unhandled error: {}.", e.as<std::string>());
         return e.getErrorCode<int>();
     }
@@ -74,6 +78,15 @@ void Entrypoint::loopStep() {
 
     async::AsyncEngine::update(deltaTime);
     core::Clock::update();
+}
+
+void Entrypoint::loadConfig() {
+    const std::string defaultConfigPath = "./starlight.json";
+    std::string configFilePath = m_argc > 1 ? m_argv[1] : defaultConfigPath;
+
+    core::FileSystem fileSystem;
+    SL_INFO("Loading config from file: {}.", configFilePath);
+    utils::Globals::config = ConfigLoader {}.loadFromFile(configFilePath, fileSystem);
 }
 
 void Entrypoint::onSignal(int sig) {

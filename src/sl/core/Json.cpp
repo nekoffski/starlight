@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "Logger.h"
-#include "error/Errors.hpp"
+#include "Errors.hpp"
 
 namespace sl::core {
 
@@ -15,7 +15,7 @@ Json::Value parseJson(const std::string& jsonString) {
     const char* p = jsonString.c_str();
     auto reader = std::unique_ptr<Json::CharReader>(builder.newCharReader());
     if (!reader->parse(p, p + jsonString.size(), &root, &errors))
-        throw error::JsonError(error::ErrorCode::InvalidJsonString);
+        throw JsonError(ErrorCode::InvalidJsonString);
     return root;
 }
 
@@ -34,7 +34,7 @@ std::string JsonBuilder::asString() {
     if (!Json::parseFromStream(builder, m_jsonStream, &root, &errors)) {
         auto msg = std::string{ errors } + "\n" + m_jsonStream.str();
         SL_WARN(msg);
-        throw error::JsonError(error::ErrorCode::InvalidJsonString, msg);
+        throw JsonError(ErrorCode::InvalidJsonString, msg);
     }
 
     reset();

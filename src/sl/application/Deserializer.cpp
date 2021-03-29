@@ -4,12 +4,12 @@
 #include "sl/asset/AssetLoader.hpp"
 #include "sl/core/Json.h"
 #include "sl/core/Logger.h"
-#include "sl/core/error/Errors.hpp"
+#include "sl/core/Errors.hpp"
 #include "sl/graphics/Cubemap.h"
 #include "sl/scene/components/ComponentsDeserializers.hpp"
 #include "sl/utils/Globals.h"
 
-using namespace sl::core::error;
+using namespace sl::core;
 
 namespace sl::application {
 
