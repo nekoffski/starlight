@@ -55,11 +55,11 @@ void GlfwInput::setKeyCallback(core::InputCallback callback) {
 }
 
 bool GlfwInput::isKeyPressed(int keycode) const {
-    return glfwGetKey(m_windowHandle, keycode) && not utils::Globals::flags.disableKeyboardInput;
+    return glfwGetKey(m_windowHandle, keycode) && not GLOBALS().flags.disableKeyboardInput;
 }
 
 bool GlfwInput::isMouseButtonPressed(int button) const {
-    return glfwGetMouseButton(m_windowHandle, button) && not utils::Globals::flags.disableMouseInput;
+    return glfwGetMouseButton(m_windowHandle, button) && not GLOBALS().flags.disableMouseInput;
 }
 
 std::pair<double, double> GlfwInput::getMousePosition() const {
@@ -73,6 +73,6 @@ std::pair<double, double> GlfwInput::getMousePositonDelta() const {
 }
 
 double GlfwInput::getScrollDelta() const {
-    return mouseScrollDelta * not utils::Globals::flags.disableMouseInput;
+    return mouseScrollDelta * not GLOBALS().flags.disableMouseInput;
 }
 }

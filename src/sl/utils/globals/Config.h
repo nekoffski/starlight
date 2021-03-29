@@ -6,6 +6,7 @@ struct Config {
         std::string shaders;
         std::string textures;
         std::string models;
+        std::string cubemaps;
     };
 
     Paths paths;

@@ -2,10 +2,11 @@
 
 #include "sl/asset/Asset.h"
 #include "sl/asset/AssetLoader.hpp"
+#include "sl/core/Errors.hpp"
 #include "sl/core/Json.h"
 #include "sl/core/Logger.h"
-#include "sl/core/Errors.hpp"
 #include "sl/graphics/Cubemap.h"
+#include "sl/graphics/Shader.h"
 #include "sl/scene/components/ComponentsDeserializers.hpp"
 #include "sl/utils/Globals.h"
 
@@ -20,7 +21,7 @@ Deserializer::Deserializer(asset::AssetManager& assetManager, std::shared_ptr<sc
 
 void Deserializer::deserialize(const std::string& path, std::shared_ptr<core::FileSystem> fileSystem) {
     if (not fileSystem->isFile(path))
-        throw DeserializationError{ ErrorCode::FileDoesNotExist, "Could not find file: " + path };
+        throw DeserializationError { ErrorCode::FileDoesNotExist, "Could not find file: " + path };
 
     auto fileContent = fileSystem->readFile(path);
 
@@ -28,15 +29,15 @@ void Deserializer::deserialize(const std::string& path, std::shared_ptr<core::Fi
         auto json = core::parseJson(fileContent);
 
         if (not json.isMember("assets") || not json.isMember("scene"))
-            throw DeserializationError{ ErrorCode::ProjectJsonIsInvalid };
+            throw DeserializationError { ErrorCode::ProjectJsonIsInvalid };
 
         deserializeAssets(json["assets"]);
         deserializeScene(json["scene"]);
 
     } catch (JsonError& e) {
-        throw DeserializationError{ ErrorCode::InvalidJsonString, e.getDetails() };
+        throw DeserializationError { ErrorCode::InvalidJsonString, e.getDetails() };
     } catch (Json::Exception& e) {
-        throw DeserializationError{ ErrorCode::ProjectJsonIsInvalid };
+        throw DeserializationError { ErrorCode::ProjectJsonIsInvalid };
     }
 }
 
@@ -101,7 +102,7 @@ void Deserializer::deserializeScene(Json::Value& sceneJson) {
     if (sceneJson.isMember("skybox-id")) {
         auto skyboxId = sceneJson["skybox-id"].asUInt();
         auto cubemapAsset = m_assetManager.getAssetById(skyboxId)->as<asset::CubemapAsset>();
-        auto skybox = scene::Skybox::create(utils::Globals::shaders->defaultCubemapShader, cubemapAsset->cubemap);
+        auto skybox = scene::Skybox::create(GLOBALS().shaders->defaultCubemapShader, cubemapAsset->cubemap);
         m_scene->skybox = skybox;
         SL_INFO("Setting skybox: {}", skyboxId);
     }

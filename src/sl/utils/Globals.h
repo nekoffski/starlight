@@ -13,16 +13,19 @@
 namespace sl::utils {
 
 struct Globals {
-    SL_STATIC_CLASS(Globals);
+    SL_SINGLETON(Globals);
 
-    static void init() {
-        shaders = std::make_unique<globals::Shaders>();
-        geometry = std::make_unique<globals::Geometry>();
-    }
+    static Globals& instance();
 
-    inline static globals::Config config;
-    inline static globals::Flags flags;
-    inline static std::unique_ptr<globals::Shaders> shaders;
-    inline static std::unique_ptr<globals::Geometry> geometry;
+    void init();
+
+    globals::Config config;
+    globals::Flags flags;
+
+    std::unique_ptr<globals::Shaders> shaders;
+    std::unique_ptr<globals::Geometry> geometry;
 };
+
 }
+
+#define GLOBALS() sl::utils::Globals::instance()

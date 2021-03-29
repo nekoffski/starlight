@@ -8,10 +8,10 @@
 #include "ConfigLoader.h"
 #include "sl/async/AsyncEngine.hpp"
 #include "sl/core/Clock.h"
+#include "sl/core/Errors.hpp"
 #include "sl/core/FileSystem.h"
 #include "sl/core/Logger.h"
 #include "sl/core/Profiler.h"
-#include "sl/core/Errors.hpp"
 #include "sl/core/sig/Signal.h"
 #include "sl/platform/clock/StdClockImpl.h"
 #include "sl/utils/Globals.h"
@@ -86,7 +86,7 @@ void Entrypoint::loadConfig() {
 
     core::FileSystem fileSystem;
     SL_INFO("Loading config from file: {}.", configFilePath);
-    utils::Globals::config = ConfigLoader {}.loadFromFile(configFilePath, fileSystem);
+    GLOBALS().config = ConfigLoader {}.loadFromFile(configFilePath, fileSystem);
 }
 
 void Entrypoint::onSignal(int sig) {

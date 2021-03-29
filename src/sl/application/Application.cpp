@@ -1,7 +1,6 @@
 #include "Application.h"
 
 #include "sl/core/Input.h"
-#include "sl/core/PathManager.hpp"
 #include "sl/core/Profiler.h"
 #include "sl/event/Categories.h"
 #include "sl/event/Emitter.hpp"
@@ -49,20 +48,12 @@ static void initFactories() {
     geometry::ModelLoaderImpl::factory = platform::createModelLoaderImplFactory();
 }
 
-static void initPaths() {
-    core::PathManager::registerResourcePath<sl::graphics::Shader>(SHADERS_DIR);
-    core::PathManager::registerResourcePath<sl::graphics::Texture>(TEXTURES_DIR);
-    core::PathManager::registerResourcePath<sl::graphics::Cubemap>(CUBEMAPS_DIR);
-    core::PathManager::registerResourcePath<sl::geometry::Model>(MODELS_DIR);
-}
-
 Application::Application()
     : m_eventEmitter(m_eventEngine.createEmitter()) {
     event::Emitter::init(m_eventEmitter->clone());
 }
 
 void Application::init() {
-    initPaths();
     initFactories();
 
     SL_INFO("Creating and initializing window instance.");
@@ -98,7 +89,7 @@ void Application::init() {
     graphics::ShaderCompiler::impl = graphics::ShaderCompilerImpl::factory->create();
 
     SL_INFO("Initializing global utils.");
-    utils::Globals::init();
+    GLOBALS().init();
 
     SL_INFO("Creating renderer instance.");
     m_renderer = std::make_shared<graphics::Renderer>(m_lowLevelRenderer);
@@ -134,8 +125,8 @@ void Application::renderGui() {
 }
 
 void Application::handleInput() {
-    utils::Globals::flags.disableKeyboardInput = m_guiApi->isCapturingKeyboard();
-    utils::Globals::flags.disableMouseInput = m_guiApi->isCapturingMouse();
+    GLOBALS().flags.disableKeyboardInput = m_guiApi->isCapturingKeyboard();
+    GLOBALS().flags.disableMouseInput = m_guiApi->isCapturingMouse();
 
     m_context->handleInput(*m_input);
 

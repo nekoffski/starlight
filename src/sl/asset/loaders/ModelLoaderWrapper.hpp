@@ -3,9 +3,9 @@
 #include "Loader.h"
 
 #include "sl/core/Logger.h"
-#include "sl/core/PathManager.hpp"
 #include "sl/geometry/Model.h"
 #include "sl/geometry/ModelLoader.hpp"
+#include "sl/utils/Globals.h"
 
 namespace sl::asset::loaders {
 
@@ -22,7 +22,7 @@ public:
     static std::shared_ptr<Model> load(bool globalPath, LoaderArgs<Model> args) {
         std::string path = "";
         if (not globalPath)
-            path += core::PathManager::get<Model>();
+            path += GLOBALS().config.paths.models;
 
         path += args.path;
         SL_DEBUG("loading model: {}", path);

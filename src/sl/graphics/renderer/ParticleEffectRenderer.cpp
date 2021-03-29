@@ -14,7 +14,7 @@ namespace sl::graphics::renderer {
 
 ParticleEffectRenderer::ParticleEffectRenderer(std::shared_ptr<graphics::LowLevelRenderer> renderer)
     : m_renderer(renderer)
-    , m_vao(utils::Globals::geometry->squareVAO) {
+    , m_vao(GLOBALS().geometry->squareVAO) {
 
     m_shader = asset::AssetLoader::loadLocalPath<graphics::Shader>(
         "/particle.vert", "/particle.frag");

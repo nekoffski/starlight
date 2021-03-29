@@ -8,10 +8,10 @@
 #include "sl/application/Serializer.h"
 #include "sl/asset/AssetLoader.hpp"
 #include "sl/asset/AssetManager.h"
+#include "sl/core/BaseError.hpp"
 #include "sl/core/FileSystem.h"
 #include "sl/core/Input.h"
 #include "sl/core/Logger.h"
-#include "sl/core/BaseError.hpp"
 #include "sl/ecs/Entity.h"
 #include "sl/event/Categories.h"
 #include "sl/event/Event.h"
@@ -136,7 +136,7 @@ public:
         for (auto& event : events) {
             if (event->is<SetSkyboxEvent>()) {
                 auto cubemap = event->as<SetSkyboxEvent>()->cubemap;
-                auto skybox = sl::scene::Skybox::create(sl::utils::Globals::shaders->defaultCubemapShader, cubemap);
+                auto skybox = sl::scene::Skybox::create(GLOBALS().shaders->defaultCubemapShader, cubemap);
                 m_scene->skybox = skybox;
                 break;
             }
@@ -190,7 +190,7 @@ public:
 
 private:
     void loadDefaultShaders() {
-        auto shaderAsset = std::make_shared<sl::asset::ShaderAsset>(sl::utils::Globals::shaders->defaultModelShader,
+        auto shaderAsset = std::make_shared<sl::asset::ShaderAsset>(GLOBALS().shaders->defaultModelShader,
             "defaultShader");
         shaderAsset->shouldSerialize = false;
         m_assetManager.addAsset(shaderAsset);

@@ -3,8 +3,8 @@
 #include "sl/asset/loaders/Loader.h"
 
 #include "sl/core/Logger.h"
-#include "sl/core/PathManager.hpp"
 #include "sl/graphics/Texture.h"
+#include "sl/utils/Globals.h"
 
 namespace sl::asset::loaders {
 
@@ -20,7 +20,7 @@ struct Loader<Texture> {
     static std::shared_ptr<Texture> load(bool globalPath, LoaderArgs<Texture> args) {
         std::string path = "";
         if (not globalPath)
-            path += core::PathManager::get<Texture>();
+            path += GLOBALS().config.paths.textures;
         path += args.path;
 
         SL_DEBUG("loading texture: {}", path);

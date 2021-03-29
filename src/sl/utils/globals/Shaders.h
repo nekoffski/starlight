@@ -2,18 +2,14 @@
 
 #include <memory>
 
-#include "sl/asset/AssetLoader.hpp"
-#include "sl/graphics/Shader.h"
+#include "sl/graphics/fwd.h"
 
 namespace sl::utils::globals {
 
 struct Shaders {
-    explicit Shaders() {
-        defaultCubemapShader = asset::AssetLoader::loadLocalPath<graphics::Shader>("/cubemap.vert", "/cubemap.frag");
-		defaultModelShader = asset::AssetLoader::loadLocalPath<graphics::Shader>("/t.vert", "/t.frag");
-	}
+    explicit Shaders();
 
     std::shared_ptr<graphics::Shader> defaultCubemapShader;
-	std::shared_ptr<graphics::Shader> defaultModelShader;
+    std::shared_ptr<graphics::Shader> defaultModelShader;
 };
 }

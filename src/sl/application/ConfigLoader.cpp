@@ -39,6 +39,7 @@ utils::globals::Config::Paths ConfigLoader::processPaths(Json::Value& root) {
     paths.shaders = processPath("shaders");
     paths.models = processPath("models");
     paths.textures = processPath("textures");
+    paths.cubemaps = processPath("cubemaps");
 
     return paths;
 }
