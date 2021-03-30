@@ -1,11 +1,11 @@
-#include "sl/application/Entrypoint.h"
+#include "sl/app/Entrypoint.h"
 
 #include "EditorContext.hpp"
 
 using namespace sl;
 using namespace sl::scene;
 
-class StarlightEditor : public sl::application::Application {
+class StarlightEditor : public sl::app::Application {
 public:
     virtual void onStart() override {
         context = createContext<EditorContext>("EditorContext");

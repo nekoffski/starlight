@@ -6,7 +6,7 @@
 #include "sl/core/Json.h"
 #include "sl/utils/globals/Config.h"
 
-namespace sl::application {
+namespace sl::app {
 
 class ConfigLoader {
 public:

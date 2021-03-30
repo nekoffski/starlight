@@ -16,7 +16,7 @@
 #include "sl/platform/clock/StdClockImpl.h"
 #include "sl/utils/Globals.h"
 
-namespace sl::application {
+namespace sl::app {
 
 Entrypoint::Entrypoint(int argc, char** argv, std::unique_ptr<Application> application)
     : m_argc(argc)
@@ -43,6 +43,8 @@ int Entrypoint::start() {
         // TODO: load config
 
         auto profilerTimer = async::AsyncEngine::createTimer(ProfilerPrintInterval);
+
+        Application::initDefaultFactories();
 
         SL_INFO("Initializing and starting application.");
         m_application->init();

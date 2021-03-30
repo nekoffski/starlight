@@ -16,7 +16,7 @@ namespace sl::core {
 class Input;
 }
 
-namespace sl::application {
+namespace sl::app {
 
 class ApplicationContext : public xvent::EventListener {
     friend class Application;

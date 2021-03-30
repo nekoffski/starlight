@@ -3,7 +3,7 @@
 #include "sl/core/Logger.h"
 #include "sl/ecs/Entity.h"
 
-namespace sl::application {
+namespace sl::app {
 
 Serializer::Serializer(const std::string& path, const std::string& filename, std::shared_ptr<core::FileSystem> fileSystem)
     : m_path(path)

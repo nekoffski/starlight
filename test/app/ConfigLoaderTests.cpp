@@ -1,4 +1,4 @@
-#include "sl/application/ConfigLoader.h"
+#include "sl/app/ConfigLoader.h"
 
 #include <gtest/gtest.h>
 
@@ -6,7 +6,7 @@
 #include "sl/core/Errors.hpp"
 
 using namespace sl;
-using namespace sl::application;
+using namespace sl::app;
 using namespace sl::core;
 using namespace testing;
 

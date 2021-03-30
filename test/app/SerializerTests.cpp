@@ -3,7 +3,7 @@
 #include <jsoncpp/json/value.h>
 #include <memory>
 
-#include "sl/application/Serializer.h"
+#include "sl/app/Serializer.h"
 #include "sl/asset/AssetManager.h"
 #include "sl/core/Json.h"
 #include "sl/scene/Scene.h"
@@ -13,7 +13,7 @@
 using namespace testing;
 
 using namespace sl::core;
-using namespace sl::application;
+using namespace sl::app;
 using namespace sl::asset;
 using namespace sl::scene;
 

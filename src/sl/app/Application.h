@@ -9,7 +9,7 @@
 #include <xvent/EventEngine.h>
 #include <xvent/EventListener.h>
 
-#include "sl/application/ApplicationContext.h"
+#include "sl/app/ApplicationContext.h"
 #include "sl/core/Input.h"
 #include "sl/core/Window.h"
 #include "sl/graphics/GraphicsContext.h"
@@ -18,13 +18,15 @@
 #include "sl/gui/GuiApi.h"
 #include "sl/scene/SceneSystems.hpp"
 
-namespace sl::application {
+namespace sl::app {
 
 class Entrypoint;
 
 class Application {
 public:
     explicit Application();
+
+    static void initDefaultFactories();
 
     void forceStop();
     bool isRunning() const;

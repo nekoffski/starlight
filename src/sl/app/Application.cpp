@@ -23,9 +23,9 @@
 #include "sl/platform/Platform.h"
 #include "sl/utils/Globals.h"
 
-namespace sl::application {
+namespace sl::app {
 
-static void initFactories() {
+void Application::initDefaultFactories() {
     graphics::Image::factory = platform::createImageFactory();
 
     graphics::buffer::VertexArray::factory = platform::createVertexArrayFactory();
@@ -54,8 +54,6 @@ Application::Application()
 }
 
 void Application::init() {
-    initFactories();
-
     SL_INFO("Creating and initializing window instance.");
     auto windowSize = core::Window::Size { 1600, 900 };
     m_window = core::Window::factory->create(windowSize, "Starlight");

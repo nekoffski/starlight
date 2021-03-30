@@ -1,6 +1,6 @@
 #pragma once
 
-namespace sl::application {
+namespace sl::app {
 
 class Entrypoint;
 class Application;

@@ -12,7 +12,7 @@
 
 using namespace sl::core;
 
-namespace sl::application {
+namespace sl::app {
 
 Deserializer::Deserializer(asset::AssetManager& assetManager, std::shared_ptr<scene::Scene> scene)
     : m_assetManager(assetManager)

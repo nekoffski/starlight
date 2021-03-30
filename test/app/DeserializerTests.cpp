@@ -4,7 +4,7 @@
 #include <jsoncpp/json/value.h>
 #include <memory>
 
-#include "sl/application/Deserializer.h"
+#include "sl/app/Deserializer.h"
 #include "sl/asset/AssetManager.h"
 #include "sl/core/Json.h"
 #include "sl/core/Errors.hpp"
@@ -15,7 +15,7 @@
 using namespace testing;
 
 using namespace sl::core;
-using namespace sl::application;
+using namespace sl::app;
 using namespace sl::asset;
 using namespace sl::scene;
 

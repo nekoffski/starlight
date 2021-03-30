@@ -20,6 +20,6 @@ endfunction()
 
 sl_add_test(core)
 sl_add_test(math)
-sl_add_test(application)
+sl_add_test(app)
 sl_add_test(asset)
 sl_add_test(ecs)

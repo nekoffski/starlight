@@ -3,9 +3,9 @@
 #include "DebugConsole.hpp"
 #include "fonts/FontAwesome.h"
 #include "gui/EditorGui.h"
-#include "sl/application/ApplicationContext.h"
-#include "sl/application/Deserializer.h"
-#include "sl/application/Serializer.h"
+#include "sl/app/ApplicationContext.h"
+#include "sl/app/Deserializer.h"
+#include "sl/app/Serializer.h"
 #include "sl/asset/AssetLoader.hpp"
 #include "sl/asset/AssetManager.h"
 #include "sl/core/BaseError.hpp"
@@ -33,7 +33,7 @@ using namespace sl;
 using namespace sl::scene;
 using namespace sl::core;
 
-class EditorContext : public application::ApplicationContext {
+class EditorContext : public app::ApplicationContext {
 public:
     explicit EditorContext(const std::string& ident)
         : ApplicationContext(ident) {
@@ -174,7 +174,7 @@ public:
             }
 
             try {
-                using namespace sl::application;
+                using namespace sl::app;
 
                 if (event->is<SerializeSceneEvent>())
                     Serializer { ".", "scene" }.serialize(m_assetManager, m_scene);

@@ -2,7 +2,7 @@
 
 #include "sl/core/Errors.hpp"
 
-namespace sl::application {
+namespace sl::app {
 
 utils::globals::Config ConfigLoader::loadFromFile(const std::string& path, const core::FileSystem& fileSystem) && {
     if (not fileSystem.isFile(path))

@@ -5,7 +5,7 @@
 #include "sl/core/Json.h"
 #include "sl/scene/Scene.h"
 
-namespace sl::application {
+namespace sl::app {
 
 class Serializer {
 public:
