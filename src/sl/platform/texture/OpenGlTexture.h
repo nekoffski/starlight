@@ -1,10 +1,10 @@
 #pragma once
 
-#include "sl/graphics/Texture.h"
+#include "sl/gfx/Texture.h"
 
 namespace sl::platform::texture {
 
-class OpenGlTexture : public graphics::Texture {
+class OpenGlTexture : public gfx::Texture {
 public:
     explicit OpenGlTexture(const std::string&);
     explicit OpenGlTexture(unsigned int, unsigned int);
@@ -21,7 +21,7 @@ public:
         return m_h;
     }
 
-    std::shared_ptr<graphics::Image> getImage() {
+    std::shared_ptr<gfx::Image> getImage() {
         return m_textureImage;
     }
 
@@ -31,18 +31,18 @@ public:
 
 private:
     unsigned int m_textureId;
-    std::shared_ptr<graphics::Image> m_textureImage;
+    std::shared_ptr<gfx::Image> m_textureImage;
 
     unsigned int m_w;
     unsigned int m_h;
 };
 
-struct OpenGlTextureFactory : graphics::Texture::Factory {
-    std::shared_ptr<graphics::Texture> create(const std::string& path) override {
+struct OpenGlTextureFactory : gfx::Texture::Factory {
+    std::shared_ptr<gfx::Texture> create(const std::string& path) override {
         return std::make_shared<OpenGlTexture>(path);
     }
 
-    std::shared_ptr<graphics::Texture> create(unsigned int w, unsigned int h) override {
+    std::shared_ptr<gfx::Texture> create(unsigned int w, unsigned int h) override {
         return std::make_shared<OpenGlTexture>(w, h);
     }
 };

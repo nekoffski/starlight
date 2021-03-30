@@ -1,10 +1,10 @@
 #pragma once
 
-#include "sl/geometry/ModelLoaderImpl.h"
+#include "sl/geom/ModelLoaderImpl.h"
 
 #include <gmock/gmock.h>
 
-using namespace sl::geometry;
+using namespace sl::geom;
 
 struct ModelLoaderImplMock : public ModelLoaderImpl {
     struct Factory : public ModelLoaderImpl::Factory {

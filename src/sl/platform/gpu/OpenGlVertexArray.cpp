@@ -3,8 +3,8 @@
 #include <glad/glad.h>
 
 #include "sl/core/Logger.h"
-#include "sl/graphics/buffer/ElementBuffer.h"
-#include "sl/graphics/buffer/VertexBuffer.h"
+#include "sl/gfx/buffer/ElementBuffer.h"
+#include "sl/gfx/buffer/VertexBuffer.h"
 
 namespace sl::platform::gpu {
 
@@ -20,7 +20,7 @@ OpenGlVertexArray::~OpenGlVertexArray() {
         glDeleteBuffers(1, &m_bufferId);
 }
 
-void OpenGlVertexArray::addVertexBuffer(std::shared_ptr<graphics::buffer::VertexBuffer> vertexBuffer) {
+void OpenGlVertexArray::addVertexBuffer(std::shared_ptr<gfx::buffer::VertexBuffer> vertexBuffer) {
     this->bind();
     vertexBuffer->bind();
 
@@ -38,7 +38,7 @@ void OpenGlVertexArray::addVertexBuffer(std::shared_ptr<graphics::buffer::Vertex
     m_vertexBuffers.push_back(vertexBuffer);
 }
 
-void OpenGlVertexArray::addElementBuffer(std::shared_ptr<graphics::buffer::ElementBuffer> elementBuffer) {
+void OpenGlVertexArray::addElementBuffer(std::shared_ptr<gfx::buffer::ElementBuffer> elementBuffer) {
     this->bind();
     elementBuffer->bind();
 

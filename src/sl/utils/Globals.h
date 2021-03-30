@@ -23,7 +23,7 @@ struct Globals {
     globals::Flags flags;
 
     std::unique_ptr<globals::Shaders> shaders;
-    std::unique_ptr<globals::Geometry> geometry;
+    std::unique_ptr<globals::Geometry> geom;
 };
 
 }

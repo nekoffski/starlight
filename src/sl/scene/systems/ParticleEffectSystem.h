@@ -4,8 +4,8 @@
 
 #include "sl/async/AsyncEngine.hpp"
 #include "sl/ecs/ComponentView.hpp"
-#include "sl/graphics/fwd.h"
-#include "sl/physics/pfx/ParticleGenerator.h"
+#include "sl/gfx/fwd.h"
+#include "sl/physx/pfx/ParticleGenerator.h"
 #include "sl/platform/fwd.h"
 #include "sl/scene/components/ParticleEffectComponent.h"
 #include "sl/scene/components/TransformComponent.h"
@@ -16,14 +16,14 @@ class ParticleEffectSystem {
 public:
     explicit ParticleEffectSystem();
 
-    void update(ecs::ComponentView<components::ParticleEffectComponent>& pfxs, float deltaTime, std::shared_ptr<graphics::camera::Camera>);
+    void update(ecs::ComponentView<components::ParticleEffectComponent>& pfxs, float deltaTime, std::shared_ptr<gfx::camera::Camera>);
 
 private:
-    void updateParticleEffect(components::ParticleEffectComponent& pfx, float deltaTime, std::shared_ptr<graphics::camera::Camera>);
-    void updateParticle(physics::pfx::Particle& particle, float deltaTime);
+    void updateParticleEffect(components::ParticleEffectComponent& pfx, float deltaTime, std::shared_ptr<gfx::camera::Camera>);
+    void updateParticle(physx::pfx::Particle& particle, float deltaTime);
 
     std::shared_ptr<async::Timer> m_pfxTimer;
 
-    physics::pfx::ParticleGenerator m_particleGenerator;
+    physx::pfx::ParticleGenerator m_particleGenerator;
 };
 }

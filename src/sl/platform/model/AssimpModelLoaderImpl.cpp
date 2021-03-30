@@ -3,15 +3,15 @@
 #include "AssimpMeshProcessor.h"
 #include "sl/core/Logger.h"
 #include "sl/core/Errors.hpp"
-#include "sl/geometry/Model.h"
+#include "sl/geom/Model.h"
 
 namespace sl::platform::model {
 
-std::shared_ptr<geometry::Model> AssimpModelLoaderImpl::loadModel(const std::string& path) {
+std::shared_ptr<geom::Model> AssimpModelLoaderImpl::loadModel(const std::string& path) {
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenNormals);
 
-    auto model = std::make_shared<geometry::Model>();
+    auto model = std::make_shared<geom::Model>();
     model->path = path;
     model->directory = path.substr(0, path.find_last_of("/"));
 
@@ -26,7 +26,7 @@ std::shared_ptr<geometry::Model> AssimpModelLoaderImpl::loadModel(const std::str
     return model;
 }
 
-void AssimpModelLoaderImpl::processNode(aiNode* node, const aiScene* scene, AssimpMeshProcessor& meshProcessor, std::shared_ptr<geometry::Model>& model) {
+void AssimpModelLoaderImpl::processNode(aiNode* node, const aiScene* scene, AssimpMeshProcessor& meshProcessor, std::shared_ptr<geom::Model>& model) {
     for (int i = 0; i < node->mNumMeshes; ++i) {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
         model->meshes.push_back(meshProcessor.processMesh(mesh, scene, model->directory));

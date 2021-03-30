@@ -7,7 +7,7 @@ namespace sl::utils {
 
 void Globals::init() {
     shaders = std::make_unique<globals::Shaders>();
-    geometry = std::make_unique<globals::Geometry>();
+    geom = std::make_unique<globals::Geometry>();
 }
 
 Globals& Globals::instance() {

@@ -15,9 +15,9 @@
 #include "shader/OpenGlShader.h"
 #include "shader/OpenGlShaderCompilerImpl.h"
 #include "sl/core/Logger.h"
-#include "sl/graphics/GraphicsContext.h"
-#include "sl/graphics/ShaderCompilerImpl.h"
-#include "sl/graphics/buffer/ElementBuffer.h"
+#include "sl/gfx/GraphicsContext.h"
+#include "sl/gfx/ShaderCompilerImpl.h"
+#include "sl/gfx/buffer/ElementBuffer.h"
 #include "sl/platform/PlatformDetector.h"
 #include "texture/OpenGlCubemap.h"
 #include "texture/OpenGlTexture.h"
@@ -25,19 +25,19 @@
 
 namespace sl::platform {
 
-std::unique_ptr<graphics::RenderApi::Factory> createRenderApiFactory() {
+std::unique_ptr<gfx::RenderApi::Factory> createRenderApiFactory() {
     return std::make_unique<gpu::OpenGlRenderApiFactory>();
 }
 
-std::unique_ptr<geometry::ModelLoaderImpl::Factory> createModelLoaderImplFactory() {
+std::unique_ptr<geom::ModelLoaderImpl::Factory> createModelLoaderImplFactory() {
     return std::make_unique<model::AssimpModelLoaderImplFactory>();
 }
 
-std::unique_ptr<graphics::ShaderCompilerImpl::Factory> createShaderCompilerImplFactory() {
+std::unique_ptr<gfx::ShaderCompilerImpl::Factory> createShaderCompilerImplFactory() {
     return std::make_unique<shader::OpenGlShaderCompilerImplFactory>();
 }
 
-std::unique_ptr<graphics::GraphicsContext::Factory> createGraphicsContextFactory() {
+std::unique_ptr<gfx::GraphicsContext::Factory> createGraphicsContextFactory() {
     return std::make_unique<gpu::OpenGlGraphicsContextFactory>();
 }
 
@@ -53,35 +53,35 @@ std::unique_ptr<sl::gui::GuiApi::Factory> createGuiApiFactory() {
     return std::make_unique<sl::platform::gui::detail::ImGuiApiFactory>();
 }
 
-std::unique_ptr<graphics::Texture::Factory> createTextureFactory() {
+std::unique_ptr<gfx::Texture::Factory> createTextureFactory() {
     return std::make_unique<texture::OpenGlTextureFactory>();
 }
 
-std::unique_ptr<graphics::Cubemap::Factory> createCubemapFactory() {
+std::unique_ptr<gfx::Cubemap::Factory> createCubemapFactory() {
     return std::make_unique<texture::OpenGlCubemapFactory>();
 }
 
-std::unique_ptr<graphics::buffer::VertexArray::Factory> createVertexArrayFactory() {
+std::unique_ptr<gfx::buffer::VertexArray::Factory> createVertexArrayFactory() {
     return std::make_unique<gpu::OpenGlVertexArrayFactory>();
 }
 
-std::unique_ptr<graphics::buffer::ElementBuffer::Factory> createElementBufferFactory() {
+std::unique_ptr<gfx::buffer::ElementBuffer::Factory> createElementBufferFactory() {
     return std::make_unique<gpu::OpenGlElementBufferFactory>();
 }
 
-std::unique_ptr<graphics::buffer::VertexBuffer::Factory> createVertexBufferFactory() {
+std::unique_ptr<gfx::buffer::VertexBuffer::Factory> createVertexBufferFactory() {
     return std::make_unique<gpu::OpenGlVertexBufferFactory>();
 }
 
-std::unique_ptr<graphics::buffer::FrameBuffer::Factory> createFrameBufferFactory() {
+std::unique_ptr<gfx::buffer::FrameBuffer::Factory> createFrameBufferFactory() {
     return std::make_unique<gpu::OpenGlFrameBufferFactory>();
 }
 
-std::unique_ptr<graphics::Image::Factory> createImageFactory() {
+std::unique_ptr<gfx::Image::Factory> createImageFactory() {
     return std::make_unique<img::StbImageFactory>();
 }
 
-std::unique_ptr<graphics::Shader::Factory> createShaderFactory() {
+std::unique_ptr<gfx::Shader::Factory> createShaderFactory() {
     return std::make_unique<shader::OpenGlShaderFactory>();
 }
 }

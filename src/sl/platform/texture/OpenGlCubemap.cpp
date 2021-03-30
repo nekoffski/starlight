@@ -2,13 +2,13 @@
 
 #include "Utils.hpp"
 #include "sl/core/Errors.hpp"
-#include "sl/graphics/Image.h"
+#include "sl/gfx/Image.h"
 
 #include <glad/glad.h>
 
 namespace sl::platform::texture {
 
-OpenGlCubemap::OpenGlCubemap(const graphics::CubemapArgs& faces)
+OpenGlCubemap::OpenGlCubemap(const gfx::CubemapArgs& faces)
     : m_faces(faces)
     , m_cubemapId(0u) {
     glGenTextures(1, &m_cubemapId);
@@ -16,7 +16,7 @@ OpenGlCubemap::OpenGlCubemap(const graphics::CubemapArgs& faces)
 
     const auto facesLen = faces.size();
     for (int i = 0; i < facesLen; ++i) {
-        const auto img = graphics::Image::factory->create(faces[i]);
+        const auto img = gfx::Image::factory->create(faces[i]);
         const auto format = channelsToFormat.find(img->getChannels());
         if (format == channelsToFormat.end())
             throw core::TextureError{ core::ErrorCode::UnknownTextureFormat };

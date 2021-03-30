@@ -2,12 +2,12 @@
 
 #include "sl/asset/loaders/Loader.h"
 #include "sl/core/Logger.h"
-#include "sl/graphics/Cubemap.h"
+#include "sl/gfx/Cubemap.h"
 #include "sl/utils/Globals.h"
 
 namespace sl::asset::loaders {
 
-using sl::graphics::Cubemap;
+using sl::gfx::Cubemap;
 
 template <>
 struct LoaderArgs<Cubemap> {
@@ -47,7 +47,7 @@ struct Loader<Cubemap> {
             prefix += GLOBALS().config.paths.cubemaps;
 
 		SL_DEBUG("loading cubemap: \n {} - {}/{}/{}/{}/{}/{} ", prefix, args.right, args.left , args.top, args.bottom, args.front, args.back);
-		return graphics::Cubemap::factory->create({ 
+		return gfx::Cubemap::factory->create({ 
 			prefix + args.right, prefix + args.left, prefix + args.top, prefix + args.bottom, prefix + args.front, prefix + args.back });
         // clang-format on
     }

@@ -311,7 +311,7 @@ bool ImGuiApi::menuItem(const std::string& label) {
     return ImGui::MenuItem(label.c_str());
 }
 
-void ImGuiApi::setupGizmo(const graphics::ViewFrustum::Viewport& viewport) {
+void ImGuiApi::setupGizmo(const gfx::ViewFrustum::Viewport& viewport) {
     ImGuizmo::SetOrthographic(false);
     ImGuizmo::SetRect(viewport.beginX, 0, viewport.width, viewport.height);
 }

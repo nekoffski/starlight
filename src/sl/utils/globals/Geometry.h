@@ -1,7 +1,7 @@
 #pragma once
 
-#include "sl/geometry/Model.h"
-#include "sl/graphics/buffer/VertexArray.h"
+#include "sl/geom/Model.h"
+#include "sl/gfx/buffer/VertexArray.h"
 
 namespace sl::utils::globals {
 
@@ -9,8 +9,8 @@ class Geometry {
 public:
     explicit Geometry();
 
-    std::shared_ptr<graphics::buffer::VertexArray> squareVAO;
-    std::shared_ptr<geometry::Model> squareModel;
+    std::shared_ptr<gfx::buffer::VertexArray> squareVAO;
+    std::shared_ptr<geom::Model> squareModel;
 
 private:
     void initSquare();

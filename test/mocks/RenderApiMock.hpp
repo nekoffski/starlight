@@ -1,10 +1,10 @@
 #pragma once
 
-#include "sl/graphics/RenderApi.h"
+#include "sl/gfx/RenderApi.h"
 
 #include <gmock/gmock.h>
 
-using namespace sl::graphics;
+using namespace sl::gfx;
 
 struct RenderApiMock : public RenderApi {
     struct Factory : public RenderApi::Factory {

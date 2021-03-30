@@ -61,6 +61,6 @@ struct GuiApiMock : public GuiApi {
     MOCK_METHOD(bool, isPreviousWidgetClicked, (), (override));
     MOCK_METHOD(bool, colorPicker3, (const std::string&, math::Vec3&), (override));
     MOCK_METHOD(bool, button, (const std::string&, int xSize, int ySize), (override));
-    MOCK_METHOD(void, setupGizmo, (const graphics::ViewFrustum::Viewport&), (override));
+    MOCK_METHOD(void, setupGizmo, (const gfx::ViewFrustum::Viewport&), (override));
     MOCK_METHOD(bool, isUsingGizmo, (), (override));
 };

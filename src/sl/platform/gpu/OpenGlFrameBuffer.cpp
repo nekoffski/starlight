@@ -1,6 +1,6 @@
 #include "OpenGlFrameBuffer.h"
 
-#include "sl/graphics/Texture.h"
+#include "sl/gfx/Texture.h"
 
 #include <glad/glad.h>
 
@@ -24,7 +24,7 @@ void OpenGlFrameBuffer::unbind() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0u);
 }
 
-void OpenGlFrameBuffer::bindTexture(std::shared_ptr<sl::graphics::Texture> texture) {
+void OpenGlFrameBuffer::bindTexture(std::shared_ptr<sl::gfx::Texture> texture) {
     // TODO: make it configurable
     //    texture->bind();
     //	bind();

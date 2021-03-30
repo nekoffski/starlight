@@ -5,8 +5,8 @@
 #include "sl/core/Errors.hpp"
 #include "sl/core/Json.h"
 #include "sl/core/Logger.h"
-#include "sl/graphics/Cubemap.h"
-#include "sl/graphics/Shader.h"
+#include "sl/gfx/Cubemap.h"
+#include "sl/gfx/Shader.h"
 #include "sl/scene/components/ComponentsDeserializers.hpp"
 #include "sl/utils/Globals.h"
 
@@ -59,7 +59,7 @@ void Deserializer::deserializeAssets(Json::Value& assetsJson) {
         switch (static_cast<AssetType>(assetType)) {
         case AssetType::shader: {
             auto& paths = asset["paths"];
-            auto shader = asset::AssetLoader::loadGlobalPath<graphics::Shader>(
+            auto shader = asset::AssetLoader::loadGlobalPath<gfx::Shader>(
                 paths[0].asString(), paths[1].asString(), paths[2].asString());
             shader->setId(id);
             auto shaderAsset = std::make_shared<asset::ShaderAsset>(shader, name);
@@ -70,7 +70,7 @@ void Deserializer::deserializeAssets(Json::Value& assetsJson) {
 
         case AssetType::model: {
             auto path = asset["paths"][0].asString();
-            auto model = asset::AssetLoader::loadGlobalPath<geometry::Model>(path);
+            auto model = asset::AssetLoader::loadGlobalPath<geom::Model>(path);
             model->setId(id);
             auto modelAsset = std::make_shared<asset::ModelAsset>(model, name);
             m_assetManager.addAsset(modelAsset);
@@ -81,11 +81,11 @@ void Deserializer::deserializeAssets(Json::Value& assetsJson) {
         case AssetType::cubemap: {
             auto& paths = asset["paths"];
 
-            graphics::CubemapArgs faces;
+            gfx::CubemapArgs faces;
             for (int i = 0; i < faces.size(); ++i)
                 faces[i] = paths[i].asString();
 
-            auto cubemap = asset::AssetLoader::loadGlobalPath<graphics::Cubemap>(faces);
+            auto cubemap = asset::AssetLoader::loadGlobalPath<gfx::Cubemap>(faces);
             cubemap->setId(id);
             auto cubemapAsset = std::make_shared<asset::CubemapAsset>(cubemap, name);
             m_assetManager.addAsset(cubemapAsset);

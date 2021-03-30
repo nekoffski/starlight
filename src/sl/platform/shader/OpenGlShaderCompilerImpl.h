@@ -1,15 +1,15 @@
 #pragma once
 
-#include "sl/graphics/Shader.h"
-#include "sl/graphics/ShaderCompilerImpl.h"
+#include "sl/gfx/Shader.h"
+#include "sl/gfx/ShaderCompilerImpl.h"
 
 namespace sl::platform::shader {
 
 class OpenGlShader;
 
-class OpenGlShaderCompilerImpl : public graphics::ShaderCompilerImpl {
+class OpenGlShaderCompilerImpl : public gfx::ShaderCompilerImpl {
 public:
-    void compile(std::shared_ptr<graphics::Shader>& shader) override;
+    void compile(std::shared_ptr<gfx::Shader>& shader) override;
 
 private:
     void compileImpl(std::shared_ptr<OpenGlShader>);
@@ -18,8 +18,8 @@ private:
     inline static constexpr int infoBufferSize{ 1024 };
 };
 
-struct OpenGlShaderCompilerImplFactory : graphics::ShaderCompilerImpl::Factory {
-    std::unique_ptr<graphics::ShaderCompilerImpl> create() override {
+struct OpenGlShaderCompilerImplFactory : gfx::ShaderCompilerImpl::Factory {
+    std::unique_ptr<gfx::ShaderCompilerImpl> create() override {
         return std::make_unique<OpenGlShaderCompilerImpl>();
     }
 };

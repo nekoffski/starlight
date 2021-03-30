@@ -6,13 +6,13 @@
 #include "sl/core/Json.h"
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
-#include "sl/graphics/Shader.h"
-#include "sl/graphics/data/ModelData.h"
+#include "sl/gfx/Shader.h"
+#include "sl/gfx/data/ModelData.h"
 
 namespace sl::scene::components {
 
 struct ModelComponent : ecs::Component {
-    explicit ModelComponent(std::shared_ptr<geometry::Model> model)
+    explicit ModelComponent(std::shared_ptr<geom::Model> model)
         : modelData(model) {
         modelData.positions.push_back(math::Vec4(0.0f));
     }
@@ -27,6 +27,6 @@ struct ModelComponent : ecs::Component {
             assetManager.getAssetById(modelId)->as<asset::ModelAsset>()->model);
     }
 
-    graphics::data::ModelData modelData;
+    gfx::data::ModelData modelData;
 };
 }

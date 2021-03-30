@@ -12,9 +12,9 @@
 #include "sl/app/ApplicationContext.h"
 #include "sl/core/Input.h"
 #include "sl/core/Window.h"
-#include "sl/graphics/GraphicsContext.h"
-#include "sl/graphics/LowLevelRenderer.h"
-#include "sl/graphics/Renderer.hpp"
+#include "sl/gfx/GraphicsContext.h"
+#include "sl/gfx/LowLevelRenderer.h"
+#include "sl/gfx/Renderer.hpp"
 #include "sl/gui/GuiApi.h"
 #include "sl/scene/SceneSystems.hpp"
 
@@ -54,7 +54,7 @@ protected:
         auto context = std::make_shared<T>(ident);
 
         context->m_guiApiProxy = std::make_shared<gui::GuiApiProxy>(m_guiApi);
-        context->m_lowLevelRendererProxy = std::make_shared<graphics::LowLevelRendererProxy>(m_lowLevelRenderer);
+        context->m_lowLevelRendererProxy = std::make_shared<gfx::LowLevelRendererProxy>(m_lowLevelRenderer);
         context->m_windowProxy = std::make_shared<core::WindowProxy>(m_window);
 
         context->onInit();
@@ -67,12 +67,12 @@ protected:
 private:
     std::shared_ptr<core::Window> m_window;
     std::shared_ptr<core::Input> m_input;
-    std::shared_ptr<graphics::LowLevelRenderer> m_lowLevelRenderer;
+    std::shared_ptr<gfx::LowLevelRenderer> m_lowLevelRenderer;
     std::shared_ptr<gui::GuiApi> m_guiApi;
-    std::shared_ptr<graphics::GraphicsContext> m_graphicsContext;
+    std::shared_ptr<gfx::GraphicsContext> m_gfxContext;
     std::shared_ptr<ApplicationContext> m_context;
     std::shared_ptr<scene::SceneSystems> m_sceneSystems;
-    std::shared_ptr<graphics::Renderer> m_renderer;
+    std::shared_ptr<gfx::Renderer> m_renderer;
 
     xvent::EventEngine m_eventEngine;
     std::shared_ptr<xvent::EventEmitter> m_eventEmitter;

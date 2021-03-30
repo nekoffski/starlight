@@ -1,18 +1,18 @@
 #include "AssimpMeshProcessor.h"
 
 #include "sl/core/Logger.h"
-#include "sl/geometry/Mesh.h"
-#include "sl/graphics/Texture.h"
-#include "sl/graphics/buffer/ElementBuffer.h"
-#include "sl/graphics/buffer/VertexArray.h"
-#include "sl/graphics/buffer/VertexBuffer.h"
+#include "sl/geom/Mesh.h"
+#include "sl/gfx/Texture.h"
+#include "sl/gfx/buffer/ElementBuffer.h"
+#include "sl/gfx/buffer/VertexArray.h"
+#include "sl/gfx/buffer/VertexBuffer.h"
 
 namespace sl::platform::model {
 
-using geometry::Vertex;
+using geom::Vertex;
 
-std::shared_ptr<geometry::Mesh> AssimpMeshProcessor::processMesh(aiMesh* assimpMesh, const aiScene* scene, const std::string& directory) {
-    auto mesh = std::make_shared<geometry::Mesh>();
+std::shared_ptr<geom::Mesh> AssimpMeshProcessor::processMesh(aiMesh* assimpMesh, const aiScene* scene, const std::string& directory) {
+    auto mesh = std::make_shared<geom::Mesh>();
 
     mesh->vertices = loadVertices(assimpMesh);
     mesh->indices = loadIndices(assimpMesh);
@@ -22,10 +22,10 @@ std::shared_ptr<geometry::Mesh> AssimpMeshProcessor::processMesh(aiMesh* assimpM
     return mesh;
 }
 
-void AssimpMeshProcessor::initVertexArray(std::shared_ptr<geometry::Mesh>& mesh) {
-    auto vao = graphics::buffer::VertexArray::factory->create();
-    auto vbo = graphics::buffer::VertexBuffer::factory->create(&mesh->vertices[0], mesh->vertices.size() * sizeof(Vertex), mesh->vertices.size());
-    auto ebo = graphics::buffer::ElementBuffer::factory->create(&mesh->indices[0], mesh->indices.size() * sizeof(unsigned), mesh->indices.size());
+void AssimpMeshProcessor::initVertexArray(std::shared_ptr<geom::Mesh>& mesh) {
+    auto vao = gfx::buffer::VertexArray::factory->create();
+    auto vbo = gfx::buffer::VertexBuffer::factory->create(&mesh->vertices[0], mesh->vertices.size() * sizeof(Vertex), mesh->vertices.size());
+    auto ebo = gfx::buffer::ElementBuffer::factory->create(&mesh->indices[0], mesh->indices.size() * sizeof(unsigned), mesh->indices.size());
 
     // vertices
     vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
@@ -44,8 +44,8 @@ void AssimpMeshProcessor::initVertexArray(std::shared_ptr<geometry::Mesh>& mesh)
     mesh->vertexArray = vao;
 }
 
-std::vector<std::shared_ptr<sl::graphics::Texture>> AssimpMeshProcessor::loadTextures(aiMaterial* material, const std::string& directory) {
-    std::vector<std::shared_ptr<sl::graphics::Texture>> textures;
+std::vector<std::shared_ptr<sl::gfx::Texture>> AssimpMeshProcessor::loadTextures(aiMaterial* material, const std::string& directory) {
+    std::vector<std::shared_ptr<sl::gfx::Texture>> textures;
 
     auto diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse", directory);
     auto specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular", directory);
@@ -71,7 +71,7 @@ std::vector<unsigned> AssimpMeshProcessor::loadIndices(aiMesh* assimpMesh) {
     return indices;
 }
 
-std::vector<geometry::Vertex> AssimpMeshProcessor::loadVertices(aiMesh* assimpMesh) {
+std::vector<geom::Vertex> AssimpMeshProcessor::loadVertices(aiMesh* assimpMesh) {
     std::vector<Vertex> vertices;
 
     for (unsigned i = 0; i < assimpMesh->mNumVertices; ++i) {
@@ -114,15 +114,15 @@ std::vector<geometry::Vertex> AssimpMeshProcessor::loadVertices(aiMesh* assimpMe
     return vertices;
 }
 
-std::vector<std::shared_ptr<sl::graphics::Texture>>
+std::vector<std::shared_ptr<sl::gfx::Texture>>
 AssimpMeshProcessor::loadMaterialTextures(aiMaterial* material, aiTextureType textureType, const std::string& typeName, const std::string& directory) {
-    std::vector<std::shared_ptr<sl::graphics::Texture>> textures;
+    std::vector<std::shared_ptr<sl::gfx::Texture>> textures;
     for (unsigned i = 0; i < material->GetTextureCount(textureType); ++i) {
         aiString str;
         material->GetTexture(textureType, i, &str);
 
         // TODO: OPTIMIZE, store texture in models as most of mesh reuse them!
-        textures.push_back(graphics::Texture::factory->create(directory + "/" + str.C_Str()));
+        textures.push_back(gfx::Texture::factory->create(directory + "/" + str.C_Str()));
     }
     return textures;
 }

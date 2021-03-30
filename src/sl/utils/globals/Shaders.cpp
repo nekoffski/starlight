@@ -7,8 +7,8 @@
 namespace sl::utils::globals {
 
 Shaders::Shaders() {
-    defaultCubemapShader = asset::AssetLoader::loadLocalPath<graphics::Shader>("/cubemap.vert", "/cubemap.frag");
-    defaultModelShader = asset::AssetLoader::loadLocalPath<graphics::Shader>("/t.vert", "/t.frag");
+    defaultCubemapShader = asset::AssetLoader::loadLocalPath<gfx::Shader>("/cubemap.vert", "/cubemap.frag");
+    defaultModelShader = asset::AssetLoader::loadLocalPath<gfx::Shader>("/t.vert", "/t.frag");
 }
 
 }

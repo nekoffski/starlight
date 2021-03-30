@@ -6,6 +6,6 @@ class Shader;
 class ShaderCompiler;
 }
 
-namespace sl::graphics {
+namespace sl::gfx {
 	class Shader;
 }

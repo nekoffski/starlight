@@ -7,7 +7,7 @@
 #include "Skybox.h"
 #include "sl/ecs/Registry.h"
 #include "sl/ecs/fwd.h"
-#include "sl/graphics/camera/Camera.h"
+#include "sl/gfx/camera/Camera.h"
 
 namespace sl::scene {
 struct Scene {
@@ -21,7 +21,7 @@ struct Scene {
         return ecsRegistry.getEntitiesCount();
     }
 
-    std::shared_ptr<graphics::camera::Camera> camera;
+    std::shared_ptr<gfx::camera::Camera> camera;
     ecs::Registry ecsRegistry;
     std::shared_ptr<Skybox> skybox;
 };

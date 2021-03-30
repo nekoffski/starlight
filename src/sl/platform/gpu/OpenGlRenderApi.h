@@ -1,10 +1,10 @@
 #pragma once
 
-#include "sl/graphics/RenderApi.h"
+#include "sl/gfx/RenderApi.h"
 
 namespace sl::platform::gpu {
 
-class OpenGlRenderApi : public graphics::RenderApi {
+class OpenGlRenderApi : public gfx::RenderApi {
 public:
     void drawArrays(unsigned, unsigned, unsigned) override;
     void drawElements(unsigned, unsigned, unsigned) override;
@@ -21,8 +21,8 @@ public:
     void disable(unsigned) override;
 };
 
-struct OpenGlRenderApiFactory : graphics::RenderApi::Factory {
-    std::unique_ptr<graphics::RenderApi> create() override {
+struct OpenGlRenderApiFactory : gfx::RenderApi::Factory {
+    std::unique_ptr<gfx::RenderApi> create() override {
         return std::make_unique<OpenGlRenderApi>();
     }
 };

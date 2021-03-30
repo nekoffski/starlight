@@ -1,6 +1,6 @@
 #pragma once
 
-namespace sl::graphics {
+namespace sl::gfx {
 
 class FrameBuffer;
 class ElementBuffer;

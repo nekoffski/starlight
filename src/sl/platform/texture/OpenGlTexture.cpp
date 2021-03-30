@@ -10,7 +10,7 @@ namespace sl::platform::texture {
 
 OpenGlTexture::OpenGlTexture(const std::string& path)
     : m_textureId(0u)
-    , m_textureImage(graphics::Image::factory->create(path)) {
+    , m_textureImage(gfx::Image::factory->create(path)) {
 
     glGenTextures(1, &m_textureId);
     glBindTexture(GL_TEXTURE_2D, m_textureId);

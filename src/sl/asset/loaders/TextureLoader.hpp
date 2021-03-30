@@ -3,12 +3,12 @@
 #include "sl/asset/loaders/Loader.h"
 
 #include "sl/core/Logger.h"
-#include "sl/graphics/Texture.h"
+#include "sl/gfx/Texture.h"
 #include "sl/utils/Globals.h"
 
 namespace sl::asset::loaders {
 
-using sl::graphics::Texture;
+using sl::gfx::Texture;
 
 template <>
 struct LoaderArgs<Texture> {
@@ -24,7 +24,7 @@ struct Loader<Texture> {
         path += args.path;
 
         SL_DEBUG("loading texture: {}", path);
-        return graphics::Texture::factory->create(path);
+        return gfx::Texture::factory->create(path);
     }
 };
 }

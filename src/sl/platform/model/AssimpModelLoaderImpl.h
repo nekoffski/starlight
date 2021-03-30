@@ -1,28 +1,28 @@
 #pragma once
 
-#include "sl/geometry/ModelLoaderImpl.h"
+#include "sl/geom/ModelLoaderImpl.h"
 
 class aiNode;
 class aiScene;
 
-namespace sl::geometry {
+namespace sl::geom {
 class Model;
 }
 
 namespace sl::platform::model {
 class AssimpMeshProcessor;
 
-class AssimpModelLoaderImpl : public geometry::ModelLoaderImpl {
+class AssimpModelLoaderImpl : public geom::ModelLoaderImpl {
 
 public:
-    std::shared_ptr<geometry::Model> loadModel(const std::string&) override;
+    std::shared_ptr<geom::Model> loadModel(const std::string&) override;
 
 private:
-    void processNode(aiNode*, const aiScene*, AssimpMeshProcessor&, std::shared_ptr<geometry::Model>&);
+    void processNode(aiNode*, const aiScene*, AssimpMeshProcessor&, std::shared_ptr<geom::Model>&);
 };
 
-struct AssimpModelLoaderImplFactory : geometry::ModelLoaderImpl::Factory {
-    std::unique_ptr<geometry::ModelLoaderImpl> create() override {
+struct AssimpModelLoaderImplFactory : geom::ModelLoaderImpl::Factory {
+    std::unique_ptr<geom::ModelLoaderImpl> create() override {
         return std::make_unique<AssimpModelLoaderImpl>();
     }
 };

@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "sl/ecs/Entity.h"
-#include "sl/graphics/Cubemap.h"
+#include "sl/gfx/Cubemap.h"
 #include "sl/gui/GuiApi.h"
 
 #include "Widget.h"
@@ -25,6 +25,6 @@ private:
     void addDirectionalLight(bool load, sl::gui::GuiApi& gui);
     void addParticleEffect(bool load, sl::gui::GuiApi& gui);
 
-    std::weak_ptr<sl::graphics::Cubemap> m_selectedCubemap;
+    std::weak_ptr<sl::gfx::Cubemap> m_selectedCubemap;
 };
 }

@@ -17,12 +17,12 @@ using namespace sl::core;
 
 namespace sl::platform::shader {
 
-void OpenGlShaderCompilerImpl::compile(std::shared_ptr<graphics::Shader>& shader) {
+void OpenGlShaderCompilerImpl::compile(std::shared_ptr<gfx::Shader>& shader) {
     compileImpl(std::dynamic_pointer_cast<OpenGlShader>(shader));
 }
 
 void OpenGlShaderCompilerImpl::compileImpl(std::shared_ptr<OpenGlShader> shader) {
-    SL_DEBUG("compiling shader: \n{},\n{},\n{}", shader->m_fragmentPath, shader->m_vertexPath, shader->m_geometryPath);
+    SL_DEBUG("compiling shader: \n{},\n{},\n{}", shader->m_fragmentPath, shader->m_vertexPath, shader->m_geomPath);
 
     GLuint& _shader_program = shader->m_shaderProgram;
     _shader_program = glCreateProgram();

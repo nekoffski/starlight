@@ -29,7 +29,7 @@ OpenGlGraphicsContext::OpenGlGraphicsContext(void* windowHandle)
     glDebugMessageCallback(messageCallback, 0);
 }
 
-void OpenGlGraphicsContext::setViewport(graphics::ViewFrustum::Viewport viewport) {
+void OpenGlGraphicsContext::setViewport(gfx::ViewFrustum::Viewport viewport) {
     glViewport(viewport.beginX, viewport.beginY, viewport.width, viewport.height);
 }
 
@@ -42,4 +42,4 @@ void OpenGlGraphicsContext::clearBuffers(unsigned buffersToClear) {
     glClear(buffersToClear);
 }
 
-} // namespace sl::graphics
+} // namespace sl::gfx

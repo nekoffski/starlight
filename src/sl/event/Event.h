@@ -7,7 +7,7 @@
 #include "Categories.h"
 #include "Util.h"
 
-#include "sl/graphics/Cubemap.h"
+#include "sl/gfx/Cubemap.h"
 #include "sl/math/Vector.hpp"
 
 namespace sl::event {
@@ -20,11 +20,11 @@ DECLARE_EVENT(AddEntityEvent, EditorCategory) {
 };
 
 DECLARE_EVENT(SetSkyboxEvent, EditorCategory) {
-    SetSkyboxEvent(std::shared_ptr<sl::graphics::Cubemap> cubemap)
+    SetSkyboxEvent(std::shared_ptr<sl::gfx::Cubemap> cubemap)
         : cubemap(cubemap) {
     }
 
-    std::shared_ptr<sl::graphics::Cubemap> cubemap;
+    std::shared_ptr<sl::gfx::Cubemap> cubemap;
 };
 
 DECLARE_EVENT(SerializeSceneEvent, EditorCategory) {};

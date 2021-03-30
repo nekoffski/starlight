@@ -1,10 +1,10 @@
 #pragma once
 
-#include "sl/graphics/ShaderCompilerImpl.h"
+#include "sl/gfx/ShaderCompilerImpl.h"
 
 #include <gmock/gmock.h>
 
-using namespace sl::graphics;
+using namespace sl::gfx;
 
 struct ShaderCompilerImplMock : public ShaderCompilerImpl {
     struct Factory : public ShaderCompilerImpl::Factory {

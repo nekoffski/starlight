@@ -80,7 +80,7 @@ public:
 
     bool button(const std::string&, int xSize, int ySize) override;
 
-    void setupGizmo(const graphics::ViewFrustum::Viewport&) override;
+    void setupGizmo(const gfx::ViewFrustum::Viewport&) override;
     bool isUsingGizmo() override;
 };
 

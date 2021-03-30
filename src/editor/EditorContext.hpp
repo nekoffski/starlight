@@ -15,9 +15,9 @@
 #include "sl/ecs/Entity.h"
 #include "sl/event/Categories.h"
 #include "sl/event/Event.h"
-#include "sl/graphics/ViewFrustum.h"
-#include "sl/graphics/camera/EulerCamera.h"
-#include "sl/graphics/camera/FPSCamera.h"
+#include "sl/gfx/ViewFrustum.h"
+#include "sl/gfx/camera/EulerCamera.h"
+#include "sl/gfx/camera/FPSCamera.h"
 #include "sl/gui/ErrorDialog.hpp"
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/Utils.hpp"
@@ -42,8 +42,8 @@ public:
     void onInit() override {
         auto [windowWidth, windowHeight] = m_windowProxy->getSize();
 
-        auto viewFrustum = graphics::ViewFrustum { windowWidth, windowHeight };
-        m_activeCamera = std::make_shared<graphics::camera::EulerCamera>(viewFrustum, math::Vec3(0.0f), 1.0f, 8.0f);
+        auto viewFrustum = gfx::ViewFrustum { windowWidth, windowHeight };
+        m_activeCamera = std::make_shared<gfx::camera::EulerCamera>(viewFrustum, math::Vec3(0.0f), 1.0f, 8.0f);
         m_scene = scene::Scene::create();
 
         // TODO: remove!
@@ -82,7 +82,7 @@ public:
         sceneSystems.pfxSystem.update(pfxs, deltaTime, m_scene->camera);
     }
 
-    void render(graphics::Renderer& renderer) override {
+    void render(gfx::Renderer& renderer) override {
         const auto& skybox = m_scene->skybox;
 
         if (skybox)
@@ -151,7 +151,7 @@ public:
                 editor::gui::GuiProperties guiProperties { width, height };
                 m_editorGui->sharedState->guiProperties = guiProperties;
 
-                graphics::ViewFrustum::Viewport newViewport {
+                gfx::ViewFrustum::Viewport newViewport {
                     width - guiProperties.scenePanelProperties.size.x - guiProperties.rightPanelProperties.size.x,
                     height - guiProperties.bottomPanelProperties.size.y,
                     guiProperties.scenePanelProperties.size.x,
@@ -168,7 +168,7 @@ public:
 
             if (event->is<ChangeSceneCenterEvent>()) {
                 auto& newCenter = event->as<ChangeSceneCenterEvent>()->center;
-                auto sceneCamera = std::dynamic_pointer_cast<sl::graphics::camera::EulerCamera>(m_activeCamera);
+                auto sceneCamera = std::dynamic_pointer_cast<sl::gfx::camera::EulerCamera>(m_activeCamera);
                 if (sceneCamera)
                     sceneCamera->setCenter(newCenter);
             }
@@ -199,7 +199,7 @@ private:
     sl::asset::AssetManager m_assetManager;
 
     std::shared_ptr<editor::gui::EditorGui> m_editorGui;
-    std::shared_ptr<graphics::camera::UserControllableCamera> m_activeCamera;
+    std::shared_ptr<gfx::camera::UserControllableCamera> m_activeCamera;
     std::shared_ptr<scene::Scene> m_scene;
 
     sl::gui::ErrorDialog m_errorDialog;

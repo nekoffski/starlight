@@ -1,5 +1,5 @@
 #pragma once
-#include "sl/graphics/Image.h"
+#include "sl/gfx/Image.h"
 
 #include <string>
 
@@ -10,7 +10,7 @@
 
 namespace sl::platform::img {
 
-class StbImage : public graphics::Image {
+class StbImage : public gfx::Image {
 public:
     StbImage(const std::string& path, int desiredChannels = 0)
         : m_data(stbi_load(path.c_str(), &m_imageSize.width, &m_imageSize.height, &m_channels, desiredChannels)) {
@@ -30,7 +30,7 @@ public:
         return m_data;
     }
 
-    graphics::ImageSize getSize() override {
+    gfx::ImageSize getSize() override {
         return m_imageSize;
     }
 
@@ -41,11 +41,11 @@ public:
 private:
     unsigned char* m_data{ nullptr };
     int m_channels;
-    graphics::ImageSize m_imageSize;
+    gfx::ImageSize m_imageSize;
 };
 
-struct StbImageFactory : graphics::Image::Factory {
-    std::shared_ptr<graphics::Image> create(const std::string& path, int desiredChannels = 0) {
+struct StbImageFactory : gfx::Image::Factory {
+    std::shared_ptr<gfx::Image> create(const std::string& path, int desiredChannels = 0) {
         return std::make_shared<StbImage>(path, desiredChannels);
     }
 };

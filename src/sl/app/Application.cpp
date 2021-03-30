@@ -5,20 +5,20 @@
 #include "sl/event/Categories.h"
 #include "sl/event/Emitter.hpp"
 #include "sl/event/Event.h"
-#include "sl/geometry/ModelLoader.hpp"
-#include "sl/geometry/ModelLoaderImpl.h"
-#include "sl/graphics/Cubemap.h"
-#include "sl/graphics/GraphicsContext.h"
-#include "sl/graphics/Image.h"
-#include "sl/graphics/RenderApi.h"
-#include "sl/graphics/Renderer.hpp"
-#include "sl/graphics/ShaderCompiler.hpp"
-#include "sl/graphics/ShaderCompilerImpl.h"
-#include "sl/graphics/ViewFrustum.h"
-#include "sl/graphics/buffer/ElementBuffer.h"
-#include "sl/graphics/buffer/FrameBuffer.h"
-#include "sl/graphics/buffer/VertexArray.h"
-#include "sl/graphics/buffer/VertexBuffer.h"
+#include "sl/geom/ModelLoader.hpp"
+#include "sl/geom/ModelLoaderImpl.h"
+#include "sl/gfx/Cubemap.h"
+#include "sl/gfx/GraphicsContext.h"
+#include "sl/gfx/Image.h"
+#include "sl/gfx/RenderApi.h"
+#include "sl/gfx/Renderer.hpp"
+#include "sl/gfx/ShaderCompiler.hpp"
+#include "sl/gfx/ShaderCompilerImpl.h"
+#include "sl/gfx/ViewFrustum.h"
+#include "sl/gfx/buffer/ElementBuffer.h"
+#include "sl/gfx/buffer/FrameBuffer.h"
+#include "sl/gfx/buffer/VertexArray.h"
+#include "sl/gfx/buffer/VertexBuffer.h"
 #include "sl/gui/GuiApi.h"
 #include "sl/platform/Platform.h"
 #include "sl/utils/Globals.h"
@@ -26,26 +26,26 @@
 namespace sl::app {
 
 void Application::initDefaultFactories() {
-    graphics::Image::factory = platform::createImageFactory();
+    gfx::Image::factory = platform::createImageFactory();
 
-    graphics::buffer::VertexArray::factory = platform::createVertexArrayFactory();
-    graphics::buffer::VertexBuffer::factory = platform::createVertexBufferFactory();
-    graphics::buffer::FrameBuffer::factory = platform::createFrameBufferFactory();
-    graphics::buffer::ElementBuffer::factory = platform::createElementBufferFactory();
+    gfx::buffer::VertexArray::factory = platform::createVertexArrayFactory();
+    gfx::buffer::VertexBuffer::factory = platform::createVertexBufferFactory();
+    gfx::buffer::FrameBuffer::factory = platform::createFrameBufferFactory();
+    gfx::buffer::ElementBuffer::factory = platform::createElementBufferFactory();
 
-    graphics::Texture::factory = platform::createTextureFactory();
-    graphics::Cubemap::factory = platform::createCubemapFactory();
-    graphics::Shader::factory = platform::createShaderFactory();
-    graphics::ShaderCompilerImpl::factory = platform::createShaderCompilerImplFactory();
-    graphics::GraphicsContext::factory = platform::createGraphicsContextFactory();
-    graphics::RenderApi::factory = platform::createRenderApiFactory();
+    gfx::Texture::factory = platform::createTextureFactory();
+    gfx::Cubemap::factory = platform::createCubemapFactory();
+    gfx::Shader::factory = platform::createShaderFactory();
+    gfx::ShaderCompilerImpl::factory = platform::createShaderCompilerImplFactory();
+    gfx::GraphicsContext::factory = platform::createGraphicsContextFactory();
+    gfx::RenderApi::factory = platform::createRenderApiFactory();
 
     core::Window::factory = platform::createWindowFactory();
     core::Input::factory = platform::createInputFactory();
 
     gui::GuiApi::factory = platform::createGuiApiFactory();
 
-    geometry::ModelLoaderImpl::factory = platform::createModelLoaderImplFactory();
+    geom::ModelLoaderImpl::factory = platform::createModelLoaderImplFactory();
 }
 
 Application::Application()
@@ -68,29 +68,29 @@ void Application::init() {
     SL_INFO("Creating input instance.");
     m_input = core::Input::factory->create(windowHandle);
 
-    SL_INFO("Creating graphics context instance.");
-    m_graphicsContext = graphics::GraphicsContext::factory->create(windowHandle);
+    SL_INFO("Creating gfx context instance.");
+    m_gfxContext = gfx::GraphicsContext::factory->create(windowHandle);
 
-    auto viewport = graphics::ViewFrustum::Viewport { windowSize.width, windowSize.height };
+    auto viewport = gfx::ViewFrustum::Viewport { windowSize.width, windowSize.height };
 
     SL_INFO("Creating low level renderer instance.");
-    m_lowLevelRenderer = std::make_shared<graphics::LowLevelRenderer>(m_graphicsContext,
-        graphics::RenderApi::factory->create(), viewport);
+    m_lowLevelRenderer = std::make_shared<gfx::LowLevelRenderer>(m_gfxContext,
+        gfx::RenderApi::factory->create(), viewport);
 
     SL_INFO("Creating GUI API instance.");
     m_guiApi = gui::GuiApi::factory->create(windowHandle);
 
     SL_INFO("Creating model loader impl instance.");
-    geometry::ModelLoader::impl = geometry::ModelLoaderImpl::factory->create();
+    geom::ModelLoader::impl = geom::ModelLoaderImpl::factory->create();
 
     SL_INFO("Creating shader compiler impl instance.");
-    graphics::ShaderCompiler::impl = graphics::ShaderCompilerImpl::factory->create();
+    gfx::ShaderCompiler::impl = gfx::ShaderCompilerImpl::factory->create();
 
     SL_INFO("Initializing global utils.");
     GLOBALS().init();
 
     SL_INFO("Creating renderer instance.");
-    m_renderer = std::make_shared<graphics::Renderer>(m_lowLevelRenderer);
+    m_renderer = std::make_shared<gfx::Renderer>(m_lowLevelRenderer);
 
     SL_INFO("Creating scene systems instance");
     m_sceneSystems = std::make_shared<scene::SceneSystems>();

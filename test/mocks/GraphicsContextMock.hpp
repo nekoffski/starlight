@@ -1,10 +1,10 @@
 #pragma once
 
-#include "sl/graphics/GraphicsContext.h"
+#include "sl/gfx/GraphicsContext.h"
 
 #include <gmock/gmock.h>
 
-using namespace sl::graphics;
+using namespace sl::gfx;
 
 struct GraphicsContextMock : public GraphicsContext {
     struct Factory : public GraphicsContext::Factory {

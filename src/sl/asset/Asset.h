@@ -3,9 +3,9 @@
 #include <memory>
 #include <string>
 
-#include "sl/geometry/Model.h"
-#include "sl/graphics/Cubemap.h"
-#include "sl/graphics/Shader.h"
+#include "sl/geom/Model.h"
+#include "sl/gfx/Cubemap.h"
+#include "sl/gfx/Shader.h"
 
 namespace sl::asset {
 
@@ -43,7 +43,7 @@ struct Asset : public std::enable_shared_from_this<Asset> {
 struct ShaderAsset : public Asset {
     SL_ASSET(AssetType::shader);
 
-    explicit ShaderAsset(std::shared_ptr<sl::graphics::Shader> shader, const std::string& name)
+    explicit ShaderAsset(std::shared_ptr<sl::gfx::Shader> shader, const std::string& name)
         : Asset(name)
         , shader(shader) {}
 
@@ -59,13 +59,13 @@ struct ShaderAsset : public Asset {
         };
     }
 
-    std::shared_ptr<sl::graphics::Shader> shader;
+    std::shared_ptr<sl::gfx::Shader> shader;
 };
 
 struct CubemapAsset : public Asset {
     SL_ASSET(AssetType::cubemap);
 
-    explicit CubemapAsset(std::shared_ptr<sl::graphics::Cubemap> cubemap, const std::string& name)
+    explicit CubemapAsset(std::shared_ptr<sl::gfx::Cubemap> cubemap, const std::string& name)
         : Asset(name)
         , cubemap(cubemap) {}
 
@@ -78,13 +78,13 @@ struct CubemapAsset : public Asset {
         return std::vector<std::string>{ faces.begin(), faces.end() };
     }
 
-    std::shared_ptr<sl::graphics::Cubemap> cubemap;
+    std::shared_ptr<sl::gfx::Cubemap> cubemap;
 };
 
 struct ModelAsset : public Asset {
     SL_ASSET(AssetType::model);
 
-    explicit ModelAsset(std::shared_ptr<sl::geometry::Model> model, const std::string& name)
+    explicit ModelAsset(std::shared_ptr<sl::geom::Model> model, const std::string& name)
         : Asset(name)
         , model(model) {}
 
@@ -96,6 +96,6 @@ struct ModelAsset : public Asset {
         return { model->path };
     }
 
-    std::shared_ptr<sl::geometry::Model> model;
+    std::shared_ptr<sl::geom::Model> model;
 };
 }
