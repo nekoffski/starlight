@@ -9,6 +9,8 @@ using namespace sl::gfx;
 struct RenderApiMock : public RenderApi {
     struct Factory : public RenderApi::Factory {
         MOCK_METHOD(std::unique_ptr<RenderApi>, create, (), (override));
+
+        inline static Factory* instance = nullptr;
     };
 
     MOCK_METHOD(void, drawArrays, (unsigned, unsigned, unsigned), (override));

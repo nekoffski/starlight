@@ -9,7 +9,12 @@ using namespace sl::core;
 struct WindowMock : public Window {
     struct Factory : public Window::Factory {
         MOCK_METHOD(std::shared_ptr<Window>, create, (Window::Size, const std::string&), (override));
+
+        inline static Factory* instance = nullptr;
     };
+
+    explicit WindowMock()
+        : Window({}, "windowTitle") { }
 
     MOCK_METHOD(void, setResizeCallback, (ResizeCallback), (override));
     MOCK_METHOD(void, init, (), (override));

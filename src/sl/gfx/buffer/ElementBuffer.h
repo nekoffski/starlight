@@ -8,11 +8,12 @@ namespace sl::gfx::buffer {
 
 class ElementBuffer {
 public:
-	struct Factory {
-		virtual std::shared_ptr<ElementBuffer> create(core::types::NotNullPtr<void>, int, unsigned int) = 0;
-	};
+    struct Factory {
+        virtual std::shared_ptr<ElementBuffer> create(core::types::NotNullPtr<void>, int, unsigned int) = 0;
+        virtual ~Factory() = default;
+    };
 
-	inline static std::unique_ptr<Factory> factory = nullptr;
+    inline static std::unique_ptr<Factory> factory = nullptr;
 
     virtual ~ElementBuffer() = default;
 

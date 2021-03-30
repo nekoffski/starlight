@@ -15,11 +15,12 @@ class Shader : public core::GameObject {
 public:
     struct Factory {
         virtual std::shared_ptr<Shader> create(const std::string&, const std::string&, const std::string& = "") = 0;
+        virtual ~Factory() = default;
     };
 
     inline static std::unique_ptr<Factory> factory = nullptr;
 
-    virtual ~Shader() {}
+    virtual ~Shader() = default;
 
     virtual void enable() = 0;
     virtual void disable() = 0;

@@ -8,7 +8,9 @@ using namespace sl::gfx;
 
 struct GraphicsContextMock : public GraphicsContext {
     struct Factory : public GraphicsContext::Factory {
-        MOCK_METHOD(std::unique_ptr<GraphicsContext>, create, (sl::core::types::NotNullPtr<void>), (override));
+        MOCK_METHOD(std::shared_ptr<GraphicsContext>, create, (sl::core::types::NotNullPtr<void>), (override));
+
+        inline static Factory* instance = nullptr;
     };
 
     MOCK_METHOD(void, swapBuffers, (), (override));

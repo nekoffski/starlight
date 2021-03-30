@@ -2,10 +2,14 @@
 
 namespace sl::gfx {
 
-class FrameBuffer;
-class ElementBuffer;
 class GraphicsContext;
 class RenderApi;
-class VertexArray;
-class VertexBuffer;
+
+namespace buffer {
+
+    class ElementBuffer;
+    class FrameBuffer;
+    class VertexArray;
+    class VertexBuffer;
+}
 }

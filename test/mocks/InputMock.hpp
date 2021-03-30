@@ -9,6 +9,8 @@ using namespace sl::core;
 struct InputMock : public Input {
     struct Factory : public Input::Factory {
         MOCK_METHOD(std::shared_ptr<Input>, create, (types::NotNullPtr<void>), (override));
+
+        inline static Factory* instance = nullptr;
     };
 
     MOCK_METHOD(void, update, (), (override));

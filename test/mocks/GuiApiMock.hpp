@@ -10,6 +10,8 @@ using namespace sl::gui;
 struct GuiApiMock : public GuiApi {
     struct Factory : public GuiApi::Factory {
         MOCK_METHOD(std::shared_ptr<GuiApi>, create, (sl::core::types::NotNullPtr<void> windowHandle), (override));
+
+        inline static Factory* instance = nullptr;
     };
 
     MOCK_METHOD(void, manipulateGizmo, (math::Mat4 & viewMatrix, math::Mat4& projectionMatrix, math::Mat4& transformation, GizmoOperation op, GizmoSystem system),

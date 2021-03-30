@@ -16,17 +16,18 @@ public:
 
     struct Factory {
         virtual std::shared_ptr<Window> create(Size windowSize, const std::string& title) = 0;
+        virtual ~Factory() = default;
     };
 
     inline static std::unique_ptr<Factory> factory = nullptr;
 
     explicit Window(Size windowSize, const std::string& title)
         : m_windowSize(std::move(windowSize))
-        , m_title(title) {}
+        , m_title(title) { }
 
     virtual ~Window() = default;
 
-    virtual void setResizeCallback(ResizeCallback) {}
+    virtual void setResizeCallback(ResizeCallback) { }
 
     virtual void init() = 0;
     virtual void update(float) = 0;

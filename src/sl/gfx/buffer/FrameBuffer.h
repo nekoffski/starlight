@@ -10,6 +10,7 @@ class FrameBuffer {
 public:
     struct Factory {
         virtual std::shared_ptr<FrameBuffer> create() = 0;
+        virtual ~Factory() = default;
     };
 
     inline static std::unique_ptr<Factory> factory = nullptr;

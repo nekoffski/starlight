@@ -93,7 +93,7 @@ void Application::init() {
     m_renderer = std::make_shared<gfx::Renderer>(m_lowLevelRenderer);
 
     SL_INFO("Creating scene systems instance");
-    m_sceneSystems = std::make_shared<scene::SceneSystems>();
+    // m_sceneSystems = std::make_shared<scene::SceneSystems>();
 }
 
 void Application::update(float deltaTime, float time) {

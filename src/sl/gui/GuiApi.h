@@ -25,6 +25,7 @@ class GuiApi {
 public:
     struct Factory {
         virtual std::shared_ptr<GuiApi> create(core::types::NotNullPtr<void> windowHandle) = 0;
+        virtual ~Factory() = default;
     };
 
     inline static std::unique_ptr<Factory> factory = nullptr;

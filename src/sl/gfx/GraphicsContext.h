@@ -10,8 +10,11 @@ namespace sl::gfx {
 class GraphicsContext {
 public:
     struct Factory {
-        virtual std::unique_ptr<GraphicsContext> create(core::types::NotNullPtr<void>) = 0;
+        virtual std::shared_ptr<GraphicsContext> create(core::types::NotNullPtr<void>) = 0;
+        virtual ~Factory() = default;
     };
+
+    virtual ~GraphicsContext() = default;
 
     inline static std::unique_ptr<Factory> factory = nullptr;
 

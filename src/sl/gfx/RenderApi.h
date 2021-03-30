@@ -11,7 +11,10 @@ class RenderApi {
 public:
     struct Factory {
         virtual std::unique_ptr<RenderApi> create() = 0;
+        virtual ~Factory() = default;
     };
+
+    virtual ~RenderApi() = default;
 
     inline static std::unique_ptr<Factory> factory = nullptr;
 
@@ -20,7 +23,7 @@ public:
     virtual void clearColor(float, float, float, float) = 0;
 
     virtual void depthMask(bool) = 0;
-	virtual void setPolygonMode(unsigned) = 0;
+    virtual void setPolygonMode(unsigned) = 0;
 
     virtual void setDepthFunc(unsigned) = 0;
     virtual void setBlendFunc(unsigned, unsigned) = 0;

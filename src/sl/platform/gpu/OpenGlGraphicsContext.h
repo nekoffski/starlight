@@ -20,8 +20,8 @@ private:
 };
 
 struct OpenGlGraphicsContextFactory : gfx::GraphicsContext::Factory {
-    std::unique_ptr<gfx::GraphicsContext> create(core::types::NotNullPtr<void> windowHandle) override {
-        return std::make_unique<OpenGlGraphicsContext>(windowHandle);
+    std::shared_ptr<gfx::GraphicsContext> create(core::types::NotNullPtr<void> windowHandle) override {
+        return std::make_shared<OpenGlGraphicsContext>(windowHandle);
     }
 };
 

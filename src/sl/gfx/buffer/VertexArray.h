@@ -3,15 +3,16 @@
 #include <memory>
 #include <vector>
 
-namespace sl::gfx::buffer {
+#include "ElementBuffer.h"
+#include "VertexBuffer.h"
 
-class VertexBuffer;
-class ElementBuffer;
+namespace sl::gfx::buffer {
 
 class VertexArray {
 public:
     struct Factory {
         virtual std::shared_ptr<VertexArray> create() = 0;
+        virtual ~Factory() = default;
     };
 
     inline static std::unique_ptr<Factory> factory = nullptr;

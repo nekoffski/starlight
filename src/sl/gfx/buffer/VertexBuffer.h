@@ -14,6 +14,7 @@ class VertexBuffer {
 public:
     struct Factory {
         virtual std::shared_ptr<VertexBuffer> create(core::types::NotNullPtr<void>, int, int) = 0;
+        virtual ~Factory() = default;
     };
 
     inline static std::unique_ptr<Factory> factory = nullptr;

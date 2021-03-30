@@ -10,7 +10,10 @@ class ModelLoaderImpl {
 public:
     struct Factory {
         virtual std::unique_ptr<ModelLoaderImpl> create() = 0;
+        virtual ~Factory() = default;
     };
+
+    virtual ~ModelLoaderImpl() = default;
 
     inline static std::unique_ptr<Factory> factory = nullptr;
 

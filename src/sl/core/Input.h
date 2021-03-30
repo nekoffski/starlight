@@ -19,12 +19,15 @@ class Input {
 public:
     struct Factory {
         virtual std::shared_ptr<Input> create(core::types::NotNullPtr<void>) = 0;
+        virtual ~Factory() = default;
     };
+
+    virtual ~Input() = default;
 
     inline static std::unique_ptr<Factory> factory = nullptr;
 
     virtual void update() = 0;
-    virtual void setKeyCallback(InputCallback){};
+    virtual void setKeyCallback(InputCallback) {};
 
     virtual bool isKeyPressed(int) const = 0;
     virtual bool isMouseButtonPressed(int) const = 0;
