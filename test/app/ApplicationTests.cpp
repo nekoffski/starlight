@@ -86,10 +86,18 @@ TEST_F(ApplicationTests, givenApplication_whenUpdating_shouldUpdateSubComponents
     application->switchContext(context);
 
     EXPECT_CALL(*mocks.windowMock, update(_)).Times(1);
-    EXPECT_CALL(*context, update(_, _, _)).Times(1);
+    EXPECT_CALL(*context, update(_, _, _, _)).Times(1);
     EXPECT_CALL(*mocks.inputMock, update()).Times(1);
 
+    bool isMouseButtonPressed = true;
+    bool cursorState;
+
+    EXPECT_CALL(*mocks.inputMock, isMouseButtonPressed(_)).Times(1).WillOnce(Return(isMouseButtonPressed));
+    EXPECT_CALL(*mocks.windowMock, changeCursorState(_)).Times(1).WillOnce(SaveArg<0>(&cursorState));
+
     application->update(1.0f, 1.0f);
+
+    EXPECT_EQ(!isMouseButtonPressed, cursorState);
 }
 
 TEST_F(ApplicationTests, givenApplication_whenRendering_shouldRenderSubComponents) {

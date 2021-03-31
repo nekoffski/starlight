@@ -23,12 +23,13 @@ public:
 
     void enableCursor() override;
     void disableCursor() override;
+    void changeCursorState(bool) override;
 
     bool getShouldClose() const override;
     void setShouldClose(bool) override;
 
 private:
-    GLFWwindow* m_windowHandle{ nullptr };
+    GLFWwindow* m_windowHandle { nullptr };
 };
 
 struct GlfwWindowFactory : core::Window::Factory {

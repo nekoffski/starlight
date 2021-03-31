@@ -32,7 +32,6 @@ public:
     bool isRunning() const;
 
     void update(float, float);
-    void handleInput();
     void render();
 
     std::shared_ptr<ApplicationContext> getActiveContext() const;

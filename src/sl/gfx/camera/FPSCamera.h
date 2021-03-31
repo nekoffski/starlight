@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UserControllableCamera.h"
+#include "Camera.h"
 
 #include "sl/core/Logger.h"
 #include "sl/gfx/ViewFrustum.h"
@@ -11,14 +11,14 @@
 
 namespace sl::gfx::camera {
 
-class FPSCamera : public UserControllableCamera {
+class FPSCamera : public Camera {
 public:
     explicit FPSCamera(const ViewFrustum& viewFrustum)
-        : UserControllableCamera(viewFrustum) {
+        : Camera(viewFrustum) {
         m_position = math::Vec3 { 0.0f, 5.0f, 0.0f };
     }
 
-    void update(float deltaTime) override {
+    void update(float deltaTime, core::Input& input) override {
         float velocity = deltaTime * m_speed;
 
         if (m_direction & directionUp)
@@ -57,25 +57,25 @@ public:
         m_up = math::cross(m_right, m_front);
     }
 
-    void handleInput(core::Input& input) override {
-        m_direction = directionNone;
+    // void handleInput(core::Input& input) override {
+    //     m_direction = directionNone;
 
-        if (input.isKeyPressed(STARL_KEY_UP))
-            m_direction |= directionUp;
+    //     if (input.isKeyPressed(STARL_KEY_UP))
+    //         m_direction |= directionUp;
 
-        if (input.isKeyPressed(STARL_KEY_RIGHT))
-            m_direction |= directionRight;
+    //     if (input.isKeyPressed(STARL_KEY_RIGHT))
+    //         m_direction |= directionRight;
 
-        if (input.isKeyPressed(STARL_KEY_DOWN))
-            m_direction |= directionDown;
+    //     if (input.isKeyPressed(STARL_KEY_DOWN))
+    //         m_direction |= directionDown;
 
-        if (input.isKeyPressed(STARL_KEY_LEFT))
-            m_direction |= directionLeft;
+    //     if (input.isKeyPressed(STARL_KEY_LEFT))
+    //         m_direction |= directionLeft;
 
-        auto [mouseX, mouseY] = input.getMousePosition();
-        m_x = mouseX;
-        m_y = mouseY;
-    }
+    //     auto [mouseX, mouseY] = input.getMousePosition();
+    //     m_x = mouseX;
+    //     m_y = mouseY;
+    // }
 
     virtual const math::Mat4 getViewMatrix() {
         return math::lookAt(m_position, m_position + m_front, m_up);

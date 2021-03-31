@@ -21,6 +21,7 @@ struct WindowMock : public Window {
     MOCK_METHOD(void, update, (float), (override));
     MOCK_METHOD(bool, getShouldClose, (), (const, override));
     MOCK_METHOD(void, setShouldClose, (bool), (override));
+    MOCK_METHOD(void, changeCursorState, (bool), (override));
     MOCK_METHOD(void, enableCursor, (), (override));
     MOCK_METHOD(void, disableCursor, (), (override));
     MOCK_METHOD(void*, getHandle, (), (const, override));

@@ -72,12 +72,8 @@ public:
         m_errorDialog.show(gui);
     }
 
-    void handleInput(core::Input& input) override {
-        m_activeCamera->handleInput(input);
-    }
-
-    void update(scene::SceneSystems& sceneSystems, float deltaTime, float time) override {
-        m_activeCamera->update(deltaTime);
+    void update(scene::SceneSystems& sceneSystems, float deltaTime, float time, core::Input& input) override {
+        m_activeCamera->update(deltaTime, input);
         auto pfxs = m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>();
         sceneSystems.pfxSystem.update(pfxs, deltaTime, m_scene->camera);
     }
@@ -199,7 +195,7 @@ private:
     sl::asset::AssetManager m_assetManager;
 
     std::shared_ptr<editor::gui::EditorGui> m_editorGui;
-    std::shared_ptr<gfx::camera::UserControllableCamera> m_activeCamera;
+    std::shared_ptr<gfx::camera::Camera> m_activeCamera;
     std::shared_ptr<scene::Scene> m_scene;
 
     sl::gui::ErrorDialog m_errorDialog;

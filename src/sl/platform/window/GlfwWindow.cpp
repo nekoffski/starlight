@@ -4,8 +4,8 @@
 
 #include <GLFW/glfw3.h>
 
-#include "sl/core/Logger.h"
 #include "sl/core/Errors.hpp"
+#include "sl/core/Logger.h"
 
 namespace sl::platform::window {
 
@@ -34,7 +34,7 @@ void GlfwWindow::init() {
     SL_INFO("initializing glfw");
     if (auto status = glfwInit(); status < 0) {
         SL_ERROR("could not initialize glfw: {]", status);
-        throw core::WindowError{ core::ErrorCode::CouldNotInitializeWindowLibrary };
+        throw core::WindowError { core::ErrorCode::CouldNotInitializeWindowLibrary };
     }
 
     SL_INFO("setting window hints");
@@ -50,7 +50,7 @@ void GlfwWindow::init() {
 
     if (m_windowHandle == nullptr) {
         SL_ERROR("could not raw window instance");
-        throw core::WindowError{ core::ErrorCode::CouldNotCreateWindowInstance };
+        throw core::WindowError { core::ErrorCode::CouldNotCreateWindowInstance };
     }
 }
 
@@ -73,6 +73,11 @@ void GlfwWindow::enableCursor() {
 
 void GlfwWindow::disableCursor() {
     glfwSetInputMode(m_windowHandle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+}
+
+void GlfwWindow::changeCursorState(bool enabled) {
+    glfwSetInputMode(m_windowHandle, GLFW_CURSOR,
+        GLFW_CURSOR_DISABLED - (GLFW_CURSOR_DISABLED - GLFW_CURSOR_NORMAL) * enabled);
 }
 
 void GlfwWindow::update(float dtime) {

@@ -1,17 +1,16 @@
 #pragma once
 
-#include "UserControllableCamera.h"
+#include "Camera.h"
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/math/Utils.hpp"
 
 namespace sl::gfx::camera {
 
-class EulerCamera : public UserControllableCamera {
+class EulerCamera : public Camera {
 public:
     explicit EulerCamera(const ViewFrustum& viewFrustum, math::Vec3, float, float);
 
-    void update(float) override;
-    void handleInput(core::Input&) override;
+    void update(float, core::Input&) override;
     void onGui(gui::GuiApi&) override;
 
     const math::Mat4 getViewMatrix() override {

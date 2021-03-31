@@ -74,7 +74,6 @@ void Entrypoint::loopStep() {
 
     float deltaTime = core::Clock::getDeltaTime();
 
-    m_application->handleInput();
     m_application->update(deltaTime, core::Clock::now()->value());
     m_application->render();
 

@@ -99,8 +99,14 @@ void Application::init() {
 void Application::update(float deltaTime, float time) {
     SL_PROFILE_FUNCTION();
 
+    GLOBALS().flags.disableKeyboardInput = m_guiApi->isCapturingKeyboard();
+    GLOBALS().flags.disableMouseInput = m_guiApi->isCapturingMouse();
+
+    m_window->changeCursorState(
+        not m_input->isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE));
+
     m_window->update(deltaTime);
-    m_context->update(*m_sceneSystems, deltaTime, time);
+    m_context->update(*m_sceneSystems, deltaTime, time, *m_input);
 
     m_eventEngine.spreadEvents();
 
@@ -120,18 +126,6 @@ void Application::renderGui() {
     m_guiApi->begin();
     m_context->renderGui(*m_guiApi);
     m_guiApi->end();
-}
-
-void Application::handleInput() {
-    GLOBALS().flags.disableKeyboardInput = m_guiApi->isCapturingKeyboard();
-    GLOBALS().flags.disableMouseInput = m_guiApi->isCapturingMouse();
-
-    m_context->handleInput(*m_input);
-
-    if (m_input->isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE))
-        m_window->disableCursor();
-    else
-        m_window->enableCursor();
 }
 
 std::shared_ptr<ApplicationContext> Application::getActiveContext() const {
