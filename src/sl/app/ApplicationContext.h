@@ -23,7 +23,10 @@ class ApplicationContext : public xvent::EventListener {
 
 public:
     explicit ApplicationContext(const std::string& ident)
-        : xvent::EventListener(ident) { }
+        : xvent::EventListener(ident) {
+    }
+
+    virtual ~ApplicationContext() = default;
 
     virtual void onInit() = 0;
     virtual void onAttach() = 0;

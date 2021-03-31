@@ -1,8 +1,8 @@
 {
     "paths": {
-        "shaders": "",
-        "models": "",
-        "textures": "",
-        "cubemaps"
+        "shaders": "/home/nek0/kapik/projects/starlight/res/shaders/",
+        "models": "/home/nek0/kapik/projects/starlight/res/models/",
+        "textures": "/home/nek0/kapik/projects/starlight/res/textures/",
+        "cubemaps": "/home/nek0/kapik/projects/starlight/res/cubemaps/"
     }
 }

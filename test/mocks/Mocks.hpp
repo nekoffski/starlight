@@ -15,6 +15,9 @@
 #include "VertexBufferMock.hpp"
 #include "WindowMock.hpp"
 
+#include "sl/core/Clock.h"
+#include "sl/platform/clock/StdClockImpl.h"
+
 #include "sl/gfx/ShaderCompiler.hpp"
 
 using namespace sl;
@@ -62,6 +65,9 @@ struct Mocks {
     std::shared_ptr<FrameBufferMock> frameBufferMock = std::make_shared<FrameBufferMock>();
 };
 
+inline void setupMockOnCalls(Mocks& mocks) {
+}
+
 inline void setupMockFactories() {
     SETUP_MOCK(ShaderCompilerImpl);
     SETUP_MOCK(GraphicsContext);
@@ -75,6 +81,8 @@ inline void setupMockFactories() {
     SETUP_MOCK(ElementBuffer);
     SETUP_MOCK(Shader);
     SETUP_MOCK(FrameBuffer);
+
+    Clock::setClockImpl<platform::clock::StdClockImpl>();
 }
 
 inline void resetMockFactories() {

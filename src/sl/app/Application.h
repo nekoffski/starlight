@@ -34,7 +34,6 @@ public:
     void update(float, float);
     void handleInput();
     void render();
-    void renderGui();
 
     std::shared_ptr<ApplicationContext> getActiveContext() const;
 
@@ -43,10 +42,12 @@ public:
     void init();
 
     // for custom user initialization
-    virtual void onStart() { }
-    virtual void onStop() { }
+    virtual void onStart() {
+    }
 
-protected:
+    virtual void onStop() {
+    }
+
     // clang-format off
     template <typename T>
     requires std::derived_from<T, ApplicationContext> && std::constructible_from<T, const std::string&>
@@ -65,6 +66,8 @@ protected:
     // clang-format on
 
 private:
+    void renderGui();
+
     std::shared_ptr<core::Window> m_window;
     std::shared_ptr<core::Input> m_input;
     std::shared_ptr<gfx::LowLevelRenderer> m_lowLevelRenderer;
