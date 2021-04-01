@@ -9,6 +9,7 @@
 #include <xvent/EventEngine.h>
 #include <xvent/EventListener.h>
 
+#include "fwd.h"
 #include "sl/app/ApplicationContext.h"
 #include "sl/core/Input.h"
 #include "sl/core/Window.h"
@@ -19,8 +20,6 @@
 #include "sl/scene/SceneSystems.hpp"
 
 namespace sl::app {
-
-class Entrypoint;
 
 class Application {
 public:

@@ -2,10 +2,9 @@
 
 #include <memory>
 
+#include "sl/gfx/LowLevelRenderer.h"
 #include "sl/gfx/Shader.h"
 #include "sl/gfx/buffer/FrameBuffer.h"
-#include "sl/gfx/fwd.h"
-#include "sl/platform/fwd.h"
 
 namespace sl::gfx::renderer {
 

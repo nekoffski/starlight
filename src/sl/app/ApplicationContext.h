@@ -6,15 +6,12 @@
 
 #include "fwd.h"
 #include "sl/core/WindowProxy.hpp"
+#include "sl/core/fwd.h"
 #include "sl/gfx/LowLevelRendererProxy.hpp"
 #include "sl/gfx/Renderer.hpp"
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/GuiApiProxy.hpp"
 #include "sl/scene/SceneSystems.hpp"
-
-namespace sl::core {
-class Input;
-}
 
 namespace sl::app {
 

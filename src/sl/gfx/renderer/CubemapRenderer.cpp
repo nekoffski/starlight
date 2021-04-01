@@ -5,7 +5,6 @@
 #include "sl/gfx/Shader.h"
 #include "sl/gfx/buffer/VertexArray.h"
 #include "sl/gfx/buffer/VertexBuffer.h"
-#include "sl/platform/gpu/fwd.h"
 
 // clang-format off
 static float cubemapVertices[] = {

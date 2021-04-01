@@ -3,9 +3,8 @@
 #include <memory>
 
 #include "sl/ecs/ComponentView.hpp"
+#include "sl/gfx/LowLevelRenderer.h"
 #include "sl/gfx/buffer/VertexArray.h"
-#include "sl/gfx/fwd.h"
-#include "sl/platform/fwd.h"
 #include "sl/scene/components/ParticleEffectComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 
@@ -24,7 +23,7 @@ private:
     void endParticleEffect();
 
     std::shared_ptr<gfx::buffer::VertexArray> m_vao;
-   
+
     std::shared_ptr<gfx::Shader> m_shader;
     std::shared_ptr<gfx::LowLevelRenderer> m_renderer;
 };

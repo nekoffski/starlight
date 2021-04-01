@@ -118,7 +118,9 @@ void Application::render() {
 
     m_lowLevelRenderer->clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
     m_context->render(*m_renderer);
+
     renderGui();
+
     m_lowLevelRenderer->swapBuffers();
 }
 

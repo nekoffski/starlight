@@ -2,9 +2,9 @@
 
 #include <memory>
 
+#include "sl/gfx/Cubemap.h"
+#include "sl/gfx/LowLevelRenderer.h"
 #include "sl/gfx/buffer/VertexArray.h"
-#include "sl/gfx/fwd.h"
-#include "sl/platform/fwd.h"
 
 namespace sl::gfx::renderer {
 

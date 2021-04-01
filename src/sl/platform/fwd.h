@@ -1,7 +1,0 @@
-#pragma once
-
-#include "gpu/fwd.h"
-#include "img/fwd.h"
-#include "shader/fwd.h"
-#include "texture/fwd.h"
-

@@ -1,9 +1,10 @@
 #pragma once
 
 #include "sl/core/types/NotNullPtr.hpp"
+#include "sl/gfx/ViewFrustum.h"
 #include "sl/gui/GuiApi.h"
 
-namespace sl::platform::gui::detail {
+namespace sl::platform::gui {
 
 class ImGuiApi : public sl::gui::GuiApi {
 public:
@@ -80,12 +81,12 @@ public:
 
     bool button(const std::string&, int xSize, int ySize) override;
 
-    void setupGizmo(const gfx::ViewFrustum::Viewport&) override;
+    void setupGizmo(const sl::gfx::ViewFrustum::Viewport&) override;
     bool isUsingGizmo() override;
 };
 
 struct ImGuiApiFactory : sl::gui::GuiApi::Factory {
-    std::shared_ptr<sl::gui::GuiApi> create(core::types::NotNullPtr<void> windowHandle) override {
+    std::shared_ptr<sl::gui::GuiApi> create(sl::core::types::NotNullPtr<void> windowHandle) override {
         return std::make_shared<ImGuiApi>(windowHandle);
     }
 };

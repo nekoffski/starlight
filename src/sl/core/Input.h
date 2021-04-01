@@ -8,7 +8,7 @@
 #include "sl/platform/PlatformDetector.h"
 
 #ifdef STARL_USE_GLFW
-#include "sl/platform/input/GlfwKeys.h"
+#include "sl/platform/core/GlfwKeys.h"
 #endif
 
 namespace sl::core {

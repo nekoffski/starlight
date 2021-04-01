@@ -15,7 +15,7 @@
 #define ICON_MIN_FA 0xe005
 #define ICON_MAX_FA 0xf8ff
 
-namespace sl::platform::gui::detail {
+namespace sl::platform::gui {
 
 static void setStyle() {
     ImGuiStyle& style = ImGui::GetStyle();
@@ -311,7 +311,7 @@ bool ImGuiApi::menuItem(const std::string& label) {
     return ImGui::MenuItem(label.c_str());
 }
 
-void ImGuiApi::setupGizmo(const gfx::ViewFrustum::Viewport& viewport) {
+void ImGuiApi::setupGizmo(const sl::gfx::ViewFrustum::Viewport& viewport) {
     ImGuizmo::SetOrthographic(false);
     ImGuizmo::SetRect(viewport.beginX, 0, viewport.width, viewport.height);
 }

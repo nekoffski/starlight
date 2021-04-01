@@ -20,19 +20,19 @@
 
 namespace sl::platform {
 
-std::unique_ptr<gfx::buffer::VertexArray::Factory> createVertexArrayFactory();
-std::unique_ptr<gfx::buffer::ElementBuffer::Factory> createElementBufferFactory();
-std::unique_ptr<gfx::buffer::VertexBuffer::Factory> createVertexBufferFactory();
-std::unique_ptr<gfx::buffer::FrameBuffer::Factory> createFrameBufferFactory();
-std::unique_ptr<gfx::Image::Factory> createImageFactory();
-std::unique_ptr<gfx::Texture::Factory> createTextureFactory();
-std::unique_ptr<gfx::Cubemap::Factory> createCubemapFactory();
-std::unique_ptr<gfx::Shader::Factory> createShaderFactory();
-std::unique_ptr<core::Window::Factory> createWindowFactory();
-std::unique_ptr<core::Input::Factory> createInputFactory();
+std::unique_ptr<sl::gfx::buffer::VertexArray::Factory> createVertexArrayFactory();
+std::unique_ptr<sl::gfx::buffer::ElementBuffer::Factory> createElementBufferFactory();
+std::unique_ptr<sl::gfx::buffer::VertexBuffer::Factory> createVertexBufferFactory();
+std::unique_ptr<sl::gfx::buffer::FrameBuffer::Factory> createFrameBufferFactory();
+std::unique_ptr<sl::gfx::Image::Factory> createImageFactory();
+std::unique_ptr<sl::gfx::Texture::Factory> createTextureFactory();
+std::unique_ptr<sl::gfx::Cubemap::Factory> createCubemapFactory();
+std::unique_ptr<sl::gfx::Shader::Factory> createShaderFactory();
+std::unique_ptr<sl::core::Window::Factory> createWindowFactory();
+std::unique_ptr<sl::core::Input::Factory> createInputFactory();
 std::unique_ptr<sl::gui::GuiApi::Factory> createGuiApiFactory();
-std::unique_ptr<gfx::GraphicsContext::Factory> createGraphicsContextFactory();
-std::unique_ptr<gfx::ShaderCompilerImpl::Factory> createShaderCompilerImplFactory();
+std::unique_ptr<sl::gfx::GraphicsContext::Factory> createGraphicsContextFactory();
+std::unique_ptr<sl::gfx::ShaderCompilerImpl::Factory> createShaderCompilerImplFactory();
 std::unique_ptr<geom::ModelLoaderImpl::Factory> createModelLoaderImplFactory();
-std::unique_ptr<gfx::RenderApi::Factory> createRenderApiFactory();
+std::unique_ptr<sl::gfx::RenderApi::Factory> createRenderApiFactory();
 }

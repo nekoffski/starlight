@@ -2,8 +2,6 @@
 
 #include <memory>
 
-#include "sl/platform/fwd.h"
-
 namespace sl::gfx::buffer {
 
 class FrameBuffer {

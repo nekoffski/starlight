@@ -5,7 +5,6 @@
 #include "sl/gfx/Shader.h"
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/gfx/buffer/FrameBuffer.h"
-#include "sl/platform/gpu/fwd.h"
 
 namespace sl::gfx::renderer {
 
@@ -16,7 +15,7 @@ ShadowRenderer::ShadowRenderer(std::shared_ptr<gfx::LowLevelRenderer> renderer)
 }
 
 void ShadowRenderer::beginDepthCapture() {
-    m_renderer->setTemporaryViewport(gfx::ViewFrustum::Viewport{ 1024u, 1024u });
+    m_renderer->setTemporaryViewport(gfx::ViewFrustum::Viewport { 1024u, 1024u });
     m_shadowMapFrameBuffer->bind();
     m_renderer->clearBuffers(STARL_DEPTH_BUFFER_BIT);
     m_depthShader->enable();

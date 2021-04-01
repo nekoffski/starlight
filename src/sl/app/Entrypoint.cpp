@@ -13,7 +13,7 @@
 #include "sl/core/Logger.h"
 #include "sl/core/Profiler.h"
 #include "sl/core/sig/Signal.h"
-#include "sl/platform/clock/StdClockImpl.h"
+#include "sl/platform/core/StdClockImpl.h"
 #include "sl/utils/Globals.h"
 
 namespace sl::app {
@@ -35,7 +35,7 @@ int Entrypoint::start() {
         loadConfig();
 
         SL_INFO("Setting up clock implementation.");
-        core::Clock::setClockImpl<platform::clock::StdClockImpl>();
+        core::Clock::setClockImpl<platform::core::StdClockImpl>();
 
         SL_INFO("Setting up async engine.");
         async::AsyncEngine::init();

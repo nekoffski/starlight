@@ -2,8 +2,7 @@
 
 #include "sl/geom/Mesh.h"
 #include "sl/geom/Model.h"
-#include "sl/gfx/fwd.h"
-#include "sl/platform/fwd.h"
+#include "sl/gfx/LowLevelRenderer.h"
 
 #include "sl/ecs/ComponentView.hpp"
 #include "sl/gfx/data/ModelData.h"
