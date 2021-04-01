@@ -5,7 +5,7 @@
 
 #include "sl/core/Clock.h"
 #include "sl/core/Macros.h"
-#include "sl/core/utils/String.hpp"
+#include "sl/core/String.hpp"
 
 #include <iostream>
 
@@ -17,8 +17,8 @@ class DebugConsole {
 public:
     template <typename... Args>
     static void write(const std::string& format, Args&&... args) {
-        auto line = sl::core::utils::format(format, std::forward<Args>(args)...);
-		auto time = sl::core::Clock::getTimeString("%H:%M:%S");
+        auto line = sl::core::format(format, std::forward<Args>(args)...);
+        auto time = sl::core::Clock::getTimeString("%H:%M:%S");
 
         m_buffer.emplace_front("[ " + time + " ] " + line + '\n');
     }

@@ -3,14 +3,14 @@
 #include <memory>
 
 #include "ViewFrustum.h"
-#include "sl/core/types/NotNullPtr.hpp"
+#include "sl/core/NotNullPtr.hpp"
 
 namespace sl::gfx {
 
 class GraphicsContext {
 public:
     struct Factory {
-        virtual std::shared_ptr<GraphicsContext> create(core::types::NotNullPtr<void>) = 0;
+        virtual std::shared_ptr<GraphicsContext> create(core::NotNullPtr<void>) = 0;
         virtual ~Factory() = default;
     };
 

@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "BufferMemoryScheme.hpp"
-#include "sl/core/types/NotNullPtr.hpp"
+#include "sl/core/NotNullPtr.hpp"
 
 // TODO: IFDEF
 #include "sl/platform/gfx/OpenGlDefines.h"
@@ -13,7 +13,7 @@ namespace sl::gfx::buffer {
 class VertexBuffer {
 public:
     struct Factory {
-        virtual std::shared_ptr<VertexBuffer> create(core::types::NotNullPtr<void>, int, int) = 0;
+        virtual std::shared_ptr<VertexBuffer> create(core::NotNullPtr<void>, int, int) = 0;
         virtual ~Factory() = default;
     };
 

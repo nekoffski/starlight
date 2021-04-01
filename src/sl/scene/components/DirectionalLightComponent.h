@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sl/core/misc/colors.hpp"
+#include "sl/core/Colors.h"
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
 #include "sl/gfx/Texture.h"
@@ -12,11 +12,11 @@ namespace sl::scene::components {
 static const auto lightProjectionMatrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
 
 struct DirectionalLightComponent : ecs::Component {
-    explicit DirectionalLightComponent(math::Vec3 direction = math::Vec3{ 1.0f, 1.0f, 1.0f }, math::Vec3 color = core::misc::COL_WHITE)
+    explicit DirectionalLightComponent(math::Vec3 direction = math::Vec3 { 1.0f, 1.0f, 1.0f }, math::Vec3 color = core::colorWhite)
         : direction(direction)
         , color(color)
         , shadowMap(gfx::Texture::factory->create(1024u, 1024u))
-        , viewMatrix(math::lookAt(direction, math::Vec3{ 0.0f }, math::Vec3{ 0.0f, 1.0f, 0.0f }))
+        , viewMatrix(math::lookAt(direction, math::Vec3 { 0.0f }, math::Vec3 { 0.0f, 1.0f, 0.0f }))
         , spaceMatrix(lightProjectionMatrix * viewMatrix) {
     }
 
@@ -25,7 +25,7 @@ struct DirectionalLightComponent : ecs::Component {
             gui.displayText("Position");
 
             if (gui.dragFloat3(gui::createHiddenLabel("dlcDirection"), direction, 0.01f, -1.0f, 1.0f)) {
-                viewMatrix = math::lookAt(direction, math::Vec3{ 0.0f }, math::Vec3{ 0.0f, 1.0f, 0.0f });
+                viewMatrix = math::lookAt(direction, math::Vec3 { 0.0f }, math::Vec3 { 0.0f, 1.0f, 0.0f });
                 spaceMatrix = lightProjectionMatrix * viewMatrix;
             }
 

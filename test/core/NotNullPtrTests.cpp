@@ -1,13 +1,13 @@
 #include <gtest/gtest.h>
 
-#include "sl/core/types/NotNullPtr.hpp"
+#include "sl/core/NotNullPtr.hpp"
 
-using namespace sl::core::types;
+using namespace sl::core;
 
 class NotNullPtrTests : public testing::Test {
 protected:
     template <typename T>
-    void foo(const NotNullPtr<T>&) {}
+    void foo(const NotNullPtr<T>&) { }
 };
 
 TEST_F(NotNullPtrTests, givenNotNullPtr_whenPassingNullptr_expectThrow) {
@@ -35,7 +35,7 @@ TEST_F(NotNullPtrTests, givenNotNullPtrToStruct_whenGettingMembers_expectCorrect
         float y;
     };
 
-    auto a = A{ 1, 1.5f };
+    auto a = A { 1, 1.5f };
     auto ptr = NotNullPtr<A>(&a);
 
     EXPECT_EQ(a.x, ptr->x);

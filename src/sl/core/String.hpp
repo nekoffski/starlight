@@ -6,7 +6,7 @@
 
 #include "sl/core/Logger.h"
 
-namespace sl::core::utils {
+namespace sl::core {
 
 template <typename... Args>
 std::string format(const std::string& format, Args... args) {

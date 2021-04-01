@@ -8,12 +8,9 @@
 #include <ImGuizmo.h>
 
 #include "sl/core/Logger.h"
-#include "sl/core/utils/String.hpp"
+#include "sl/core/String.hpp"
 
 #include "sl/math/Utils.hpp"
-
-#define ICON_MIN_FA 0xe005
-#define ICON_MAX_FA 0xf8ff
 
 namespace sl::platform::gui {
 
@@ -139,7 +136,7 @@ void ImGuiApi::endGroup() {
 void ImGuiApi::inputText(const std::string& label, std::string& text) {
     text.resize(256);
     ImGui::InputText(label.c_str(), &text[0], text.size());
-    core::utils::stripString(text);
+    core::stripString(text);
 }
 
 void ImGuiApi::openPopUp(const std::string& label) {

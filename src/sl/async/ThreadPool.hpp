@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "Future.h"
-#include "sl/core/containers/AtomicQueue.hpp"
+#include "sl/core/AtomicQueue.hpp"
 
 namespace sl::async {
 
@@ -22,7 +22,7 @@ public:
         , m_size(size) {
         m_threads.reserve(size);
         for (int i = 0; i < size; ++i)
-            m_threads.emplace_back(Thread{ &ThreadPool::threadWorker, this });
+            m_threads.emplace_back(Thread { &ThreadPool::threadWorker, this });
     }
 
     std::size_t getSize() const {
@@ -59,7 +59,7 @@ private:
         }
     }
 
-    core::containers::AtomicQueue<Job> m_jobs;
+    core::AtomicQueue<Job> m_jobs;
     std::vector<Thread> m_threads;
     std::atomic_bool m_active;
     std::size_t m_size;

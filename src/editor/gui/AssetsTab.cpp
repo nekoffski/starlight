@@ -3,7 +3,7 @@
 #include "editor/DebugConsole.hpp"
 #include "sl/asset/AssetLoader.hpp"
 #include "sl/core/Errors.hpp"
-#include "sl/core/utils/String.hpp"
+#include "sl/core/String.hpp"
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/Utils.hpp"
 
@@ -14,7 +14,7 @@ constexpr int padding = 65;
 static void validateAssetName(const std::string& name) {
     using namespace sl::core;
 
-    if (sl::core::utils::isStringEmpty(name))
+    if (sl::core::isStringEmpty(name))
         throw AssetError(ErrorCode::AssetError, "Asset name cannot be empty");
 }
 

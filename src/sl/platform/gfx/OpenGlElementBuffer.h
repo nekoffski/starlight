@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sl/core/types/NotNullPtr.hpp"
+#include "sl/core/NotNullPtr.hpp"
 #include "sl/gfx/buffer/ElementBuffer.h"
 
 namespace sl::platform::gfx {
@@ -23,7 +23,7 @@ private:
 };
 
 struct OpenGlElementBufferFactory : sl::gfx::buffer::ElementBuffer::Factory {
-    std::shared_ptr<sl::gfx::buffer::ElementBuffer> create(sl::core::types::NotNullPtr<void> data, int size, unsigned int indicesCount) override {
+    std::shared_ptr<sl::gfx::buffer::ElementBuffer> create(sl::core::NotNullPtr<void> data, int size, unsigned int indicesCount) override {
         return std::make_shared<OpenGlElementBuffer>(data, size, indicesCount);
     }
 };

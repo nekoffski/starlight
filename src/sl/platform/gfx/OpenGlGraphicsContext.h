@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sl/core/types/NotNullPtr.hpp"
+#include "sl/core/NotNullPtr.hpp"
 #include "sl/gfx/GraphicsContext.h"
 
 #include <GLFW/glfw3.h>
@@ -20,7 +20,7 @@ private:
 };
 
 struct OpenGlGraphicsContextFactory : sl::gfx::GraphicsContext::Factory {
-    std::shared_ptr<sl::gfx::GraphicsContext> create(sl::core::types::NotNullPtr<void> windowHandle) override {
+    std::shared_ptr<sl::gfx::GraphicsContext> create(sl::core::NotNullPtr<void> windowHandle) override {
         return std::make_shared<OpenGlGraphicsContext>(windowHandle);
     }
 };

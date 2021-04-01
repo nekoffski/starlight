@@ -9,7 +9,7 @@
 #include "ComponentMap.hpp"
 #include "ComponentView.hpp"
 #include "sl/core/Logger.h"
-#include "sl/core/misc/misc.hpp"
+#include "sl/core/Misc.hpp"
 
 namespace sl::ecs {
 

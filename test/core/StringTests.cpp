@@ -1,8 +1,8 @@
-#include "sl/core/utils/String.hpp"
+#include "sl/core/String.hpp"
 
 #include <gtest/gtest.h>
 
-using namespace sl::core::utils;
+using namespace sl::core;
 
 namespace {
 

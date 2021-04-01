@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "sl/core/misc/misc.hpp"
+#include "sl/core/Misc.hpp"
 
 TEST(MiscTests, givenType_typeIndexShouldBeEqualToMiscWrapper) {
     using Type = int;
 
-    ASSERT_EQ(sl::core::misc::typeIndex<Type>(), std::type_index(typeid(Type)));
+    ASSERT_EQ(sl::core::typeIndex<Type>(), std::type_index(typeid(Type)));
 }

@@ -4,7 +4,7 @@
 #include <memory>
 #include <tuple>
 
-#include "sl/core/types/NotNullPtr.hpp"
+#include "sl/core/NotNullPtr.hpp"
 #include "sl/platform/PlatformDetector.h"
 
 #ifdef STARL_USE_GLFW
@@ -18,7 +18,7 @@ using InputCallback = std::function<void(int)>;
 class Input {
 public:
     struct Factory {
-        virtual std::shared_ptr<Input> create(core::types::NotNullPtr<void>) = 0;
+        virtual std::shared_ptr<Input> create(core::NotNullPtr<void>) = 0;
         virtual ~Factory() = default;
     };
 

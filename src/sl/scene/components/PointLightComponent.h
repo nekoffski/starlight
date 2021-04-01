@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sl/core/misc/colors.hpp"
+#include "sl/core/Colors.h"
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
 #include "sl/math/Vector.hpp"
@@ -8,7 +8,7 @@
 namespace sl::scene::components {
 
 struct PointLightComponent : ecs::Component {
-    explicit PointLightComponent(math::Vec3 position = math::Vec3 { 0.0f, 0.0f, 0.0f }, math::Vec3 color = core::misc::COL_WHITE,
+    explicit PointLightComponent(math::Vec3 position = math::Vec3 { 0.0f, 0.0f, 0.0f }, math::Vec3 color = core::colorWhite,
         float attenuationA = 0.05f, float attenuationB = 0.1f, float attenuationC = 0.3f)
         : position(position)
         , color(color)

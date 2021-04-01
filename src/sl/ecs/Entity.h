@@ -5,7 +5,7 @@
 
 #include "Component.h"
 #include "Registry.h"
-#include "sl/core/misc/misc.hpp"
+#include "sl/core/Misc.hpp"
 #include "sl/gui/GuiApi.h"
 
 namespace sl::ecs {
@@ -30,7 +30,7 @@ public:
 
     template <typename T, typename... Args>
     void addComponent(Args&&... args) {
-        m_componentsIndexes.emplace_back(core::misc::typeIndex<T>());
+        m_componentsIndexes.emplace_back(core::typeIndex<T>());
         m_registry.addComponent<T>(m_id, std::forward<Args>(args)...);
     }
 

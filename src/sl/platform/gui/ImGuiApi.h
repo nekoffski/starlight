@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sl/core/types/NotNullPtr.hpp"
+#include "sl/core/NotNullPtr.hpp"
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/gui/GuiApi.h"
 
@@ -86,7 +86,7 @@ public:
 };
 
 struct ImGuiApiFactory : sl::gui::GuiApi::Factory {
-    std::shared_ptr<sl::gui::GuiApi> create(sl::core::types::NotNullPtr<void> windowHandle) override {
+    std::shared_ptr<sl::gui::GuiApi> create(sl::core::NotNullPtr<void> windowHandle) override {
         return std::make_shared<ImGuiApi>(windowHandle);
     }
 };

@@ -12,7 +12,7 @@ static inline void signalHandlerWrapper(int signal) {
 
 namespace sl::core::sig {
 
-void setupSignalHandler(core::types::NotNullPtr<SignalHandler> sigHandler) {
+void setupSignalHandler(core::NotNullPtr<SignalHandler> sigHandler) {
     SL_INFO("setting up signal handler");
     SL_ASSERT(signalHandler == nullptr, "Could not set signal handler twice");
 

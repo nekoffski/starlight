@@ -9,7 +9,7 @@ using namespace sl::gui;
 
 struct GuiApiMock : public GuiApi {
     struct Factory : public GuiApi::Factory {
-        MOCK_METHOD(std::shared_ptr<GuiApi>, create, (sl::core::types::NotNullPtr<void> windowHandle), (override));
+        MOCK_METHOD(std::shared_ptr<GuiApi>, create, (sl::core::NotNullPtr<void> windowHandle), (override));
 
         inline static Factory* instance = nullptr;
     };

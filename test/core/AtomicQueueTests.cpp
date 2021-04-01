@@ -1,9 +1,9 @@
-#include "sl/core/containers/AtomicQueue.hpp"
+#include "sl/core/AtomicQueue.hpp"
 
 #include <gtest/gtest.h>
 
 using namespace testing;
-using namespace sl::core::containers;
+using namespace sl::core;
 
 namespace {
 
@@ -34,17 +34,17 @@ TEST_F(AtomicQueueTests, givenNonEmptyQueue_whenCheckingIfIsEmpty_shouldReturnFa
 }
 
 TEST_F(AtomicQueueTests, givenEmptyQueue_whenDequingFromEmptyQueue_shouldReturnNullOptional) {
-	auto val = m_atomicQueue.dequeue();
-	EXPECT_FALSE(val.has_value());
+    auto val = m_atomicQueue.dequeue();
+    EXPECT_FALSE(val.has_value());
 }
 
 TEST_F(AtomicQueueTests, givenNonEmptyQueue_whenDequingFromEmptyQueue_shouldReturnValue) {
-	const int input = 5;
-	m_atomicQueue.enqueue(input);
+    const int input = 5;
+    m_atomicQueue.enqueue(input);
 
-	auto val = m_atomicQueue.dequeue();
-	
-	ASSERT_TRUE(val.has_value());
-	EXPECT_EQ(val.value(), input);
+    auto val = m_atomicQueue.dequeue();
+
+    ASSERT_TRUE(val.has_value());
+    EXPECT_EQ(val.value(), input);
 }
 }

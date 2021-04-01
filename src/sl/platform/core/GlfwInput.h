@@ -1,7 +1,7 @@
 #pragma once
 
 #include "sl/core/Input.h"
-#include "sl/core/types/NotNullPtr.hpp"
+#include "sl/core/NotNullPtr.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -29,7 +29,7 @@ private:
 };
 
 struct GlfwInputFactory : sl::core::Input::Factory {
-    virtual std::shared_ptr<sl::core::Input> create(sl::core::types::NotNullPtr<void> windowHandle) {
+    virtual std::shared_ptr<sl::core::Input> create(sl::core::NotNullPtr<void> windowHandle) {
         return std::make_shared<GlfwInput>(windowHandle);
     }
 };

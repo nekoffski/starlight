@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-#include "sl/core/types/NotNullPtr.hpp"
+#include "sl/core/NotNullPtr.hpp"
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
@@ -24,7 +24,7 @@ enum class GizmoSystem {
 class GuiApi {
 public:
     struct Factory {
-        virtual std::shared_ptr<GuiApi> create(core::types::NotNullPtr<void> windowHandle) = 0;
+        virtual std::shared_ptr<GuiApi> create(core::NotNullPtr<void> windowHandle) = 0;
         virtual ~Factory() = default;
     };
 
