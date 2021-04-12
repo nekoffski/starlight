@@ -16,4 +16,5 @@ sudo apt-get install -y libjsoncpp-dev
 sudo apt-get install -y libglm-dev
 sudo apt-get install -y libgtest-dev
 sudo apt-get install -y libgmock-dev
+sudo apt-get install -y libfmt-dev
 

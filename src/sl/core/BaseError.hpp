@@ -4,8 +4,8 @@
 #include <exception>
 #include <sstream>
 #include <string>
-#include <type_traits>
-#include <typeindex>
+
+#include "Misc.hpp"
 
 #include "ErrorCode.h"
 
@@ -38,7 +38,7 @@ public:
 
     template <typename T>
     bool is() const {
-        return getType() == std::type_index(typeid(T));
+        return getType() == typeIndex<T>();
     }
 
 private:
@@ -52,10 +52,7 @@ private:
     }
 
     std::string toString() const {
-        std::stringstream errorStream;
-        errorStream << getName() << " - " << m_details << " - " << static_cast<int>(m_errorCode);
-
-        return errorStream.str();
+        return getName() + " - " + m_details + " - " + std::to_string(static_cast<int>(m_errorCode));
     }
 
     ErrorCode m_errorCode;

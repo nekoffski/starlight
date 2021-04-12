@@ -1,4 +1,4 @@
-set (SL_LIBS xvent spdlog jsoncpp glfw glad stb assimp imgui crossguid dl imguizmo)
+set (SL_LIBS xvent spdlog jsoncpp glfw glad stb assimp imgui crossguid dl imguizmo fmt)
 file (GLOB_RECURSE SL_SRC ./*.cpp)
 
 add_library(sl STATIC ${SL_SRC})

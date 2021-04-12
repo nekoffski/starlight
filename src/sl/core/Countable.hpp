@@ -27,7 +27,7 @@ public:
         if (this->id == id)
             return;
 
-        assetNotTaken(id);
+        assertNotTaken(id);
 
         s_freeIds.push_back(this->id);
         s_takenIds.push_back(id);
@@ -41,7 +41,7 @@ public:
     ulong id;
 
 private:
-    static void assetNotTaken(ulong id) {
+    static void assertNotTaken(ulong id) {
         auto position = std::find(s_takenIds.begin(), s_takenIds.end(), id);
         SL_ASSERT(position == s_takenIds.end(), "Mismatch in Countable for id: " + std::to_string(id) + "\n" + raport());
     }
@@ -86,5 +86,5 @@ private:
     inline static ulong s_nextId = 0;
 };
 
-struct GameObject : Countable<GameObject> {};
+struct GameObject : Countable<GameObject> { };
 }
