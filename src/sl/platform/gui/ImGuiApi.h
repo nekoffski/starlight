@@ -11,6 +11,14 @@ public:
     explicit ImGuiApi(void*);
     ~ImGuiApi() override;
 
+    void pushId(const std::string&) override;
+    void pushId(int) override;
+    void popId() override;
+
+    bool checkbox(const std::string&, bool&) override;
+
+    void showImage(sl::gfx::Texture& texture, math::Vec2 size) override;
+
     void manipulateGizmo(math::Mat4& viewMatrix, math::Mat4& projectionMatrix, math::Mat4& transformation,
         sl::gui::GizmoOperation op, sl::gui::GizmoSystem system) override;
 

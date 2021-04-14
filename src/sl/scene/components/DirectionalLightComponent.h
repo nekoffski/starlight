@@ -9,28 +9,33 @@
 
 namespace sl::scene::components {
 
-static const auto lightProjectionMatrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
+static const auto lightProjectionMatrix = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, 0.1f, 100.0f);
 
 struct DirectionalLightComponent : ecs::Component {
     explicit DirectionalLightComponent(math::Vec3 direction = math::Vec3 { 1.0f, 1.0f, 1.0f }, math::Vec3 color = core::colorWhite)
         : direction(direction)
         , color(color)
         , shadowMap(gfx::Texture::factory->create(1024u, 1024u))
-        , viewMatrix(math::lookAt(direction, math::Vec3 { 0.0f }, math::Vec3 { 0.0f, 1.0f, 0.0f }))
+        , viewMatrix(math::lookAt(-direction, math::Vec3 { 0.0f }, math::Vec3 { 0.0f, 1.0f, 0.0f }))
         , spaceMatrix(lightProjectionMatrix * viewMatrix) {
     }
 
     void onGui(gui::GuiApi& gui) override {
-        if (gui.beginTreeNode("Directional light")) {
-            gui.displayText("Position");
+        if (gui.beginTreeNodeWithCheckbox("Directional light", isActive)) {
+            gui.displayText("Direction");
 
-            if (gui.dragFloat3(gui::createHiddenLabel("dlcDirection"), direction, 0.01f, -1.0f, 1.0f)) {
-                viewMatrix = math::lookAt(direction, math::Vec3 { 0.0f }, math::Vec3 { 0.0f, 1.0f, 0.0f });
+            if (gui.dragFloat3(gui::createHiddenLabel("dlcDirection"), direction, 0.01f, -15.0f, 15.0f)) {
+                viewMatrix = math::lookAt(-direction, math::Vec3 { 0.0f }, math::Vec3 { 0.0f, 1.0f, 0.0f });
                 spaceMatrix = lightProjectionMatrix * viewMatrix;
             }
 
             gui.displayText("Color");
             gui.colorPicker3(gui::createHiddenLabel("dlcColor"), color);
+
+            if (gui.beginTreeNode("Shadow map")) {
+                gui.showImage(*shadowMap, { 250, 250 });
+                gui.popTreeNode();
+            }
 
             gui.popTreeNode();
         }

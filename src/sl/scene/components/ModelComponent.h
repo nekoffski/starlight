@@ -17,6 +17,22 @@ struct ModelComponent : ecs::Component {
         modelData.positions.push_back(math::Vec4(0.0f));
     }
 
+    void onGui(gui::GuiApi& gui) override {
+        if (gui.beginTreeNode("Model")) {
+
+            if (gui.beginTreeNode("Meshes:")) {
+                for (auto& mesh : modelData.model->meshes) {
+                    gui.displayText("Textures:");
+                    for (auto& texture : mesh->textures)
+                        gui.showImage(*texture, { 250, 250 });
+                }
+                gui.popTreeNode();
+            }
+
+            gui.popTreeNode();
+        }
+    }
+
     void serialize(core::JsonBuilder& builder) override {
         builder.addField("name", "ModelComponent"s).addField("model-id", modelData.model->id);
     }

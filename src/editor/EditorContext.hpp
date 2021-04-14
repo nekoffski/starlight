@@ -58,7 +58,7 @@ public:
 
         m_guiApiProxy->addFont("/home/nek0/kapik/projects/starlight/res/fonts/fa-solid-900.ttf",
             ICON_MIN_FA, ICON_MAX_FA);
-        WRITE_DEBUG("%s", "Editor context initialized");
+        WRITE_DEBUG("{}", "Editor context initialized");
     }
 
     void onAttach() override {

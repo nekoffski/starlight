@@ -14,6 +14,10 @@ struct GuiApiMock : public GuiApi {
         inline static Factory* instance = nullptr;
     };
 
+    MOCK_METHOD(void, pushId, (const std::string&), (override));
+    MOCK_METHOD(void, pushId, (int), (override));
+    MOCK_METHOD(void, popId, (), (override));
+    MOCK_METHOD(bool, checkbox, (const std::string&, bool&), (override));
     MOCK_METHOD(void, manipulateGizmo, (math::Mat4 & viewMatrix, math::Mat4& projectionMatrix, math::Mat4& transformation, GizmoOperation op, GizmoSystem system),
         (override));
     MOCK_METHOD(void, pushTextColor, (const math::Vec4&), (override));
@@ -65,4 +69,5 @@ struct GuiApiMock : public GuiApi {
     MOCK_METHOD(bool, button, (const std::string&, int xSize, int ySize), (override));
     MOCK_METHOD(void, setupGizmo, (const gfx::ViewFrustum::Viewport&), (override));
     MOCK_METHOD(bool, isUsingGizmo, (), (override));
+    MOCK_METHOD(void, showImage, (gfx::Texture & texture, math::Vec2 size), (override));
 };

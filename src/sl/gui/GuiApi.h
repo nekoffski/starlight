@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "sl/core/NotNullPtr.hpp"
+#include "sl/gfx/Texture.h"
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
@@ -30,7 +31,23 @@ public:
 
     inline static std::unique_ptr<Factory> factory = nullptr;
 
+    bool beginTreeNodeWithCheckbox(const std::string& label, bool& checkbox) {
+        bool isOpened = this->beginTreeNode(label);
+        this->sameLine();
+        this->checkbox("##" + label, checkbox);
+
+        return isOpened;
+    }
+
     virtual ~GuiApi() = default;
+
+    virtual void pushId(const std::string&) = 0;
+    virtual void pushId(int) = 0;
+    virtual void popId() = 0;
+
+    virtual bool checkbox(const std::string&, bool&) = 0;
+
+    virtual void showImage(gfx::Texture& texture, math::Vec2 size) = 0;
 
     virtual void manipulateGizmo(math::Mat4& viewMatrix, math::Mat4& projectionMatrix, math::Mat4& transformation,
         GizmoOperation op, GizmoSystem system) = 0;

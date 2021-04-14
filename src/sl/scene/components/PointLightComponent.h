@@ -18,7 +18,7 @@ struct PointLightComponent : ecs::Component {
     }
 
     void onGui(gui::GuiApi& gui) override {
-        if (gui.beginTreeNode("Point light")) {
+        if (gui.beginTreeNodeWithCheckbox("Point light", isActive)) {
             gui.displayText("Position");
             gui.dragFloat3(gui::createHiddenLabel("plcPositon"), position, 0.1f);
             gui.displayText("Color");

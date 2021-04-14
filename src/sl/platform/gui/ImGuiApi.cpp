@@ -78,6 +78,26 @@ ImGuiApi::~ImGuiApi() {
     ImGui::DestroyContext();
 }
 
+void ImGuiApi::pushId(const std::string& id) {
+    ImGui::PushID(id.c_str());
+}
+
+void ImGuiApi::pushId(int id) {
+    ImGui::PushID(id);
+}
+
+void ImGuiApi::popId() {
+    ImGui::PopID();
+}
+
+bool ImGuiApi::checkbox(const std::string& label, bool& value) {
+    return ImGui::Checkbox(label.c_str(), &value);
+}
+
+void ImGuiApi::showImage(sl::gfx::Texture& texture, math::Vec2 size) {
+    ImGui::Image((void*)(intptr_t)texture.getBuffer(), ImVec2(size.x, size.y));
+}
+
 void ImGuiApi::pushTextColor(const math::Vec4& color) {
     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(color.x, color.y, color.z, color.w));
 }

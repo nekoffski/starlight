@@ -48,11 +48,14 @@ public:
 
 private:
     void threadWorker() {
+        using namespace std::chrono_literals;
+
         while (m_active) {
             auto job = m_jobs.dequeue();
 
             if (not job.has_value()) {
-                std::this_thread::yield();
+                // std::this_thread::yield();
+                std::this_thread::sleep_for(100ms);
                 continue;
             }
             (*job)();

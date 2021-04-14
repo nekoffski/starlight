@@ -15,7 +15,8 @@ class Entity {
 
 public:
     explicit Entity(const std::string& id, const std::string& name, Registry& registry)
-        : m_id(id)
+        : isActive(true)
+        , m_id(id)
         , m_name(name)
         , m_registry(registry) {
     }
@@ -56,6 +57,8 @@ public:
         for (const auto& index : m_componentsIndexes)
             m_registry.getComponentByIndex(m_id, index).onGui(gui);
     }
+
+    bool isActive;
 
 private:
     std::string m_id;

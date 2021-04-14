@@ -13,23 +13,24 @@ namespace sl::gfx::renderer {
 void LightRenderer::prepareDirectionalLights(ecs::ComponentView<scene::components::DirectionalLightComponent> lights,
     std::shared_ptr<gfx::Shader> shader) {
 
-    unsigned int directionalLightsNum = lights.size();
-    shader->setUniform("directionalLightsNum", directionalLightsNum);
+    unsigned int lightIndex = 0;
+    for (auto& directionalLight : lights)
+        if (directionalLight.isActive)
+            setDirectionalLight(shader, directionalLight, lightIndex++);
 
-    for (unsigned int i = 0; i < directionalLightsNum; ++i)
-        setDirectionalLight(shader, lights[i], i);
+    shader->setUniform("directionalLightsNum", lightIndex);
 }
 
 void LightRenderer::preparePointsLights(ecs::ComponentView<scene::components::PointLightComponent> lights,
     ecs::ComponentView<scene::components::TransformComponent> transforms, std::shared_ptr<gfx::Shader> shader) {
 
-    unsigned int pointLightsNum = lights.size();
-    shader->setUniform("pointLightsNum", pointLightsNum);
+    unsigned int lightIndex = 0;
+    for (auto& pointLight : lights)
+        if (pointLight.isActive)
+            setPointLight(shader, pointLight,
+                transforms.getByEntityId(pointLight.ownerEntityId), lightIndex++);
 
-    for (unsigned int i = 0; i < pointLightsNum; ++i) {
-        auto& transform = transforms.getByEntityId(lights[i].ownerEntityId);
-        setPointLight(shader, lights[i], transform, i);
-    }
+    shader->setUniform("pointLightsNum", lightIndex);
 }
 
 void LightRenderer::setDirectionalLight(std::shared_ptr<gfx::Shader> shader,
