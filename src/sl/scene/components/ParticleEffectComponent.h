@@ -16,7 +16,9 @@ struct ParticleEffectComponent : ecs::Component {
     }
 
     void onGui(gui::GuiApi& gui) override {
-        if (gui.beginTreeNode("ParticleEffect")) {
+        gui.pushId(ownerEntityId);
+
+        if (beginComponentTreeNode(gui, "ParticleEffect")) {
             gui.displayText("Position");
             gui.dragFloat3(gui::createHiddenLabel("pfxPositon"), position, 0.1f);
 
@@ -54,6 +56,8 @@ struct ParticleEffectComponent : ecs::Component {
 
             gui.popTreeNode();
         }
+
+        gui.popId();
     }
 
     math::Vec3 position;

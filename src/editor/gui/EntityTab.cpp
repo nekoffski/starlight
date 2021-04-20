@@ -31,7 +31,7 @@ void EntityTab::render(sl::gui::GuiApi& gui) {
 }
 
 void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
-    if (m_sharedState->selectedEntity != nullptr) {
+    if (auto selectedEntity = m_sharedState->selectedEntity.lock(); selectedEntity) {
         static int selectedValue = 0;
 
         auto& widgetProperties = m_sharedState->guiProperties.rightPanelProperties;
@@ -60,37 +60,37 @@ void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
 
             switch (selectedValue) {
             case 0: {
-                addModel(load, gui);
+                addModel(load, *selectedEntity, gui);
                 break;
             }
 
             case 1: {
-                addRenderer(load, gui);
+                addRenderer(load, *selectedEntity, gui);
                 break;
             }
 
             case 2: {
-                addRenderer(load, gui);
+                addRenderer(load, *selectedEntity, gui);
                 break;
             }
 
             case 3: {
-                addParticleEffect(load, gui);
+                addParticleEffect(load, *selectedEntity, gui);
                 break;
             }
 
             case 4: {
-                addTransform(load, gui);
+                addTransform(load, *selectedEntity, gui);
                 break;
             }
 
             case 5: {
-                addPointLight(load, gui);
+                addPointLight(load, *selectedEntity, gui);
                 break;
             }
 
             case 6: {
-                addDirectionalLight(load, gui);
+                addDirectionalLight(load, *selectedEntity, gui);
                 break;
             }
             }
@@ -98,11 +98,11 @@ void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
             gui.endPopUp();
         }
 
-        m_sharedState->selectedEntity->onGui(gui);
+        selectedEntity->onGui(gui);
     }
 }
 
-void EntityTab::addModel(bool load, sl::gui::GuiApi& gui) {
+void EntityTab::addModel(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui) {
     auto modelsNames = m_sharedState->assetManager.getNamesByType(sl::asset::AssetType::model);
     modelsNames.insert(modelsNames.begin(), "None");
 
@@ -115,26 +115,26 @@ void EntityTab::addModel(bool load, sl::gui::GuiApi& gui) {
         auto& modelName = modelsNames[selectedValue];
         auto modelAsset =
             m_sharedState->assetManager.getAssetsByType(sl::asset::AssetType::model)[modelName]->as<sl::asset::ModelAsset>();
-        m_sharedState->selectedEntity->addComponent<sl::scene::components::ModelComponent>(modelAsset->model);
+        entity.addComponent<sl::scene::components::ModelComponent>(modelAsset->model);
     }
 }
 
-void EntityTab::addParticleEffect(bool load, sl::gui::GuiApi& gui) {
+void EntityTab::addParticleEffect(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui) {
     if (load)
-        m_sharedState->selectedEntity->addComponent<scene::components::ParticleEffectComponent>();
+        entity.addComponent<scene::components::ParticleEffectComponent>();
 }
 
-void EntityTab::addPointLight(bool load, sl::gui::GuiApi& gui) {
+void EntityTab::addPointLight(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui) {
     if (load)
-        m_sharedState->selectedEntity->addComponent<sl::scene::components::PointLightComponent>();
+        entity.addComponent<sl::scene::components::PointLightComponent>();
 }
 
-void EntityTab::addDirectionalLight(bool load, sl::gui::GuiApi& gui) {
+void EntityTab::addDirectionalLight(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui) {
     if (load)
-        m_sharedState->selectedEntity->addComponent<sl::scene::components::DirectionalLightComponent>();
+        entity.addComponent<sl::scene::components::DirectionalLightComponent>();
 }
 
-void EntityTab::addRenderer(bool load, sl::gui::GuiApi& gui) {
+void EntityTab::addRenderer(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui) {
     auto shadersNames = m_sharedState->assetManager.getNamesByType(sl::asset::AssetType::shader);
     shadersNames.insert(shadersNames.begin(), "None");
 
@@ -147,13 +147,13 @@ void EntityTab::addRenderer(bool load, sl::gui::GuiApi& gui) {
         auto& shaderName = shadersNames[selectedValue];
         auto shaderAsset =
             m_sharedState->assetManager.getAssetsByType(sl::asset::AssetType::shader)[shaderName]->as<sl::asset::ShaderAsset>();
-        m_sharedState->selectedEntity->addComponent<sl::scene::components::RendererComponent>(shaderAsset->shader);
+        entity.addComponent<sl::scene::components::RendererComponent>(shaderAsset->shader);
     }
 }
 
-void EntityTab::addTransform(bool load, sl::gui::GuiApi& gui) {
+void EntityTab::addTransform(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui) {
     if (load) {
-        m_sharedState->selectedEntity->addComponent<sl::scene::components::TransformComponent>();
+        entity.addComponent<sl::scene::components::TransformComponent>();
     }
 }
 }

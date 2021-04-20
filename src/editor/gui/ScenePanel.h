@@ -40,8 +40,12 @@ public:
         if (scene) {
             gui.breakLine();
 
+            std::vector<std::string> entitiesToRemove;
+
             if (gui.beginTreeNode(" " ICON_FA_CUBES " Scene")) {
                 for (auto& [entityId, entity] : scene->ecsRegistry.getEntities()) {
+                    gui.pushId(entity->getId());
+
                     auto onEntityClick = [&]() {
                         m_sharedState->selectedEntity = entity;
 
@@ -51,34 +55,56 @@ public:
                         }
                     };
 
-                    bool isSelectedEntity = m_sharedState->selectedEntity != nullptr &&
-                        m_sharedState->selectedEntity->getId() == entityId;
+                    auto selectedEntity = m_sharedState->selectedEntity.lock();
+                    bool isEntitySelected = selectedEntity && selectedEntity->getId() == entityId;
 
-                    if (isSelectedEntity)
-                        gui.pushTextColor(selectedEntryColor);
+                    auto entryColor =
+                        isEntitySelected ? selectedEntryColor : entity->isActive ? guiDefaultTextColor
+                                                                                 : disabledEntryColor;
 
-                    if (gui.beginTreeNode(" " ICON_FA_CUBE " "s + entity->getName(), false)) {
-                        gui.pushTextColor(guiDefaultTextColor);
-                        if (gui.isPreviousWidgetClicked())
+                    gui.pushTextColor(entryColor);
+
+                    bool isEntityOpened = gui.beginTreeNode(" " ICON_FA_CUBE " "s + entity->getName(), false);
+                    bool isClicked = gui.isPreviousWidgetClicked();
+
+                    gui.popColor();
+
+                    gui.sameLine();
+                    gui.setFontScale(0.55f);
+                    gui.checkbox("##isActive", entity->isActive);
+                    gui.setFontScale(0.8);
+                    gui.sameLine();
+                    gui.displayText(ICON_FA_TIMES);
+
+                    if (gui.isPreviousWidgetClicked())
+                        entitiesToRemove.push_back(entityId);
+
+                    gui.setFontScale(1.0f);
+
+                    if (isEntityOpened) {
+                        if (isClicked)
                             onEntityClick();
 
-                        gui.popColor();
                         gui.popTreeNode();
                     }
 
-                    if (isSelectedEntity)
-                        gui.popColor();
-
-                    if (gui.isPreviousWidgetClicked())
+                    if (isClicked)
                         onEntityClick();
+
+                    gui.popId();
                 }
+
+                for (auto& entityId : entitiesToRemove)
+                    scene->ecsRegistry.removeEntity(entityId);
             }
         }
         gui.endPanel();
 
         if (scene) {
-            if (m_sharedState->selectedEntity != nullptr && m_sharedState->selectedEntity->hasComponent<TransformComponent>()) {
-                auto& transform = m_sharedState->selectedEntity->getComponent<TransformComponent>();
+            if (auto selectedEntity = m_sharedState->selectedEntity.lock(); selectedEntity &&
+                selectedEntity->hasComponent<TransformComponent>()) {
+
+                auto& transform = selectedEntity->getComponent<TransformComponent>();
 
                 gui.setupGizmo(scene->camera->viewFrustum.viewport);
 

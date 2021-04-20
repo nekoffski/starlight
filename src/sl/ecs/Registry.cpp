@@ -13,4 +13,14 @@ std::shared_ptr<Entity> Registry::createEntity(const std::string& name) {
     m_entityNameToId[name] = id;
     return entity;
 }
+
+void Registry::removeEntity(const std::string& entityId) {
+    auto entity = m_entities[entityId];
+
+    for (const auto& componentIndex : entity->m_componentsIndexes)
+        removeComponent(entityId, componentIndex);
+
+    m_entityNameToId.erase(entity->getName());
+    m_entities.erase(entityId);
+}
 }

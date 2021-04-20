@@ -78,6 +78,10 @@ ImGuiApi::~ImGuiApi() {
     ImGui::DestroyContext();
 }
 
+void ImGuiApi::setFontScale(float scale) {
+    ImGui::SetWindowFontScale(scale);
+}
+
 void ImGuiApi::pushId(const std::string& id) {
     ImGui::PushID(id.c_str());
 }
@@ -116,7 +120,11 @@ bool ImGuiApi::isCapturingKeyboard() {
 
 void ImGuiApi::addFont(const std::string& path, short unsigned min, short unsigned max) {
     ImGuiIO& io = ImGui::GetIO();
-    io.Fonts->AddFontDefault();
+
+    constexpr int sizePixels = 15;
+    io.Fonts->AddFontFromFileTTF("/home/nek0/kapik/projects/starlight/res/fonts/Roboto-Regular.ttf", sizePixels);
+
+    // io.Fonts->AddFontDefault();
 
     ImFontConfig config;
     config.MergeMode = true;
@@ -249,6 +257,10 @@ void ImGuiApi::beginPanel(const std::string& title, math::Vec2 pos, math::Vec2 s
 
 void ImGuiApi::endPanel() {
     ImGui::End();
+}
+
+void ImGuiApi::separator() {
+    ImGui::Separator();
 }
 
 bool ImGuiApi::sliderFloat3(const std::string& label, math::Vec3& v, float min, float max) {

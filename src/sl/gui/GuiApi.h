@@ -41,6 +41,7 @@ public:
 
     virtual ~GuiApi() = default;
 
+    virtual void setFontScale(float scale) = 0;
     virtual void pushId(const std::string&) = 0;
     virtual void pushId(int) = 0;
     virtual void popId() = 0;
@@ -57,6 +58,8 @@ public:
 
     virtual void begin() = 0;
     virtual void end() = 0;
+
+    virtual void separator() = 0;
 
     virtual bool beginMenuBar() = 0;
     virtual void endMenuBar() = 0;

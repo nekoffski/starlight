@@ -5,7 +5,7 @@
 #include "EntityTab.h"
 #include "Widget.h"
 
-#include "editor/fonts/FontAwesome.h"
+#include "sl/gui/fonts/FontAwesome.h"
 
 namespace editor::gui {
 

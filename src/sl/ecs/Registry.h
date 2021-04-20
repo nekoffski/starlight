@@ -26,6 +26,12 @@ public:
         component.ownerEntityId = entityId;
     }
 
+    void removeEntity(const std::string& entityId);
+
+    void removeComponent(const std::string& entityId, std::type_index componentIndex) {
+        m_componentMap.getByIndex<Component>(componentIndex)->remove(entityId);
+    }
+
     template <typename T>
     T& getComponent(const std::string& entityId) {
         return m_componentMap.get<T>()->getByEntityId(entityId);

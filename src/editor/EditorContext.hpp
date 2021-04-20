@@ -1,7 +1,6 @@
 #pragma once
 
 #include "DebugConsole.hpp"
-#include "fonts/FontAwesome.h"
 #include "gui/EditorGui.h"
 #include "sl/app/ApplicationContext.h"
 #include "sl/app/Deserializer.h"
@@ -21,6 +20,7 @@
 #include "sl/gui/ErrorDialog.hpp"
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/Utils.hpp"
+#include "sl/gui/fonts/FontAwesome.h"
 #include "sl/scene/Scene.h"
 #include "sl/scene/components/MaterialComponent.h"
 #include "sl/scene/components/ModelComponent.h"
@@ -56,8 +56,6 @@ public:
 
         loadDefaultShaders();
 
-        m_guiApiProxy->addFont("/home/nek0/kapik/projects/starlight/res/fonts/fa-solid-900.ttf",
-            ICON_MIN_FA, ICON_MAX_FA);
         WRITE_DEBUG("{}", "Editor context initialized");
     }
 

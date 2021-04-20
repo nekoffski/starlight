@@ -94,6 +94,9 @@ void Application::init() {
 
     SL_INFO("Creating scene systems instance");
     m_sceneSystems = std::make_shared<scene::SceneSystems>();
+
+    m_guiApi->addFont("/home/nek0/kapik/projects/starlight/res/fonts/fa-solid-900.ttf",
+        ICON_MIN_FA, ICON_MAX_FA);
 }
 
 void Application::update(float deltaTime, float time) {

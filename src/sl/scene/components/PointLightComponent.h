@@ -18,7 +18,9 @@ struct PointLightComponent : ecs::Component {
     }
 
     void onGui(gui::GuiApi& gui) override {
-        if (gui.beginTreeNodeWithCheckbox("Point light", isActive)) {
+        gui.pushId(ownerEntityId);
+
+        if (beginComponentTreeNode(gui, "Point light")) {
             gui.displayText("Position");
             gui.dragFloat3(gui::createHiddenLabel("plcPositon"), position, 0.1f);
             gui.displayText("Color");
@@ -32,6 +34,8 @@ struct PointLightComponent : ecs::Component {
 
             gui.popTreeNode();
         }
+
+        gui.popId();
     }
 
     void serialize(core::JsonBuilder& builder) override {

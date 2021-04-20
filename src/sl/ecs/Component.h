@@ -6,15 +6,40 @@
 #include "sl/core/Json.h"
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/Utils.hpp"
+#include "sl/gui/fonts/FontAwesome.h"
 
 namespace sl::ecs {
 
 struct Component {
-    virtual void onGui([[maybe_unused]] gui::GuiApi& gui) { }
-    virtual void serialize([[maybe_unused]] core::JsonBuilder& builder) { }
+    virtual void onGui([[maybe_unused]] gui::GuiApi& gui) {
+    }
+
+    virtual void serialize([[maybe_unused]] core::JsonBuilder& builder) {
+    }
 
     std::string ownerEntityId;
     bool isActive = true;
+    bool shouldBeRemoved = false;
+    std::string name;
+
+    bool beginComponentTreeNode(gui::GuiApi& gui, const std::string& name) {
+        gui.separator();
+
+        bool isOpened = gui.beginTreeNode(name);
+
+        gui.sameLine();
+        gui.setFontScale(0.6f);
+        gui.checkbox("##" + name, isActive);
+
+        gui.sameLine();
+        gui.setFontScale(0.9f);
+        gui.displayText("            " ICON_FA_TIMES_CIRCLE);
+
+        gui.setFontScale(1.0f);
+
+        shouldBeRemoved = gui.isPreviousWidgetClicked();
+        return isOpened;
+    }
 
     static void serializeVector(core::JsonBuilder& builder, const std::string& name, const math::Vec3& vector) {
         builder.addField(name, std::vector<float> { vector.x, vector.y, vector.z });

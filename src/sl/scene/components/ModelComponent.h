@@ -18,7 +18,9 @@ struct ModelComponent : ecs::Component {
     }
 
     void onGui(gui::GuiApi& gui) override {
-        if (gui.beginTreeNode("Model")) {
+        gui.pushId(ownerEntityId);
+
+        if (beginComponentTreeNode(gui, "Model")) {
 
             if (gui.beginTreeNode("Meshes:")) {
                 for (auto& mesh : modelData.model->meshes) {
@@ -31,6 +33,8 @@ struct ModelComponent : ecs::Component {
 
             gui.popTreeNode();
         }
+
+        gui.popId();
     }
 
     void serialize(core::JsonBuilder& builder) override {

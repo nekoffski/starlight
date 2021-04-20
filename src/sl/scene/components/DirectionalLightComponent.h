@@ -21,7 +21,9 @@ struct DirectionalLightComponent : ecs::Component {
     }
 
     void onGui(gui::GuiApi& gui) override {
-        if (gui.beginTreeNodeWithCheckbox("Directional light", isActive)) {
+        gui.pushId(ownerEntityId);
+
+        if (beginComponentTreeNode(gui, "Directional light")) {
             gui.displayText("Direction");
 
             if (gui.dragFloat3(gui::createHiddenLabel("dlcDirection"), direction, 0.01f, -15.0f, 15.0f)) {
@@ -39,6 +41,8 @@ struct DirectionalLightComponent : ecs::Component {
 
             gui.popTreeNode();
         }
+
+        gui.popId();
     }
 
     void serialize(core::JsonBuilder& builder) override {

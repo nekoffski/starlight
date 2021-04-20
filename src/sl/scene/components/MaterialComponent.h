@@ -17,7 +17,9 @@ struct MaterialComponent : ecs::Component {
     }
 
     void onGui(gui::GuiApi& gui) override {
-        if (gui.beginTreeNode("Material")) {
+        gui.pushId(ownerEntityId);
+
+        if (beginComponentTreeNode(gui, "Material")) {
             gui.displayText("Ambient color");
             gui.colorPicker3(gui::createHiddenLabel("Ambient color"), ambientColor);
             gui.displayText("Diffuse color");
@@ -28,6 +30,8 @@ struct MaterialComponent : ecs::Component {
             gui.dragFloat(gui::createHiddenLabel("rotation"), shininess, 0.5f, 0.0f, 128.0f);
             gui.popTreeNode();
         }
+
+        gui.popId();
     }
 
     void serialize(core::JsonBuilder& builder) override {

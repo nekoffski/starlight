@@ -18,12 +18,12 @@ public:
 private:
     void showEntityProperties(sl::gui::GuiApi& gui);
 
-    void addModel(bool load, sl::gui::GuiApi& gui);
-    void addRenderer(bool load, sl::gui::GuiApi& gui);
-    void addTransform(bool load, sl::gui::GuiApi& gui);
-    void addPointLight(bool load, sl::gui::GuiApi& gui);
-    void addDirectionalLight(bool load, sl::gui::GuiApi& gui);
-    void addParticleEffect(bool load, sl::gui::GuiApi& gui);
+    void addModel(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui);
+    void addRenderer(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui);
+    void addTransform(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui);
+    void addPointLight(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui);
+    void addDirectionalLight(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui);
+    void addParticleEffect(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui);
 
     std::weak_ptr<sl::gfx::Cubemap> m_selectedCubemap;
 };

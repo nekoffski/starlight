@@ -4,8 +4,8 @@
 
 #include "GuiStyle.h"
 #include "SharedState.hpp"
-#include "editor/fonts/FontAwesome.h"
 #include "sl/gui/GuiApi.h"
+#include "sl/gui/fonts/FontAwesome.h"
 #include "sl/math/Vector.hpp"
 #include "sl/scene/Scene.h"
 

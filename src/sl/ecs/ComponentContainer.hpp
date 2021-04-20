@@ -5,11 +5,14 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Component.h"
+
 namespace sl::ecs {
 
 class IComponentContainer {
 public:
     virtual ~IComponentContainer() = default;
+    virtual void remove(const std::string& entityId) = 0;
 };
 
 template <typename T>
@@ -27,7 +30,7 @@ public:
 
     template <typename... Args>
     T& add(const std::string& entityId, Args&&... args) {
-        m_components.emplace_back(T{ std::forward<Args>(args)... });
+        m_components.emplace_back(T { std::forward<Args>(args)... });
         auto& component = m_components.back();
 
         component.ownerEntityId = entityId;
@@ -36,7 +39,7 @@ public:
         return component;
     }
 
-    void remove(const std::string& entityId) {
+    void remove(const std::string& entityId) override {
         m_entityIdToComponent.erase(entityId);
         std::erase_if(m_components, [&entityId](T& component) { return component.ownerEntityId == entityId; });
         rebuildMap();

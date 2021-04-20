@@ -11,6 +11,8 @@ public:
     explicit ImGuiApi(void*);
     ~ImGuiApi() override;
 
+    void setFontScale(float scale) override;
+
     void pushId(const std::string&) override;
     void pushId(int) override;
     void popId() override;
@@ -33,6 +35,8 @@ public:
 
     bool beginMenu(const std::string&) override;
     void endMenu() override;
+
+    void separator() override;
 
     bool isCapturingMouse() override;
     bool isCapturingKeyboard() override;

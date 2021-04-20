@@ -35,6 +35,12 @@ public:
         m_registry.addComponent<T>(m_id, std::forward<Args>(args)...);
     }
 
+    template <typename T>
+    void removeComponent() {
+        std::erase(m_componentsIndexes, core::typeIndex<T>());
+        m_registry.removeComponent(m_id, core::typeIndex<T>());
+    }
+
     std::vector<std::type_index> getComponentsIndexes() {
         return m_componentsIndexes;
     }
@@ -54,8 +60,20 @@ public:
     }
 
     void onGui(sl::gui::GuiApi& gui) {
-        for (const auto& index : m_componentsIndexes)
-            m_registry.getComponentByIndex(m_id, index).onGui(gui);
+        std::vector<std::type_index> indexesToRemove;
+
+        for (const auto& index : m_componentsIndexes) {
+            auto& component = m_registry.getComponentByIndex(m_id, index);
+            component.onGui(gui);
+
+            if (component.shouldBeRemoved)
+                indexesToRemove.push_back(index);
+        }
+
+        for (const auto& index : indexesToRemove) {
+            m_registry.removeComponent(m_id, index);
+            std::erase(m_componentsIndexes, index);
+        }
     }
 
     bool isActive;
