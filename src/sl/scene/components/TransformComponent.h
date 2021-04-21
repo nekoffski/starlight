@@ -24,7 +24,7 @@ struct TransformComponent : ecs::Component {
     void onGui(gui::GuiApi& gui) override {
         gui.pushId(ownerEntityId);
 
-        if (beginComponentTreeNode(gui, "Transform")) {
+        if (beginComponentTreeNode(gui, ICON_FA_STREET_VIEW "  Transform")) {
             int trigerred = 0;
 
             gui.displayText("Translation");

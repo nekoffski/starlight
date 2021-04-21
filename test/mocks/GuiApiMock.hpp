@@ -14,6 +14,7 @@ struct GuiApiMock : public GuiApi {
         inline static Factory* instance = nullptr;
     };
 
+    MOCK_METHOD(float, getCurrentWindowWidth, (), (override));
     MOCK_METHOD(void, setFontScale, (float scale), (override));
     MOCK_METHOD(void, separator, (), (override));
     MOCK_METHOD(void, pushId, (const std::string&), (override));

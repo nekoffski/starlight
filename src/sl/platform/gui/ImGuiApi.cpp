@@ -78,6 +78,10 @@ ImGuiApi::~ImGuiApi() {
     ImGui::DestroyContext();
 }
 
+float ImGuiApi::getCurrentWindowWidth() {
+    return ImGui::GetWindowWidth();
+}
+
 void ImGuiApi::setFontScale(float scale) {
     ImGui::SetWindowFontScale(scale);
 }
@@ -133,7 +137,7 @@ void ImGuiApi::addFont(const std::string& path, short unsigned min, short unsign
 
     // TODO: THIS CAN'T BE STATIC!!
     static const ImWchar iconRanges[] = { min, max, 0 };
-    io.Fonts->AddFontFromFileTTF(path.c_str(), 11.0f, &config, iconRanges);
+    io.Fonts->AddFontFromFileTTF(path.c_str(), 15.0f, &config, iconRanges);
 }
 
 void ImGuiApi::manipulateGizmo(math::Mat4& viewMatrix, math::Mat4& projectionMatrix, math::Mat4& transformation,

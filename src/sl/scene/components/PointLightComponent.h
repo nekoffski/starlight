@@ -20,7 +20,7 @@ struct PointLightComponent : ecs::Component {
     void onGui(gui::GuiApi& gui) override {
         gui.pushId(ownerEntityId);
 
-        if (beginComponentTreeNode(gui, "Point light")) {
+        if (beginComponentTreeNode(gui, ICON_FA_LIGHTBULB "  Point light")) {
             gui.displayText("Position");
             gui.dragFloat3(gui::createHiddenLabel("plcPositon"), position, 0.1f);
             gui.displayText("Color");

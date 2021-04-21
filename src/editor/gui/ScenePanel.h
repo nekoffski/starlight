@@ -10,6 +10,8 @@
 #include "sl/math/Vector.hpp"
 #include "sl/scene/components/TransformComponent.h"
 
+#include "sl/core/Logger.h"
+
 #include "editor/DebugConsole.hpp"
 
 #include "Widget.h"
@@ -31,20 +33,22 @@ public:
         auto scene = m_sharedState->activeScene.lock();
 
         gui.beginPanel("Scene entities", widgetProperties.origin, widgetProperties.size);
-        if (gui.button(ICON_FA_PLUS " Add entity", 150))
+        if (gui.button(ICON_FA_PLUS "  Add entity", gui.getCurrentWindowWidth()))
             if (scene)
                 scene->addEntity("Entity" + std::to_string(scene->getEntitiesCount()));
 
         using sl::scene::components::TransformComponent;
+
+        gui.pushId("scene-panel");
 
         if (scene) {
             gui.breakLine();
 
             std::vector<std::string> entitiesToRemove;
 
-            if (gui.beginTreeNode(" " ICON_FA_CUBES " Scene")) {
+            if (gui.beginTreeNode(" " ICON_FA_CUBES "  Scene")) {
                 for (auto& [entityId, entity] : scene->ecsRegistry.getEntities()) {
-                    gui.pushId(entity->getId());
+                    gui.pushId(entityId);
 
                     auto onEntityClick = [&]() {
                         m_sharedState->selectedEntity = entity;
@@ -64,14 +68,20 @@ public:
 
                     gui.pushTextColor(entryColor);
 
-                    bool isEntityOpened = gui.beginTreeNode(" " ICON_FA_CUBE " "s + entity->getName(), false);
+                    bool isEntityOpened = gui.beginTreeNode(" " ICON_FA_CUBE "  "s + entity->getName(), false);
                     bool isClicked = gui.isPreviousWidgetClicked();
 
                     gui.popColor();
 
                     gui.sameLine();
                     gui.setFontScale(0.55f);
-                    gui.checkbox("##isActive", entity->isActive);
+
+                    if (gui.checkbox("##isActive", entity->isActive)) {
+                        SL_INFO("click");
+                        for (auto& componentIndex : entity->getComponentsIndexes())
+                            entity->getComponent(componentIndex).isActive = entity->isActive;
+                    }
+
                     gui.setFontScale(0.8);
                     gui.sameLine();
                     gui.displayText(ICON_FA_TIMES);
@@ -98,6 +108,8 @@ public:
                     scene->ecsRegistry.removeEntity(entityId);
             }
         }
+
+        gui.popId();
         gui.endPanel();
 
         if (scene) {

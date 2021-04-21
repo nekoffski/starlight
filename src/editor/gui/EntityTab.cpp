@@ -35,7 +35,7 @@ void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
         static int selectedValue = 0;
 
         auto& widgetProperties = m_sharedState->guiProperties.rightPanelProperties;
-        if (gui.button(ICON_FA_PLUS " Add component", widgetProperties.size.x)) {
+        if (gui.button(ICON_FA_PLUS " Add component", gui.getCurrentWindowWidth())) {
             selectedValue = 0;
             gui.openPopUp("AddComponentPopUp");
         }

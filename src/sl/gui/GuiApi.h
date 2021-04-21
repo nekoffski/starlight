@@ -41,6 +41,8 @@ public:
 
     virtual ~GuiApi() = default;
 
+    virtual float getCurrentWindowWidth() = 0;
+
     virtual void setFontScale(float scale) = 0;
     virtual void pushId(const std::string&) = 0;
     virtual void pushId(int) = 0;

@@ -19,17 +19,27 @@ struct ModelComponent : ecs::Component {
 
     void onGui(gui::GuiApi& gui) override {
         gui.pushId(ownerEntityId);
+        if (beginComponentTreeNode(gui, ICON_FA_FIGHTER_JET "  Model")) {
+            auto& meshes = modelData.model->meshes;
 
-        if (beginComponentTreeNode(gui, "Model")) {
+            if (meshes.size() > 0) {
+                if (gui.beginTreeNode("Meshes")) {
+                    for (auto& mesh : meshes) {
+                        gui.displayText(mesh->name);
+                    }
 
-            if (gui.beginTreeNode("Meshes:")) {
-                for (auto& mesh : modelData.model->meshes) {
-                    gui.displayText("Textures:");
-                    for (auto& texture : mesh->textures)
-                        gui.showImage(*texture, { 250, 250 });
+                    gui.popTreeNode();
                 }
-                gui.popTreeNode();
             }
+
+            // if (gui.beginTreeNode("Meshes:")) {
+            //     for (auto& mesh : modelData.model->meshes) {
+            //         gui.displayText("Textures:");
+            //         for (auto& texture : mesh->textures)
+            //             gui.showImage(*texture, { 250, 250 });
+            //     }
+            //     gui.popTreeNode();
+            // }
 
             gui.popTreeNode();
         }

@@ -54,6 +54,7 @@ public:
         m_scene->camera = m_activeCamera;
         m_editorGui->sharedState->activeScene = m_scene;
 
+        recalculateWindow(windowWidth, windowHeight);
         loadDefaultShaders();
 
         WRITE_DEBUG("{}", "Editor context initialized");
@@ -142,21 +143,7 @@ public:
                 auto windowResizedEvent = event->as<WindowResizedEvent>();
                 auto [width, height] = windowResizedEvent->getSize();
 
-                editor::gui::GuiProperties guiProperties { width, height };
-                m_editorGui->sharedState->guiProperties = guiProperties;
-
-                gfx::ViewFrustum::Viewport newViewport {
-                    width - guiProperties.scenePanelProperties.size.x - guiProperties.rightPanelProperties.size.x,
-                    height - guiProperties.bottomPanelProperties.size.y,
-                    guiProperties.scenePanelProperties.size.x,
-                    guiProperties.bottomPanelProperties.size.y
-                };
-
-                m_activeCamera->viewFrustum.viewport = newViewport;
-                m_activeCamera->calculateProjectionMatrix();
-
-                m_lowLevelRendererProxy->setViewport(newViewport);
-
+                recalculateWindow(width, height);
                 break;
             }
 
@@ -180,6 +167,23 @@ public:
                 m_errorDialog.setErrorMessage(err.as<std::string>());
             }
         }
+    }
+
+    void recalculateWindow(float width, float height) {
+        editor::gui::GuiProperties guiProperties { width, height };
+        m_editorGui->sharedState->guiProperties = guiProperties;
+
+        gfx::ViewFrustum::Viewport newViewport {
+            width - guiProperties.scenePanelProperties.size.x - guiProperties.rightPanelProperties.size.x,
+            height - guiProperties.bottomPanelProperties.size.y,
+            guiProperties.scenePanelProperties.size.x,
+            guiProperties.bottomPanelProperties.size.y
+        };
+
+        m_activeCamera->viewFrustum.viewport = newViewport;
+        m_activeCamera->calculateProjectionMatrix();
+
+        m_lowLevelRendererProxy->setViewport(newViewport);
     }
 
 private:

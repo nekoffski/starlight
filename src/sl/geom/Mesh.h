@@ -14,6 +14,8 @@ struct Mesh {
     std::vector<unsigned int> indices;
     std::vector<std::shared_ptr<sl::gfx::Texture>> textures;
     std::shared_ptr<gfx::buffer::VertexArray> vertexArray;
+
+    std::string name = "ExampleMesh";
 };
 
 using MeshPtr = std::shared_ptr<Mesh>;

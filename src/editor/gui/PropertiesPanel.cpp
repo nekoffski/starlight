@@ -24,7 +24,7 @@ void PropertiesPanel::render(sl::gui::GuiApi& gui) {
     gui.beginPanel("Properties", widgetProperties.origin, widgetProperties.size);
     gui.beginTabBar("lowerLeftTabBar");
 
-    if (gui.beginTabItem("Scene")) {
+    if (gui.beginTabItem(ICON_FA_GLOBE_EUROPE "  Scene")) {
         showSceneProperties(gui);
         gui.endTabItem();
     }
@@ -54,7 +54,7 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
         gui.popTreeNode();
     }
 
-    if (gui.beginTreeNode("Camera")) {
+    if (gui.beginTreeNode(ICON_FA_VIDEO "  Camera")) {
         if (auto scene = m_sharedState->activeScene.lock(); scene)
             scene->camera->onGui(gui);
         gui.popTreeNode();

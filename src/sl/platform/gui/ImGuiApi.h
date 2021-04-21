@@ -11,6 +11,8 @@ public:
     explicit ImGuiApi(void*);
     ~ImGuiApi() override;
 
+    float getCurrentWindowWidth() override;
+
     void setFontScale(float scale) override;
 
     void pushId(const std::string&) override;

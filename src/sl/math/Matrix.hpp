@@ -19,6 +19,9 @@ template <class T, glm::qualifier Q>
 glm::mat<4, 4, T, Q> lookAt(glm::vec<3, T, Q> const& eye, glm::vec<3, T, Q> const& center, glm::vec<3, T, Q> const& up) {
     return glm::lookAt(eye, center, up);
 }
+
+const Mat4 identityMatrix = Mat4 { 1.0f };
+
 }
 
 inline std::ostream& operator<<(std::ostream& ss, const sl::math::Mat4& m) {

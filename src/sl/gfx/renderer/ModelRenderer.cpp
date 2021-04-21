@@ -19,20 +19,24 @@ void ModelRenderer::render(scene::components::RendererComponent& component, ecs:
     ecs::ComponentView<scene::components::ModelComponent> models, ecs::ComponentView<scene::components::TransformComponent> transforms,
     std::shared_ptr<gfx::camera::Camera> camera, std::shared_ptr<gfx::Shader> shader) {
 
+    auto& entityId = component.ownerEntityId;
+    auto& model = models.getByEntityId(entityId);
+
+    if (not model.isActive || not component.isActive)
+        return;
+
     shader->setUniform("view", camera->getViewMatrix());
     shader->setUniform("viewPos", camera->getPosition());
-
-    auto& entityId = component.ownerEntityId;
 
     // TODO: POSSIBLE BRANCHING
     auto& material = materials.doesEntityOwnComponent(entityId) ? materials.getByEntityId(entityId) : DEFAULT_MATERIAL;
 
     setMaterial(material, shader);
 
-    auto& model = models.getByEntityId(entityId);
-    auto transformComponent = transforms.getByEntityId(entityId);
+    auto transformMatrix = transforms.doesEntityOwnComponent(entityId) ? transforms.getByEntityId(entityId).transformation
+                                                                       : math::identityMatrix;
 
-    renderModelComposite(shader, model.modelData, transformComponent.transformation, camera);
+    renderModelComposite(shader, model.modelData, transformMatrix, camera);
 }
 
 void ModelRenderer::render(scene::components::RendererComponent& component, ecs::ComponentView<scene::components::MaterialComponent> materials,

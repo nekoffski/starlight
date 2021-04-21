@@ -8,6 +8,8 @@
 #include "sl/gui/Utils.hpp"
 #include "sl/gui/fonts/FontAwesome.h"
 
+#include "imgui/imgui.h"
+
 namespace sl::ecs {
 
 struct Component {
@@ -31,11 +33,10 @@ struct Component {
         gui.setFontScale(0.6f);
         gui.checkbox("##" + name, isActive);
 
-        gui.sameLine();
-        gui.setFontScale(0.9f);
-        gui.displayText("            " ICON_FA_TIMES_CIRCLE);
-
         gui.setFontScale(1.0f);
+
+        gui.sameLine(gui.getCurrentWindowWidth() - 35);
+        gui.displayText(ICON_FA_TIMES);
 
         shouldBeRemoved = gui.isPreviousWidgetClicked();
         return isOpened;

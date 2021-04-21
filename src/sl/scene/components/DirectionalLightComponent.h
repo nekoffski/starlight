@@ -23,7 +23,7 @@ struct DirectionalLightComponent : ecs::Component {
     void onGui(gui::GuiApi& gui) override {
         gui.pushId(ownerEntityId);
 
-        if (beginComponentTreeNode(gui, "Directional light")) {
+        if (beginComponentTreeNode(gui, ICON_FA_SUN "  Directional light")) {
             gui.displayText("Direction");
 
             if (gui.dragFloat3(gui::createHiddenLabel("dlcDirection"), direction, 0.01f, -15.0f, 15.0f)) {
