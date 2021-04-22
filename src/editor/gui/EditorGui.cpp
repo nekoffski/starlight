@@ -17,7 +17,7 @@ EditorGui::EditorGui(std::shared_ptr<SharedState> sharedState)
 void EditorGui::renderEditorGui(sl::gui::GuiApi& gui) {
     using namespace event;
 
-    gui.pushTextColor(guiDefaultTextColor);
+    gui.pushTextColor(sl::gui::guiDefaultTextColor);
 
     if (gui.beginMainMenuBar()) {
         if (gui.beginMenu(ICON_FA_BARS " File")) {

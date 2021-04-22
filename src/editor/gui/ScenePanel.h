@@ -63,8 +63,8 @@ public:
                     bool isEntitySelected = selectedEntity && selectedEntity->getId() == entityId;
 
                     auto entryColor =
-                        isEntitySelected ? selectedEntryColor : entity->isActive ? guiDefaultTextColor
-                                                                                 : disabledEntryColor;
+                        isEntitySelected ? sl::gui::selectedEntryColor : entity->isActive ? sl::gui::guiDefaultTextColor
+                                                                                          : sl::gui::disabledEntryColor;
 
                     gui.pushTextColor(entryColor);
 

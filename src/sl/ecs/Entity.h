@@ -8,6 +8,10 @@
 #include "sl/core/Misc.hpp"
 #include "sl/gui/GuiApi.h"
 
+namespace sl::asset {
+class AssetManager;
+}
+
 namespace sl::ecs {
 
 class Entity {
@@ -59,12 +63,12 @@ public:
         return m_registry.hasComponent<T>(m_id);
     }
 
-    void onGui(sl::gui::GuiApi& gui) {
+    void onGui(sl::gui::GuiApi& gui, asset::AssetManager& assetManager) {
         std::vector<std::type_index> indexesToRemove;
 
         for (const auto& index : m_componentsIndexes) {
             auto& component = m_registry.getComponentByIndex(m_id, index);
-            component.onGui(gui);
+            component.onGui(gui, assetManager);
 
             if (component.shouldBeRemoved)
                 indexesToRemove.push_back(index);

@@ -5,7 +5,6 @@
 #include "sl/gfx/LowLevelRenderer.h"
 
 #include "sl/ecs/ComponentView.hpp"
-#include "sl/gfx/data/ModelData.h"
 #include "sl/scene/components/MaterialComponent.h"
 #include "sl/scene/components/ModelComponent.h"
 #include "sl/scene/components/RendererComponent.h"
@@ -26,10 +25,10 @@ public:
 private:
     void setMaterial(const scene::components::MaterialComponent& material, std::shared_ptr<gfx::Shader> shader);
 
-    void renderModelComposite(std::shared_ptr<gfx::Shader> shader, const gfx::data::ModelData& modelData,
+    void renderModel(std::shared_ptr<gfx::Shader> shader, scene::components::ModelComponent& model,
         const math::Mat4& transform, std::shared_ptr<gfx::camera::Camera>);
 
-    void renderModel(std::shared_ptr<geom::Model>);
+    // void renderModel(std::shared_ptr<geom::Model>);
 
     void renderMesh(std::shared_ptr<geom::Mesh>);
 

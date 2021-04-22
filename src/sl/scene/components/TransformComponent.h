@@ -21,7 +21,7 @@ struct TransformComponent : ecs::Component {
         recalculate();
     }
 
-    void onGui(gui::GuiApi& gui) override {
+    void onGui(gui::GuiApi& gui, asset::AssetManager& assetManager) override {
         gui.pushId(ownerEntityId);
 
         if (beginComponentTreeNode(gui, ICON_FA_STREET_VIEW "  Transform")) {
