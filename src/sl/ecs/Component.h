@@ -13,7 +13,7 @@
 namespace sl::ecs {
 
 struct Component {
-    virtual void onGui([[maybe_unused]] gui::GuiApi& gui) {
+    virtual void onGui([[maybe_unused]] gui::GuiApi& gui, [[maybe_unused]] asset::AssetManager& assetManager) {
     }
 
     virtual void serialize([[maybe_unused]] core::JsonBuilder& builder) {

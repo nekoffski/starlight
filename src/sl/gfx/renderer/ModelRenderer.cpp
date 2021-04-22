@@ -20,6 +20,10 @@ void ModelRenderer::render(scene::components::RendererComponent& component, ecs:
     std::shared_ptr<gfx::camera::Camera> camera, std::shared_ptr<gfx::Shader> shader) {
 
     auto& entityId = component.ownerEntityId;
+
+    if (not models.doesEntityOwnComponent(entityId))
+        return;
+
     auto& model = models.getByEntityId(entityId);
 
     if (not model.isActive || not component.isActive)
@@ -36,7 +40,7 @@ void ModelRenderer::render(scene::components::RendererComponent& component, ecs:
     auto transformMatrix = transforms.doesEntityOwnComponent(entityId) ? transforms.getByEntityId(entityId).transformation
                                                                        : math::identityMatrix;
 
-    renderModelComposite(shader, model.modelData, transformMatrix, camera);
+    renderModel(shader, model, transformMatrix, camera);
 }
 
 void ModelRenderer::render(scene::components::RendererComponent& component, ecs::ComponentView<scene::components::MaterialComponent> materials,
@@ -53,22 +57,19 @@ void ModelRenderer::setMaterial(const scene::components::MaterialComponent& mate
     shader->setUniform("material.shininess", material.shininess);
 }
 
-void ModelRenderer::renderModelComposite(std::shared_ptr<gfx::Shader> shader, const gfx::data::ModelData& modelData,
+void ModelRenderer::renderModel(std::shared_ptr<gfx::Shader> shader, scene::components::ModelComponent& model,
     const math::Mat4& transform, std::shared_ptr<gfx::camera::Camera> camera) {
 
     float t = core::Clock::now()->value();
     shader->setUniform("t", t);
     shader->setUniform("projection", camera->getProjectionMatrix());
 
-    for (const auto& position : modelData.positions) {
+    for (auto& position : model.instances) {
         shader->setUniform("model", transform * math::translate(position));
-        renderModel(modelData.model);
-    }
-}
 
-void ModelRenderer::renderModel(std::shared_ptr<geom::Model> model) {
-    for (const auto& mesh : model->meshes)
-        renderMesh(mesh);
+        for (auto& mesh : model.meshes)
+            renderMesh(mesh);
+    }
 }
 
 void ModelRenderer::renderMesh(std::shared_ptr<geom::Mesh> mesh) {

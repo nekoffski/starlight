@@ -20,7 +20,7 @@ struct DirectionalLightComponent : ecs::Component {
         , spaceMatrix(lightProjectionMatrix * viewMatrix) {
     }
 
-    void onGui(gui::GuiApi& gui) override {
+    void onGui(gui::GuiApi& gui, asset::AssetManager& assetManager) override {
         gui.pushId(ownerEntityId);
 
         if (beginComponentTreeNode(gui, ICON_FA_SUN "  Directional light")) {

@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include "GuiStyle.h"
 #include "SharedState.hpp"
 #include "sl/gui/GuiApi.h"
+#include "sl/gui/GuiStyle.h"
 #include "sl/gui/fonts/FontAwesome.h"
 #include "sl/math/Vector.hpp"
 #include "sl/scene/Scene.h"

@@ -15,7 +15,7 @@ struct ParticleEffectComponent : ecs::Component {
         , maxParticles(maxParticles) {
     }
 
-    void onGui(gui::GuiApi& gui) override {
+    void onGui(gui::GuiApi& gui, asset::AssetManager& assetManager) override {
         gui.pushId(ownerEntityId);
 
         if (beginComponentTreeNode(gui, "ParticleEffect")) {

@@ -98,25 +98,13 @@ void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
             gui.endPopUp();
         }
 
-        selectedEntity->onGui(gui);
+        selectedEntity->onGui(gui, m_sharedState->assetManager);
     }
 }
 
 void EntityTab::addModel(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui) {
-    auto modelsNames = m_sharedState->assetManager.getNamesByType(sl::asset::AssetType::model);
-    modelsNames.insert(modelsNames.begin(), "None");
-
-    static int selectedValue = 0;
-    gui.displayText("Model");
-    gui.sameLine();
-    gui.combo(sl::gui::createHiddenLabel("Model"), selectedValue, modelsNames);
-
-    if (load && selectedValue != 0) {
-        auto& modelName = modelsNames[selectedValue];
-        auto modelAsset =
-            m_sharedState->assetManager.getAssetsByType(sl::asset::AssetType::model)[modelName]->as<sl::asset::ModelAsset>();
-        entity.addComponent<sl::scene::components::ModelComponent>(modelAsset->model);
-    }
+    if (load)
+        entity.addComponent<sl::scene::components::ModelComponent>();
 }
 
 void EntityTab::addParticleEffect(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui) {

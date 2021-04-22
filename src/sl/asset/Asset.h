@@ -45,7 +45,7 @@ struct ShaderAsset : public Asset {
 
     explicit ShaderAsset(std::shared_ptr<sl::gfx::Shader> shader, const std::string& name)
         : Asset(name)
-        , shader(shader) {}
+        , shader(shader) { }
 
     int getId() override {
         return shader->id;
@@ -67,7 +67,7 @@ struct CubemapAsset : public Asset {
 
     explicit CubemapAsset(std::shared_ptr<sl::gfx::Cubemap> cubemap, const std::string& name)
         : Asset(name)
-        , cubemap(cubemap) {}
+        , cubemap(cubemap) { }
 
     int getId() override {
         return cubemap->id;
@@ -75,7 +75,7 @@ struct CubemapAsset : public Asset {
 
     std::vector<std::string> getResourceLocation() override {
         auto faces = cubemap->getFaces();
-        return std::vector<std::string>{ faces.begin(), faces.end() };
+        return std::vector<std::string> { faces.begin(), faces.end() };
     }
 
     std::shared_ptr<sl::gfx::Cubemap> cubemap;
@@ -86,7 +86,8 @@ struct ModelAsset : public Asset {
 
     explicit ModelAsset(std::shared_ptr<sl::geom::Model> model, const std::string& name)
         : Asset(name)
-        , model(model) {}
+        , model(model) {
+    }
 
     int getId() override {
         return model->id;
