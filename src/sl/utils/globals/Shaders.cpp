@@ -2,13 +2,19 @@
 
 #include <memory>
 
-#include "sl/asset/AssetLoader.hpp"
+#include "sl/gfx/Shader.h"
+#include "sl/utils/Globals.h"
 
 namespace sl::utils::globals {
 
 Shaders::Shaders() {
-    defaultCubemapShader = asset::AssetLoader::loadLocalPath<gfx::Shader>("/cubemap.vert", "/cubemap.frag");
-    defaultModelShader = asset::AssetLoader::loadLocalPath<gfx::Shader>("/t.vert", "/t.frag");
+    defaultCubemapShader =
+        gfx::Shader::factory->create(
+            GLOBALS().config.paths.shaders + "/cubemap.vert", GLOBALS().config.paths.shaders + "/cubemap.frag");
+
+    defaultModelShader =
+        gfx::Shader::factory->create(
+            GLOBALS().config.paths.shaders + "/t.vert", GLOBALS().config.paths.shaders + "/t.frag");
 }
 
 }

@@ -1,10 +1,10 @@
 #include "Deserializer.h"
 
 #include "sl/asset/Asset.h"
-#include "sl/asset/AssetLoader.hpp"
 #include "sl/core/Errors.hpp"
 #include "sl/core/Json.h"
 #include "sl/core/Logger.h"
+#include "sl/geom/ModelLoader.hpp"
 #include "sl/gfx/Cubemap.h"
 #include "sl/gfx/Shader.h"
 #include "sl/scene/components/ComponentsDeserializers.hpp"
@@ -59,7 +59,7 @@ void Deserializer::deserializeAssets(Json::Value& assetsJson) {
         switch (static_cast<AssetType>(assetType)) {
         case AssetType::shader: {
             auto& paths = asset["paths"];
-            auto shader = asset::AssetLoader::loadGlobalPath<gfx::Shader>(
+            auto shader = gfx::Shader::factory->create(
                 paths[0].asString(), paths[1].asString(), paths[2].asString());
             shader->setId(id);
             auto shaderAsset = std::make_shared<asset::ShaderAsset>(shader, name);
@@ -70,7 +70,7 @@ void Deserializer::deserializeAssets(Json::Value& assetsJson) {
 
         case AssetType::model: {
             auto path = asset["paths"][0].asString();
-            auto model = asset::AssetLoader::loadGlobalPath<geom::Model>(path);
+            auto model = geom::ModelLoader::loadModel(path);
             model->setId(id);
             auto modelAsset = std::make_shared<asset::ModelAsset>(model, name);
             m_assetManager.addAsset(modelAsset);
@@ -85,8 +85,9 @@ void Deserializer::deserializeAssets(Json::Value& assetsJson) {
             for (int i = 0; i < faces.size(); ++i)
                 faces[i] = paths[i].asString();
 
-            auto cubemap = asset::AssetLoader::loadGlobalPath<gfx::Cubemap>(faces);
+            auto cubemap = gfx::Cubemap::factory->create(faces);
             cubemap->setId(id);
+
             auto cubemapAsset = std::make_shared<asset::CubemapAsset>(cubemap, name);
             m_assetManager.addAsset(cubemapAsset);
 

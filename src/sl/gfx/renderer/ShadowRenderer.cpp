@@ -5,13 +5,15 @@
 #include "sl/gfx/Shader.h"
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/gfx/buffer/FrameBuffer.h"
+#include "sl/utils/Globals.h"
 
 namespace sl::gfx::renderer {
 
 ShadowRenderer::ShadowRenderer(std::shared_ptr<gfx::LowLevelRenderer> renderer)
     : m_renderer(renderer)
     , m_shadowMapFrameBuffer(gfx::buffer::FrameBuffer::factory->create())
-    , m_depthShader(asset::AssetLoader::loadLocalPath<gfx::Shader>("/depth_capture.vert", "/depth_capture.frag")) {
+    , m_depthShader(gfx::Shader::factory->create(
+          GLOBALS().config.paths.shaders + "/depth_capture.vert", GLOBALS().config.paths.shaders + "/depth_capture.frag")) {
 }
 
 void ShadowRenderer::beginDepthCapture() {

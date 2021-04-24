@@ -16,8 +16,8 @@ ParticleEffectRenderer::ParticleEffectRenderer(std::shared_ptr<gfx::LowLevelRend
     : m_renderer(renderer)
     , m_vao(GLOBALS().geom->squareVAO) {
 
-    m_shader = asset::AssetLoader::loadLocalPath<gfx::Shader>(
-        "/particle.vert", "/particle.frag");
+    m_shader = gfx::Shader::factory->create(
+        GLOBALS().config.paths.shaders + "/particle.vert", GLOBALS().config.paths.shaders + "/particle.frag");
 }
 
 void ParticleEffectRenderer::renderParticleEffects(ecs::ComponentView<scene::components::ParticleEffectComponent> pfxs,

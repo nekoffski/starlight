@@ -27,4 +27,5 @@ public:
 
     virtual std::shared_ptr<gfx::Image> getImage() = 0;
 };
+
 }

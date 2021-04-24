@@ -23,25 +23,7 @@ std::shared_ptr<geom::Mesh> AssimpMeshProcessor::processMesh(aiMesh* assimpMesh,
 }
 
 void AssimpMeshProcessor::initVertexArray(std::shared_ptr<geom::Mesh>& mesh) {
-    auto vao = gfx::buffer::VertexArray::factory->create();
-    auto vbo = gfx::buffer::VertexBuffer::factory->create(&mesh->vertices[0], mesh->vertices.size() * sizeof(Vertex), mesh->vertices.size());
-    auto ebo = gfx::buffer::ElementBuffer::factory->create(&mesh->indices[0], mesh->indices.size() * sizeof(unsigned), mesh->indices.size());
-
-    // vertices
-    vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
-    // normals
-    vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
-    // tex coords
-    vbo->addMemoryOffsetScheme(2, STARL_FLOAT, sizeof(float));
-    // tangents
-    vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
-    // bitangents
-    vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
-
-    vao->addVertexBuffer(vbo);
-    vao->addElementBuffer(ebo);
-
-    mesh->vertexArray = vao;
+    mesh->buildVertexArray();
 }
 
 std::vector<std::shared_ptr<sl::gfx::Texture>> AssimpMeshProcessor::loadTextures(aiMaterial* material, const std::string& directory) {

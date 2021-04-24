@@ -11,6 +11,7 @@ ModelComponent::ModelComponent() {
 }
 
 void ModelComponent::onGui(gui::GuiApi& gui, asset::AssetManager& assetManager) {
+    std::vector<geom::Mesh*> meshesToRebuild;
     gui.pushId(ownerEntityId);
     if (beginComponentTreeNode(gui, ICON_FA_FIGHTER_JET "  Model")) {
         std::vector<std::string> meshesMock = {
@@ -29,9 +30,10 @@ void ModelComponent::onGui(gui::GuiApi& gui, asset::AssetManager& assetManager) 
                     if (gui.beginTreeNode(mesh->name)) {
                         if (gui.beginTreeNode("Vertices")) {
                             int i = 0;
-                            for (auto& vertex : mesh->vertices) {
-                                gui.dragFloat3("##" + mesh->name + std::to_string(i++), vertex.position);
-                            }
+                            for (auto& vertex : mesh->vertices)
+                                if (gui.dragFloat3("##" + mesh->name + std::to_string(i++), vertex.position)) {
+                                    meshesToRebuild.push_back(mesh.get());
+                                }
 
                             gui.popTreeNode();
                         }
@@ -101,6 +103,12 @@ void ModelComponent::onGui(gui::GuiApi& gui, asset::AssetManager& assetManager) 
         }
 
         if (gui.beginTreeNode("Instances")) {
+            int i = 0;
+            for (auto& instance : instances)
+                gui.dragFloat3("##" + std::to_string(i++), instance);
+
+            if (gui.button("Add instance"))
+                instances.push_back(math::Vec3 { 0.0f, 0.0f, 0.0f });
 
             gui.popTreeNode();
         }
@@ -111,6 +119,9 @@ void ModelComponent::onGui(gui::GuiApi& gui, asset::AssetManager& assetManager) 
     }
 
     gui.popId();
+
+    for (auto& mesh : meshesToRebuild)
+        mesh->buildVertexArray();
 }
 
 void ModelComponent::serialize(core::JsonBuilder& builder) {
