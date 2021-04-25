@@ -15,6 +15,10 @@ public:
 
     inline static std::unique_ptr<Factory> factory = nullptr;
 
+    static std::shared_ptr<Texture> load(const std::string& path) {
+        return factory->create(path);
+    }
+
     virtual ~Texture() = default;
 
     virtual void bind(unsigned int = 0) = 0;

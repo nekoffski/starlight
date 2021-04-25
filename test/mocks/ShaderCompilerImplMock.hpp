@@ -13,5 +13,5 @@ struct ShaderCompilerImplMock : public ShaderCompilerImpl {
         inline static Factory* instance = nullptr;
     };
 
-    MOCK_METHOD(void, compile, (std::shared_ptr<Shader>&), (override));
+    MOCK_METHOD(void, compile, (Shader&), (override));
 };

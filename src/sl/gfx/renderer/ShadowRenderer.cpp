@@ -1,6 +1,5 @@
 #include "ShadowRenderer.h"
 
-#include "sl/asset/AssetLoader.hpp"
 #include "sl/gfx/LowLevelRenderer.h"
 #include "sl/gfx/Shader.h"
 #include "sl/gfx/ViewFrustum.h"
@@ -12,7 +11,7 @@ namespace sl::gfx::renderer {
 ShadowRenderer::ShadowRenderer(std::shared_ptr<gfx::LowLevelRenderer> renderer)
     : m_renderer(renderer)
     , m_shadowMapFrameBuffer(gfx::buffer::FrameBuffer::factory->create())
-    , m_depthShader(gfx::Shader::factory->create(
+    , m_depthShader(gfx::Shader::load(
           GLOBALS().config.paths.shaders + "/depth_capture.vert", GLOBALS().config.paths.shaders + "/depth_capture.frag")) {
 }
 

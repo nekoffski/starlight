@@ -9,10 +9,10 @@ class OpenGlShader;
 
 class OpenGlShaderCompilerImpl : public sl::gfx::ShaderCompilerImpl {
 public:
-    void compile(std::shared_ptr<sl::gfx::Shader>& shader) override;
+    void compile(sl::gfx::Shader& shader) override;
 
 private:
-    void compileImpl(std::shared_ptr<OpenGlShader>);
+    void compileImpl(OpenGlShader&);
     unsigned int compileShader(const std::string&, unsigned);
 
     inline static constexpr int infoBufferSize { 1024 };

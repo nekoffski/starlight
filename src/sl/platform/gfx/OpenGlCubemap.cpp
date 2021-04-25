@@ -2,6 +2,7 @@
 
 #include "Utils.hpp"
 #include "sl/core/Errors.hpp"
+#include "sl/core/Logger.h"
 #include "sl/gfx/Image.h"
 
 #include <glad/glad.h>
@@ -14,6 +15,8 @@ OpenGlCubemap::OpenGlCubemap(const sl::gfx::CubemapArgs& faces)
     glGenTextures(1, &m_cubemapId);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemapId);
 
+    SL_INFO("Loading cubemap");
+
     const auto facesLen = faces.size();
     for (int i = 0; i < facesLen; ++i) {
         const auto img = sl::gfx::Image::factory->create(faces[i]);
@@ -21,6 +24,8 @@ OpenGlCubemap::OpenGlCubemap(const sl::gfx::CubemapArgs& faces)
         if (format == channelsToFormat.end())
             throw core::TextureError { core::ErrorCode::UnknownTextureFormat };
         const auto& size = img->getSize();
+
+        SL_DEBUG("Face: {}, width: {}, height: {}", faces[i], size.width, size.height);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format->second, size.width, size.height,
             0, format->second, GL_UNSIGNED_BYTE, img->getRaw());
     }

@@ -6,6 +6,8 @@
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
 
+#include "ShaderCompiler.hpp"
+
 namespace sl::gfx {
 class ShaderCompilerImpl;
 
@@ -17,6 +19,13 @@ public:
         virtual std::shared_ptr<Shader> create(const std::string&, const std::string&, const std::string& = "") = 0;
         virtual ~Factory() = default;
     };
+
+    static std::shared_ptr<Shader> load(const std::string& vertex, const std::string& fragment, const std::string& geometry = "") {
+        auto shader = factory->create(vertex, fragment, geometry);
+        ShaderCompiler::compile(*shader);
+
+        return shader;
+    }
 
     inline static std::unique_ptr<Factory> factory = nullptr;
 

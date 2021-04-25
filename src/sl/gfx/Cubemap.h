@@ -18,6 +18,10 @@ public:
 
     inline static std::unique_ptr<Factory> factory = nullptr;
 
+    static std::shared_ptr<Cubemap> load(const CubemapArgs& args) {
+        return factory->create(args);
+    }
+
     virtual ~Cubemap() = default;
 
     virtual void bind() = 0;

@@ -5,7 +5,6 @@
 #include "sl/app/ApplicationContext.h"
 #include "sl/app/Deserializer.h"
 #include "sl/app/Serializer.h"
-#include "sl/asset/AssetLoader.hpp"
 #include "sl/asset/AssetManager.h"
 #include "sl/core/BaseError.hpp"
 #include "sl/core/FileSystem.h"

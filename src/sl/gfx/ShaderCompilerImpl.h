@@ -17,6 +17,6 @@ public:
 
     virtual ~ShaderCompilerImpl() = default;
 
-    virtual void compile(std::shared_ptr<Shader>&) = 0;
+    virtual void compile(Shader&) = 0;
 };
 }

@@ -1,6 +1,5 @@
 #include "ParticleEffectRenderer.h"
 
-#include "sl/asset/AssetLoader.hpp"
 #include "sl/async/AsyncEngine.hpp"
 #include "sl/core/Profiler.h"
 #include "sl/ecs/ComponentView.hpp"
@@ -16,7 +15,7 @@ ParticleEffectRenderer::ParticleEffectRenderer(std::shared_ptr<gfx::LowLevelRend
     : m_renderer(renderer)
     , m_vao(GLOBALS().geom->squareVAO) {
 
-    m_shader = gfx::Shader::factory->create(
+    m_shader = gfx::Shader::load(
         GLOBALS().config.paths.shaders + "/particle.vert", GLOBALS().config.paths.shaders + "/particle.frag");
 }
 

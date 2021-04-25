@@ -128,7 +128,7 @@ void AssetsTab::handleShaderLoader(sl::gui::GuiApi& gui) {
     if (m_loadClicked) {
         validateAssetName(m_assetsArgs.assetName);
 
-        auto shader = sl::gfx::Shader::factory->create(
+        auto shader = sl::gfx::Shader::load(
             m_assetsArgs.faces[0], m_assetsArgs.faces[1], m_assetsArgs.faces[2]);
         auto shaderAsset = std::make_shared<sl::asset::ShaderAsset>(shader, m_assetsArgs.assetName);
         m_sharedState->assetManager.addAsset(shaderAsset);
@@ -169,7 +169,7 @@ void AssetsTab::handleCubemapLoader(sl::gui::GuiApi& gui) {
         for (auto& face : faces)
             face += GLOBALS().config.paths.cubemaps;
 
-        auto cubemap = sl::gfx::Cubemap::factory->create(faces);
+        auto cubemap = sl::gfx::Cubemap::load(faces);
         auto cubemapAsset = std::make_shared<sl::asset::CubemapAsset>(cubemap, m_assetsArgs.assetName);
         m_sharedState->assetManager.addAsset(cubemapAsset);
     }
@@ -185,7 +185,7 @@ void AssetsTab::handleModelLoader(sl::gui::GuiApi& gui) {
     if (m_loadClicked) {
         validateAssetName(m_assetsArgs.assetName);
 
-        auto model = sl::geom::ModelLoader::loadModel(m_assetsArgs.modelName);
+        auto model = sl::geom::ModelLoader::load(m_assetsArgs.modelName);
         auto modelAsset = std::make_shared<sl::asset::ModelAsset>(model, m_assetsArgs.assetName);
         m_sharedState->assetManager.addAsset(modelAsset);
     }

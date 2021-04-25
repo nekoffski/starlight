@@ -1,6 +1,5 @@
 #include "ParticleEffectSystem.h"
 
-#include "sl/asset/AssetLoader.hpp"
 #include "sl/async/AsyncEngine.hpp"
 #include "sl/core/Profiler.h"
 #include "sl/ecs/ComponentView.hpp"
@@ -29,7 +28,7 @@ void ParticleEffectSystem::update(ecs::ComponentView<components::ParticleEffectC
 }
 
 void ParticleEffectSystem::updateParticleEffect(components::ParticleEffectComponent& pfx, float deltaTime, std::shared_ptr<gfx::camera::Camera> camera) {
-    pfx.maxParticles = MAX_PARTICLE_PER_ITERATION; 
+    pfx.maxParticles = MAX_PARTICLE_PER_ITERATION;
 
     auto& particles = pfx.particles;
     for (auto& particle : particles)

@@ -17,20 +17,20 @@ using namespace sl::core;
 
 namespace sl::platform::gfx {
 
-void OpenGlShaderCompilerImpl::compile(std::shared_ptr<sl::gfx::Shader>& shader) {
-    compileImpl(std::dynamic_pointer_cast<OpenGlShader>(shader));
+void OpenGlShaderCompilerImpl::compile(sl::gfx::Shader& shader) {
+    compileImpl(dynamic_cast<OpenGlShader&>(shader));
 }
 
-void OpenGlShaderCompilerImpl::compileImpl(std::shared_ptr<OpenGlShader> shader) {
-    SL_DEBUG("compiling shader: \n{},\n{},\n{}", shader->m_fragmentPath, shader->m_vertexPath, shader->m_geomPath);
+void OpenGlShaderCompilerImpl::compileImpl(OpenGlShader& shader) {
+    SL_DEBUG("compiling shader: \n{},\n{},\n{}", shader.m_fragmentPath, shader.m_vertexPath, shader.m_geomPath);
 
-    GLuint& _shader_program = shader->m_shaderProgram;
+    GLuint& _shader_program = shader.m_shaderProgram;
     _shader_program = glCreateProgram();
 
     SL_DEBUG("compiling vertex shader");
-    auto vertexShader = compileShader(shader->m_vertexPath, GL_VERTEX_SHADER);
+    auto vertexShader = compileShader(shader.m_vertexPath, GL_VERTEX_SHADER);
     SL_DEBUG("compiling fragment shader");
-    auto fragmentShader = compileShader(shader->m_fragmentPath, GL_FRAGMENT_SHADER);
+    auto fragmentShader = compileShader(shader.m_fragmentPath, GL_FRAGMENT_SHADER);
 
     glAttachShader(_shader_program, vertexShader);
     glAttachShader(_shader_program, fragmentShader);

@@ -9,11 +9,11 @@ namespace sl::utils::globals {
 
 Shaders::Shaders() {
     defaultCubemapShader =
-        gfx::Shader::factory->create(
+        gfx::Shader::load(
             GLOBALS().config.paths.shaders + "/cubemap.vert", GLOBALS().config.paths.shaders + "/cubemap.frag");
 
     defaultModelShader =
-        gfx::Shader::factory->create(
+        gfx::Shader::load(
             GLOBALS().config.paths.shaders + "/t.vert", GLOBALS().config.paths.shaders + "/t.frag");
 }
 
