@@ -36,6 +36,7 @@ layout(binding = 0) uniform sampler2D textureSampler;
 
 uniform uint directionalLightsNum;
 uniform uint pointLightsNum;
+uniform uint textures;
 
 uniform DirectionalLights directionalLights[MAX_DIRECTIONAL_LIGHTS];
 uniform PointLights pointLights[MAX_POINT_LIGHTS];
@@ -119,5 +120,7 @@ vec4 calculateLight(float shadow) {
 }
 
 void main() {
-    FragColor = texture(textureSampler, texturePosition) * calculateLight(ShadowCalculation(fragPosLightSpace));
+    FragColor =
+        (textures > 0 ? texture(textureSampler, texturePosition) : vec4(1.0, 1.0, 1.0, 1.0)) *
+        calculateLight(ShadowCalculation(fragPosLightSpace));
 }

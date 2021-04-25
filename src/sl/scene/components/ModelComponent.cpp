@@ -1,6 +1,7 @@
 #include "ModelComponent.h"
 
 #include "sl/gui/GuiStyle.h"
+#include "sl/utils/Globals.h"
 
 #include "imgui/imgui.h"
 
@@ -12,14 +13,9 @@ ModelComponent::ModelComponent() {
 
 void ModelComponent::onGui(gui::GuiApi& gui, asset::AssetManager& assetManager) {
     std::vector<geom::Mesh*> meshesToRebuild;
+
     gui.pushId(ownerEntityId);
     if (beginComponentTreeNode(gui, ICON_FA_FIGHTER_JET "  Model")) {
-        std::vector<std::string> meshesMock = {
-            "Plane",
-            "Cube",
-            "Sphere",
-        };
-
         static std::string selectedMesh = "";
         static std::shared_ptr<geom::Mesh> selectedMeshh = nullptr;
 
@@ -28,15 +24,6 @@ void ModelComponent::onGui(gui::GuiApi& gui, asset::AssetManager& assetManager) 
                 gui.pushId("added");
                 for (auto& mesh : meshes) {
                     if (gui.beginTreeNode(mesh->name)) {
-                        if (gui.beginTreeNode("Vertices")) {
-                            int i = 0;
-                            for (auto& vertex : mesh->vertices)
-                                if (gui.dragFloat3("##" + mesh->name + std::to_string(i++), vertex.position)) {
-                                    meshesToRebuild.push_back(mesh.get());
-                                }
-
-                            gui.popTreeNode();
-                        }
 
                         gui.popTreeNode();
                     }
@@ -50,42 +37,40 @@ void ModelComponent::onGui(gui::GuiApi& gui, asset::AssetManager& assetManager) 
                 ImGui::BeginChild("Meshes: ", ImVec2(0, 110));
 
                 if (gui.beginTreeNode("Predefined")) {
-                    for (auto& meshName : meshesMock) {
-                        if (meshName == selectedMesh)
+                    for (auto& [name, mesh] : GLOBALS().geom->meshes) {
+                        if (name == selectedMesh)
                             gui.pushTextColor(gui::selectedEntryColor);
 
-                        gui.displayText(meshName);
+                        gui.displayText(name);
 
-                        if (meshName == selectedMesh)
+                        if (name == selectedMesh)
                             gui.popColor();
 
-                        if (gui.isPreviousWidgetClicked())
-                            selectedMesh = meshName;
+                        if (gui.isPreviousWidgetClicked()) {
+                            selectedMesh = name;
+                            selectedMeshh = mesh;
+                        }
                     }
                     gui.popTreeNode();
                 }
 
-                for (auto& [assetName, asset] : assetManager.getAssetsByType(asset::AssetType::model)) {
-                    if (gui.beginTreeNode(assetName)) {
-                        for (auto& mesh : asset->as<asset::ModelAsset>()->model->meshes) {
-                            auto& meshName = mesh->name;
+                if (gui.beginTreeNode("Loaded")) {
+                    for (auto& [name, mesh] : assetManager.getMeshes().getAll()) {
+                        if (name == selectedMesh)
+                            gui.pushTextColor(gui::selectedEntryColor);
 
-                            if (meshName == selectedMesh)
-                                gui.pushTextColor(gui::selectedEntryColor);
+                        gui.displayText(name);
 
-                            gui.displayText(meshName);
+                        if (name == selectedMesh)
+                            gui.popColor();
 
-                            if (meshName == selectedMesh)
-                                gui.popColor();
-
-                            if (gui.isPreviousWidgetClicked()) {
-                                selectedMesh = meshName;
-                                selectedMeshh = mesh;
-                            }
+                        if (gui.isPreviousWidgetClicked()) {
+                            selectedMesh = name;
+                            selectedMeshh = mesh;
                         }
-
-                        gui.popTreeNode();
                     }
+
+                    gui.popTreeNode();
                 }
 
                 gui.endChild();
@@ -113,8 +98,6 @@ void ModelComponent::onGui(gui::GuiApi& gui, asset::AssetManager& assetManager) 
             gui.popTreeNode();
         }
 
-        // auto meshes = assetManager.
-
         gui.popTreeNode();
     }
 
@@ -125,12 +108,32 @@ void ModelComponent::onGui(gui::GuiApi& gui, asset::AssetManager& assetManager) 
 }
 
 void ModelComponent::serialize(core::JsonBuilder& builder) {
-    // builder.addField("name", "ModelComponent"s).addField("model-id", modelData.model->id);
+    std::vector<int> meshesIds;
+    std::ranges::transform(meshes, std::back_inserter(meshesIds),
+        [](auto& mesh) -> int { return mesh->id; });
+
+    builder.addField("name", "ModelComponent"s).addField("meshes-ids", meshesIds);
 }
 
 void ModelComponent::deserialize(std::shared_ptr<ecs::Entity> entity, asset::AssetManager& assetManager, Json::Value& componentDescription) {
-    // auto modelId = componentDescription["model-id"].asUInt();
-    // entity->addComponent<ModelComponent>(
-    //     assetManager.getAssetById(modelId)->as<asset::ModelAsset>()->model);
+    auto& component = entity->addComponent<ModelComponent>();
+    auto& meshes = assetManager.getMeshes();
+
+    for (auto& meshId : componentDescription["meshes-ids"]) {
+        auto id = meshId.asInt();
+
+        auto mesh = [&]() {
+            if (meshes.has(id))
+                return meshes.getById(id);
+
+            for (auto& mesh : GLOBALS().geom->meshes | std::views::values)
+                if (mesh->id == id)
+                    return mesh;
+
+            // TODO: handle this case
+        }();
+
+        component.meshes.push_back(mesh);
+    }
 }
 }

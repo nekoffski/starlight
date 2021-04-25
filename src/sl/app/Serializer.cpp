@@ -1,5 +1,7 @@
 #include "Serializer.h"
 
+#include <unordered_set>
+
 #include "sl/core/Logger.h"
 #include "sl/ecs/Entity.h"
 
@@ -21,22 +23,63 @@ void Serializer::serialize(asset::AssetManager& assetManager, std::shared_ptr<sc
 }
 
 void Serializer::serializeAssets(asset::AssetManager& assetManager) {
-    m_jsonBuilder.beginArray("assets");
+    m_jsonBuilder
+        .beginObject("assets")
+        .beginArray("cubemaps");
 
-    for (auto& [assetType, assetMap] : assetManager.getAllAssets()) {
-        auto iAssetType = static_cast<int>(assetType);
-        for (auto& [assetName, asset] : assetMap) {
-            if (not asset->shouldSerialize)
-                continue;
-
-            m_jsonBuilder.beginObject();
-            m_jsonBuilder.addField("name", assetName).addField("type", iAssetType).addField("id", asset->getId());
-            m_jsonBuilder.addField("paths", asset->getResourceLocation());
-            m_jsonBuilder.endObject();
-        }
+    for (auto& [name, cubemap] : assetManager.getCubemaps().getAll()) {
+        auto faces = cubemap->getFaces();
+        m_jsonBuilder
+            .beginObject()
+            .addField("name", name)
+            .addField("id", cubemap->id)
+            .addField("paths",
+                std::vector<std::string> { faces.begin(), faces.end() })
+            .endObject();
     }
 
-    m_jsonBuilder.endArray();
+    std::unordered_set<std::string> modelsToLoad;
+
+    m_jsonBuilder
+        .endArray()
+        .beginObject("models")
+        .beginArray("meshes");
+
+    for (auto& [name, mesh] : assetManager.getMeshes().getAll()) {
+        m_jsonBuilder
+            .beginObject()
+            .addField("name", name)
+            .addField("id", mesh->id);
+
+        if (mesh->providedBy.has_value()) {
+            auto providedBy = *mesh->providedBy;
+
+            modelsToLoad.insert(providedBy);
+            m_jsonBuilder.addField("provided-by", providedBy);
+        }
+
+        m_jsonBuilder.endObject();
+    }
+
+    m_jsonBuilder
+        .endArray()
+        .addField("paths", modelsToLoad)
+        .endObject();
+
+    // for (auto& [assetType, assetMap] : assetManager.getAllAssets()) {
+    //     auto iAssetType = static_cast<int>(assetType);
+    //     for (auto& [assetName, asset] : assetMap) {
+    //         if (not asset->shouldSerialize)
+    //             continue;
+
+    //         m_jsonBuilder.beginObject();
+    //         m_jsonBuilder.addField("name", assetName).addField("type", iAssetType).addField("id", asset->getId());
+    //         m_jsonBuilder.addField("paths", asset->getResourceLocation());
+    //         m_jsonBuilder.endObject();
+    //     }
+    // }
+
+    m_jsonBuilder.endObject();
 }
 
 void Serializer::serializeScene(std::shared_ptr<scene::Scene> scene) {

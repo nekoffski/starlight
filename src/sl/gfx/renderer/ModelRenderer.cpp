@@ -6,6 +6,7 @@
 #include "sl/scene/components/ModelComponent.h"
 #include "sl/scene/components/RendererComponent.h"
 #include "sl/scene/components/TransformComponent.h"
+#include "sl/utils/Globals.h"
 
 namespace sl::gfx::renderer {
 
@@ -47,7 +48,9 @@ void ModelRenderer::render(scene::components::RendererComponent& component, ecs:
     ecs::ComponentView<scene::components::ModelComponent> models, ecs::ComponentView<scene::components::TransformComponent> transforms,
     std::shared_ptr<gfx::camera::Camera> camera) {
 
-    render(component, materials, models, transforms, camera, component.shader);
+    auto shader = GLOBALS().shaders->defaultModelShader;
+
+    render(component, materials, models, transforms, camera, shader);
 }
 
 void ModelRenderer::setMaterial(const scene::components::MaterialComponent& material, std::shared_ptr<gfx::Shader> shader) {
@@ -67,8 +70,10 @@ void ModelRenderer::renderModel(std::shared_ptr<gfx::Shader> shader, scene::comp
     for (auto& position : model.instances) {
         shader->setUniform("model", transform * math::translate(position));
 
-        for (auto& mesh : model.meshes)
+        for (auto& mesh : model.meshes) {
+            shader->setUniform("textures", static_cast<unsigned int>(mesh->textures.size()));
             renderMesh(mesh);
+        }
     }
 }
 

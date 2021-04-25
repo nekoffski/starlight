@@ -123,19 +123,8 @@ void EntityTab::addDirectionalLight(bool load, sl::ecs::Entity& entity, sl::gui:
 }
 
 void EntityTab::addRenderer(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui) {
-    auto shadersNames = m_sharedState->assetManager.getNamesByType(sl::asset::AssetType::shader);
-    shadersNames.insert(shadersNames.begin(), "None");
-
-    static int selectedValue = 0;
-    gui.displayText("Shader");
-    gui.sameLine();
-    gui.combo(sl::gui::createHiddenLabel("Shader"), selectedValue, shadersNames);
-
-    if (load && selectedValue != 0) {
-        auto& shaderName = shadersNames[selectedValue];
-        auto shaderAsset =
-            m_sharedState->assetManager.getAssetsByType(sl::asset::AssetType::shader)[shaderName]->as<sl::asset::ShaderAsset>();
-        entity.addComponent<sl::scene::components::RendererComponent>(shaderAsset->shader);
+    if (load) {
+        entity.addComponent<sl::scene::components::RendererComponent>();
     }
 }
 

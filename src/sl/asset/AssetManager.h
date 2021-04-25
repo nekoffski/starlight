@@ -4,37 +4,40 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Asset.h"
+#include "AssetContainer.h"
 #include "sl/core/Logger.h"
+#include "sl/geom/Mesh.h"
+#include "sl/geom/Model.h"
+#include "sl/gfx/Cubemap.h"
 
 namespace sl::asset {
 
 class AssetManager {
-    using NameToAssetMap = std::unordered_map<std::string, std::shared_ptr<Asset>>;
-	using IdToAssetMap = std::unordered_map<unsigned long, std::shared_ptr<Asset>>;
-	using TypeToAssetMapMap = std::unordered_map<AssetType, NameToAssetMap>;
-    using NamesVector = std::vector<std::string>;
-    using TypeToNamesMap = std::unordered_map<AssetType, NamesVector>;
-
 public:
-    TypeToAssetMapMap& getAllAssets();
-    NameToAssetMap& getAssetsByType(AssetType type);
-    TypeToNamesMap& getAssetsNames();
-    NamesVector& getNamesByType(AssetType type);
+    void add(std::shared_ptr<gfx::Cubemap> cubemap, const std::string& name) {
+        m_cubemaps.insert(cubemap, name);
+    }
 
-    // TODO: optimize
-    std::shared_ptr<Asset> getAssetById(unsigned long id) {
-		return m_idToAsset[id];
-	}
+    void add(std::shared_ptr<geom::Mesh> mesh) {
+        m_meshes.insert(mesh, mesh->name);
+    }
 
-    void addAsset(std::shared_ptr<Asset> resource);
+    void add(std::vector<std::shared_ptr<geom::Mesh>> meshes) {
+        for (auto& mesh : meshes)
+            add(mesh);
+    }
+
+    AssetContainer<gfx::Cubemap>& getCubemaps() {
+        return m_cubemaps;
+    }
+
+    AssetContainer<geom::Mesh>& getMeshes() {
+        return m_meshes;
+    }
 
 private:
-    TypeToAssetMapMap m_assets;
-    TypeToNamesMap m_assetsNames;
-	IdToAssetMap m_idToAsset;
-
-    inline static NamesVector m_emptyNamesVector;
-    inline static NameToAssetMap m_emptyAssetMap;
+    AssetContainer<gfx::Cubemap> m_cubemaps;
+    AssetContainer<geom::Mesh> m_meshes;
 };
+
 }

@@ -102,15 +102,17 @@ public:
         }
         renderer.endDepthCapture();
 
-        for (auto& rendererComponent : rendererComponents) {
-            rendererComponent.shader->enable();
+        auto shader = GLOBALS().shaders->defaultModelShader;
 
-            renderer.prepareDirectionalLights(directionalLights, rendererComponent.shader);
-            renderer.preparePointsLights(pointLights, transforms, rendererComponent.shader);
+        for (auto& rendererComponent : rendererComponents) {
+            shader->enable();
+
+            renderer.prepareDirectionalLights(directionalLights, shader);
+            renderer.preparePointsLights(pointLights, transforms, shader);
 
             renderer.renderModel(rendererComponent, materials, models, transforms, m_scene->camera);
 
-            rendererComponent.shader->disable();
+            shader->disable();
         }
 
         renderer.renderParticleEffects(
@@ -187,10 +189,10 @@ public:
 
 private:
     void loadDefaultShaders() {
-        auto shaderAsset = std::make_shared<sl::asset::ShaderAsset>(GLOBALS().shaders->defaultModelShader,
-            "defaultShader");
-        shaderAsset->shouldSerialize = false;
-        m_assetManager.addAsset(shaderAsset);
+        // auto shaderAsset = std::make_shared<sl::asset::ShaderAsset>(GLOBALS().shaders->defaultModelShader,
+        // "defaultShader");
+        // shaderAsset->shouldSerialize = false;
+        // m_assetManager.addAsset(shaderAsset);
     }
 
     sl::asset::AssetManager m_assetManager;

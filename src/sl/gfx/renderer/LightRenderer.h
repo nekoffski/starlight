@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "sl/ecs/ComponentView.hpp"
+#include "sl/gfx/Shader.h"
 #include "sl/scene/components/DirectionalLightComponent.h"
 #include "sl/scene/components/PointLightComponent.h"
 #include "sl/scene/components/TransformComponent.h"

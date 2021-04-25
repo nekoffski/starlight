@@ -36,11 +36,26 @@ void AssetsTab::render(sl::gui::GuiApi& gui) {
         gui.endPopUp();
     }
 
-    gui.endGroup();
+    gui.beginGroup();
+    if (gui.beginTreeNode("Cubemaps")) {
+        for (auto cubemapName : m_sharedState->assetManager.getCubemaps().getNames())
+            gui.displayText(cubemapName);
 
-    for (auto& [_, namesVector] : m_sharedState->assetManager.getAssetsNames())
-        for (auto& assetName : namesVector)
-            gui.displayText(assetName);
+        gui.popTreeNode();
+    }
+
+    gui.endGroup();
+    gui.sameLine();
+    gui.beginGroup();
+
+    if (gui.beginTreeNode("Meshes")) {
+        for (auto meshName : m_sharedState->assetManager.getMeshes().getNames())
+            gui.displayText(meshName);
+
+        gui.popTreeNode();
+    }
+
+    gui.endGroup();
 }
 
 void AssetsTab::resetArgs() {
@@ -130,8 +145,8 @@ void AssetsTab::handleShaderLoader(sl::gui::GuiApi& gui) {
 
         auto shader = sl::gfx::Shader::load(
             m_assetsArgs.faces[0], m_assetsArgs.faces[1], m_assetsArgs.faces[2]);
-        auto shaderAsset = std::make_shared<sl::asset::ShaderAsset>(shader, m_assetsArgs.assetName);
-        m_sharedState->assetManager.addAsset(shaderAsset);
+        // auto shaderAsset = std::make_shared<sl::asset::ShaderAsset>(shader, m_assetsArgs.assetName);
+        // m_sharedState->assetManager.addAsset(shaderAsset);
     }
 }
 
@@ -167,11 +182,10 @@ void AssetsTab::handleCubemapLoader(sl::gui::GuiApi& gui) {
 
         auto faces = m_assetsArgs.faces;
         for (auto& face : faces)
-            face += GLOBALS().config.paths.cubemaps;
+            face = GLOBALS().config.paths.cubemaps + face;
 
-        auto cubemap = sl::gfx::Cubemap::load(faces);
-        auto cubemapAsset = std::make_shared<sl::asset::CubemapAsset>(cubemap, m_assetsArgs.assetName);
-        m_sharedState->assetManager.addAsset(cubemapAsset);
+        m_sharedState->assetManager.add(
+            sl::gfx::Cubemap::load(faces), m_assetsArgs.assetName);
     }
 }
 
@@ -186,8 +200,7 @@ void AssetsTab::handleModelLoader(sl::gui::GuiApi& gui) {
         validateAssetName(m_assetsArgs.assetName);
 
         auto model = sl::geom::ModelLoader::load(m_assetsArgs.modelName);
-        auto modelAsset = std::make_shared<sl::asset::ModelAsset>(model, m_assetsArgs.assetName);
-        m_sharedState->assetManager.addAsset(modelAsset);
+        m_sharedState->assetManager.add(model->meshes);
     }
 }
 

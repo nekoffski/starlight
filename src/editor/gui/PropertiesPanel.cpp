@@ -35,7 +35,7 @@ void PropertiesPanel::render(sl::gui::GuiApi& gui) {
 
 void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
     if (gui.beginTreeNode("Skybox")) {
-        auto cubemapsNames = m_sharedState->assetManager.getNamesByType(sl::asset::AssetType::cubemap);
+        auto cubemapsNames = m_sharedState->assetManager.getCubemaps().getNames();
         cubemapsNames.insert(cubemapsNames.begin(), "None");
 
         static int selectedValue = 0;
@@ -45,8 +45,7 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
 
         if (selectedValue != 0) {
             auto& cubemapName = cubemapsNames[selectedValue];
-            auto cubemap =
-                m_sharedState->assetManager.getAssetsByType(sl::asset::AssetType::cubemap)[cubemapName]->as<sl::asset::CubemapAsset>()->cubemap;
+            auto cubemap = m_sharedState->assetManager.getCubemaps().getByName(cubemapName);
 
             m_selectedCubemap = cubemap;
             event::Emitter::emit<event::SetSkyboxEvent>(cubemap);

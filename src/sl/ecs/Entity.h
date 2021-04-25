@@ -34,9 +34,11 @@ public:
     }
 
     template <typename T, typename... Args>
-    void addComponent(Args&&... args) {
+    T& addComponent(Args&&... args) {
         m_componentsIndexes.emplace_back(core::typeIndex<T>());
         m_registry.addComponent<T>(m_id, std::forward<Args>(args)...);
+
+        return getComponent<T>();
     }
 
     template <typename T>

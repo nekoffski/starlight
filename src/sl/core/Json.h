@@ -39,8 +39,8 @@ public:
         return addFieldImpl(key, value);
     }
 
-    template <typename T>
-    JsonBuilder& addField(const std::string& key, const std::vector<T>& values) {
+    template <typename T, template <typename> typename C>
+    JsonBuilder& addField(const std::string& key, const C<T>& values) {
         beginArray(key);
         for (const auto& value : values)
             addField(value);

@@ -1,15 +1,17 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "Vertex.h"
+#include "sl/core/Countable.hpp"
 #include "sl/gfx/Texture.h"
 #include "sl/gfx/buffer/VertexArray.h"
 
 namespace sl::geom {
 
-struct Mesh {
+struct Mesh : core::GameObject {
     void buildVertexArray() {
         if (vertexArray != nullptr)
             vertexArray->unbind();
@@ -41,8 +43,7 @@ struct Mesh {
     std::shared_ptr<gfx::buffer::VertexArray> vertexArray;
 
     std::string name = "ExampleMesh";
+    std::optional<std::string> providedBy;
 };
-
-using MeshPtr = std::shared_ptr<Mesh>;
 
 } // namespace

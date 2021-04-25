@@ -8,6 +8,10 @@ namespace sl::utils::globals {
 
 Geometry::Geometry() {
     initSquare();
+
+    meshes = {
+        { "square", squareMesh }
+    };
 }
 
 void Geometry::initSquare() {
@@ -50,7 +54,6 @@ void Geometry::initSquare() {
     squareVAO->addElementBuffer(ebo);
     mesh->vertexArray = squareVAO;
 
-    squareModel = std::make_shared<geom::Model>();
-    squareModel->meshes.emplace_back(std::move(mesh));
+    squareMesh = mesh;
 }
 }
