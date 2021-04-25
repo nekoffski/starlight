@@ -1,6 +1,5 @@
 #include "Deserializer.h"
 
-#include "sl/asset/Asset.h"
 #include "sl/core/Errors.hpp"
 #include "sl/core/Json.h"
 #include "sl/core/Logger.h"
