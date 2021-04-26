@@ -21,7 +21,7 @@ namespace {
 
 class SerializerTests : public Test {
 protected:
-	std::shared_ptr<FileSystemMock> m_fsMock = std::make_shared<FileSystemMock>();
+    std::shared_ptr<FileSystemMock> m_fsMock = std::make_shared<FileSystemMock>();
 
     const std::string m_filename = "exampleFilename";
     const std::string m_path = "/path/";
@@ -29,7 +29,7 @@ protected:
     std::shared_ptr<Scene> m_scene = std::make_shared<Scene>();
     AssetManager m_assetManager;
 
-    Serializer m_serializer = Serializer{ m_path, m_filename, m_fsMock };
+    Serializer m_serializer = Serializer { m_path, m_filename, m_fsMock };
 
     void prevalidateSerializerJson(Json::Value root) {
         ASSERT_EQ(root.size(), 2);
@@ -40,7 +40,7 @@ protected:
 };
 
 TEST_F(SerializerTests, whenCreatingSerializerWithDefaultFileSystem_shouldBeCreatedWell) {
-    Serializer serializer{ m_path, m_filename };
+    Serializer serializer { m_path, m_filename };
 }
 
 TEST_F(SerializerTests, givenEmptySceneAndEmptyAssetManager_whenSerializing_shouldReturnEmptyAssetsAndEntities) {
@@ -50,7 +50,9 @@ TEST_F(SerializerTests, givenEmptySceneAndEmptyAssetManager_whenSerializing_shou
 
     auto json = parseJson(FileSystemMock::capturedFileContent);
     prevalidateSerializerJson(json);
-    EXPECT_EQ(json["assets"].size(), 0);
+    EXPECT_TRUE(json.isMember("assets"));
+    EXPECT_EQ(json["assets"]["cubemaps"].size(), 0);
+
     EXPECT_EQ(json["scene"]["entities"].size(), 0);
 }
 }
