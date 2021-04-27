@@ -52,4 +52,5 @@ struct Component {
         };
     }
 };
+
 }

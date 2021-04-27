@@ -94,7 +94,7 @@ void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
             gui.endPopUp();
         }
 
-        selectedEntity->onGui(gui, m_sharedState->assetManager);
+        m_entityGui.renderEntityGui(*selectedEntity, gui, m_sharedState->assetManager);
     }
 }
 
