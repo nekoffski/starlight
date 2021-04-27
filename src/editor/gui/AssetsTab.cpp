@@ -36,10 +36,25 @@ void AssetsTab::render(sl::gui::GuiApi& gui) {
         gui.endPopUp();
     }
 
+    static std::string selectedAssetName = "";
+
     gui.beginGroup();
     if (gui.beginTreeNode("Cubemaps")) {
-        for (auto cubemapName : m_sharedState->assetManager.getCubemaps().getNames())
+        for (auto cubemapName : m_sharedState->assetManager.getCubemaps().getNames()) {
+            bool isSelected = cubemapName == selectedAssetName;
+
+            if (isSelected)
+                gui.pushTextColor(sl::gui::selectedEntryColor);
+
             gui.displayText(cubemapName);
+
+            if (isSelected)
+                gui.popColor();
+
+            if (gui.isPreviousWidgetClicked()) {
+                selectedAssetName = cubemapName;
+            }
+        }
 
         gui.popTreeNode();
     }
@@ -49,8 +64,45 @@ void AssetsTab::render(sl::gui::GuiApi& gui) {
     gui.beginGroup();
 
     if (gui.beginTreeNode("Meshes")) {
-        for (auto meshName : m_sharedState->assetManager.getMeshes().getNames())
+        for (auto meshName : m_sharedState->assetManager.getMeshes().getNames()) {
+            bool isSelected = meshName == selectedAssetName;
+
+            if (isSelected)
+                gui.pushTextColor(sl::gui::selectedEntryColor);
+
             gui.displayText(meshName);
+
+            if (isSelected)
+                gui.popColor();
+
+            if (gui.isPreviousWidgetClicked()) {
+                selectedAssetName = meshName;
+            }
+        }
+
+        gui.popTreeNode();
+    }
+
+    gui.endGroup();
+    gui.sameLine();
+    gui.beginGroup();
+
+    if (gui.beginTreeNode("Shaders")) {
+        for (auto shaderName : m_sharedState->assetManager.getShaders().getNames()) {
+            bool isSelected = shaderName == selectedAssetName;
+
+            if (isSelected)
+                gui.pushTextColor(sl::gui::selectedEntryColor);
+
+            gui.displayText(shaderName);
+
+            if (isSelected)
+                gui.popColor();
+
+            if (gui.isPreviousWidgetClicked()) {
+                selectedAssetName = shaderName;
+            }
+        }
 
         gui.popTreeNode();
     }

@@ -54,7 +54,6 @@ public:
         m_editorGui->sharedState->activeScene = m_scene;
 
         recalculateWindow(windowWidth, windowHeight);
-        loadDefaultShaders();
 
         WRITE_DEBUG("{}", "Editor context initialized");
     }
@@ -84,7 +83,7 @@ public:
 
         auto directionalLights = m_scene->ecsRegistry.getComponentView<components::DirectionalLightComponent>();
         auto pointLights = m_scene->ecsRegistry.getComponentView<components::PointLightComponent>();
-        auto rendererComponents = m_scene->ecsRegistry.getComponentView<components::RendererComponent>();
+        auto rendererComponents = m_scene->ecsRegistry.getComponentView<components::MeshRendererComponent>();
         auto transforms = m_scene->ecsRegistry.getComponentView<components::TransformComponent>();
         auto models = m_scene->ecsRegistry.getComponentView<components::ModelComponent>();
         auto materials = m_scene->ecsRegistry.getComponentView<components::MaterialComponent>();
@@ -97,20 +96,20 @@ public:
 
             for (auto& rendererComponent : rendererComponents) {
                 depthShader->setUniform("lightSpaceMatrix", directionalLight.spaceMatrix);
-                renderer.renderModel(rendererComponent, materials, models, transforms, m_scene->camera, depthShader);
+                renderer.renderModel(rendererComponent, materials, models, transforms, *m_scene->camera, *depthShader);
             }
         }
+
         renderer.endDepthCapture();
 
-        auto shader = GLOBALS().shaders->defaultModelShader;
-
         for (auto& rendererComponent : rendererComponents) {
+            auto& shader = rendererComponent.shader;
+
             shader->enable();
 
             renderer.prepareDirectionalLights(directionalLights, shader);
             renderer.preparePointsLights(pointLights, transforms, shader);
-
-            renderer.renderModel(rendererComponent, materials, models, transforms, m_scene->camera);
+            renderer.renderModel(rendererComponent, materials, models, transforms, *m_scene->camera);
 
             shader->disable();
         }
@@ -188,13 +187,6 @@ public:
     }
 
 private:
-    void loadDefaultShaders() {
-        // auto shaderAsset = std::make_shared<sl::asset::ShaderAsset>(GLOBALS().shaders->defaultModelShader,
-        // "defaultShader");
-        // shaderAsset->shouldSerialize = false;
-        // m_assetManager.addAsset(shaderAsset);
-    }
-
     sl::asset::AssetManager m_assetManager;
 
     std::shared_ptr<editor::gui::EditorGui> m_editorGui;

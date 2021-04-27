@@ -66,19 +66,6 @@ void Serializer::serializeAssets(asset::AssetManager& assetManager) {
         .addField("paths", modelsToLoad)
         .endObject();
 
-    // for (auto& [assetType, assetMap] : assetManager.getAllAssets()) {
-    //     auto iAssetType = static_cast<int>(assetType);
-    //     for (auto& [assetName, asset] : assetMap) {
-    //         if (not asset->shouldSerialize)
-    //             continue;
-
-    //         m_jsonBuilder.beginObject();
-    //         m_jsonBuilder.addField("name", assetName).addField("type", iAssetType).addField("id", asset->getId());
-    //         m_jsonBuilder.addField("paths", asset->getResourceLocation());
-    //         m_jsonBuilder.endObject();
-    //     }
-    // }
-
     m_jsonBuilder.endObject();
 }
 

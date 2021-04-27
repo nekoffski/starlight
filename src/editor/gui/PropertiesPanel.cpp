@@ -4,10 +4,10 @@
 #include "sl/event/Event.h"
 #include "sl/gui/Utils.hpp"
 #include "sl/scene/components/DirectionalLightComponent.h"
+#include "sl/scene/components/MeshRendererComponent.h"
 #include "sl/scene/components/ModelComponent.h"
 #include "sl/scene/components/ParticleEffectComponent.h"
 #include "sl/scene/components/PointLightComponent.h"
-#include "sl/scene/components/RendererComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 
 namespace editor::gui {

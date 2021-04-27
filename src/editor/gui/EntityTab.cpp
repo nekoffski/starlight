@@ -4,10 +4,10 @@
 #include "sl/event/Event.h"
 #include "sl/gui/Utils.hpp"
 #include "sl/scene/components/DirectionalLightComponent.h"
+#include "sl/scene/components/MeshRendererComponent.h"
 #include "sl/scene/components/ModelComponent.h"
 #include "sl/scene/components/ParticleEffectComponent.h"
 #include "sl/scene/components/PointLightComponent.h"
-#include "sl/scene/components/RendererComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 
 namespace editor::gui {
@@ -20,14 +20,10 @@ EntityTab::EntityTab(std::shared_ptr<SharedState> sharedState)
 
 void EntityTab::render(sl::gui::GuiApi& gui) {
     auto& widgetProperties = m_sharedState->guiProperties.propertiesPanelProperties;
-    gui.beginTabBar("lowerLeftTabBar");
-
     if (gui.beginTabItem(ICON_FA_CUBE " Entity")) {
         showEntityProperties(gui);
         gui.endTabItem();
     }
-
-    gui.endTabBar();
 }
 
 void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
@@ -124,7 +120,7 @@ void EntityTab::addDirectionalLight(bool load, sl::ecs::Entity& entity, sl::gui:
 
 void EntityTab::addRenderer(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui) {
     if (load) {
-        entity.addComponent<sl::scene::components::RendererComponent>();
+        entity.addComponent<sl::scene::components::MeshRendererComponent>();
     }
 }
 

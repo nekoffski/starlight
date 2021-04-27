@@ -6,7 +6,7 @@
 
 #include "renderer/CubemapRenderer.h"
 #include "renderer/LightRenderer.h"
-#include "renderer/ModelRenderer.h"
+#include "renderer/MeshRenderer.h"
 #include "renderer/ParticleEffectRenderer.h"
 #include "renderer/ShadowRenderer.h"
 
@@ -15,7 +15,7 @@ namespace sl::gfx {
 class Renderer {
 public:
     explicit Renderer(std::shared_ptr<LowLevelRenderer> renderer)
-        : m_modelRenderer(renderer)
+        : m_meshRenderer(renderer)
         , m_shadowRenderer(renderer)
         , m_cubemapRenderer(renderer)
         , m_pfxRenderer(renderer) {
@@ -36,16 +36,16 @@ public:
         m_lightRenderer.preparePointsLights(lights, transforms, shader);
     }
 
-    void renderModel(scene::components::RendererComponent& component, ecs::ComponentView<scene::components::MaterialComponent> materials,
+    void renderModel(scene::components::MeshRendererComponent& component, ecs::ComponentView<scene::components::MaterialComponent> materials,
         ecs::ComponentView<scene::components::ModelComponent> models, ecs::ComponentView<scene::components::TransformComponent> transforms,
-        std::shared_ptr<gfx::camera::Camera> camera) {
-        m_modelRenderer.render(component, materials, models, transforms, camera);
+        gfx::camera::Camera& camera) {
+        m_meshRenderer.render(component, materials, models, transforms, camera);
     }
 
-    void renderModel(scene::components::RendererComponent& component, ecs::ComponentView<scene::components::MaterialComponent> materials,
+    void renderModel(scene::components::MeshRendererComponent& component, ecs::ComponentView<scene::components::MaterialComponent> materials,
         ecs::ComponentView<scene::components::ModelComponent> models, ecs::ComponentView<scene::components::TransformComponent> transforms,
-        std::shared_ptr<gfx::camera::Camera> camera, std::shared_ptr<gfx::Shader> shader) {
-        m_modelRenderer.render(component, materials, models, transforms, camera, shader);
+        gfx::camera::Camera& camera, gfx::Shader& shader) {
+        m_meshRenderer.render(component, materials, models, transforms, camera, shader);
     }
 
     void renderParticleEffects(ecs::ComponentView<scene::components::ParticleEffectComponent> pfxs,
@@ -70,7 +70,7 @@ public:
 
 private:
     renderer::LightRenderer m_lightRenderer;
-    renderer::ModelRenderer m_modelRenderer;
+    renderer::MeshRenderer m_meshRenderer;
     renderer::ShadowRenderer m_shadowRenderer;
     renderer::CubemapRenderer m_cubemapRenderer;
     renderer::ParticleEffectRenderer m_pfxRenderer;

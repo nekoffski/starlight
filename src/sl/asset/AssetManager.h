@@ -9,6 +9,7 @@
 #include "sl/geom/Mesh.h"
 #include "sl/geom/Model.h"
 #include "sl/gfx/Cubemap.h"
+#include "sl/gfx/Shader.h"
 
 namespace sl::asset {
 
@@ -27,6 +28,10 @@ public:
             add(mesh);
     }
 
+    AssetContainer<gfx::Shader>& getShaders() {
+        return m_shaders;
+    }
+
     AssetContainer<gfx::Cubemap>& getCubemaps() {
         return m_cubemaps;
     }
@@ -38,6 +43,7 @@ public:
 private:
     AssetContainer<gfx::Cubemap> m_cubemaps;
     AssetContainer<geom::Mesh> m_meshes;
+    AssetContainer<gfx::Shader> m_shaders;
 };
 
 }
