@@ -133,7 +133,7 @@ public:
                     math::decomposeMatrix(transformationMatrix, transform.position, rotation, transform.scale);
 
                     transform.rotation += rotation;
-                    transform.recalculate();
+                    transform.recalculateTransformation();
                 }
             }
         }

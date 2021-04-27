@@ -18,35 +18,11 @@ struct TransformComponent : ecs::Component {
         : position(position)
         , rotation(rotation)
         , scale(scale) {
-        recalculate();
+        recalculateTransformation();
     }
 
-    void onGui(gui::GuiApi& gui, asset::AssetManager& assetManager) override {
-        gui.pushId(ownerEntityId);
-
-        if (beginComponentTreeNode(gui, ICON_FA_STREET_VIEW "  Transform")) {
-            int trigerred = 0;
-
-            gui.displayText("Translation");
-            trigerred += gui.dragFloat3(gui::createHiddenLabel("translation"), position, 0.1f);
-            gui.displayText("Rotation");
-            trigerred += gui.dragFloat3(gui::createHiddenLabel("rotation"), rotation, 0.5f, 0.0f, 360.0f);
-            gui.displayText("Scale");
-            trigerred += gui.dragFloat3(gui::createHiddenLabel("scale"), scale, 0.5f, 0.0f, 360.0f);
-            gui.popTreeNode();
-
-            if (trigerred > 0)
-                recalculate();
-        }
-
-        gui.popId();
-    }
-
-    void serialize(core::JsonBuilder& builder) override {
-        builder.addField("name", "TransformComponent"s);
-        serializeVector(builder, "position", position);
-        serializeVector(builder, "rotation", rotation);
-        serializeVector(builder, "scale", scale);
+    void recalculateTransformation() {
+        transformation = math::scale(scale) * math::translate(position) * math::createRotationMatrix(math::toRadians(rotation));
     }
 
     static void deserialize(std::shared_ptr<ecs::Entity> entity, asset::AssetManager& assetManager, Json::Value& componentDescription) {
@@ -59,15 +35,6 @@ struct TransformComponent : ecs::Component {
     math::Vec3 position;
     math::Vec3 rotation;
     math::Vec3 scale;
-
     math::Mat4 transformation;
-
-    void recalculate() {
-        transformation = math::scale(scale) * math::translate(position) * math::createRotationMatrix(math::toRadians(rotation));
-    }
-
-    math::Mat4 operator()() {
-        return transformation;
-    }
 };
 }

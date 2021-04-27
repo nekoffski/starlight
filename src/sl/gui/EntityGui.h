@@ -3,6 +3,7 @@
 #include <typeindex>
 #include <vector>
 
+#include "ComponentsGui.h"
 #include "GuiApi.h"
 #include "sl/asset/AssetManager.h"
 #include "sl/ecs/Entity.h"
@@ -16,7 +17,9 @@ public:
 
         for (const auto& index : entity.getComponentsIndexes()) {
             auto& component = entity.getComponent(index);
-            component.onGui(gui, assetManager);
+
+            m_componentsGui.renderComponentGui(
+                index, component, gui, assetManager);
 
             if (component.shouldBeRemoved)
                 indexesToRemove.push_back(index);
@@ -25,5 +28,8 @@ public:
         for (const auto& index : indexesToRemove)
             entity.removeComponent(index);
     }
+
+private:
+    ComponentsGui m_componentsGui;
 };
 }

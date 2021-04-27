@@ -16,32 +16,6 @@ struct MaterialComponent : ecs::Component {
         , shininess(shininess) {
     }
 
-    void onGui(gui::GuiApi& gui, asset::AssetManager& assetManager) override {
-        gui.pushId(ownerEntityId);
-
-        if (beginComponentTreeNode(gui, "Material")) {
-            gui.displayText("Ambient color");
-            gui.colorPicker3(gui::createHiddenLabel("Ambient color"), ambientColor);
-            gui.displayText("Diffuse color");
-            gui.colorPicker3(gui::createHiddenLabel("Diffuse color"), diffuseColor);
-            gui.displayText("Specular color");
-            gui.colorPicker3(gui::createHiddenLabel("Specular color"), specularColor);
-            gui.displayText("Shininess");
-            gui.dragFloat(gui::createHiddenLabel("rotation"), shininess, 0.5f, 0.0f, 128.0f);
-            gui.popTreeNode();
-        }
-
-        gui.popId();
-    }
-
-    void serialize(core::JsonBuilder& builder) override {
-        builder.addField("name", "MaterialComponent"s);
-        serializeVector(builder, "ambient-color", ambientColor);
-        serializeVector(builder, "diffuse-color", diffuseColor);
-        serializeVector(builder, "specular-color", specularColor);
-        builder.addField("shininess", shininess);
-    }
-
     static void deserialize(std::shared_ptr<ecs::Entity> entity, asset::AssetManager& assetManager, Json::Value& componentDescription) {
         entity->addComponent<MaterialComponent>(
             deserializeVector3(componentDescription["ambient-color"]),

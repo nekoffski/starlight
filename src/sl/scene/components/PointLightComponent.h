@@ -17,34 +17,6 @@ struct PointLightComponent : ecs::Component {
         , attenuationC(attenuationC) {
     }
 
-    void onGui(gui::GuiApi& gui, asset::AssetManager& assetManager) override {
-        gui.pushId(ownerEntityId);
-
-        if (beginComponentTreeNode(gui, ICON_FA_LIGHTBULB "  Point light")) {
-            gui.displayText("Position");
-            gui.dragFloat3(gui::createHiddenLabel("plcPositon"), position, 0.1f);
-            gui.displayText("Color");
-            gui.colorPicker3(gui::createHiddenLabel("plcColor"), color);
-            gui.displayText("Attenuation A");
-            gui.dragFloat(gui::createHiddenLabel("plcAttenuationA"), attenuationA, 0.001f, 0.0f, 10.0f);
-            gui.displayText("Attenuation B");
-            gui.dragFloat(gui::createHiddenLabel("plcAttenuationB"), attenuationB, 0.001f, 0.0f, 10.0f);
-            gui.displayText("Attenuation C");
-            gui.dragFloat(gui::createHiddenLabel("plcAttenuationC"), attenuationC, 0.001f, 0.0f, 10.0f);
-
-            gui.popTreeNode();
-        }
-
-        gui.popId();
-    }
-
-    void serialize(core::JsonBuilder& builder) override {
-        builder.addField("name", "PointLightComponent"s);
-        serializeVector(builder, "position", position);
-        serializeVector(builder, "color", color);
-        builder.beginObject("attenuation").addField("a", attenuationA).addField("b", attenuationB).addField("c", attenuationC).endObject();
-    }
-
     static void deserialize(std::shared_ptr<ecs::Entity> entity, asset::AssetManager& assetManager, Json::Value& componentDescription) {
         auto& attenuation = componentDescription["attenuation"];
         entity->addComponent<PointLightComponent>(

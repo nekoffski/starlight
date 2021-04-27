@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ComponentsSerializer.h"
 #include "sl/asset/AssetManager.h"
 #include "sl/core/FileSystem.h"
 #include "sl/core/Json.h"
@@ -26,5 +27,7 @@ private:
     std::string m_filename;
 
     std::shared_ptr<core::FileSystem> m_fileSystem;
+
+    ComponentsSerializer m_componentsSerializer;
 };
 }

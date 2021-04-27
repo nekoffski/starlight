@@ -20,37 +20,6 @@ struct DirectionalLightComponent : ecs::Component {
         , spaceMatrix(lightProjectionMatrix * viewMatrix) {
     }
 
-    void onGui(gui::GuiApi& gui, asset::AssetManager& assetManager) override {
-        gui.pushId(ownerEntityId);
-
-        if (beginComponentTreeNode(gui, ICON_FA_SUN "  Directional light")) {
-            gui.displayText("Direction");
-
-            if (gui.dragFloat3(gui::createHiddenLabel("dlcDirection"), direction, 0.01f, -15.0f, 15.0f)) {
-                viewMatrix = math::lookAt(-direction, math::Vec3 { 0.0f }, math::Vec3 { 0.0f, 1.0f, 0.0f });
-                spaceMatrix = lightProjectionMatrix * viewMatrix;
-            }
-
-            gui.displayText("Color");
-            gui.colorPicker3(gui::createHiddenLabel("dlcColor"), color);
-
-            if (gui.beginTreeNode("Shadow map")) {
-                gui.showImage(*shadowMap, { 250, 250 });
-                gui.popTreeNode();
-            }
-
-            gui.popTreeNode();
-        }
-
-        gui.popId();
-    }
-
-    void serialize(core::JsonBuilder& builder) override {
-        builder.addField("name", "DirectionalLightComponent"s);
-        serializeVector(builder, "direction", direction);
-        serializeVector(builder, "color", color);
-    }
-
     static void deserialize(std::shared_ptr<ecs::Entity> entity, asset::AssetManager& assetManager, Json::Value& componentDescription) {
         entity->addComponent<DirectionalLightComponent>(
             deserializeVector3(componentDescription["direction"]),

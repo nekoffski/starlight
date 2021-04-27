@@ -30,7 +30,7 @@ void ParticleEffectRenderer::renderParticleEffects(ecs::ComponentView<scene::com
 
     for (auto& pfx : pfxs) {
         auto& transform = transforms.getByEntityId(pfx.ownerEntityId);
-        m_shader->setUniform("model", math::translate(pfx.position) * transform());
+        m_shader->setUniform("model", math::translate(pfx.position) * transform.transformation);
 
         for (auto& particle : pfx.particles) {
             m_shader->setUniform("localModel", math::translate(particle.position) * math::scale(particle.scale));

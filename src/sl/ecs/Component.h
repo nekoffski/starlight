@@ -13,12 +13,6 @@
 namespace sl::ecs {
 
 struct Component {
-    virtual void onGui([[maybe_unused]] gui::GuiApi& gui, [[maybe_unused]] asset::AssetManager& assetManager) {
-    }
-
-    virtual void serialize([[maybe_unused]] core::JsonBuilder& builder) {
-    }
-
     std::string ownerEntityId;
     bool isActive = true;
     bool shouldBeRemoved = false;
@@ -54,3 +48,14 @@ struct Component {
 };
 
 }
+
+// clang-format off
+
+#define DECLARE_COMPONENT(Name) \
+    struct Name : sl::ecs::Component { \
+        
+
+#define END_COMPONENT \
+    };
+
+// clang-format on

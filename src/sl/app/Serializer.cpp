@@ -79,7 +79,8 @@ void Serializer::serializeScene(std::shared_ptr<scene::Scene> scene) {
 
         for (auto& componentIndex : entity->getComponentsIndexes()) {
             m_jsonBuilder.beginObject();
-            entity->getComponent(componentIndex).serialize(m_jsonBuilder);
+            m_componentsSerializer.serializeComponent(
+                componentIndex, m_jsonBuilder, entity->getComponent(componentIndex));
             m_jsonBuilder.endObject();
         }
 

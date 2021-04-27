@@ -50,7 +50,7 @@ void LightRenderer::setPointLight(std::shared_ptr<gfx::Shader> shader,
     std::string strIndex = std::to_string(index);
 
     shader->setUniform("pointLights[" + strIndex + "].position", light.position);
-    shader->setUniform("pointLights[" + strIndex + "].modelMatrix", transform());
+    shader->setUniform("pointLights[" + strIndex + "].modelMatrix", transform.transformation);
     shader->setUniform("pointLights[" + strIndex + "].color", light.color);
     shader->setUniform("pointLights[" + strIndex + "].attenuationA", light.attenuationA);
     shader->setUniform("pointLights[" + strIndex + "].attenuationB", light.attenuationB);

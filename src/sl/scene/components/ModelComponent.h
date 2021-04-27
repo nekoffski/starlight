@@ -12,8 +12,6 @@ namespace sl::scene::components {
 struct ModelComponent : ecs::Component {
     explicit ModelComponent();
 
-    void onGui(gui::GuiApi& gui, asset::AssetManager& assetManager) override;
-    void serialize(core::JsonBuilder& builder) override;
     static void deserialize(std::shared_ptr<ecs::Entity> entity, asset::AssetManager& assetManager, Json::Value& componentDescription);
 
     // new one
