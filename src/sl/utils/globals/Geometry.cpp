@@ -10,7 +10,7 @@ Geometry::Geometry() {
     initSquare();
 
     meshes = {
-        { "square", squareMesh }
+        { squareMesh->name, squareMesh }
     };
 }
 
@@ -52,7 +52,9 @@ void Geometry::initSquare() {
 
     squareVAO->addVertexBuffer(vbo);
     squareVAO->addElementBuffer(ebo);
+
     mesh->vertexArray = squareVAO;
+    mesh->name = "Square";
 
     squareMesh = mesh;
 }

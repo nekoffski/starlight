@@ -12,6 +12,7 @@ public:
     ~ImGuiApi() override;
 
     float getCurrentWindowWidth() override;
+    float getCurrentWindowHeight() override;
 
     void setFontScale(float scale) override;
 
@@ -47,7 +48,7 @@ public:
 
     bool menuItem(const std::string&) override;
 
-    void beginChild(const std::string&) override;
+    void beginChild(const std::string&, math::Vec2) override;
     void endChild() override;
     void setNextWindowPosition(math::Vec2) override;
     void setNextWindowSize(math::Vec2) override;

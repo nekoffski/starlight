@@ -1,108 +1,28 @@
 #pragma once
 
+#include <memory>
+#include <unordered_map>
+
 #include "ComponentGui.h"
-#include "sl/gui/GuiStyle.h"
 #include "sl/scene/components/ModelComponent.h"
-#include "sl/utils/Globals.h"
 
 namespace sl::gui::components {
 
-using namespace scene::components;
-
 class ModelComponentGui : public ComponentGuiImpl<scene::components::ModelComponent> {
+    struct Params {
+        std::string selectedMeshName = "";
+        std::weak_ptr<geom::Mesh> selectedMesh;
+    };
+
+    using MeshesMap = std::unordered_map<std::string, std::shared_ptr<geom::Mesh>>;
+
 private:
-    void renderComponentGuiImpl(ModelComponent& component, gui::GuiApi& gui,
-        asset::AssetManager& assetManager) const override {
+    void renderComponentGuiImpl(scene::components::ModelComponent& component,
+        gui::GuiApi& gui, asset::AssetManager& assetManager) override;
 
-        gui.pushId(component.ownerEntityId);
-        if (beginComponentTreeNode(gui, ICON_FA_FIGHTER_JET "  Model", component)) {
-            static std::string selectedMesh = "";
-            static std::shared_ptr<geom::Mesh> selectedMeshh = nullptr;
+    void showMeshesSection(const std::string& header, gui::GuiApi& gui, Params& params, MeshesMap&);
 
-            if (gui.beginTreeNode("Meshes")) {
-                if (gui.beginTreeNode("Added")) {
-                    gui.pushId("added");
-                    for (auto& mesh : component.meshes) {
-                        if (gui.beginTreeNode(mesh->name)) {
-
-                            gui.popTreeNode();
-                        }
-                    }
-
-                    gui.popId();
-                    gui.popTreeNode();
-                }
-
-                if (gui.beginTreeNode("Available")) {
-                    ImGui::BeginChild("Meshes: ", ImVec2(0, 110));
-
-                    if (gui.beginTreeNode("Predefined")) {
-                        for (auto& [name, mesh] : GLOBALS().geom->meshes) {
-                            if (name == selectedMesh)
-                                gui.pushTextColor(gui::selectedEntryColor);
-
-                            gui.displayText(name);
-
-                            if (name == selectedMesh)
-                                gui.popColor();
-
-                            if (gui.isPreviousWidgetClicked()) {
-                                selectedMesh = name;
-                                selectedMeshh = mesh;
-                            }
-                        }
-                        gui.popTreeNode();
-                    }
-
-                    if (gui.beginTreeNode("Loaded")) {
-                        for (auto& [name, mesh] : assetManager.getMeshes().getAll()) {
-                            if (name == selectedMesh)
-                                gui.pushTextColor(gui::selectedEntryColor);
-
-                            gui.displayText(name);
-
-                            if (name == selectedMesh)
-                                gui.popColor();
-
-                            if (gui.isPreviousWidgetClicked()) {
-                                selectedMesh = name;
-                                selectedMeshh = mesh;
-                            }
-                        }
-
-                        gui.popTreeNode();
-                    }
-
-                    gui.endChild();
-
-                    if (gui.button("Add mesh to model"))
-                        if (selectedMeshh != nullptr) {
-                            component.meshes.push_back(selectedMeshh);
-                            selectedMeshh = nullptr;
-                        }
-
-                    gui.popTreeNode();
-                }
-
-                gui.popTreeNode();
-            }
-
-            if (gui.beginTreeNode("Instances")) {
-                int i = 0;
-                for (auto& instance : component.instances)
-                    gui.dragFloat3("##" + std::to_string(i++), instance);
-
-                if (gui.button("Add instance"))
-                    component.instances.push_back(math::Vec3 { 0.0f, 0.0f, 0.0f });
-
-                gui.popTreeNode();
-            }
-
-            gui.popTreeNode();
-        }
-
-        gui.popId();
-    }
+    std::unordered_map<std::string, Params> m_params;
 };
 
 }

@@ -26,7 +26,7 @@ AssetsTab::AssetsTab(std::shared_ptr<SharedState> sharedState)
 
 void AssetsTab::render(sl::gui::GuiApi& gui) {
     gui.beginGroup();
-    if (gui.button("+")) {
+    if (gui.button(ICON_FA_PLUS "  Load new asset")) {
         resetArgs();
         gui.openPopUp("AssetLoadPopUp");
     }
@@ -35,6 +35,8 @@ void AssetsTab::render(sl::gui::GuiApi& gui) {
         showLoaderPopUp(gui);
         gui.endPopUp();
     }
+
+    gui.displayText("\n");
 
     static std::string selectedAssetName = "";
 

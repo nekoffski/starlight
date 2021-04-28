@@ -42,6 +42,7 @@ public:
     virtual ~GuiApi() = default;
 
     virtual float getCurrentWindowWidth() = 0;
+    virtual float getCurrentWindowHeight() = 0;
 
     virtual void setFontScale(float scale) = 0;
     virtual void pushId(const std::string&) = 0;
@@ -74,7 +75,7 @@ public:
     virtual bool beginMainMenuBar() = 0;
     virtual void endMainMenuBar() = 0;
 
-    virtual void beginChild(const std::string&) = 0;
+    virtual void beginChild(const std::string&, math::Vec2 = { 0.0f, 0.0f }) = 0;
     virtual void endChild() = 0;
 
     virtual bool beginMenu(const std::string&) = 0;

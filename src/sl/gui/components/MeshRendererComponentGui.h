@@ -1,49 +1,28 @@
 #pragma once
 
+#include <unordered_map>
+
 #include "ComponentGui.h"
 #include "sl/scene/components/MeshRendererComponent.h"
 
 namespace sl::gui::components {
 
-using namespace scene::components;
-
 class MeshRendererComponentGui : public ComponentGuiImpl<scene::components::MeshRendererComponent> {
+    struct Params {
+        int polygonModeItem = 0;
+    };
+
 private:
-    void renderComponentGuiImpl(MeshRendererComponent& component, gui::GuiApi& gui,
-        asset::AssetManager& assetManager) const override {
+    void renderComponentGuiImpl(scene::components::MeshRendererComponent& component,
+        gui::GuiApi& gui, asset::AssetManager& assetManager) override;
 
-        gui.pushId(component.ownerEntityId);
+    int getPolygonMode(int) const;
 
-        if (beginComponentTreeNode(gui, ICON_FA_PENCIL_ALT "  Mesh renderer", component)) {
-            static int polygonModeItem = 0;
+    std::vector<std::string> m_polygonModeLabels = {
+        "Fill", "Lines", "Points"
+    };
 
-            auto getPolygonMode = [&]() {
-                switch (polygonModeItem) {
-                case 0:
-                    return STARL_FILL;
-                case 1:
-                    return STARL_LINE;
-                case 2:
-                    return STARL_POINT;
-                default:
-                    return STARL_FILL;
-                }
-            };
-
-            std::vector<std::string> polygonModeLabels = {
-                "Fill", "Lines", "Points"
-            };
-
-            gui.displayText("Polygon rendering mode");
-            gui.combo("##polygonRenderingMode", polygonModeItem, polygonModeLabels);
-
-            component.polygonMode = getPolygonMode();
-
-            gui.popTreeNode();
-        }
-
-        gui.popId();
-    }
+    std::unordered_map<std::string, Params> m_params;
 };
 
 }

@@ -82,6 +82,10 @@ float ImGuiApi::getCurrentWindowWidth() {
     return ImGui::GetWindowWidth();
 }
 
+float ImGuiApi::getCurrentWindowHeight() {
+    return ImGui::GetWindowHeight();
+}
+
 void ImGuiApi::setFontScale(float scale) {
     ImGui::SetWindowFontScale(scale);
 }
@@ -245,8 +249,8 @@ void ImGuiApi::setNextWindowSize(math::Vec2 size) {
     ImGui::SetNextWindowSize(ImVec2(size.x, size.y));
 }
 
-void ImGuiApi::beginChild(const std::string& id) {
-    ImGui::BeginChild(id.c_str());
+void ImGuiApi::beginChild(const std::string& id, math::Vec2 size) {
+    ImGui::BeginChild(id.c_str(), ImVec2(size.x, size.y));
 }
 
 void ImGuiApi::endChild() {

@@ -5,32 +5,12 @@
 
 namespace sl::gui::components {
 
-using namespace scene::components;
-
 class TransformComponentGui : public ComponentGuiImpl<scene::components::TransformComponent> {
 private:
-    void renderComponentGuiImpl(TransformComponent& component, gui::GuiApi& gui,
-        asset::AssetManager& assetManager) const override {
+    void renderComponentGuiImpl(scene::components::TransformComponent& component,
+        gui::GuiApi& gui, asset::AssetManager& assetManager) override;
 
-        gui.pushId(component.ownerEntityId);
-
-        if (beginComponentTreeNode(gui, ICON_FA_STREET_VIEW "  Transform", component)) {
-            int trigerred = 0;
-
-            gui.displayText("Translation");
-            trigerred += gui.dragFloat3(gui::createHiddenLabel("translation"), component.position, 0.1f);
-            gui.displayText("Rotation");
-            trigerred += gui.dragFloat3(gui::createHiddenLabel("rotation"), component.rotation, 0.5f, 0.0f, 360.0f);
-            gui.displayText("Scale");
-            trigerred += gui.dragFloat3(gui::createHiddenLabel("scale"), component.scale, 0.5f, 0.0f, 360.0f);
-            gui.popTreeNode();
-
-            if (trigerred > 0)
-                component.recalculateTransformation();
-        }
-
-        gui.popId();
-    }
+    int m_trigerred = 0;
 };
 
 }

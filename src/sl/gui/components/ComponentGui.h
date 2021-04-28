@@ -7,22 +7,21 @@ namespace sl::gui::components {
 
 struct ComponentGui {
     virtual void renderComponentGui(
-        ecs::Component& component, gui::GuiApi& gui, asset::AssetManager& assetManager) const = 0;
+        ecs::Component& component, gui::GuiApi& gui, asset::AssetManager& assetManager) = 0;
 };
 
 template <typename T>
 class ComponentGuiImpl : public ComponentGui {
 public:
     void renderComponentGui(
-        ecs::Component& component, gui::GuiApi& gui, asset::AssetManager& assetManager) const override {
+        ecs::Component& component, gui::GuiApi& gui, asset::AssetManager& assetManager) override {
 
-        renderComponentGuiImpl(
-            static_cast<T&>(component), gui, assetManager);
+        renderComponentGuiImpl(static_cast<T&>(component), gui, assetManager);
     }
 
 protected:
     virtual void renderComponentGuiImpl(
-        T&, gui::GuiApi& gui, asset::AssetManager& assetManager) const = 0;
+        T&, gui::GuiApi& gui, asset::AssetManager& assetManager) = 0;
 
     bool beginComponentTreeNode(gui::GuiApi& gui, const std::string& name, ecs::Component& component) const {
         gui.separator();

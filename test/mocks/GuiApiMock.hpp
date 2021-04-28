@@ -14,6 +14,7 @@ struct GuiApiMock : public GuiApi {
         inline static Factory* instance = nullptr;
     };
 
+    MOCK_METHOD(float, getCurrentWindowHeight, (), (override));
     MOCK_METHOD(float, getCurrentWindowWidth, (), (override));
     MOCK_METHOD(void, setFontScale, (float scale), (override));
     MOCK_METHOD(void, separator, (), (override));
@@ -34,7 +35,7 @@ struct GuiApiMock : public GuiApi {
     MOCK_METHOD(void, addFont, (const std::string&, short unsigned, short unsigned), (override));
     MOCK_METHOD(bool, beginMainMenuBar, (), (override));
     MOCK_METHOD(void, endMainMenuBar, (), (override));
-    MOCK_METHOD(void, beginChild, (const std::string&), (override));
+    MOCK_METHOD(void, beginChild, (const std::string&, math::Vec2), (override));
     MOCK_METHOD(void, endChild, (), (override));
     MOCK_METHOD(bool, beginMenu, (const std::string&), (override));
     MOCK_METHOD(void, endMenu, (), (override));
