@@ -17,16 +17,6 @@ struct PointLightComponent : ecs::Component {
         , attenuationC(attenuationC) {
     }
 
-    static void deserialize(std::shared_ptr<ecs::Entity> entity, asset::AssetManager& assetManager, Json::Value& componentDescription) {
-        auto& attenuation = componentDescription["attenuation"];
-        entity->addComponent<PointLightComponent>(
-            deserializeVector3(componentDescription["position"]),
-            deserializeVector3(componentDescription["color"]),
-            attenuation["a"].asFloat(),
-            attenuation["b"].asFloat(),
-            attenuation["c"].asFloat());
-    }
-
     math::Vec3 position;
     math::Vec3 color;
     float attenuationA;

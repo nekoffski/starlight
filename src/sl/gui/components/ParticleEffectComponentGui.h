@@ -12,7 +12,7 @@ private:
     void renderComponentGuiImpl(ParticleEffectComponent& component, gui::GuiApi& gui,
         asset::AssetManager& assetManager) const override {
 
-        if (component.beginComponentTreeNode(gui, "ParticleEffect")) {
+        if (beginComponentTreeNode(gui, "ParticleEffect", component)) {
             gui.displayText("Position");
             gui.dragFloat3(gui::createHiddenLabel("pfxPositon"), component.position, 0.1f);
 

@@ -10,11 +10,10 @@
 namespace sl::scene::components {
 
 struct ModelComponent : ecs::Component {
-    explicit ModelComponent();
+    explicit ModelComponent() {
+        instances.push_back(math::Vec3 { 0.0f, 0.0f, 0.0f });
+    }
 
-    static void deserialize(std::shared_ptr<ecs::Entity> entity, asset::AssetManager& assetManager, Json::Value& componentDescription);
-
-    // new one
     std::vector<std::shared_ptr<geom::Mesh>> meshes;
     std::vector<math::Vec3> instances;
 };

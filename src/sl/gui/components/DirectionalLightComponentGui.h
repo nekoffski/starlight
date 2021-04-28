@@ -14,7 +14,7 @@ private:
 
         gui.pushId(component.ownerEntityId);
 
-        if (component.beginComponentTreeNode(gui, ICON_FA_SUN "  Directional light")) {
+        if (beginComponentTreeNode(gui, ICON_FA_SUN "  Directional light", component)) {
             gui.displayText("Direction");
 
             if (gui.dragFloat3(gui::createHiddenLabel("dlcDirection"), component.direction, 0.01f, -15.0f, 15.0f)) {

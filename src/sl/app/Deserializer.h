@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 
+#include "ComponentsDeserializer.h"
 #include "sl/asset/AssetManager.h"
 #include "sl/core/FileSystem.h"
 #include "sl/core/Json.h"
@@ -19,8 +20,10 @@ public:
 private:
     void deserializeAssets(Json::Value&);
     void deserializeScene(Json::Value&);
- 
+
     asset::AssetManager& m_assetManager;
     std::shared_ptr<scene::Scene> m_scene;
+
+    ComponentsDeserializer m_componentsDeserializer;
 };
 }

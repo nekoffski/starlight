@@ -25,13 +25,6 @@ struct TransformComponent : ecs::Component {
         transformation = math::scale(scale) * math::translate(position) * math::createRotationMatrix(math::toRadians(rotation));
     }
 
-    static void deserialize(std::shared_ptr<ecs::Entity> entity, asset::AssetManager& assetManager, Json::Value& componentDescription) {
-        entity->addComponent<TransformComponent>(
-            deserializeVector3(componentDescription["position"]),
-            deserializeVector3(componentDescription["rotation"]),
-            deserializeVector3(componentDescription["scale"]));
-    }
-
     math::Vec3 position;
     math::Vec3 rotation;
     math::Vec3 scale;

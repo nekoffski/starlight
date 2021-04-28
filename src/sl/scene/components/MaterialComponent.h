@@ -16,14 +16,6 @@ struct MaterialComponent : ecs::Component {
         , shininess(shininess) {
     }
 
-    static void deserialize(std::shared_ptr<ecs::Entity> entity, asset::AssetManager& assetManager, Json::Value& componentDescription) {
-        entity->addComponent<MaterialComponent>(
-            deserializeVector3(componentDescription["ambient-color"]),
-            deserializeVector3(componentDescription["diffuse-color"]),
-            deserializeVector3(componentDescription["specular-color"]),
-            componentDescription["shininess"].asFloat());
-    }
-
     math::Vec3 ambientColor;
     math::Vec3 diffuseColor;
     math::Vec3 specularColor;

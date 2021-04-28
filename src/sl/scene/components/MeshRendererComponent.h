@@ -4,13 +4,15 @@
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
 #include "sl/gfx/Shader.h"
+#include "sl/utils/Globals.h"
 
 namespace sl::scene::components {
 
 struct MeshRendererComponent : ecs::Component {
-    explicit MeshRendererComponent();
-
-    static void deserialize(std::shared_ptr<ecs::Entity> entity, asset::AssetManager& assetManager, Json::Value& componentDescription);
+    explicit MeshRendererComponent()
+        : shader(GLOBALS().shaders->defaultModelShader)
+        , polygonMode(STARL_FILL) {
+    }
 
     std::shared_ptr<gfx::Shader> shader;
     unsigned int polygonMode;

@@ -23,6 +23,24 @@ public:
 protected:
     virtual void renderComponentGuiImpl(
         T&, gui::GuiApi& gui, asset::AssetManager& assetManager) const = 0;
+
+    bool beginComponentTreeNode(gui::GuiApi& gui, const std::string& name, ecs::Component& component) const {
+        gui.separator();
+
+        bool isOpened = gui.beginTreeNode(name);
+
+        gui.sameLine();
+        gui.setFontScale(0.6f);
+        gui.checkbox("##" + name, component.isActive);
+
+        gui.setFontScale(1.0f);
+
+        gui.sameLine(gui.getCurrentWindowWidth() - 35);
+        gui.displayText(ICON_FA_TIMES);
+
+        component.shouldBeRemoved = gui.isPreviousWidgetClicked();
+        return isOpened;
+    }
 };
 
 }

@@ -14,7 +14,7 @@ private:
 
         gui.pushId(component.ownerEntityId);
 
-        if (component.beginComponentTreeNode(gui, ICON_FA_STREET_VIEW "  Transform")) {
+        if (beginComponentTreeNode(gui, ICON_FA_STREET_VIEW "  Transform", component)) {
             int trigerred = 0;
 
             gui.displayText("Translation");

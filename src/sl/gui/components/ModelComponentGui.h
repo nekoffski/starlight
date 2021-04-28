@@ -15,7 +15,7 @@ private:
         asset::AssetManager& assetManager) const override {
 
         gui.pushId(component.ownerEntityId);
-        if (component.beginComponentTreeNode(gui, ICON_FA_FIGHTER_JET "  Model")) {
+        if (beginComponentTreeNode(gui, ICON_FA_FIGHTER_JET "  Model", component)) {
             static std::string selectedMesh = "";
             static std::shared_ptr<geom::Mesh> selectedMeshh = nullptr;
 

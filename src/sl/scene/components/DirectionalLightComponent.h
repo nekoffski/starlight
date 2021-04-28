@@ -20,12 +20,6 @@ struct DirectionalLightComponent : ecs::Component {
         , spaceMatrix(lightProjectionMatrix * viewMatrix) {
     }
 
-    static void deserialize(std::shared_ptr<ecs::Entity> entity, asset::AssetManager& assetManager, Json::Value& componentDescription) {
-        entity->addComponent<DirectionalLightComponent>(
-            deserializeVector3(componentDescription["direction"]),
-            deserializeVector3(componentDescription["color"]));
-    }
-
     math::Vec3 direction;
     math::Vec3 color;
     math::Mat4 viewMatrix;

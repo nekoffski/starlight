@@ -14,7 +14,7 @@ private:
 
         gui.pushId(component.ownerEntityId);
 
-        if (component.beginComponentTreeNode(gui, ICON_FA_LIGHTBULB "  Point light")) {
+        if (beginComponentTreeNode(gui, ICON_FA_LIGHTBULB "  Point light", component)) {
             gui.displayText("Position");
             gui.dragFloat3(gui::createHiddenLabel("plcPositon"), component.position, 0.1f);
             gui.displayText("Color");

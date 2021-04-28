@@ -14,7 +14,7 @@ private:
 
         gui.pushId(component.ownerEntityId);
 
-        if (component.beginComponentTreeNode(gui, "Material")) {
+        if (beginComponentTreeNode(gui, "Material", component)) {
             gui.displayText("Ambient color");
             gui.colorPicker3(gui::createHiddenLabel("Ambient color"), component.ambientColor);
             gui.displayText("Diffuse color");

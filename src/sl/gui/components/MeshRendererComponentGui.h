@@ -14,7 +14,7 @@ private:
 
         gui.pushId(component.ownerEntityId);
 
-        if (component.beginComponentTreeNode(gui, ICON_FA_PENCIL_ALT "  Mesh renderer")) {
+        if (beginComponentTreeNode(gui, ICON_FA_PENCIL_ALT "  Mesh renderer", component)) {
             static int polygonModeItem = 0;
 
             auto getPolygonMode = [&]() {

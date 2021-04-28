@@ -6,7 +6,6 @@
 #include "sl/geom/ModelLoader.hpp"
 #include "sl/gfx/Cubemap.h"
 #include "sl/gfx/Shader.h"
-#include "sl/scene/components/ComponentsDeserializers.hpp"
 #include "sl/utils/Globals.h"
 
 using namespace sl::core;
@@ -91,15 +90,8 @@ void Deserializer::deserializeScene(Json::Value& sceneJson) {
         for (auto& componentDescription : entityDescription["components"]) {
             auto componentName = componentDescription["name"].asString();
 
-            using scene::components::componentsDeserializers;
-
-            if (not componentsDeserializers.contains(componentName)) {
-                SL_WARN("Could not find deserializer for component: {}, skipping", componentName);
-                continue;
-            }
-
-            SL_INFO("Loading component: {} for entity: {}", componentName, name);
-            (componentsDeserializers[componentName])(entity, m_assetManager, componentDescription);
+            m_componentsDeserializer.deserializeComponent(componentName,
+                componentDescription, *entity, m_assetManager);
         }
     }
 }
