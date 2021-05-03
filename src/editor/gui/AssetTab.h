@@ -18,6 +18,8 @@ public:
 
     void render(sl::gui::GuiApi& gui) override {
         if (gui.beginTabItem(ICON_FA_CLOUD "  Asset")) {
+            if (auto& activeAssetGui = m_sharedState->activeAssetGui; activeAssetGui != nullptr)
+                activeAssetGui->render(gui);
 
             gui.endTabItem();
         }

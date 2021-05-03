@@ -5,7 +5,7 @@
 #include <ranges>
 #include <unordered_map>
 
-#include "sl/core/Countable.hpp"
+#include "sl/core/GameObject.h"
 
 namespace sl::asset {
 

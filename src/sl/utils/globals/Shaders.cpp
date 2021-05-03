@@ -7,14 +7,20 @@
 
 namespace sl::utils::globals {
 
-Shaders::Shaders() {
-    defaultCubemapShader =
-        gfx::Shader::load(
-            GLOBALS().config.paths.shaders + "/cubemap.vert", GLOBALS().config.paths.shaders + "/cubemap.frag");
+#define BIND_SHADER(shader) \
+    { shader->name, shader }
 
-    defaultModelShader =
-        gfx::Shader::load(
-            GLOBALS().config.paths.shaders + "/t.vert", GLOBALS().config.paths.shaders + "/t.frag");
+Shaders::Shaders() {
+    defaultCubemapShader = gfx::Shader::load(
+        GLOBALS().config.paths.shaders + "/cubemap.vert", GLOBALS().config.paths.shaders + "/cubemap.frag");
+
+    defaultModelShader = gfx::Shader::load(
+        GLOBALS().config.paths.shaders + "/t.vert", GLOBALS().config.paths.shaders + "/t.frag");
+    defaultModelShader->name = "default-model-shader";
+
+    shadersByName = {
+        BIND_SHADER(defaultModelShader)
+    };
 }
 
 }

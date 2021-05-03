@@ -1,5 +1,9 @@
 #include "AssetsTab.h"
 
+#include <any>
+
+#include <ranges>
+
 #include "editor/DebugConsole.hpp"
 #include "sl/core/Errors.hpp"
 #include "sl/core/String.hpp"
@@ -40,76 +44,46 @@ void AssetsTab::render(sl::gui::GuiApi& gui) {
 
     static std::string selectedAssetName = "";
 
-    gui.beginGroup();
-    if (gui.beginTreeNode("Cubemaps")) {
-        for (auto cubemapName : m_sharedState->assetManager.getCubemaps().getNames()) {
-            bool isSelected = cubemapName == selectedAssetName;
+    auto displayAssetSection = [&](const std::string& header, auto& assetsMap) {
+        gui.beginGroup();
 
-            if (isSelected)
-                gui.pushTextColor(sl::gui::selectedEntryColor);
+        if (gui.beginTreeNode(header)) {
+            for (auto& [name, asset] : assetsMap) {
+                bool isSelected = (name == selectedAssetName);
 
-            gui.displayText(cubemapName);
+                if (isSelected)
+                    gui.pushTextColor(sl::gui::selectedEntryColor);
 
-            if (isSelected)
-                gui.popColor();
+                gui.displayText(name);
 
-            if (gui.isPreviousWidgetClicked()) {
-                selectedAssetName = cubemapName;
+                if (isSelected)
+                    gui.popColor();
+
+                if (gui.isPreviousWidgetClicked()) {
+                    selectedAssetName = name;
+                    m_sharedState->activeAssetGui = m_assetsGui.createGui(asset);
+                }
             }
+            gui.popTreeNode();
         }
+        gui.endGroup();
+    };
 
-        gui.popTreeNode();
-    }
-
-    gui.endGroup();
+    auto& cubemaps = m_sharedState->assetManager.getCubemaps().getAll();
+    displayAssetSection("Cubemaps", cubemaps);
     gui.sameLine();
-    gui.beginGroup();
 
-    if (gui.beginTreeNode("Meshes")) {
-        for (auto meshName : m_sharedState->assetManager.getMeshes().getNames()) {
-            bool isSelected = meshName == selectedAssetName;
-
-            if (isSelected)
-                gui.pushTextColor(sl::gui::selectedEntryColor);
-
-            gui.displayText(meshName);
-
-            if (isSelected)
-                gui.popColor();
-
-            if (gui.isPreviousWidgetClicked()) {
-                selectedAssetName = meshName;
-            }
-        }
-
-        gui.popTreeNode();
-    }
-
-    gui.endGroup();
+    auto& meshes = m_sharedState->assetManager.getMeshes().getAll();
+    displayAssetSection("Meshes", meshes);
     gui.sameLine();
-    gui.beginGroup();
 
-    if (gui.beginTreeNode("Shaders")) {
-        for (auto shaderName : m_sharedState->assetManager.getShaders().getNames()) {
-            bool isSelected = shaderName == selectedAssetName;
+    auto shaders = m_sharedState->assetManager.getShaders().getAll();
+    auto& globalShaders = GLOBALS().shaders->shadersByName;
 
-            if (isSelected)
-                gui.pushTextColor(sl::gui::selectedEntryColor);
+    for (auto& [name, shader] : globalShaders)
+        shaders[name] = shader;
 
-            gui.displayText(shaderName);
-
-            if (isSelected)
-                gui.popColor();
-
-            if (gui.isPreviousWidgetClicked()) {
-                selectedAssetName = shaderName;
-            }
-        }
-
-        gui.popTreeNode();
-    }
-
-    gui.endGroup();
+    displayAssetSection("Shader", shaders);
 }
 
 void AssetsTab::resetArgs() {
@@ -117,7 +91,8 @@ void AssetsTab::resetArgs() {
     m_assetsArgs.activeItem = 0;
     m_assetsArgs.modelName = "/tow/tower.obj";
     m_assetsArgs.faces = {
-        "/skybox/right.jpg", "/skybox/left.jpg", "/skybox/top.jpg", "/skybox/bottom.jpg", "/skybox/front.jpg", "/skybox/back.jpg"
+        "/skybox/right.jpg", "/skybox/left.jpg", "/skybox/top.jpg",
+        "/skybox/bottom.jpg", "/skybox/front.jpg", "/skybox/back.jpg"
     };
 }
 

@@ -86,5 +86,4 @@ private:
     inline static ulong s_nextId = 0;
 };
 
-struct GameObject : Countable<GameObject> { };
 }

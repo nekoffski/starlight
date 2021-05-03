@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <unordered_map>
 
 #include "sl/gfx/fwd.h"
 
@@ -11,5 +12,7 @@ struct Shaders {
 
     std::shared_ptr<gfx::Shader> defaultCubemapShader;
     std::shared_ptr<gfx::Shader> defaultModelShader;
+
+    std::unordered_map<std::string, std::shared_ptr<gfx::Shader>&> shadersByName;
 };
 }

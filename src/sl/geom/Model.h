@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "Mesh.h"
-#include "sl/core/Countable.hpp"
+#include "sl/core/GameObject.h"
 
 namespace sl::geom {
 

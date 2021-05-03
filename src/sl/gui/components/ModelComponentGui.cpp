@@ -48,7 +48,7 @@ void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
                 gui.beginChild("Meshes: ", childHeight);
 
                 showMeshesSection("Predefined", gui, params, GLOBALS().geom->meshes);
-                showMeshesSection("Predefined", gui, params, assetManager.getMeshes().getAll());
+                showMeshesSection("Loaded", gui, params, assetManager.getMeshes().getAll());
 
                 gui.endChild();
 
@@ -62,10 +62,8 @@ void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
             }
             gui.popTreeNode();
         }
-
         gui.popTreeNode();
     }
-
     gui.popId();
 }
 

@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "Vertex.h"
-#include "sl/core/Countable.hpp"
+#include "sl/core/GameObject.h"
 #include "sl/gfx/Texture.h"
 #include "sl/gfx/buffer/VertexArray.h"
 

@@ -120,7 +120,7 @@ vec4 calculateLight(float shadow) {
 }
 
 void main() {
-    FragColor =
-        (textures > 0 ? texture(textureSampler, texturePosition) : vec4(1.0, 1.0, 1.0, 1.0)) *
+    vec4 defaultColor = vec4(0.0, 1.0, 1.0, 1.0);
+    FragColor = (textures > 0 ? texture(textureSampler, texturePosition) : defaultColor) *
         calculateLight(ShadowCalculation(fragPosLightSpace));
 }

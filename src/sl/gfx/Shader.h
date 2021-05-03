@@ -2,7 +2,8 @@
 
 #include <memory>
 
-#include "sl/core/Countable.hpp"
+#include "sl/core/GameObject.h"
+#include "sl/core/String.hpp"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
 
@@ -24,8 +25,12 @@ public:
         auto shader = factory->create(vertex, fragment, geometry);
         ShaderCompiler::compile(*shader);
 
+        shader->name = core::extractNameFromPath(vertex);
+
         return shader;
     }
+
+    std::string name = "";
 
     inline static std::unique_ptr<Factory> factory = nullptr;
 

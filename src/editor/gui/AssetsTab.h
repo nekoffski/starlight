@@ -5,6 +5,7 @@
 #include <exception>
 
 #include "sl/asset/AssetManager.h"
+#include "sl/gui/AssetsGui.hpp"
 #include "sl/gui/ErrorDialog.hpp"
 #include "sl/gui/FileBrowser.hpp"
 #include "sl/gui/GuiApi.h"
@@ -37,6 +38,7 @@ private:
 
     sl::gui::ErrorDialog m_errorDialog;
     sl::gui::FileBrowser m_fileBrowser;
+    sl::gui::AssetsGui m_assetsGui;
     AssetsArgs m_assetsArgs;
 };
 }

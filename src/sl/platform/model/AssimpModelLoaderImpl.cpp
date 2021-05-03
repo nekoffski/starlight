@@ -5,6 +5,7 @@
 #include "AssimpMeshProcessor.h"
 #include "sl/core/Errors.hpp"
 #include "sl/core/Logger.h"
+#include "sl/core/String.hpp"
 #include "sl/geom/Model.h"
 
 namespace sl::platform::model {
@@ -33,7 +34,7 @@ std::shared_ptr<geom::Model> AssimpModelLoaderImpl::loadModel(const std::string&
     AssimpMeshProcessor meshProcessor;
     processNode(scene->mRootNode, scene, meshProcessor, model);
 
-    auto modelName = getModelName(path);
+    auto modelName = core::extractNameFromPath(path);
 
     int i = 0;
     for (auto& mesh : model->meshes) {

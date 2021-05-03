@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "sl/core/Countable.hpp"
+#include "sl/core/GameObject.h"
 
 namespace sl::gfx {
 
