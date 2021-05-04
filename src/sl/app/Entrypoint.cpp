@@ -14,6 +14,7 @@
 #include "sl/core/Profiler.h"
 #include "sl/core/sig/Signal.h"
 #include "sl/platform/core/StdClockImpl.h"
+#include "sl/task/TaskManager.h"
 #include "sl/utils/Globals.h"
 
 namespace sl::app {
@@ -79,6 +80,8 @@ void Entrypoint::loopStep() {
 
     async::AsyncEngine::update(deltaTime);
     core::Clock::update();
+
+    TASK_MANAGER().processTasks();
 }
 
 void Entrypoint::loadConfig() {

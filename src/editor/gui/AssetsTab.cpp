@@ -61,7 +61,7 @@ void AssetsTab::render(sl::gui::GuiApi& gui) {
 
                 if (gui.isPreviousWidgetClicked()) {
                     selectedAssetName = name;
-                    m_sharedState->activeAssetGui = m_assetsGui.createGui(asset);
+                    m_sharedState->activeAssetGuiProvider = m_assetsGui.createGuiProvider(asset);
                 }
             }
             gui.popTreeNode();

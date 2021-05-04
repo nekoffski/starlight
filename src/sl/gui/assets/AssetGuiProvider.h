@@ -4,7 +4,7 @@
 
 namespace sl::gui::assets {
 
-struct AssetGui {
+struct AssetGuiProvider {
     virtual void render(GuiApi&) = 0;
 };
 
