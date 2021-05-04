@@ -15,8 +15,6 @@ namespace sl::utils {
 struct Globals {
     SL_SINGLETON(Globals);
 
-    static Globals& instance();
-
     void init();
 
     globals::Config config;

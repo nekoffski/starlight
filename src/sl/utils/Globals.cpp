@@ -10,9 +10,4 @@ void Globals::init() {
     geom = std::make_unique<globals::Geometry>();
 }
 
-Globals& Globals::instance() {
-    static Globals globals;
-    return globals;
-}
-
 }

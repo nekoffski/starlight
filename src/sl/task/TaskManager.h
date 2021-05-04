@@ -9,9 +9,9 @@
 namespace sl::task {
 
 class TaskManager {
-public:
-    static TaskManager& instance();
+    SL_SINGLETON(TaskManager);
 
+public:
     void processTasks();
 
     template <typename T, typename... Args>

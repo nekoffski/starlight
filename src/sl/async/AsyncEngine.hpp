@@ -7,25 +7,30 @@
 #include "ThreadPool.hpp"
 #include "Timer.h"
 #include "TimerEngine.h"
+#include "sl/core/Macros.h"
 
 namespace sl::async {
 
 class AsyncEngine {
+    SL_SINGLETON(AsyncEngine);
+
 public:
-    static void init();
-    static void deinit();
+    void init();
+    void deinit();
 
     template <typename F, typename... Args>
-    static Future<typename std::result_of<F(Args...)>::type> callAsync(F&& func, Args&&... args) {
+    Future<typename std::result_of<F(Args...)>::type> callAsync(F&& func, Args&&... args) {
         return m_threadPool->callAsync<F, Args...>(std::forward<F>(func), std::forward<Args>(args)...);
     }
 
-    static void parallelLoop(const int iterations, const std::function<void(const int)>& func);
-    static void update(float dtime);
-    static std::shared_ptr<Timer> createTimer(float sleepTime);
+    void parallelLoop(const int iterations, const std::function<void(const int)>& func);
+    void update(float dtime);
+    std::shared_ptr<Timer> createTimer(float sleepTime);
 
 private:
-    static detail::TimerEngine m_timerEngine;
-    static std::unique_ptr<ThreadPool<>> m_threadPool;
+    detail::TimerEngine m_timerEngine;
+    std::unique_ptr<ThreadPool<>> m_threadPool = nullptr;
 };
 }
+
+#define ASYNC_ENGINE() sl::async::AsyncEngine::instance()

@@ -4,33 +4,38 @@
 #include <string>
 
 #include "ClockImpl.h"
+#include "Macros.h"
 
 namespace sl::core {
 
 class Clock {
+    SL_SINGLETON(Clock);
+
 public:
     template <typename T>
-    static void setClockImpl() {
+    void setClockImpl() {
         m_pimpl = std::make_unique<T>();
     }
 
-    static float getDeltaTime() {
+    float getDeltaTime() {
         return m_pimpl->getDeltaTime();
     }
 
-    static void update() {
+    void update() {
         m_pimpl->update();
     }
 
-    static std::string getTimeString(const std::string& format) {
+    std::string getTimeString(const std::string& format) {
         return m_pimpl->getTimeString(format);
     }
 
-    static std::shared_ptr<Timestamp> now() {
+    std::shared_ptr<Timestamp> now() {
         return m_pimpl->now();
     }
 
 private:
-    static inline std::unique_ptr<ClockImpl> m_pimpl;
+    std::unique_ptr<ClockImpl> m_pimpl;
 };
 }
+
+#define CLOCK() sl::core::Clock::instance()

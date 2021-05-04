@@ -82,7 +82,7 @@ inline void setupMockFactories() {
     SETUP_MOCK(Shader);
     SETUP_MOCK(FrameBuffer);
 
-    Clock::setClockImpl<platform::core::StdClockImpl>();
+    CLOCK().setClockImpl<platform::core::StdClockImpl>();
 }
 
 inline void resetMockFactories() {

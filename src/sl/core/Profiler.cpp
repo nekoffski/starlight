@@ -11,26 +11,24 @@ constexpr float EtaFactor = 0.3f;
 
 namespace sl::core {
 
-std::unordered_map<std::string, float> Profiler::m_times;
-
 Profiler::RegionBasedTimer::RegionBasedTimer(float& value)
     : m_value(value)
-    , m_start(core::Clock::now()) {
+    , m_start(CLOCK().now()) {
 }
 
 Profiler::RegionBasedTimer::~RegionBasedTimer() {
-    float tmp = core::Clock::now()->substract(m_start);
+    float tmp = CLOCK().now()->substract(m_start);
     m_value = math::lerp(m_value, tmp, EtaFactor);
 }
 
 Profiler::RegionBasedTimer Profiler::createRegionBasedTimer(const std::string& name) {
     if (m_times.count(name) == 0)
         m_times[name] = 0.0f;
-    return RegionBasedTimer{ m_times[name] };
+    return RegionBasedTimer { m_times[name] };
 }
 
 void Profiler::saveResults(const std::string& logdir) {
-    std::string logfile = logdir + core::Clock::getTimeString("%d-%m-%Y_%H:%M:%S") + ".perf";
+    std::string logfile = logdir + CLOCK().getTimeString("%d-%m-%Y_%H:%M:%S") + ".perf";
     std::ofstream log(logfile);
 
     if (!log.good()) {

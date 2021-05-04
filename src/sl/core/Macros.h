@@ -15,6 +15,11 @@ public:                              \
     T& operator=(const T&) = delete; \
     T& operator=(T&&) = delete;      \
                                      \
+    static T& instance() {           \
+        static T s_instance;         \
+        return s_instance;           \
+    }                                \
+                                     \
 private:                             \
     T() = default;                   \
                                      \

@@ -3,7 +3,8 @@
 #include <sstream>
 #include <unordered_map>
 
-#include "sl/core/Clock.h"
+#include "Clock.h"
+#include "Macros.h"
 
 #define SL_PROFILER_ENABLED 1
 constexpr float ProfilerPrintInterval = 5.0f;
@@ -11,6 +12,8 @@ constexpr float ProfilerPrintInterval = 5.0f;
 namespace sl::core {
 
 class Profiler {
+    SL_SINGLETON(Profiler);
+
     class RegionBasedTimer {
     public:
         explicit RegionBasedTimer(float& value);
@@ -22,20 +25,22 @@ class Profiler {
     };
 
 public:
-    static RegionBasedTimer createRegionBasedTimer(const std::string& name);
-    static void saveResults(const std::string& logfile);
-    static void printResults();
+    RegionBasedTimer createRegionBasedTimer(const std::string& name);
+    void saveResults(const std::string& logfile);
+    void printResults();
 
 private:
-    static std::string formatTimers();
-    static std::unordered_map<std::string, float> m_times;
+    std::string formatTimers();
+    std::unordered_map<std::string, float> m_times;
 };
 }
 
+#define PROFILER() sl::core::Profiler::instance()
+
 // clang-format off
 #ifdef SL_PROFILER_ENABLED
-    #define SL_PROFILE_REGION(name) auto __sl_prf_region_timer = core::Profiler::createRegionBasedTimer(name); 
-    #define SL_PROFILE_FUNCTION() auto __sl_prf_func_timer = core::Profiler::createRegionBasedTimer(__PRETTY_FUNCTION__);
+    #define SL_PROFILE_REGION(name) auto __sl_prf_region_timer = PROFILER().createRegionBasedTimer(name); 
+    #define SL_PROFILE_FUNCTION() auto __sl_prf_func_timer = PROFILER().createRegionBasedTimer(__PRETTY_FUNCTION__);
 #else
     #define SL_PROFILE_REGION(name)
     #define SL_PROFILE_FUNCTION

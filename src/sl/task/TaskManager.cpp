@@ -2,11 +2,6 @@
 
 namespace sl::task {
 
-TaskManager& TaskManager::instance() {
-    static TaskManager taskManager;
-    return taskManager;
-}
-
 void TaskManager::processTasks() {
     std::vector<int> tasksToRemove;
 

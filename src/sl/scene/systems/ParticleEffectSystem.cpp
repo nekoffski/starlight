@@ -11,14 +11,14 @@
 namespace sl::scene::systems {
 
 constexpr float particleCleanerSleepTime = 0.1f;
-constexpr int MAX_PARTICLE_PER_ITERATION = 1000;
+constexpr int maxParticlesPerIteration = 1000;
 
 static void cleanRetiredParticles(std::vector<physx::pfx::Particle>& particles) {
     std::erase_if(particles, [](auto& particle) -> bool { return particle.scale <= 0 || particle.position.y >= 7.5f; });
 }
 
 ParticleEffectSystem::ParticleEffectSystem() {
-    m_pfxTimer = async::AsyncEngine::createTimer(particleCleanerSleepTime);
+    m_pfxTimer = ASYNC_ENGINE().createTimer(particleCleanerSleepTime);
 }
 
 void ParticleEffectSystem::update(ecs::ComponentView<components::ParticleEffectComponent>& pfxs, float deltaTime,
@@ -28,7 +28,7 @@ void ParticleEffectSystem::update(ecs::ComponentView<components::ParticleEffectC
 }
 
 void ParticleEffectSystem::updateParticleEffect(components::ParticleEffectComponent& pfx, float deltaTime, std::shared_ptr<gfx::camera::Camera> camera) {
-    pfx.maxParticles = MAX_PARTICLE_PER_ITERATION;
+    pfx.maxParticles = maxParticlesPerIteration;
 
     auto& particles = pfx.particles;
     for (auto& particle : particles)

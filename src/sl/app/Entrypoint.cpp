@@ -36,14 +36,14 @@ int Entrypoint::start() {
         loadConfig();
 
         SL_INFO("Setting up clock implementation.");
-        core::Clock::setClockImpl<platform::core::StdClockImpl>();
+        CLOCK().setClockImpl<platform::core::StdClockImpl>();
 
         SL_INFO("Setting up async engine.");
-        async::AsyncEngine::init();
+        ASYNC_ENGINE().init();
 
         // TODO: load config
 
-        auto profilerTimer = async::AsyncEngine::createTimer(ProfilerPrintInterval);
+        auto profilerTimer = ASYNC_ENGINE().createTimer(ProfilerPrintInterval);
 
         Application::initDefaultFactories();
 
@@ -58,14 +58,14 @@ int Entrypoint::start() {
             loopStep();
 
         m_application->onStop();
-        async::AsyncEngine::deinit();
+        ASYNC_ENGINE().deinit();
 
     } catch (core::Error& e) {
         SL_ERROR("Entrypoint catched unhandled error: {}.", e.as<std::string>());
         return e.getErrorCode<int>();
     }
 
-    core::Profiler::saveResults("./logs/");
+    PROFILER().saveResults("./logs/");
     SL_INFO("Shutdown gracefully.");
     return 0;
 }
@@ -73,14 +73,13 @@ int Entrypoint::start() {
 void Entrypoint::loopStep() {
     SL_PROFILE_REGION("main-loop-step");
 
-    float deltaTime = core::Clock::getDeltaTime();
+    float deltaTime = CLOCK().getDeltaTime();
 
-    m_application->update(deltaTime, core::Clock::now()->value());
+    m_application->update(deltaTime, CLOCK().now()->value());
     m_application->render();
 
-    async::AsyncEngine::update(deltaTime);
-    core::Clock::update();
-
+    ASYNC_ENGINE().update(deltaTime);
+    CLOCK().update();
     TASK_MANAGER().processTasks();
 }
 

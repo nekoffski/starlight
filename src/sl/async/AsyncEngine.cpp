@@ -2,9 +2,6 @@
 
 namespace sl::async {
 
-detail::TimerEngine AsyncEngine::m_timerEngine;
-std::unique_ptr<ThreadPool<>> AsyncEngine::m_threadPool = nullptr;
-
 void AsyncEngine::init() {
     m_threadPool = std::make_unique<ThreadPool<>>(std::thread::hardware_concurrency());
 }
