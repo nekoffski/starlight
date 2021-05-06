@@ -11,6 +11,7 @@ EditorGui::EditorGui(std::shared_ptr<SharedState> sharedState)
     : m_leftPanel(sharedState)
     , m_bottomPanel(sharedState)
     , m_rightPanel(sharedState)
+    , m_toolBar(sharedState)
     , sharedState(sharedState) {
 }
 
@@ -41,6 +42,7 @@ void EditorGui::renderEditorGui(sl::gui::GuiApi& gui) {
     m_leftPanel.render(gui);
     m_bottomPanel.render(gui);
     m_rightPanel.render(gui);
+    m_toolBar.render(gui);
 
     gui.popColor();
 }

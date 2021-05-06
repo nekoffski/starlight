@@ -4,6 +4,7 @@
 #include "LeftPanel.h"
 #include "RightPanel.h"
 #include "SharedState.hpp"
+#include "ToolBar.h"
 #include "sl/asset/AssetManager.h"
 
 using namespace sl::core;
@@ -22,5 +23,6 @@ private:
     LeftPanel m_leftPanel;
     BottomPanel m_bottomPanel;
     RightPanel m_rightPanel;
+    ToolBar m_toolBar;
 };
 }

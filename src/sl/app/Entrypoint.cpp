@@ -41,8 +41,6 @@ int Entrypoint::start() {
         SL_INFO("Setting up async engine.");
         ASYNC_ENGINE().init();
 
-        // TODO: load config
-
         auto profilerTimer = ASYNC_ENGINE().createTimer(ProfilerPrintInterval);
 
         Application::initDefaultFactories();

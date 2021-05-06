@@ -22,7 +22,8 @@ struct TransformComponent : ecs::Component {
     }
 
     void recalculateTransformation() {
-        transformation = math::scale(scale) * math::translate(position) * math::createRotationMatrix(math::toRadians(rotation));
+        transformation = math::translate(position) * math::scale(scale) *
+            math::createRotationMatrix(math::toRadians(rotation));
     }
 
     math::Vec3 position;

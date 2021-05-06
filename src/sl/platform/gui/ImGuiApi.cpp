@@ -257,6 +257,14 @@ void ImGuiApi::endChild() {
     ImGui::EndChild();
 }
 
+void ImGuiApi::beginTransparentPanel(const std::string& title, math::Vec2 pos, math::Vec2 size) {
+    ImGui::SetNextWindowPos(ImVec2(pos.x, pos.y));
+    ImGui::SetNextWindowSize(ImVec2(size.x, size.y));
+    static bool opened = true;
+    ImGui::Begin(title.c_str(), &opened,
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+}
+
 void ImGuiApi::beginPanel(const std::string& title, math::Vec2 pos, math::Vec2 size) {
     ImGui::SetNextWindowPos(ImVec2(pos.x, pos.y));
     ImGui::SetNextWindowSize(ImVec2(size.x, size.y));

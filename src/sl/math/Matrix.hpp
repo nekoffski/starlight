@@ -38,3 +38,13 @@ inline std::ostream& operator<<(std::ostream& ss, const sl::math::Mat3& m) {
        << m[2].x << " " << m[2].y << " " << m[2].z << '\n';
     return ss;
 }
+
+namespace sl::math {
+
+inline std::string toString(const sl::math::Mat4& m) {
+    std::ostringstream ss;
+    ss << m;
+    return ss.str();
+}
+
+}

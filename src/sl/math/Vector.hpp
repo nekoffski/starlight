@@ -43,6 +43,20 @@ inline Vec4 asColor(const Vec4& vec) {
     return Vec4 { vec.x / 255.0f, vec.y / 255.0f, vec.z / 255.0f, vec.w / 255.0f };
 }
 
+inline std::string toString(const Vec2& v) {
+    return "Vec2: [" + std::to_string(v.x) + ", " + std::to_string(v.y) + "]";
+}
+
+inline std::string toString(const Vec3& v) {
+    return "Vec3: [" + std::to_string(v.x) + ", " + std::to_string(v.y) +
+        ", " + std::to_string(v.z) + "]";
+}
+
+inline std::string toString(const Vec4& v) {
+    return "Vec4: [" + std::to_string(v.x) + ", " + std::to_string(v.y) + ", " +
+        std::to_string(v.z) + ", " + std::to_string(v.w) + "]";
+}
+
 inline const math::Vec3 VEC_ONES = math::Vec3 { 1.0f, 1.0f, 1.0f };
 inline const math::Vec3 VEC_ZEROS = math::Vec3 { 0.0f, 0.0f, 0.0f };
 }

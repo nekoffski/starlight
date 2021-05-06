@@ -170,14 +170,16 @@ public:
     }
 
     void recalculateWindow(float width, float height) {
-        editor::gui::GuiProperties guiProperties { width, height };
+        editor::gui::GuiProperties guiProperties {
+            static_cast<int>(width), static_cast<int>(height)
+        };
         m_editorGui->sharedState->guiProperties = guiProperties;
 
         gfx::ViewFrustum::Viewport newViewport {
-            width - guiProperties.scenePanelProperties.size.x - guiProperties.rightPanelProperties.size.x,
-            height - guiProperties.bottomPanelProperties.size.y,
-            guiProperties.scenePanelProperties.size.x,
-            guiProperties.bottomPanelProperties.size.y
+            static_cast<int>(width - guiProperties.scenePanelProperties.size.x - guiProperties.rightPanelProperties.size.x),
+            static_cast<int>(height - guiProperties.bottomPanelProperties.size.y),
+            static_cast<int>(guiProperties.scenePanelProperties.size.x),
+            static_cast<int>(guiProperties.bottomPanelProperties.size.y)
         };
 
         m_activeCamera->viewFrustum.viewport = newViewport;

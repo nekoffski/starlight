@@ -103,6 +103,7 @@ public:
     virtual bool beginTabItem(const std::string&) = 0;
     virtual void endTabItem() = 0;
     virtual void beginPanel(const std::string&, math::Vec2, math::Vec2) = 0;
+    virtual void beginTransparentPanel(const std::string&, math::Vec2, math::Vec2) = 0;
     virtual void endPanel() = 0;
     virtual void displayText(const std::string&) = 0;
     virtual void breakLine() = 0;

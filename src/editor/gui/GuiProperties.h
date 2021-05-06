@@ -50,12 +50,21 @@ struct GuiProperties {
             { windowWidth - rightPanelWidth, 35 },
             { rightPanelWidth, windowHeight - 35 - bottomPanelHeight }
         };
+
+        const float toolBarHeightRatio = 0.045f;
+        const float toolBarHeight = toolBarHeightRatio * windowHeight;
+
+        toolBarProperties = {
+            { leftPanelWidth, windowHeight - bottomPanelHeight - toolBarHeight },
+            { 0, toolBarHeight }
+        };
     }
 
     WidgetProperties scenePanelProperties;
     WidgetProperties propertiesPanelProperties;
     WidgetProperties bottomPanelProperties;
     WidgetProperties rightPanelProperties;
+    WidgetProperties toolBarProperties;
 };
 
 }

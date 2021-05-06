@@ -126,13 +126,19 @@ public:
                 auto transformationMatrix = transform.transformation;
 
                 gui.manipulateGizmo(viewMatrix, projectionMatrix, transformationMatrix,
-                    sl::gui::GizmoOperation::translate, sl::gui::GizmoSystem::world);
+                    m_sharedState->gizmoOperation, m_sharedState->gizmoSystem);
 
                 if (gui.isUsingGizmo()) {
-                    math::Vec3 rotation;
-                    math::decomposeMatrix(transformationMatrix, transform.position, rotation, transform.scale);
+                    math::Vec3 rotation, position, scale;
+                    math::decomposeMatrix(transformationMatrix, position,
+                        rotation, scale);
 
-                    transform.rotation += rotation;
+                    rotation = sl::math::toDegrees(rotation);
+
+                    transform.rotation = rotation;
+                    transform.position = position;
+                    transform.scale = scale;
+
                     transform.recalculateTransformation();
                 }
             }

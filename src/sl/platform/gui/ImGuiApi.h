@@ -74,6 +74,7 @@ public:
     bool isItemHovered() override;
     bool isMouseClicked() override;
 
+    void beginTransparentPanel(const std::string&, math::Vec2, math::Vec2) override;
     void beginPanel(const std::string&, math::Vec2, math::Vec2) override;
     void endPanel() override;
 
