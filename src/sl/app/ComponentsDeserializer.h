@@ -40,6 +40,9 @@ private:
     static void deserializeTransformComponent(Json::Value& componentDescription,
         ecs::Entity& entity, asset::AssetManager& assetManager);
 
+    static void deserializeRigidBodyComponent(Json::Value& componentDescription,
+        ecs::Entity& entity, asset::AssetManager& assetManager);
+
     static math::Vec3 deserializeVector3(Json::Value& value);
 
     std::unordered_map<std::string, DeserializerCallback> m_deserializers;

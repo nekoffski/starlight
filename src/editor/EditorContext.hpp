@@ -23,6 +23,7 @@
 #include "sl/scene/Scene.h"
 #include "sl/scene/components/MaterialComponent.h"
 #include "sl/scene/components/ModelComponent.h"
+#include "sl/scene/components/RigidBodyComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 #include "sl/utils/Globals.h"
 
@@ -73,6 +74,10 @@ public:
         m_activeCamera->update(deltaTime, input);
         auto pfxs = m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>();
         sceneSystems.pfxEngine.update(pfxs, deltaTime, m_scene->camera);
+
+        auto rigidBodies = m_scene->ecsRegistry.getComponentView<components::RigidBodyComponent>();
+        auto transforms = m_scene->ecsRegistry.getComponentView<components::TransformComponent>();
+        sceneSystems.physxEngine.processRigidBodies(rigidBodies, transforms, deltaTime);
     }
 
     void render(gfx::Renderer& renderer) override {

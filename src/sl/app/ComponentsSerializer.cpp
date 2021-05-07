@@ -6,6 +6,7 @@
 #include "sl/scene/components/ModelComponent.h"
 #include "sl/scene/components/ParticleEffectComponent.h"
 #include "sl/scene/components/PointLightComponent.h"
+#include "sl/scene/components/RigidBodyComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 
 #define BIND_SERIALIZER_CALLBACK(Component) \
@@ -21,7 +22,8 @@ ComponentsSerializer::ComponentsSerializer() {
         BIND_SERIALIZER_CALLBACK(ModelComponent),
         BIND_SERIALIZER_CALLBACK(ParticleEffectComponent),
         BIND_SERIALIZER_CALLBACK(PointLightComponent),
-        BIND_SERIALIZER_CALLBACK(TransformComponent)
+        BIND_SERIALIZER_CALLBACK(TransformComponent),
+        BIND_SERIALIZER_CALLBACK(RigidBodyComponent)
     };
 }
 
@@ -91,6 +93,15 @@ void ComponentsSerializer::serializeTransformComponent(core::JsonBuilder& builde
     serializeVector(builder, "position", transformComponent.position);
     serializeVector(builder, "rotation", transformComponent.rotation);
     serializeVector(builder, "scale", transformComponent.scale);
+}
+
+void ComponentsSerializer::serializeRigidBodyComponent(core::JsonBuilder& builder, ecs::Component& component) {
+    auto& rigidBodyCompoent = static_cast<scene::components::RigidBodyComponent&>(component);
+
+    builder
+        .addField("name", "RigidBodyComponent"s)
+        .addField("use-gravity", rigidBodyCompoent.useGravity)
+        .addField("mass", rigidBodyCompoent.mass);
 }
 
 void ComponentsSerializer::serializeVector(core::JsonBuilder& builder, const std::string& name, const math::Vec3& vector) {

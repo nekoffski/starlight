@@ -8,6 +8,7 @@
 #include "sl/scene/components/ModelComponent.h"
 #include "sl/scene/components/ParticleEffectComponent.h"
 #include "sl/scene/components/PointLightComponent.h"
+#include "sl/scene/components/RigidBodyComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 
 namespace editor::gui {
@@ -54,6 +55,7 @@ void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
             gui.sameLine(250);
             gui.beginGroup();
 
+            // TODO: refactor
             switch (selectedValue) {
             case 0: {
                 addModel(load, *selectedEntity, gui);
@@ -66,7 +68,9 @@ void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
             }
 
             case 2: {
-                addRenderer(load, *selectedEntity, gui);
+                if (load)
+                    selectedEntity->addComponent<sl::scene::components::RigidBodyComponent>();
+
                 break;
             }
 

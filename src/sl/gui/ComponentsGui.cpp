@@ -8,6 +8,7 @@
 #include "components/ModelComponentGui.h"
 #include "components/ParticleEffectComponentGui.h"
 #include "components/PointLightComponentGui.h"
+#include "components/RigidBodyComponentGui.h"
 #include "components/TransformComponentGui.h"
 
 #define BIND_COMPONENT_GUI(Component) \
@@ -23,7 +24,8 @@ ComponentsGui::ComponentsGui() {
         BIND_COMPONENT_GUI(ModelComponent),
         BIND_COMPONENT_GUI(ParticleEffectComponent),
         BIND_COMPONENT_GUI(PointLightComponent),
-        BIND_COMPONENT_GUI(TransformComponent)
+        BIND_COMPONENT_GUI(TransformComponent),
+        BIND_COMPONENT_GUI(RigidBodyComponent)
     };
 }
 

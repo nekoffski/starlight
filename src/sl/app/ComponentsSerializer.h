@@ -25,6 +25,7 @@ private:
     static void serializeParticleEffectComponent(core::JsonBuilder& builder, ecs::Component& component);
     static void serializePointLightComponent(core::JsonBuilder& builder, ecs::Component& component);
     static void serializeTransformComponent(core::JsonBuilder& builder, ecs::Component& component);
+    static void serializeRigidBodyComponent(core::JsonBuilder& builder, ecs::Component& component);
 
     static void serializeVector(core::JsonBuilder& builder, const std::string& name, const math::Vec3& vector);
 

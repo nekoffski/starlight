@@ -6,6 +6,7 @@
 #include "sl/scene/components/ModelComponent.h"
 #include "sl/scene/components/ParticleEffectComponent.h"
 #include "sl/scene/components/PointLightComponent.h"
+#include "sl/scene/components/RigidBodyComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 #include "sl/utils/Globals.h"
 
@@ -24,7 +25,8 @@ ComponentsDeserializer::ComponentsDeserializer() {
         BIND_DESERIALIZER_CALLBACK(ModelComponent),
         BIND_DESERIALIZER_CALLBACK(ParticleEffectComponent),
         BIND_DESERIALIZER_CALLBACK(PointLightComponent),
-        BIND_DESERIALIZER_CALLBACK(TransformComponent)
+        BIND_DESERIALIZER_CALLBACK(TransformComponent),
+        BIND_DESERIALIZER_CALLBACK(RigidBodyComponent)
     };
 }
 
@@ -113,6 +115,15 @@ void ComponentsDeserializer::deserializeTransformComponent(Json::Value& componen
         deserializeVector3(componentDescription["position"]),
         deserializeVector3(componentDescription["rotation"]),
         deserializeVector3(componentDescription["scale"]));
+}
+
+void ComponentsDeserializer::deserializeRigidBodyComponent(Json::Value& componentDescription,
+    ecs::Entity& entity, asset::AssetManager& assetManager) {
+
+    auto& component = entity.addComponent<RigidBodyComponent>();
+
+    component.useGravity = componentDescription["use-gravity"].asBool();
+    component.mass = componentDescription["mass"].asFloat();
 }
 
 math::Vec3 ComponentsDeserializer::deserializeVector3(Json::Value& value) {
