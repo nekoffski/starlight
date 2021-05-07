@@ -79,8 +79,9 @@ public:
         sceneSystems.pfxEngine.update(pfxs, deltaTime, m_scene->camera);
 
         if (m_engineState == editor::EngineState::started) {
-            auto rigidBodies = m_scene->ecsRegistry.getComponentView<components::RigidBodyComponent>();
-            auto transforms = m_scene->ecsRegistry.getComponentView<components::TransformComponent>();
+            using namespace sl::scene::components;
+
+            auto [rigidBodies, transforms] = m_scene->ecsRegistry.getComponentsViews<RigidBodyComponent, TransformComponent>();
             sceneSystems.physxEngine.processRigidBodies(rigidBodies, transforms, deltaTime);
         }
     }
@@ -91,12 +92,11 @@ public:
         if (skybox)
             skybox->cubemap->bind();
 
-        auto directionalLights = m_scene->ecsRegistry.getComponentView<components::DirectionalLightComponent>();
-        auto pointLights = m_scene->ecsRegistry.getComponentView<components::PointLightComponent>();
-        auto rendererComponents = m_scene->ecsRegistry.getComponentView<components::MeshRendererComponent>();
-        auto transforms = m_scene->ecsRegistry.getComponentView<components::TransformComponent>();
-        auto models = m_scene->ecsRegistry.getComponentView<components::ModelComponent>();
-        auto materials = m_scene->ecsRegistry.getComponentView<components::MaterialComponent>();
+        using namespace sl::scene::components;
+
+        auto [directionalLights, pointLights, rendererComponents, transforms, models, materials] =
+            m_scene->ecsRegistry.getComponentsViews<DirectionalLightComponent, PointLightComponent, MeshRendererComponent,
+                TransformComponent, ModelComponent, MaterialComponent>();
 
         renderer.beginDepthCapture();
         auto depthShader = renderer.getDepthShader();
@@ -207,9 +207,9 @@ private:
         m_engineState = state;
 
         using editor::EngineState;
+        using namespace sl::scene::components;
 
-        auto rigidBodies = m_scene->ecsRegistry.getComponentView<scene::components::RigidBodyComponent>();
-        auto transforms = m_scene->ecsRegistry.getComponentView<scene::components::TransformComponent>();
+        auto [rigidBodies, transforms] = m_scene->ecsRegistry.getComponentsViews<RigidBodyComponent, TransformComponent>();
 
         switch (state) {
         case EngineState::started: {

@@ -23,6 +23,13 @@ private:
             }
 
             if (gui.beginTreeNode("Collider")) {
+                gui.checkbox("Enable collisions", component.enableCollisions);
+
+                if (gui.beginTreeNode("Bounding box")) {
+                    gui.checkbox("Render bounding box", component.renderBoundingBox);
+
+                    gui.popTreeNode();
+                }
 
                 gui.popTreeNode();
             }

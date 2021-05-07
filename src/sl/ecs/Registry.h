@@ -53,6 +53,11 @@ public:
         return ComponentView<T> { m_componentMap.get<T>() };
     }
 
+    template <typename... T>
+    auto getComponentsViews() {
+        return std::make_tuple(getComponentView<T>()...);
+    }
+
     std::shared_ptr<Entity> getEntityByName(const std::string& name) {
         return getEntityById(m_entityNameToId[name]);
     }
