@@ -129,16 +129,11 @@ public:
                     m_sharedState->gizmoOperation, m_sharedState->gizmoSystem);
 
                 if (gui.isUsingGizmo()) {
-                    math::Vec3 rotation, position, scale;
-                    math::decomposeMatrix(transformationMatrix, position,
-                        rotation, scale);
+                    math::Vec3 rotation;
+                    math::decomposeMatrix(transformationMatrix, transform.position,
+                        rotation, transform.scale);
 
-                    rotation = sl::math::toDegrees(rotation);
-
-                    transform.rotation = rotation;
-                    transform.position = position;
-                    transform.scale = scale;
-
+                    transform.rotation = sl::math::toDegrees(rotation);
                     transform.recalculateTransformation();
                 }
             }

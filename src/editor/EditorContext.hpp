@@ -69,10 +69,10 @@ public:
         m_errorDialog.show(gui);
     }
 
-    void update(scene::SceneSystems& sceneSystems, float deltaTime, float time, core::Input& input) override {
+    void update(app::SceneSystems& sceneSystems, float deltaTime, float time, core::Input& input) override {
         m_activeCamera->update(deltaTime, input);
         auto pfxs = m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>();
-        sceneSystems.pfxSystem.update(pfxs, deltaTime, m_scene->camera);
+        sceneSystems.pfxEngine.update(pfxs, deltaTime, m_scene->camera);
     }
 
     void render(gfx::Renderer& renderer) override {

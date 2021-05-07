@@ -9,6 +9,7 @@
 #include <xvent/EventEngine.h>
 #include <xvent/EventListener.h>
 
+#include "SceneSystems.h"
 #include "fwd.h"
 #include "sl/app/ApplicationContext.h"
 #include "sl/core/Input.h"
@@ -17,7 +18,6 @@
 #include "sl/gfx/LowLevelRenderer.h"
 #include "sl/gfx/Renderer.hpp"
 #include "sl/gui/GuiApi.h"
-#include "sl/scene/SceneSystems.hpp"
 
 namespace sl::app {
 
@@ -72,7 +72,7 @@ private:
     std::shared_ptr<gui::GuiApi> m_guiApi;
     std::shared_ptr<gfx::GraphicsContext> m_gfxContext;
     std::shared_ptr<ApplicationContext> m_context;
-    std::shared_ptr<scene::SceneSystems> m_sceneSystems;
+    std::unique_ptr<SceneSystems> m_sceneSystems;
     std::shared_ptr<gfx::Renderer> m_renderer;
 
     xvent::EventEngine m_eventEngine;

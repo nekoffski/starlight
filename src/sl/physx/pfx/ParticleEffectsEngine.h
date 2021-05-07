@@ -9,11 +9,13 @@
 #include "sl/scene/components/ParticleEffectComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 
-namespace sl::scene::systems {
+namespace sl::physx::pfx {
 
-class ParticleEffectSystem {
+using namespace scene;
+
+class ParticleEffectsEngine {
 public:
-    explicit ParticleEffectSystem();
+    explicit ParticleEffectsEngine();
 
     void update(ecs::ComponentView<components::ParticleEffectComponent>& pfxs, float deltaTime, std::shared_ptr<gfx::camera::Camera>);
 

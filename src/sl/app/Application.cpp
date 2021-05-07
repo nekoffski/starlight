@@ -93,7 +93,7 @@ void Application::init() {
     m_renderer = std::make_shared<gfx::Renderer>(m_lowLevelRenderer);
 
     SL_INFO("Creating scene systems instance");
-    m_sceneSystems = std::make_shared<scene::SceneSystems>();
+    m_sceneSystems = std::make_unique<SceneSystems>();
 
     m_guiApi->addFont("/home/nek0/kapik/projects/starlight/res/fonts/fa-solid-900.ttf",
         ICON_MIN_FA, ICON_MAX_FA);
