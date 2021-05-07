@@ -1,6 +1,8 @@
 #pragma once
 
 #include "DebugConsole.hpp"
+#include "EngineState.h"
+#include "Events.h"
 #include "gui/EditorGui.h"
 #include "sl/app/ApplicationContext.h"
 #include "sl/app/Deserializer.h"
@@ -36,7 +38,8 @@ using namespace sl::core;
 class EditorContext : public app::ApplicationContext {
 public:
     explicit EditorContext(const std::string& ident)
-        : ApplicationContext(ident) {
+        : ApplicationContext(ident)
+        , m_engineState(editor::EngineState::stopped) {
     }
 
     void onInit() override {
@@ -75,9 +78,11 @@ public:
         auto pfxs = m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>();
         sceneSystems.pfxEngine.update(pfxs, deltaTime, m_scene->camera);
 
-        auto rigidBodies = m_scene->ecsRegistry.getComponentView<components::RigidBodyComponent>();
-        auto transforms = m_scene->ecsRegistry.getComponentView<components::TransformComponent>();
-        sceneSystems.physxEngine.processRigidBodies(rigidBodies, transforms, deltaTime);
+        if (m_engineState == editor::EngineState::started) {
+            auto rigidBodies = m_scene->ecsRegistry.getComponentView<components::RigidBodyComponent>();
+            auto transforms = m_scene->ecsRegistry.getComponentView<components::TransformComponent>();
+            sceneSystems.physxEngine.processRigidBodies(rigidBodies, transforms, deltaTime);
+        }
     }
 
     void render(gfx::Renderer& renderer) override {
@@ -159,6 +164,10 @@ public:
                     sceneCamera->setCenter(newCenter);
             }
 
+            if (event->is<editor::EngineStateChanged>())
+                handleStateChange(
+                    event->as<editor::EngineStateChanged>()->state);
+
             try {
                 using namespace sl::app;
 
@@ -194,6 +203,40 @@ public:
     }
 
 private:
+    void handleStateChange(editor::EngineState state) {
+        m_engineState = state;
+
+        using editor::EngineState;
+
+        auto rigidBodies = m_scene->ecsRegistry.getComponentView<scene::components::RigidBodyComponent>();
+        auto transforms = m_scene->ecsRegistry.getComponentView<scene::components::TransformComponent>();
+
+        switch (state) {
+        case EngineState::started: {
+            for (auto& rigidBody : rigidBodies)
+                rigidBody.save();
+
+            for (auto& transform : transforms)
+                transform.save();
+
+            break;
+        }
+
+        case EngineState::stopped: {
+            for (auto& rigidBody : rigidBodies)
+                rigidBody.restore();
+
+            for (auto& transform : transforms)
+                transform.restore();
+
+            break;
+        }
+
+        default:
+            break;
+        }
+    }
+
     sl::asset::AssetManager m_assetManager;
 
     std::shared_ptr<editor::gui::EditorGui> m_editorGui;
@@ -201,4 +244,6 @@ private:
     std::shared_ptr<scene::Scene> m_scene;
 
     sl::gui::ErrorDialog m_errorDialog;
+
+    editor::EngineState m_engineState;
 };

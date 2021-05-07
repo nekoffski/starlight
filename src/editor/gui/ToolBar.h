@@ -2,82 +2,83 @@
 
 #include "Widget.h"
 
+#include "editor/EngineState.h"
+#include "editor/Events.h"
+
 namespace editor::gui {
 
 class ToolBar : public Widget {
 public:
     explicit ToolBar(std::shared_ptr<SharedState> sharedState)
         : Widget(sharedState)
-        , m_gizmoOperation(0) {
+        , m_gizmoOperation(sl::gui::GizmoOperation::translate)
+        , m_engineState(EngineState::stopped) {
     }
 
     void render(sl::gui::GuiApi& gui) {
         auto& properties = m_sharedState->guiProperties.toolBarProperties;
+
         gui.beginTransparentPanel("Toolbar", properties.origin, properties.size);
         gui.pushId("ToolBar");
 
-        if (gui.button(ICON_FA_PLAY)) {
-        }
-
-        gui.sameLine();
-
-        if (gui.button(ICON_FA_PAUSE)) {
-        }
-
-        gui.sameLine();
-
-        if (gui.button(ICON_FA_STOP)) {
-        }
-
-        gui.sameLine();
-
-        gui.displayText("  " ICON_FA_ELLIPSIS_V "  ");
-
-        gui.sameLine();
-
-        auto handleGizmoOperation = [&](const std::string& label, int index) {
-            bool isSelected = (m_gizmoOperation == index);
+        auto handleEngineStateButton = [&](const std::string& label, EngineState state) -> void {
+            bool isSelected = m_engineState == state;
 
             if (isSelected)
                 gui.pushTextColor(sl::gui::selectedEntryColor);
 
             if (gui.button(label)) {
-                m_gizmoOperation = index;
-                m_sharedState->gizmoOperation = getGizmoOperation();
+                sl::event::Emitter::emit<EngineStateChanged>(state);
+                m_engineState = state;
             }
 
             if (isSelected)
                 gui.popColor();
         };
 
-        handleGizmoOperation(ICON_FA_ARROWS_ALT, 0);
+        handleEngineStateButton(ICON_FA_PLAY, EngineState::started);
         gui.sameLine();
 
-        handleGizmoOperation(ICON_FA_SYNC_ALT, 1);
+        handleEngineStateButton(ICON_FA_PAUSE, EngineState::paused);
         gui.sameLine();
 
-        handleGizmoOperation(ICON_FA_EXPAND_ALT, 2);
+        handleEngineStateButton(ICON_FA_STOP, EngineState::stopped);
+        gui.sameLine();
+
+        gui.displayText("  " ICON_FA_ELLIPSIS_V "  ");
+
+        gui.sameLine();
+
+        auto handleGizmoOperation = [&](const std::string& label, sl::gui::GizmoOperation operation) -> void {
+            bool isSelected = (m_gizmoOperation == operation);
+
+            if (isSelected)
+                gui.pushTextColor(sl::gui::selectedEntryColor);
+
+            if (gui.button(label)) {
+                m_gizmoOperation = operation;
+                m_sharedState->gizmoOperation = operation;
+            }
+
+            if (isSelected)
+                gui.popColor();
+        };
+
+        handleGizmoOperation(ICON_FA_ARROWS_ALT, sl::gui::GizmoOperation::translate);
+        gui.sameLine();
+
+        handleGizmoOperation(ICON_FA_SYNC_ALT, sl::gui::GizmoOperation::rotate);
+        gui.sameLine();
+
+        handleGizmoOperation(ICON_FA_EXPAND_ALT, sl::gui::GizmoOperation::scale);
 
         gui.popId();
         gui.endPanel();
     }
 
 private:
-    sl::gui::GizmoOperation getGizmoOperation() {
-        switch (m_gizmoOperation) {
-        case 0:
-            return sl::gui::GizmoOperation::translate;
-
-        case 1:
-            return sl::gui::GizmoOperation::rotate;
-
-        case 2:
-            return sl::gui::GizmoOperation::scale;
-        }
-        return sl::gui::GizmoOperation::translate;
-    }
-
-    int m_gizmoOperation;
+    sl::gui::GizmoOperation m_gizmoOperation;
+    EngineState m_engineState;
 };
 
 }
