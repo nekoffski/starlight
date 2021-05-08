@@ -179,7 +179,7 @@ void ImGuiApi::openPopUp(const std::string& label) {
     ImGui::OpenPopup(label.c_str());
 }
 
-void ImGuiApi::combo(const std::string& label, int& currentItem, std::vector<std::string> items) {
+bool ImGuiApi::combo(const std::string& label, int& currentItem, std::vector<std::string> items) {
     std::vector<const char*> imguiItems;
     auto itemsSize = items.size();
     imguiItems.reserve(itemsSize);
@@ -187,7 +187,7 @@ void ImGuiApi::combo(const std::string& label, int& currentItem, std::vector<std
     for (auto& item : items)
         imguiItems.push_back(item.c_str());
 
-    ImGui::Combo(label.c_str(), &currentItem, imguiItems.data(), itemsSize);
+    return ImGui::Combo(label.c_str(), &currentItem, imguiItems.data(), itemsSize);
 }
 
 void ImGuiApi::closeCurrentPopUp() {

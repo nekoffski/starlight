@@ -86,7 +86,7 @@ public:
     virtual void setNextWindowSize(math::Vec2) = 0;
     virtual void setNextWindowPosition(math::Vec2) = 0;
 
-    virtual void combo(const std::string&, int&, std::vector<std::string> items) = 0;
+    virtual bool combo(const std::string&, int&, std::vector<std::string> items) = 0;
     virtual void openPopUp(const std::string&) = 0;
     virtual void closeCurrentPopUp() = 0;
     virtual bool beginPopUp(const std::string&) = 0;

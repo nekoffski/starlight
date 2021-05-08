@@ -52,7 +52,7 @@ public:
     void endChild() override;
     void setNextWindowPosition(math::Vec2) override;
     void setNextWindowSize(math::Vec2) override;
-    void combo(const std::string&, int&, std::vector<std::string> items) override;
+    bool combo(const std::string&, int&, std::vector<std::string> items) override;
     void openPopUp(const std::string&) override;
     void closeCurrentPopUp() override;
     bool beginPopUp(const std::string&) override;

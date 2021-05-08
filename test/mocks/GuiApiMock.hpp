@@ -43,7 +43,7 @@ struct GuiApiMock : public GuiApi {
     MOCK_METHOD(bool, menuItem, (const std::string&), (override));
     MOCK_METHOD(void, setNextWindowSize, (math::Vec2), (override));
     MOCK_METHOD(void, setNextWindowPosition, (math::Vec2), (override));
-    MOCK_METHOD(void, combo, (const std::string&, int&, std::vector<std::string> items), (override));
+    MOCK_METHOD(bool, combo, (const std::string&, int&, std::vector<std::string> items), (override));
     MOCK_METHOD(void, openPopUp, (const std::string&), (override));
     MOCK_METHOD(void, closeCurrentPopUp, (), (override));
     MOCK_METHOD(bool, beginPopUp, (const std::string&), (override));

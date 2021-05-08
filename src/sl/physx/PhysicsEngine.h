@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ranges>
+
 #include "sl/core/Logger.h"
 #include "sl/scene/components/RigidBodyComponent.h"
 #include "sl/scene/components/TransformComponent.h"
@@ -12,6 +14,9 @@ class PhysicsEngine {
 public:
     void processRigidBodies(ecs::ComponentView<scene::components::RigidBodyComponent> rigidBodies,
         ecs::ComponentView<scene::components::TransformComponent> transforms, float deltaTime) {
+
+        using scene::components::TransformComponent;
+
         for (auto& rigidBody : rigidBodies) {
             if (rigidBody.useGravity)
                 rigidBody.velocity += gravityAcceleration * deltaTime;
@@ -25,9 +30,31 @@ public:
                 transform.recalculateTransformation();
             }
         }
-    }
 
-private:
+        auto areCollisionsEnabled = [](auto& rigidBody) -> bool { return rigidBody.boundingBox != nullptr && rigidBody.enableCollisions; };
+        auto rigidBodiesWithEnabledCollisions = rigidBodies | std::views::filter(areCollisionsEnabled);
+
+        for (auto& rigidBody : rigidBodiesWithEnabledCollisions) {
+            auto& entityId = rigidBody.ownerEntityId;
+
+            auto collider = rigidBody.boundingBox->getCollider();
+
+            if (transforms.doesEntityOwnComponent(entityId))
+                collider->setModelMatrix(transforms.getByEntityId(entityId).transformation);
+
+            for (auto& rigidBodyToCollide : rigidBodiesWithEnabledCollisions) {
+                if (rigidBody == rigidBodyToCollide)
+                    continue;
+
+                auto& entityId = rigidBodyToCollide.ownerEntityId;
+                auto transform =
+                    transforms.doesEntityOwnComponent(entityId) ? transforms.getByEntityId(entityId).transformation : sl::math::identityMatrix;
+
+                if (rigidBodyToCollide.boundingBox->collide(collider, transform))
+                    rigidBody.velocity = math::Vec3 { 0.0f };
+            }
+        }
+    }
 };
 
 }

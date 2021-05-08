@@ -70,16 +70,8 @@ void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
             }
 
             case 2: {
-                if (load) {
-                    auto& rigidBody = selectedEntity->addComponent<sl::scene::components::RigidBodyComponent>();
-
-                    if (selectedEntity->hasComponent<sl::scene::components::ModelComponent>()) {
-                        auto& modelComponent = selectedEntity->getComponent<sl::scene::components::ModelComponent>();
-
-                        auto aabb = std::make_unique<sl::physx::AxisAlignedBoundingBox>(modelComponent.meshes);
-                        rigidBody.boundingBox = std::move(aabb);
-                    }
-                }
+                if (load)
+                    selectedEntity->addComponent<sl::scene::components::RigidBodyComponent>();
 
                 break;
             }

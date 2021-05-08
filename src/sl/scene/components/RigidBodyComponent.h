@@ -26,6 +26,10 @@ public:
         }
     }
 
+    bool operator==(const RigidBodyComponent& other) {
+        return ownerEntityId == other.ownerEntityId;
+    }
+
     bool useGravity = false;
     bool enableCollisions = false;
     bool renderBoundingBox = false;
