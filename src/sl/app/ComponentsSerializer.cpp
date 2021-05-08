@@ -96,12 +96,16 @@ void ComponentsSerializer::serializeTransformComponent(core::JsonBuilder& builde
 }
 
 void ComponentsSerializer::serializeRigidBodyComponent(core::JsonBuilder& builder, ecs::Component& component) {
-    auto& rigidBodyCompoent = static_cast<scene::components::RigidBodyComponent&>(component);
+    auto& rigidBodyComponent = static_cast<scene::components::RigidBodyComponent&>(component);
 
     builder
         .addField("name", "RigidBodyComponent"s)
-        .addField("use-gravity", rigidBodyCompoent.useGravity)
-        .addField("mass", rigidBodyCompoent.mass);
+        .addField("use-gravity", rigidBodyComponent.useGravity)
+        .addField("mass", rigidBodyComponent.mass)
+        .addField("enable-collisions", rigidBodyComponent.enableCollisions)
+        .addField("render-bounding-box", rigidBodyComponent.renderBoundingBox)
+        .addField("bounding-box", rigidBodyComponent.boundingBox != nullptr ? rigidBodyComponent.boundingBox->getName() : "None");
+    serializeVector(builder, "velocity", rigidBodyComponent.velocity);
 }
 
 void ComponentsSerializer::serializeVector(core::JsonBuilder& builder, const std::string& name, const math::Vec3& vector) {

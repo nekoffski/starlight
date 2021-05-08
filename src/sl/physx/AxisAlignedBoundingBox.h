@@ -7,6 +7,8 @@
 #include "fwd.h"
 #include "sl/geom/Mesh.h"
 
+#include "AxisAlignedCollider.h"
+
 namespace sl::physx {
 
 class AxisAlignedBoundingBox : public BoundingBox {

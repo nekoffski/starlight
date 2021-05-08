@@ -4,6 +4,7 @@
 #include "sl/event/Event.h"
 #include "sl/gui/Utils.hpp"
 #include "sl/scene/components/DirectionalLightComponent.h"
+#include "sl/scene/components/MaterialComponent.h"
 #include "sl/scene/components/MeshRendererComponent.h"
 #include "sl/scene/components/ModelComponent.h"
 #include "sl/scene/components/ParticleEffectComponent.h"
@@ -41,7 +42,7 @@ void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
 
         if (gui.beginPopUp("AddComponentPopUp")) {
             static std::vector<std::string> componentsNames = {
-                "Model", "Renderer", "Rigid body", "Particle effect", "Transform", "Point light", "Directional light"
+                "Model", "Renderer", "Rigid body", "Particle effect", "Transform", "Point light", "Directional light", "Material"
             };
 
             gui.beginGroup();
@@ -94,6 +95,11 @@ void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
             case 6: {
                 addDirectionalLight(load, *selectedEntity, gui);
                 break;
+            }
+
+            case 7: {
+                if (load)
+                    selectedEntity->addComponent<sl::scene::components::MaterialComponent>();
             }
             }
             gui.endGroup();

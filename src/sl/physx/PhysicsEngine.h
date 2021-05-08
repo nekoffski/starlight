@@ -51,7 +51,7 @@ public:
                     transforms.doesEntityOwnComponent(entityId) ? transforms.getByEntityId(entityId).transformation : sl::math::identityMatrix;
 
                 if (rigidBodyToCollide.boundingBox->collide(collider, transform))
-                    rigidBody.velocity = math::Vec3 { 0.0f };
+                    rigidBody.velocity.y = -rigidBody.velocity.y / 2.0f;
             }
         }
     }

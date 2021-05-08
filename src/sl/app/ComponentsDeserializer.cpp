@@ -8,6 +8,8 @@
 #include "sl/scene/components/PointLightComponent.h"
 #include "sl/scene/components/RigidBodyComponent.h"
 #include "sl/scene/components/TransformComponent.h"
+
+#include "sl/physx/AxisAlignedBoundingBox.h"
 #include "sl/utils/Globals.h"
 
 using namespace sl::scene::components;
@@ -123,7 +125,24 @@ void ComponentsDeserializer::deserializeRigidBodyComponent(Json::Value& componen
     auto& component = entity.addComponent<RigidBodyComponent>();
 
     component.useGravity = componentDescription["use-gravity"].asBool();
+    component.renderBoundingBox = componentDescription["render-bounding-box"].asBool();
+    component.enableCollisions = componentDescription["enable-collisions"].asBool();
     component.mass = componentDescription["mass"].asFloat();
+    component.velocity = deserializeVector3(componentDescription["velocity"]);
+
+    auto boundingBoxName = componentDescription["bounding-box"].asString();
+
+    component.boundingBox = [&]() -> std::unique_ptr<physx::BoundingBox> {
+        if (not entity.hasComponent<ModelComponent>())
+            return nullptr;
+
+        auto meshes = entity.getComponent<ModelComponent>().meshes;
+
+        if (boundingBoxName == "AxisAlignedBoundingBox")
+            return std::make_unique<physx::AxisAlignedBoundingBox>(meshes);
+
+        return nullptr;
+    }();
 }
 
 math::Vec3 ComponentsDeserializer::deserializeVector3(Json::Value& value) {
