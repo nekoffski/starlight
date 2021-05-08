@@ -19,7 +19,7 @@ public:
             auto& component = entity.getComponent(index);
 
             m_componentsGui.renderComponentGui(
-                index, component, gui, assetManager);
+                index, component, gui, assetManager, entity);
 
             if (component.shouldBeRemoved)
                 indexesToRemove.push_back(index);

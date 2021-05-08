@@ -5,7 +5,7 @@ namespace sl::gui::components {
 using namespace scene::components;
 
 void PointLightComponentGui::renderComponentGuiImpl(PointLightComponent& component,
-    gui::GuiApi& gui, asset::AssetManager& assetManager) {
+    gui::GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity) {
 
     gui.pushId(component.ownerEntityId);
 

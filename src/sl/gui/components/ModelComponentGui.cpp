@@ -9,7 +9,7 @@ namespace sl::gui::components {
 using namespace scene::components;
 
 void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
-    gui::GuiApi& gui, asset::AssetManager& assetManager) {
+    gui::GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity) {
 
     gui.pushId(component.ownerEntityId);
     auto& params = m_params[component.ownerEntityId];

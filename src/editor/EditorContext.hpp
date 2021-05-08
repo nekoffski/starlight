@@ -94,9 +94,9 @@ public:
 
         using namespace sl::scene::components;
 
-        auto [directionalLights, pointLights, rendererComponents, transforms, models, materials] =
+        auto [directionalLights, pointLights, rendererComponents, transforms, models, materials, rigidBodies] =
             m_scene->ecsRegistry.getComponentsViews<DirectionalLightComponent, PointLightComponent, MeshRendererComponent,
-                TransformComponent, ModelComponent, MaterialComponent>();
+                TransformComponent, ModelComponent, MaterialComponent, RigidBodyComponent>();
 
         renderer.beginDepthCapture();
         auto depthShader = renderer.getDepthShader();
@@ -126,6 +126,8 @@ public:
 
         renderer.renderParticleEffects(
             m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>(), transforms, m_scene->camera);
+
+        renderer.renderBoundingBoxes(rigidBodies, transforms, *m_scene->camera);
 
         if (skybox) {
             renderer.renderCubemap(skybox->cubemap, skybox->shader, m_scene->camera);

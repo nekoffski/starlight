@@ -8,7 +8,7 @@ namespace sl::gui::components {
 class RigidBodyComponentGui : public ComponentGuiImpl<scene::components::RigidBodyComponent> {
 private:
     void renderComponentGuiImpl(scene::components::RigidBodyComponent& component,
-        gui::GuiApi& gui, asset::AssetManager& assetManager) override {
+        gui::GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity) override {
 
         gui.pushId(component.ownerEntityId);
 
@@ -30,6 +30,8 @@ private:
 
                     gui.popTreeNode();
                 }
+
+                // component.
 
                 gui.popTreeNode();
             }

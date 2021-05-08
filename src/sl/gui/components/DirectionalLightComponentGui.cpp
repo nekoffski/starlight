@@ -5,7 +5,7 @@ namespace sl::gui::components {
 using namespace scene::components;
 
 void DirectionalLightComponentGui::renderComponentGuiImpl(DirectionalLightComponent& component,
-    gui::GuiApi& gui, asset::AssetManager& assetManager) {
+    gui::GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity) {
 
     gui.pushId(component.ownerEntityId);
 

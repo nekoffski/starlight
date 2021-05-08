@@ -5,7 +5,7 @@ namespace sl::gui::components {
 using namespace scene::components;
 
 void ParticleEffectComponentGui::renderComponentGuiImpl(ParticleEffectComponent& component,
-    gui::GuiApi& gui, asset::AssetManager& assetManager) {
+    gui::GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity) {
 
     if (beginComponentTreeNode(gui, "ParticleEffect", component)) {
         gui.displayText("Position");

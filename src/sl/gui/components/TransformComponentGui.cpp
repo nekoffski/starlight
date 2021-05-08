@@ -5,7 +5,7 @@ namespace sl::gui::components {
 using namespace scene::components;
 
 void TransformComponentGui::renderComponentGuiImpl(TransformComponent& component,
-    gui::GuiApi& gui, asset::AssetManager& assetManager) {
+    gui::GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity) {
 
     gui.pushId(component.ownerEntityId);
 

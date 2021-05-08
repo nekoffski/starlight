@@ -8,6 +8,6 @@ namespace sl::gui::components {
 class ParticleEffectComponentGui : public ComponentGuiImpl<scene::components::ParticleEffectComponent> {
 private:
     void renderComponentGuiImpl(scene::components::ParticleEffectComponent& component,
-        gui::GuiApi& gui, asset::AssetManager& assetManager) override;
+        gui::GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity) override;
 };
 }

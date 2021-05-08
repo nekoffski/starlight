@@ -5,6 +5,8 @@
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
 
+#include "sl/physx/BoundingBox.h"
+
 namespace sl::scene::components {
 
 class RigidBodyComponent : public ecs::Component {
@@ -31,6 +33,8 @@ public:
     float mass = { 0.0f };
 
     math::Vec3 velocity = { 0.0f, 0.0f, 0.0f };
+
+    std::unique_ptr<physx::BoundingBox> boundingBox = nullptr;
 
 private:
     std::optional<Memento> m_memento;

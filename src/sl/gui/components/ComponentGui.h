@@ -2,26 +2,27 @@
 
 #include "sl/asset/AssetManager.h"
 #include "sl/ecs/Component.h"
+#include "sl/ecs/Entity.h"
 
 namespace sl::gui::components {
 
 struct ComponentGui {
     virtual void renderComponentGui(
-        ecs::Component& component, gui::GuiApi& gui, asset::AssetManager& assetManager) = 0;
+        ecs::Component& component, gui::GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity) = 0;
 };
 
 template <typename T>
 class ComponentGuiImpl : public ComponentGui {
 public:
     void renderComponentGui(
-        ecs::Component& component, gui::GuiApi& gui, asset::AssetManager& assetManager) override {
+        ecs::Component& component, gui::GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity) override {
 
-        renderComponentGuiImpl(static_cast<T&>(component), gui, assetManager);
+        renderComponentGuiImpl(static_cast<T&>(component), gui, assetManager, entity);
     }
 
 protected:
     virtual void renderComponentGuiImpl(
-        T&, gui::GuiApi& gui, asset::AssetManager& assetManager) = 0;
+        T&, gui::GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity) = 0;
 
     bool beginComponentTreeNode(gui::GuiApi& gui, const std::string& name, ecs::Component& component) const {
         gui.separator();

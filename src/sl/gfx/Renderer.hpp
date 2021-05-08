@@ -4,6 +4,7 @@
 
 #include "LowLevelRenderer.h"
 
+#include "renderer/BoundingBoxRenderer.h"
 #include "renderer/CubemapRenderer.h"
 #include "renderer/LightRenderer.h"
 #include "renderer/MeshRenderer.h"
@@ -18,7 +19,13 @@ public:
         : m_meshRenderer(renderer)
         , m_shadowRenderer(renderer)
         , m_cubemapRenderer(renderer)
-        , m_pfxRenderer(renderer) {
+        , m_pfxRenderer(renderer)
+        , m_boundingBoxRenderer(renderer) {
+    }
+
+    void renderBoundingBoxes(ecs::ComponentView<scene::components::RigidBodyComponent> rigidBodies,
+        ecs::ComponentView<scene::components::TransformComponent> transforms, gfx::camera::Camera& camera) {
+        m_boundingBoxRenderer.renderBoundingBoxes(std::move(rigidBodies), std::move(transforms), camera);
     }
 
     void renderCubemap(std::shared_ptr<Cubemap> cubemap, std::shared_ptr<Shader> cubemapShader,
@@ -74,5 +81,6 @@ private:
     renderer::ShadowRenderer m_shadowRenderer;
     renderer::CubemapRenderer m_cubemapRenderer;
     renderer::ParticleEffectRenderer m_pfxRenderer;
+    renderer::BoundingBoxRenderer m_boundingBoxRenderer;
 };
 }
