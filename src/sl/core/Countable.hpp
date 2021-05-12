@@ -41,6 +41,7 @@ public:
     ulong id;
 
 private:
+
     static void assertNotTaken(ulong id) {
         auto position = std::find(s_takenIds.begin(), s_takenIds.end(), id);
         SL_ASSERT(position == s_takenIds.end(), "Mismatch in Countable for id: " + std::to_string(id) + "\n" + raport());

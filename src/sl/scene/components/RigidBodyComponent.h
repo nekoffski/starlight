@@ -33,8 +33,9 @@ public:
     bool useGravity = false;
     bool enableCollisions = false;
     bool renderBoundingBox = false;
+    bool fixed = false;
 
-    float mass = { 0.0f };
+    float mass = { 1.0f };
 
     math::Vec3 velocity = { 0.0f, 0.0f, 0.0f };
 

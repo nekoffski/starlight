@@ -35,6 +35,7 @@ private:
 
             if (gui.beginTreeNode("Collider")) {
                 gui.checkbox("Enable collisions", component.enableCollisions);
+                gui.checkbox("Fixed", component.fixed);
 
                 if (gui.beginTreeNode("Bounding box")) {
                     if (gui.combo("##Bounding box type", params.selectedBoundingBox, m_boundingBoxes))

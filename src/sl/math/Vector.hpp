@@ -15,6 +15,10 @@ using Vec2 = glm::vec2;
 using Vec3 = glm::vec3;
 using Vec4 = glm::vec4;
 
+inline float length(const Vec3& v) {
+    return glm::length(v);
+}
+
 template <glm::length_t L, class T, glm::qualifier Q>
 glm::vec<L, T, Q> normalize(glm::vec<L, T, Q> const& x) {
     return glm::normalize(x);

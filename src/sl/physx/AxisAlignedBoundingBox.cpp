@@ -93,6 +93,12 @@ void AxisAlignedBoundingBox::build(const std::vector<std::shared_ptr<geom::Mesh>
     m_vao->addElementBuffer(ebo);
 
     m_collider = std::make_unique<AxisAlignedCollider>(min, max);
+
+    m_centerOfMass = {
+        (min.x + max.x) / 2.0f,
+        (min.y + max.z) / 2.0f,
+        (min.z + max.z) / 2.0f
+    };
 }
 
 bool AxisAlignedBoundingBox::collide(Collider* collider, const math::Mat4& modelMatrix) {
@@ -101,6 +107,10 @@ bool AxisAlignedBoundingBox::collide(Collider* collider, const math::Mat4& model
 
 Collider* AxisAlignedBoundingBox::getCollider() {
     return m_collider.get();
+}
+
+const math::Vec3& AxisAlignedBoundingBox::getCenterOfMass() const {
+    return m_centerOfMass;
 }
 
 }

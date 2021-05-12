@@ -22,6 +22,8 @@ public:
     bool collide(Collider* collider, const math::Mat4& modelMatrix) override;
     Collider* getCollider() override;
 
+    const math::Vec3& getCenterOfMass() const override;
+
     math::Vec3 min;
     math::Vec3 max;
 
@@ -33,6 +35,8 @@ private:
 
     std::vector<math::Vec3> m_vertices;
     std::vector<unsigned int> m_indices;
+
+    math::Vec3 m_centerOfMass;
 };
 
 }

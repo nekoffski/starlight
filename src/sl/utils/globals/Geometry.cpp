@@ -9,11 +9,26 @@ namespace sl::utils::globals {
 Geometry::Geometry() {
     initSquare();
     initCube();
+    initLine();
 
     meshes = {
         { squareMesh->name, squareMesh },
         { cubeMesh->name, cubeMesh }
     };
+}
+
+void Geometry::initLine() {
+    static std::vector<float> vertices = {
+        0.0f, 0.0f, 0.0f,
+        1.0f, 1.0f, 1.0f
+    };
+
+    lineVAO = gfx::buffer::VertexArray::factory->create();
+    auto vbo = gfx::buffer::VertexBuffer::factory->create(&vertices[0], vertices.size() * sizeof(float), vertices.size());
+
+    vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
+
+    lineVAO->addVertexBuffer(vbo);
 }
 
 void Geometry::initCube() {

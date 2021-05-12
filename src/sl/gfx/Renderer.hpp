@@ -10,6 +10,7 @@
 #include "renderer/MeshRenderer.h"
 #include "renderer/ParticleEffectRenderer.h"
 #include "renderer/ShadowRenderer.h"
+#include "renderer/VectorRenderer.h"
 
 namespace sl::gfx {
 
@@ -20,10 +21,15 @@ public:
         , m_shadowRenderer(renderer)
         , m_cubemapRenderer(renderer)
         , m_pfxRenderer(renderer)
-        , m_boundingBoxRenderer(renderer) {
+        , m_boundingBoxRenderer(renderer)
+        , m_vectorRenderer(renderer) {
     }
 
+    void renderVectors(const std::vector<physx::Vector>& vectors, camera::Camera& camera) {
+        m_vectorRenderer.renderVectors(vectors, camera);
+    }
     void renderBoundingBoxes(ecs::ComponentView<scene::components::RigidBodyComponent> rigidBodies,
+
         ecs::ComponentView<scene::components::TransformComponent> transforms, gfx::camera::Camera& camera) {
         m_boundingBoxRenderer.renderBoundingBoxes(std::move(rigidBodies), std::move(transforms), camera);
     }
@@ -82,5 +88,6 @@ private:
     renderer::CubemapRenderer m_cubemapRenderer;
     renderer::ParticleEffectRenderer m_pfxRenderer;
     renderer::BoundingBoxRenderer m_boundingBoxRenderer;
+    renderer::VectorRenderer m_vectorRenderer;
 };
 }

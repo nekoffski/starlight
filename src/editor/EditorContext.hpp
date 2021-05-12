@@ -129,6 +129,17 @@ public:
 
         renderer.renderBoundingBoxes(rigidBodies, transforms, *m_scene->camera);
 
+        std::vector<sl::physx::Vector> vectorsToRender;
+        for (auto& rigidBody : rigidBodies) {
+            auto transformation = transforms.getByEntityId(rigidBody.ownerEntityId).transformation;
+
+            if (rigidBody.boundingBox != nullptr)
+                vectorsToRender.emplace_back(physx::Vector {
+                    transformation * rigidBody.boundingBox->getCenterOfMass(), rigidBody.velocity });
+        }
+
+        renderer.renderVectors(vectorsToRender, *m_scene->camera);
+
         if (skybox) {
             renderer.renderCubemap(skybox->cubemap, skybox->shader, m_scene->camera);
             skybox->cubemap->unbind();

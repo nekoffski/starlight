@@ -7,7 +7,7 @@
 namespace sl::platform::gfx {
 
 void OpenGlRenderApi::drawArrays(unsigned mode, unsigned begin, unsigned end) {
-    glDrawArrays(GL_TRIANGLES, begin, end);
+    glDrawArrays(mode, begin, end);
 }
 
 void OpenGlRenderApi::drawElements(unsigned mode, unsigned count, unsigned type) {

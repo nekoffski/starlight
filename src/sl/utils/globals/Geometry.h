@@ -17,10 +17,13 @@ public:
     std::shared_ptr<gfx::buffer::VertexArray> cubeVAO;
     std::shared_ptr<geom::Mesh> cubeMesh;
 
+    std::shared_ptr<gfx::buffer::VertexArray> lineVAO;
+
     std::unordered_map<std::string, std::shared_ptr<geom::Mesh>> meshes;
 
 private:
     void initSquare();
     void initCube();
+    void initLine();
 };
 }

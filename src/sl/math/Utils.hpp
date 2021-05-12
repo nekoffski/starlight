@@ -126,3 +126,7 @@ inline void decomposeMatrix(const Mat4& transform, Vec3& translation, Vec3& rota
     rotation = glm::eulerAngles(rotationQuat);
 }
 }
+
+inline sl::math::Vec3 operator*(const sl::math::Mat4& lhs, const sl::math::Vec3& rhs) {
+    return sl::math::Vec3 { lhs * sl::math::Vec4 { rhs, 1.0f } };
+}

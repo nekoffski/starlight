@@ -31,6 +31,10 @@ public:
 
     void renderVertexArray(std::shared_ptr<gfx::buffer::VertexArray>);
 
+    void renderLine() {
+        m_renderApi->drawArrays(STARL_LINES, 0, 2);
+    }
+
     void clearBuffers(unsigned buff) {
         m_gfxContext->clearBuffers(buff);
     }

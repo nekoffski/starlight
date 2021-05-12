@@ -9,7 +9,7 @@ void MaterialComponentGui::renderComponentGuiImpl(MaterialComponent& component,
 
     gui.pushId(component.ownerEntityId);
 
-    if (beginComponentTreeNode(gui, "Material", component)) {
+    if (beginComponentTreeNode(gui, ICON_FA_MAP " Material", component)) {
         gui.displayText("Ambient color");
         gui.colorPicker3(gui::createHiddenLabel("Ambient color"), component.ambientColor);
         gui.displayText("Diffuse color");
