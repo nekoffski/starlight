@@ -103,6 +103,7 @@ void ComponentsSerializer::serializeRigidBodyComponent(core::JsonBuilder& builde
         .addField("use-gravity", rigidBodyComponent.useGravity)
         .addField("mass", rigidBodyComponent.mass)
         .addField("enable-collisions", rigidBodyComponent.enableCollisions)
+        .addField("fixed", rigidBodyComponent.fixed)
         .addField("render-bounding-box", rigidBodyComponent.renderBoundingBox)
         .addField("bounding-box", rigidBodyComponent.boundingBox != nullptr ? rigidBodyComponent.boundingBox->getName() : "None");
     serializeVector(builder, "velocity", rigidBodyComponent.velocity);

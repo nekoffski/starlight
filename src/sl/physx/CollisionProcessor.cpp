@@ -19,7 +19,10 @@ void CollisionProcessor::processCollisions(const std::vector<DynamicBody> dynami
                 continue;
 
             if (othRigidBody->boundingBox->collide(collider, othTransform->transformation)) {
-                SL_INFO("Collision!");
+                // if (werePreviouslyCollided(rigidBody, othRigidBody))
+                // continue;
+
+                setPreviouslyCollided(rigidBody, othRigidBody, true);
 
                 if (rigidBody->fixed)
                     processCollisionWithFixedRigidBody(dynamicBodies[i], dynamicBodies[j]);
@@ -27,6 +30,8 @@ void CollisionProcessor::processCollisions(const std::vector<DynamicBody> dynami
                     processCollisionWithFixedRigidBody(dynamicBodies[j], dynamicBodies[i]);
                 else
                     processElasticCollision(dynamicBodies[i], dynamicBodies[j]);
+            } else {
+                setPreviouslyCollided(rigidBody, othRigidBody, false);
             }
         }
     }
@@ -53,5 +58,20 @@ void CollisionProcessor::processElasticCollision(const DynamicBody& lhs, const D
 
     lhsRigidBody->velocity = ((m1 - m2) / massSum) * v1 + 2.0f * m2 * v2 / massSum;
     rhsRigidBody->velocity = 2.0f * m1 * v1 / massSum + ((m2 - m1) / massSum) * v2;
+}
+
+bool CollisionProcessor::werePreviouslyCollided(RigidBodyComponent* lhs, RigidBodyComponent* rhs) {
+    auto& lhsId = lhs->ownerEntityId;
+    auto& rhsId = rhs->ownerEntityId;
+
+    return m_collided[lhsId].contains(rhsId) || m_collided[rhsId].contains(lhsId);
+}
+
+void CollisionProcessor::setPreviouslyCollided(RigidBodyComponent* lhs, RigidBodyComponent* rhs, bool value) {
+    auto& lhsId = lhs->ownerEntityId;
+    auto& rhsId = rhs->ownerEntityId;
+
+    m_collided[lhsId][rhsId] = value;
+    m_collided[rhsId][lhsId] = value;
 }
 }

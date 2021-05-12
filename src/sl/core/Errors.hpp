@@ -9,6 +9,7 @@ SL_DEFINE_ERROR(GraphicsError);
 SL_DEFINE_ERROR(GeometryError);
 SL_DEFINE_ERROR(ApplicationError);
 SL_DEFINE_ERROR(AssetError);
+SL_DEFINE_ERROR(GuiError);
 
 SL_DEFINE_SUB_ERROR(ModelError, GeometryError);
 

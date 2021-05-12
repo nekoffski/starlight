@@ -1,5 +1,7 @@
 #include "PhysicsEngine.h"
 
+#include "sl/utils/Globals.h"
+
 namespace sl::physx {
 
 const math::Vec3 gravityAcceleration = { 0.0f, -10.0f, 0.0f };
@@ -11,7 +13,7 @@ void PhysicsEngine::processRigidBodies(ecs::ComponentView<scene::components::Rig
 
     for (auto& rigidBody : rigidBodies) {
         if (rigidBody.useGravity && not rigidBody.fixed)
-            rigidBody.velocity += gravityAcceleration * deltaTime;
+            rigidBody.velocity += -GLOBALS().world.gravity * deltaTime;
 
         auto& entityId = rigidBody.ownerEntityId;
 

@@ -20,7 +20,7 @@ std::vector<math::Vec3> AxisAlignedBoundingBox::getVertices() const {
 }
 
 std::string AxisAlignedBoundingBox::getName() const {
-    return "AxisAlignedBoundingBox";
+    return "AABB";
 }
 
 void AxisAlignedBoundingBox::build(const std::vector<std::shared_ptr<geom::Mesh>> meshes) {

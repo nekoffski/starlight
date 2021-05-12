@@ -2,11 +2,11 @@
 
 #include "ComponentGui.h"
 
-#include "sl/scene/components/ModelComponent.h"
-#include "sl/scene/components/RigidBodyComponent.h"
-
+#include "sl/core/Utils.hpp"
 #include "sl/physx/AxisAlignedBoundingBox.h"
 #include "sl/physx/AxisAlignedCollider.h"
+#include "sl/scene/components/ModelComponent.h"
+#include "sl/scene/components/RigidBodyComponent.h"
 
 namespace sl::gui::components {
 
@@ -36,6 +36,9 @@ private:
             if (gui.beginTreeNode("Collider")) {
                 gui.checkbox("Enable collisions", component.enableCollisions);
                 gui.checkbox("Fixed", component.fixed);
+
+                if (component.boundingBox != nullptr && params.selectedBoundingBox == 0)
+                    params.selectedBoundingBox = sl::core::indexOf(m_boundingBoxes, component.boundingBox->getName(), 0);
 
                 if (gui.beginTreeNode("Bounding box")) {
                     if (gui.combo("##Bounding box type", params.selectedBoundingBox, m_boundingBoxes))

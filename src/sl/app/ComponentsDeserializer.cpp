@@ -127,6 +127,7 @@ void ComponentsDeserializer::deserializeRigidBodyComponent(Json::Value& componen
     component.useGravity = componentDescription["use-gravity"].asBool();
     component.renderBoundingBox = componentDescription["render-bounding-box"].asBool();
     component.enableCollisions = componentDescription["enable-collisions"].asBool();
+    component.fixed = componentDescription["fixed"].asBool();
     component.mass = componentDescription["mass"].asFloat();
     component.velocity = deserializeVector3(componentDescription["velocity"]);
 

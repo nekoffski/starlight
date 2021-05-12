@@ -28,5 +28,7 @@ public:
     virtual void unbind() = 0;
 
     virtual CubemapArgs getFaces() = 0;
+
+    std::string name;
 };
 }

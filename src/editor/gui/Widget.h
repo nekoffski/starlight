@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "SharedState.hpp"
+#include "sl/core/Errors.hpp"
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/GuiStyle.h"
 #include "sl/gui/fonts/FontAwesome.h"
@@ -20,6 +21,10 @@ public:
     virtual void render(sl::gui::GuiApi& gui) = 0;
 
 protected:
+    void raise(const std::string& reason) {
+        throw sl::core::GuiError { sl::core::ErrorCode::GuiUserError, reason };
+    }
+
     std::shared_ptr<SharedState> m_sharedState;
 };
 
