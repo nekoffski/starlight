@@ -41,6 +41,8 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
         cubemapsNames.insert(cubemapsNames.begin(), "None");
 
         static int selectedValue = 0;
+        static int previousSelectedValue = -1;
+
         gui.displayText("Cubemap");
         gui.sameLine();
         gui.combo(sl::gui::createHiddenLabel("Cubemap"), selectedValue, cubemapsNames);
@@ -49,12 +51,14 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
             if (scene->skybox != nullptr)
                 selectedValue = core::indexOf(cubemapsNames, scene->skybox->cubemap->name, 0);
 
-        if (selectedValue != 0) {
+        if (selectedValue != 0 && selectedValue != previousSelectedValue) {
             auto& cubemapName = cubemapsNames[selectedValue];
             auto cubemap = m_sharedState->assetManager.getCubemaps().getByName(cubemapName);
 
             m_selectedCubemap = cubemap;
             event::Emitter::emit<event::SetSkyboxEvent>(cubemap);
+
+            previousSelectedValue = selectedValue;
         }
         gui.popTreeNode();
     }

@@ -10,6 +10,10 @@ DECLARE_EVENT(EngineStateChanged, sl::event::EditorCategory) {
         : state(state) {
     }
 
+    std::string asString() const override {
+        return "[EngineStateChanged]";
+    }
+
     EngineState state;
 };
 

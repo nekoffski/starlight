@@ -147,16 +147,18 @@ public:
     }
 
     void handleEvents(const xvent::EventProvider& eventProvider) override {
+
         auto events = eventProvider.getByCategories<event::CoreCategory, event::EditorCategory>();
 
         using namespace sl::event;
 
         for (auto& event : events) {
+            SL_INFO("Processing event: {}", event->asString());
+
             if (event->is<SetSkyboxEvent>()) {
                 auto cubemap = event->as<SetSkyboxEvent>()->cubemap;
                 auto skybox = sl::scene::Skybox::create(GLOBALS().shaders->defaultCubemapShader, cubemap);
                 m_scene->skybox = skybox;
-                break;
             }
 
             if (event->is<QuitEvent>())
@@ -167,7 +169,6 @@ public:
                 auto [width, height] = windowResizedEvent->getSize();
 
                 recalculateWindow(width, height);
-                break;
             }
 
             if (event->is<ChangeSceneCenterEvent>()) {
@@ -217,6 +218,8 @@ public:
 
 private:
     void handleStateChange(editor::EngineState state) {
+        SL_INFO("Engine state changed to: {}", toString(state));
+
         m_engineState = state;
 
         using editor::EngineState;

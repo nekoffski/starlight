@@ -12,9 +12,15 @@
 
 namespace sl::event {
 
+// clang-format off
+
 DECLARE_EVENT(AddEntityEvent, EditorCategory) {
     AddEntityEvent(std::string name)
-        : name(std::move(name)) {}
+        : name(std::move(name)) { }
+
+    std::string asString() const override {
+        return "[AddEntityEvent] - enttiyName=" + name;
+    }
 
     std::string name;
 };
@@ -24,16 +30,32 @@ DECLARE_EVENT(SetSkyboxEvent, EditorCategory) {
         : cubemap(cubemap) {
     }
 
+    std::string asString() const override {
+        return "[SetSkyboxEvent]";
+    }
+
     std::shared_ptr<sl::gfx::Cubemap> cubemap;
 };
 
-DECLARE_EVENT(SerializeSceneEvent, EditorCategory) {};
+DECLARE_EVENT(SerializeSceneEvent, EditorCategory) {
+    std::string asString() const override {
+        return "[SerializeSceneEvent]";
+    }
+};
 
-DECLARE_EVENT(DeserializeSceneEvent, EditorCategory) {};
+DECLARE_EVENT(DeserializeSceneEvent, EditorCategory) {
+    std::string asString() const override {
+        return "[DeserializeSceneEvent]";
+    }
+};
 
 DECLARE_EVENT(ChangeSceneCenterEvent, EditorCategory) {
     ChangeSceneCenterEvent(math::Vec3 center)
-        : center(center) {}
+        : center(center) { }
+
+    std::string asString() const override {
+        return "[ChangeSceneCenterEvent]";
+    }
 
     math::Vec3 center;
 };
@@ -48,9 +70,19 @@ DECLARE_EVENT(WindowResizedEvent, CoreCategory) {
         return { width, height };
     }
 
+    std::string asString() const override {
+        return "[WindowResizedEvent]";
+    }
+
     int width;
     int height;
 };
 
-DECLARE_EVENT(QuitEvent, CoreCategory) {};
+DECLARE_EVENT(QuitEvent, CoreCategory) {
+    std::string asString() const override {
+        return "[QuitEvent]";
+    }
+};
+
+// clang-format on
 }

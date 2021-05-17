@@ -8,4 +8,19 @@ enum class EngineState {
     started
 };
 
+inline std::string toString(EngineState engineState) {
+    switch (engineState) {
+    case EngineState::paused:
+        return "paused";
+
+    case EngineState::stopped:
+        return "stopped";
+
+    case EngineState::started:
+        return "started";
+    }
+
+    return "";
+}
+
 }
