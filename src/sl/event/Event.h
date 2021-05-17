@@ -38,15 +38,25 @@ DECLARE_EVENT(SetSkyboxEvent, EditorCategory) {
 };
 
 DECLARE_EVENT(SerializeSceneEvent, EditorCategory) {
+    SerializeSceneEvent(const std::string& path) : path(path) {
+    }
+    
     std::string asString() const override {
         return "[SerializeSceneEvent]";
     }
+
+    std::string path;
 };
 
 DECLARE_EVENT(DeserializeSceneEvent, EditorCategory) {
+    DeserializeSceneEvent(const std::string& path) : path(path) {
+    }
+    
     std::string asString() const override {
         return "[DeserializeSceneEvent]";
     }
+
+    std::string path;
 };
 
 DECLARE_EVENT(ChangeSceneCenterEvent, EditorCategory) {

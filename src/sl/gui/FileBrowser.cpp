@@ -1,7 +1,8 @@
 #include "FileBrowser.h"
 
-#include <fmt/core.h>
+// #include <fmt/core.h>
 
+#include "sl/core/Logger.h"
 #include "sl/gui/fonts/FontAwesome.h"
 
 const std::string rootPath = "/home/nek0/kapik/projects/starlight";
@@ -13,13 +14,16 @@ FileBrowser::FileBrowser(const std::string& id, std::unique_ptr<core::FileSystem
     , m_fileSystem(std::move(fileSystem)) {
 }
 
-void FileBrowser::open(std::string* path, GuiApi& gui) {
+void FileBrowser::open(std::string* path, GuiApi& gui, std::optional<Callback> callback) {
     m_path = path;
     m_root = rootPath;
 
     m_history.clear();
     m_history.push_back(m_root);
 
+    m_callback = callback;
+
+    SL_INFO("Opening file dialog");
     gui.openPopUp(m_id);
 }
 
@@ -28,6 +32,8 @@ void FileBrowser::show(GuiApi& gui) {
     gui.setNextWindowSize({ windowWidth, 0.0f });
 
     if (gui.beginPopUp(m_id)) {
+        SL_INFO("Displaying file dialog");
+
         handleHistory(gui);
         gui.breakLine();
 
@@ -79,7 +85,12 @@ void FileBrowser::handleFileExplorer(GuiApi& gui) {
 
 void FileBrowser::handleBottomPanel(GuiApi& gui) {
     if (gui.button(ICON_FA_CHECK_CIRCLE "  Ok")) {
-        *m_path = m_currentSelection;
+        if (m_path != nullptr)
+            *m_path = m_currentSelection;
+
+        if (m_callback.has_value())
+            std::invoke(m_callback.value(), m_currentSelection);
+
         gui.closeCurrentPopUp();
     }
 
@@ -89,7 +100,9 @@ void FileBrowser::handleBottomPanel(GuiApi& gui) {
         gui.closeCurrentPopUp();
 
     gui.sameLine();
-    gui.displayText(fmt::format("Full path: {}", m_currentSelection));
+    gui.displayText("Full path: ");
+    gui.sameLine();
+    gui.inputText("##fileSelection", m_currentSelection);
 }
 
 std::string FileBrowser::extractNameFromPath(const std::string& path) {

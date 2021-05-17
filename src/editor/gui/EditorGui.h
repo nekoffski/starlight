@@ -6,6 +6,7 @@
 #include "SharedState.hpp"
 #include "ToolBar.h"
 #include "sl/asset/AssetManager.h"
+#include "sl/gui/FileBrowser.h"
 
 using namespace sl::core;
 
@@ -24,5 +25,7 @@ private:
     BottomPanel m_bottomPanel;
     RightPanel m_rightPanel;
     ToolBar m_toolBar;
+
+    sl::gui::FileBrowser m_fileBrowser;
 };
 }

@@ -12,7 +12,8 @@ EditorGui::EditorGui(std::shared_ptr<SharedState> sharedState)
     , m_bottomPanel(sharedState)
     , m_rightPanel(sharedState)
     , m_toolBar(sharedState)
-    , sharedState(sharedState) {
+    , sharedState(sharedState)
+    , m_fileBrowser("editorGuiFileBrowser") {
 }
 
 void EditorGui::renderEditorGui(sl::gui::GuiApi& gui) {
@@ -20,15 +21,19 @@ void EditorGui::renderEditorGui(sl::gui::GuiApi& gui) {
 
     gui.pushTextColor(sl::gui::guiDefaultTextColor);
 
+    std::optional<sl::gui::FileBrowser::Callback> callback;
+
     if (gui.beginMainMenuBar()) {
         if (gui.beginMenu(ICON_FA_BARS " File")) {
-            if (gui.menuItem("Export scene")) {
-                Emitter::emit<SerializeSceneEvent>();
-            }
+            if (gui.menuItem("Export scene"))
+                callback = [](const std::string& path) -> void {
+                    Emitter::emit<SerializeSceneEvent>(path);
+                };
 
-            if (gui.menuItem("Import scene")) {
-                Emitter::emit<DeserializeSceneEvent>();
-            }
+            if (gui.menuItem("Import scene"))
+                callback = [](const std::string& path) -> void {
+                    Emitter::emit<DeserializeSceneEvent>(path);
+                };
 
             if (gui.menuItem("Quit"))
                 Emitter::emit<QuitEvent>();
@@ -38,6 +43,11 @@ void EditorGui::renderEditorGui(sl::gui::GuiApi& gui) {
 
         gui.endMainMenuBar();
     }
+
+    if (callback.has_value())
+        m_fileBrowser.open(nullptr, gui, callback.value());
+
+    m_fileBrowser.show(gui);
 
     m_leftPanel.render(gui);
     m_bottomPanel.render(gui);
