@@ -8,8 +8,8 @@
 namespace sl::scene::components {
 
 struct MaterialComponent : ecs::Component {
-    explicit MaterialComponent(math::Vec3 ambientColor = core::colorWhite, math::Vec3 diffuseColor = core::colorWhite,
-        math::Vec3 specularColor = core::colorWhite, float shininess = 32.0f)
+    explicit MaterialComponent(math::Vec3 ambientColor = core::color::white, math::Vec3 diffuseColor = core::color::white,
+        math::Vec3 specularColor = core::color::white, float shininess = 32.0f)
         : ambientColor(ambientColor)
         , diffuseColor(diffuseColor)
         , specularColor(specularColor)

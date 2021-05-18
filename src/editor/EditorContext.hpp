@@ -35,6 +35,8 @@ using namespace sl;
 using namespace sl::scene;
 using namespace sl::core;
 
+const math::Vec3 sceneOrigin = { 0.0f, 0.0f, 0.0f };
+
 class EditorContext : public app::ApplicationContext {
 public:
     explicit EditorContext(const std::string& ident)
@@ -101,7 +103,15 @@ public:
         renderer.beginDepthCapture();
         auto depthShader = renderer.getDepthShader();
 
+        std::vector<sl::gfx::VectorRenderData> vectorsToRender;
+
         for (auto& directionalLight : directionalLights) {
+            if (directionalLight.renderDirection) {
+                physx::Vector vector { sceneOrigin, directionalLight.direction * 1000.0f };
+                vectorsToRender.emplace_back(gfx::VectorRenderData {
+                    std::move(vector), color::blue });
+            }
+
             renderer.setShadowMap(directionalLight.shadowMap);
 
             for (auto& rendererComponent : rendererComponents) {
@@ -117,31 +127,34 @@ public:
 
             shader->enable();
 
-            renderer.prepareDirectionalLights(directionalLights, shader);
-            renderer.preparePointsLights(pointLights, transforms, shader);
+            renderer.prepareDirectionalLights(directionalLights, *shader);
+            renderer.preparePointsLights(pointLights, transforms, *shader);
             renderer.renderModel(rendererComponent, materials, models, transforms, *m_scene->camera);
 
             shader->disable();
         }
 
         renderer.renderParticleEffects(
-            m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>(), transforms, m_scene->camera);
+            m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>(), transforms, *m_scene->camera);
 
         renderer.renderBoundingBoxes(rigidBodies, transforms, *m_scene->camera);
 
-        std::vector<sl::physx::Vector> vectorsToRender;
         for (auto& rigidBody : rigidBodies) {
             auto transformation = transforms.getByEntityId(rigidBody.ownerEntityId).transformation;
 
-            if (rigidBody.boundingBox != nullptr)
-                vectorsToRender.emplace_back(physx::Vector {
-                    transformation * rigidBody.boundingBox->getCenterOfMass(), rigidBody.velocity });
+            if (rigidBody.boundingBox != nullptr) {
+                physx::Vector vector {
+                    transformation * rigidBody.boundingBox->getCenterOfMass(), rigidBody.velocity
+                };
+                vectorsToRender.emplace_back(gfx::VectorRenderData {
+                    std::move(vector), color::green });
+            }
         }
 
         renderer.renderVectors(vectorsToRender, *m_scene->camera);
 
         if (skybox) {
-            renderer.renderCubemap(skybox->cubemap, skybox->shader, m_scene->camera);
+            renderer.renderCubemap(*skybox->cubemap, *skybox->shader, *m_scene->camera);
             skybox->cubemap->unbind();
         }
     }
@@ -185,11 +198,19 @@ public:
             try {
                 using namespace sl::app;
 
-                if (event->is<SerializeSceneEvent>())
-                    Serializer { ".", "scene" }.serialize(m_assetManager, m_scene);
+                if (event->is<SerializeSceneEvent>()) {
+                    auto& path = event->as<SerializeSceneEvent>()->path;
 
-                if (event->is<DeserializeSceneEvent>())
-                    Deserializer { m_assetManager, m_scene }.deserialize("./scene.starscene");
+                    SL_INFO("Serializing scene as: {}", path);
+                    Serializer { "/", path }.serialize(m_assetManager, m_scene);
+                }
+
+                if (event->is<DeserializeSceneEvent>()) {
+                    auto& path = event->as<DeserializeSceneEvent>()->path;
+
+                    SL_INFO("Deserializing scene from: {}", path);
+                    Deserializer { m_assetManager, m_scene }.deserialize(path);
+                }
 
             } catch (sl::core::Error& err) {
                 m_errorDialog.setErrorMessage(err.as<std::string>());

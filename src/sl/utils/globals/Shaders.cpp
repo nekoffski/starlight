@@ -14,6 +14,9 @@ Shaders::Shaders() {
     defaultCubemapShader = gfx::Shader::load(
         GLOBALS().config.paths.shaders + "/cubemap.vert", GLOBALS().config.paths.shaders + "/cubemap.frag");
 
+    singleColorShader = gfx::Shader::load(
+        GLOBALS().config.paths.shaders + "/single_color.vert", GLOBALS().config.paths.shaders + "/single_color.frag");
+
     defaultModelShader = gfx::Shader::load(
         GLOBALS().config.paths.shaders + "/t.vert", GLOBALS().config.paths.shaders + "/t.frag");
     defaultModelShader->name = "default-model-shader";

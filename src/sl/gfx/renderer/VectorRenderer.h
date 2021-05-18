@@ -18,52 +18,52 @@ namespace sl::gfx::renderer {
 using namespace scene::components;
 
 class VectorRenderer {
-
 public:
-    explicit VectorRenderer(std::shared_ptr<LowLevelRenderer> renderer)
-        : m_renderer(renderer)
-        , m_vectorShader(gfx::Shader::load(
-              GLOBALS().config.paths.shaders + "/vector.vert", GLOBALS().config.paths.shaders + "/vector.frag")) {
+    struct VectorData {
+        physx::Vector vector;
+        math::Vec3 color;
+    };
 
-        // TODO: fixme
-        m_vectorShader->setId(16);
+    explicit VectorRenderer(std::shared_ptr<LowLevelRenderer> renderer)
+        : m_renderer(renderer) {
     }
 
-    void renderVectors(const std::vector<physx::Vector>& vectors, camera::Camera& camera) {
-        m_vectorShader->enable();
-        m_vectorShader->setUniform("projection", camera.getProjectionMatrix());
-        m_vectorShader->setUniform("view", camera.getViewMatrix());
+    void renderVectors(const std::vector<VectorData>& vectors, camera::Camera& camera, gfx::Shader& shader) {
+        shader.enable();
+        shader.setUniform("projection", camera.getProjectionMatrix());
+        shader.setUniform("view", camera.getViewMatrix());
 
         auto& vao = GLOBALS().geom->lineVAO;
         vao->bind();
 
         // TODO: refactor!
 
-        for (const auto& vector : vectors) {
-            auto scale = math::length(vector.direction) * 0.75f;
-            auto dir = math::normalize(vector.origin);
-            auto ff = math::normalize(vector.direction);
+        for (const auto& [vector, color] : vectors) {
+            shader.setUniform("color", color);
 
-            math::Mat4 rot = {
-                ff.x, 0.0f, 0.0f, 0.0f,
-                0.0f, ff.y, 0.0f, 0.0f,
-                0.0f, 0.0f, ff.z, 0.0f,
+            auto scale = math::length(vector.direction) * 0.75f;
+            auto normalizedDirection = math::normalize(vector.direction);
+
+            math::Mat4 rotationMatrix = {
+                normalizedDirection.x, 0.0f, 0.0f, 0.0f,
+                0.0f, normalizedDirection.y, 0.0f, 0.0f,
+                0.0f, 0.0f, normalizedDirection.z, 0.0f,
                 0.0f, 0.0f, 0.0f, 1.0f
             };
 
-            auto model = math::translate(vector.origin) * math::scale(scale) * rot;
-            m_vectorShader->setUniform("model", model);
+            auto model = math::translate(vector.origin) * math::scale(scale) * rotationMatrix;
+            shader.setUniform("model", model);
 
             m_renderer->renderLine();
         }
 
         vao->unbind();
 
-        m_vectorShader->disable();
+        shader.disable();
     }
 
 private:
     std::shared_ptr<LowLevelRenderer> m_renderer;
-    std::shared_ptr<gfx::Shader> m_vectorShader;
 };
+
 }

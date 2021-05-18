@@ -20,12 +20,12 @@ ParticleEffectRenderer::ParticleEffectRenderer(std::shared_ptr<gfx::LowLevelRend
 }
 
 void ParticleEffectRenderer::renderParticleEffects(ecs::ComponentView<scene::components::ParticleEffectComponent> pfxs,
-    ecs::ComponentView<scene::components::TransformComponent> transforms, std::shared_ptr<gfx::camera::Camera> camera) {
+    ecs::ComponentView<scene::components::TransformComponent> transforms, gfx::camera::Camera& camera) {
     SL_PROFILE_FUNCTION();
 
     m_shader->enable();
-    m_shader->setUniform("view", camera->getViewMatrix());
-    m_shader->setUniform("viewPos", camera->getPosition());
+    m_shader->setUniform("view", camera.getViewMatrix());
+    m_shader->setUniform("viewPos", camera.getPosition());
     beginParticleEffect(camera);
 
     for (auto& pfx : pfxs) {
@@ -43,8 +43,8 @@ void ParticleEffectRenderer::renderParticleEffects(ecs::ComponentView<scene::com
     m_shader->disable();
 }
 
-void ParticleEffectRenderer::beginParticleEffect(std::shared_ptr<gfx::camera::Camera> camera) {
-    m_shader->setUniform("projection", camera->getProjectionMatrix());
+void ParticleEffectRenderer::beginParticleEffect(gfx::camera::Camera& camera) {
+    m_shader->setUniform("projection", camera.getProjectionMatrix());
     m_vao->bind();
 }
 

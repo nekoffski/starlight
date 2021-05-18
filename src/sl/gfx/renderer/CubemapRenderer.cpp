@@ -64,12 +64,11 @@ CubemapRenderer::CubemapRenderer(std::shared_ptr<LowLevelRenderer> renderer)
     m_cubemapVertexArray->addVertexBuffer(vertexBuffer);
 }
 
-void CubemapRenderer::render(std::shared_ptr<Cubemap> cubemap, std::shared_ptr<Shader> cubemapShader,
-    std::shared_ptr<camera::Camera> camera) {
+void CubemapRenderer::render(Cubemap& cubemap, Shader& cubemapShader, camera::Camera& camera) {
 
-    cubemapShader->enable();
-    cubemapShader->setUniform("projection", camera->getProjectionMatrix());
-    cubemapShader->setUniform("view", camera->getViewMatrix());
+    cubemapShader.enable();
+    cubemapShader.setUniform("projection", camera.getProjectionMatrix());
+    cubemapShader.setUniform("view", camera.getViewMatrix());
 
     m_cubemapVertexArray->bind();
 
@@ -81,6 +80,6 @@ void CubemapRenderer::render(std::shared_ptr<Cubemap> cubemap, std::shared_ptr<S
     m_renderer->restoreSettings();
 
     m_cubemapVertexArray->unbind();
-    cubemapShader->disable();
+    cubemapShader.disable();
 }
 }

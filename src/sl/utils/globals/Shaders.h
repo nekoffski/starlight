@@ -12,6 +12,7 @@ struct Shaders {
 
     std::shared_ptr<gfx::Shader> defaultCubemapShader;
     std::shared_ptr<gfx::Shader> defaultModelShader;
+    std::shared_ptr<gfx::Shader> singleColorShader;
 
     std::unordered_map<std::string, std::shared_ptr<gfx::Shader>&> shadersByName;
 };

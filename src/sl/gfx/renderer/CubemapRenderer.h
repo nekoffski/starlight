@@ -11,8 +11,7 @@ namespace sl::gfx::renderer {
 class CubemapRenderer {
 public:
     explicit CubemapRenderer(std::shared_ptr<LowLevelRenderer> renderer);
-    void render(std::shared_ptr<Cubemap> cubemap, std::shared_ptr<Shader> cubemapShader,
-        std::shared_ptr<camera::Camera> camera);
+    void render(Cubemap& cubemap, Shader& cubemapShader, camera::Camera& camera);
 
 private:
     std::shared_ptr<buffer::VertexArray> m_cubemapVertexArray;

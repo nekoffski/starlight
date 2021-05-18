@@ -11,8 +11,11 @@
 #include "renderer/ParticleEffectRenderer.h"
 #include "renderer/ShadowRenderer.h"
 #include "renderer/VectorRenderer.h"
+#include "sl/utils/Globals.h"
 
 namespace sl::gfx {
+
+using VectorRenderData = renderer::VectorRenderer::VectorData;
 
 class Renderer {
 public:
@@ -25,8 +28,10 @@ public:
         , m_vectorRenderer(renderer) {
     }
 
-    void renderVectors(const std::vector<physx::Vector>& vectors, camera::Camera& camera) {
-        m_vectorRenderer.renderVectors(vectors, camera);
+    void renderVectors(const std::vector<VectorRenderData>& vectors, camera::Camera& camera,
+        gfx::Shader& shader = *GLOBALS().shaders->singleColorShader) {
+
+        m_vectorRenderer.renderVectors(vectors, camera, shader);
     }
     void renderBoundingBoxes(ecs::ComponentView<scene::components::RigidBodyComponent> rigidBodies,
 
@@ -34,18 +39,17 @@ public:
         m_boundingBoxRenderer.renderBoundingBoxes(std::move(rigidBodies), std::move(transforms), camera);
     }
 
-    void renderCubemap(std::shared_ptr<Cubemap> cubemap, std::shared_ptr<Shader> cubemapShader,
-        std::shared_ptr<camera::Camera> camera) {
+    void renderCubemap(Cubemap& cubemap, Shader& cubemapShader, camera::Camera& camera) {
         m_cubemapRenderer.render(cubemap, cubemapShader, camera);
     }
 
     void prepareDirectionalLights(ecs::ComponentView<scene::components::DirectionalLightComponent> lights,
-        std::shared_ptr<gfx::Shader> shader) {
+        gfx::Shader& shader) {
         m_lightRenderer.prepareDirectionalLights(lights, shader);
     }
 
     void preparePointsLights(ecs::ComponentView<scene::components::PointLightComponent> lights,
-        ecs::ComponentView<scene::components::TransformComponent> transforms, std::shared_ptr<gfx::Shader> shader) {
+        ecs::ComponentView<scene::components::TransformComponent> transforms, gfx::Shader& shader) {
         m_lightRenderer.preparePointsLights(lights, transforms, shader);
     }
 
@@ -62,7 +66,7 @@ public:
     }
 
     void renderParticleEffects(ecs::ComponentView<scene::components::ParticleEffectComponent> pfxs,
-        ecs::ComponentView<scene::components::TransformComponent> transforms, std::shared_ptr<gfx::camera::Camera> camera) {
+        ecs::ComponentView<scene::components::TransformComponent> transforms, gfx::camera::Camera& camera) {
         m_pfxRenderer.renderParticleEffects(pfxs, transforms, camera);
     }
 

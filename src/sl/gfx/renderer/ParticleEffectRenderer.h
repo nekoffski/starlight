@@ -15,10 +15,10 @@ public:
     explicit ParticleEffectRenderer(std::shared_ptr<gfx::LowLevelRenderer> renderer);
 
     void renderParticleEffects(ecs::ComponentView<scene::components::ParticleEffectComponent> pfxs,
-        ecs::ComponentView<scene::components::TransformComponent> transforms, std::shared_ptr<gfx::camera::Camera> camera);
+        ecs::ComponentView<scene::components::TransformComponent> transforms, camera::Camera& camera);
 
 private:
-    void beginParticleEffect(std::shared_ptr<gfx::camera::Camera>);
+    void beginParticleEffect(gfx::camera::Camera&);
     void renderParticle();
     void endParticleEffect();
 
