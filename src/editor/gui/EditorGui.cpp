@@ -44,8 +44,10 @@ void EditorGui::renderEditorGui(sl::gui::GuiApi& gui) {
         gui.endMainMenuBar();
     }
 
-    if (callback.has_value())
-        m_fileBrowser.open(nullptr, gui, callback.value());
+    if (callback.has_value()) {
+        m_fileBrowser.open(gui, std::move(callback.value()));
+        callback.reset();
+    }
 
     m_fileBrowser.show(gui);
 

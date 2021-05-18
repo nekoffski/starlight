@@ -78,6 +78,14 @@ ImGuiApi::~ImGuiApi() {
     ImGui::DestroyContext();
 }
 
+void ImGuiApi::pushItemWidth(float value) {
+    ImGui::PushItemWidth(value);
+}
+
+void ImGuiApi::popItemWidth() {
+    ImGui::PopItemWidth();
+}
+
 float ImGuiApi::getCurrentWindowWidth() {
     return ImGui::GetWindowWidth();
 }
@@ -169,10 +177,12 @@ void ImGuiApi::endGroup() {
     ImGui::EndGroup();
 }
 
-void ImGuiApi::inputText(const std::string& label, std::string& text) {
+bool ImGuiApi::inputText(const std::string& label, std::string& text) {
     text.resize(256);
-    ImGui::InputText(label.c_str(), &text[0], text.size());
+    bool isActive = ImGui::InputText(label.c_str(), &text[0], text.size());
     core::stripString(text);
+
+    return isActive;
 }
 
 void ImGuiApi::openPopUp(const std::string& label) {

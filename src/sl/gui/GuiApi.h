@@ -41,6 +41,9 @@ public:
 
     virtual ~GuiApi() = default;
 
+    virtual void pushItemWidth(float) = 0;
+    virtual void popItemWidth() = 0;
+
     virtual float getCurrentWindowWidth() = 0;
     virtual float getCurrentWindowHeight() = 0;
 
@@ -91,7 +94,7 @@ public:
     virtual void closeCurrentPopUp() = 0;
     virtual bool beginPopUp(const std::string&) = 0;
     virtual void endPopUp() = 0;
-    virtual void inputText(const std::string&, std::string&) = 0;
+    virtual bool inputText(const std::string&, std::string&) = 0;
     virtual bool isItemHovered() = 0;
     virtual bool isMouseClicked() = 0;
 

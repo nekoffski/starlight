@@ -11,6 +11,9 @@ public:
     explicit ImGuiApi(void*);
     ~ImGuiApi() override;
 
+    void pushItemWidth(float) override;
+    void popItemWidth() override;
+
     float getCurrentWindowWidth() override;
     float getCurrentWindowHeight() override;
 
@@ -57,7 +60,7 @@ public:
     void closeCurrentPopUp() override;
     bool beginPopUp(const std::string&) override;
     void endPopUp() override;
-    void inputText(const std::string&, std::string&) override;
+    bool inputText(const std::string&, std::string&) override;
 
     void beginGroup() override;
     void endGroup() override;

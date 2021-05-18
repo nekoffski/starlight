@@ -157,15 +157,15 @@ void AssetsTab::showLoaderPopUp(sl::gui::GuiApi& gui) {
 void AssetsTab::handleShaderLoader(sl::gui::GuiApi& gui) {
     sl::gui::labeledTextInput(gui, "Vertex shader", m_assetsArgs.faces[0], padding);
     if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(&m_assetsArgs.faces[0], gui);
+        m_fileBrowser.open(gui, [&v = m_assetsArgs.faces[0]](const std::string& value) { v = value; });
 
     sl::gui::labeledTextInput(gui, "Fragment shader", m_assetsArgs.faces[1], padding);
     if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(&m_assetsArgs.faces[1], gui);
+        m_fileBrowser.open(gui, [&v = m_assetsArgs.faces[1]](const std::string& value) { v = value; });
 
     sl::gui::labeledTextInput(gui, "Geometry shader", m_assetsArgs.faces[2], padding);
     if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(&m_assetsArgs.faces[2], gui);
+        m_fileBrowser.open(gui, [&v = m_assetsArgs.faces[2]](const std::string& value) { v = value; });
 
     m_fileBrowser.show(gui);
 
@@ -182,27 +182,27 @@ void AssetsTab::handleShaderLoader(sl::gui::GuiApi& gui) {
 void AssetsTab::handleCubemapLoader(sl::gui::GuiApi& gui) {
     sl::gui::labeledTextInput(gui, "Right", m_assetsArgs.faces[0], padding);
     if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(&m_assetsArgs.faces[0], gui);
+        m_fileBrowser.open(gui, [&v = m_assetsArgs.faces[0]](const std::string& value) { v = value; });
 
     sl::gui::labeledTextInput(gui, "Left", m_assetsArgs.faces[1], padding);
     if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(&m_assetsArgs.faces[1], gui);
+        m_fileBrowser.open(gui, [&v = m_assetsArgs.faces[1]](const std::string& value) { v = value; });
 
     sl::gui::labeledTextInput(gui, "Top", m_assetsArgs.faces[2], padding);
     if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(&m_assetsArgs.faces[2], gui);
+        m_fileBrowser.open(gui, [&v = m_assetsArgs.faces[2]](const std::string& value) { v = value; });
 
     sl::gui::labeledTextInput(gui, "Bottom", m_assetsArgs.faces[3], padding);
     if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(&m_assetsArgs.faces[3], gui);
+        m_fileBrowser.open(gui, [&v = m_assetsArgs.faces[3]](const std::string& value) { v = value; });
 
     sl::gui::labeledTextInput(gui, "Front", m_assetsArgs.faces[4], padding);
     if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(&m_assetsArgs.faces[4], gui);
+        m_fileBrowser.open(gui, [&v = m_assetsArgs.faces[4]](const std::string& value) { v = value; });
 
     sl::gui::labeledTextInput(gui, "Back", m_assetsArgs.faces[5], padding);
     if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(&m_assetsArgs.faces[5], gui);
+        m_fileBrowser.open(gui, [&v = m_assetsArgs.faces[5]](const std::string& value) { v = value; });
 
     m_fileBrowser.show(gui);
 
@@ -221,7 +221,7 @@ void AssetsTab::handleCubemapLoader(sl::gui::GuiApi& gui) {
 void AssetsTab::handleModelLoader(sl::gui::GuiApi& gui) {
     sl::gui::labeledTextInput(gui, "Model", m_assetsArgs.modelName, padding);
     if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(&m_assetsArgs.modelName, gui);
+        m_fileBrowser.open(gui, [&v = m_assetsArgs.modelName](const std::string& value) { v = value; });
 
     m_fileBrowser.show(gui);
 

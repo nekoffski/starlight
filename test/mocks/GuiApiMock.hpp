@@ -14,6 +14,8 @@ struct GuiApiMock : public GuiApi {
         inline static Factory* instance = nullptr;
     };
 
+    MOCK_METHOD(void, pushItemWidth, (float), (override));
+    MOCK_METHOD(void, popItemWidth, (), (override));
     MOCK_METHOD(void, beginTransparentPanel, (const std::string&, math::Vec2, math::Vec2), (override));
     MOCK_METHOD(float, getCurrentWindowHeight, (), (override));
     MOCK_METHOD(float, getCurrentWindowWidth, (), (override));
@@ -48,7 +50,7 @@ struct GuiApiMock : public GuiApi {
     MOCK_METHOD(void, closeCurrentPopUp, (), (override));
     MOCK_METHOD(bool, beginPopUp, (const std::string&), (override));
     MOCK_METHOD(void, endPopUp, (), (override));
-    MOCK_METHOD(void, inputText, (const std::string&, std::string&), (override));
+    MOCK_METHOD(bool, inputText, (const std::string&, std::string&), (override));
     MOCK_METHOD(bool, isItemHovered, (), (override));
     MOCK_METHOD(bool, isMouseClicked, (), (override));
     MOCK_METHOD(void, beginGroup, (), (override));
