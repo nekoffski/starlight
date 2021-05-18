@@ -7,14 +7,16 @@
 
 namespace sl::app {
 
-Serializer::Serializer(const std::string& path, const std::string& filename, std::shared_ptr<core::FileSystem> fileSystem)
+Serializer::Serializer(const std::string& path, std::shared_ptr<core::FileSystem> fileSystem)
     : m_path(path)
-    , m_filename(filename)
     , m_fileSystem(fileSystem) {
 }
 
 void Serializer::serialize(asset::AssetManager& assetManager, std::shared_ptr<scene::Scene> scene) {
-    auto filePath = m_path + "/" + m_filename + extension;
+    auto filePath = m_path;
+
+    if (not filePath.ends_with(extension))
+        filePath += extension;
 
     serializeAssets(assetManager);
     serializeScene(scene);

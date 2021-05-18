@@ -202,7 +202,7 @@ public:
                     auto& path = event->as<SerializeSceneEvent>()->path;
 
                     SL_INFO("Serializing scene as: {}", path);
-                    Serializer { "/", path }.serialize(m_assetManager, m_scene);
+                    Serializer { path }.serialize(m_assetManager, m_scene);
                 }
 
                 if (event->is<DeserializeSceneEvent>()) {

@@ -23,13 +23,12 @@ class SerializerTests : public Test {
 protected:
     std::shared_ptr<FileSystemMock> m_fsMock = std::make_shared<FileSystemMock>();
 
-    const std::string m_filename = "exampleFilename";
-    const std::string m_path = "/path/";
+    const std::string m_filename = "/path/exampleFilename";
 
     std::shared_ptr<Scene> m_scene = std::make_shared<Scene>();
     AssetManager m_assetManager;
 
-    Serializer m_serializer = Serializer { m_path, m_filename, m_fsMock };
+    Serializer m_serializer = Serializer { m_filename, m_fsMock };
 
     void prevalidateSerializerJson(Json::Value root) {
         ASSERT_EQ(root.size(), 2);
@@ -40,7 +39,7 @@ protected:
 };
 
 TEST_F(SerializerTests, whenCreatingSerializerWithDefaultFileSystem_shouldBeCreatedWell) {
-    Serializer serializer { m_path, m_filename };
+    Serializer serializer { m_filename };
 }
 
 TEST_F(SerializerTests, givenEmptySceneAndEmptyAssetManager_whenSerializing_shouldReturnEmptyAssetsAndEntities) {

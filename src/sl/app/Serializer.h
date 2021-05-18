@@ -10,7 +10,7 @@ namespace sl::app {
 
 class Serializer {
 public:
-    explicit Serializer(const std::string& path, const std::string& filename,
+    explicit Serializer(const std::string& path,
         std::shared_ptr<core::FileSystem> fileSystem = std::make_shared<core::FileSystem>());
 
     void serialize(asset::AssetManager& assetManager, std::shared_ptr<scene::Scene> scene);
@@ -24,7 +24,6 @@ private:
     core::JsonBuilder m_jsonBuilder;
 
     std::string m_path;
-    std::string m_filename;
 
     std::shared_ptr<core::FileSystem> m_fileSystem;
 
