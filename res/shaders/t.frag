@@ -46,6 +46,10 @@ uniform vec3 viewPos;
 float ShadowCalculation(vec4 fragPosLightSpace) {
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5;
+
+    if (projCoords.z > 1.0f)
+        return 0.0f;
+
     float closestDepth = texture(shadowMap, projCoords.xy).r;
     float currentDepth = projCoords.z;
     const float bias = 0.05f;
@@ -82,7 +86,7 @@ vec4 calculateDirectionalLights(vec3 viewDirection, float shadow) {
     for (uint i = 0u; i < directionalLightsNum; ++i) {
         DirectionalLights light = directionalLights[i];
 
-        vec3 lightDir = normalize(-light.direction);
+        vec3 lightDir = normalize(light.direction);
 
         vec3 ambient = calculateAmbient(light.color);
         vec3 diffuse = calculateDiffuse(lightDir, light.color);
@@ -90,6 +94,7 @@ vec4 calculateDirectionalLights(vec3 viewDirection, float shadow) {
 
         lightSum += (ambient + (1.0f - shadow) * (diffuse + specular));
     }
+
     return vec4(lightSum, 1.0f);
 }
 
@@ -121,6 +126,7 @@ vec4 calculateLight(float shadow) {
 
 void main() {
     vec4 defaultColor = vec4(1.0, 1.0, 1.0, 1.0);
-    FragColor = (textures > 0 ? texture(textureSampler, texturePosition) : defaultColor) *
-        calculateLight(ShadowCalculation(fragPosLightSpace));
+    vec4 color = (textures > 0 ? texture(textureSampler, texturePosition) : defaultColor);
+
+    FragColor = color * calculateLight(ShadowCalculation(fragPosLightSpace));
 }

@@ -6,6 +6,8 @@ namespace sl::platform::gfx {
 
 class OpenGlRenderApi : public sl::gfx::RenderApi {
 public:
+    void setCullFace(unsigned int) override;
+
     void drawArrays(unsigned, unsigned, unsigned) override;
     void drawElements(unsigned, unsigned, unsigned) override;
 

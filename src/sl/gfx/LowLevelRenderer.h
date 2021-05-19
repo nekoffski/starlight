@@ -22,6 +22,7 @@ namespace sl::gfx {
 struct RendererSettings {
     bool enableDepthMask = true;
     unsigned int polygonMode = STARL_FILL;
+    unsigned int cullFace = STARL_BACK;
 };
 
 class LowLevelRenderer {

@@ -114,8 +114,9 @@ bool ImGuiApi::checkbox(const std::string& label, bool& value) {
     return ImGui::Checkbox(label.c_str(), &value);
 }
 
-void ImGuiApi::showImage(sl::gfx::Texture& texture, math::Vec2 size) {
-    ImGui::Image((void*)(intptr_t)texture.getBuffer(), ImVec2(size.x, size.y));
+void ImGuiApi::showImage(sl::gfx::Texture& texture, math::Vec2 size, math::Vec2 uv0, math::Vec2 uv1) {
+    ImGui::Image((void*)(intptr_t)texture.getBuffer(), ImVec2(size.x, size.y),
+        ImVec2(uv0.x, uv0.y), ImVec2(uv1.x, uv1.y));
 }
 
 void ImGuiApi::pushTextColor(const math::Vec4& color) {

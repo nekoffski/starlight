@@ -20,12 +20,18 @@ void ShadowRenderer::beginDepthCapture() {
     m_shadowMapFrameBuffer->bind();
     m_renderer->clearBuffers(STARL_DEPTH_BUFFER_BIT);
     m_depthShader->enable();
+
+    auto settings = m_renderer->getSettings();
+    settings.cullFace = STARL_FRONT;
+    m_renderer->setTemporarySettings(settings);
 }
 
 void ShadowRenderer::endDepthCapture() {
     m_shadowMapFrameBuffer->unbind();
     m_depthShader->disable();
     m_renderer->clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
+
+    m_renderer->restoreSettings();
     m_renderer->restoreViewport();
 }
 

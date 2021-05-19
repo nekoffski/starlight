@@ -9,7 +9,7 @@
 
 namespace sl::scene::components {
 
-static const auto lightProjectionMatrix = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, 0.1f, 100.0f);
+static const auto lightProjectionMatrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 15.0f);
 
 struct DirectionalLightComponent : ecs::Component {
     explicit DirectionalLightComponent(math::Vec3 direction = math::Vec3 { 1.0f, 1.0f, 1.0f }, math::Vec3 color = core::color::white)

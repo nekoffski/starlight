@@ -29,13 +29,17 @@ ComponentsSerializer::ComponentsSerializer() {
 
 void ComponentsSerializer::serializeComponent(std::type_index index, core::JsonBuilder& builder, ecs::Component& component) {
     if (m_serializers.contains(index))
-        m_serializers.at(index)(builder, component);
+        std::invoke(m_serializers.at(index), builder, component);
 }
 
 void ComponentsSerializer::serializeDirectionalLightComponent(core::JsonBuilder& builder, ecs::Component& component) {
     auto& directionalLightComponent = static_cast<scene::components::DirectionalLightComponent&>(component);
 
-    builder.addField("name", "DirectionalLightComponent"s);
+    builder
+        .addField("name", "DirectionalLightComponent"s)
+        .addField("active", directionalLightComponent.isActive)
+        .addField("render-direction", directionalLightComponent.renderDirection);
+
     serializeVector(builder, "direction", directionalLightComponent.direction);
     serializeVector(builder, "color", directionalLightComponent.color);
 }
@@ -43,7 +47,7 @@ void ComponentsSerializer::serializeDirectionalLightComponent(core::JsonBuilder&
 void ComponentsSerializer::serializeMaterialComponent(core::JsonBuilder& builder, ecs::Component& component) {
     auto& materialComponent = static_cast<scene::components::MaterialComponent&>(component);
 
-    builder.addField("name", "MaterialComponent"s);
+    builder.addField("name", "MaterialComponent"s).addField("active", materialComponent.isActive);
     serializeVector(builder, "ambient-color", materialComponent.ambientColor);
     serializeVector(builder, "diffuse-color", materialComponent.diffuseColor);
     serializeVector(builder, "specular-color", materialComponent.specularColor);
@@ -55,7 +59,8 @@ void ComponentsSerializer::serializeMeshRendererComponent(core::JsonBuilder& bui
 
     builder
         .addField("name", "MeshRendererComponent"s)
-        .addField("shader-id", meshRendererComponent.shader->id);
+        .addField("shader-id", meshRendererComponent.shader->id)
+        .addField("active", meshRendererComponent.isActive);
 }
 
 void ComponentsSerializer::serializeModelComponent(core::JsonBuilder& builder, ecs::Component& component) {
@@ -65,7 +70,9 @@ void ComponentsSerializer::serializeModelComponent(core::JsonBuilder& builder, e
     std::ranges::transform(modelComponent.meshes, std::back_inserter(meshesIds),
         [](auto& mesh) -> int { return mesh->id; });
 
-    builder.addField("name", "ModelComponent"s).addField("meshes-ids", meshesIds);
+    builder.addField("name", "ModelComponent"s)
+        .addField("meshes-ids", meshesIds)
+        .addField("active", modelComponent.isActive);
 }
 
 void ComponentsSerializer::serializeParticleEffectComponent(core::JsonBuilder& builder, ecs::Component& component) {
@@ -75,7 +82,7 @@ void ComponentsSerializer::serializeParticleEffectComponent(core::JsonBuilder& b
 void ComponentsSerializer::serializePointLightComponent(core::JsonBuilder& builder, ecs::Component& component) {
     auto& pointLightComponent = static_cast<scene::components::PointLightComponent&>(component);
 
-    builder.addField("name", "PointLightComponent"s);
+    builder.addField("name", "PointLightComponent"s).addField("active", pointLightComponent.isActive);
     serializeVector(builder, "position", pointLightComponent.position);
     serializeVector(builder, "color", pointLightComponent.color);
     builder
@@ -89,7 +96,7 @@ void ComponentsSerializer::serializePointLightComponent(core::JsonBuilder& build
 void ComponentsSerializer::serializeTransformComponent(core::JsonBuilder& builder, ecs::Component& component) {
     auto& transformComponent = static_cast<scene::components::TransformComponent&>(component);
 
-    builder.addField("name", "TransformComponent"s);
+    builder.addField("name", "TransformComponent"s).addField("active", transformComponent.isActive);
     serializeVector(builder, "position", transformComponent.position);
     serializeVector(builder, "rotation", transformComponent.rotation);
     serializeVector(builder, "scale", transformComponent.scale);
@@ -105,7 +112,9 @@ void ComponentsSerializer::serializeRigidBodyComponent(core::JsonBuilder& builde
         .addField("enable-collisions", rigidBodyComponent.enableCollisions)
         .addField("fixed", rigidBodyComponent.fixed)
         .addField("render-bounding-box", rigidBodyComponent.renderBoundingBox)
-        .addField("bounding-box", rigidBodyComponent.boundingBox != nullptr ? rigidBodyComponent.boundingBox->getName() : "None");
+        .addField("bounding-box", rigidBodyComponent.boundingBox != nullptr ? rigidBodyComponent.boundingBox->getName() : "None")
+        .addField("active", rigidBodyComponent.isActive);
+
     serializeVector(builder, "velocity", rigidBodyComponent.velocity);
 }
 

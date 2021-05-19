@@ -18,6 +18,8 @@ public:
 
     inline static std::unique_ptr<Factory> factory = nullptr;
 
+    virtual void setCullFace(unsigned int) = 0;
+
     virtual void drawArrays(unsigned, unsigned, unsigned) = 0;
     virtual void drawElements(unsigned, unsigned, unsigned) = 0;
     virtual void clearColor(float, float, float, float) = 0;

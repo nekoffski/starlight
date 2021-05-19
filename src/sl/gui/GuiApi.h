@@ -54,7 +54,7 @@ public:
 
     virtual bool checkbox(const std::string&, bool&) = 0;
 
-    virtual void showImage(gfx::Texture& texture, math::Vec2 size) = 0;
+    virtual void showImage(gfx::Texture& texture, math::Vec2 size, math::Vec2 uv0 = { 0.0f, 0.0f }, math::Vec2 uv1 = { 1.0f, 1.0f }) = 0;
 
     virtual void manipulateGizmo(math::Mat4& viewMatrix, math::Mat4& projectionMatrix, math::Mat4& transformation,
         GizmoOperation op, GizmoSystem system) = 0;

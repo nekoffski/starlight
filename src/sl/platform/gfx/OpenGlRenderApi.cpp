@@ -6,6 +6,10 @@
 
 namespace sl::platform::gfx {
 
+void OpenGlRenderApi::setCullFace(unsigned int face) {
+    glCullFace(face);
+}
+
 void OpenGlRenderApi::drawArrays(unsigned mode, unsigned begin, unsigned end) {
     glDrawArrays(mode, begin, end);
 }

@@ -44,19 +44,24 @@ void ComponentsDeserializer::deserializeComponent(const std::string& name, Json:
 void ComponentsDeserializer::deserializeDirectionalLightComponent(Json::Value& componentDescription,
     ecs::Entity& entity, asset::AssetManager& assetManager) {
 
-    entity.addComponent<DirectionalLightComponent>(
+    auto& component = entity.addComponent<DirectionalLightComponent>(
         deserializeVector3(componentDescription["direction"]),
         deserializeVector3(componentDescription["color"]));
+
+    component.isActive = componentDescription["active"].asBool();
+    component.renderDirection = componentDescription["render-direction"].asBool();
 }
 
 void ComponentsDeserializer::deserializeMaterialComponent(Json::Value& componentDescription,
     ecs::Entity& entity, asset::AssetManager& assetManager) {
 
-    entity.addComponent<MaterialComponent>(
+    auto& component = entity.addComponent<MaterialComponent>(
         deserializeVector3(componentDescription["ambient-color"]),
         deserializeVector3(componentDescription["diffuse-color"]),
         deserializeVector3(componentDescription["specular-color"]),
         componentDescription["shininess"].asFloat());
+
+    component.isActive = componentDescription["active"].asBool();
 }
 
 void ComponentsDeserializer::deserializeMeshRendererComponent(Json::Value& componentDescription,
@@ -67,6 +72,8 @@ void ComponentsDeserializer::deserializeMeshRendererComponent(Json::Value& compo
 
     if (defaultShader->id == componentDescription["shader-id"].asInt())
         component.shader = defaultShader;
+
+    component.isActive = componentDescription["active"].asBool();
 }
 
 void ComponentsDeserializer::deserializeModelComponent(Json::Value& componentDescription,
@@ -92,6 +99,8 @@ void ComponentsDeserializer::deserializeModelComponent(Json::Value& componentDes
 
         component.meshes.push_back(mesh);
     }
+
+    component.isActive = componentDescription["active"].asBool();
 }
 
 void ComponentsDeserializer::deserializeParticleEffectComponent(Json::Value& componentDescription,
@@ -102,21 +111,25 @@ void ComponentsDeserializer::deserializePointLightComponent(Json::Value& compone
     ecs::Entity& entity, asset::AssetManager& assetManager) {
 
     auto& attenuation = componentDescription["attenuation"];
-    entity.addComponent<PointLightComponent>(
+    auto& component = entity.addComponent<PointLightComponent>(
         deserializeVector3(componentDescription["position"]),
         deserializeVector3(componentDescription["color"]),
         attenuation["a"].asFloat(),
         attenuation["b"].asFloat(),
         attenuation["c"].asFloat());
+
+    component.isActive = componentDescription["active"].asBool();
 }
 
 void ComponentsDeserializer::deserializeTransformComponent(Json::Value& componentDescription,
     ecs::Entity& entity, asset::AssetManager& assetManager) {
 
-    entity.addComponent<TransformComponent>(
+    auto& component = entity.addComponent<TransformComponent>(
         deserializeVector3(componentDescription["position"]),
         deserializeVector3(componentDescription["rotation"]),
         deserializeVector3(componentDescription["scale"]));
+
+    component.isActive = componentDescription["active"].asBool();
 }
 
 void ComponentsDeserializer::deserializeRigidBodyComponent(Json::Value& componentDescription,
@@ -144,6 +157,8 @@ void ComponentsDeserializer::deserializeRigidBodyComponent(Json::Value& componen
 
         return nullptr;
     }();
+
+    component.isActive = componentDescription["active"].asBool();
 }
 
 math::Vec3 ComponentsDeserializer::deserializeVector3(Json::Value& value) {

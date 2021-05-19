@@ -13,6 +13,8 @@ struct RenderApiMock : public RenderApi {
         inline static Factory* instance = nullptr;
     };
 
+    MOCK_METHOD(void, setCullFace, (unsigned int), (override));
+
     MOCK_METHOD(void, drawArrays, (unsigned, unsigned, unsigned), (override));
     MOCK_METHOD(void, drawElements, (unsigned, unsigned, unsigned), (override));
     MOCK_METHOD(void, clearColor, (float, float, float, float), (override));
