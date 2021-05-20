@@ -15,6 +15,8 @@ struct PointLightComponent : ecs::Component {
         , attenuationA(attenuationA)
         , attenuationB(attenuationB)
         , attenuationC(attenuationC) {
+
+        name = "PointLightComponent";
     }
 
     math::Vec3 position;

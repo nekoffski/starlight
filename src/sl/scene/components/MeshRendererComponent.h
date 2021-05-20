@@ -12,6 +12,8 @@ struct MeshRendererComponent : ecs::Component {
     explicit MeshRendererComponent()
         : shader(GLOBALS().shaders->defaultModelShader)
         , polygonMode(STARL_FILL) {
+
+        name = "MeshRendererComponent";
     }
 
     std::shared_ptr<gfx::Shader> shader;

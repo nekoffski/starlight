@@ -12,6 +12,8 @@ namespace sl::scene::components {
 struct ModelComponent : ecs::Component {
     explicit ModelComponent() {
         instances.push_back(math::Vec3 { 0.0f, 0.0f, 0.0f });
+
+        name = "ModelComponent";
     }
 
     std::vector<std::shared_ptr<geom::Mesh>> meshes;

@@ -21,6 +21,7 @@ void FileBrowser::open(GuiApi& gui, Callback&& callback) {
 
     m_callback = callback;
 
+    SL_DEBUG("Opening file browser");
     gui.openPopUp(m_id);
 }
 

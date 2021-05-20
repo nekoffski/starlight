@@ -19,7 +19,8 @@ namespace editor::gui {
 using namespace sl;
 
 EntityTab::EntityTab(std::shared_ptr<SharedState> sharedState)
-    : Widget(sharedState) {
+    : Widget(sharedState)
+    , m_selectedComponent(0) {
 }
 
 void EntityTab::render(sl::gui::GuiApi& gui) {
@@ -30,13 +31,31 @@ void EntityTab::render(sl::gui::GuiApi& gui) {
     }
 }
 
+// clang-format off
+template <typename T, int expectedIndex>
+requires std::derived_from<T, ecs::Component> 
+static void handleComponent(int index, ecs::Entity& entity) {
+    if (index == expectedIndex) {
+        if (entity.hasComponent<T>()) {
+            auto& componentName = entity.getComponent<T>().name;
+            SL_WARN("Could not add {} to {}", componentName, entity.asString());
+
+            throw core::GuiUserError{ core::ErrorCode::GuiUserError, 
+                "Entity already has " + componentName };
+        }
+        
+        auto& component = entity.addComponent<T>();
+        SL_INFO("Added {} to {}", component.name, entity.asString());
+    }
+}
+// clang-format on
+
 void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
     if (auto selectedEntity = m_sharedState->selectedEntity.lock(); selectedEntity) {
-        static int selectedValue = 0;
 
         auto& widgetProperties = m_sharedState->guiProperties.rightPanelProperties;
         if (gui.button(ICON_FA_PLUS " Add component", gui.getCurrentWindowWidth())) {
-            selectedValue = 0;
+            m_selectedComponent = 0;
             gui.openPopUp("AddComponentPopUp");
         }
 
@@ -46,99 +65,36 @@ void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
             };
 
             gui.beginGroup();
-            gui.combo(sl::gui::createHiddenLabel("ComponentCombo"), selectedValue, componentsNames);
+            gui.combo(sl::gui::createHiddenLabel("ComponentCombo"), m_selectedComponent, componentsNames);
 
-            bool load = false;
             if (gui.button("Add")) {
+                using namespace scene::components;
                 gui.closeCurrentPopUp();
-                load = true;
+
+                try {
+                    // clang-format off
+                    handleComponent<ModelComponent,            0>(m_selectedComponent, *selectedEntity);
+                    handleComponent<MeshRendererComponent,     1>(m_selectedComponent, *selectedEntity);
+                    handleComponent<RigidBodyComponent,        2>(m_selectedComponent, *selectedEntity);
+                    handleComponent<ParticleEffectComponent,   3>(m_selectedComponent, *selectedEntity);
+                    handleComponent<TransformComponent,        4>(m_selectedComponent, *selectedEntity);
+                    handleComponent<PointLightComponent,       5>(m_selectedComponent, *selectedEntity);
+                    handleComponent<DirectionalLightComponent, 6>(m_selectedComponent, *selectedEntity);
+                    handleComponent<MaterialComponent,         7>(m_selectedComponent, *selectedEntity);
+                    // clang-format on
+
+                } catch (core::GuiUserError& e) {
+                    m_errorDialog.setErrorMessage(e.getDetails());
+                }
             }
 
-            gui.endGroup();
-            gui.sameLine(250);
-            gui.beginGroup();
-
-            // TODO: refactor
-            switch (selectedValue) {
-            case 0: {
-                addModel(load, *selectedEntity, gui);
-                break;
-            }
-
-            case 1: {
-                addRenderer(load, *selectedEntity, gui);
-                break;
-            }
-
-            case 2: {
-                if (load)
-                    selectedEntity->addComponent<sl::scene::components::RigidBodyComponent>();
-
-                break;
-            }
-
-            case 3: {
-                addParticleEffect(load, *selectedEntity, gui);
-                break;
-            }
-
-            case 4: {
-                addTransform(load, *selectedEntity, gui);
-                break;
-            }
-
-            case 5: {
-                addPointLight(load, *selectedEntity, gui);
-                break;
-            }
-
-            case 6: {
-                addDirectionalLight(load, *selectedEntity, gui);
-                break;
-            }
-
-            case 7: {
-                if (load)
-                    selectedEntity->addComponent<sl::scene::components::MaterialComponent>();
-            }
-            }
             gui.endGroup();
             gui.endPopUp();
         }
 
+        m_errorDialog.show(gui);
+
         m_entityGui.renderEntityGui(*selectedEntity, gui, m_sharedState->assetManager);
-    }
-}
-
-void EntityTab::addModel(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui) {
-    if (load)
-        entity.addComponent<sl::scene::components::ModelComponent>();
-}
-
-void EntityTab::addParticleEffect(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui) {
-    if (load)
-        entity.addComponent<scene::components::ParticleEffectComponent>();
-}
-
-void EntityTab::addPointLight(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui) {
-    if (load)
-        entity.addComponent<sl::scene::components::PointLightComponent>();
-}
-
-void EntityTab::addDirectionalLight(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui) {
-    if (load)
-        entity.addComponent<sl::scene::components::DirectionalLightComponent>();
-}
-
-void EntityTab::addRenderer(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui) {
-    if (load) {
-        entity.addComponent<sl::scene::components::MeshRendererComponent>();
-    }
-}
-
-void EntityTab::addTransform(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui) {
-    if (load) {
-        entity.addComponent<sl::scene::components::TransformComponent>();
     }
 }
 }

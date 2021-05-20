@@ -15,6 +15,19 @@ class RigidBodyComponent : public ecs::Component {
     };
 
 public:
+    explicit RigidBodyComponent()
+        : useGravity(false)
+        , enableCollisions(false)
+        , renderBoundingBox(false)
+        , fixed(false)
+        , mass(1.0f)
+        , velocity({ 0.0f, 0.0f, 0.0f })
+        , boundingBox(nullptr)
+
+    {
+        name = "RigidBodyComponent";
+    }
+
     void save() {
         m_memento = Memento { velocity };
     }
@@ -30,16 +43,16 @@ public:
         return ownerEntityId == other.ownerEntityId;
     }
 
-    bool useGravity = false;
-    bool enableCollisions = false;
-    bool renderBoundingBox = false;
-    bool fixed = false;
+    bool useGravity;
+    bool enableCollisions;
+    bool renderBoundingBox;
+    bool fixed;
 
-    float mass = { 1.0f };
+    float mass;
 
-    math::Vec3 velocity = { 0.0f, 0.0f, 0.0f };
+    math::Vec3 velocity;
 
-    std::unique_ptr<physx::BoundingBox> boundingBox = nullptr;
+    std::unique_ptr<physx::BoundingBox> boundingBox;
 
 private:
     std::optional<Memento> m_memento;

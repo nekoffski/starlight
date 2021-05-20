@@ -13,6 +13,7 @@ struct ParticleEffectComponent : ecs::Component {
     explicit ParticleEffectComponent(math::Vec3 position = math::VEC_ZEROS, int maxParticles = 2500)
         : position(position)
         , maxParticles(maxParticles) {
+        name = "ParticleEffectComponent";
     }
 
     math::Vec3 position;

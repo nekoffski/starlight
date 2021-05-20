@@ -5,6 +5,7 @@
 #include "sl/ecs/Entity.h"
 #include "sl/gfx/Cubemap.h"
 #include "sl/gui/EntityGui.h"
+#include "sl/gui/ErrorDialog.hpp"
 #include "sl/gui/GuiApi.h"
 
 #include "Widget.h"
@@ -19,15 +20,10 @@ public:
 private:
     void showEntityProperties(sl::gui::GuiApi& gui);
 
-    void addModel(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui);
-    void addRenderer(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui);
-    void addTransform(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui);
-    void addPointLight(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui);
-    void addDirectionalLight(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui);
-    void addParticleEffect(bool load, sl::ecs::Entity& entity, sl::gui::GuiApi& gui);
-
     sl::gui::EntityGui m_entityGui;
-
+    int m_selectedComponent;
     std::weak_ptr<sl::gfx::Cubemap> m_selectedCubemap;
+
+    sl::gui::ErrorDialog m_errorDialog;
 };
 }

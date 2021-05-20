@@ -25,9 +25,8 @@ public:
 
         m_entityTab.render(gui);
         m_assetTab.render(gui);
-        gui.endPanel();
-
         gui.endTabBar();
+        gui.endPanel();
     }
 
 private:

@@ -27,6 +27,8 @@ public:
         , rotation(rotation)
         , scale(scale) {
         recalculateTransformation();
+
+        name = "TransformComponent";
     }
 
     void recalculateTransformation() {

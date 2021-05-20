@@ -14,6 +14,8 @@ struct MaterialComponent : ecs::Component {
         , diffuseColor(diffuseColor)
         , specularColor(specularColor)
         , shininess(shininess) {
+
+        name = "MaterialComponent";
     }
 
     math::Vec3 ambientColor;

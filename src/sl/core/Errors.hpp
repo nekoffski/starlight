@@ -11,6 +11,8 @@ SL_DEFINE_ERROR(ApplicationError);
 SL_DEFINE_ERROR(AssetError);
 SL_DEFINE_ERROR(GuiError);
 
+SL_DEFINE_SUB_ERROR(GuiUserError, GuiError);
+
 SL_DEFINE_SUB_ERROR(ModelError, GeometryError);
 
 SL_DEFINE_SUB_ERROR(ShaderError, GraphicsError);

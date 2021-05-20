@@ -19,6 +19,8 @@ struct DirectionalLightComponent : ecs::Component {
         , viewMatrix(math::lookAt(-direction, math::Vec3 { 0.0f }, math::Vec3 { 0.0f, 1.0f, 0.0f }))
         , spaceMatrix(lightProjectionMatrix * viewMatrix)
         , renderDirection(false) {
+
+        name = "DirectionalLightComponent";
     }
 
     math::Vec3 direction;

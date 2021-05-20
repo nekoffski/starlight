@@ -274,13 +274,13 @@ private:
         }
     }
 
+    sl::gui::ErrorDialog m_errorDialog;
+
     sl::asset::AssetManager m_assetManager;
 
     std::shared_ptr<editor::gui::EditorGui> m_editorGui;
     std::shared_ptr<gfx::camera::Camera> m_activeCamera;
     std::shared_ptr<scene::Scene> m_scene;
-
-    sl::gui::ErrorDialog m_errorDialog;
 
     editor::EngineState m_engineState;
 };

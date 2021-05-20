@@ -17,6 +17,10 @@ public:
     std::string getId() const;
     std::string getName() const;
 
+    std::string asString() const {
+        return fmt::format("[Entity name: {}, id: {}]", m_name, m_id);
+    }
+
     std::vector<std::type_index> getComponentsIndexes();
 
     template <typename T, typename... Args>

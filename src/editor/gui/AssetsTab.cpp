@@ -84,6 +84,8 @@ void AssetsTab::render(sl::gui::GuiApi& gui) {
         shaders[name] = shader;
 
     displayAssetSection("Shader", shaders);
+
+    gui.endGroup();
 }
 
 void AssetsTab::resetArgs() {
