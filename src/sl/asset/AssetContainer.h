@@ -45,6 +45,11 @@ public:
             m_idToName.at(id));
     }
 
+    void clear() {
+        m_nameToAsset.clear();
+        m_idToName.clear();
+    }
+
 private:
     std::unordered_map<std::string, std::shared_ptr<T>> m_nameToAsset;
     std::unordered_map<int, std::string> m_idToName;

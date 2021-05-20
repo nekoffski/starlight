@@ -17,6 +17,10 @@ public:
     std::string getId() const;
     std::string getName() const;
 
+    void setName(const std::string& name) {
+        m_name = name;
+    }
+
     std::string asString() const {
         return fmt::format("[Entity name: {}, id: {}]", m_name, m_id);
     }

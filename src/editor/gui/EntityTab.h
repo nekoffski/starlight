@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <unordered_map>
 
 #include "sl/ecs/Entity.h"
 #include "sl/gfx/Cubemap.h"
@@ -25,5 +26,7 @@ private:
     std::weak_ptr<sl::gfx::Cubemap> m_selectedCubemap;
 
     sl::gui::ErrorDialog m_errorDialog;
+
+    std::unordered_map<std::string, std::string> m_entityNamePlacehoders;
 };
 }

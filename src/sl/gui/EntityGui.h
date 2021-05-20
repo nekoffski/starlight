@@ -14,7 +14,6 @@ class EntityGui {
 public:
     void renderEntityGui(ecs::Entity& entity, GuiApi& gui, asset::AssetManager& assetManager) {
         std::vector<std::type_index> indexesToRemove;
-
         for (const auto& index : entity.getComponentsIndexes()) {
             auto& component = entity.getComponent(index);
 

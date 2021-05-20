@@ -18,6 +18,7 @@ Deserializer::Deserializer(asset::AssetManager& assetManager, std::shared_ptr<sc
 }
 
 void Deserializer::deserialize(const std::string& path, std::shared_ptr<core::FileSystem> fileSystem) {
+
     if (not fileSystem->isFile(path))
         throw DeserializationError { ErrorCode::FileDoesNotExist, "Could not find file: " + path };
 
@@ -28,6 +29,9 @@ void Deserializer::deserialize(const std::string& path, std::shared_ptr<core::Fi
 
         if (not json.isMember("assets") || not json.isMember("scene"))
             throw DeserializationError { ErrorCode::ProjectJsonIsInvalid };
+
+        m_scene->clear();
+        m_assetManager.clear();
 
         deserializeAssets(json["assets"]);
         deserializeScene(json["scene"]);
@@ -89,6 +93,7 @@ void Deserializer::deserializeScene(Json::Value& sceneJson) {
 
         for (auto& componentDescription : entityDescription["components"]) {
             auto componentName = componentDescription["name"].asString();
+            SL_INFO("Deserializing {}", componentName);
 
             m_componentsDeserializer.deserializeComponent(componentName,
                 componentDescription, *entity, m_assetManager);

@@ -52,6 +52,23 @@ static void handleComponent(int index, ecs::Entity& entity) {
 
 void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
     if (auto selectedEntity = m_sharedState->selectedEntity.lock(); selectedEntity) {
+        auto entityId = selectedEntity->getId();
+
+        if (not m_entityNamePlacehoders.contains(entityId))
+            m_entityNamePlacehoders[entityId] = selectedEntity->getName();
+
+        auto& namePlaceholder = m_entityNamePlacehoders.at(entityId);
+
+        gui.displayText("Entity name:");
+        gui.inputText("##entity_name", namePlaceholder);
+        gui.sameLine();
+
+        if (gui.button(ICON_FA_CHECK_CIRCLE)) {
+            selectedEntity->setName(namePlaceholder);
+        }
+
+        gui.displayText("\n");
+        gui.breakLine();
 
         auto& widgetProperties = m_sharedState->guiProperties.rightPanelProperties;
         if (gui.button(ICON_FA_PLUS " Add component", gui.getCurrentWindowWidth())) {

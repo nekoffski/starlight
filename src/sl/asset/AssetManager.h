@@ -15,6 +15,9 @@ namespace sl::asset {
 
 class AssetManager {
 public:
+    void clear() {
+    }
+
     void add(std::shared_ptr<gfx::Cubemap> cubemap, const std::string& name) {
         cubemap->name = name;
         m_cubemaps.insert(cubemap, name);

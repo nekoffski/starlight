@@ -21,6 +21,10 @@ struct Scene {
         return ecsRegistry.getEntitiesCount();
     }
 
+    void clear() {
+        skybox.reset();
+    }
+
     std::shared_ptr<gfx::camera::Camera> camera;
     ecs::Registry ecsRegistry;
     std::shared_ptr<Skybox> skybox;
