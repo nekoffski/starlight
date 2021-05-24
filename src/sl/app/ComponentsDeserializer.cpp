@@ -19,7 +19,9 @@ using namespace sl::scene::components;
 
 namespace sl::app {
 
-ComponentsDeserializer::ComponentsDeserializer() {
+ComponentsDeserializer::ComponentsDeserializer(const std::unordered_map<std::string, std::string>& assetsIdRedirections)
+    : m_assetsIdRedirections(assetsIdRedirections) {
+
     m_deserializers = {
         BIND_DESERIALIZER_CALLBACK(DirectionalLightComponent),
         BIND_DESERIALIZER_CALLBACK(MaterialComponent),
@@ -38,11 +40,12 @@ void ComponentsDeserializer::deserializeComponent(const std::string& name, Json:
     if (not m_deserializers.contains(name))
         return;
 
-    m_deserializers.at(name)(componentDescription, entity, assetManager);
+    std::invoke(m_deserializers.at(name), componentDescription,
+        entity, assetManager, m_assetsIdRedirections);
 }
 
 void ComponentsDeserializer::deserializeDirectionalLightComponent(Json::Value& componentDescription,
-    ecs::Entity& entity, asset::AssetManager& assetManager) {
+    ecs::Entity& entity, asset::AssetManager& assetManager, const std::unordered_map<std::string, std::string>& assetsIdRedirections) {
 
     auto& component = entity.addComponent<DirectionalLightComponent>(
         deserializeVector3(componentDescription["direction"]),
@@ -53,7 +56,7 @@ void ComponentsDeserializer::deserializeDirectionalLightComponent(Json::Value& c
 }
 
 void ComponentsDeserializer::deserializeMaterialComponent(Json::Value& componentDescription,
-    ecs::Entity& entity, asset::AssetManager& assetManager) {
+    ecs::Entity& entity, asset::AssetManager& assetManager, const std::unordered_map<std::string, std::string>& assetsIdRedirections) {
 
     auto& component = entity.addComponent<MaterialComponent>(
         deserializeVector3(componentDescription["ambient-color"]),
@@ -65,32 +68,34 @@ void ComponentsDeserializer::deserializeMaterialComponent(Json::Value& component
 }
 
 void ComponentsDeserializer::deserializeMeshRendererComponent(Json::Value& componentDescription,
-    ecs::Entity& entity, asset::AssetManager& assetManager) {
+    ecs::Entity& entity, asset::AssetManager& assetManager, const std::unordered_map<std::string, std::string>& assetsIdRedirections) {
     auto& component = entity.addComponent<MeshRendererComponent>();
 
     auto& defaultShader = GLOBALS().shaders->defaultModelShader;
 
-    if (defaultShader->id == componentDescription["shader-id"].asInt())
+    if (defaultShader->getId() == assetsIdRedirections.at(componentDescription["shader-id"].asString()))
         component.shader = defaultShader;
 
     component.isActive = componentDescription["active"].asBool();
 }
 
 void ComponentsDeserializer::deserializeModelComponent(Json::Value& componentDescription,
-    ecs::Entity& entity, asset::AssetManager& assetManager) {
+    ecs::Entity& entity, asset::AssetManager& assetManager, const std::unordered_map<std::string, std::string>& assetsIdRedirections) {
 
     auto& component = entity.addComponent<ModelComponent>();
     auto& meshes = assetManager.getMeshes();
 
     for (auto& meshId : componentDescription["meshes-ids"]) {
-        auto id = meshId.asInt();
+        auto id = meshId.asString();
 
         auto mesh = [&]() {
-            if (meshes.has(id))
-                return meshes.getById(id);
+            auto targetId = assetsIdRedirections.at(id);
+
+            if (meshes.hasId(targetId))
+                return meshes.getById(targetId);
 
             for (auto& mesh : GLOBALS().geom->meshes | std::views::values)
-                if (mesh->id == id)
+                if (mesh->getId() == targetId)
                     return mesh;
 
             // TODO: handle this case
@@ -104,11 +109,11 @@ void ComponentsDeserializer::deserializeModelComponent(Json::Value& componentDes
 }
 
 void ComponentsDeserializer::deserializeParticleEffectComponent(Json::Value& componentDescription,
-    ecs::Entity& entity, asset::AssetManager& assetManager) {
+    ecs::Entity& entity, asset::AssetManager& assetManager, const std::unordered_map<std::string, std::string>& assetsIdRedirections) {
 }
 
 void ComponentsDeserializer::deserializePointLightComponent(Json::Value& componentDescription,
-    ecs::Entity& entity, asset::AssetManager& assetManager) {
+    ecs::Entity& entity, asset::AssetManager& assetManager, const std::unordered_map<std::string, std::string>& assetsIdRedirections) {
 
     auto& attenuation = componentDescription["attenuation"];
     auto& component = entity.addComponent<PointLightComponent>(
@@ -122,7 +127,7 @@ void ComponentsDeserializer::deserializePointLightComponent(Json::Value& compone
 }
 
 void ComponentsDeserializer::deserializeTransformComponent(Json::Value& componentDescription,
-    ecs::Entity& entity, asset::AssetManager& assetManager) {
+    ecs::Entity& entity, asset::AssetManager& assetManager, const std::unordered_map<std::string, std::string>& assetsIdRedirections) {
 
     auto& component = entity.addComponent<TransformComponent>(
         deserializeVector3(componentDescription["position"]),
@@ -133,7 +138,7 @@ void ComponentsDeserializer::deserializeTransformComponent(Json::Value& componen
 }
 
 void ComponentsDeserializer::deserializeRigidBodyComponent(Json::Value& componentDescription,
-    ecs::Entity& entity, asset::AssetManager& assetManager) {
+    ecs::Entity& entity, asset::AssetManager& assetManager, const std::unordered_map<std::string, std::string>& assetsIdRedirections) {
 
     auto& component = entity.addComponent<RigidBodyComponent>();
 

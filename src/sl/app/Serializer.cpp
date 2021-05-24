@@ -4,6 +4,7 @@
 
 #include "sl/core/Logger.h"
 #include "sl/ecs/Entity.h"
+#include "sl/utils/Globals.h"
 
 namespace sl::app {
 
@@ -34,7 +35,7 @@ void Serializer::serializeAssets(asset::AssetManager& assetManager) {
         m_jsonBuilder
             .beginObject()
             .addField("name", name)
-            .addField("id", cubemap->id)
+            .addField("id", cubemap->getId())
             .addField("paths",
                 std::vector<std::string> { faces.begin(), faces.end() })
             .endObject();
@@ -51,7 +52,7 @@ void Serializer::serializeAssets(asset::AssetManager& assetManager) {
         m_jsonBuilder
             .beginObject()
             .addField("name", name)
-            .addField("id", mesh->id);
+            .addField("id", mesh->getId());
 
         if (mesh->providedBy.has_value()) {
             auto providedBy = *mesh->providedBy;
@@ -66,9 +67,32 @@ void Serializer::serializeAssets(asset::AssetManager& assetManager) {
     m_jsonBuilder
         .endArray()
         .addField("paths", modelsToLoad)
-        .endObject();
+        .endObject()
+        .beginObject("default-assets")
+        .beginArray("shaders");
 
-    m_jsonBuilder.endObject();
+    for (auto& [name, shader] : GLOBALS().shaders->shadersByName)
+        m_jsonBuilder
+            .beginObject()
+            .addField("name", name)
+            .addField("id", shader->getId())
+            .endObject();
+
+    m_jsonBuilder
+        .endArray()
+        .beginArray("meshes");
+
+    for (auto& [name, mesh] : GLOBALS().geom->meshes)
+        m_jsonBuilder
+            .beginObject()
+            .addField("name", name)
+            .addField("id", mesh->getId())
+            .endObject();
+
+    m_jsonBuilder
+        .endArray()
+        .endObject()
+        .endObject();
 }
 
 void Serializer::serializeScene(std::shared_ptr<scene::Scene> scene) {
@@ -92,7 +116,7 @@ void Serializer::serializeScene(std::shared_ptr<scene::Scene> scene) {
     m_jsonBuilder.endArray();
 
     if (scene->skybox != nullptr)
-        m_jsonBuilder.addField("skybox-id", scene->skybox->cubemap->id);
+        m_jsonBuilder.addField("skybox-id", scene->skybox->cubemap->getId());
 
     m_jsonBuilder.endObject();
 }

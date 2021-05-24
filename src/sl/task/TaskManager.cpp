@@ -3,7 +3,7 @@
 namespace sl::task {
 
 void TaskManager::processTasks() {
-    std::vector<int> tasksToRemove;
+    std::vector<std::string> tasksToRemove;
 
     for (auto& [id, task] : m_tasks) {
         if (not task->isActive) {

@@ -29,7 +29,7 @@ public:
     }
 
 private:
-    std::unordered_map<int, std::unique_ptr<Task>> m_tasks;
+    std::unordered_map<std::string, std::unique_ptr<Task>> m_tasks;
 };
 }
 

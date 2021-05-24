@@ -59,16 +59,16 @@ void ComponentsSerializer::serializeMeshRendererComponent(core::JsonBuilder& bui
 
     builder
         .addField("name", "MeshRendererComponent"s)
-        .addField("shader-id", meshRendererComponent.shader->id)
+        .addField("shader-id", meshRendererComponent.shader->getId())
         .addField("active", meshRendererComponent.isActive);
 }
 
 void ComponentsSerializer::serializeModelComponent(core::JsonBuilder& builder, ecs::Component& component) {
     auto& modelComponent = static_cast<scene::components::ModelComponent&>(component);
 
-    std::vector<int> meshesIds;
+    std::vector<std::string> meshesIds;
     std::ranges::transform(modelComponent.meshes, std::back_inserter(meshesIds),
-        [](auto& mesh) -> int { return mesh->id; });
+        [](auto& mesh) -> std::string { return mesh->getId(); });
 
     builder.addField("name", "ModelComponent"s)
         .addField("meshes-ids", meshesIds)

@@ -25,5 +25,7 @@ private:
     std::shared_ptr<scene::Scene> m_scene;
 
     ComponentsDeserializer m_componentsDeserializer;
+
+    std::unordered_map<std::string, std::string> m_assetsIdRedirections;
 };
 }

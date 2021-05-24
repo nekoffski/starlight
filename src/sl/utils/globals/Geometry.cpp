@@ -95,9 +95,6 @@ void Geometry::initCube() {
     mesh->vertexArray = cubeVAO;
     mesh->name = "Cube";
 
-    // TODO: fixme
-    mesh->setId(11);
-
     cubeMesh = mesh;
 }
 

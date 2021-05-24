@@ -2,15 +2,11 @@
 
 namespace sl::ecs {
 
-Entity::Entity(const std::string& id, const std::string& name, Registry& registry)
+Entity::Entity(const std::string& name, Registry& registry)
     : isActive(true)
-    , m_id(id)
     , m_name(name)
-    , m_registry(registry) {
-}
-
-std::string Entity::getId() const {
-    return m_id;
+    , m_registry(registry)
+    , m_id(core::generateUuid()) {
 }
 
 std::string Entity::getName() const {

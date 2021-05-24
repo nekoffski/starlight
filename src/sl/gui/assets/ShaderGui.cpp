@@ -98,7 +98,7 @@ void ShaderGui::Provider::processRecompileOnSaveRequest(std::shared_ptr<gfx::Sha
 }
 
 std::unique_ptr<AssetGuiProvider> ShaderGui::createGuiProvider(std::shared_ptr<gfx::Shader> shader) {
-    return std::make_unique<Provider>(shader, m_params[shader->id]);
+    return std::make_unique<Provider>(shader, m_params[shader->getId()]);
 }
 
 }

@@ -1,19 +1,29 @@
 #pragma once
 
-#include "sl/core/Logger.h"
+#include <string>
 
-#include "Countable.hpp"
+#include "Logger.h"
+#include "Uuid.h"
 
 namespace sl::core {
 
-struct GameObject : Countable<GameObject> {
-    GameObject() {
-        SL_INFO("GameObject - taking id: {}", id);
+class GameObject {
+public:
+    GameObject()
+        : m_id(generateUuid()) {
+        SL_INFO("Creating GameObject: {}", m_id);
     }
 
     ~GameObject() {
-        SL_INFO("GameObject - freeing id: {}", id);
+        SL_INFO("Destroying GameObject: {}", m_id);
     }
+
+    const std::string getId() const {
+        return m_id;
+    }
+
+protected:
+    std::string m_id;
 };
 
 }

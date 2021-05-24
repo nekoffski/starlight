@@ -14,7 +14,8 @@ namespace sl::app {
 
 Deserializer::Deserializer(asset::AssetManager& assetManager, std::shared_ptr<scene::Scene> scene)
     : m_assetManager(assetManager)
-    , m_scene(scene) {
+    , m_scene(scene)
+    , m_componentsDeserializer(m_assetsIdRedirections) {
 }
 
 void Deserializer::deserialize(const std::string& path, std::shared_ptr<core::FileSystem> fileSystem) {
@@ -54,9 +55,12 @@ void Deserializer::deserializeAssets(Json::Value& assetsJson) {
             faces[i] = paths[i].asString();
 
         auto cubemap = gfx::Cubemap::load(faces);
-        cubemap->setId(cubemapDescription["id"].asInt());
+        auto oldId = cubemapDescription["id"].asString();
 
+        m_assetsIdRedirections[oldId] = cubemap->getId();
         m_assetManager.add(cubemap, cubemapDescription["name"].asString());
+
+        SL_INFO("Found cubemap redirection: {} -> {}", oldId, cubemap->getId());
     }
 
     auto& models = assetsJson["models"];
@@ -67,8 +71,42 @@ void Deserializer::deserializeAssets(Json::Value& assetsJson) {
 
     for (auto& meshDescription : models["meshes"]) {
         auto name = meshDescription["name"].asString();
-        m_assetManager.getMeshes().getByName(name)->setId(
-            meshDescription["id"].asInt());
+        auto oldId = meshDescription["id"].asString();
+        auto mesh = m_assetManager.getMeshes().getByName(name);
+
+        m_assetsIdRedirections[oldId] = mesh->getId();
+
+        SL_INFO("Found mesh redirection: {} -> {}", oldId, mesh->getId());
+    }
+
+    auto& defaultAssets = assetsJson["default-assets"];
+
+    auto& globalShaders = GLOBALS().shaders->shadersByName;
+
+    for (auto& shaderDescription : defaultAssets["shaders"]) {
+        auto name = shaderDescription["name"].asString();
+
+        if (globalShaders.contains(name)) {
+            auto oldId = shaderDescription["id"].asString();
+            auto newId = globalShaders.at(name)->getId();
+            m_assetsIdRedirections[oldId] = newId;
+
+            SL_INFO("Found redirection for default shader: {} - {} -> {}", name, oldId, newId);
+        }
+    }
+
+    auto& globalMeshes = GLOBALS().geom->meshes;
+
+    for (auto& meshDescription : defaultAssets["meshes"]) {
+        auto name = meshDescription["name"].asString();
+
+        if (globalMeshes.contains(name)) {
+            auto oldId = meshDescription["id"].asString();
+            auto newId = globalMeshes.at(name)->getId();
+            m_assetsIdRedirections[oldId] = newId;
+
+            SL_INFO("Found redirection for default mesh: {} - {} -> {}", name, oldId, newId);
+        }
     }
 }
 
@@ -76,11 +114,14 @@ void Deserializer::deserializeScene(Json::Value& sceneJson) {
     SL_INFO("Deserializing scene");
 
     if (sceneJson.isMember("skybox-id")) {
-        auto skyboxId = sceneJson["skybox-id"].asUInt();
-        auto cubemap = m_assetManager.getCubemaps().getById(skyboxId);
+        auto skyboxOldId = sceneJson["skybox-id"].asString();
+
+        auto cubemap = m_assetManager.getCubemaps().getById(
+            m_assetsIdRedirections.at(skyboxOldId));
         auto skybox = scene::Skybox::create(GLOBALS().shaders->defaultCubemapShader, cubemap);
         m_scene->skybox = skybox;
-        SL_INFO("Setting skybox: {}", skyboxId);
+
+        SL_INFO("Setting skybox: {}", skybox->cubemap->getId());
     }
 
     SL_INFO("Deserializing entities");

@@ -14,7 +14,7 @@ requires std::derived_from<T, core::GameObject> class AssetContainer {
 public:
     void insert(std::shared_ptr<T> asset, const std::string& name) {
         m_nameToAsset[name] = asset;
-        m_idToName[asset->id] = name;
+        m_idToName[asset->getId()] = name;
     }
 
     std::unordered_map<std::string, std::shared_ptr<T>>& getAll() {
@@ -28,11 +28,11 @@ public:
         return names;
     }
 
-    bool has(int id) {
+    bool hasId(const std::string& id) {
         return m_idToName.contains(id);
     }
 
-    bool has(const std::string& name) {
+    bool hasName(const std::string& name) {
         return m_nameToAsset.contains(name);
     }
 
@@ -40,7 +40,7 @@ public:
         return m_nameToAsset.at(name);
     }
 
-    std::shared_ptr<T> getById(int id) {
+    std::shared_ptr<T> getById(const std::string& id) {
         return m_nameToAsset.at(
             m_idToName.at(id));
     }
@@ -52,7 +52,7 @@ public:
 
 private:
     std::unordered_map<std::string, std::shared_ptr<T>> m_nameToAsset;
-    std::unordered_map<int, std::string> m_idToName;
+    std::unordered_map<std::string, std::string> m_idToName;
 };
 
 }

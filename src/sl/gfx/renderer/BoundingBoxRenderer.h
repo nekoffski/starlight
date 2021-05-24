@@ -21,9 +21,6 @@ public:
         : m_renderer(renderer)
         , m_boundingBoxShader(gfx::Shader::load(
               GLOBALS().config.paths.shaders + "/rigid_body.vert", GLOBALS().config.paths.shaders + "/rigid_body.frag")) {
-
-        // TODO: fixme
-        m_boundingBoxShader->setId(12);
     }
 
     void renderBoundingBoxes(ecs::ComponentView<RigidBodyComponent> rigidBodies, ecs::ComponentView<TransformComponent> transforms, gfx::camera::Camera& camera) {

@@ -17,7 +17,7 @@ cscope.files
 cscope.out
 cscope.in.out
 cscope.po.out
-
+scenes
 cov_build
 *.xml
 CMakeLists.txt.user

@@ -5,16 +5,16 @@
 
 #include "Component.h"
 #include "Registry.h"
+#include "sl/core/GameObject.h"
 
 namespace sl::ecs {
 
-class Entity {
+class Entity : public core::GameObject {
     friend class Registry;
 
 public:
-    explicit Entity(const std::string& id, const std::string& name, Registry& registry);
+    explicit Entity(const std::string& name, Registry& registry);
 
-    std::string getId() const;
     std::string getName() const;
 
     void setName(const std::string& name) {

@@ -33,7 +33,7 @@ public:
     std::unique_ptr<AssetGuiProvider> createGuiProvider(std::shared_ptr<gfx::Shader> shader);
 
 private:
-    std::unordered_map<int, Params> m_params;
+    std::unordered_map<std::string, Params> m_params;
 };
 
 }

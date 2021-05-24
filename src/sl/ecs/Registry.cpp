@@ -7,8 +7,9 @@
 namespace sl::ecs {
 
 std::shared_ptr<Entity> Registry::createEntity(const std::string& name) {
-    auto id = xg::newGuid().str();
-    auto entity = std::make_shared<Entity>(id, name, *this);
+    auto entity = std::make_shared<Entity>(name, *this);
+    auto id = entity->getId();
+
     m_entities[id] = entity;
     m_entityNameToId[name] = id;
     return entity;

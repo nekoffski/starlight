@@ -19,7 +19,7 @@ void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
             if (gui.beginTreeNode("Added")) {
                 gui.pushId("added");
 
-                std::vector<int> meshesToRemove;
+                std::vector<std::string> meshesToRemove;
 
                 for (auto& mesh : component.meshes) {
                     gui.displayText(mesh->name);
@@ -28,14 +28,14 @@ void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
                     gui.displayText(ICON_FA_TIMES);
 
                     if (gui.isPreviousWidgetClicked())
-                        meshesToRemove.push_back(mesh->id);
+                        meshesToRemove.push_back(mesh->getId());
 
                     gui.setFontScale(1.0f);
                 }
 
                 for (auto& meshId : meshesToRemove)
                     std::erase_if(component.meshes,
-                        [&meshId](auto& element) -> bool { return meshId == element->id; });
+                        [&meshId](auto& element) -> bool { return meshId == element->getId(); });
 
                 gui.popId();
                 gui.popTreeNode();
