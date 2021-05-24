@@ -19,6 +19,10 @@ public:
         return std::static_pointer_cast<ComponentContainer<T>>(m_componentContainers[id]);
     }
 
+    void clear() {
+        m_componentContainers.clear();
+    }
+
     template <typename T>
     std::shared_ptr<ComponentContainer<T>> getByIndex(std::type_index id) {
         return std::static_pointer_cast<ComponentContainer<T>>(m_componentContainers[id]);

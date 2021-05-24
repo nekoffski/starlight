@@ -67,7 +67,14 @@ void Serializer::serializeAssets(asset::AssetManager& assetManager) {
     m_jsonBuilder
         .endArray()
         .addField("paths", modelsToLoad)
-        .endObject()
+        .endObject();
+
+    serializeDefaultAssets();
+}
+
+void Serializer::serializeDefaultAssets() {
+
+    m_jsonBuilder
         .beginObject("default-assets")
         .beginArray("shaders");
 

@@ -23,6 +23,7 @@ struct Scene {
 
     void clear() {
         skybox.reset();
+        ecsRegistry.clear();
     }
 
     std::shared_ptr<gfx::camera::Camera> camera;

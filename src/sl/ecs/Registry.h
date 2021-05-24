@@ -28,6 +28,12 @@ public:
 
     void removeEntity(const std::string& entityId);
 
+    void clear() {
+        m_entities.clear();
+        m_entityNameToId.clear();
+        m_componentMap.clear();
+    }
+
     void removeComponent(const std::string& entityId, std::type_index componentIndex) {
         m_componentMap.getByIndex<Component>(componentIndex)->remove(entityId);
     }

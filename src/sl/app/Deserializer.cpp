@@ -79,8 +79,10 @@ void Deserializer::deserializeAssets(Json::Value& assetsJson) {
         SL_INFO("Found mesh redirection: {} -> {}", oldId, mesh->getId());
     }
 
-    auto& defaultAssets = assetsJson["default-assets"];
+    deserializeDefaultAssets(assetsJson["default-assets"]);
+}
 
+void Deserializer::deserializeDefaultAssets(Json::Value& defaultAssets) {
     auto& globalShaders = GLOBALS().shaders->shadersByName;
 
     for (auto& shaderDescription : defaultAssets["shaders"]) {

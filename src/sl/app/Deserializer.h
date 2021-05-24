@@ -21,6 +21,8 @@ private:
     void deserializeAssets(Json::Value&);
     void deserializeScene(Json::Value&);
 
+    void deserializeDefaultAssets(Json::Value&);
+
     asset::AssetManager& m_assetManager;
     std::shared_ptr<scene::Scene> m_scene;
 

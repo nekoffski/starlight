@@ -20,6 +20,7 @@ enum class ErrorCode : int {
     CouldNotReadFile = 451,
 
     ProjectJsonIsInvalid = 475,
+    CouldNotDeserializeScene = 476,
 
     CouldNotLinkShaderProgram = 500,
     CouldNotReadVertexShader = 501,

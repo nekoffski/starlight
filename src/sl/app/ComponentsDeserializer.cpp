@@ -1,5 +1,6 @@
 #include "ComponentsDeserializer.h"
 
+#include "sl/core/Errors.hpp"
 #include "sl/scene/components/DirectionalLightComponent.h"
 #include "sl/scene/components/MaterialComponent.h"
 #include "sl/scene/components/MeshRendererComponent.h"
@@ -98,8 +99,10 @@ void ComponentsDeserializer::deserializeModelComponent(Json::Value& componentDes
                 if (mesh->getId() == targetId)
                     return mesh;
 
-            // TODO: handle this case
-            throw std::runtime_error { "Unhandled case" };
+            throw core::DeserializationError {
+                core::ErrorCode::CouldNotDeserializeScene,
+                fmt::format("Could not deserialize scene json, mesh with id {} not found", meshId)
+            };
         }();
 
         component.meshes.push_back(mesh);

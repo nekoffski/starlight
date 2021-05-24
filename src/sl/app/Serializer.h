@@ -21,6 +21,8 @@ private:
     void serializeAssets(asset::AssetManager& assetManager);
     void serializeScene(std::shared_ptr<scene::Scene> scene);
 
+    void serializeDefaultAssets();
+
     core::JsonBuilder m_jsonBuilder;
 
     std::string m_path;
