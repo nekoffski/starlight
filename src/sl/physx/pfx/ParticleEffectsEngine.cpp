@@ -21,18 +21,34 @@ ParticleEffectsEngine::ParticleEffectsEngine() {
     m_pfxTimer = ASYNC_ENGINE().createTimer(particleCleanerSleepTime);
 }
 
-void ParticleEffectsEngine::update(ecs::ComponentView<components::ParticleEffectComponent>& pfxs, float deltaTime,
-    std::shared_ptr<gfx::camera::Camera> camera) {
+void ParticleEffectsEngine::update(ecs::ComponentView<components::ParticleEffectComponent>& pfxs, float deltaTime, gfx::camera::Camera& camera) {
     for (auto& pfx : pfxs)
         updateParticleEffect(pfx, deltaTime, camera);
 }
 
-void ParticleEffectsEngine::updateParticleEffect(components::ParticleEffectComponent& pfx, float deltaTime, std::shared_ptr<gfx::camera::Camera> camera) {
-    pfx.maxParticles = maxParticlesPerIteration;
-
+void ParticleEffectsEngine::updateParticleEffect(components::ParticleEffectComponent& pfx, float deltaTime, gfx::camera::Camera& camera) {
     auto& particles = pfx.particles;
-    for (auto& particle : particles)
+
+    pfx.maxX = pfx.maxY = std::numeric_limits<int>::min();
+    pfx.minX = pfx.minY = std::numeric_limits<int>::max();
+
+    for (auto& particle : particles) {
         updateParticle(particle, deltaTime);
+
+        auto& position = particle.position;
+
+        if (position.x > pfx.maxX)
+            pfx.maxX = position.x;
+
+        if (position.y > pfx.maxY)
+            pfx.maxY = position.y;
+
+        if (position.x < pfx.minX)
+            pfx.minX = position.x;
+
+        if (position.y < pfx.minY)
+            pfx.minY = position.y;
+    }
 
     if (not m_pfxTimer->asyncSleep())
         std::erase_if(particles, [](auto& particle) -> bool { return particle.scale <= 0 || particle.position.y >= 7.5f; });

@@ -15,7 +15,6 @@ LowLevelRenderer::LowLevelRenderer(std::shared_ptr<gfx::GraphicsContext> gfxCont
 
     m_renderApi->enable(STARL_DEPTH_TEST);
     m_renderApi->enable(STARL_BLEND);
-    // m_renderApi->enable(STARL_CULL_FACE);
     m_renderApi->setCullFace(STARL_BACK);
     m_renderApi->setDepthFunc(STARL_LEQUAL);
     m_renderApi->setBlendFunc(STARL_SRC_ALPHA, STARL_ONE_MINUS_SRC_ALPHA);

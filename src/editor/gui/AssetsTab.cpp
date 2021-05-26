@@ -85,6 +85,11 @@ void AssetsTab::render(sl::gui::GuiApi& gui) {
 
     displayAssetSection("Shader", shaders);
 
+    gui.sameLine();
+
+    auto& textures = m_sharedState->assetManager.getTextures().getAll();
+    displayAssetSection("Textures", textures);
+
     gui.endGroup();
 }
 
@@ -236,5 +241,19 @@ void AssetsTab::handleModelLoader(sl::gui::GuiApi& gui) {
 }
 
 void AssetsTab::handleTextureLoader(sl::gui::GuiApi& gui) {
+    sl::gui::labeledTextInput(gui, "Texture", m_assetsArgs.modelName, padding);
+    if (gui.isPreviousWidgetClicked())
+        m_fileBrowser.open(gui, [&v = m_assetsArgs.modelName](const std::string& value) { v = value; });
+
+    m_fileBrowser.show(gui);
+
+    if (m_loadClicked) {
+        validateAssetName(m_assetsArgs.assetName);
+
+        auto texture = sl::gfx::Texture::load(m_assetsArgs.modelName);
+        texture->name = m_assetsArgs.assetName;
+
+        m_sharedState->assetManager.add(texture);
+    }
 }
 }

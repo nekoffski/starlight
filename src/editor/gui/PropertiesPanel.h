@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "AssetTab.h"
 #include "sl/asset/AssetManager.h"
 #include "sl/ecs/Entity.h"
 #include "sl/gfx/Cubemap.h"
@@ -20,5 +21,7 @@ private:
     void showSceneProperties(sl::gui::GuiApi& gui);
 
     std::weak_ptr<sl::gfx::Cubemap> m_selectedCubemap;
+
+    AssetTab m_assetTab;
 };
 }

@@ -24,7 +24,5 @@ public:
             gui.endTabItem();
         }
     }
-
-private:
 };
 }

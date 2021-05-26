@@ -7,12 +7,13 @@
 namespace sl::utils::globals {
 
 Geometry::Geometry() {
-    initSquare();
+    initSquares();
     initCube();
     initLine();
 
     meshes = {
-        { squareMesh->name, squareMesh },
+        { upSquareMesh->name, upSquareMesh },
+        { frontSquareMesh->name, frontSquareMesh },
         { cubeMesh->name, cubeMesh }
     };
 }
@@ -98,19 +99,10 @@ void Geometry::initCube() {
     cubeMesh = mesh;
 }
 
-void Geometry::initSquare() {
-    const static std::vector<unsigned int> indices {
+Geometry::MeshVaoPair Geometry::initSquare(std::vector<geom::Vertex> vertices, const std::string& name) {
+    const std::vector<unsigned int> indices {
         0, 1, 2,
         0, 2, 3
-    };
-
-    const static math::Vec3 normal { 0.0f, 1.0f, 0.0f };
-
-    const static std::vector<geom::Vertex> vertices {
-        geom::Vertex { { -0.5f, 0.0f, -0.5f }, normal, normal, normal, normal },
-        geom::Vertex { { 0.5f, 0.0f, -0.5f }, normal, normal, normal, normal },
-        geom::Vertex { { 0.5f, 0.0f, 0.5f }, normal, normal, normal, normal },
-        geom::Vertex { { -0.5f, 0.0f, 0.5f }, normal, normal, normal, normal }
     };
 
     auto mesh = std::make_shared<geom::Mesh>();
@@ -118,8 +110,8 @@ void Geometry::initSquare() {
     mesh->indices = std::move(indices);
     mesh->vertices = std::move(vertices);
 
-    // TODO: move this logic to mesh contstructor
-    squareVAO = gfx::buffer::VertexArray::factory->create();
+    // // TODO: move this logic to mesh contstructor
+    auto vao = gfx::buffer::VertexArray::factory->create();
     auto vbo = gfx::buffer::VertexBuffer::factory->create(&mesh->vertices[0], mesh->vertices.size() * sizeof(geom::Vertex), mesh->vertices.size());
     auto ebo = gfx::buffer::ElementBuffer::factory->create(&mesh->indices[0], mesh->indices.size() * sizeof(unsigned), mesh->indices.size());
 
@@ -134,12 +126,33 @@ void Geometry::initSquare() {
     // bitangents
     vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
 
-    squareVAO->addVertexBuffer(vbo);
-    squareVAO->addElementBuffer(ebo);
+    vao->addVertexBuffer(vbo);
+    vao->addElementBuffer(ebo);
 
-    mesh->vertexArray = squareVAO;
-    mesh->name = "Square";
+    mesh->vertexArray = vao;
+    mesh->name = name;
 
-    squareMesh = mesh;
+    return { mesh, vao };
+}
+
+void Geometry::initSquares() {
+    const static math::Vec3 normal { 0.0f, 1.0f, 0.0f };
+
+    const std::vector<geom::Vertex> verticesUp {
+        geom::Vertex { { -0.5f, 0.0f, -0.5f }, normal, normal, normal, normal },
+        geom::Vertex { { 0.5f, 0.0f, -0.5f }, normal, normal, normal, normal },
+        geom::Vertex { { 0.5f, 0.0f, 0.5f }, normal, normal, normal, normal },
+        geom::Vertex { { -0.5f, 0.0f, 0.5f }, normal, normal, normal, normal }
+    };
+
+    const std::vector<geom::Vertex> verticesFront {
+        geom::Vertex { { -0.5f, -0.5f, 0.0f }, normal, { 0.0f, 1.0f }, normal, normal },
+        geom::Vertex { { 0.5f, -0.5f, 0.0f }, normal, { 1.0f, 1.0f }, normal, normal },
+        geom::Vertex { { 0.5f, 0.5f, 0.0f }, normal, { 1.0f, 0.0f }, normal, normal },
+        geom::Vertex { { -0.5f, 0.5f, 0.0f }, normal, { 0.0f, 0.0f }, normal, normal }
+    };
+
+    std::tie(upSquareMesh, upSquareVAO) = initSquare(std::move(verticesUp), "up-square");
+    std::tie(frontSquareMesh, frontSquareVAO) = initSquare(std::move(verticesFront), "front-square");
 }
 }

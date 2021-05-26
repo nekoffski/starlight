@@ -21,8 +21,13 @@ Shaders::Shaders() {
         GLOBALS().config.paths.shaders + "/t.vert", GLOBALS().config.paths.shaders + "/t.frag");
     defaultModelShader->name = "default-model-shader";
 
+    pfxShader = gfx::Shader::load(
+        GLOBALS().config.paths.shaders + "/particle.vert", GLOBALS().config.paths.shaders + "/particle.frag");
+    pfxShader->name = "pfx-shader";
+
     shadersByName = {
-        BIND_SHADER(defaultModelShader)
+        BIND_SHADER(defaultModelShader),
+        BIND_SHADER(pfxShader)
     };
 }
 

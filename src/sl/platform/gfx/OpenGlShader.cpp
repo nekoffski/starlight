@@ -31,7 +31,7 @@ void OpenGlShader::setUniform(const std::string& name, float value) {
 }
 
 void OpenGlShader::setUniform(const std::string& name, int value) {
-    glUniform1f(glGetUniformLocation(m_shaderProgram, name.c_str()), value);
+    glUniform1i(glGetUniformLocation(m_shaderProgram, name.c_str()), value);
 }
 
 void OpenGlShader::setUniform(const std::string& name, unsigned int value) {

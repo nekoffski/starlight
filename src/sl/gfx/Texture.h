@@ -2,11 +2,12 @@
 
 #include <memory>
 
+#include "sl/core/GameObject.h"
 #include "sl/gfx/Image.h"
 
 namespace sl::gfx {
 
-class Texture {
+class Texture : public core::GameObject {
 public:
     struct Factory {
         virtual std::shared_ptr<Texture> create(const std::string&) = 0;
@@ -16,7 +17,10 @@ public:
     inline static std::unique_ptr<Factory> factory = nullptr;
 
     static std::shared_ptr<Texture> load(const std::string& path) {
-        return factory->create(path);
+        auto texture = factory->create(path);
+        texture->path = path;
+
+        return texture;
     }
 
     virtual ~Texture() = default;
@@ -30,6 +34,9 @@ public:
     virtual unsigned int getBuffer() const = 0;
 
     virtual std::shared_ptr<gfx::Image> getImage() = 0;
+
+    std::string name;
+    std::string path;
 };
 
 }

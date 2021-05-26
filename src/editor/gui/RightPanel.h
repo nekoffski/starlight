@@ -14,8 +14,7 @@ class RightPanel : public Widget {
 public:
     explicit RightPanel(std::shared_ptr<SharedState> sharedState)
         : Widget(sharedState)
-        , m_entityTab(sharedState)
-        , m_assetTab(sharedState) {
+        , m_entityTab(sharedState) {
     }
 
     void render(sl::gui::GuiApi& gui) override {
@@ -24,13 +23,11 @@ public:
         gui.beginTabBar("lowerLeftTabBar");
 
         m_entityTab.render(gui);
-        m_assetTab.render(gui);
         gui.endTabBar();
         gui.endPanel();
     }
 
 private:
     EntityTab m_entityTab;
-    AssetTab m_assetTab;
 };
 }

@@ -77,6 +77,23 @@ void ComponentsSerializer::serializeModelComponent(core::JsonBuilder& builder, e
 
 void ComponentsSerializer::serializeParticleEffectComponent(core::JsonBuilder& builder, ecs::Component& component) {
     auto& particleEffectComponent = static_cast<scene::components::ParticleEffectComponent&>(component);
+    auto& settings = particleEffectComponent.pfxGeneratorSettings;
+
+    builder
+        .addField("name", "ParticleEffectComponent"s)
+        .addField("is-active", component.isActive)
+        .addField("max-particles", particleEffectComponent.maxParticles)
+        .addField("min-scale", settings.minScale)
+        .addField("max-scale", settings.maxScale)
+        .addField("min-speed", settings.minSpeed)
+        .addField("max-speed", settings.maxSpeed)
+        .addField("radius", settings.radius)
+        .addField("direction-factor", settings.directionFactor)
+        .addField("delta-scale", settings.deltaScale);
+
+    serializeVector(builder, "min-color", settings.minColor);
+    serializeVector(builder, "max-color", settings.maxColor);
+    serializeVector(builder, "position", particleEffectComponent.position);
 }
 
 void ComponentsSerializer::serializePointLightComponent(core::JsonBuilder& builder, ecs::Component& component) {

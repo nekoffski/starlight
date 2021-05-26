@@ -17,10 +17,10 @@ class ParticleEffectsEngine {
 public:
     explicit ParticleEffectsEngine();
 
-    void update(ecs::ComponentView<components::ParticleEffectComponent>& pfxs, float deltaTime, std::shared_ptr<gfx::camera::Camera>);
+    void update(ecs::ComponentView<components::ParticleEffectComponent>& pfxs, float deltaTime, gfx::camera::Camera&);
 
 private:
-    void updateParticleEffect(components::ParticleEffectComponent& pfx, float deltaTime, std::shared_ptr<gfx::camera::Camera>);
+    void updateParticleEffect(components::ParticleEffectComponent& pfx, float deltaTime, gfx::camera::Camera&);
     void updateParticle(physx::pfx::Particle& particle, float deltaTime);
 
     std::shared_ptr<async::Timer> m_pfxTimer;

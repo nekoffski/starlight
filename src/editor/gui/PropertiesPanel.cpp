@@ -17,7 +17,8 @@ namespace editor::gui {
 using namespace sl;
 
 PropertiesPanel::PropertiesPanel(std::shared_ptr<SharedState> sharedState)
-    : Widget(sharedState) {
+    : Widget(sharedState)
+    , m_assetTab(sharedState) {
 }
 
 void PropertiesPanel::render(sl::gui::GuiApi& gui) {
@@ -30,6 +31,8 @@ void PropertiesPanel::render(sl::gui::GuiApi& gui) {
         showSceneProperties(gui);
         gui.endTabItem();
     }
+
+    m_assetTab.render(gui);
 
     gui.endTabBar();
     gui.endPanel();

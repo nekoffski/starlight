@@ -113,6 +113,24 @@ void ComponentsDeserializer::deserializeModelComponent(Json::Value& componentDes
 
 void ComponentsDeserializer::deserializeParticleEffectComponent(Json::Value& componentDescription,
     ecs::Entity& entity, asset::AssetManager& assetManager, const std::unordered_map<std::string, std::string>& assetsIdRedirections) {
+
+    auto& component = entity.addComponent<ParticleEffectComponent>();
+
+    component.isActive = componentDescription["is-active"].asBool();
+    component.pfxGeneratorSettings.deltaScale = componentDescription["delta-scale"].asFloat();
+    component.pfxGeneratorSettings.radius = componentDescription["radius"].asFloat();
+    component.pfxGeneratorSettings.directionFactor = componentDescription["direction-factor"].asFloat();
+
+    component.pfxGeneratorSettings.maxScale = componentDescription["max-scale"].asFloat();
+    component.pfxGeneratorSettings.minScale = componentDescription["min-scale"].asFloat();
+    component.pfxGeneratorSettings.maxSpeed = componentDescription["max-speed"].asFloat();
+    component.pfxGeneratorSettings.minSpeed = componentDescription["min-speed"].asFloat();
+    component.maxParticles = componentDescription["max-particles"].asInt();
+
+    component.position = deserializeVector3(componentDescription["position"]);
+
+    component.pfxGeneratorSettings.minColor = deserializeVector3(componentDescription["min-color"]);
+    component.pfxGeneratorSettings.maxColor = deserializeVector3(componentDescription["max-color"]);
 }
 
 void ComponentsDeserializer::deserializePointLightComponent(Json::Value& componentDescription,

@@ -8,11 +8,16 @@
 namespace sl::utils::globals {
 
 class Geometry {
+    using MeshVaoPair = std::pair<std::shared_ptr<geom::Mesh>, std::shared_ptr<gfx::buffer::VertexArray>>;
+
 public:
     explicit Geometry();
 
-    std::shared_ptr<gfx::buffer::VertexArray> squareVAO;
-    std::shared_ptr<geom::Mesh> squareMesh;
+    std::shared_ptr<gfx::buffer::VertexArray> frontSquareVAO;
+    std::shared_ptr<geom::Mesh> frontSquareMesh;
+
+    std::shared_ptr<gfx::buffer::VertexArray> upSquareVAO;
+    std::shared_ptr<geom::Mesh> upSquareMesh;
 
     std::shared_ptr<gfx::buffer::VertexArray> cubeVAO;
     std::shared_ptr<geom::Mesh> cubeMesh;
@@ -22,8 +27,10 @@ public:
     std::unordered_map<std::string, std::shared_ptr<geom::Mesh>> meshes;
 
 private:
-    void initSquare();
+    void initSquares();
     void initCube();
     void initLine();
+
+    MeshVaoPair initSquare(std::vector<geom::Vertex> vertices, const std::string& name);
 };
 }

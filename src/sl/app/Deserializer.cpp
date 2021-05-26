@@ -57,10 +57,24 @@ void Deserializer::deserializeAssets(Json::Value& assetsJson) {
         auto cubemap = gfx::Cubemap::load(faces);
         auto oldId = cubemapDescription["id"].asString();
 
+        cubemap->name = cubemapDescription["name"].asString();
+
         m_assetsIdRedirections[oldId] = cubemap->getId();
-        m_assetManager.add(cubemap, cubemapDescription["name"].asString());
+        m_assetManager.add(cubemap, cubemap->name);
 
         SL_INFO("Found cubemap redirection: {} -> {}", oldId, cubemap->getId());
+    }
+
+    for (auto& textureDescription : assetsJson["textures"]) {
+        auto texture = gfx::Texture::load(textureDescription["path"].asString());
+        auto oldId = textureDescription["id"].asString();
+
+        texture->name = textureDescription["name"].asString();
+
+        m_assetsIdRedirections[oldId] = texture->getId();
+        m_assetManager.add(texture);
+
+        SL_INFO("Found texture redirection: {} -> {}", oldId, texture->getId());
     }
 
     auto& models = assetsJson["models"];

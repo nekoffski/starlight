@@ -69,7 +69,21 @@ void Serializer::serializeAssets(asset::AssetManager& assetManager) {
         .addField("paths", modelsToLoad)
         .endObject();
 
+    m_jsonBuilder.beginArray("textures");
+
+    for (auto& [name, texture] : assetManager.getTextures().getAll())
+        m_jsonBuilder
+            .beginObject()
+            .addField("name", name)
+            .addField("id", texture->getId())
+            .addField("path", texture->path)
+            .endObject();
+
+    m_jsonBuilder.endArray();
+
     serializeDefaultAssets();
+
+    m_jsonBuilder.endObject();
 }
 
 void Serializer::serializeDefaultAssets() {
@@ -100,7 +114,6 @@ void Serializer::serializeDefaultAssets() {
 
     m_jsonBuilder
         .endArray()
-        .endObject()
         .endObject();
 }
 

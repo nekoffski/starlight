@@ -78,7 +78,7 @@ public:
     void update(app::SceneSystems& sceneSystems, float deltaTime, float time, core::Input& input) override {
         m_activeCamera->update(deltaTime, input);
         auto pfxs = m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>();
-        sceneSystems.pfxEngine.update(pfxs, deltaTime, m_scene->camera);
+        sceneSystems.pfxEngine.update(pfxs, deltaTime, *m_scene->camera);
 
         if (m_engineState == editor::EngineState::started) {
             using namespace sl::scene::components;

@@ -13,10 +13,8 @@ namespace sl::gfx::renderer {
 
 ParticleEffectRenderer::ParticleEffectRenderer(std::shared_ptr<gfx::LowLevelRenderer> renderer)
     : m_renderer(renderer)
-    , m_vao(GLOBALS().geom->squareVAO) {
-
-    m_shader = gfx::Shader::load(
-        GLOBALS().config.paths.shaders + "/particle.vert", GLOBALS().config.paths.shaders + "/particle.frag");
+    , m_vao(GLOBALS().geom->frontSquareVAO)
+    , m_shader(GLOBALS().shaders->pfxShader) {
 }
 
 void ParticleEffectRenderer::renderParticleEffects(ecs::ComponentView<scene::components::ParticleEffectComponent> pfxs,
@@ -25,18 +23,35 @@ void ParticleEffectRenderer::renderParticleEffects(ecs::ComponentView<scene::com
 
     m_shader->enable();
     m_shader->setUniform("view", camera.getViewMatrix());
-    m_shader->setUniform("viewPos", camera.getPosition());
+
     beginParticleEffect(camera);
 
     for (auto& pfx : pfxs) {
+        m_shader->setUniform("minX", pfx.minX);
+        m_shader->setUniform("minY", pfx.minY);
+        m_shader->setUniform("maxX", pfx.maxX);
+        m_shader->setUniform("maxY", pfx.maxY);
+
         auto& transform = transforms.getByEntityId(pfx.ownerEntityId);
         m_shader->setUniform("model", math::translate(pfx.position) * transform.transformation);
 
+        bool hasTexture = pfx.texture != nullptr;
+
+        if (hasTexture)
+            pfx.texture->bind();
+
+        m_shader->setUniform("hasTexture", hasTexture);
+
         for (auto& particle : pfx.particles) {
-            m_shader->setUniform("localModel", math::translate(particle.position) * math::scale(particle.scale));
+            m_shader->setUniform("scale", particle.scale);
+            m_shader->setUniform("localModel", math::translate(particle.position));
+            m_shader->setUniform("position", particle.position);
             m_shader->setUniform("color", particle.color);
             renderParticle();
         }
+
+        if (hasTexture)
+            pfx.texture->unbind();
     }
 
     endParticleEffect();

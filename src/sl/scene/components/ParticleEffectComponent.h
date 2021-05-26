@@ -20,5 +20,12 @@ struct ParticleEffectComponent : ecs::Component {
     int maxParticles;
     physx::pfx::ParticleGeneratorSettings pfxGeneratorSettings;
     std::vector<physx::pfx::Particle> particles;
+
+    float minX = 0.0f;
+    float maxX = 0.0f;
+    float minY = 0.0f;
+    float maxY = 0.0f;
+
+    std::shared_ptr<gfx::Texture> texture = nullptr;
 };
 }

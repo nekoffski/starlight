@@ -27,6 +27,10 @@ public:
         m_meshes.insert(mesh, mesh->name);
     }
 
+    void add(std::shared_ptr<gfx::Texture> texture) {
+        m_textures.insert(texture, texture->name);
+    }
+
     void add(std::vector<std::shared_ptr<geom::Mesh>> meshes) {
         for (auto& mesh : meshes)
             add(mesh);
@@ -44,7 +48,12 @@ public:
         return m_meshes;
     }
 
+    AssetContainer<gfx::Texture>& getTextures() {
+        return m_textures;
+    }
+
 private:
+    AssetContainer<gfx::Texture> m_textures;
     AssetContainer<gfx::Cubemap> m_cubemaps;
     AssetContainer<geom::Mesh> m_meshes;
     AssetContainer<gfx::Shader> m_shaders;

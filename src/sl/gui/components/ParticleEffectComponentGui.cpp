@@ -1,5 +1,9 @@
 #include "ParticleEffectComponentGui.h"
 
+#include "sl/core/Logger.h"
+
+#include <ranges>
+
 namespace sl::gui::components {
 
 using namespace scene::components;
@@ -7,9 +11,31 @@ using namespace scene::components;
 void ParticleEffectComponentGui::renderComponentGuiImpl(ParticleEffectComponent& component,
     gui::GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity) {
 
-    if (beginComponentTreeNode(gui, "ParticleEffect", component)) {
+    auto& params = m_params[component.ownerEntityId];
+
+    gui.pushId(component.ownerEntityId);
+
+    if (beginComponentTreeNode(gui, "Particle effect", component)) {
         gui.displayText("Position");
         gui.dragFloat3(gui::createHiddenLabel("pfxPositon"), component.position, 0.1f);
+
+        auto textures = assetManager.getTextures();
+
+        std::vector<std::string> names = { "None" };
+        std::ranges::move(textures.getNames(), std::back_inserter(names));
+
+        gui.displayText("Texture:");
+
+        if (gui.combo("##pfx_texture", params.selectedTexture, names)) {
+            if (params.selectedTexture == 0) {
+                component.texture = nullptr;
+                SL_INFO("Setting null texture for component: {}", entity.asString());
+            } else {
+                auto& name = names[params.selectedTexture];
+                SL_INFO("Setting {} texture for component: {}", name, entity.asString());
+                component.texture = textures.getByName(name);
+            }
+        }
 
         gui.displayText("Max particles");
         gui.dragInt(gui::createHiddenLabel("pfxMaxParticles"), component.maxParticles, 1.0, 1, 12500);
@@ -45,5 +71,7 @@ void ParticleEffectComponentGui::renderComponentGuiImpl(ParticleEffectComponent&
 
         gui.popTreeNode();
     }
+
+    gui.popId();
 }
 }
