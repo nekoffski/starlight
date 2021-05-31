@@ -51,11 +51,13 @@ static void handleComponent(int index, ecs::Entity& entity) {
 // clang-format on
 
 void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
-    if (auto selectedEntity = m_sharedState->selectedEntity.lock(); selectedEntity) {
-        auto entityId = selectedEntity->getId();
+    if (m_sharedState->hasSelectedEntity()) {
+        auto& selectedEntity = m_sharedState->getSelectedEntity();
+
+        auto entityId = selectedEntity.getId();
 
         if (not m_entityNamePlacehoders.contains(entityId))
-            m_entityNamePlacehoders[entityId] = selectedEntity->getName();
+            m_entityNamePlacehoders[entityId] = selectedEntity.getName();
 
         auto& namePlaceholder = m_entityNamePlacehoders.at(entityId);
 
@@ -64,7 +66,7 @@ void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
         gui.sameLine();
 
         if (gui.button(ICON_FA_CHECK_CIRCLE)) {
-            selectedEntity->setName(namePlaceholder);
+            selectedEntity.setName(namePlaceholder);
         }
 
         gui.displayText("\n");
@@ -90,14 +92,14 @@ void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
 
                 try {
                     // clang-format off
-                    handleComponent<ModelComponent,            0>(m_selectedComponent, *selectedEntity);
-                    handleComponent<MeshRendererComponent,     1>(m_selectedComponent, *selectedEntity);
-                    handleComponent<RigidBodyComponent,        2>(m_selectedComponent, *selectedEntity);
-                    handleComponent<ParticleEffectComponent,   3>(m_selectedComponent, *selectedEntity);
-                    handleComponent<TransformComponent,        4>(m_selectedComponent, *selectedEntity);
-                    handleComponent<PointLightComponent,       5>(m_selectedComponent, *selectedEntity);
-                    handleComponent<DirectionalLightComponent, 6>(m_selectedComponent, *selectedEntity);
-                    handleComponent<MaterialComponent,         7>(m_selectedComponent, *selectedEntity);
+                    handleComponent<ModelComponent,            0>(m_selectedComponent, selectedEntity);
+                    handleComponent<MeshRendererComponent,     1>(m_selectedComponent, selectedEntity);
+                    handleComponent<RigidBodyComponent,        2>(m_selectedComponent, selectedEntity);
+                    handleComponent<ParticleEffectComponent,   3>(m_selectedComponent, selectedEntity);
+                    handleComponent<TransformComponent,        4>(m_selectedComponent, selectedEntity);
+                    handleComponent<PointLightComponent,       5>(m_selectedComponent, selectedEntity);
+                    handleComponent<DirectionalLightComponent, 6>(m_selectedComponent, selectedEntity);
+                    handleComponent<MaterialComponent,         7>(m_selectedComponent, selectedEntity);
                     // clang-format on
 
                 } catch (core::GuiUserError& e) {
@@ -111,7 +113,7 @@ void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
 
         m_errorDialog.show(gui);
 
-        m_entityGui.renderEntityGui(*selectedEntity, gui, m_sharedState->assetManager);
+        m_entityGui.renderEntityGui(selectedEntity, gui, m_sharedState->assetManager);
     }
 }
 }

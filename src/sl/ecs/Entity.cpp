@@ -5,8 +5,15 @@ namespace sl::ecs {
 Entity::Entity(const std::string& name, Registry& registry)
     : isActive(true)
     , m_name(name)
-    , m_registry(registry)
-    , m_id(core::generateUuid()) {
+    , m_registry(registry) {
+}
+
+void Entity::setName(const std::string& name) {
+    m_name = name;
+}
+
+std::string Entity::asString() const {
+    return fmt::format("[Entity name: {}, id: {}]", m_name, m_id);
 }
 
 std::string Entity::getName() const {

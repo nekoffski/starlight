@@ -143,7 +143,7 @@ void Deserializer::deserializeScene(Json::Value& sceneJson) {
     SL_INFO("Deserializing entities");
     for (auto& entityDescription : sceneJson["entities"]) {
         auto name = entityDescription["name"].asString();
-        auto entity = m_scene->addEntity(name);
+        auto& entity = m_scene->addEntity(name);
 
         SL_INFO("Deserializing entity: {}", name);
         SL_INFO("Deserializing components");
@@ -153,7 +153,7 @@ void Deserializer::deserializeScene(Json::Value& sceneJson) {
             SL_INFO("Deserializing {}", componentName);
 
             m_componentsDeserializer.deserializeComponent(componentName,
-                componentDescription, *entity, m_assetManager);
+                componentDescription, entity, m_assetManager);
         }
     }
 }

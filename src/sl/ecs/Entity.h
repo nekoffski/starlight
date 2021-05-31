@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "Component.h"
-#include "Registry.h"
+#include "Registry.hpp"
 #include "sl/core/GameObject.h"
 
 namespace sl::ecs {
@@ -16,23 +16,15 @@ public:
     explicit Entity(const std::string& name, Registry& registry);
 
     std::string getName() const;
+    std::string asString() const;
 
-    void setName(const std::string& name) {
-        m_name = name;
-    }
-
-    std::string asString() const {
-        return fmt::format("[Entity name: {}, id: {}]", m_name, m_id);
-    }
+    void setName(const std::string& name);
 
     std::vector<std::type_index> getComponentsIndexes();
 
     template <typename T, typename... Args>
     T& addComponent(Args&&... args) {
-        m_componentsIndexes.emplace_back(core::typeIndex<T>());
-        m_registry.addComponent<T>(m_id, std::forward<Args>(args)...);
-
-        return getComponent<T>();
+        return m_registry.addComponent<T>(m_id, std::forward<Args>(args)...);
     }
 
     template <typename T>
@@ -57,7 +49,6 @@ public:
     bool isActive;
 
 private:
-    std::string m_id;
     std::string m_name;
     Registry& m_registry;
     std::vector<std::type_index> m_componentsIndexes;

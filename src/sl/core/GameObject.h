@@ -18,6 +18,10 @@ public:
         SL_INFO("Destroying GameObject: {}", m_id);
     }
 
+    GameObject(GameObject&& oth) {
+        m_id = std::move(oth.m_id);
+    }
+
     const std::string getId() const {
         return m_id;
     }

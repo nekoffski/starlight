@@ -7,9 +7,9 @@ namespace sl::ecs {
 template <typename T>
 class ComponentView {
 public:
-    explicit ComponentView(std::shared_ptr<ComponentContainer<T>> componentContainer)
+    explicit ComponentView(ComponentContainer<T>& componentContainer)
         : m_componentContainer(componentContainer)
-        , m_components(componentContainer->getAll()) {
+        , m_components(componentContainer.getAll()) {
     }
 
     auto begin() {
@@ -29,16 +29,16 @@ public:
     }
 
     T& getByEntityId(const std::string& entityId) {
-        return m_componentContainer->getByEntityId(entityId);
+        return m_componentContainer.getByEntityId(entityId);
     }
 
     bool doesEntityOwnComponent(const std::string& entityId) {
-        return m_componentContainer->doesEntityOwnComponent(entityId) &&
-            m_componentContainer->getByEntityId(entityId).isActive;
+        return m_componentContainer.doesEntityOwnComponent(entityId) &&
+            m_componentContainer.getByEntityId(entityId).isActive;
     }
 
 private:
     std::vector<T>& m_components;
-    std::shared_ptr<ComponentContainer<T>> m_componentContainer;
+    ComponentContainer<T>& m_componentContainer;
 };
 }

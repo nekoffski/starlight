@@ -51,7 +51,7 @@ public:
                     gui.pushId(entityId);
 
                     auto onEntityClick = [&]() {
-                        m_sharedState->selectedEntity = entity;
+                        m_sharedState->selectedEntityId = entity->getId();
 
                         if (entity->hasComponent<TransformComponent>()) {
                             auto& transform = entity->getComponent<TransformComponent>();
@@ -59,8 +59,10 @@ public:
                         }
                     };
 
-                    auto selectedEntity = m_sharedState->selectedEntity.lock();
-                    bool isEntitySelected = selectedEntity && selectedEntity->getId() == entityId;
+                    // auto selectedEntity = m_sharedState->selectedEntity.lock();
+
+                    bool isEntitySelected = m_sharedState->selectedEntityId.has_value() &&
+                        m_sharedState->selectedEntityId.value() == entityId;
 
                     auto entryColor =
                         isEntitySelected ? sl::gui::selectedEntryColor : entity->isActive ? sl::gui::guiDefaultTextColor
@@ -113,28 +115,30 @@ public:
         gui.endPanel();
 
         if (scene) {
-            if (auto selectedEntity = m_sharedState->selectedEntity.lock(); selectedEntity &&
-                selectedEntity->hasComponent<TransformComponent>()) {
+            if (m_sharedState->hasSelectedEntity()) {
+                auto& selectedEntity = m_sharedState->getSelectedEntity();
 
-                auto& transform = selectedEntity->getComponent<TransformComponent>();
+                if (selectedEntity.hasComponent<TransformComponent>()) {
+                    auto& transform = selectedEntity.getComponent<TransformComponent>();
 
-                gui.setupGizmo(scene->camera->viewFrustum.viewport);
+                    gui.setupGizmo(scene->camera->viewFrustum.viewport);
 
-                auto viewMatrix = scene->camera->getViewMatrix();
-                auto projectionMatrix = scene->camera->getProjectionMatrix();
+                    auto viewMatrix = scene->camera->getViewMatrix();
+                    auto projectionMatrix = scene->camera->getProjectionMatrix();
 
-                auto transformationMatrix = transform.transformation;
+                    auto transformationMatrix = transform.transformation;
 
-                gui.manipulateGizmo(viewMatrix, projectionMatrix, transformationMatrix,
-                    m_sharedState->gizmoOperation, m_sharedState->gizmoSystem);
+                    gui.manipulateGizmo(viewMatrix, projectionMatrix, transformationMatrix,
+                        m_sharedState->gizmoOperation, m_sharedState->gizmoSystem);
 
-                if (gui.isUsingGizmo()) {
-                    math::Vec3 rotation;
-                    math::decomposeMatrix(transformationMatrix, transform.position,
-                        rotation, transform.scale);
+                    if (gui.isUsingGizmo()) {
+                        math::Vec3 rotation;
+                        math::decomposeMatrix(transformationMatrix, transform.position,
+                            rotation, transform.scale);
 
-                    transform.rotation = sl::math::toDegrees(rotation);
-                    transform.recalculateTransformation();
+                        transform.rotation = sl::math::toDegrees(rotation);
+                        transform.recalculateTransformation();
+                    }
                 }
             }
         }

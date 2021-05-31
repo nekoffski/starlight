@@ -6,6 +6,7 @@
 #include "sl/app/Serializer.h"
 #include "sl/asset/AssetManager.h"
 #include "sl/core/Json.h"
+#include "sl/ecs/Entity.h"
 #include "sl/scene/Scene.h"
 
 #include "mocks/FileSystemMock.hpp"

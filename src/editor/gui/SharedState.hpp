@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 
 #include "GuiProperties.h"
 #include "sl/ecs/Entity.h"
@@ -19,9 +20,26 @@ struct SharedState {
         , gizmoSystem(sl::gui::GizmoSystem::world) {
     }
 
+    bool hasSelectedEntity() const {
+        auto scene = activeScene.lock();
+
+        if (not scene)
+            return false;
+
+        return selectedEntityId.has_value() &&
+            scene->ecsRegistry.hasEntityById(selectedEntityId.value());
+    }
+
+    sl::ecs::Entity& getSelectedEntity() {
+        return activeScene.lock()->ecsRegistry.getEntityById(selectedEntityId.value());
+    }
+
     sl::asset::AssetManager& assetManager;
+
     std::weak_ptr<sl::scene::Scene> activeScene;
-    std::weak_ptr<sl::ecs::Entity> selectedEntity;
+
+    std::optional<std::string> selectedEntityId;
+
     GuiProperties guiProperties;
     std::unique_ptr<sl::gui::assets::AssetGuiProvider> activeAssetGuiProvider;
     sl::gui::GizmoOperation gizmoOperation;

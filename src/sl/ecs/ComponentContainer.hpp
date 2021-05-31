@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Component.h"
+#include "sl/core/Logger.h"
 
 namespace sl::ecs {
 
@@ -13,16 +14,13 @@ class IComponentContainer {
 public:
     virtual ~IComponentContainer() = default;
     virtual void remove(const std::string& entityId) = 0;
+    virtual Component& getByEntityId(const std::string& entityId) = 0;
 };
 
 template <typename T>
 class ComponentContainer : public IComponentContainer {
 public:
     inline static constexpr int defaultCapacity = 1000;
-
-    static std::shared_ptr<IComponentContainer> create() {
-        return std::make_shared<ComponentContainer<T>>();
-    }
 
     explicit ComponentContainer(const int capacity = defaultCapacity) {
         m_components.reserve(capacity);
@@ -41,7 +39,14 @@ public:
 
     void remove(const std::string& entityId) override {
         m_entityIdToComponent.erase(entityId);
-        std::erase_if(m_components, [&entityId](T& component) { return component.ownerEntityId == entityId; });
+        std::erase_if(m_components, [&entityId](T& component) {
+            SL_INFO("{}/{}", component.ownerEntityId, entityId);
+            if (component.ownerEntityId == entityId) {
+                SL_INFO("Removing {} from entity with id: {}", component.name, entityId);
+                return true;
+            }
+            return false;
+        });
         rebuildMap();
     }
 
@@ -57,7 +62,7 @@ public:
         return m_components;
     }
 
-    T& getByEntityId(const std::string& entityId) {
+    T& getByEntityId(const std::string& entityId) override {
         return *m_entityIdToComponent[entityId];
     }
 
