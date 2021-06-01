@@ -22,7 +22,9 @@ struct Scene {
     }
 
     void clear() {
-        skybox.reset();
+        SL_INFO("Cleaning up scene");
+
+        skybox = nullptr;
         ecsRegistry.clear();
     }
 

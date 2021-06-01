@@ -50,9 +50,13 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
         gui.sameLine();
         gui.combo(sl::gui::createHiddenLabel("Cubemap"), selectedValue, cubemapsNames);
 
-        if (auto scene = m_sharedState->activeScene.lock(); scene)
+        if (auto scene = m_sharedState->activeScene.lock(); scene) {
+            // if (selectedValue == 0 && scene->skybox != nullptr)
+            //     scene->skybox = nullptr;
+
             if (scene->skybox != nullptr)
                 selectedValue = core::indexOf(cubemapsNames, scene->skybox->cubemap->name, 0);
+        }
 
         if (selectedValue != 0 && selectedValue != previousSelectedValue) {
             auto& cubemapName = cubemapsNames[selectedValue];
@@ -63,6 +67,7 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
 
             previousSelectedValue = selectedValue;
         }
+
         gui.popTreeNode();
     }
 

@@ -59,8 +59,6 @@ public:
                         }
                     };
 
-                    // auto selectedEntity = m_sharedState->selectedEntity.lock();
-
                     bool isEntitySelected = m_sharedState->selectedEntityId.has_value() &&
                         m_sharedState->selectedEntityId.value() == entityId;
 

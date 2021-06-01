@@ -66,7 +66,12 @@ void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
         gui.sameLine();
 
         if (gui.button(ICON_FA_CHECK_CIRCLE)) {
-            selectedEntity.setName(namePlaceholder);
+            auto& ecs = m_sharedState->activeScene.lock()->ecsRegistry;
+
+            if (ecs.hasEntityByName(namePlaceholder))
+                m_errorDialog.setErrorMessage(fmt::format("Entity with name {} already exists", namePlaceholder));
+            else
+                selectedEntity.setName(namePlaceholder);
         }
 
         gui.displayText("\n");

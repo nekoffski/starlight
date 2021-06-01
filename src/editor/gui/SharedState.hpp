@@ -35,9 +35,7 @@ struct SharedState {
     }
 
     sl::asset::AssetManager& assetManager;
-
     std::weak_ptr<sl::scene::Scene> activeScene;
-
     std::optional<std::string> selectedEntityId;
 
     GuiProperties guiProperties;

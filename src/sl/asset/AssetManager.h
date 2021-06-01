@@ -16,6 +16,10 @@ namespace sl::asset {
 class AssetManager {
 public:
     void clear() {
+        m_textures.clear();
+        m_cubemaps.clear();
+        m_meshes.clear();
+        m_shaders.clear();
     }
 
     void add(std::shared_ptr<gfx::Cubemap> cubemap, const std::string& name) {
