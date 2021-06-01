@@ -38,6 +38,24 @@ void AsyncEngine::parallelLoop(const int iterations, const std::function<void(co
 
 void AsyncEngine::update(float dtime) {
     m_timerEngine.update(dtime);
+
+    std::vector<std::string> idsToRemove;
+
+    for (auto& [id, taskSentinel] : m_asyncTasks) {
+        auto& [future, task] = taskSentinel;
+
+        if (future.isReady()) {
+            SL_INFO("Task {}/{} finished, finalizing.", task->asString(), id);
+
+            task->finalize();
+            idsToRemove.push_back(id);
+
+            SL_INFO("Task {}/{} finalized, will remove.", task->asString(), id);
+        }
+    }
+
+    for (const auto& idToRemove : idsToRemove)
+        m_asyncTasks.erase(idToRemove);
 }
 
 std::shared_ptr<Timer> AsyncEngine::createTimer(float sleepTime) {
