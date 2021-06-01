@@ -66,10 +66,10 @@ void Deserializer::deserializeAssets(Json::Value& assetsJson) {
     }
 
     for (auto& textureDescription : assetsJson["textures"]) {
-        auto texture = gfx::Texture::load(textureDescription["path"].asString());
-        auto oldId = textureDescription["id"].asString();
+        auto texture = gfx::Texture::load(textureDescription["path"].asString(),
+            textureDescription["name"].asString());
 
-        texture->name = textureDescription["name"].asString();
+        auto oldId = textureDescription["id"].asString();
 
         m_assetsIdRedirections[oldId] = texture->getId();
         m_assetManager.add(texture);

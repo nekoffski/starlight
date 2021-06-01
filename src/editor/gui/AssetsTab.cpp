@@ -242,6 +242,7 @@ void AssetsTab::handleModelLoader(sl::gui::GuiApi& gui) {
 
 void AssetsTab::handleTextureLoader(sl::gui::GuiApi& gui) {
     sl::gui::labeledTextInput(gui, "Texture", m_assetsArgs.modelName, padding);
+
     if (gui.isPreviousWidgetClicked())
         m_fileBrowser.open(gui, [&v = m_assetsArgs.modelName](const std::string& value) { v = value; });
 
@@ -250,10 +251,10 @@ void AssetsTab::handleTextureLoader(sl::gui::GuiApi& gui) {
     if (m_loadClicked) {
         validateAssetName(m_assetsArgs.assetName);
 
-        auto texture = sl::gfx::Texture::load(m_assetsArgs.modelName);
-        texture->name = m_assetsArgs.assetName;
+        auto output = std::make_unique<sl::asset::AssetManager::Output<
+            sl::gfx::Texture>>(m_sharedState->assetManager);
 
-        m_sharedState->assetManager.add(texture);
+        sl::gfx::Texture::loadAsync(m_assetsArgs.modelName, m_assetsArgs.assetName, std::move(output));
     }
 }
 }

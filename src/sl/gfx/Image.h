@@ -12,10 +12,14 @@ struct ImageSize {
 class Image {
 public:
     struct Factory {
-        virtual std::shared_ptr<Image> create(const std::string& path, int desiredChannels = 0) = 0;
+        virtual std::unique_ptr<Image> create(const std::string& path, int desiredChannels = 0) = 0;
     };
 
     inline static std::unique_ptr<Factory> factory = nullptr;
+
+    static std::unique_ptr<Image> load(const std::string& path, int desiredChannels = 0) {
+        return factory->create(path, desiredChannels);
+    }
 
     virtual ~Image() = default;
 

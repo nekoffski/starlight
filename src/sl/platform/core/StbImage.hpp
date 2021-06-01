@@ -46,8 +46,8 @@ private:
 };
 
 struct StbImageFactory : sl::gfx::Image::Factory {
-    std::shared_ptr<sl::gfx::Image> create(const std::string& path, int desiredChannels = 0) {
-        return std::make_shared<StbImage>(path, desiredChannels);
+    std::unique_ptr<sl::gfx::Image> create(const std::string& path, int desiredChannels = 0) {
+        return std::make_unique<StbImage>(path, desiredChannels);
     }
 };
 }

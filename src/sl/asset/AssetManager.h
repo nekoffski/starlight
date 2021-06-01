@@ -15,6 +15,20 @@ namespace sl::asset {
 
 class AssetManager {
 public:
+    template <typename T>
+    class Output : public core::Output<T> {
+    public:
+        explicit Output(AssetManager& assetManager)
+            : m_assetManager(assetManager) { }
+
+        void set(std::shared_ptr<T>& result) override {
+            m_assetManager.add(result);
+        }
+
+    private:
+        AssetManager& m_assetManager;
+    };
+
     void clear() {
         m_textures.clear();
         m_cubemaps.clear();
