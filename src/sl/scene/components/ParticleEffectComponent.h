@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "sl/core/GameObject.h"
 #include "sl/physx/pfx/Particle.h"
 #include "sl/physx/pfx/ParticleGeneratorSettings.h"
 
@@ -26,6 +27,6 @@ struct ParticleEffectComponent : ecs::Component {
     float minY = 0.0f;
     float maxY = 0.0f;
 
-    std::shared_ptr<gfx::Texture> texture = nullptr;
+    core::GameObjectPtr<gfx::Texture> texture;
 };
 }

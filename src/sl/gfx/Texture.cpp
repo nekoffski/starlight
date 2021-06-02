@@ -4,7 +4,7 @@
 
 namespace sl::gfx {
 
-std::shared_ptr<Texture> Texture::load(const std::string& path, const std::string& name) {
+std::unique_ptr<Texture> Texture::load(const std::string& path, const std::string& name) {
     auto textureImage = Image::load(path);
     auto texture = factory->create(*textureImage);
 
@@ -41,7 +41,7 @@ void Texture::loadAsync(const std::string& path, const std::string& name, std::u
             texture->path = m_path;
             texture->name = m_name;
 
-            m_output->set(texture);
+            m_output->set(std::move(texture));
         }
 
     private:

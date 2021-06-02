@@ -19,7 +19,7 @@ void ParticleEffectComponentGui::renderComponentGuiImpl(ParticleEffectComponent&
         gui.displayText("Position");
         gui.dragFloat3(gui::createHiddenLabel("pfxPositon"), component.position, 0.1f);
 
-        auto textures = assetManager.getTextures();
+        auto& textures = assetManager.getTextures();
 
         std::vector<std::string> names = { "None" };
         std::ranges::move(textures.getNames(), std::back_inserter(names));
@@ -28,12 +28,12 @@ void ParticleEffectComponentGui::renderComponentGuiImpl(ParticleEffectComponent&
 
         if (gui.combo("##pfx_texture", params.selectedTexture, names)) {
             if (params.selectedTexture == 0) {
-                component.texture = nullptr;
+                component.texture.reset();
                 SL_INFO("Setting null texture for component: {}", entity.asString());
             } else {
                 auto& name = names[params.selectedTexture];
                 SL_INFO("Setting {} texture for component: {}", name, entity.asString());
-                component.texture = textures.getByName(name);
+                // component.texture = textures.getByName(name);
             }
         }
 

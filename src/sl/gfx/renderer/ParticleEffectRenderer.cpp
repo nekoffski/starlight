@@ -35,7 +35,7 @@ void ParticleEffectRenderer::renderParticleEffects(ecs::ComponentView<scene::com
         auto& transform = transforms.getByEntityId(pfx.ownerEntityId);
         m_shader->setUniform("model", math::translate(pfx.position) * transform.transformation);
 
-        bool hasTexture = pfx.texture != nullptr;
+        bool hasTexture = pfx.texture.hasValue();
 
         if (hasTexture)
             pfx.texture->bind();

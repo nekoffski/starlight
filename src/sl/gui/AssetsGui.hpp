@@ -23,9 +23,10 @@ public:
         return m_shaderGui.createGuiProvider(shader);
     }
 
-    std::unique_ptr<assets::AssetGuiProvider> createGuiProvider(std::shared_ptr<gfx::Texture> texture) {
+    // TODO: replace with raw_ptr
+    std::unique_ptr<assets::AssetGuiProvider> createGuiProvider(std::unique_ptr<gfx::Texture>& texture) {
         SL_INFO("Creating texture gui asset provider");
-        return m_textureGui.createGuiProvider(texture);
+        return m_textureGui.createGuiProvider(texture.get());
     }
 
 private:

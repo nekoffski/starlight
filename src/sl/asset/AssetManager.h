@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "AssetContainer.h"
+#include "AssetContainer2.h"
 #include "sl/core/Logger.h"
 #include "sl/geom/Mesh.h"
 #include "sl/geom/Model.h"
@@ -21,8 +22,8 @@ public:
         explicit Output(AssetManager& assetManager)
             : m_assetManager(assetManager) { }
 
-        void set(std::shared_ptr<T>& result) override {
-            m_assetManager.add(result);
+        void set(std::unique_ptr<T> result) override {
+            m_assetManager.add(std::move(result));
         }
 
     private:
@@ -45,8 +46,9 @@ public:
         m_meshes.insert(mesh, mesh->name);
     }
 
-    void add(std::shared_ptr<gfx::Texture> texture) {
-        m_textures.insert(texture, texture->name);
+    void add(std::unique_ptr<gfx::Texture> texture) {
+        auto name = texture->name;
+        m_textures.insert(std::move(texture), name);
     }
 
     void add(std::vector<std::shared_ptr<geom::Mesh>> meshes) {
@@ -66,12 +68,12 @@ public:
         return m_meshes;
     }
 
-    AssetContainer<gfx::Texture>& getTextures() {
+    AssetContainer2<gfx::Texture>& getTextures() {
         return m_textures;
     }
 
 private:
-    AssetContainer<gfx::Texture> m_textures;
+    AssetContainer2<gfx::Texture> m_textures;
     AssetContainer<gfx::Cubemap> m_cubemaps;
     AssetContainer<geom::Mesh> m_meshes;
     AssetContainer<gfx::Shader> m_shaders;

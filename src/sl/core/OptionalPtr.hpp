@@ -23,6 +23,20 @@ public:
         : m_data(data) {
     }
 
+    OptionalPtr& operator=(std::unique_ptr<T>& data) {
+        return operator=(data.get());
+    }
+
+    OptionalPtr& operator=(std::shared_ptr<T>& data) {
+        return operator=(data.get());
+    }
+
+    OptionalPtr& operator=(T* data) {
+        m_data = data;
+
+        return *this;
+    }
+
     void reset() {
         m_data = nullptr;
     }

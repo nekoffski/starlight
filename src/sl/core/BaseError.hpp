@@ -77,4 +77,22 @@ private:
         }                                          \
     };
 
+#define SL_DEFINE_SUB_ERROR_DF(ClassName, BaseError, DefErrorCode)              \
+    class ClassName : public BaseError {                                        \
+    public:                                                                     \
+        explicit ClassName(const std::string& details = "No details specified", \
+            ErrorCode errorCode = DefErrorCode)                                 \
+            : BaseError(errorCode, details) {                                   \
+        }                                                                       \
+                                                                                \
+        std::string getName() const override {                                  \
+            return #ClassName;                                                  \
+        }                                                                       \
+                                                                                \
+    private:                                                                    \
+        std::type_index getType() const override {                              \
+            return typeid(ClassName);                                           \
+        }                                                                       \
+    };
+
 #define SL_DEFINE_ERROR(ClassName) SL_DEFINE_SUB_ERROR(ClassName, Error)

@@ -37,6 +37,8 @@ enum class ErrorCode : int {
 
     AssetError = 900,
 
-    GuiUserError = 1000
+    GuiUserError = 1000,
+
+    NullValueAccess = 2000
 };
 }

@@ -70,11 +70,12 @@ void Deserializer::deserializeAssets(Json::Value& assetsJson) {
             textureDescription["name"].asString());
 
         auto oldId = textureDescription["id"].asString();
+        auto newId = texture->getId();
 
-        m_assetsIdRedirections[oldId] = texture->getId();
-        m_assetManager.add(texture);
+        m_assetsIdRedirections[oldId] = newId;
+        m_assetManager.add(std::move(texture));
 
-        SL_INFO("Found texture redirection: {} -> {}", oldId, texture->getId());
+        SL_INFO("Found texture redirection: {} -> {}", oldId, newId);
     }
 
     auto& models = assetsJson["models"];

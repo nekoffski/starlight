@@ -15,6 +15,8 @@ SL_DEFINE_SUB_ERROR(GuiUserError, GuiError);
 
 SL_DEFINE_SUB_ERROR(ModelError, GeometryError);
 
+SL_DEFINE_SUB_ERROR_DF(NullValueAccessError, CoreError, ErrorCode::NullValueAccess);
+
 SL_DEFINE_SUB_ERROR(ShaderError, GraphicsError);
 SL_DEFINE_SUB_ERROR(TextureError, GraphicsError);
 SL_DEFINE_SUB_ERROR(ImageError, GraphicsError);

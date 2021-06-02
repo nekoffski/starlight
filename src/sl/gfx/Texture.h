@@ -12,13 +12,13 @@ class Texture : public core::GameObject {
 
 public:
     struct Factory {
-        virtual std::shared_ptr<Texture> create(sl::gfx::Image&) = 0;
-        virtual std::shared_ptr<Texture> create(unsigned int, unsigned int) = 0;
+        virtual std::unique_ptr<Texture> create(sl::gfx::Image&) = 0;
+        virtual std::unique_ptr<Texture> create(unsigned int, unsigned int) = 0;
     };
 
     inline static std::unique_ptr<Factory> factory = nullptr;
 
-    static std::shared_ptr<Texture> load(const std::string& path, const std::string& name);
+    static std::unique_ptr<Texture> load(const std::string& path, const std::string& name);
 
     static void loadAsync(const std::string& path, const std::string& name, std::unique_ptr<core::Output<Texture>> output);
 

@@ -64,4 +64,16 @@ void OpenGlTexture::bind(unsigned int index) {
 void OpenGlTexture::unbind() {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+unsigned int OpenGlTexture::getWidth() const {
+    return m_w;
+}
+
+unsigned int OpenGlTexture::getHeight() const {
+    return m_h;
+}
+
+unsigned int OpenGlTexture::getBuffer() const {
+    return m_textureId;
+}
 }
