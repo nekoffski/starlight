@@ -31,7 +31,7 @@ void Serializer::serializeAssets(asset::AssetManager& assetManager) {
         .beginArray("cubemaps");
 
     for (auto& [name, cubemap] : assetManager.getCubemaps().getAll()) {
-        auto faces = cubemap->getFaces();
+        auto faces = cubemap->getFacesPaths();
         m_jsonBuilder
             .beginObject()
             .addField("name", name)
@@ -137,7 +137,7 @@ void Serializer::serializeScene(std::shared_ptr<scene::Scene> scene) {
     }
     m_jsonBuilder.endArray();
 
-    if (scene->skybox != nullptr)
+    if (scene->skybox.has_value())
         m_jsonBuilder.addField("skybox-id", scene->skybox->cubemap->getId());
 
     m_jsonBuilder.endObject();

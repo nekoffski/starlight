@@ -5,30 +5,38 @@
 #include <vector>
 
 #include "sl/core/GameObject.h"
+#include "sl/core/Output.h"
+#include "sl/gfx/Image.h"
 
 namespace sl::gfx {
 
-using CubemapArgs = std::array<std::string, 6>;
+constexpr unsigned int facesCount = 6;
+using CubemapArgs = std::array<std::string, facesCount>;
+using CubemapFaces = std::array<gfx::Image*, facesCount>;
 
 class Cubemap : public core::GameObject {
 public:
     struct Factory {
-        virtual std::shared_ptr<Cubemap> create(const CubemapArgs&) = 0;
+        virtual std::unique_ptr<Cubemap> create(const CubemapFaces&) = 0;
     };
 
     inline static std::unique_ptr<Factory> factory = nullptr;
 
-    static std::shared_ptr<Cubemap> load(const CubemapArgs& args) {
-        return factory->create(args);
-    }
+    static std::unique_ptr<Cubemap> load(const CubemapArgs& paths, const std::string& name);
+    static void loadAsync(const CubemapArgs& paths, const std::string& name, std::unique_ptr<core::Output<Cubemap>> output);
 
     virtual ~Cubemap() = default;
 
     virtual void bind() = 0;
     virtual void unbind() = 0;
 
-    virtual CubemapArgs getFaces() = 0;
+    CubemapArgs getFacesPaths() const {
+        return m_facesPaths;
+    }
 
     std::string name;
+
+private:
+    CubemapArgs m_facesPaths;
 };
 }

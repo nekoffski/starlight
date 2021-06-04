@@ -26,7 +26,7 @@ DECLARE_EVENT(AddEntityEvent, EditorCategory) {
 };
 
 DECLARE_EVENT(SetSkyboxEvent, EditorCategory) {
-    SetSkyboxEvent(std::shared_ptr<sl::gfx::Cubemap> cubemap)
+    SetSkyboxEvent(sl::gfx::Cubemap* cubemap)
         : cubemap(cubemap) {
     }
 
@@ -34,7 +34,7 @@ DECLARE_EVENT(SetSkyboxEvent, EditorCategory) {
         return "[SetSkyboxEvent]";
     }
 
-    std::shared_ptr<sl::gfx::Cubemap> cubemap;
+    sl::gfx::Cubemap* cubemap;
 };
 
 DECLARE_EVENT(SerializeSceneEvent, EditorCategory) {

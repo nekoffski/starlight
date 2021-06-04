@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -24,12 +25,13 @@ struct Scene {
     void clear() {
         SL_INFO("Cleaning up scene");
 
-        skybox = nullptr;
+        skybox.reset();
         ecsRegistry.clear();
     }
 
     std::shared_ptr<gfx::camera::Camera> camera;
     ecs::Registry ecsRegistry;
-    std::shared_ptr<Skybox> skybox;
+
+    std::optional<Skybox> skybox;
 };
 }

@@ -13,7 +13,13 @@ namespace sl::gui {
 class AssetsGui {
 public:
     template <typename T>
-    std::unique_ptr<assets::AssetGuiProvider> createGuiProvider(std::shared_ptr<T>) {
+    std::unique_ptr<assets::AssetGuiProvider> createGuiProvider(std::shared_ptr<T>&) {
+        SL_INFO("Creating NULL gui asset provider");
+        return nullptr;
+    }
+
+    template <typename T>
+    std::unique_ptr<assets::AssetGuiProvider> createGuiProvider(std::unique_ptr<T>&) {
         SL_INFO("Creating NULL gui asset provider");
         return nullptr;
     }

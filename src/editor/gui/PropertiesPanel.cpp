@@ -54,7 +54,7 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
             // if (selectedValue == 0 && scene->skybox != nullptr)
             //     scene->skybox = nullptr;
 
-            if (scene->skybox != nullptr)
+            if (scene->skybox.has_value())
                 selectedValue = core::indexOf(cubemapsNames, scene->skybox->cubemap->name, 0);
         }
 

@@ -20,7 +20,7 @@ public:
 private:
     void showSceneProperties(sl::gui::GuiApi& gui);
 
-    std::weak_ptr<sl::gfx::Cubemap> m_selectedCubemap;
+    sl::core::GameObjectPtr<sl::gfx::Cubemap> m_selectedCubemap;
 
     AssetTab m_assetTab;
 };

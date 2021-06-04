@@ -54,15 +54,14 @@ void Deserializer::deserializeAssets(Json::Value& assetsJson) {
         for (int i = 0; i < faces.size(); ++i)
             faces[i] = paths[i].asString();
 
-        auto cubemap = gfx::Cubemap::load(faces);
+        auto cubemap = gfx::Cubemap::load(faces, cubemapDescription["name"].asString());
         auto oldId = cubemapDescription["id"].asString();
+        auto newId = cubemap->getId();
 
-        cubemap->name = cubemapDescription["name"].asString();
+        m_assetsIdRedirections[oldId] = newId;
+        m_assetManager.add(std::move(cubemap));
 
-        m_assetsIdRedirections[oldId] = cubemap->getId();
-        m_assetManager.add(cubemap, cubemap->name);
-
-        SL_INFO("Found cubemap redirection: {} -> {}", oldId, cubemap->getId());
+        SL_INFO("Found cubemap redirection: {} -> {}", oldId, newId);
     }
 
     for (auto& textureDescription : assetsJson["textures"]) {
@@ -135,10 +134,12 @@ void Deserializer::deserializeScene(Json::Value& sceneJson) {
 
         auto cubemap = m_assetManager.getCubemaps().getById(
             m_assetsIdRedirections.at(skyboxOldId));
-        auto skybox = scene::Skybox::create(GLOBALS().shaders->defaultCubemapShader, cubemap);
-        m_scene->skybox = skybox;
 
-        SL_INFO("Setting skybox: {}", skybox->cubemap->getId());
+        m_scene->skybox = scene::Skybox {
+            GLOBALS().shaders->defaultCubemapShader, cubemap
+        };
+
+        SL_INFO("Setting skybox: {}", m_scene->skybox->cubemap->getId());
     }
 
     SL_INFO("Deserializing entities");

@@ -38,11 +38,11 @@ requires std::derived_from<T, GameObject> class GameObjectPtr : public OptionalP
 public:
     using OptionalPtr<T>::OptionalPtr;
 
-    explicit GameObjectPtr(std::unique_ptr<T>& data)
+    GameObjectPtr(std::unique_ptr<T>& data)
         : GameObjectPtr(data.get()) {
     }
 
-    explicit GameObjectPtr(T* data)
+    GameObjectPtr(T* data)
         : OptionalPtr<T>(data)
         , m_id(data->getId()) {
     }

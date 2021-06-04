@@ -89,9 +89,9 @@ public:
     }
 
     void render(gfx::Renderer& renderer) override {
-        const auto& skybox = m_scene->skybox;
+        auto& skybox = m_scene->skybox;
 
-        if (skybox)
+        if (skybox.has_value())
             skybox->cubemap->bind();
 
         using namespace sl::scene::components;
@@ -153,8 +153,8 @@ public:
 
         renderer.renderVectors(vectorsToRender, *m_scene->camera);
 
-        if (skybox) {
-            renderer.renderCubemap(*skybox->cubemap, *skybox->shader, *m_scene->camera);
+        if (skybox.has_value()) {
+            renderer.renderCubemap(skybox->cubemap.value(), *skybox->shader, *m_scene->camera);
             skybox->cubemap->unbind();
         }
     }
@@ -170,8 +170,7 @@ public:
 
             if (event->is<SetSkyboxEvent>()) {
                 auto cubemap = event->as<SetSkyboxEvent>()->cubemap;
-                auto skybox = sl::scene::Skybox::create(GLOBALS().shaders->defaultCubemapShader, cubemap);
-                m_scene->skybox = skybox;
+                m_scene->skybox = sl::scene::Skybox { GLOBALS().shaders->defaultCubemapShader, cubemap };
             }
 
             if (event->is<QuitEvent>())

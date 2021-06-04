@@ -33,7 +33,7 @@ void ParticleEffectComponentGui::renderComponentGuiImpl(ParticleEffectComponent&
             } else {
                 auto& name = names[params.selectedTexture];
                 SL_INFO("Setting {} texture for component: {}", name, entity.asString());
-                // component.texture = textures.getByName(name);
+                component.texture = textures.getByName(name);
             }
         }
 

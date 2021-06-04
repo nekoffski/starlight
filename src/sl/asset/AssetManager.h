@@ -37,9 +37,9 @@ public:
         m_shaders.clear();
     }
 
-    void add(std::shared_ptr<gfx::Cubemap> cubemap, const std::string& name) {
-        cubemap->name = name;
-        m_cubemaps.insert(cubemap, name);
+    void add(std::unique_ptr<gfx::Cubemap> cubemap) {
+        auto name = cubemap->name;
+        m_cubemaps.insert(std::move(cubemap), name);
     }
 
     void add(std::shared_ptr<geom::Mesh> mesh) {
@@ -60,7 +60,7 @@ public:
         return m_shaders;
     }
 
-    AssetContainer<gfx::Cubemap>& getCubemaps() {
+    AssetContainer2<gfx::Cubemap>& getCubemaps() {
         return m_cubemaps;
     }
 
@@ -74,7 +74,7 @@ public:
 
 private:
     AssetContainer2<gfx::Texture> m_textures;
-    AssetContainer<gfx::Cubemap> m_cubemaps;
+    AssetContainer2<gfx::Cubemap> m_cubemaps;
     AssetContainer<geom::Mesh> m_meshes;
     AssetContainer<gfx::Shader> m_shaders;
 };

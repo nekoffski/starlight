@@ -220,8 +220,10 @@ void AssetsTab::handleCubemapLoader(sl::gui::GuiApi& gui) {
         for (auto& face : faces)
             face = GLOBALS().config.paths.cubemaps + face;
 
-        m_sharedState->assetManager.add(
-            sl::gfx::Cubemap::load(faces), m_assetsArgs.assetName);
+        auto output = std::make_unique<sl::asset::AssetManager::Output<
+            sl::gfx::Cubemap>>(m_sharedState->assetManager);
+
+        sl::gfx::Cubemap::loadAsync(faces, m_assetsArgs.assetName, std::move(output));
     }
 }
 
