@@ -12,7 +12,7 @@ namespace sl::gfx::renderer {
 
 class ParticleEffectRenderer {
 public:
-    explicit ParticleEffectRenderer(std::shared_ptr<gfx::LowLevelRenderer> renderer);
+    explicit ParticleEffectRenderer(LowLevelRenderer& renderer);
 
     void renderParticleEffects(ecs::ComponentView<scene::components::ParticleEffectComponent> pfxs,
         ecs::ComponentView<scene::components::TransformComponent> transforms, camera::Camera& camera);
@@ -25,6 +25,6 @@ private:
     std::shared_ptr<gfx::buffer::VertexArray> m_vao;
 
     std::shared_ptr<gfx::Shader> m_shader;
-    std::shared_ptr<gfx::LowLevelRenderer> m_renderer;
+    LowLevelRenderer& m_renderer;
 };
 }

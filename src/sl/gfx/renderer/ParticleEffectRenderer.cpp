@@ -11,7 +11,7 @@
 
 namespace sl::gfx::renderer {
 
-ParticleEffectRenderer::ParticleEffectRenderer(std::shared_ptr<gfx::LowLevelRenderer> renderer)
+ParticleEffectRenderer::ParticleEffectRenderer(LowLevelRenderer& renderer)
     : m_renderer(renderer)
     , m_vao(GLOBALS().geom->frontSquareVAO)
     , m_shader(GLOBALS().shaders->pfxShader) {
@@ -64,7 +64,7 @@ void ParticleEffectRenderer::beginParticleEffect(gfx::camera::Camera& camera) {
 }
 
 void ParticleEffectRenderer::renderParticle() {
-    m_renderer->renderVertexArray(m_vao);
+    m_renderer.renderVertexArray(m_vao);
 }
 
 void ParticleEffectRenderer::endParticleEffect() {

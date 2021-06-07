@@ -54,7 +54,7 @@ static float cubemapVertices[] = {
 
 namespace sl::gfx::renderer {
 
-CubemapRenderer::CubemapRenderer(std::shared_ptr<LowLevelRenderer> renderer)
+CubemapRenderer::CubemapRenderer(LowLevelRenderer& renderer)
     : m_renderer(renderer) {
 
     auto vertexBuffer = buffer::VertexBuffer::factory->create(cubemapVertices, sizeof(cubemapVertices), 36);
@@ -72,12 +72,12 @@ void CubemapRenderer::render(Cubemap& cubemap, Shader& cubemapShader, camera::Ca
 
     m_cubemapVertexArray->bind();
 
-    auto settings = m_renderer->getSettings();
+    auto settings = m_renderer.getSettings();
     settings.enableDepthMask = false;
 
-    m_renderer->setTemporarySettings(settings);
-    m_renderer->renderVertexArray(m_cubemapVertexArray);
-    m_renderer->restoreSettings();
+    m_renderer.setTemporarySettings(settings);
+    m_renderer.renderVertexArray(m_cubemapVertexArray);
+    m_renderer.restoreSettings();
 
     m_cubemapVertexArray->unbind();
     cubemapShader.disable();

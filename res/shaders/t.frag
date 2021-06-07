@@ -43,19 +43,30 @@ uniform PointLights pointLights[MAX_POINT_LIGHTS];
 uniform Material material;
 uniform vec3 viewPos;
 
-float ShadowCalculation(vec4 fragPosLightSpace) {
+float calculateShadows(vec4 fragPosLightSpace) {
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5;
 
     if (projCoords.z > 1.0f)
         return 0.0f;
 
-    float closestDepth = texture(shadowMap, projCoords.xy).r;
-    float currentDepth = projCoords.z;
-    const float bias = 0.05f;
-    float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
+    const int kernelSize = 3;
+    const int offset = (kernelSize - 1) / 2;
+    const float bias = 0.05;
 
-    return shadow;
+    float currentDepth = projCoords.z;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+
+    float shadow = 0.0;
+
+    for (int x = -offset; x <= offset; ++x) {
+        for (int y = -offset; y <= offset; ++y) {
+            float neighbourDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+            shadow += (currentDepth - bias > neighbourDepth) ? 1.0 : 0.0;
+        }
+    }
+
+    return shadow / (kernelSize * kernelSize);
 }
 
 float calculateAttenuation(float fragmentDistance, float a, float b, float c) {
@@ -128,5 +139,5 @@ void main() {
     vec4 defaultColor = vec4(1.0, 1.0, 1.0, 1.0);
     vec4 color = (textures > 0 ? texture(textureSampler, texturePosition) : defaultColor);
 
-    FragColor = color * calculateLight(ShadowCalculation(fragPosLightSpace));
+    FragColor = color * calculateLight(calculateShadows(fragPosLightSpace));
 }

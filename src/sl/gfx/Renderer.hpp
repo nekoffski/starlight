@@ -19,7 +19,7 @@ using VectorRenderData = renderer::VectorRenderer::VectorData;
 
 class Renderer {
 public:
-    explicit Renderer(std::shared_ptr<LowLevelRenderer> renderer)
+    explicit Renderer(LowLevelRenderer& renderer)
         : m_meshRenderer(renderer)
         , m_shadowRenderer(renderer)
         , m_cubemapRenderer(renderer)

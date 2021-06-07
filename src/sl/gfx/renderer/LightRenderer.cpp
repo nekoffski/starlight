@@ -14,7 +14,7 @@ void LightRenderer::prepareDirectionalLights(ecs::ComponentView<scene::component
     gfx::Shader& shader) {
 
     unsigned int lightIndex = 0;
-    for (auto& directionalLight : lights)
+    for (const auto& directionalLight : lights)
         if (directionalLight.isActive)
             setDirectionalLight(shader, directionalLight, lightIndex++);
 
@@ -25,15 +25,19 @@ void LightRenderer::preparePointsLights(ecs::ComponentView<scene::components::Po
     ecs::ComponentView<scene::components::TransformComponent> transforms, Shader& shader) {
 
     unsigned int lightIndex = 0;
-    for (auto& pointLight : lights)
-        if (pointLight.isActive)
-            setPointLight(shader, pointLight,
-                transforms.getByEntityId(pointLight.ownerEntityId), lightIndex++);
+    for (const auto& pointLight : lights)
+        if (pointLight.isActive) {
+            auto& transform = transforms.doesEntityOwnComponent(pointLight.ownerEntityId)
+                ? transforms.getByEntityId(pointLight.ownerEntityId).transformation
+                : math::identityMatrix;
+
+            setPointLight(shader, pointLight, transform, lightIndex++);
+        }
 
     shader.setUniform("pointLightsNum", lightIndex);
 }
 
-void LightRenderer::setDirectionalLight(Shader& shader, scene::components::DirectionalLightComponent& light,
+void LightRenderer::setDirectionalLight(Shader& shader, const scene::components::DirectionalLightComponent& light,
     unsigned int index) {
 
     std::string strIndex = std::to_string(index);
@@ -44,13 +48,12 @@ void LightRenderer::setDirectionalLight(Shader& shader, scene::components::Direc
     shader.setUniform("directionalLights[" + strIndex + "].color", light.color);
 }
 
-void LightRenderer::setPointLight(Shader& shader, scene::components::PointLightComponent& light,
-    scene::components::TransformComponent& transform, unsigned int index) {
+void LightRenderer::setPointLight(Shader& shader, const scene::components::PointLightComponent& light, const math::Mat4& transform, unsigned int index) {
 
     std::string strIndex = std::to_string(index);
 
     shader.setUniform("pointLights[" + strIndex + "].position", light.position);
-    shader.setUniform("pointLights[" + strIndex + "].modelMatrix", transform.transformation);
+    shader.setUniform("pointLights[" + strIndex + "].modelMatrix", transform);
     shader.setUniform("pointLights[" + strIndex + "].color", light.color);
     shader.setUniform("pointLights[" + strIndex + "].attenuationA", light.attenuationA);
     shader.setUniform("pointLights[" + strIndex + "].attenuationB", light.attenuationB);

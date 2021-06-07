@@ -74,7 +74,7 @@ void Application::init() {
     auto viewport = gfx::ViewFrustum::Viewport { windowSize.width, windowSize.height };
 
     SL_INFO("Creating low level renderer instance.");
-    m_lowLevelRenderer = std::make_shared<gfx::LowLevelRenderer>(m_gfxContext,
+    m_lowLevelRenderer = std::make_unique<gfx::LowLevelRenderer>(m_gfxContext,
         gfx::RenderApi::factory->create(), viewport);
 
     SL_INFO("Creating GUI API instance.");
@@ -90,7 +90,7 @@ void Application::init() {
     GLOBALS().init();
 
     SL_INFO("Creating renderer instance.");
-    m_renderer = std::make_shared<gfx::Renderer>(m_lowLevelRenderer);
+    m_renderer = std::make_unique<gfx::Renderer>(*m_lowLevelRenderer);
 
     SL_INFO("Creating scene systems instance");
     m_sceneSystems = std::make_unique<SceneSystems>();

@@ -20,9 +20,9 @@ public:
 
 private:
     void setDirectionalLight(gfx::Shader& shader,
-        scene::components::DirectionalLightComponent& light, unsigned int index);
+        const scene::components::DirectionalLightComponent& light, unsigned int index);
 
     void setPointLight(gfx::Shader& shader,
-        scene::components::PointLightComponent& light, scene::components::TransformComponent& transform, unsigned int index);
+        const scene::components::PointLightComponent& light, const math::Mat4& transform, unsigned int index);
 };
 }

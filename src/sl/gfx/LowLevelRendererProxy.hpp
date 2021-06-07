@@ -8,7 +8,7 @@ namespace sl::gfx {
 
 class LowLevelRendererProxy {
 public:
-    explicit LowLevelRendererProxy(std::shared_ptr<LowLevelRenderer> lowLevelRenderer)
+    explicit LowLevelRendererProxy(LowLevelRenderer* lowLevelRenderer)
         : m_lowLevelRenderer(lowLevelRenderer) {
     }
 
@@ -17,7 +17,7 @@ public:
     }
 
 private:
-    std::shared_ptr<LowLevelRenderer> m_lowLevelRenderer;
+    LowLevelRenderer* m_lowLevelRenderer;
 };
 
 }

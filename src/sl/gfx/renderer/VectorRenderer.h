@@ -24,7 +24,7 @@ public:
         math::Vec3 color;
     };
 
-    explicit VectorRenderer(std::shared_ptr<LowLevelRenderer> renderer)
+    explicit VectorRenderer(LowLevelRenderer& renderer)
         : m_renderer(renderer) {
     }
 
@@ -54,7 +54,7 @@ public:
             auto model = math::translate(vector.origin) * math::scale(scale) * rotationMatrix;
             shader.setUniform("model", model);
 
-            m_renderer->renderLine();
+            m_renderer.renderLine();
         }
 
         vao->unbind();
@@ -63,7 +63,7 @@ public:
     }
 
 private:
-    std::shared_ptr<LowLevelRenderer> m_renderer;
+    LowLevelRenderer& m_renderer;
 };
 
 }

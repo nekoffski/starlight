@@ -14,7 +14,7 @@ namespace sl::gfx::renderer {
 
 class MeshRenderer {
 public:
-    explicit MeshRenderer(std::shared_ptr<gfx::LowLevelRenderer> renderer);
+    explicit MeshRenderer(LowLevelRenderer& renderer);
 
     void render(scene::components::MeshRendererComponent& component, ecs::ComponentView<scene::components::MaterialComponent>, ecs::ComponentView<scene::components::ModelComponent>,
         ecs::ComponentView<scene::components::TransformComponent>, gfx::camera::Camera& camera);
@@ -30,6 +30,6 @@ private:
 
     void renderMesh(geom::Mesh&);
 
-    std::shared_ptr<gfx::LowLevelRenderer> m_renderer;
+    LowLevelRenderer& m_renderer;
 };
 }

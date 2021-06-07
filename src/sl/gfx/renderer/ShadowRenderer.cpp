@@ -8,7 +8,7 @@
 
 namespace sl::gfx::renderer {
 
-ShadowRenderer::ShadowRenderer(std::shared_ptr<gfx::LowLevelRenderer> renderer)
+ShadowRenderer::ShadowRenderer(LowLevelRenderer& renderer)
     : m_renderer(renderer)
     , m_shadowMapFrameBuffer(gfx::buffer::FrameBuffer::factory->create())
     , m_depthShader(gfx::Shader::load(
@@ -16,23 +16,23 @@ ShadowRenderer::ShadowRenderer(std::shared_ptr<gfx::LowLevelRenderer> renderer)
 }
 
 void ShadowRenderer::beginDepthCapture() {
-    m_renderer->setTemporaryViewport(gfx::ViewFrustum::Viewport { 1024u, 1024u });
+    m_renderer.setTemporaryViewport(gfx::ViewFrustum::Viewport { 1024u, 1024u });
     m_shadowMapFrameBuffer->bind();
-    m_renderer->clearBuffers(STARL_DEPTH_BUFFER_BIT);
+    m_renderer.clearBuffers(STARL_DEPTH_BUFFER_BIT);
     m_depthShader->enable();
 
-    auto settings = m_renderer->getSettings();
+    auto settings = m_renderer.getSettings();
     settings.cullFace = STARL_FRONT;
-    m_renderer->setTemporarySettings(settings);
+    m_renderer.setTemporarySettings(settings);
 }
 
 void ShadowRenderer::endDepthCapture() {
     m_shadowMapFrameBuffer->unbind();
     m_depthShader->disable();
-    m_renderer->clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
+    m_renderer.clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
 
-    m_renderer->restoreSettings();
-    m_renderer->restoreViewport();
+    m_renderer.restoreSettings();
+    m_renderer.restoreViewport();
 }
 
 void ShadowRenderer::setShadowMap(std::shared_ptr<sl::gfx::Texture> shadowMap) {

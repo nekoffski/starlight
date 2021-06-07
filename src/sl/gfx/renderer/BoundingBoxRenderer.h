@@ -17,7 +17,7 @@ using namespace scene::components;
 
 class BoundingBoxRenderer {
 public:
-    explicit BoundingBoxRenderer(std::shared_ptr<LowLevelRenderer> renderer)
+    explicit BoundingBoxRenderer(LowLevelRenderer& renderer)
         : m_renderer(renderer)
         , m_boundingBoxShader(gfx::Shader::load(
               GLOBALS().config.paths.shaders + "/rigid_body.vert", GLOBALS().config.paths.shaders + "/rigid_body.frag")) {
@@ -28,10 +28,10 @@ public:
         m_boundingBoxShader->setUniform("projection", camera.getProjectionMatrix());
         m_boundingBoxShader->setUniform("view", camera.getViewMatrix());
 
-        auto settings = m_renderer->getSettings();
+        auto settings = m_renderer.getSettings();
         settings.polygonMode = STARL_LINE;
 
-        m_renderer->setTemporarySettings(settings);
+        m_renderer.setTemporarySettings(settings);
 
         for (auto& rigidyBody : rigidBodies) {
             auto& entityId = rigidyBody.ownerEntityId;
@@ -48,7 +48,7 @@ public:
         }
 
         m_boundingBoxShader->disable();
-        m_renderer->restoreSettings();
+        m_renderer.restoreSettings();
     }
 
 private:
@@ -56,11 +56,11 @@ private:
         auto vao = boundingBox.getVertexArray();
 
         vao->bind();
-        m_renderer->renderVertexArray(vao);
+        m_renderer.renderVertexArray(vao);
         vao->unbind();
     }
 
     std::shared_ptr<gfx::Shader> m_boundingBoxShader;
-    std::shared_ptr<LowLevelRenderer> m_renderer;
+    LowLevelRenderer& m_renderer;
 };
 }

@@ -53,7 +53,7 @@ public:
         auto context = std::make_shared<T>(ident);
 
         context->m_guiApiProxy = std::make_shared<gui::GuiApiProxy>(m_guiApi);
-        context->m_lowLevelRendererProxy = std::make_shared<gfx::LowLevelRendererProxy>(m_lowLevelRenderer);
+        context->m_lowLevelRendererProxy = std::make_shared<gfx::LowLevelRendererProxy>(m_lowLevelRenderer.get());
         context->m_windowProxy = std::make_shared<core::WindowProxy>(m_window);
 
         context->onInit();
@@ -68,12 +68,12 @@ private:
 
     std::shared_ptr<core::Window> m_window;
     std::shared_ptr<core::Input> m_input;
-    std::shared_ptr<gfx::LowLevelRenderer> m_lowLevelRenderer;
+    std::unique_ptr<gfx::LowLevelRenderer> m_lowLevelRenderer;
     std::shared_ptr<gui::GuiApi> m_guiApi;
     std::shared_ptr<gfx::GraphicsContext> m_gfxContext;
     std::shared_ptr<ApplicationContext> m_context;
     std::unique_ptr<SceneSystems> m_sceneSystems;
-    std::shared_ptr<gfx::Renderer> m_renderer;
+    std::unique_ptr<gfx::Renderer> m_renderer;
 
     xvent::EventEngine m_eventEngine;
     std::shared_ptr<xvent::EventEmitter> m_eventEmitter;

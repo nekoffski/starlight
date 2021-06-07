@@ -10,7 +10,7 @@ namespace sl::gfx::renderer {
 
 class ShadowRenderer {
 public:
-    explicit ShadowRenderer(std::shared_ptr<gfx::LowLevelRenderer> renderer);
+    explicit ShadowRenderer(LowLevelRenderer& renderer);
 
     void beginDepthCapture();
     void endDepthCapture();
@@ -20,7 +20,7 @@ public:
     std::shared_ptr<gfx::Shader> getDepthShader();
 
 private:
-    std::shared_ptr<gfx::LowLevelRenderer> m_renderer;
+    LowLevelRenderer& m_renderer;
     std::shared_ptr<gfx::buffer::FrameBuffer> m_shadowMapFrameBuffer;
     std::shared_ptr<gfx::Shader> m_depthShader;
 };

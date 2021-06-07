@@ -11,7 +11,7 @@ namespace sl::gfx::renderer {
 
 const scene::components::MaterialComponent DEFAULT_MATERIAL = scene::components::MaterialComponent();
 
-MeshRenderer::MeshRenderer(std::shared_ptr<gfx::LowLevelRenderer> renderer)
+MeshRenderer::MeshRenderer(LowLevelRenderer& renderer)
     : m_renderer(renderer) {
 }
 
@@ -40,13 +40,13 @@ void MeshRenderer::render(scene::components::MeshRendererComponent& component, e
     auto transformMatrix = transforms.doesEntityOwnComponent(entityId) ? transforms.getByEntityId(entityId).transformation
                                                                        : math::identityMatrix;
 
-    auto settings = m_renderer->getSettings();
+    auto settings = m_renderer.getSettings();
     settings.polygonMode = component.polygonMode;
-    m_renderer->setTemporarySettings(settings);
+    m_renderer.setTemporarySettings(settings);
 
     renderModel(shader, model, transformMatrix, camera);
 
-    m_renderer->restoreSettings();
+    m_renderer.restoreSettings();
 }
 
 void MeshRenderer::render(scene::components::MeshRendererComponent& component, ecs::ComponentView<scene::components::MaterialComponent> materials,
@@ -88,7 +88,7 @@ void MeshRenderer::renderMesh(geom::Mesh& mesh) {
     auto& vao = mesh.vertexArray;
 
     vao->bind();
-    m_renderer->renderVertexArray(vao);
+    m_renderer.renderVertexArray(vao);
     vao->unbind();
 
     for (const auto& texture : mesh.textures)
