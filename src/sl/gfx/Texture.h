@@ -10,7 +10,7 @@ namespace sl::gfx {
 
 class Texture : public core::GameObject {
 public:
-    inline static constexpr unsigned int shadowMapSize = 1024u;
+    inline static constexpr unsigned int shadowMapSize = 1024u * 4;
 
     struct Factory {
         virtual std::unique_ptr<Texture> create(sl::gfx::Image&) = 0;

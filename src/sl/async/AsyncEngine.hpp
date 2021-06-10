@@ -55,6 +55,7 @@ public:
 private:
     TaskManager m_taskManager;
     detail::TimerEngine m_timerEngine;
+
     std::unique_ptr<ThreadPool<>> m_threadPool = nullptr;
 
     std::unordered_map<std::string, AsyncTaskSentinel> m_asyncTasks;

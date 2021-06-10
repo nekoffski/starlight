@@ -9,18 +9,22 @@
 
 namespace sl::scene::components {
 
-static const auto lightProjectionMatrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 15.0f);
+static const auto lightProjectionMatrix = glm::ortho(-25.0f, 25.0f, -25.0f, 25.0f, 0.01f, 100.0f);
 
 struct DirectionalLightComponent : ecs::Component {
     explicit DirectionalLightComponent(math::Vec3 direction = math::Vec3 { 1.0f, 1.0f, 1.0f }, math::Vec3 color = core::color::white)
         : direction(direction)
         , color(color)
         , shadowMap(gfx::Texture::createShadowMap())
-        , viewMatrix(math::lookAt(-direction, math::Vec3 { 0.0f }, math::Vec3 { 0.0f, 1.0f, 0.0f }))
-        , spaceMatrix(lightProjectionMatrix * viewMatrix)
         , renderDirection(false) {
 
+        recalculateMatrices();
         name = "DirectionalLightComponent";
+    }
+
+    void recalculateMatrices() {
+        viewMatrix = math::lookAt(direction, math::Vec3 { 0.0f }, math::Vec3 { 0.0f, 1.0f, 0.0f });
+        spaceMatrix = lightProjectionMatrix * viewMatrix;
     }
 
     math::Vec3 direction;

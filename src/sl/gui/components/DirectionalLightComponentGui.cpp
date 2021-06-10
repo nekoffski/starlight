@@ -14,10 +14,8 @@ void DirectionalLightComponentGui::renderComponentGuiImpl(DirectionalLightCompon
 
         gui.displayText("Direction");
 
-        if (gui.dragFloat3(gui::createHiddenLabel("dlcDirection"), component.direction, 0.01f, -15.0f, 15.0f)) {
-            component.viewMatrix = math::lookAt(component.direction, math::Vec3 { 0.0f }, math::Vec3 { 0.0f, 1.0f, 0.0f });
-            component.spaceMatrix = lightProjectionMatrix * component.viewMatrix;
-        }
+        if (gui.dragFloat3(gui::createHiddenLabel("dlcDirection"), component.direction, 0.01f, -15.0f, 15.0f))
+            component.recalculateMatrices();
 
         gui.displayText("Color");
         gui.colorPicker3(gui::createHiddenLabel("dlcColor"), component.color);

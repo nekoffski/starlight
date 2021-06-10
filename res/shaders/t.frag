@@ -47,7 +47,7 @@ float calculateShadows(vec4 fragPosLightSpace) {
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5;
 
-    if (projCoords.z > 1.0f)
+    if (projCoords.z > 0.45f)
         return 0.0f;
 
     const int kernelSize = 3;
@@ -67,6 +67,7 @@ float calculateShadows(vec4 fragPosLightSpace) {
     }
 
     return shadow / (kernelSize * kernelSize);
+    // return 0;
 }
 
 float calculateAttenuation(float fragmentDistance, float a, float b, float c) {

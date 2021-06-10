@@ -58,7 +58,7 @@ private:
                 std::this_thread::sleep_for(100ms);
                 continue;
             }
-            (*job)();
+            std::invoke(*job);
         }
     }
 
