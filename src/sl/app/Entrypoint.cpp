@@ -46,13 +46,13 @@ int Entrypoint::start() {
         SL_ASSERT(m_application->getActiveContext(), "Application context is null.");
 
         static constexpr float loggerSavingInterval = 1.0f;
-        auto loggerTimer = ASYNC_ENGINE().createTimer(loggerSavingInterval);
+        auto saveProfilerResultsTimer = ASYNC_ENGINE().createTimer(loggerSavingInterval);
 
         SL_INFO("Starting starlight main loop.");
         while (m_application->isRunning()) {
             loopStep();
 
-            if (not loggerTimer->asyncSleep())
+            if (not saveProfilerResultsTimer->asyncSleep())
                 PROFILER().saveResults();
         }
 
