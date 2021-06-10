@@ -13,7 +13,6 @@
 #include "sl/core/Logger.h"
 #include "sl/core/Profiler.h"
 #include "sl/core/sig/Signal.h"
-#include "sl/platform/core/StdClockImpl.h"
 #include "sl/task/TaskManager.h"
 #include "sl/utils/Globals.h"
 
@@ -35,13 +34,8 @@ int Entrypoint::start() {
 
         loadConfig();
 
-        SL_INFO("Setting up clock implementation.");
-        CLOCK().setClockImpl<platform::core::StdClockImpl>();
-
         SL_INFO("Setting up async engine.");
         ASYNC_ENGINE().init();
-
-        auto profilerTimer = ASYNC_ENGINE().createTimer(ProfilerPrintInterval);
 
         Application::initDefaultFactories();
 
@@ -51,9 +45,16 @@ int Entrypoint::start() {
 
         SL_ASSERT(m_application->getActiveContext(), "Application context is null.");
 
+        static constexpr float loggerSavingInterval = 1.0f;
+        auto loggerTimer = ASYNC_ENGINE().createTimer(loggerSavingInterval);
+
         SL_INFO("Starting starlight main loop.");
-        while (m_application->isRunning())
+        while (m_application->isRunning()) {
             loopStep();
+
+            if (not loggerTimer->asyncSleep())
+                PROFILER().saveResults();
+        }
 
         m_application->onStop();
         ASYNC_ENGINE().deinit();
@@ -63,7 +64,7 @@ int Entrypoint::start() {
         return e.getErrorCode<int>();
     }
 
-    PROFILER().saveResults("./logs/");
+    PROFILER().saveResults();
     SL_INFO("Shutdown gracefully.");
     return 0;
 }
@@ -73,7 +74,7 @@ void Entrypoint::loopStep() {
 
     float deltaTime = CLOCK().getDeltaTime();
 
-    m_application->update(deltaTime, CLOCK().now()->value());
+    m_application->update(deltaTime, CLOCK().nowAsFloat());
     m_application->render();
 
     ASYNC_ENGINE().update(deltaTime);

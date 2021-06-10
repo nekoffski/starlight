@@ -73,15 +73,16 @@ public:
     void beginDepthCapture() {
         m_shadowRenderer.beginDepthCapture();
     }
+
     void endDepthCapture() {
         m_shadowRenderer.endDepthCapture();
     }
 
-    void setShadowMap(std::shared_ptr<sl::gfx::Texture> shadowMap) {
-        m_shadowRenderer.setShadowMap(shadowMap);
+    void bindShadowMap(sl::gfx::Texture& shadowMap) {
+        m_shadowRenderer.bindShadowMap(shadowMap);
     }
 
-    std::shared_ptr<gfx::Shader> getDepthShader() {
+    gfx::Shader* getDepthShader() {
         return m_shadowRenderer.getDepthShader();
     }
 

@@ -1,33 +1,36 @@
 #pragma once
 
+#include <memory>
 #include <sstream>
 #include <unordered_map>
 
 #include "Clock.h"
+#include "FileSystem.h"
 #include "Macros.h"
 
 #define SL_PROFILER_ENABLED 1
-constexpr float ProfilerPrintInterval = 5.0f;
 
 namespace sl::core {
 
 class Profiler {
     SL_SINGLETON(Profiler);
 
-    class RegionBasedTimer {
+    class RegionTimer {
     public:
-        explicit RegionBasedTimer(float& value);
-        ~RegionBasedTimer();
+        explicit RegionTimer(float& value);
+        ~RegionTimer();
 
     private:
+        void blendActualValueWithPreviousOne();
+
         float& m_value;
-        std::shared_ptr<core::Timestamp> m_start;
+        Clock::TimePoint m_startTime;
     };
 
 public:
-    RegionBasedTimer createRegionBasedTimer(const std::string& name);
-    void saveResults(const std::string& logfile);
-    void printResults();
+    RegionTimer createRegionTimer(const std::string& name);
+
+    void saveResults(const std::string& logDestination = "./", std::unique_ptr<FileSystem> fileSystem = std::make_unique<FileSystem>());
 
 private:
     std::string formatTimers();
@@ -39,8 +42,8 @@ private:
 
 // clang-format off
 #ifdef SL_PROFILER_ENABLED
-    #define SL_PROFILE_REGION(name) auto __sl_prf_region_timer = PROFILER().createRegionBasedTimer(name); 
-    #define SL_PROFILE_FUNCTION() auto __sl_prf_func_timer = PROFILER().createRegionBasedTimer(__PRETTY_FUNCTION__);
+    #define SL_PROFILE_REGION(name) auto __sl_prf_region_timer = PROFILER().createRegionTimer("Tag: " + std::string{name}); 
+    #define SL_PROFILE_FUNCTION() auto __sl_prf_func_timer = PROFILER().createRegionTimer("Function: " + std::string{__FUNCTION__});
 #else
     #define SL_PROFILE_REGION(name)
     #define SL_PROFILE_FUNCTION

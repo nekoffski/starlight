@@ -1,40 +1,46 @@
 #pragma once
 
-#include <memory>
+#include <chrono>
 #include <string>
 
-#include "ClockImpl.h"
 #include "Macros.h"
+
+using namespace std::literals::chrono_literals;
 
 namespace sl::core {
 
 class Clock {
-    SL_SINGLETON(Clock);
+    using ClockType = std::chrono::steady_clock;
+
+    inline static constexpr float microsecondsInSecond = 1000 * 1000;
 
 public:
-    template <typename T>
-    void setClockImpl() {
-        m_pimpl = std::make_unique<T>();
+    SL_SINGLETON(Clock);
+
+    using TimePoint = std::chrono::time_point<ClockType>;
+
+    static float toSeconds(const TimePoint& point);
+
+    template <typename U, typename T>
+    static float toSeconds(const std::chrono::duration<U, T>& duration) {
+        return std::chrono::duration_cast<std::chrono::microseconds>(duration).count() / microsecondsInSecond;
     }
 
-    float getDeltaTime() {
-        return m_pimpl->getDeltaTime();
-    }
+    float getDeltaTime() const;
 
-    void update() {
-        m_pimpl->update();
-    }
+    void update();
 
-    std::string getTimeString(const std::string& format) {
-        return m_pimpl->getTimeString(format);
-    }
+    std::string getTimeString(const std::string& format) const;
 
-    std::shared_ptr<Timestamp> now() {
-        return m_pimpl->now();
-    }
+    TimePoint now() const;
+
+    float nowAsFloat() const;
 
 private:
-    std::unique_ptr<ClockImpl> m_pimpl;
+    ClockType m_clock;
+    TimePoint m_previousNow;
+
+    float m_deltaTime = 0.0f;
 };
 }
 

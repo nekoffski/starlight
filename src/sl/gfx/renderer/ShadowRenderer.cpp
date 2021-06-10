@@ -2,6 +2,7 @@
 
 #include "sl/gfx/LowLevelRenderer.h"
 #include "sl/gfx/Shader.h"
+#include "sl/gfx/Texture.h"
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/gfx/buffer/FrameBuffer.h"
 #include "sl/utils/Globals.h"
@@ -16,7 +17,7 @@ ShadowRenderer::ShadowRenderer(LowLevelRenderer& renderer)
 }
 
 void ShadowRenderer::beginDepthCapture() {
-    m_renderer.setTemporaryViewport(gfx::ViewFrustum::Viewport { 1024u, 1024u });
+    m_renderer.setTemporaryViewport(gfx::ViewFrustum::Viewport { Texture::shadowMapSize, Texture::shadowMapSize });
     m_shadowMapFrameBuffer->bind();
     m_renderer.clearBuffers(STARL_DEPTH_BUFFER_BIT);
     m_depthShader->enable();
@@ -35,11 +36,11 @@ void ShadowRenderer::endDepthCapture() {
     m_renderer.restoreViewport();
 }
 
-void ShadowRenderer::setShadowMap(std::shared_ptr<sl::gfx::Texture> shadowMap) {
+void ShadowRenderer::bindShadowMap(sl::gfx::Texture& shadowMap) {
     m_shadowMapFrameBuffer->bindTexture(shadowMap);
 }
 
-std::shared_ptr<gfx::Shader> ShadowRenderer::getDepthShader() {
-    return m_depthShader;
+gfx::Shader* ShadowRenderer::getDepthShader() {
+    return m_depthShader.get();
 }
 }

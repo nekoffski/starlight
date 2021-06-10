@@ -13,7 +13,7 @@ struct FrameBufferMock : public FrameBuffer {
         inline static Factory* instance = nullptr;
     };
 
-    MOCK_METHOD(void, bindTexture, (std::shared_ptr<sl::gfx::Texture>), (override));
+    MOCK_METHOD(void, bindTexture, (sl::gfx::Texture&), (override));
     MOCK_METHOD(void, bind, (), (override));
     MOCK_METHOD(void, unbind, (), (override));
 };

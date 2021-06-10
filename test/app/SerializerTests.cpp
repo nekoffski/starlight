@@ -44,7 +44,7 @@ TEST_F(SerializerTests, whenCreatingSerializerWithDefaultFileSystem_shouldBeCrea
 }
 
 TEST_F(SerializerTests, givenEmptySceneAndEmptyAssetManager_whenSerializing_shouldReturnEmptyAssetsAndEntities) {
-    EXPECT_CALL(*m_fsMock, writeFile(_, _)).Times(1).WillOnce(Invoke(writeFileArgsHijacker));
+    EXPECT_CALL(*m_fsMock, writeFile(_, _, _)).Times(1).WillOnce(Invoke(writeFileArgsHijacker));
 
     m_serializer.serialize(m_assetManager, m_scene);
 

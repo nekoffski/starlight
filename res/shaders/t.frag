@@ -52,7 +52,7 @@ float calculateShadows(vec4 fragPosLightSpace) {
 
     const int kernelSize = 3;
     const int offset = (kernelSize - 1) / 2;
-    const float bias = 0.05;
+    const float bias = 0.005;
 
     float currentDepth = projCoords.z;
     vec2 texelSize = 1.0 / textureSize(shadowMap, 0);

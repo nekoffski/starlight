@@ -9,8 +9,9 @@
 namespace sl::gfx {
 
 class Texture : public core::GameObject {
-
 public:
+    inline static constexpr unsigned int shadowMapSize = 1024u;
+
     struct Factory {
         virtual std::unique_ptr<Texture> create(sl::gfx::Image&) = 0;
         virtual std::unique_ptr<Texture> create(unsigned int, unsigned int) = 0;
@@ -18,8 +19,8 @@ public:
 
     inline static std::unique_ptr<Factory> factory = nullptr;
 
+    static std::unique_ptr<Texture> createShadowMap();
     static std::unique_ptr<Texture> load(const std::string& path, const std::string& name);
-
     static void loadAsync(const std::string& path, const std::string& name, std::unique_ptr<core::Output<Texture>> output);
 
     virtual ~Texture() = default;

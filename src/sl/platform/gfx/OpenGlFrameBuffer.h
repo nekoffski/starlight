@@ -12,7 +12,7 @@ public:
 
     void bind() override;
     void unbind() override;
-    void bindTexture(std::shared_ptr<sl::gfx::Texture>) override;
+    void bindTexture(sl::gfx::Texture&) override;
 
 private:
     unsigned int m_bufferId;

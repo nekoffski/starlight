@@ -106,13 +106,16 @@ public:
         std::vector<sl::gfx::VectorRenderData> vectorsToRender;
 
         for (auto& directionalLight : directionalLights) {
+            if (not directionalLight.isActive)
+                continue;
+
             if (directionalLight.renderDirection) {
                 physx::Vector vector { sceneOrigin, directionalLight.direction * 1000.0f };
                 vectorsToRender.emplace_back(gfx::VectorRenderData {
                     std::move(vector), color::blue });
             }
 
-            renderer.setShadowMap(directionalLight.shadowMap);
+            renderer.bindShadowMap(*directionalLight.shadowMap);
 
             for (auto& rendererComponent : rendererComponents) {
                 depthShader->setUniform("lightSpaceMatrix", directionalLight.spaceMatrix);

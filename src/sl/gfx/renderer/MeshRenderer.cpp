@@ -66,7 +66,7 @@ void MeshRenderer::setMaterial(const scene::components::MaterialComponent& mater
 void MeshRenderer::renderModel(gfx::Shader& shader, scene::components::ModelComponent& model,
     const math::Mat4& transform, gfx::camera::Camera& camera) {
 
-    float t = CLOCK().now()->value();
+    float t = CLOCK().nowAsFloat();
     shader.setUniform("t", t);
     shader.setUniform("projection", camera.getProjectionMatrix());
 

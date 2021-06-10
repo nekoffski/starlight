@@ -16,7 +16,6 @@
 #include "WindowMock.hpp"
 
 #include "sl/core/Clock.h"
-#include "sl/platform/core/StdClockImpl.h"
 
 #include "sl/gfx/ShaderCompiler.hpp"
 
@@ -81,8 +80,6 @@ inline void setupMockFactories() {
     SETUP_MOCK(ElementBuffer);
     SETUP_MOCK(Shader);
     SETUP_MOCK(FrameBuffer);
-
-    CLOCK().setClockImpl<platform::core::StdClockImpl>();
 }
 
 inline void resetMockFactories() {

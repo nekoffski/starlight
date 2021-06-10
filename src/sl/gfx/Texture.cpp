@@ -14,6 +14,10 @@ std::unique_ptr<Texture> Texture::load(const std::string& path, const std::strin
     return texture;
 }
 
+std::unique_ptr<Texture> Texture::createShadowMap() {
+    return factory->create(shadowMapSize, shadowMapSize);
+}
+
 void Texture::loadAsync(const std::string& path, const std::string& name, std::unique_ptr<core::Output<Texture>> output) {
     class LoadAsync : public async::AsyncTask {
     public:

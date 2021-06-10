@@ -7,54 +7,48 @@
 #include "sl/core/Logger.h"
 #include "sl/math/Utils.hpp"
 
-constexpr float EtaFactor = 0.3f;
-
 namespace sl::core {
 
-Profiler::RegionBasedTimer::RegionBasedTimer(float& value)
+Profiler::RegionTimer::RegionTimer(float& value)
     : m_value(value)
-    , m_start(CLOCK().now()) {
+    , m_startTime(CLOCK().now()) {
 }
 
-Profiler::RegionBasedTimer::~RegionBasedTimer() {
-    float tmp = CLOCK().now()->substract(m_start);
-    m_value = math::lerp(m_value, tmp, EtaFactor);
+Profiler::RegionTimer::~RegionTimer() {
+    blendActualValueWithPreviousOne();
 }
 
-Profiler::RegionBasedTimer Profiler::createRegionBasedTimer(const std::string& name) {
+void Profiler::RegionTimer::blendActualValueWithPreviousOne() {
+    static constexpr float newValueWeight = 0.3f;
+
+    auto deltaTime = CLOCK().now() - m_startTime;
+    m_value = math::lerp(m_value, CLOCK().toSeconds(deltaTime), newValueWeight);
+}
+
+Profiler::RegionTimer Profiler::createRegionTimer(const std::string& name) {
     if (m_times.count(name) == 0)
         m_times[name] = 0.0f;
-    return RegionBasedTimer { m_times[name] };
+
+    return RegionTimer { m_times[name] };
 }
 
-void Profiler::saveResults(const std::string& logdir) {
-    std::string logfile = logdir + CLOCK().getTimeString("%d-%m-%Y_%H:%M:%S") + ".perf";
-    std::ofstream log(logfile);
-
-    if (!log.good()) {
-        SL_ERROR("Could not open log file: {}", logfile);
-        return;
-    }
-
-    log << formatTimers();
-    log.close();
-    SL_INFO("Profiler logs saved as: {}", logfile);
-}
-
-void Profiler::printResults() {
-// clang-format off
-    #ifdef SL_PROFILER_ENABLED
-        SL_WARN("\n{}\n", formatTimers()); // CREATE OTHER FORMATTER!
-    #endif
-    // clang-format on
+void Profiler::saveResults(const std::string& logDestination, std::unique_ptr<FileSystem> fileSystem) {
+    fileSystem->writeFile(logDestination + "logs.perf", formatTimers(), true);
 }
 
 std::string Profiler::formatTimers() {
+    static auto compareStringsByLength = [](auto& lhs, auto& rhs) {
+        return lhs.first.size() < rhs.first.size();
+    };
+
+    auto longestName = std::ranges::max_element(m_times, compareStringsByLength)->first;
+    auto alignment = longestName.size();
+
     std::ostringstream ss;
     ss << std::fixed;
 
     for (const auto& [label, value] : m_times)
-        ss << label << " -> " << value << "s\n";
+        ss << std::setw(alignment) << std::left << label << " -> " << value << "s\n";
 
     return ss.str();
 }

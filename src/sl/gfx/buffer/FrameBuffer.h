@@ -15,7 +15,7 @@ public:
 
     virtual ~FrameBuffer() = default;
 
-    virtual void bindTexture(std::shared_ptr<sl::gfx::Texture>) = 0;
+    virtual void bindTexture(sl::gfx::Texture&) = 0;
     virtual void bind() = 0;
     virtual void unbind() = 0;
 };

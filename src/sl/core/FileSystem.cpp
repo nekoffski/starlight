@@ -23,9 +23,9 @@ std::vector<std::string> FileSystem::listDirectory(const Path& path) const {
     return entries;
 }
 
-void FileSystem::writeFile(const Path& path, const std::string& buffer) const {
+void FileSystem::writeFile(const Path& path, const std::string& buffer, bool override) const {
     std::ofstream fs;
-    fs.open(path);
+    fs.open(path, override ? std::ios::trunc : std::ios::app);
     fs << buffer;
     fs.close();
 }
