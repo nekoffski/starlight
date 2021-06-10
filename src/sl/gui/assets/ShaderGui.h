@@ -3,9 +3,9 @@
 #include <unordered_map>
 
 #include "AssetGuiProvider.h"
+#include "sl/async/Task.h"
 #include "sl/core/FileSystem.h"
 #include "sl/gfx/Shader.h"
-#include "sl/task/TaskManager.h"
 #include "sl/utils/Globals.h"
 
 namespace sl::gui::assets {
@@ -13,7 +13,7 @@ namespace sl::gui::assets {
 class ShaderGui {
     struct Params {
         bool recompileOnSave = false;
-        std::optional<task::Task::Handle> taskHandle = std::nullopt;
+        std::optional<async::Task::Handle> taskHandle = std::nullopt;
     };
 
     class Provider : public AssetGuiProvider {

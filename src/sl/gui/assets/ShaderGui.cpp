@@ -1,9 +1,11 @@
 #include "ShaderGui.h"
 
+#include "sl/async/AsyncEngine.hpp"
+
 namespace sl::gui::assets {
 
 namespace details {
-    class RecompileShaderOnUpdate : public task::Task {
+    class RecompileShaderOnUpdate : public async::Task {
     public:
         explicit RecompileShaderOnUpdate(std::shared_ptr<gfx::Shader> shader,
             std::unique_ptr<core::FileSystem> fileSystem = std::make_unique<core::FileSystem>())
@@ -88,7 +90,7 @@ void ShaderGui::Provider::processRecompileOnSaveRequest(std::shared_ptr<gfx::Sha
     auto& taskHandle = m_params.taskHandle;
 
     if (m_params.recompileOnSave) {
-        taskHandle = TASK_MANAGER().addPeriodicTask<details::RecompileShaderOnUpdate>(shader);
+        taskHandle = ASYNC_ENGINE().addPeriodicTask<details::RecompileShaderOnUpdate>(shader);
     } else {
         if (taskHandle.has_value()) {
             taskHandle.value().disable();

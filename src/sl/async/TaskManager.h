@@ -6,11 +6,9 @@
 #include "sl/core/Logger.h"
 #include "sl/core/Macros.h"
 
-namespace sl::task {
+namespace sl::async {
 
 class TaskManager {
-    SL_SINGLETON(TaskManager);
-
 public:
     void processTasks();
 
@@ -32,5 +30,3 @@ private:
     std::unordered_map<std::string, std::unique_ptr<Task>> m_tasks;
 };
 }
-
-#define TASK_MANAGER() sl::task::TaskManager::instance()

@@ -13,7 +13,6 @@
 #include "sl/core/Logger.h"
 #include "sl/core/Profiler.h"
 #include "sl/core/sig/Signal.h"
-#include "sl/task/TaskManager.h"
 #include "sl/utils/Globals.h"
 
 namespace sl::app {
@@ -79,7 +78,6 @@ void Entrypoint::loopStep() {
 
     ASYNC_ENGINE().update(deltaTime);
     CLOCK().update();
-    TASK_MANAGER().processTasks();
 }
 
 void Entrypoint::loadConfig() {

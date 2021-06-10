@@ -4,7 +4,7 @@
 
 #include "sl/core/Uuid.h"
 
-namespace sl::task {
+namespace sl::async {
 
 struct Task {
     class Handle {

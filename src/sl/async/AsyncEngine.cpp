@@ -38,6 +38,7 @@ void AsyncEngine::parallelLoop(const int iterations, const std::function<void(co
 
 void AsyncEngine::update(float dtime) {
     m_timerEngine.update(dtime);
+    m_taskManager.processTasks();
 
     std::vector<std::string> idsToRemove;
 

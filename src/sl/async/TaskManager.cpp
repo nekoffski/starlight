@@ -1,6 +1,6 @@
 #include "TaskManager.h"
 
-namespace sl::task {
+namespace sl::async {
 
 void TaskManager::processTasks() {
     std::vector<std::string> tasksToRemove;

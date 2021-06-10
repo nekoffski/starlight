@@ -5,6 +5,7 @@
 #include <type_traits>
 
 #include "AsyncTask.h"
+#include "TaskManager.h"
 #include "ThreadPool.hpp"
 #include "Timer.h"
 #include "TimerEngine.h"
@@ -25,6 +26,11 @@ class AsyncEngine {
 public:
     void init();
     void deinit();
+
+    template <typename T, typename... Args>
+    requires std::derived_from<T, Task> Task::Handle addPeriodicTask(Args&&... args) {
+        return m_taskManager.addPeriodicTask<T, Args...>(std::forward<Args>(args)...);
+    }
 
     template <typename F, typename... Args>
     Future<typename std::result_of<F(Args...)>::type> callAsync(F&& func, Args&&... args) {
@@ -47,6 +53,7 @@ public:
     std::shared_ptr<Timer> createTimer(float sleepTime);
 
 private:
+    TaskManager m_taskManager;
     detail::TimerEngine m_timerEngine;
     std::unique_ptr<ThreadPool<>> m_threadPool = nullptr;
 
