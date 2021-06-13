@@ -8,12 +8,17 @@ namespace sl::platform::gfx {
 
 class OpenGlCubemap : public sl::gfx::Cubemap {
 public:
+    explicit OpenGlCubemap(unsigned int width, unsigned int height);
     explicit OpenGlCubemap(const sl::gfx::CubemapFaces&);
 
     ~OpenGlCubemap() override;
 
     void bind() override;
     void unbind() override;
+
+    unsigned int getBufferId() const override {
+        return m_cubemapId;
+    }
 
 private:
     unsigned int m_cubemapId;
@@ -22,6 +27,10 @@ private:
 struct OpenGlCubemapFactory : sl::gfx::Cubemap::Factory {
     std::unique_ptr<sl::gfx::Cubemap> create(const sl::gfx::CubemapFaces& args) override {
         return std::make_unique<OpenGlCubemap>(args);
+    }
+
+    std::unique_ptr<sl::gfx::Cubemap> create(unsigned int width, unsigned int height) override {
+        return std::make_unique<OpenGlCubemap>(width, height);
     }
 };
 }

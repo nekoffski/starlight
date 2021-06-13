@@ -3,8 +3,13 @@
 #include <ranges>
 
 #include "sl/async/AsyncEngine.hpp"
+#include "sl/gfx/Texture.h"
 
 namespace sl::gfx {
+
+std::unique_ptr<Cubemap> Cubemap::createOmnidirectionalShaderMap() {
+    return factory->create(Texture::shadowMapSize, Texture::shadowMapSize);
+}
 
 std::unique_ptr<Cubemap> Cubemap::load(const CubemapArgs& paths, const std::string& name) {
     std::array<std::unique_ptr<gfx::Image>, facesCount> faces;

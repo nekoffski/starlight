@@ -36,6 +36,13 @@ public:
                 gui.popColor();
         };
 
+        if (gui.button(ICON_FA_GAMEPAD))
+            sl::event::Emitter::emit<EnterGameMode>();
+
+        gui.sameLine();
+        gui.displayText("  " ICON_FA_ELLIPSIS_V "  ");
+        gui.sameLine();
+
         handleEngineStateButton(ICON_FA_PLAY, EngineState::started);
         gui.sameLine();
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DebugConsole.hpp"
+#include "EngineMode.h"
 #include "EngineState.h"
 #include "Events.h"
 #include "gui/EditorGui.h"
@@ -59,7 +60,9 @@ public:
         m_scene->camera = m_activeCamera;
         m_editorGui->sharedState->activeScene = m_scene;
 
-        recalculateWindow(windowWidth, windowHeight);
+        m_engineMode = editor::EngineMode::inEditor;
+
+        recalculateViewportSize(windowWidth, windowHeight);
 
         WRITE_DEBUG("{}", "Editor context initialized");
     }
@@ -71,8 +74,10 @@ public:
     }
 
     void renderGui(gui::GuiApi& gui) override {
-        m_editorGui->renderEditorGui(gui);
-        m_errorDialog.show(gui);
+        if (m_engineMode == editor::EngineMode::inEditor) {
+            m_editorGui->renderEditorGui(gui);
+            m_errorDialog.show(gui);
+        }
     }
 
     void update(app::SceneSystems& sceneSystems, float deltaTime, float time, core::Input& input) override {
@@ -85,6 +90,13 @@ public:
 
             auto [rigidBodies, transforms] = m_scene->ecsRegistry.getComponentsViews<RigidBodyComponent, TransformComponent>();
             sceneSystems.physxEngine.processRigidBodies(rigidBodies, transforms, deltaTime);
+        }
+
+        if (m_engineMode == editor::EngineMode::inGame && input.isKeyPressed(STARL_KEY_ESCAPE)) {
+            m_engineMode = editor::EngineMode::inEditor;
+
+            auto [width, height] = m_windowProxy->getSize();
+            recalculateViewportSize(width, height);
         }
     }
 
@@ -140,21 +152,23 @@ public:
         renderer.renderParticleEffects(
             m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>(), transforms, *m_scene->camera);
 
-        renderer.renderBoundingBoxes(rigidBodies, transforms, *m_scene->camera);
+        if (m_engineMode == editor::EngineMode::inEditor) {
+            renderer.renderBoundingBoxes(rigidBodies, transforms, *m_scene->camera);
 
-        for (auto& rigidBody : rigidBodies) {
-            auto transformation = transforms.getByEntityId(rigidBody.ownerEntityId).transformation;
+            for (auto& rigidBody : rigidBodies) {
+                auto transformation = transforms.getByEntityId(rigidBody.ownerEntityId).transformation;
 
-            if (rigidBody.boundingBox != nullptr) {
-                physx::Vector vector {
-                    transformation * rigidBody.boundingBox->getCenterOfMass(), rigidBody.velocity
-                };
-                vectorsToRender.emplace_back(gfx::VectorRenderData {
-                    std::move(vector), color::green });
+                if (rigidBody.boundingBox != nullptr) {
+                    physx::Vector vector {
+                        transformation * rigidBody.boundingBox->getCenterOfMass(), rigidBody.velocity
+                    };
+                    vectorsToRender.emplace_back(gfx::VectorRenderData {
+                        std::move(vector), color::green });
+                }
             }
-        }
 
-        renderer.renderVectors(vectorsToRender, *m_scene->camera);
+            renderer.renderVectors(vectorsToRender, *m_scene->camera);
+        }
 
         if (skybox.has_value()) {
             renderer.renderCubemap(skybox->cubemap.value(), *skybox->shader, *m_scene->camera);
@@ -163,7 +177,6 @@ public:
     }
 
     void handleEvents(const xvent::EventProvider& eventProvider) override {
-
         auto events = eventProvider.getByCategories<event::CoreCategory, event::EditorCategory>();
 
         using namespace sl::event;
@@ -174,28 +187,32 @@ public:
             if (event->is<SetSkyboxEvent>()) {
                 auto cubemap = event->as<SetSkyboxEvent>()->cubemap;
                 m_scene->skybox = sl::scene::Skybox { GLOBALS().shaders->defaultCubemapShader, cubemap };
-            }
 
-            if (event->is<QuitEvent>())
+            } else if (event->is<QuitEvent>()) {
                 m_windowProxy->quit();
 
-            if (event->is<WindowResizedEvent>()) {
+            } else if (event->is<WindowResizedEvent>()) {
                 auto windowResizedEvent = event->as<WindowResizedEvent>();
                 auto [width, height] = windowResizedEvent->getSize();
 
-                recalculateWindow(width, height);
-            }
+                recalculateViewportSize(width, height);
 
-            if (event->is<ChangeSceneCenterEvent>()) {
+            } else if (event->is<ChangeSceneCenterEvent>()) {
                 auto& newCenter = event->as<ChangeSceneCenterEvent>()->center;
                 auto sceneCamera = std::dynamic_pointer_cast<sl::gfx::camera::EulerCamera>(m_activeCamera);
                 if (sceneCamera)
                     sceneCamera->setCenter(newCenter);
-            }
 
-            if (event->is<editor::EngineStateChanged>())
+            } else if (event->is<editor::EngineStateChanged>()) {
                 handleStateChange(
                     event->as<editor::EngineStateChanged>()->state);
+
+            } else if (event->is<editor::EnterGameMode>()) {
+                m_engineMode = editor::EngineMode::inGame;
+
+                auto [width, height] = m_windowProxy->getSize();
+                recalculateViewportSize(width, height);
+            }
 
             try {
                 using namespace sl::app;
@@ -220,18 +237,25 @@ public:
         }
     }
 
-    void recalculateWindow(float width, float height) {
+    void recalculateViewportSize(float width, float height) {
         editor::gui::GuiProperties guiProperties {
             static_cast<int>(width), static_cast<int>(height)
         };
         m_editorGui->sharedState->guiProperties = guiProperties;
 
-        gfx::ViewFrustum::Viewport newViewport {
-            static_cast<int>(width - guiProperties.scenePanelProperties.size.x - guiProperties.rightPanelProperties.size.x),
-            static_cast<int>(height - guiProperties.bottomPanelProperties.size.y),
-            static_cast<int>(guiProperties.scenePanelProperties.size.x),
-            static_cast<int>(guiProperties.bottomPanelProperties.size.y)
-        };
+        gfx::ViewFrustum::Viewport newViewport;
+
+        if (m_engineMode == editor::EngineMode::inEditor) {
+            newViewport.width = static_cast<int>(width - guiProperties.scenePanelProperties.size.x - guiProperties.rightPanelProperties.size.x);
+            newViewport.height = static_cast<int>(height - guiProperties.bottomPanelProperties.size.y);
+            newViewport.beginX = static_cast<int>(guiProperties.scenePanelProperties.size.x);
+            newViewport.beginY = static_cast<int>(guiProperties.bottomPanelProperties.size.y);
+        } else {
+            newViewport.width = static_cast<int>(width);
+            newViewport.height = static_cast<int>(height);
+            newViewport.beginX = 0;
+            newViewport.beginY = 0;
+        }
 
         m_activeCamera->viewFrustum.viewport = newViewport;
         m_activeCamera->calculateProjectionMatrix();
@@ -285,4 +309,5 @@ private:
     std::shared_ptr<scene::Scene> m_scene;
 
     editor::EngineState m_engineState;
+    editor::EngineMode m_engineMode;
 };

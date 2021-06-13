@@ -24,38 +24,51 @@ void OpenGlShaderCompilerImpl::compile(sl::gfx::Shader& shader) {
 void OpenGlShaderCompilerImpl::compileImpl(OpenGlShader& shader) {
     SL_DEBUG("compiling shader: \n{},\n{},\n{}", shader.m_fragmentPath, shader.m_vertexPath, shader.m_geomPath);
 
-    GLuint& _shader_program = shader.m_shaderProgram;
-    _shader_program = glCreateProgram();
+    GLuint& shaderProgramId = shader.m_shaderProgram;
+    shaderProgramId = glCreateProgram();
 
     SL_DEBUG("compiling vertex shader");
-    auto vertexShader = compileShader(shader.m_vertexPath, GL_VERTEX_SHADER);
+    auto vertexShaderId = compileShader(shader.m_vertexPath, GL_VERTEX_SHADER);
     SL_DEBUG("compiling fragment shader");
-    auto fragmentShader = compileShader(shader.m_fragmentPath, GL_FRAGMENT_SHADER);
+    auto fragmentShaderId = compileShader(shader.m_fragmentPath, GL_FRAGMENT_SHADER);
 
-    glAttachShader(_shader_program, vertexShader);
-    glAttachShader(_shader_program, fragmentShader);
+    bool hasGeometryShader = shader.m_geomPath != "";
+    std::optional<unsigned int> geometryShaderId;
 
-    SL_DEBUG("linking shader");
-    glLinkProgram(_shader_program);
+    if (hasGeometryShader) {
+        SL_DEBUG("compiling geometry shader");
+        geometryShaderId = compileShader(shader.m_geomPath, GL_GEOMETRY_SHADER);
 
-    char info_buffer[infoBufferSize];
-    int linked = 0;
-    std::memset(info_buffer, 0, infoBufferSize);
-
-    glGetProgramiv(_shader_program, GL_LINK_STATUS, &linked);
-
-    if (!linked) {
-        glGetProgramInfoLog(_shader_program, infoBufferSize, nullptr, info_buffer);
-        SL_ERROR("could not link: ", info_buffer);
-        throw core::ShaderError { core::ErrorCode::CouldNotLinkShaderProgram };
+        glAttachShader(shaderProgramId, geometryShaderId.value());
     }
 
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    glAttachShader(shaderProgramId, vertexShaderId);
+    glAttachShader(shaderProgramId, fragmentShaderId);
+
+    SL_DEBUG("linking shader");
+    glLinkProgram(shaderProgramId);
+
+    char infoBuffer[infoBufferSize];
+    int linked = 0;
+    std::memset(infoBuffer, 0, infoBufferSize);
+
+    glGetProgramiv(shaderProgramId, GL_LINK_STATUS, &linked);
+
+    glDeleteShader(vertexShaderId);
+    glDeleteShader(fragmentShaderId);
+
+    if (geometryShaderId.has_value())
+        glDeleteShader(geometryShaderId.value());
+
+    if (!linked) {
+        glGetProgramInfoLog(shaderProgramId, infoBufferSize, nullptr, infoBuffer);
+        SL_ERROR("could not link: ", infoBuffer);
+        throw core::ShaderError { core::ErrorCode::CouldNotLinkShaderProgram };
+    }
 }
 
 unsigned int OpenGlShaderCompilerImpl::compileShader(const std::string& path, unsigned type) {
-    char info_buffer[infoBufferSize];
+    char infoBuffer[infoBufferSize];
     int compiled = 0;
 
     std::fstream shaderSource(path);
@@ -80,13 +93,13 @@ unsigned int OpenGlShaderCompilerImpl::compileShader(const std::string& path, un
     glShaderSource(shader, 1, &shaderData, nullptr);
     glCompileShader(shader);
 
-    std::memset(info_buffer, 0, infoBufferSize);
+    std::memset(infoBuffer, 0, infoBufferSize);
 
     glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
 
     if (!compiled) {
-        glGetShaderInfoLog(shader, infoBufferSize, nullptr, info_buffer);
-        SL_ERROR("could not compile: {}", info_buffer);
+        glGetShaderInfoLog(shader, infoBufferSize, nullptr, infoBuffer);
+        SL_ERROR("could not compile: {}", infoBuffer);
         auto code = type == GL_VERTEX_SHADER ? ErrorCode::CouldNotCompileVertexShader : ErrorCode::CouldNotCompileFragmentShader;
         throw ShaderError { code };
     }

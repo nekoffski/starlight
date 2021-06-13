@@ -34,4 +34,10 @@ void OpenGlFrameBuffer::bindTexture(sl::gfx::Texture& texture) {
     // unbind();
     //texture->unbind();
 }
+
+void OpenGlFrameBuffer::bindCubemap(sl::gfx::Cubemap& cubemap) {
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, cubemap.getBufferId(), 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+}
 }

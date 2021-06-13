@@ -14,6 +14,7 @@ struct FrameBufferMock : public FrameBuffer {
     };
 
     MOCK_METHOD(void, bindTexture, (sl::gfx::Texture&), (override));
+    MOCK_METHOD(void, bindCubemap, (sl::gfx::Cubemap&), (override));
     MOCK_METHOD(void, bind, (), (override));
     MOCK_METHOD(void, unbind, (), (override));
 };

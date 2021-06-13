@@ -18,14 +18,18 @@ class Cubemap : public core::GameObject {
 public:
     struct Factory {
         virtual std::unique_ptr<Cubemap> create(const CubemapFaces&) = 0;
+        virtual std::unique_ptr<Cubemap> create(unsigned int, unsigned int) = 0;
     };
 
     inline static std::unique_ptr<Factory> factory = nullptr;
 
+    static std::unique_ptr<Cubemap> createOmnidirectionalShaderMap();
     static std::unique_ptr<Cubemap> load(const CubemapArgs& paths, const std::string& name);
     static void loadAsync(const CubemapArgs& paths, const std::string& name, std::unique_ptr<core::Output<Cubemap>> output);
 
     virtual ~Cubemap() = default;
+
+    virtual unsigned int getBufferId() const = 0;
 
     virtual void bind() = 0;
     virtual void unbind() = 0;

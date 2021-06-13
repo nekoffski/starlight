@@ -17,4 +17,10 @@ DECLARE_EVENT(EngineStateChanged, sl::event::EditorCategory) {
     EngineState state;
 };
 
+DECLARE_EVENT(EnterGameMode, sl::event::EditorCategory) {
+    std::string asString() const override {
+        return "[EnterGameMode]";
+}
+}
+;
 }

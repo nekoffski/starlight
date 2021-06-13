@@ -12,7 +12,9 @@ public:
 
     void bind() override;
     void unbind() override;
+
     void bindTexture(sl::gfx::Texture&) override;
+    void bindCubemap(sl::gfx::Cubemap&) override;
 
 private:
     unsigned int m_bufferId;

@@ -2,6 +2,9 @@
 
 #include <memory>
 
+#include "sl/gfx/Cubemap.h"
+#include "sl/gfx/Texture.h"
+
 namespace sl::gfx::buffer {
 
 class FrameBuffer {
@@ -16,6 +19,7 @@ public:
     virtual ~FrameBuffer() = default;
 
     virtual void bindTexture(sl::gfx::Texture&) = 0;
+    virtual void bindCubemap(sl::gfx::Cubemap&) = 0;
     virtual void bind() = 0;
     virtual void unbind() = 0;
 };
