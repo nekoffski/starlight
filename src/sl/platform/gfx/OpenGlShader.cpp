@@ -27,30 +27,30 @@ OpenGlShader::~OpenGlShader() {
 }
 
 void OpenGlShader::setUniform(const std::string& name, float value) {
-    glUniform1f(glGetUniformLocation(m_shaderProgram, name.c_str()), value);
+    glProgramUniform1f(m_shaderProgram, glGetUniformLocation(m_shaderProgram, name.c_str()), value);
 }
 
 void OpenGlShader::setUniform(const std::string& name, int value) {
-    glUniform1i(glGetUniformLocation(m_shaderProgram, name.c_str()), value);
+    glProgramUniform1i(m_shaderProgram, glGetUniformLocation(m_shaderProgram, name.c_str()), value);
 }
 
 void OpenGlShader::setUniform(const std::string& name, unsigned int value) {
-    glUniform1ui(glGetUniformLocation(m_shaderProgram, name.c_str()), value);
+    glProgramUniform1ui(m_shaderProgram, glGetUniformLocation(m_shaderProgram, name.c_str()), value);
 }
 
 void OpenGlShader::setUniform(const std::string& name, math::Mat3 value) {
-    glUniformMatrix3fv(glGetUniformLocation(m_shaderProgram, name.c_str()), 1, GL_FALSE, math::valuePtr(value));
+    glProgramUniformMatrix3fv(m_shaderProgram, glGetUniformLocation(m_shaderProgram, name.c_str()), 1, GL_FALSE, math::valuePtr(value));
 }
 
 void OpenGlShader::setUniform(const std::string& name, math::Mat4 value) {
-    glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram, name.c_str()), 1, GL_FALSE, math::valuePtr(value));
+    glProgramUniformMatrix4fv(m_shaderProgram, glGetUniformLocation(m_shaderProgram, name.c_str()), 1, GL_FALSE, math::valuePtr(value));
 }
 
 void OpenGlShader::setUniform(const std::string& name, math::Vec4 value) {
-    glUniform4f(glGetUniformLocation(m_shaderProgram, name.c_str()), value.x, value.y, value.z, value.w);
+    glProgramUniform4f(m_shaderProgram, glGetUniformLocation(m_shaderProgram, name.c_str()), value.x, value.y, value.z, value.w);
 }
 
 void OpenGlShader::setUniform(const std::string& name, math::Vec3 value) {
-    glUniform3f(glGetUniformLocation(m_shaderProgram, name.c_str()), value.x, value.y, value.z);
+    glProgramUniform3f(m_shaderProgram, glGetUniformLocation(m_shaderProgram, name.c_str()), value.x, value.y, value.z);
 }
 }
