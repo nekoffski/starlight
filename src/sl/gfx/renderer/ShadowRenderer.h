@@ -15,8 +15,9 @@ public:
     void beginDepthCapture();
     void endDepthCapture();
 
-    void bindShadowMap(sl::gfx::Texture&);
+    // void bindShadowMap(sl::gfx::Texture&);
 
+    gfx::buffer::FrameBuffer* getShadowMapFrameBuffer();
     gfx::Shader* getDepthShader();
 
 private:

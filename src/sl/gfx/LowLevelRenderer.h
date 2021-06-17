@@ -81,7 +81,9 @@ private:
     }
 
     std::shared_ptr<gfx::GraphicsContext> m_gfxContext;
+
     std::unique_ptr<gfx::RenderApi> m_renderApi;
+
     ViewFrustum::Viewport m_viewport;
     RendererSettings m_settings;
 };

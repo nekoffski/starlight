@@ -6,62 +6,16 @@
 #include "sl/gfx/buffer/VertexArray.h"
 #include "sl/gfx/buffer/VertexBuffer.h"
 
-// clang-format off
-static float cubemapVertices[] = {
-        -1.0f,  1.0f, -1.0f,
-        -1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-
-        -1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
-
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-
-        -1.0f, -1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
-
-        -1.0f,  1.0f, -1.0f,
-         1.0f,  1.0f, -1.0f,
-         1.0f,  1.0f,  1.0f,
-         1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f, -1.0f,
-
-        -1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,
-         1.0f, -1.0f, -1.0f,
-         1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,
-         1.0f, -1.0f,  1.0f
-};
-// clang-format on
-
 namespace sl::gfx::renderer {
 
 CubemapRenderer::CubemapRenderer(LowLevelRenderer& renderer)
     : m_renderer(renderer) {
 
-    auto vertexBuffer = buffer::VertexBuffer::factory->create(cubemapVertices, sizeof(cubemapVertices), 36);
-    vertexBuffer->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
+    // auto vertexBuffer = buffer::VertexBuffer::factory->create(cubemapVertices, sizeof(cubemapVertices), 36);
+    // vertexBuffer->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
 
-    m_cubemapVertexArray = buffer::VertexArray::factory->create();
-    m_cubemapVertexArray->addVertexBuffer(vertexBuffer);
+    // m_cubemapVertexArray = buffer::VertexArray::factory->create();
+    // m_cubemapVertexArray->addVertexBuffer(vertexBuffer);
 }
 
 void CubemapRenderer::render(Cubemap& cubemap, Shader& cubemapShader, camera::Camera& camera) {

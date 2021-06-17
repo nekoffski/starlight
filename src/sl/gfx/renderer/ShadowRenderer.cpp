@@ -18,8 +18,8 @@ ShadowRenderer::ShadowRenderer(LowLevelRenderer& renderer)
 
 void ShadowRenderer::beginDepthCapture() {
     m_renderer.setTemporaryViewport(gfx::ViewFrustum::Viewport { Texture::shadowMapSize, Texture::shadowMapSize });
+    m_renderer.clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
     m_shadowMapFrameBuffer->bind();
-    m_renderer.clearBuffers(STARL_DEPTH_BUFFER_BIT);
     m_depthShader->enable();
 
     auto settings = m_renderer.getSettings();
@@ -36,8 +36,8 @@ void ShadowRenderer::endDepthCapture() {
     m_renderer.restoreViewport();
 }
 
-void ShadowRenderer::bindShadowMap(sl::gfx::Texture& shadowMap) {
-    m_shadowMapFrameBuffer->bindTexture(shadowMap);
+gfx::buffer::FrameBuffer* ShadowRenderer::getShadowMapFrameBuffer() {
+    return m_shadowMapFrameBuffer.get();
 }
 
 gfx::Shader* ShadowRenderer::getDepthShader() {

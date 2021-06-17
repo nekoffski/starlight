@@ -30,6 +30,17 @@
 #include "sl/scene/components/TransformComponent.h"
 #include "sl/utils/Globals.h"
 
+#include "sl/rendering/CustomFrameBufferRenderPass.h"
+#include "sl/rendering/DefaultFrameBufferRenderPass.h"
+#include "sl/rendering/RenderPass.h"
+#include "sl/rendering/RenderPipeline.h"
+#include "sl/rendering/stages/CaptureDirectionalDepthMapsStage.h"
+#include "sl/rendering/stages/PrepareLightsStage.h"
+#include "sl/rendering/stages/RenderBoundingBoxesStage.h"
+#include "sl/rendering/stages/RenderMeshesStage.h"
+#include "sl/rendering/stages/RenderSkyboxStage.h"
+#include "sl/rendering/stages/RenderVectorsStage.h"
+
 #include <memory>
 
 using namespace sl;
@@ -42,7 +53,9 @@ class EditorContext : public app::ApplicationContext {
 public:
     explicit EditorContext(const std::string& ident)
         : ApplicationContext(ident)
-        , m_engineState(editor::EngineState::stopped) {
+        , m_engineState(editor::EngineState::stopped)
+        , m_depthFrameBuffer(gfx::buffer::FrameBuffer::factory->create())
+        , m_captureDepthMapsRenderPass(m_depthFrameBuffer.get()) {
     }
 
     void onInit() override {
@@ -63,6 +76,19 @@ public:
         m_engineMode = editor::EngineMode::inEditor;
 
         recalculateViewportSize(windowWidth, windowHeight);
+
+        // setup rendering pipeline
+
+        m_captureDepthMapsRenderPass.addRenderStage(&m_captureDirectionalDepthMapsStage);
+
+        m_finalRenderPass
+            .addRenderStage(&m_prepareLightsStage)
+            .addRenderStage(&m_renderMeshesStage)
+            .addRenderStage(&m_renderBoundingBoxesStage)
+            .addRenderStage(&m_renderVectorsStage)
+            .addRenderStage(&m_renderSkyboxStage);
+
+        m_renderPipeline.addRenderPass(&m_captureDepthMapsRenderPass).addRenderPass(&m_finalRenderPass);
 
         WRITE_DEBUG("{}", "Editor context initialized");
     }
@@ -101,79 +127,7 @@ public:
     }
 
     void render(gfx::Renderer& renderer) override {
-        auto& skybox = m_scene->skybox;
-
-        if (skybox.has_value())
-            skybox->cubemap->bind();
-
-        using namespace sl::scene::components;
-
-        auto [directionalLights, pointLights, rendererComponents, transforms, models, materials, rigidBodies] =
-            m_scene->ecsRegistry.getComponentsViews<DirectionalLightComponent, PointLightComponent, MeshRendererComponent,
-                TransformComponent, ModelComponent, MaterialComponent, RigidBodyComponent>();
-
-        renderer.beginDepthCapture();
-        auto depthShader = renderer.getDepthShader();
-
-        std::vector<sl::gfx::VectorRenderData> vectorsToRender;
-
-        for (auto& directionalLight : directionalLights) {
-            if (not directionalLight.isActive)
-                continue;
-
-            if (directionalLight.renderDirection) {
-                physx::Vector vector { sceneOrigin, directionalLight.direction * 1000.0f };
-                vectorsToRender.emplace_back(gfx::VectorRenderData {
-                    std::move(vector), color::blue });
-            }
-
-            renderer.bindShadowMap(*directionalLight.shadowMap);
-
-            for (auto& rendererComponent : rendererComponents) {
-                depthShader->setUniform("lightSpaceMatrix", directionalLight.spaceMatrix);
-                renderer.renderModel(rendererComponent, materials, models, transforms, *m_scene->camera, *depthShader);
-            }
-        }
-
-        renderer.endDepthCapture();
-
-        for (auto& rendererComponent : rendererComponents) {
-            auto& shader = rendererComponent.shader;
-
-            shader->enable();
-
-            renderer.prepareDirectionalLights(directionalLights, *shader);
-            renderer.preparePointsLights(pointLights, transforms, *shader);
-            renderer.renderModel(rendererComponent, materials, models, transforms, *m_scene->camera);
-
-            shader->disable();
-        }
-
-        renderer.renderParticleEffects(
-            m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>(), transforms, *m_scene->camera);
-
-        if (m_engineMode == editor::EngineMode::inEditor) {
-            renderer.renderBoundingBoxes(rigidBodies, transforms, *m_scene->camera);
-
-            for (auto& rigidBody : rigidBodies) {
-                auto transformation = transforms.getByEntityId(rigidBody.ownerEntityId).transformation;
-
-                if (rigidBody.boundingBox != nullptr) {
-                    physx::Vector vector {
-                        transformation * rigidBody.boundingBox->getCenterOfMass(), rigidBody.velocity
-                    };
-                    vectorsToRender.emplace_back(gfx::VectorRenderData {
-                        std::move(vector), color::green });
-                }
-            }
-
-            renderer.renderVectors(vectorsToRender, *m_scene->camera);
-        }
-
-        if (skybox.has_value()) {
-            renderer.renderCubemap(skybox->cubemap.value(), *skybox->shader, *m_scene->camera);
-            skybox->cubemap->unbind();
-        }
+        m_renderPipeline.run(renderer.renderer, *m_scene);
     }
 
     void handleEvents(const xvent::EventProvider& eventProvider) override {
@@ -310,4 +264,18 @@ private:
 
     editor::EngineState m_engineState;
     editor::EngineMode m_engineMode;
+
+    std::shared_ptr<gfx::buffer::FrameBuffer> m_depthFrameBuffer;
+
+    rendering::RenderPipeline m_renderPipeline;
+
+    rendering::DefaultFrameBufferRenderPass m_finalRenderPass;
+    rendering::CustomFrameBufferRenderPass m_captureDepthMapsRenderPass;
+
+    rendering::stages::RenderSkyboxStage m_renderSkyboxStage;
+    rendering::stages::RenderMeshesStage m_renderMeshesStage;
+    rendering::stages::PrepareLightsStage m_prepareLightsStage;
+    rendering::stages::RenderBoundingBoxesStage m_renderBoundingBoxesStage;
+    rendering::stages::CaptureDirectionalDepthMapsStage m_captureDirectionalDepthMapsStage;
+    rendering::stages::RenderVectorsStage m_renderVectorsStage;
 };

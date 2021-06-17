@@ -25,7 +25,8 @@ public:
         , m_cubemapRenderer(renderer)
         , m_pfxRenderer(renderer)
         , m_boundingBoxRenderer(renderer)
-        , m_vectorRenderer(renderer) {
+        , m_vectorRenderer(renderer)
+        , renderer(renderer) {
     }
 
     void renderVectors(const std::vector<VectorRenderData>& vectors, camera::Camera& camera,
@@ -78,13 +79,15 @@ public:
         m_shadowRenderer.endDepthCapture();
     }
 
-    void bindShadowMap(sl::gfx::Texture& shadowMap) {
-        m_shadowRenderer.bindShadowMap(shadowMap);
-    }
-
     gfx::Shader* getDepthShader() {
         return m_shadowRenderer.getDepthShader();
     }
+
+    gfx::buffer::FrameBuffer* getShadowMapFrameBuffer() {
+        return m_shadowRenderer.getShadowMapFrameBuffer();
+    }
+
+    LowLevelRenderer& renderer;
 
 private:
     renderer::LightRenderer m_lightRenderer;

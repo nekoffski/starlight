@@ -9,6 +9,7 @@
 #include "sl/ecs/Registry.hpp"
 #include "sl/ecs/fwd.h"
 #include "sl/gfx/camera/Camera.h"
+#include "sl/physx/Vector.h"
 
 namespace sl::scene {
 struct Scene {
@@ -33,5 +34,7 @@ struct Scene {
     ecs::Registry ecsRegistry;
 
     std::optional<Skybox> skybox;
+
+    std::vector<physx::ColoredVector> vectors;
 };
 }
