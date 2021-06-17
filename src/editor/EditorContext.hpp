@@ -126,8 +126,8 @@ public:
         }
     }
 
-    void render(gfx::Renderer& renderer) override {
-        m_renderPipeline.run(renderer.renderer, *m_scene);
+    void render(gfx::LowLevelRenderer& renderer) override {
+        m_renderPipeline.run(renderer, *m_scene);
     }
 
     void handleEvents(const xvent::EventProvider& eventProvider) override {

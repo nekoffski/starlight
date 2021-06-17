@@ -9,7 +9,6 @@
 #include "sl/core/WindowProxy.hpp"
 #include "sl/core/fwd.h"
 #include "sl/gfx/LowLevelRendererProxy.hpp"
-#include "sl/gfx/Renderer.hpp"
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/GuiApiProxy.hpp"
 
@@ -30,7 +29,7 @@ public:
     virtual void onDetach() = 0;
 
     virtual void update(SceneSystems& sceneSystems, float, float, core::Input&) = 0;
-    virtual void render(gfx::Renderer&) = 0;
+    virtual void render(gfx::LowLevelRenderer&) = 0;
 
     virtual void renderGui(gui::GuiApi&) { }
 

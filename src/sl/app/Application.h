@@ -16,7 +16,6 @@
 #include "sl/core/Window.h"
 #include "sl/gfx/GraphicsContext.h"
 #include "sl/gfx/LowLevelRenderer.h"
-#include "sl/gfx/Renderer.hpp"
 #include "sl/gui/GuiApi.h"
 
 namespace sl::app {
@@ -73,7 +72,6 @@ private:
     std::shared_ptr<gfx::GraphicsContext> m_gfxContext;
     std::shared_ptr<ApplicationContext> m_context;
     std::unique_ptr<SceneSystems> m_sceneSystems;
-    std::unique_ptr<gfx::Renderer> m_renderer;
 
     xvent::EventEngine m_eventEngine;
     std::shared_ptr<xvent::EventEmitter> m_eventEmitter;

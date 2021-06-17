@@ -11,7 +11,6 @@
 #include "sl/gfx/GraphicsContext.h"
 #include "sl/gfx/Image.h"
 #include "sl/gfx/RenderApi.h"
-#include "sl/gfx/Renderer.hpp"
 #include "sl/gfx/ShaderCompiler.hpp"
 #include "sl/gfx/ShaderCompilerImpl.h"
 #include "sl/gfx/ViewFrustum.h"
@@ -89,9 +88,6 @@ void Application::init() {
     SL_INFO("Initializing global utils.");
     GLOBALS().init();
 
-    SL_INFO("Creating renderer instance.");
-    m_renderer = std::make_unique<gfx::Renderer>(*m_lowLevelRenderer);
-
     SL_INFO("Creating scene systems instance");
     m_sceneSystems = std::make_unique<SceneSystems>();
 
@@ -120,7 +116,7 @@ void Application::render() {
     SL_PROFILE_FUNCTION();
 
     m_lowLevelRenderer->clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
-    m_context->render(*m_renderer);
+    m_context->render(*m_lowLevelRenderer);
 
     renderGui();
 
