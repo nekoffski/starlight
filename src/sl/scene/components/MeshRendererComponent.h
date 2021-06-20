@@ -9,6 +9,8 @@
 namespace sl::scene::components {
 
 struct MeshRendererComponent : ecs::Component {
+    using View = ecs::ComponentView<MeshRendererComponent>;
+
     explicit MeshRendererComponent()
         : shader(GLOBALS().shaders->defaultModelShader)
         , polygonMode(STARL_FILL) {
@@ -19,4 +21,5 @@ struct MeshRendererComponent : ecs::Component {
     std::shared_ptr<gfx::Shader> shader;
     unsigned int polygonMode;
 };
+
 }

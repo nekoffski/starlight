@@ -10,6 +10,8 @@
 namespace sl::scene::components {
 
 struct ModelComponent : ecs::Component {
+    using View = ecs::ComponentView<ModelComponent>;
+
     explicit ModelComponent() {
         instances.push_back(math::Vec3 { 0.0f, 0.0f, 0.0f });
 

@@ -15,7 +15,7 @@ inline void renderMesh(gfx::LowLevelRenderer& renderer, geom::Mesh& mesh) {
     auto& vao = mesh.vertexArray;
 
     vao->bind();
-    renderer.renderVertexArray(vao);
+    renderer.renderVertexArray(*vao);
     vao->unbind();
 
     for (const auto& texture : mesh.textures)

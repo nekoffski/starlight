@@ -30,7 +30,7 @@ public:
     explicit LowLevelRenderer(std::shared_ptr<gfx::GraphicsContext> gfxContext,
         std::unique_ptr<gfx::RenderApi> renderApi, ViewFrustum::Viewport viewport);
 
-    void renderVertexArray(std::shared_ptr<gfx::buffer::VertexArray>);
+    void renderVertexArray(gfx::buffer::VertexArray&);
 
     void renderLine() {
         m_renderApi->drawArrays(STARL_LINES, 0, 2);

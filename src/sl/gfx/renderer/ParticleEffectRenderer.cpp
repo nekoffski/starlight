@@ -64,7 +64,7 @@ void ParticleEffectRenderer::beginParticleEffect(gfx::camera::Camera& camera) {
 }
 
 void ParticleEffectRenderer::renderParticle() {
-    m_renderer.renderVertexArray(m_vao);
+    m_renderer.renderVertexArray(*m_vao);
 }
 
 void ParticleEffectRenderer::endParticleEffect() {

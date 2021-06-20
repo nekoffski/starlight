@@ -11,6 +11,8 @@
 namespace sl::scene::components {
 
 struct ParticleEffectComponent : ecs::Component {
+    using View = ecs::ComponentView<ParticleEffectComponent>;
+
     explicit ParticleEffectComponent(math::Vec3 position = math::VEC_ZEROS, int maxParticles = 2500)
         : position(position)
         , maxParticles(maxParticles) {

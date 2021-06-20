@@ -20,11 +20,11 @@ LowLevelRenderer::LowLevelRenderer(std::shared_ptr<gfx::GraphicsContext> gfxCont
     m_renderApi->setBlendFunc(STARL_SRC_ALPHA, STARL_ONE_MINUS_SRC_ALPHA);
 }
 
-void LowLevelRenderer::renderVertexArray(std::shared_ptr<gfx::buffer::VertexArray> vertexArray) {
+void LowLevelRenderer::renderVertexArray(gfx::buffer::VertexArray& vertexArray) {
     // to optimize! -> BRANCHING!!!
-    if (auto indices = vertexArray->getIndicesCount(); indices != 0u)
+    if (auto indices = vertexArray.getIndicesCount(); indices != 0u)
         m_renderApi->drawElements(STARL_TRIANGLES, indices, STARL_UNSIGNED_INT);
     else
-        m_renderApi->drawArrays(STARL_TRIANGLES, 0, vertexArray->getVerticesCount());
+        m_renderApi->drawArrays(STARL_TRIANGLES, 0, vertexArray.getVerticesCount());
 }
 }

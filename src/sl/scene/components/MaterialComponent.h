@@ -8,6 +8,8 @@
 namespace sl::scene::components {
 
 struct MaterialComponent : ecs::Component {
+    using View = ecs::ComponentView<MaterialComponent>;
+
     explicit MaterialComponent(math::Vec3 ambientColor = core::color::white, math::Vec3 diffuseColor = core::color::white,
         math::Vec3 specularColor = core::color::white, float shininess = 32.0f)
         : ambientColor(ambientColor)
@@ -24,4 +26,5 @@ struct MaterialComponent : ecs::Component {
 
     float shininess;
 };
+
 }

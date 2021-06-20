@@ -15,6 +15,8 @@ class RigidBodyComponent : public ecs::Component {
     };
 
 public:
+    using View = ecs::ComponentView<RigidBodyComponent>;
+
     explicit RigidBodyComponent()
         : useGravity(false)
         , enableCollisions(false)

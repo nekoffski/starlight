@@ -30,7 +30,7 @@ void RenderSkyboxStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& s
     settings.enableDepthMask = false;
 
     renderer.setTemporarySettings(settings);
-    renderer.renderVertexArray(m_cubemapVertexArray);
+    renderer.renderVertexArray(*m_cubemapVertexArray);
     renderer.restoreSettings();
 
     m_cubemapVertexArray->unbind();

@@ -21,6 +21,8 @@ class TransformComponent : public ecs::Component {
     };
 
 public:
+    using View = ecs::ComponentView<TransformComponent>;
+
     explicit TransformComponent(math::Vec3 position = math::Vec3 { 0.0f },
         math::Vec3 rotation = math::Vec3 { 0.0f }, math::Vec3 scale = math::Vec3 { 1.0f })
         : position(position)

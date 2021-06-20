@@ -11,8 +11,8 @@ AxisAlignedBoundingBox::AxisAlignedBoundingBox(const std::vector<std::shared_ptr
     build(meshes);
 }
 
-std::shared_ptr<gfx::buffer::VertexArray> AxisAlignedBoundingBox::getVertexArray() const {
-    return m_vao;
+gfx::buffer::VertexArray* AxisAlignedBoundingBox::getVertexArray() const {
+    return m_vao.get();
 }
 
 std::vector<math::Vec3> AxisAlignedBoundingBox::getVertices() const {
