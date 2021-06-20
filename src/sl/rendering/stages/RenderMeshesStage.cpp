@@ -34,7 +34,7 @@ void RenderMeshesStage::processMeshRendererComponent(MeshRendererComponent& mesh
 
     auto& shader = *meshRendererComponent.shader;
 
-    setShaderUniforms(shader, *scene.camera, getMaterial(entityId, materials));
+    setUniforms(shader, *scene.camera, getMaterial(entityId, materials));
     prepareRenderer(meshRendererComponent, renderer);
 
     shader.enable();
@@ -55,7 +55,7 @@ const MaterialComponent& RenderMeshesStage::getMaterial(const std::string& entit
     return materials.doesEntityOwnComponent(entityId) ? materials.getByEntityId(entityId) : defaultMaterial;
 }
 
-void RenderMeshesStage::setShaderUniforms(gfx::Shader& shader, gfx::camera::Camera& camera, const MaterialComponent& material) {
+void RenderMeshesStage::setUniforms(gfx::Shader& shader, gfx::camera::Camera& camera, const MaterialComponent& material) {
     shader.setUniform("view", camera.getViewMatrix());
     shader.setUniform("projection", camera.getProjectionMatrix());
     shader.setUniform("viewPos", camera.getPosition());
