@@ -1,6 +1,7 @@
 #include "RenderBoundingBoxesStage.h"
 
 #include "sl/core/Colors.h"
+#include "sl/core/Profiler.h"
 #include "sl/rendering/utils/Misc.h"
 
 namespace sl::rendering::stages {
@@ -13,6 +14,7 @@ RenderBoundingBoxesStage::RenderBoundingBoxesStage()
 }
 
 void RenderBoundingBoxesStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene) {
+    SL_PROFILE_FUNCTION();
 
     setShaderTransforms(*scene.camera);
     prepareRenderer(renderer);

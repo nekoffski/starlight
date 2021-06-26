@@ -31,7 +31,7 @@ public:
 
     virtual unsigned int getBufferId() const = 0;
 
-    virtual void bind() = 0;
+    virtual void bind(unsigned int index = s_currentTextureId) = 0;
     virtual void unbind() = 0;
 
     CubemapArgs getFacesPaths() const {
@@ -39,6 +39,9 @@ public:
     }
 
     std::string name;
+
+protected:
+    inline static unsigned int s_currentTextureId = 0u;
 
 private:
     CubemapArgs m_facesPaths;

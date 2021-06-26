@@ -13,7 +13,7 @@ public:
 
     ~OpenGlCubemap() override;
 
-    void bind() override;
+    void bind(unsigned int index) override;
     void unbind() override;
 
     unsigned int getBufferId() const override {

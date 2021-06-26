@@ -43,7 +43,7 @@ private:
 // clang-format off
 #ifdef SL_PROFILER_ENABLED
     #define SL_PROFILE_REGION(name) auto __sl_prf_region_timer = PROFILER().createRegionTimer("Tag: " + std::string{name}); 
-    #define SL_PROFILE_FUNCTION() auto __sl_prf_func_timer = PROFILER().createRegionTimer("Function: " + std::string{__FUNCTION__});
+    #define SL_PROFILE_FUNCTION() auto __sl_prf_func_timer = PROFILER().createRegionTimer("Function: " + std::string{__PRETTY_FUNCTION__});
 #else
     #define SL_PROFILE_REGION(name)
     #define SL_PROFILE_FUNCTION

@@ -17,8 +17,10 @@ public:
         : m_frameBuffer(frameBuffer) {
     }
 
-    void addRenderStage(Stage* renderStage) {
+    CustomFrameBufferRenderPass& addRenderStage(Stage* renderStage) {
         m_renderStages.push_back(renderStage);
+
+        return *this;
     }
 
     void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene) {

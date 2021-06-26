@@ -20,8 +20,16 @@ public:
     void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene) {
         renderer.clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
 
+        bool hasSkybox = scene.skybox.has_value();
+
+        if (hasSkybox)
+            scene.skybox->cubemap->bind();
+
         for (auto& renderStage : m_renderStages)
             renderStage->execute(renderer, scene);
+
+        if (hasSkybox)
+            scene.skybox->cubemap->unbind();
     }
 
 private:

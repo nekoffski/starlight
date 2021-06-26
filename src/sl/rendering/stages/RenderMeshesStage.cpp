@@ -5,6 +5,7 @@
 #include "sl/rendering/utils/Mesh.h"
 #include "sl/utils/Globals.h"
 
+#include "sl/core/Profiler.h"
 #include "sl/rendering/utils/Misc.h"
 
 namespace sl::rendering::stages {
@@ -12,6 +13,8 @@ namespace sl::rendering::stages {
 using namespace sl::scene::components;
 
 void RenderMeshesStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene) {
+    SL_PROFILE_FUNCTION();
+
     auto [meshRendererComponents, transforms, models, materials] =
         scene.ecsRegistry.getComponentsViews<MeshRendererComponent, TransformComponent, ModelComponent, MaterialComponent>();
 

@@ -31,8 +31,12 @@ struct Material {
 #define MAX_DIRECTIONAL_LIGHTS 64
 #define MAX_POINT_LIGHTS 64
 
-layout(binding = 1) uniform sampler2D shadowMap;
+uniform float far_plane;
+
 layout(binding = 0) uniform sampler2D textureSampler;
+layout(binding = 1) uniform sampler2D shadowMap;
+
+layout(binding = 1) uniform samplerCube omnidirectionalShadowMap;
 
 uniform uint directionalLightsNum;
 uniform uint pointLightsNum;
@@ -43,31 +47,56 @@ uniform PointLights pointLights[MAX_POINT_LIGHTS];
 uniform Material material;
 uniform vec3 viewPos;
 
+// float calculateShadows(vec4 fragPosLightSpace) {
+//     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+//     projCoords = projCoords * 0.5 + 0.5;
+
+//     if (projCoords.z > 0.45f)
+//         return 0.0f;
+
+//     const int kernelSize = 3;
+//     const int offset = (kernelSize - 1) / 2;
+//     const float bias = 0.005;
+
+//     float currentDepth = projCoords.z;
+//     vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+
+//     float shadow = 0.0;
+
+//     for (int x = -offset; x <= offset; ++x) {
+//         for (int y = -offset; y <= offset; ++y) {
+//             float neighbourDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+//             shadow += (currentDepth - bias > neighbourDepth) ? 1.0 : 0.0;
+//         }
+//     }
+
+//     return shadow / (kernelSize * kernelSize);
+//     // return 0;
+// }
+
 float calculateShadows(vec4 fragPosLightSpace) {
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    projCoords = projCoords * 0.5 + 0.5;
+    // get vector between fragment position and light position
+    mat4 modelM = pointLights[0].modelMatrix;
+    vec3 lightPosition = vec3(modelM * vec4(pointLights[0].position, 1.0f));
 
-    if (projCoords.z > 0.45f)
-        return 0.0f;
+    vec3 fragToLight = lightPosition - fragmentPosition;
+    fragToLight = -fragToLight;
 
-    const int kernelSize = 3;
-    const int offset = (kernelSize - 1) / 2;
-    const float bias = 0.005;
+    // use the light to fragment vector to sample from the depth map
+    float closestDepth = texture(omnidirectionalShadowMap, fragToLight).r;
 
-    float currentDepth = projCoords.z;
-    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    // it is currently in linear range between [0,1]. Re-transform back to original value
+    closestDepth *= far_plane;
 
-    float shadow = 0.0;
+    // now get current linear depth as the length between the fragment and light position
+    float currentDepth = length(fragToLight);
+    // now test for shadows
+    float bias = 0.01;
+    float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
 
-    for (int x = -offset; x <= offset; ++x) {
-        for (int y = -offset; y <= offset; ++y) {
-            float neighbourDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
-            shadow += (currentDepth - bias > neighbourDepth) ? 1.0 : 0.0;
-        }
-    }
+    return shadow;
 
-    return shadow / (kernelSize * kernelSize);
-    // return 0;
+    // return 0.0;
 }
 
 float calculateAttenuation(float fragmentDistance, float a, float b, float c) {
@@ -125,7 +154,7 @@ vec4 calculatePointLights(vec3 viewDirection, float shadow) {
         float fragmentDistance = length(lightPosition - fragmentPosition);
         float attenuationFactor = calculateAttenuation(fragmentDistance, light.attenuationA, light.attenuationB, light.attenuationC);
 
-        lightSum += (ambient + diffuse + specular) * attenuationFactor;
+        lightSum += (ambient + (1.0 - shadow) * (diffuse + specular)) * attenuationFactor;
     }
 
     return vec4(lightSum, 1.0f);
@@ -141,4 +170,16 @@ void main() {
     vec4 color = (textures > 0 ? texture(textureSampler, texturePosition) : defaultColor);
 
     FragColor = color * calculateLight(calculateShadows(fragPosLightSpace));
+
+    mat4 modelM = pointLights[0].modelMatrix;
+    vec3 lightPosition = vec3(modelM * vec4(pointLights[0].position, 1.0f));
+
+    vec3 fragToLight = fragmentPosition - lightPosition;
+
+    // use the light to fragment vector to sample from the depth map
+    float closestDepth = texture(omnidirectionalShadowMap, fragToLight).r;
+
+    float currentDepth = length(fragToLight) / far_plane;
+    // FragColor = vec4(vec3(closestDepth), 1.0);
+    // FragColor = defaultColor;
 }

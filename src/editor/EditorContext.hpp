@@ -35,6 +35,7 @@
 #include "sl/rendering/RenderPass.h"
 #include "sl/rendering/RenderPipeline.h"
 #include "sl/rendering/stages/CaptureDirectionalDepthMapsStage.h"
+#include "sl/rendering/stages/CapturePointDepthMapsStage.h"
 #include "sl/rendering/stages/PrepareLightsStage.h"
 #include "sl/rendering/stages/RenderBoundingBoxesStage.h"
 #include "sl/rendering/stages/RenderMeshesStage.h"
@@ -79,7 +80,9 @@ public:
 
         // setup rendering pipeline
 
-        m_captureDepthMapsRenderPass.addRenderStage(&m_captureDirectionalDepthMapsStage);
+        m_captureDepthMapsRenderPass
+            .addRenderStage(&m_captureDirectionalDepthMapsStage)
+            .addRenderStage(&m_capturePointDepthMapsStage);
 
         m_finalRenderPass
             .addRenderStage(&m_prepareLightsStage)
@@ -277,5 +280,6 @@ private:
     rendering::stages::PrepareLightsStage m_prepareLightsStage;
     rendering::stages::RenderBoundingBoxesStage m_renderBoundingBoxesStage;
     rendering::stages::CaptureDirectionalDepthMapsStage m_captureDirectionalDepthMapsStage;
+    rendering::stages::CapturePointDepthMapsStage m_capturePointDepthMapsStage;
     rendering::stages::RenderVectorsStage m_renderVectorsStage;
 };

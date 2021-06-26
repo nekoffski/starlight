@@ -12,6 +12,10 @@
 #include "sl/scene/components/PointLightComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 
+#include "sl/rendering/utils/Mesh.h"
+#include "sl/rendering/utils/Misc.h"
+#include "sl/utils/Globals.h"
+
 namespace sl::rendering::stages {
 
 class CaptureDirectionalDepthMapsStage : public CustomFrameBufferRenderPass::Stage {

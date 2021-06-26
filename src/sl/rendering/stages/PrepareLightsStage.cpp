@@ -1,5 +1,6 @@
 #include "PrepareLightsStage.h"
 
+#include "sl/core/Profiler.h"
 #include "sl/rendering/utils/Misc.h"
 
 using namespace sl::scene::components;
@@ -7,6 +8,8 @@ using namespace sl::scene::components;
 namespace sl::rendering::stages {
 
 void PrepareLightsStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene) {
+    SL_PROFILE_FUNCTION();
+
     auto [rendererComponents, transforms, directionalLights, pointLights] =
         scene.ecsRegistry.getComponentsViews<MeshRendererComponent,
             TransformComponent, DirectionalLightComponent, PointLightComponent>();
@@ -48,6 +51,10 @@ void PrepareLightsStage::setDirectionalLightProperties(gfx::Shader& shader, cons
 
 void PrepareLightsStage::setPointLightProperties(gfx::Shader& shader, const PointLightComponent& light, const math::Mat4& transform, unsigned int index) {
     std::string strIndex = std::to_string(index);
+
+    light.omnidirectionalShadowMap->bind(index + 1);
+
+    shader.setUniform("far_plane", 25.0f);
 
     shader.setUniform("pointLights[" + strIndex + "].position", light.position);
     shader.setUniform("pointLights[" + strIndex + "].modelMatrix", transform);

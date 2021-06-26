@@ -1,5 +1,6 @@
 #include "RenderSkyboxStage.h"
 
+#include "sl/core/Profiler.h"
 #include "sl/geom/CubemapVertices.h"
 
 namespace sl::rendering::stages {
@@ -15,6 +16,8 @@ RenderSkyboxStage::RenderSkyboxStage() {
 }
 
 void RenderSkyboxStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene) {
+    SL_PROFILE_FUNCTION();
+
     if (not scene.skybox.has_value())
         return;
 

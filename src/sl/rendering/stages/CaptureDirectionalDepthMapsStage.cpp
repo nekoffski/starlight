@@ -1,5 +1,6 @@
 #include "CaptureDirectionalDepthMapsStage.h"
 
+#include "sl/core/Profiler.h"
 #include "sl/rendering/utils/Mesh.h"
 #include "sl/rendering/utils/Misc.h"
 #include "sl/utils/Globals.h"
@@ -14,6 +15,8 @@ CaptureDirectionalDepthMapsStage::CaptureDirectionalDepthMapsStage()
 }
 
 void CaptureDirectionalDepthMapsStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer& frameBuffer) {
+    SL_PROFILE_FUNCTION();
+
     prepareRenderer(renderer);
 
     auto [meshRenderers, transforms, directionalLights, models] =
