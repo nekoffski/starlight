@@ -59,9 +59,12 @@ OpenGlTexture::~OpenGlTexture() {
 void OpenGlTexture::bind(unsigned int index) {
     glActiveTexture(GL_TEXTURE0 + index);
     glBindTexture(GL_TEXTURE_2D, m_textureId);
+
+    m_lastBoundIndex = index;
 }
 
 void OpenGlTexture::unbind() {
+    glActiveTexture(GL_TEXTURE0 + m_lastBoundIndex);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 

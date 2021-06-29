@@ -22,6 +22,8 @@ private:
     unsigned int m_textureId;
     unsigned int m_w;
     unsigned int m_h;
+
+    unsigned int m_lastBoundIndex = 0u;
 };
 
 struct OpenGlTextureFactory : sl::gfx::Texture::Factory {

@@ -56,11 +56,11 @@ void RenderVectorsStage::setVectorUniforms(const physx::ColoredVector& coloredVe
     const auto& [vector, color] = coloredVector;
 
     m_lineShader->setUniform("color", color);
-    m_lineShader->setUniform("model", calculateModelMatrix(vector));
+    m_lineShader->setUniform("modelMatrix", calculateModelMatrix(vector));
 }
 
 void RenderVectorsStage::setCameraUniforms(gfx::camera::Camera& camera) {
-    m_lineShader->setUniform("projection", camera.getProjectionMatrix());
-    m_lineShader->setUniform("view", camera.getViewMatrix());
+    m_lineShader->setUniform("projectionMatrix", camera.getProjectionMatrix());
+    m_lineShader->setUniform("viewMatrix", camera.getViewMatrix());
 }
 }

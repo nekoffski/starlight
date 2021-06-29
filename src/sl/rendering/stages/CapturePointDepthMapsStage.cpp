@@ -19,8 +19,8 @@ using namespace sl::scene::components;
 
 CapturePointDepthMapsStage::CapturePointDepthMapsStage()
     : m_depthShader(gfx::Shader::load(
-          GLOBALS().config.paths.shaders + "/point_depth_capture.vert", GLOBALS().config.paths.shaders + "/point_depth_capture.frag",
-          GLOBALS().config.paths.shaders + "/point_depth_capture.geom")) {
+          GLOBALS().config.paths.shaders + "/PointDepthCapture.vert", GLOBALS().config.paths.shaders + "/PointDepthCapture.frag",
+          GLOBALS().config.paths.shaders + "/PointDepthCapture.geom")) {
 
     m_shadowProjection = math::perspective(math::toRadians(90.0f), aspect, near, far);
 }
@@ -31,7 +31,7 @@ void CapturePointDepthMapsStage::execute(gfx::LowLevelRenderer& renderer, scene:
     prepareRenderer(renderer);
 
     m_depthShader->enable();
-    m_depthShader->setUniform("far_plane", far);
+    m_depthShader->setUniform("farPlane", far);
 
     auto [meshRenderers, transforms, pointLights, models] =
         scene.ecsRegistry.getComponentsViews<MeshRendererComponent, TransformComponent, PointLightComponent, ModelComponent>();
@@ -56,6 +56,8 @@ void CapturePointDepthMapsStage::processLight(PointLightComponent& light, MeshRe
     setLightUniforms(transform * light.position);
 
     frameBuffer.bindCubemap(*light.omnidirectionalShadowMap);
+
+    renderer.clearBuffers(STARL_DEPTH_BUFFER_BIT);
 
     for (auto& meshRenderer : meshRenderers)
         tryToRender(meshRenderer, transforms, models, renderer);

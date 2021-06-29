@@ -68,12 +68,11 @@ void OpenGlCubemap::bind(unsigned int index) {
     glActiveTexture(GL_TEXTURE0 + index);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemapId);
 
-    ++s_currentTextureId;
+    m_lastBoundIndex = index;
 }
 
 void OpenGlCubemap::unbind() {
+    glActiveTexture(GL_TEXTURE0 + m_lastBoundIndex);
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0u);
-
-    --s_currentTextureId;
 }
 }

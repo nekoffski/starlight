@@ -1,11 +1,11 @@
 #version 420 core
 
-out vec4 FragColor;
+out vec4 fragmentColor;
 
 in vec2 texturePosition;
 in vec3 normal;
 in vec3 fragmentPosition;
-in vec4 fragPosLightSpace;
+in vec4 fragmentPositionLightSpace;
 
 struct DirectionalLights {
     vec3 direction;
@@ -31,15 +31,15 @@ struct Material {
 #define MAX_DIRECTIONAL_LIGHTS 64
 #define MAX_POINT_LIGHTS 64
 
-uniform float far_plane;
+uniform float farPlane;
 
 layout(binding = 0) uniform sampler2D textureSampler;
 layout(binding = 1) uniform sampler2D shadowMap;
 
-layout(binding = 1) uniform samplerCube omnidirectionalShadowMap;
+layout(binding = 3) uniform samplerCube omnidirectionalShadowMap;
 
-uniform uint directionalLightsNum;
-uniform uint pointLightsNum;
+uniform uint directionalLightsCount;
+uniform uint pointLightsCount;
 uniform uint textures;
 
 uniform DirectionalLights directionalLights[MAX_DIRECTIONAL_LIGHTS];
@@ -47,34 +47,36 @@ uniform PointLights pointLights[MAX_POINT_LIGHTS];
 uniform Material material;
 uniform vec3 viewPos;
 
-// float calculateShadows(vec4 fragPosLightSpace) {
-//     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-//     projCoords = projCoords * 0.5 + 0.5;
+float calculateShadows_(vec4 fragmentPositionLightSpace) {
+    vec3 projCoords = fragmentPositionLightSpace.xyz / fragmentPositionLightSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
 
-//     if (projCoords.z > 0.45f)
-//         return 0.0f;
+    if (projCoords.z > 0.45f)
+        return 0.0f;
 
-//     const int kernelSize = 3;
-//     const int offset = (kernelSize - 1) / 2;
-//     const float bias = 0.005;
+    const int kernelSize = 3;
+    const int offset = (kernelSize - 1) / 2;
+    const float bias = 0.005;
 
-//     float currentDepth = projCoords.z;
-//     vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    float currentDepth = projCoords.z;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
 
-//     float shadow = 0.0;
+    float shadow = 0.0;
 
-//     for (int x = -offset; x <= offset; ++x) {
-//         for (int y = -offset; y <= offset; ++y) {
-//             float neighbourDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
-//             shadow += (currentDepth - bias > neighbourDepth) ? 1.0 : 0.0;
-//         }
-//     }
+    // for (int x = -offset; x <= offset; ++x) {
+    //     for (int y = -offset; y <= offset; ++y) {
+    //         float neighbourDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+    //         shadow += (currentDepth - bias > neighbourDepth) ? 1.0 : 0.0;
+    //     }
+    // }
+    shadow = (texture(shadowMap, projCoords.xy).r < currentDepth - bias) ? 1.0 : 0.5;
 
-//     return shadow / (kernelSize * kernelSize);
-//     // return 0;
-// }
+    return shadow;
+    // return shadow / (kernelSize * kernelSize);
+    // return 0;
+}
 
-float calculateShadows(vec4 fragPosLightSpace) {
+float calculateShadows(vec4 fragmentPositionLightSpace) {
     // get vector between fragment position and light position
     mat4 modelM = pointLights[0].modelMatrix;
     vec3 lightPosition = vec3(modelM * vec4(pointLights[0].position, 1.0f));
@@ -86,13 +88,13 @@ float calculateShadows(vec4 fragPosLightSpace) {
     float closestDepth = texture(omnidirectionalShadowMap, fragToLight).r;
 
     // it is currently in linear range between [0,1]. Re-transform back to original value
-    closestDepth *= far_plane;
+    closestDepth *= farPlane;
 
     // now get current linear depth as the length between the fragment and light position
     float currentDepth = length(fragToLight);
     // now test for shadows
     float bias = 0.01;
-    float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
+    float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.5;
 
     return shadow;
 
@@ -121,10 +123,11 @@ vec3 calculateSpecular(vec3 viewDirection, vec3 lightDirection, vec3 lightColor)
     return specularFactor * spec * lightColor * material.specularColor;
 }
 
-vec4 calculateDirectionalLights(vec3 viewDirection, float shadow) {
+vec4 calculateDirectionalLights(vec3 viewDirection, float shadow_) {
     vec3 lightSum = vec3(0.0f);
+    float shadow = calculateShadows_(fragmentPositionLightSpace);
 
-    for (uint i = 0u; i < directionalLightsNum; ++i) {
+    for (uint i = 0u; i < directionalLightsCount; ++i) {
         DirectionalLights light = directionalLights[i];
 
         vec3 lightDir = normalize(light.direction);
@@ -142,7 +145,7 @@ vec4 calculateDirectionalLights(vec3 viewDirection, float shadow) {
 vec4 calculatePointLights(vec3 viewDirection, float shadow) {
     vec3 lightSum = vec3(0.0f);
 
-    for (uint i = 0u; i < pointLightsNum; ++i) {
+    for (uint i = 0u; i < pointLightsCount; ++i) {
         PointLights light = pointLights[i];
         vec3 lightPosition = vec3(light.modelMatrix * vec4(light.position, 1.0f));
         vec3 lightDirection = normalize(lightPosition - fragmentPosition);
@@ -169,17 +172,5 @@ void main() {
     vec4 defaultColor = vec4(1.0, 1.0, 1.0, 1.0);
     vec4 color = (textures > 0 ? texture(textureSampler, texturePosition) : defaultColor);
 
-    FragColor = color * calculateLight(calculateShadows(fragPosLightSpace));
-
-    mat4 modelM = pointLights[0].modelMatrix;
-    vec3 lightPosition = vec3(modelM * vec4(pointLights[0].position, 1.0f));
-
-    vec3 fragToLight = fragmentPosition - lightPosition;
-
-    // use the light to fragment vector to sample from the depth map
-    float closestDepth = texture(omnidirectionalShadowMap, fragToLight).r;
-
-    float currentDepth = length(fragToLight) / far_plane;
-    // FragColor = vec4(vec3(closestDepth), 1.0);
-    // FragColor = defaultColor;
+    fragmentColor = vec4(0.1, 0.1, 0.1, 1.0) + color * calculateLight(calculateShadows(fragmentPositionLightSpace));
 }

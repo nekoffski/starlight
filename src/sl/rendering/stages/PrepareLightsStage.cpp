@@ -3,6 +3,8 @@
 #include "sl/core/Profiler.h"
 #include "sl/rendering/utils/Misc.h"
 
+#include "sl/core/Logger.h"
+
 using namespace sl::scene::components;
 
 namespace sl::rendering::stages {
@@ -26,7 +28,7 @@ void PrepareLightsStage::prepareDirectionalLights(DirectionalLightComponent::Vie
         if (directionalLight.isActive)
             setDirectionalLightProperties(shader, directionalLight, lightIndex++);
 
-    shader.setUniform("directionalLightsNum", lightIndex);
+    shader.setUniform("directionalLightsCount", lightIndex);
 }
 
 void PrepareLightsStage::preparePointLights(PointLightComponent::View& lights, TransformComponent::View& transforms, gfx::Shader& shader) {
@@ -37,7 +39,7 @@ void PrepareLightsStage::preparePointLights(PointLightComponent::View& lights, T
             setPointLightProperties(shader, pointLight, transform, lightIndex++);
         }
 
-    shader.setUniform("pointLightsNum", lightIndex);
+    shader.setUniform("pointLightsCount", lightIndex);
 }
 
 void PrepareLightsStage::setDirectionalLightProperties(gfx::Shader& shader, const DirectionalLightComponent& light, unsigned int index) {
@@ -52,9 +54,9 @@ void PrepareLightsStage::setDirectionalLightProperties(gfx::Shader& shader, cons
 void PrepareLightsStage::setPointLightProperties(gfx::Shader& shader, const PointLightComponent& light, const math::Mat4& transform, unsigned int index) {
     std::string strIndex = std::to_string(index);
 
-    light.omnidirectionalShadowMap->bind(index + 1);
+    light.omnidirectionalShadowMap->bind(3);
 
-    shader.setUniform("far_plane", 25.0f);
+    shader.setUniform("farPlane", 25.0f);
 
     shader.setUniform("pointLights[" + strIndex + "].position", light.position);
     shader.setUniform("pointLights[" + strIndex + "].modelMatrix", transform);

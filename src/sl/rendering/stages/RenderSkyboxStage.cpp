@@ -23,9 +23,11 @@ void RenderSkyboxStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& s
 
     auto& skybox = scene.skybox;
 
+    skybox->cubemap->bind(0);
+
     skybox->shader->enable();
-    skybox->shader->setUniform("projection", scene.camera->getProjectionMatrix());
-    skybox->shader->setUniform("view", scene.camera->getViewMatrix());
+    skybox->shader->setUniform("projectionMatrix", scene.camera->getProjectionMatrix());
+    skybox->shader->setUniform("viewMatrix", scene.camera->getViewMatrix());
 
     m_cubemapVertexArray->bind();
 
@@ -35,6 +37,8 @@ void RenderSkyboxStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& s
     renderer.setTemporarySettings(settings);
     renderer.renderVertexArray(*m_cubemapVertexArray);
     renderer.restoreSettings();
+
+    skybox->cubemap->unbind();
 
     m_cubemapVertexArray->unbind();
     skybox->shader->disable();

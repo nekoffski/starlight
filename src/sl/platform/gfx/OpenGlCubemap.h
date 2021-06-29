@@ -22,6 +22,7 @@ public:
 
 private:
     unsigned int m_cubemapId;
+    unsigned int m_lastBoundIndex = 0u;
 };
 
 struct OpenGlCubemapFactory : sl::gfx::Cubemap::Factory {

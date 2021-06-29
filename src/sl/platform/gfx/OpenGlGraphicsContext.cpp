@@ -25,7 +25,7 @@ OpenGlGraphicsContext::OpenGlGraphicsContext(void* windowHandle)
         throw core::GraphicsError { core::ErrorCode::CouldNotLoadGraphicsApi };
 
     // TODO: make it configurable
-    //glEnable(GL_DEBUG_OUTPUT);
+    // glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(messageCallback, 0);
 }
 

@@ -9,8 +9,7 @@ namespace sl::rendering::stages {
 using namespace sl::scene::components;
 
 RenderBoundingBoxesStage::RenderBoundingBoxesStage()
-    : m_boundingBoxShader(gfx::Shader::load(
-          GLOBALS().config.paths.shaders + "/rigid_body.vert", GLOBALS().config.paths.shaders + "/rigid_body.frag")) {
+    : m_boundingBoxShader(GLOBALS().shaders->singleColorShader) {
 }
 
 void RenderBoundingBoxesStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene) {
@@ -37,7 +36,8 @@ void RenderBoundingBoxesStage::processRigidBody(RigidBodyComponent& rigidBody, T
     const auto& entityId = rigidBody.ownerEntityId;
     const auto& modelMatrix = utils::getModelMatrix(entityId, transforms);
 
-    m_boundingBoxShader->setUniform("model", modelMatrix);
+    m_boundingBoxShader->setUniform("modelMatrix", modelMatrix);
+    m_boundingBoxShader->setUniform("color", core::color::red);
 
     if (not rigidBody.renderBoundingBox || rigidBody.boundingBox == nullptr)
         return;
@@ -55,8 +55,8 @@ void RenderBoundingBoxesStage::queueVelocityVectorForBeingRendered(physx::Vector
 }
 
 void RenderBoundingBoxesStage::setShaderTransforms(gfx::camera::Camera& camera) {
-    m_boundingBoxShader->setUniform("projection", camera.getProjectionMatrix());
-    m_boundingBoxShader->setUniform("view", camera.getViewMatrix());
+    m_boundingBoxShader->setUniform("projectionMatrix", camera.getProjectionMatrix());
+    m_boundingBoxShader->setUniform("viewMatrix", camera.getViewMatrix());
 }
 
 void RenderBoundingBoxesStage::prepareRenderer(gfx::LowLevelRenderer& renderer) {

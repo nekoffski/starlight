@@ -12,13 +12,13 @@ namespace sl::utils::globals {
 
 Shaders::Shaders() {
     defaultCubemapShader = gfx::Shader::load(
-        GLOBALS().config.paths.shaders + "/cubemap.vert", GLOBALS().config.paths.shaders + "/cubemap.frag");
+        GLOBALS().config.paths.shaders + "/Cubemap.vert", GLOBALS().config.paths.shaders + "/Cubemap.frag");
 
     singleColorShader = gfx::Shader::load(
-        GLOBALS().config.paths.shaders + "/single_color.vert", GLOBALS().config.paths.shaders + "/single_color.frag");
+        GLOBALS().config.paths.shaders + "/SingleColor.vert", GLOBALS().config.paths.shaders + "/SingleColor.frag");
 
     defaultModelShader = gfx::Shader::load(
-        GLOBALS().config.paths.shaders + "/t.vert", GLOBALS().config.paths.shaders + "/t.frag");
+        GLOBALS().config.paths.shaders + "/DefaultModelShader.vert", GLOBALS().config.paths.shaders + "/DefaultModelShader.frag");
     defaultModelShader->name = "default-model-shader";
 
     pfxShader = gfx::Shader::load(

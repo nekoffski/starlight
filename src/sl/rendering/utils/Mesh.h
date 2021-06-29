@@ -22,9 +22,17 @@ inline void renderMesh(gfx::LowLevelRenderer& renderer, geom::Mesh& mesh) {
         texture->unbind();
 }
 
+inline void renderMeshWithoutTextures(gfx::LowLevelRenderer& renderer, geom::Mesh& mesh) {
+    auto& vao = mesh.vertexArray;
+
+    vao->bind();
+    renderer.renderVertexArray(*vao);
+    vao->unbind();
+}
+
 inline void renderModel(gfx::LowLevelRenderer& renderer, gfx::Shader& shader, scene::components::ModelComponent& model, const math::Mat4& transform) {
     for (auto& position : model.instances) {
-        shader.setUniform("model", transform * math::translate(position));
+        shader.setUniform("modelMatrix", transform * math::translate(position));
 
         for (auto& mesh : model.meshes) {
             shader.setUniform("textures", static_cast<unsigned int>(mesh->textures.size()));

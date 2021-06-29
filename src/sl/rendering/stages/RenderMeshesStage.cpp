@@ -59,10 +59,9 @@ const MaterialComponent& RenderMeshesStage::getMaterial(const std::string& entit
 }
 
 void RenderMeshesStage::setUniforms(gfx::Shader& shader, gfx::camera::Camera& camera, const MaterialComponent& material) {
-    shader.setUniform("view", camera.getViewMatrix());
-    shader.setUniform("projection", camera.getProjectionMatrix());
-    shader.setUniform("viewPos", camera.getPosition());
-    shader.setUniform("t", CLOCK().nowAsFloat());
+    shader.setUniform("viewMatrix", camera.getViewMatrix());
+    shader.setUniform("projectionMatrix", camera.getProjectionMatrix());
+    shader.setUniform("viewPosition", camera.getPosition());
 
     setMaterialUniforms(material, shader);
 }
