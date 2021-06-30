@@ -17,6 +17,9 @@ void MeshRendererComponentGui::renderComponentGuiImpl(MeshRendererComponent& com
 
         component.polygonMode = getPolygonMode(params.polygonModeItem);
 
+        gui.displayText("\n");
+        gui.checkbox("Is transparent for light", component.isTransparentForLight);
+
         gui.popTreeNode();
     }
 

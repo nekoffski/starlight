@@ -60,7 +60,8 @@ void CapturePointDepthMapsStage::processLight(PointLightComponent& light, MeshRe
     renderer.clearBuffers(STARL_DEPTH_BUFFER_BIT);
 
     for (auto& meshRenderer : meshRenderers)
-        tryToRender(meshRenderer, transforms, models, renderer);
+        if (not meshRenderer.isTransparentForLight)
+            tryToRender(meshRenderer, transforms, models, renderer);
 }
 
 void CapturePointDepthMapsStage::setLightUniforms(const math::Vec3& lightPosition) {

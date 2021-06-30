@@ -20,6 +20,8 @@ struct MeshRendererComponent : ecs::Component {
 
     std::shared_ptr<gfx::Shader> shader;
     unsigned int polygonMode;
+
+    bool isTransparentForLight = false;
 };
 
 }

@@ -19,5 +19,6 @@ void main() {
     normal = vec3(transpose(inverse(modelMatrix)) * vec4(iNormal, 1.0f));
     fragmentPosition = vec3(modelMatrix * vec4(iPosition, 1.0f));
     fragmentPositionLightSpace = lightSpaceMatrix * vec4(fragmentPosition, 1.0);
+
     gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(iPosition, 1.0);
 }

@@ -50,7 +50,8 @@ void CaptureDirectionalDepthMapsStage::renderDepth(DirectionalLightComponent& li
     m_depthShader->setUniform("lightSpaceMatrix", light.spaceMatrix);
 
     for (auto& meshRenderer : meshRenderers)
-        tryToRenderModel(meshRenderer, transforms, models, renderer);
+        if (not meshRenderer.isTransparentForLight)
+            tryToRenderModel(meshRenderer, transforms, models, renderer);
 }
 
 void CaptureDirectionalDepthMapsStage::tryToRenderModel(MeshRendererComponent& meshRenderer, TransformComponent::View& transforms,
