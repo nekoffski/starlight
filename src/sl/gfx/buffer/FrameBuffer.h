@@ -4,6 +4,7 @@
 
 #include "sl/gfx/Cubemap.h"
 #include "sl/gfx/Texture.h"
+#include "sl/gfx/buffer/RenderBuffer.h"
 
 namespace sl::gfx::buffer {
 
@@ -18,8 +19,11 @@ public:
 
     virtual ~FrameBuffer() = default;
 
-    virtual void bindTexture(sl::gfx::Texture&) = 0;
-    virtual void bindCubemap(sl::gfx::Cubemap&) = 0;
+    virtual void bindRenderBuffer(RenderBuffer&) = 0;
+    virtual void bindTexture(Texture&, unsigned int attachment) = 0;
+    virtual void bindTexture(Texture&) = 0;
+    virtual void bindCubemap(Cubemap&) = 0;
+
     virtual void bind() = 0;
     virtual void unbind() = 0;
 };

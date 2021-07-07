@@ -8,11 +8,11 @@
 
 namespace sl::rendering::stages {
 
-class RenderBoundingBoxesStage : public DefaultFrameBufferRenderPass::Stage {
+class RenderBoundingBoxesStage : public Stage {
 public:
     explicit RenderBoundingBoxesStage();
 
-    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene) override;
+    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer*) override;
 
 private:
     void renderBoundingBox(gfx::LowLevelRenderer& renderer, physx::BoundingBox& boundingBox);

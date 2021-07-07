@@ -6,11 +6,11 @@
 
 namespace sl::rendering::stages {
 
-class RenderSkyboxStage : public DefaultFrameBufferRenderPass::Stage {
+class RenderSkyboxStage : public Stage {
 public:
     explicit RenderSkyboxStage();
 
-    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene) override;
+    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer*) override;
 
 private:
     std::shared_ptr<gfx::buffer::VertexArray> m_cubemapVertexArray;

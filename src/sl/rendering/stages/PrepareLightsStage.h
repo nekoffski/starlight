@@ -9,9 +9,9 @@
 
 namespace sl::rendering::stages {
 
-class PrepareLightsStage : public DefaultFrameBufferRenderPass::Stage {
+class PrepareLightsStage : public Stage {
 public:
-    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene) override;
+    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer*) override;
 
 private:
     void prepareDirectionalLights(scene::components::DirectionalLightComponent::View& lights, gfx::Shader& shader);

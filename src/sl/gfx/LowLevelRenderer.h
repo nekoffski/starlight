@@ -65,6 +65,10 @@ public:
         m_gfxContext->setViewport(m_viewport);
     }
 
+    ViewFrustum::Viewport getViewport() const {
+        return m_viewport;
+    }
+
     void setViewport(const ViewFrustum::Viewport& viewport) {
         m_viewport = viewport;
         restoreViewport();

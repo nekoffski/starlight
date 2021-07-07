@@ -18,11 +18,11 @@
 
 namespace sl::rendering::stages {
 
-class CaptureDirectionalDepthMapsStage : public CustomFrameBufferRenderPass::Stage {
+class CaptureDirectionalDepthMapsStage : public Stage {
 public:
     explicit CaptureDirectionalDepthMapsStage();
 
-    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer& frameBuffer) override;
+    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer* frameBuffer) override;
 
 private:
     void renderDepth(scene::components::DirectionalLightComponent& light, scene::components::MeshRendererComponent::View& meshRenderers,

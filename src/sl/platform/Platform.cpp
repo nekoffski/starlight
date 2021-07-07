@@ -10,6 +10,7 @@
 #include "gfx/OpenGlFrameBuffer.h"
 #include "gfx/OpenGlGraphicsContext.h"
 #include "gfx/OpenGlRenderApi.h"
+#include "gfx/OpenGlRenderBuffer.h"
 #include "gfx/OpenGlShader.h"
 #include "gfx/OpenGlShaderCompilerImpl.h"
 #include "gfx/OpenGlTexture.h"
@@ -21,6 +22,10 @@
 #include "sl/platform/PlatformDetector.h"
 
 namespace sl::platform {
+
+std::unique_ptr<sl::gfx::buffer::RenderBuffer::Factory> createRenderBufferFactory() {
+    return std::make_unique<gfx::OpenGlRenderBufferFactory>();
+}
 
 std::unique_ptr<sl::gfx::RenderApi::Factory> createRenderApiFactory() {
     return std::make_unique<gfx::OpenGlRenderApiFactory>();

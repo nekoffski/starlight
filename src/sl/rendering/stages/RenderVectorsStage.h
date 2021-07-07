@@ -7,11 +7,11 @@
 
 namespace sl::rendering::stages {
 
-class RenderVectorsStage : public DefaultFrameBufferRenderPass::Stage {
+class RenderVectorsStage : public Stage {
 public:
     explicit RenderVectorsStage();
 
-    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene) override;
+    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer*) override;
 
 private:
     void renderVector(const physx::ColoredVector& coloredVector, gfx::LowLevelRenderer& renderer);

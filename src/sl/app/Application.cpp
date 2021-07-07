@@ -16,6 +16,7 @@
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/gfx/buffer/ElementBuffer.h"
 #include "sl/gfx/buffer/FrameBuffer.h"
+#include "sl/gfx/buffer/RenderBuffer.h"
 #include "sl/gfx/buffer/VertexArray.h"
 #include "sl/gfx/buffer/VertexBuffer.h"
 #include "sl/gui/GuiApi.h"
@@ -31,6 +32,7 @@ void Application::initDefaultFactories() {
     gfx::buffer::VertexBuffer::factory = platform::createVertexBufferFactory();
     gfx::buffer::FrameBuffer::factory = platform::createFrameBufferFactory();
     gfx::buffer::ElementBuffer::factory = platform::createElementBufferFactory();
+    gfx::buffer::RenderBuffer::factory = platform::createRenderBufferFactory();
 
     gfx::Texture::factory = platform::createTextureFactory();
     gfx::Cubemap::factory = platform::createCubemapFactory();

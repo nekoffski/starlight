@@ -1,17 +1,13 @@
 #pragma once
 
 #include "RenderPass.h"
-#include "StageBase.h"
+#include "Stage.h"
 #include "sl/gfx/LowLevelRenderer.h"
 
 namespace sl::rendering {
 
 class DefaultFrameBufferRenderPass : public RenderPass {
 public:
-    struct Stage : public StageBase {
-        virtual void execute(gfx::LowLevelRenderer&, scene::Scene& scene) = 0;
-    };
-
     DefaultFrameBufferRenderPass& addRenderStage(Stage* renderStage) {
         m_renderStages.push_back(renderStage);
         return *this;
@@ -26,7 +22,7 @@ public:
             scene.skybox->cubemap->bind();
 
         for (auto& renderStage : m_renderStages)
-            renderStage->execute(renderer, scene);
+            renderStage->execute(renderer, scene, nullptr);
 
         if (hasSkybox)
             scene.skybox->cubemap->unbind();

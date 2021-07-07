@@ -12,7 +12,7 @@ public:
         : m_window(window) {
     }
 
-    const Window::Size& getSize() const {
+    Window::Size getSize() const {
         return m_window->getSize();
     }
 

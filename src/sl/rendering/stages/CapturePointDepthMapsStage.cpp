@@ -25,7 +25,7 @@ CapturePointDepthMapsStage::CapturePointDepthMapsStage()
     m_shadowProjection = math::perspective(math::toRadians(90.0f), aspect, near, far);
 }
 
-void CapturePointDepthMapsStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer& frameBuffer) {
+void CapturePointDepthMapsStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer* frameBuffer) {
     SL_PROFILE_FUNCTION();
 
     prepareRenderer(renderer);
@@ -50,12 +50,12 @@ void CapturePointDepthMapsStage::execute(gfx::LowLevelRenderer& renderer, scene:
 }
 
 void CapturePointDepthMapsStage::processLight(PointLightComponent& light, MeshRendererComponent::View& meshRenderers,
-    TransformComponent::View& transforms, ModelComponent::View& models, gfx::LowLevelRenderer& renderer, gfx::buffer::FrameBuffer& frameBuffer) {
+    TransformComponent::View& transforms, ModelComponent::View& models, gfx::LowLevelRenderer& renderer, gfx::buffer::FrameBuffer* frameBuffer) {
 
     const auto& transform = utils::getModelMatrix(light.ownerEntityId, transforms);
     setLightUniforms(transform * light.position);
 
-    frameBuffer.bindCubemap(*light.omnidirectionalShadowMap);
+    frameBuffer->bindCubemap(*light.omnidirectionalShadowMap);
 
     renderer.clearBuffers(STARL_DEPTH_BUFFER_BIT);
 

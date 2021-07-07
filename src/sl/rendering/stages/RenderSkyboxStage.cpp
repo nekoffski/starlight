@@ -15,7 +15,7 @@ RenderSkyboxStage::RenderSkyboxStage() {
     m_cubemapVertexArray->addVertexBuffer(vertexBuffer);
 }
 
-void RenderSkyboxStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene) {
+void RenderSkyboxStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer*) {
     SL_PROFILE_FUNCTION();
 
     if (not scene.skybox.has_value())

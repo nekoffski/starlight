@@ -38,9 +38,12 @@
 #include "sl/rendering/stages/CapturePointDepthMapsStage.h"
 #include "sl/rendering/stages/PrepareLightsStage.h"
 #include "sl/rendering/stages/RenderBoundingBoxesStage.h"
+#include "sl/rendering/stages/RenderColorBufferState.h"
 #include "sl/rendering/stages/RenderMeshesStage.h"
 #include "sl/rendering/stages/RenderSkyboxStage.h"
 #include "sl/rendering/stages/RenderVectorsStage.h"
+
+#include "sl/gfx/buffer/RenderBuffer.h"
 
 #include <memory>
 
@@ -56,7 +59,9 @@ public:
         : ApplicationContext(ident)
         , m_engineState(editor::EngineState::stopped)
         , m_depthFrameBuffer(gfx::buffer::FrameBuffer::factory->create())
-        , m_captureDepthMapsRenderPass(m_depthFrameBuffer.get()) {
+        , m_captureDepthMapsRenderPass(m_depthFrameBuffer.get())
+        , m_sceneQuadFrameBuffer(gfx::buffer::FrameBuffer::factory->create())
+        , m_captureSceneRenderPass(m_sceneQuadFrameBuffer.get()) {
     }
 
     void onInit() override {
@@ -79,19 +84,27 @@ public:
         recalculateViewportSize(windowWidth, windowHeight);
 
         // setup rendering pipeline
+        m_renderColorBufferStage.setWindowProxy(m_windowProxy.get());
+        m_renderColorBufferStage.setColorBuffer(m_colorBuffer.get());
 
         m_captureDepthMapsRenderPass
             .addRenderStage(&m_captureDirectionalDepthMapsStage)
             .addRenderStage(&m_capturePointDepthMapsStage);
 
-        m_finalRenderPass
+        // m_finalRenderPass
+        m_captureSceneRenderPass
             .addRenderStage(&m_prepareLightsStage)
             .addRenderStage(&m_renderMeshesStage)
             .addRenderStage(&m_renderBoundingBoxesStage)
             .addRenderStage(&m_renderVectorsStage)
             .addRenderStage(&m_renderSkyboxStage);
 
-        m_renderPipeline.addRenderPass(&m_captureDepthMapsRenderPass).addRenderPass(&m_finalRenderPass);
+        m_finalRenderPass.addRenderStage(&m_renderColorBufferStage);
+
+        m_renderPipeline
+            .addRenderPass(&m_captureDepthMapsRenderPass)
+            .addRenderPass(&m_captureSceneRenderPass)
+            .addRenderPass(&m_finalRenderPass);
 
         WRITE_DEBUG("{}", "Editor context initialized");
     }
@@ -217,6 +230,16 @@ public:
         m_activeCamera->viewFrustum.viewport = newViewport;
         m_activeCamera->calculateProjectionMatrix();
 
+        m_depthBuffer = gfx::buffer::RenderBuffer::factory->create(STARL_DEPTH_COMPONENT, width, height);
+        m_colorBuffer = gfx::Texture::factory->create(width, height, STARL_RGBA16, STARL_RGBA);
+
+        m_sceneQuadFrameBuffer->bind();
+        m_sceneQuadFrameBuffer->bindTexture(*m_colorBuffer, STARL_COLOR_ATTACHMENT0);
+        m_sceneQuadFrameBuffer->bindRenderBuffer(*m_depthBuffer);
+        m_sceneQuadFrameBuffer->unbind();
+
+        m_renderColorBufferStage.setColorBuffer(m_colorBuffer.get());
+
         m_lowLevelRendererProxy->setViewport(newViewport);
     }
 
@@ -270,10 +293,15 @@ private:
 
     std::shared_ptr<gfx::buffer::FrameBuffer> m_depthFrameBuffer;
 
+    std::shared_ptr<gfx::buffer::FrameBuffer> m_sceneQuadFrameBuffer;
+    std::unique_ptr<gfx::buffer::RenderBuffer> m_depthBuffer;
+    std::unique_ptr<gfx::Texture> m_colorBuffer;
+
     rendering::RenderPipeline m_renderPipeline;
 
     rendering::DefaultFrameBufferRenderPass m_finalRenderPass;
     rendering::CustomFrameBufferRenderPass m_captureDepthMapsRenderPass;
+    rendering::CustomFrameBufferRenderPass m_captureSceneRenderPass;
 
     rendering::stages::RenderSkyboxStage m_renderSkyboxStage;
     rendering::stages::RenderMeshesStage m_renderMeshesStage;
@@ -282,4 +310,5 @@ private:
     rendering::stages::CaptureDirectionalDepthMapsStage m_captureDirectionalDepthMapsStage;
     rendering::stages::CapturePointDepthMapsStage m_capturePointDepthMapsStage;
     rendering::stages::RenderVectorsStage m_renderVectorsStage;
+    rendering::stages::RenderColorBufferStage m_renderColorBufferStage;
 };

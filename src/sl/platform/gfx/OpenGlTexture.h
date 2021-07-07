@@ -7,7 +7,7 @@ namespace sl::platform::gfx {
 class OpenGlTexture : public sl::gfx::Texture {
 public:
     explicit OpenGlTexture(sl::gfx::Image&);
-    explicit OpenGlTexture(unsigned int, unsigned int);
+    explicit OpenGlTexture(unsigned int, unsigned int, int, int);
 
     ~OpenGlTexture() override;
 
@@ -31,8 +31,8 @@ struct OpenGlTextureFactory : sl::gfx::Texture::Factory {
         return std::make_unique<OpenGlTexture>(image);
     }
 
-    std::unique_ptr<sl::gfx::Texture> create(unsigned int w, unsigned int h) override {
-        return std::make_unique<OpenGlTexture>(w, h);
+    std::unique_ptr<sl::gfx::Texture> create(unsigned int w, unsigned int h, int internalFormat, int format) override {
+        return std::make_unique<OpenGlTexture>(w, h, internalFormat, format);
     }
 };
 }

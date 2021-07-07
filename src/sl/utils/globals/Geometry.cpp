@@ -139,17 +139,17 @@ void Geometry::initSquares() {
     const static math::Vec3 normal { 0.0f, 1.0f, 0.0f };
 
     const std::vector<geom::Vertex> verticesUp {
-        geom::Vertex { { -0.5f, 0.0f, -0.5f }, normal, normal, normal, normal },
-        geom::Vertex { { 0.5f, 0.0f, -0.5f }, normal, normal, normal, normal },
-        geom::Vertex { { 0.5f, 0.0f, 0.5f }, normal, normal, normal, normal },
-        geom::Vertex { { -0.5f, 0.0f, 0.5f }, normal, normal, normal, normal }
+        geom::Vertex { { -1.0f, 0.0f, -1.0f }, normal, normal, normal, normal },
+        geom::Vertex { { 1.0f, 0.0f, -1.0f }, normal, normal, normal, normal },
+        geom::Vertex { { 1.0f, 0.0f, 1.0f }, normal, normal, normal, normal },
+        geom::Vertex { { -1.0f, 0.0f, 1.0f }, normal, normal, normal, normal }
     };
 
     const std::vector<geom::Vertex> verticesFront {
-        geom::Vertex { { -0.5f, -0.5f, 0.0f }, normal, { 0.0f, 1.0f }, normal, normal },
-        geom::Vertex { { 0.5f, -0.5f, 0.0f }, normal, { 1.0f, 1.0f }, normal, normal },
-        geom::Vertex { { 0.5f, 0.5f, 0.0f }, normal, { 1.0f, 0.0f }, normal, normal },
-        geom::Vertex { { -0.5f, 0.5f, 0.0f }, normal, { 0.0f, 0.0f }, normal, normal }
+        geom::Vertex { { -1.0, -1.0f, 0.0f }, normal, { 0.0f, 1.0f }, normal, normal },
+        geom::Vertex { { 1.0f, -1.0f, 0.0f }, normal, { 1.0f, 1.0f }, normal, normal },
+        geom::Vertex { { 1.0f, 1.0f, 0.0f }, normal, { 1.0f, 0.0f }, normal, normal },
+        geom::Vertex { { -1.0f, 1.0f, 0.0f }, normal, { 0.0f, 0.0f }, normal, normal }
     };
 
     std::tie(upSquareMesh, upSquareVAO) = initSquare(std::move(verticesUp), "up-square");

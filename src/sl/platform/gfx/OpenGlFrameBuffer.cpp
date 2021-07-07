@@ -24,6 +24,14 @@ void OpenGlFrameBuffer::unbind() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0u);
 }
 
+void OpenGlFrameBuffer::bindRenderBuffer(sl::gfx::buffer::RenderBuffer& buffer) {
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, buffer.getBufferId());
+}
+
+void OpenGlFrameBuffer::bindTexture(sl::gfx::Texture& texture, unsigned int attachment) {
+    glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture.getBuffer(), 0);
+}
+
 void OpenGlFrameBuffer::bindTexture(sl::gfx::Texture& texture) {
     // TODO: make it configurable
     //    texture->bind();

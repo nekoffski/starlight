@@ -13,6 +13,8 @@ public:
     void bind() override;
     void unbind() override;
 
+    void bindRenderBuffer(sl::gfx::buffer::RenderBuffer&) override;
+    void bindTexture(sl::gfx::Texture&, unsigned int attachment) override;
     void bindTexture(sl::gfx::Texture&) override;
     void bindCubemap(sl::gfx::Cubemap&) override;
 

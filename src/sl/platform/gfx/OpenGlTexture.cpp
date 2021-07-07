@@ -35,14 +35,13 @@ OpenGlTexture::OpenGlTexture(sl::gfx::Image& image)
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-OpenGlTexture::OpenGlTexture(unsigned int w, unsigned int h)
+OpenGlTexture::OpenGlTexture(unsigned int w, unsigned int h, int internalFormat, int format)
     : m_w(w)
     , m_h(h) {
 
     glGenTextures(1, &m_textureId);
     glBindTexture(GL_TEXTURE_2D, m_textureId);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
-        m_w, m_h, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_w, m_h, 0, format, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

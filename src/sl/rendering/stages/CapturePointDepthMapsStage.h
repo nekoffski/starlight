@@ -12,18 +12,18 @@
 
 namespace sl::rendering::stages {
 
-class CapturePointDepthMapsStage : public CustomFrameBufferRenderPass::Stage {
+class CapturePointDepthMapsStage : public Stage {
     inline static constexpr unsigned int facesCount = 6;
 
 public:
     explicit CapturePointDepthMapsStage();
 
-    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer& frameBuffer) override;
+    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer* frameBuffer) override;
 
 private:
     void processLight(scene::components::PointLightComponent& light, scene::components::MeshRendererComponent::View& meshRenderers,
         scene::components::TransformComponent::View& transforms, scene::components::ModelComponent::View& models,
-        gfx::LowLevelRenderer& renderer, gfx::buffer::FrameBuffer& frameBuffer);
+        gfx::LowLevelRenderer& renderer, gfx::buffer::FrameBuffer* frameBuffer);
 
     void setLightUniforms(const math::Vec3& lightPosition);
 

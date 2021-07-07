@@ -14,7 +14,7 @@ CaptureDirectionalDepthMapsStage::CaptureDirectionalDepthMapsStage()
           GLOBALS().config.paths.shaders + "/DirectionalDepthCapture.vert", GLOBALS().config.paths.shaders + "/DirectionalDepthCapture.frag")) {
 }
 
-void CaptureDirectionalDepthMapsStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer& frameBuffer) {
+void CaptureDirectionalDepthMapsStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer* frameBuffer) {
     SL_PROFILE_FUNCTION();
 
     prepareRenderer(renderer);
@@ -31,7 +31,7 @@ void CaptureDirectionalDepthMapsStage::execute(gfx::LowLevelRenderer& renderer, 
         if (light.renderDirection)
             queueDirectionVectorForBeingRendered(light.direction, scene);
 
-        frameBuffer.bindTexture(*light.shadowMap);
+        frameBuffer->bindTexture(*light.shadowMap);
 
         renderer.clearBuffers(STARL_DEPTH_BUFFER_BIT);
 

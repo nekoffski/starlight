@@ -11,9 +11,9 @@
 
 namespace sl::rendering::stages {
 
-class RenderMeshesStage : public DefaultFrameBufferRenderPass::Stage {
+class RenderMeshesStage : public Stage {
 public:
-    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene) override;
+    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer*) override;
 
 private:
     void processMeshRendererComponent(scene::components::MeshRendererComponent& meshRendererComponent, scene::components::TransformComponent::View& transforms,

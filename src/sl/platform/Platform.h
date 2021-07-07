@@ -14,6 +14,7 @@
 #include "sl/gfx/Texture.h"
 #include "sl/gfx/buffer/ElementBuffer.h"
 #include "sl/gfx/buffer/FrameBuffer.h"
+#include "sl/gfx/buffer/RenderBuffer.h"
 #include "sl/gfx/buffer/VertexArray.h"
 #include "sl/gfx/buffer/VertexBuffer.h"
 #include "sl/gui/GuiApi.h"
@@ -35,4 +36,5 @@ std::unique_ptr<sl::gfx::GraphicsContext::Factory> createGraphicsContextFactory(
 std::unique_ptr<sl::gfx::ShaderCompilerImpl::Factory> createShaderCompilerImplFactory();
 std::unique_ptr<geom::ModelLoaderImpl::Factory> createModelLoaderImplFactory();
 std::unique_ptr<sl::gfx::RenderApi::Factory> createRenderApiFactory();
+std::unique_ptr<sl::gfx::buffer::RenderBuffer::Factory> createRenderBufferFactory();
 }
