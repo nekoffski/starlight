@@ -48,4 +48,9 @@ void OpenGlFrameBuffer::bindCubemap(sl::gfx::Cubemap& cubemap) {
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
 }
+
+void OpenGlFrameBuffer::specifyColorBuffers(const std::vector<unsigned int>& buffers) {
+    glDrawBuffers(buffers.size(), buffers.data());
+}
+
 }

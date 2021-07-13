@@ -39,6 +39,11 @@ OpenGlTexture::OpenGlTexture(unsigned int w, unsigned int h, int internalFormat,
     : m_w(w)
     , m_h(h) {
 
+    // TODO: virtual getters in Texture instead
+
+    this->internalFormat = internalFormat;
+    this->format = format;
+
     glGenTextures(1, &m_textureId);
     glBindTexture(GL_TEXTURE_2D, m_textureId);
     glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_w, m_h, 0, format, GL_FLOAT, nullptr);

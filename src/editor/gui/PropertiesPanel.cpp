@@ -84,5 +84,15 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
         gui.sliderFloat("##Gravity acceleration", GLOBALS().world.gravity.y, 0.0f, 25.0f);
         gui.popTreeNode();
     }
+
+    gui.displayText("\n");
+
+    if (gui.beginTreeNode(ICON_FA_EYE "  Visual")) {
+        gui.displayText("Gamma corection");
+        gui.sliderFloat("##Gamma correction", GLOBALS().visual.gammaCorrection, 0.0f, 5.0f);
+
+        gui.displayText("Exposure");
+        gui.sliderFloat("##Exposure", GLOBALS().visual.exposure, 0.0f, 5.0f);
+    }
 }
 }

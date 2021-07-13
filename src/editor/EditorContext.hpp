@@ -34,6 +34,7 @@
 #include "sl/rendering/DefaultFrameBufferRenderPass.h"
 #include "sl/rendering/RenderPass.h"
 #include "sl/rendering/RenderPipeline.h"
+#include "sl/rendering/stages/BlurColorBufferStage.h"
 #include "sl/rendering/stages/CaptureDirectionalDepthMapsStage.h"
 #include "sl/rendering/stages/CapturePointDepthMapsStage.h"
 #include "sl/rendering/stages/PrepareLightsStage.h"
@@ -87,6 +88,8 @@ public:
         m_renderColorBufferStage.setWindowProxy(m_windowProxy.get());
         m_renderColorBufferStage.setColorBuffer(m_colorBuffer.get());
 
+        m_blurColorBufferStage.setWindowProxy(m_windowProxy.get());
+
         m_captureDepthMapsRenderPass
             .addRenderStage(&m_captureDirectionalDepthMapsStage)
             .addRenderStage(&m_capturePointDepthMapsStage);
@@ -99,11 +102,14 @@ public:
             .addRenderStage(&m_renderVectorsStage)
             .addRenderStage(&m_renderSkyboxStage);
 
+        m_bloomPass.addRenderStage(&m_blurColorBufferStage);
+
         m_finalRenderPass.addRenderStage(&m_renderColorBufferStage);
 
         m_renderPipeline
             .addRenderPass(&m_captureDepthMapsRenderPass)
             .addRenderPass(&m_captureSceneRenderPass)
+            .addRenderPass(&m_bloomPass)
             .addRenderPass(&m_finalRenderPass);
 
         WRITE_DEBUG("{}", "Editor context initialized");
@@ -232,13 +238,18 @@ public:
 
         m_depthBuffer = gfx::buffer::RenderBuffer::factory->create(STARL_DEPTH_COMPONENT, width, height);
         m_colorBuffer = gfx::Texture::factory->create(width, height, STARL_RGBA16, STARL_RGBA);
+        m_bloomBuffer = gfx::Texture::factory->create(width, height, STARL_RGBA16, STARL_RGBA);
 
         m_sceneQuadFrameBuffer->bind();
         m_sceneQuadFrameBuffer->bindTexture(*m_colorBuffer, STARL_COLOR_ATTACHMENT0);
+        m_sceneQuadFrameBuffer->bindTexture(*m_bloomBuffer, STARL_COLOR_ATTACHMENT1);
         m_sceneQuadFrameBuffer->bindRenderBuffer(*m_depthBuffer);
         m_sceneQuadFrameBuffer->unbind();
 
+        m_blurColorBufferStage.setColorBuffer(m_bloomBuffer.get());
+
         m_renderColorBufferStage.setColorBuffer(m_colorBuffer.get());
+        m_renderColorBufferStage.setBloomBuffer(m_blurColorBufferStage.getOutputColorBuffer());
 
         m_lowLevelRendererProxy->setViewport(newViewport);
     }
@@ -295,11 +306,14 @@ private:
 
     std::shared_ptr<gfx::buffer::FrameBuffer> m_sceneQuadFrameBuffer;
     std::unique_ptr<gfx::buffer::RenderBuffer> m_depthBuffer;
+
     std::unique_ptr<gfx::Texture> m_colorBuffer;
+    std::unique_ptr<gfx::Texture> m_bloomBuffer;
 
     rendering::RenderPipeline m_renderPipeline;
 
     rendering::DefaultFrameBufferRenderPass m_finalRenderPass;
+    rendering::DefaultFrameBufferRenderPass m_bloomPass;
     rendering::CustomFrameBufferRenderPass m_captureDepthMapsRenderPass;
     rendering::CustomFrameBufferRenderPass m_captureSceneRenderPass;
 
@@ -311,4 +325,5 @@ private:
     rendering::stages::CapturePointDepthMapsStage m_capturePointDepthMapsStage;
     rendering::stages::RenderVectorsStage m_renderVectorsStage;
     rendering::stages::RenderColorBufferStage m_renderColorBufferStage;
+    rendering::stages::BlurColorBufferStage m_blurColorBufferStage;
 };

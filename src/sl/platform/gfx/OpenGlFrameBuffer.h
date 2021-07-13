@@ -18,6 +18,8 @@ public:
     void bindTexture(sl::gfx::Texture&) override;
     void bindCubemap(sl::gfx::Cubemap&) override;
 
+    void specifyColorBuffers(const std::vector<unsigned int>&) override;
+
 private:
     unsigned int m_bufferId;
 };

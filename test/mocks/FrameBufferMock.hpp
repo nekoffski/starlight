@@ -19,4 +19,5 @@ struct FrameBufferMock : public FrameBuffer {
     MOCK_METHOD(void, bindCubemap, (sl::gfx::Cubemap&), (override));
     MOCK_METHOD(void, bind, (), (override));
     MOCK_METHOD(void, unbind, (), (override));
+    MOCK_METHOD(void, specifyColorBuffers, (const std::vector<unsigned int>&), (override));
 };

@@ -12,14 +12,18 @@ namespace sl::rendering::stages {
 
 using namespace sl::scene::components;
 
-void RenderMeshesStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer*) {
+void RenderMeshesStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer* frameBuffer) {
     SL_PROFILE_FUNCTION();
 
     auto [meshRendererComponents, transforms, models, materials] =
         scene.ecsRegistry.getComponentsViews<MeshRendererComponent, TransformComponent, ModelComponent, MaterialComponent>();
 
+    frameBuffer->specifyColorBuffers({ STARL_COLOR_ATTACHMENT0, STARL_COLOR_ATTACHMENT1 });
+
     for (auto& meshRendererComponent : meshRendererComponents)
         processMeshRendererComponent(meshRendererComponent, transforms, models, materials, renderer, scene);
+
+    frameBuffer->specifyColorBuffers({ STARL_COLOR_ATTACHMENT0 });
 }
 
 void RenderMeshesStage::processMeshRendererComponent(MeshRendererComponent& meshRendererComponent, TransformComponent::View& transforms,

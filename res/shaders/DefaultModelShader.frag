@@ -1,6 +1,7 @@
 #version 420 core
 
-out vec4 fragmentColor;
+layout(location = 0) out vec4 fragmentColor;
+layout(location = 1) out vec4 bloomColor;
 
 in vec2 texturePosition;
 in vec3 normal;
@@ -158,4 +159,7 @@ void main() {
     vec4 color = (textures > 0 ? texture(textureSampler, texturePosition) : defaultColor);
 
     fragmentColor = vec4(0.1, 0.1, 0.1, 1.0) + color * calculateLight();
+
+    float brightness = dot(vec3(fragmentColor), vec3(0.2126, 0.7152, 0.0722));
+    bloomColor = brightness > 1.0 ? fragmentColor : vec4(0.0, 0.0, 0.0, 1.0);
 }

@@ -27,6 +27,11 @@ public:
     static std::unique_ptr<Texture> load(const std::string& path, const std::string& name);
     static void loadAsync(const std::string& path, const std::string& name, std::unique_ptr<core::Output<Texture>> output);
 
+    std::unique_ptr<Texture> clone() {
+        return factory->create(
+            getWidth(), getHeight(), internalFormat, format);
+    }
+
     virtual ~Texture() = default;
 
     virtual void bind(unsigned int = 0) = 0;
@@ -43,6 +48,9 @@ public:
 
     std::string name;
     std::string path;
+
+    int internalFormat;
+    int format;
 };
 
 }

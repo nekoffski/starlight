@@ -9,6 +9,7 @@
 #include "globals/Flags.h"
 #include "globals/Geometry.h"
 #include "globals/Shaders.h"
+#include "globals/Visual.h"
 #include "globals/World.h"
 
 namespace sl::utils {
@@ -21,6 +22,7 @@ struct Globals {
     globals::World world;
     globals::Config config;
     globals::Flags flags;
+    globals::Visual visual;
 
     std::unique_ptr<globals::Shaders> shaders;
     std::unique_ptr<globals::Geometry> geom;

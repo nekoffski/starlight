@@ -23,9 +23,13 @@ public:
         gfx::ViewFrustum::Viewport viewport { width, height };
 
         renderer.setTemporaryViewport(viewport);
-
-        m_colorBuffer->bind(0);
         m_colorBufferShader->enable();
+
+        m_colorBuffer->bind(1);
+        m_bloomBuffer->bind(2);
+
+        m_colorBufferShader->setUniform("gamma", GLOBALS().visual.gammaCorrection);
+        m_colorBufferShader->setUniform("exposure", GLOBALS().visual.exposure);
 
         m_quadVao->bind();
         renderer.renderVertexArray(*m_quadVao);
@@ -33,6 +37,7 @@ public:
 
         m_colorBufferShader->disable();
         m_colorBuffer->unbind();
+        m_bloomBuffer->unbind();
         renderer.restoreViewport();
     }
 
@@ -40,9 +45,14 @@ public:
         m_colorBuffer = colorBuffer;
     }
 
+    void setBloomBuffer(gfx::Texture* bloomBuffer) {
+        m_bloomBuffer = bloomBuffer;
+    }
+
 private:
     gfx::buffer::VertexArray* m_quadVao;
     gfx::Texture* m_colorBuffer;
+    gfx::Texture* m_bloomBuffer;
 
     std::shared_ptr<gfx::Shader> m_colorBufferShader;
 };
