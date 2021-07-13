@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "AssetTab.h"
+#include "SystemTab.h"
 #include "sl/asset/AssetManager.h"
 #include "sl/ecs/Entity.h"
 #include "sl/gfx/Cubemap.h"
@@ -23,5 +24,6 @@ private:
     sl::core::GameObjectPtr<sl::gfx::Cubemap> m_selectedCubemap;
 
     AssetTab m_assetTab;
+    SystemTab m_systemTab;
 };
 }

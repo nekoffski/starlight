@@ -6,6 +6,8 @@
 #include "sl/core/Logger.h"
 #include "sl/core/Profiler.h"
 
+#include "sl/utils/Globals.h"
+
 static void GLAPIENTRY messageCallback(GLenum source, GLenum type, GLuint id,
     GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
     SL_DEBUG("GL CALLBACK: {} type = {}, severity = {}, message = {}\n",
@@ -26,6 +28,13 @@ OpenGlGraphicsContext::OpenGlGraphicsContext(void* windowHandle)
 
     // TODO: make it configurable
     // glEnable(GL_DEBUG_OUTPUT);
+    auto& info = GLOBALS().info;
+
+    info.gpuApiVendor = fmt::format("{}", glGetString(GL_VENDOR));
+    info.gpuApiRelease = fmt::format("{}", glGetString(GL_VERSION));
+    info.rendererName = fmt::format("{}", glGetString(GL_RENDERER));
+    info.shadingLanguageVersion = fmt::format("{}", glGetString(GL_SHADING_LANGUAGE_VERSION));
+
     glDebugMessageCallback(messageCallback, 0);
 }
 

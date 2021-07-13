@@ -26,6 +26,8 @@ public:
         return std::chrono::duration_cast<std::chrono::microseconds>(duration).count() / microsecondsInSecond;
     }
 
+    float getFPS() const;
+
     float getDeltaTime() const;
 
     void update();

@@ -8,6 +8,7 @@
 #include "globals/Config.h"
 #include "globals/Flags.h"
 #include "globals/Geometry.h"
+#include "globals/Info.h"
 #include "globals/Shaders.h"
 #include "globals/Visual.h"
 #include "globals/World.h"
@@ -23,6 +24,7 @@ struct Globals {
     globals::Config config;
     globals::Flags flags;
     globals::Visual visual;
+    globals::Info info;
 
     std::unique_ptr<globals::Shaders> shaders;
     std::unique_ptr<globals::Geometry> geom;

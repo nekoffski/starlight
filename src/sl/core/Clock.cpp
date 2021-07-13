@@ -22,6 +22,10 @@ void Clock::update() {
     m_previousNow = now;
 }
 
+float Clock::getFPS() const {
+    return 1.0f / m_deltaTime;
+}
+
 std::string Clock::getTimeString(const std::string& format) const {
     auto t = std::time(nullptr);
     auto tm = *std::localtime(&t);

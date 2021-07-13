@@ -18,7 +18,8 @@ using namespace sl;
 
 PropertiesPanel::PropertiesPanel(std::shared_ptr<SharedState> sharedState)
     : Widget(sharedState)
-    , m_assetTab(sharedState) {
+    , m_assetTab(sharedState)
+    , m_systemTab(sharedState) {
 }
 
 void PropertiesPanel::render(sl::gui::GuiApi& gui) {
@@ -33,6 +34,7 @@ void PropertiesPanel::render(sl::gui::GuiApi& gui) {
     }
 
     m_assetTab.render(gui);
+    m_systemTab.render(gui);
 
     gui.endTabBar();
     gui.endPanel();
@@ -93,6 +95,8 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
 
         gui.displayText("Exposure");
         gui.sliderFloat("##Exposure", GLOBALS().visual.exposure, 0.0f, 5.0f);
+
+        gui.popTreeNode();
     }
 }
 }
