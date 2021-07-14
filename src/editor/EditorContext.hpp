@@ -237,8 +237,9 @@ public:
         m_activeCamera->calculateProjectionMatrix();
 
         m_depthBuffer = gfx::buffer::RenderBuffer::factory->create(STARL_DEPTH_COMPONENT, width, height);
-        m_colorBuffer = gfx::Texture::factory->create(width, height, STARL_RGBA16, STARL_RGBA);
-        m_bloomBuffer = gfx::Texture::factory->create(width, height, STARL_RGBA16, STARL_RGBA);
+
+        m_colorBuffer = gfx::Texture::factory->create(width, height, STARL_RGBA16F, STARL_RGBA);
+        m_bloomBuffer = gfx::Texture::factory->create(width, height, STARL_RGBA16F, STARL_RGBA);
 
         m_sceneQuadFrameBuffer->bind();
         m_sceneQuadFrameBuffer->bindTexture(*m_colorBuffer, STARL_COLOR_ATTACHMENT0);

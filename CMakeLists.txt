@@ -13,6 +13,8 @@ add_subdirectory(3rdparty)
 find_package(Threads)
 enable_testing()
 
+add_definitions(-DDEV_MODE=1)
+
 if (COV_BUILD)
 	message("-- Triggering build with coverage support")
 	set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")

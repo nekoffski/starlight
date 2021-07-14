@@ -96,6 +96,8 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
         gui.displayText("Exposure");
         gui.sliderFloat("##Exposure", GLOBALS().visual.exposure, 0.0f, 5.0f);
 
+        gui.checkbox("Enable bloom", GLOBALS().visual.enableBloom);
+
         gui.popTreeNode();
     }
 }

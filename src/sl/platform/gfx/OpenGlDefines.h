@@ -362,6 +362,10 @@
 #define STARL_DITHER 0x0BD0
 #define STARL_RGB 0x1907
 #define STARL_RGBA 0x1908
+#define STARL_RGBA32F 0x8814
+#define STARL_RGB32F 0x8815
+#define STARL_RGBA16F 0x881A
+#define STARL_RGB16F 0x881B
 
 /* Implementation limits */
 #define STARL_MAX_LIST_NESTING 0x0B31

@@ -21,9 +21,7 @@ public:
         auto id = task->id;
         m_tasks[id] = std::move(task);
 
-        return Task::Handle {
-            m_tasks.at(id).get()
-        };
+        return Task::Handle { m_tasks.at(id).get() };
     }
 
 private:

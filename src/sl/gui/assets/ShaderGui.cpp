@@ -1,6 +1,7 @@
 #include "ShaderGui.h"
 
 #include "sl/async/AsyncEngine.hpp"
+#include "sl/gfx/Shader.h"
 
 namespace sl::gui::assets {
 
