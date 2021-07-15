@@ -12,6 +12,8 @@ using Path = std::string;
 
 class FileSystem {
 public:
+    using TimeType = decltype(std::filesystem::last_write_time(""));
+
     virtual bool isFile(const Path& path) const;
     virtual bool isDirectory(const Path& path) const;
     virtual std::vector<Path> listDirectory(const Path& path) const;

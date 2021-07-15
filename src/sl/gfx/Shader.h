@@ -59,25 +59,23 @@ public:
     explicit RecompileShaderOnUpdate(std::shared_ptr<gfx::Shader> shader,
         std::unique_ptr<core::FileSystem> fileSystem = std::make_unique<core::FileSystem>())
         : m_shader(shader)
-        , m_fileSystem(std::move(fileSystem)) {
+        , m_fileSystem(std::move(fileSystem))
+        , m_vertexShaderPath(shader->getVertexShaderPath())
+        , m_fragmentShaderPath(shader->getFragmentShaderPath())
+        , m_previousFragmentWrite(m_fileSystem->lastWriteTime(m_fragmentShaderPath))
+        , m_previousVertexWrite(m_fileSystem->lastWriteTime(m_vertexShaderPath)) {
     }
 
     bool shouldInvoke() override {
         if (auto shader = m_shader.lock(); shader) {
-            auto vertexShader = shader->getVertexShaderPath();
-            auto fragmentShader = shader->getFragmentShaderPath();
+            auto newVertexWrite = m_fileSystem->lastWriteTime(m_vertexShaderPath);
+            auto newFragmentWrite = m_fileSystem->lastWriteTime(m_fragmentShaderPath);
 
-            static auto previousVertexWrite = m_fileSystem->lastWriteTime(vertexShader);
-            static auto previousFragmentWrite = m_fileSystem->lastWriteTime(fragmentShader);
+            auto shouldRecompile = m_previousVertexWrite != newVertexWrite ||
+                m_previousFragmentWrite != newFragmentWrite;
 
-            auto newVertexWrite = m_fileSystem->lastWriteTime(vertexShader);
-            auto newFragmentWrite = m_fileSystem->lastWriteTime(fragmentShader);
-
-            auto shouldRecompile = previousVertexWrite != newVertexWrite ||
-                previousFragmentWrite != newFragmentWrite;
-
-            previousVertexWrite = newVertexWrite;
-            previousFragmentWrite = newFragmentWrite;
+            m_previousVertexWrite = newVertexWrite;
+            m_previousFragmentWrite = newFragmentWrite;
 
             return shouldRecompile;
         }
@@ -96,6 +94,12 @@ public:
 private:
     std::weak_ptr<gfx::Shader> m_shader;
     std::unique_ptr<core::FileSystem> m_fileSystem;
+
+    const std::string m_vertexShaderPath;
+    const std::string m_fragmentShaderPath;
+
+    core::FileSystem::TimeType m_previousVertexWrite;
+    core::FileSystem::TimeType m_previousFragmentWrite;
 };
 
 }
