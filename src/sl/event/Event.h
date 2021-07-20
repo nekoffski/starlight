@@ -88,6 +88,13 @@ DECLARE_EVENT(WindowResizedEvent, CoreCategory) {
     int height;
 };
 
+DECLARE_EVENT(DisplayErrorEvent, EditorCategory) {
+    DisplayErrorEvent(const std::string& message) : message(message) {
+    }
+    
+    std::string message;
+};
+
 DECLARE_EVENT(QuitEvent, CoreCategory) {
     std::string asString() const override {
         return "[QuitEvent]";

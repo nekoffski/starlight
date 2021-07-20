@@ -188,6 +188,8 @@ public:
 
                 auto [width, height] = m_windowProxy->getSize();
                 recalculateViewportSize(width, height);
+            } else if (event->is<DisplayErrorEvent>()) {
+                m_errorDialog.setErrorMessage(event->as<DisplayErrorEvent>()->message);
             }
 
             try {

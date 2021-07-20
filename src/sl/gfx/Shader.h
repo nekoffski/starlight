@@ -6,6 +6,8 @@
 #include "sl/core/FileSystem.h"
 #include "sl/core/GameObject.h"
 #include "sl/core/String.hpp"
+#include "sl/event/Emitter.hpp"
+#include "sl/event/Event.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
 
@@ -63,7 +65,8 @@ public:
         , m_vertexShaderPath(shader->getVertexShaderPath())
         , m_fragmentShaderPath(shader->getFragmentShaderPath())
         , m_previousFragmentWrite(m_fileSystem->lastWriteTime(m_fragmentShaderPath))
-        , m_previousVertexWrite(m_fileSystem->lastWriteTime(m_vertexShaderPath)) {
+        , m_previousVertexWrite(m_fileSystem->lastWriteTime(m_vertexShaderPath))
+        , m_wasCompiledCorrectly(true) {
     }
 
     bool shouldInvoke() override {
@@ -83,8 +86,20 @@ public:
     }
 
     void invoke() override {
-        if (auto shader = m_shader.lock(); shader)
-            gfx::ShaderCompiler::compile(*shader);
+        if (auto shader = m_shader.lock(); shader) {
+            try {
+                gfx::ShaderCompiler::compile(*shader);
+                m_wasCompiledCorrectly = true;
+            } catch (core::ShaderError& err) {
+                if (m_wasCompiledCorrectly) {
+                    SL_WARN("Could not recompile shader due to {}", err.getDetails());
+
+                    using namespace event;
+                    Emitter::emit<DisplayErrorEvent>(err.as<std::string>());
+                }
+                m_wasCompiledCorrectly = false;
+            }
+        }
     }
 
     std::string getName() const {
@@ -100,6 +115,8 @@ private:
 
     core::FileSystem::TimeType m_previousVertexWrite;
     core::FileSystem::TimeType m_previousFragmentWrite;
+
+    bool m_wasCompiledCorrectly;
 };
 
 }
