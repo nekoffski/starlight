@@ -59,7 +59,7 @@ public:
 
     template <typename... T>
     auto getComponentsViews() {
-        return std::make_tuple(getComponentView<T>()...);
+        return std::make_tuple(getComponentView<T>()...); // TODO: investigate performance
     }
 
     Entity& getEntityByName(const std::string& name);

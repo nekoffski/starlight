@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdexcept>
+#include "Logger.h"
 
 namespace sl::core {
 
@@ -9,8 +9,8 @@ class NotNullPtrBase {
 public:
     NotNullPtrBase(T* ptr)
         : m_ptr(ptr) {
-        if (ptr == nullptr)
-            throw std::logic_error("Pointer could not be empty");
+
+        SL_ASSERT(ptr != nullptr, "Pointer could not be empty");
     }
 
     operator T*() const { return m_ptr; }

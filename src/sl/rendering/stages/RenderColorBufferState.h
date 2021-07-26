@@ -18,7 +18,7 @@ public:
         , m_colorBufferShader(gfx::Shader::load(
               GLOBALS().config.paths.shaders + "/ColorBuffer.vert", GLOBALS().config.paths.shaders + "/ColorBuffer.frag")) {
 
-        // clang-format off
+// clang-format off
         #ifdef DEV_MODE
             ASYNC_ENGINE().addPeriodicTask<gfx::RecompileShaderOnUpdate>(m_colorBufferShader);
         #endif
@@ -29,7 +29,12 @@ public:
         auto [width, height] = m_windowProxy->getSize();
         gfx::ViewFrustum::Viewport viewport { width, height };
 
+        auto settings = renderer.getSettings();
+        settings.enableBlending = false;
+
+        renderer.setTemporarySettings(settings);
         renderer.setTemporaryViewport(viewport);
+
         m_colorBufferShader->enable();
 
         m_colorBuffer->bind(1);
@@ -48,7 +53,9 @@ public:
         m_colorBufferShader->disable();
         m_colorBuffer->unbind();
         m_bloomBuffer->unbind();
+
         renderer.restoreViewport();
+        renderer.restoreSettings();
     }
 
     void setColorBuffer(gfx::Texture* colorBuffer) {

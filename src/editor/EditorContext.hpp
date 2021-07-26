@@ -11,7 +11,7 @@
 #include "sl/asset/AssetManager.h"
 #include "sl/core/BaseError.hpp"
 #include "sl/core/FileSystem.h"
-#include "sl/core/Input.h"
+#include "sl/core/InputManager.h"
 #include "sl/core/Logger.h"
 #include "sl/ecs/Entity.h"
 #include "sl/event/Categories.h"
@@ -128,8 +128,8 @@ public:
         }
     }
 
-    void update(app::SceneSystems& sceneSystems, float deltaTime, float time, core::Input& input) override {
-        m_activeCamera->update(deltaTime, input);
+    void update(app::SceneSystems& sceneSystems, float deltaTime, float time) override {
+        m_activeCamera->update(deltaTime);
         auto pfxs = m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>();
         sceneSystems.pfxEngine.update(pfxs, deltaTime, *m_scene->camera);
 
@@ -140,7 +140,7 @@ public:
             sceneSystems.physxEngine.processRigidBodies(rigidBodies, transforms, deltaTime);
         }
 
-        if (m_engineMode == editor::EngineMode::inGame && input.isKeyPressed(STARL_KEY_ESCAPE)) {
+        if (m_engineMode == editor::EngineMode::inGame && INPUT_MANAGER().isKeyPressed(STARL_KEY_ESCAPE)) {
             m_engineMode = editor::EngineMode::inEditor;
 
             auto [width, height] = m_windowProxy->getSize();

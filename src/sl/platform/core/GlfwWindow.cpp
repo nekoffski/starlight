@@ -42,16 +42,20 @@ void GlfwWindow::init() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+    glfwSetErrorCallback([](int errorCode, const char* message) {
+        SL_ERROR("GLFW ERROR {} - {}", errorCode, message);
+    });
+
     SL_INFO("creating raw window instance");
     m_windowHandle = glfwCreateWindow(m_windowSize.width, m_windowSize.height,
         m_title.c_str(), nullptr, nullptr);
 
-    glfwSetWindowUserPointer(m_windowHandle, (void*)&m_windowSize);
-
     if (m_windowHandle == nullptr) {
-        SL_ERROR("could not raw window instance");
+        SL_ERROR("could not create raw window instance");
         throw sl::core::WindowError { sl::core::ErrorCode::CouldNotCreateWindowInstance };
     }
+
+    glfwSetWindowUserPointer(m_windowHandle, (void*)&m_windowSize);
 }
 
 void GlfwWindow::setResizeCallback(sl::core::Window::ResizeCallback resizeCallback) {

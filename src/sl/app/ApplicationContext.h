@@ -28,7 +28,7 @@ public:
     virtual void onAttach() = 0;
     virtual void onDetach() = 0;
 
-    virtual void update(SceneSystems& sceneSystems, float, float, core::Input&) = 0;
+    virtual void update(SceneSystems& sceneSystems, float, float) = 0;
     virtual void render(gfx::LowLevelRenderer&) = 0;
 
     virtual void renderGui(gui::GuiApi&) { }

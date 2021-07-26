@@ -6,7 +6,7 @@
 #include "FrameBufferMock.hpp"
 #include "GraphicsContextMock.hpp"
 #include "GuiApiMock.hpp"
-#include "InputMock.hpp"
+
 #include "ModelLoaderImplMock.hpp"
 #include "RenderApiMock.hpp"
 #include "ShaderCompilerImplMock.hpp"
@@ -51,7 +51,6 @@ void safeReset(std::unique_ptr<T>& ptr) {
 
 struct Mocks {
     std::shared_ptr<WindowMock> windowMock = std::make_shared<WindowMock>();
-    std::shared_ptr<InputMock> inputMock = std::make_shared<InputMock>();
     std::shared_ptr<GraphicsContextMock> graphicsContextMock = std::make_shared<GraphicsContextMock>();
     std::shared_ptr<GuiApiMock> guiApiMock = std::make_shared<GuiApiMock>();
     std::unique_ptr<ModelLoaderImplMock> modelLoaderImplMock = std::make_unique<ModelLoaderImplMock>();
@@ -72,7 +71,6 @@ inline void setupMockFactories() {
     SETUP_MOCK(GraphicsContext);
     SETUP_MOCK(RenderApi);
     SETUP_MOCK(Window);
-    SETUP_MOCK(Input);
     SETUP_MOCK(GuiApi);
     SETUP_MOCK(ModelLoaderImpl);
     SETUP_MOCK(VertexArray);
@@ -86,7 +84,6 @@ inline void resetMockFactories() {
     resetMockFactory<GraphicsContext>();
     resetMockFactory<RenderApi>();
     resetMockFactory<Window>();
-    resetMockFactory<Input>();
     resetMockFactory<GuiApi>();
     resetMockFactory<ModelLoaderImpl>();
     resetMockFactory<VertexArray>();

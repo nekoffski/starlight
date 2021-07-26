@@ -14,7 +14,7 @@ public:
     MOCK_METHOD(void, onInit, (), (override));
     MOCK_METHOD(void, onAttach, (), (override));
     MOCK_METHOD(void, onDetach, (), (override));
-    MOCK_METHOD(void, update, (app::SceneSystems & sceneSystems, float, float, core::Input&), (override));
+    MOCK_METHOD(void, update, (app::SceneSystems&, float, float), (override));
     MOCK_METHOD(void, render, (gfx::LowLevelRenderer&), (override));
     MOCK_METHOD(void, renderGui, (gui::GuiApi&), (override));
 };

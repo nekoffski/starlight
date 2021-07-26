@@ -10,7 +10,7 @@ class EulerCamera : public Camera {
 public:
     explicit EulerCamera(const ViewFrustum& viewFrustum, math::Vec3, float, float);
 
-    void update(float, core::Input&) override;
+    void update(float) override;
     void onGui(gui::GuiApi&) override;
 
     const math::Mat4 getViewMatrix() override {

@@ -12,7 +12,8 @@
 #include "SceneSystems.h"
 #include "fwd.h"
 #include "sl/app/ApplicationContext.h"
-#include "sl/core/Input.h"
+#include "sl/core/Hud.h"
+
 #include "sl/core/Window.h"
 #include "sl/gfx/GraphicsContext.h"
 #include "sl/gfx/LowLevelRenderer.h"
@@ -75,5 +76,7 @@ private:
 
     xvent::EventEngine m_eventEngine;
     std::shared_ptr<xvent::EventEmitter> m_eventEmitter;
+
+    std::unique_ptr<core::Hud> m_hud;
 };
 }

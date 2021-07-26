@@ -2,7 +2,6 @@
 
 #include <memory>
 
-#include "sl/core/Input.h"
 #include "sl/core/Window.h"
 #include "sl/geom/ModelLoaderImpl.h"
 #include "sl/gfx/Cubemap.h"
@@ -30,7 +29,7 @@ std::unique_ptr<sl::gfx::Texture::Factory> createTextureFactory();
 std::unique_ptr<sl::gfx::Cubemap::Factory> createCubemapFactory();
 std::unique_ptr<sl::gfx::Shader::Factory> createShaderFactory();
 std::unique_ptr<sl::core::Window::Factory> createWindowFactory();
-std::unique_ptr<sl::core::Input::Factory> createInputFactory();
+
 std::unique_ptr<sl::gui::GuiApi::Factory> createGuiApiFactory();
 std::unique_ptr<sl::gfx::GraphicsContext::Factory> createGraphicsContextFactory();
 std::unique_ptr<sl::gfx::ShaderCompilerImpl::Factory> createShaderCompilerImplFactory();

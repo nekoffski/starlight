@@ -2,7 +2,6 @@
 
 #include <memory>
 
-#include "core/GlfwInput.h"
 #include "core/GlfwWindow.h"
 #include "core/StbImage.hpp"
 #include "gfx/OpenGlCubemap.h"
@@ -45,10 +44,6 @@ std::unique_ptr<sl::gfx::GraphicsContext::Factory> createGraphicsContextFactory(
 
 std::unique_ptr<sl::core::Window::Factory> createWindowFactory() {
     return std::make_unique<core::GlfwWindowFactory>();
-}
-
-std::unique_ptr<sl::core::Input::Factory> createInputFactory() {
-    return std::make_unique<core::GlfwInputFactory>();
 }
 
 std::unique_ptr<sl::gui::GuiApi::Factory> createGuiApiFactory() {

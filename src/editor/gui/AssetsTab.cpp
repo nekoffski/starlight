@@ -6,6 +6,7 @@
 
 #include "editor/DebugConsole.hpp"
 #include "sl/core/Errors.hpp"
+#include "sl/core/InputManager.h"
 #include "sl/core/String.hpp"
 #include "sl/geom/ModelLoader.hpp"
 #include "sl/gui/GuiApi.h"

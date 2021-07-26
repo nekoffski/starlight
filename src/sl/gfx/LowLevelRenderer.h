@@ -21,6 +21,7 @@ namespace sl::gfx {
 
 struct RendererSettings {
     bool enableDepthMask = true;
+    bool enableBlending = false;
     unsigned int polygonMode = STARL_FILL;
     unsigned int cullFace = STARL_BACK;
 };
@@ -82,6 +83,11 @@ private:
     void applySettings(const RendererSettings& settings) {
         m_renderApi->depthMask(settings.enableDepthMask);
         m_renderApi->setPolygonMode(settings.polygonMode);
+
+        if (settings.enableBlending)
+            m_renderApi->enable(STARL_BLEND);
+        else
+            m_renderApi->disable(STARL_BLEND);
     }
 
     std::shared_ptr<gfx::GraphicsContext> m_gfxContext;

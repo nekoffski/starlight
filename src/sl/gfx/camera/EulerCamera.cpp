@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-#include "sl/core/Input.h"
+#include "sl/core/InputManager.h"
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/gui/GuiApi.h"
 #include "sl/math/Matrix.hpp"
@@ -29,7 +29,7 @@ EulerCamera::EulerCamera(const ViewFrustum& viewFrustum, math::Vec3 center, floa
     calculateProjectionMatrix();
 }
 
-void EulerCamera::update(float deltaTime, core::Input& input) {
+void EulerCamera::update(float deltaTime) {
     if (m_isInAnimation) {
         m_alpha += deltaTime * 2.0f;
 
@@ -41,16 +41,16 @@ void EulerCamera::update(float deltaTime, core::Input& input) {
     } else {
         float velocity = deltaTime * m_speed;
 
-        if (input.isKeyPressed(STARL_KEY_UP))
+        if (INPUT_MANAGER().isKeyPressed(STARL_KEY_UP))
             m_psi += velocity;
 
-        if (input.isKeyPressed(STARL_KEY_RIGHT))
+        if (INPUT_MANAGER().isKeyPressed(STARL_KEY_RIGHT))
             m_fi += velocity;
 
-        if (input.isKeyPressed(STARL_KEY_DOWN))
+        if (INPUT_MANAGER().isKeyPressed(STARL_KEY_DOWN))
             m_psi -= velocity;
 
-        if (input.isKeyPressed(STARL_KEY_LEFT))
+        if (INPUT_MANAGER().isKeyPressed(STARL_KEY_LEFT))
             m_fi -= velocity;
 
         m_fi = math::circularRange(m_fi, minFi, maxFi);
@@ -58,18 +58,18 @@ void EulerCamera::update(float deltaTime, core::Input& input) {
         // TODO: FIX
         m_psi = std::clamp(m_psi, minPsi, maxPsi);
 
-        m_isMouseMiddlePressed = input.isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE);
+        m_isMouseMiddlePressed = INPUT_MANAGER().isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE);
 
         if (m_isMouseMiddlePressed) {
             constexpr float mouseSpeed = 0.0015f;
 
-            auto [deltaX, deltaY] = input.getMousePositonDelta();
+            auto [deltaX, deltaY] = INPUT_MANAGER().getMousePositonDelta();
 
             m_psi += deltaY * mouseSpeed;
             m_fi += deltaX * mouseSpeed;
         }
 
-        auto scrollDelta = input.getScrollDelta();
+        auto scrollDelta = INPUT_MANAGER().getScrollDelta();
         const float scrollDeltaSpeed = 5.0f;
         m_radius += scrollDelta * scrollDeltaSpeed;
     }

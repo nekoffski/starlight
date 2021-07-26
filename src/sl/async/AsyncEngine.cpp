@@ -10,6 +10,7 @@ void AsyncEngine::deinit() {
     m_threadPool->stop();
 }
 
+// TODO: replace std::function with template
 void AsyncEngine::parallelLoop(const int iterations, const std::function<void(const int)>& func) {
     auto threadCount = m_threadPool->getSize();
     auto batch = iterations / threadCount;

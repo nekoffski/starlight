@@ -2,7 +2,6 @@
 
 #include <cstdint>
 
-#include "sl/core/Input.h"
 #include "sl/core/Logger.h"
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/gui/GuiApi.h"
@@ -37,7 +36,7 @@ public:
         , m_right(std::move(right)) {
     }
 
-    virtual void update(float, core::Input&) = 0;
+    virtual void update(float) = 0;
 
     virtual void onGui(gui::GuiApi&) { }
 

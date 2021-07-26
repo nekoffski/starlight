@@ -31,7 +31,6 @@ struct ApplicationTests : Test {
         EXPECT_CALL(*mocks.windowMock, getHandle()).Times(1).WillOnce(Return(&someValue));
 
         EXPECT_CALL(*WindowMock::Factory::instance, create(_, _)).Times(1).WillOnce(Return(mocks.windowMock));
-        EXPECT_CALL(*InputMock::Factory::instance, create(_)).Times(1).WillOnce(Return(mocks.inputMock));
         EXPECT_CALL(*GraphicsContextMock::Factory::instance, create(_)).Times(1).WillOnce(Return(mocks.graphicsContextMock));
         EXPECT_CALL(*RenderApiMock::Factory::instance, create()).Times(1).WillOnce(Return(ByMove(std::move(mocks.renderApiMock))));
         EXPECT_CALL(*ShaderCompilerImplMock::Factory::instance, create()).Times(1).WillOnce(Return(ByMove(std::move(mocks.shaderCompilerImplMock))));
@@ -86,13 +85,11 @@ TEST_F(ApplicationTests, givenApplication_whenUpdating_shouldUpdateSubComponents
     application->switchContext(context);
 
     EXPECT_CALL(*mocks.windowMock, update(_)).Times(1);
-    EXPECT_CALL(*context, update(_, _, _, _)).Times(1);
-    EXPECT_CALL(*mocks.inputMock, update()).Times(1);
+    EXPECT_CALL(*context, update(_, _, _)).Times(1);
 
     bool isMouseButtonPressed = true;
     bool cursorState;
 
-    EXPECT_CALL(*mocks.inputMock, isMouseButtonPressed(_)).Times(1).WillOnce(Return(isMouseButtonPressed));
     EXPECT_CALL(*mocks.windowMock, changeCursorState(_)).Times(1).WillOnce(SaveArg<0>(&cursorState));
 
     application->update(1.0f, 1.0f);

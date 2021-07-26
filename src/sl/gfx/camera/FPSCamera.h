@@ -18,7 +18,7 @@ public:
         m_position = math::Vec3 { 0.0f, 5.0f, 0.0f };
     }
 
-    void update(float deltaTime, core::Input& input) override {
+    void update(float deltaTime) override {
         float velocity = deltaTime * m_speed;
 
         if (m_direction & directionUp)

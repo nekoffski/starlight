@@ -1,6 +1,6 @@
 #include "Application.h"
 
-#include "sl/core/Input.h"
+#include "sl/core/InputManager.h"
 #include "sl/core/Profiler.h"
 #include "sl/event/Categories.h"
 #include "sl/event/Emitter.hpp"
@@ -21,6 +21,7 @@
 #include "sl/gfx/buffer/VertexBuffer.h"
 #include "sl/gui/GuiApi.h"
 #include "sl/platform/Platform.h"
+#include "sl/platform/core/GlfwHud.h"
 #include "sl/utils/Globals.h"
 
 namespace sl::app {
@@ -42,7 +43,6 @@ void Application::initDefaultFactories() {
     gfx::RenderApi::factory = platform::createRenderApiFactory();
 
     core::Window::factory = platform::createWindowFactory();
-    core::Input::factory = platform::createInputFactory();
 
     gui::GuiApi::factory = platform::createGuiApiFactory();
 
@@ -67,7 +67,9 @@ void Application::init() {
     auto windowHandle = m_window->getHandle();
 
     SL_INFO("Creating input instance.");
-    m_input = core::Input::factory->create(windowHandle);
+    m_hud = std::make_unique<platform::core::GlfwHud>(windowHandle);
+
+    INPUT_MANAGER().setKeyboard(m_hud.get()).setMouse(m_hud.get());
 
     SL_INFO("Creating gfx context instance.");
     m_gfxContext = gfx::GraphicsContext::factory->create(windowHandle);
@@ -104,14 +106,14 @@ void Application::update(float deltaTime, float time) {
     GLOBALS().flags.disableMouseInput = m_guiApi->isCapturingMouse();
 
     m_window->changeCursorState(
-        not m_input->isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE));
+        not INPUT_MANAGER().isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE));
 
     m_window->update(deltaTime);
-    m_context->update(*m_sceneSystems, deltaTime, time, *m_input);
+    m_context->update(*m_sceneSystems, deltaTime, time);
 
     m_eventEngine.spreadEvents();
 
-    m_input->update();
+    INPUT_MANAGER().update();
 }
 
 void Application::render() {
