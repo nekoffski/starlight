@@ -140,7 +140,7 @@ public:
             sceneSystems.physxEngine.processRigidBodies(rigidBodies, transforms, deltaTime);
         }
 
-        if (m_engineMode == editor::EngineMode::inGame && INPUT_MANAGER().isKeyPressed(STARL_KEY_ESCAPE)) {
+        if (m_engineMode == editor::EngineMode::inGame && core::InputManager::get()->isKeyPressed(STARL_KEY_ESCAPE)) {
             m_engineMode = editor::EngineMode::inEditor;
 
             auto [width, height] = m_windowProxy->getSize();

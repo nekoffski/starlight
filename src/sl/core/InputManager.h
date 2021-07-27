@@ -6,14 +6,13 @@
 #include "Logger.h"
 #include "Macros.h"
 #include "Mouse.h"
+#include "Singleton.hpp"
 
 #include "sl/platform/core/GlfwKeys.h"
 
 namespace sl::core {
 
-class InputManager {
-    SL_SINGLETON(InputManager);
-
+class InputManager : public Singleton<InputManager> {
 public:
     // clang-format off
     InputManager& setMouse(Mouse* mouse);
@@ -37,5 +36,3 @@ private:
 };
 
 }
-
-#define INPUT_MANAGER() sl::core::InputManager::instance()

@@ -63,14 +63,14 @@ public:
     }
     // clang-format on
 
-private:
+    // private:
     void renderGui();
 
     std::shared_ptr<core::Window> m_window;
-    std::shared_ptr<core::Input> m_input;
     std::unique_ptr<gfx::LowLevelRenderer> m_lowLevelRenderer;
     std::shared_ptr<gui::GuiApi> m_guiApi;
     std::shared_ptr<gfx::GraphicsContext> m_gfxContext;
+
     std::shared_ptr<ApplicationContext> m_context;
     std::unique_ptr<SceneSystems> m_sceneSystems;
 
