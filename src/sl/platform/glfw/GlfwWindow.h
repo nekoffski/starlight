@@ -1,40 +1,40 @@
-#pragma once
+// #pragma once
 
-#include <GLFW/glfw3.h>
+// #include <GLFW/glfw3.h>
 
-#include "sl/core/Window.h"
+// #include "sl/core/Window.h"
 
-namespace sl::platform::glfw {
+// namespace sl::platform::glfw {
 
-class GlfwWindow : public core::Window {
-public:
-    using sl::core::Window::Window;
+// class GlfwWindow : public core::Window {
+// public:
+//     using sl::core::Window::Window;
 
-    ~GlfwWindow() override;
+//     ~GlfwWindow() override;
 
-    void init() override;
-    void update(float) override;
+//     void init() override;
+//     void update(float) override;
 
-    void* getHandle() const override {
-        return static_cast<void*>(m_windowHandle);
-    }
+//     void* getHandle() const override {
+//         return static_cast<void*>(m_windowHandle);
+//     }
 
-    void setResizeCallback(ResizeCallback) override;
+//     void setResizeCallback(ResizeCallback) override;
 
-    void enableCursor() override;
-    void disableCursor() override;
-    void changeCursorState(bool) override;
+//     void enableCursor() override;
+//     void disableCursor() override;
+//     void changeCursorState(bool) override;
 
-    bool getShouldClose() const override;
-    void setShouldClose(bool) override;
+//     bool getShouldClose() const override;
+//     void setShouldClose(bool) override;
 
-private:
-    GLFWwindow* m_windowHandle { nullptr };
-};
+// private:
+//     GLFWwindow* m_windowHandle { nullptr };
+// };
 
-struct GlfwWindowFactory : sl::core::Window::Factory {
-    std::shared_ptr<sl::core::Window> create(sl::core::Window::Size windowSize, const std::string& title) {
-        return std::make_shared<GlfwWindow>(windowSize, title);
-    }
-};
-}
+// struct GlfwWindowFactory : sl::core::Window::Factory {
+//     std::shared_ptr<sl::core::Window> create(sl::core::Window::Size windowSize, const std::string& title) {
+//         return std::make_shared<GlfwWindow>(windowSize, title);
+//     }
+// };
+// }

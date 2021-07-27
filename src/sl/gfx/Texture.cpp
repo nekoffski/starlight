@@ -1,6 +1,6 @@
 #include "Texture.h"
 
-#include "sl/async/AsyncEngine.hpp"
+#include "sl/async/AsyncManager.hpp"
 
 namespace sl::gfx {
 
@@ -55,7 +55,7 @@ void Texture::loadAsync(const std::string& path, const std::string& name, std::u
         std::unique_ptr<Image> m_image;
     };
 
-    ASYNC_ENGINE().executeAsyncTask<LoadAsync>(path, name, std::move(output));
+    async::AsyncManager::get()->executeAsyncTask<LoadAsync>(path, name, std::move(output));
 }
 
 }

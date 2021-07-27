@@ -15,7 +15,7 @@ public:
     using ResizeCallback = std::function<void(int, int)>;
 
     struct Factory {
-        virtual std::shared_ptr<Window> create(Size windowSize, const std::string& title) = 0;
+        virtual std::unique_ptr<Window> create(Size windowSize, const std::string& title) = 0;
         virtual ~Factory() = default;
     };
 

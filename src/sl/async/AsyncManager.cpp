@@ -1,17 +1,17 @@
-#include "AsyncEngine.hpp"
+#include "AsyncManager.hpp"
 
 namespace sl::async {
 
-void AsyncEngine::init() {
+void AsyncManager::start() {
     m_threadPool = std::make_unique<ThreadPool<>>(std::thread::hardware_concurrency());
 }
 
-void AsyncEngine::deinit() {
+void AsyncManager::stop() {
     m_threadPool->stop();
 }
 
 // TODO: replace std::function with template
-void AsyncEngine::parallelLoop(const int iterations, const std::function<void(const int)>& func) {
+void AsyncManager::parallelLoop(const int iterations, const std::function<void(const int)>& func) {
     auto threadCount = m_threadPool->getSize();
     auto batch = iterations / threadCount;
 
@@ -37,7 +37,7 @@ void AsyncEngine::parallelLoop(const int iterations, const std::function<void(co
     wait(futures);
 }
 
-void AsyncEngine::update(float dtime) {
+void AsyncManager::update(float dtime) {
     m_timerEngine.update(dtime);
     m_taskManager.processTasks();
 
@@ -60,7 +60,7 @@ void AsyncEngine::update(float dtime) {
         m_asyncTasks.erase(idToRemove);
 }
 
-std::shared_ptr<Timer> AsyncEngine::createTimer(float sleepTime) {
+std::shared_ptr<Timer> AsyncManager::createTimer(float sleepTime) {
     return m_timerEngine.createTimer(sleepTime);
 }
 }

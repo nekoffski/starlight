@@ -1,6 +1,5 @@
 #include "ParticleEffectsEngine.h"
 
-#include "sl/async/AsyncEngine.hpp"
 #include "sl/core/Profiler.h"
 #include "sl/ecs/ComponentView.hpp"
 #include "sl/gfx/Shader.h"
@@ -18,7 +17,7 @@ static void cleanRetiredParticles(std::vector<physx::pfx::Particle>& particles) 
 }
 
 ParticleEffectsEngine::ParticleEffectsEngine() {
-    m_pfxTimer = ASYNC_ENGINE().createTimer(particleCleanerSleepTime);
+    m_pfxTimer = async::AsyncManager::get()->createTimer(particleCleanerSleepTime);
 }
 
 void ParticleEffectsEngine::update(ecs::ComponentView<components::ParticleEffectComponent>& pfxs, float deltaTime, gfx::camera::Camera& camera) {

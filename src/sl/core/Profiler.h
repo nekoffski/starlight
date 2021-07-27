@@ -4,7 +4,7 @@
 #include <sstream>
 #include <unordered_map>
 
-#include "Clock.h"
+#include "ClockManager.h"
 #include "FileSystem.h"
 #include "Macros.h"
 
@@ -24,7 +24,7 @@ class Profiler {
         void blendActualValueWithPreviousOne();
 
         float& m_value;
-        Clock::TimePoint m_startTime;
+        ClockManager::TimePoint m_startTime;
     };
 
 public:

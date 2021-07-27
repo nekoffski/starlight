@@ -6,7 +6,7 @@
 
 #include <fmt/core.h>
 
-#include "sl/core/Clock.h"
+#include "sl/core/ClockManager.h"
 #include "sl/core/Macros.h"
 #include "sl/core/String.hpp"
 
@@ -19,7 +19,7 @@ public:
     template <typename... Args>
     static void write(const std::string& format, Args&&... args) {
         auto line = fmt::format(format, std::forward<Args>(args)...);
-        auto time = CLOCK().getTimeString("%H:%M:%S");
+        auto time = sl::core::ClockManager::get()->getTimeString("%H:%M:%S");
 
         m_buffer.emplace_front("[ " + time + " ] " + line + '\n');
     }

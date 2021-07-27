@@ -1,6 +1,5 @@
 #include "ParticleEffectRenderer.h"
 
-#include "sl/async/AsyncEngine.hpp"
 #include "sl/core/Profiler.h"
 #include "sl/ecs/ComponentView.hpp"
 #include "sl/gfx/LowLevelRenderer.h"
