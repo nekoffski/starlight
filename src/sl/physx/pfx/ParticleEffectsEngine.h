@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "sl/async/AsyncEngine.hpp"
+#include "sl/async/AsyncManager.hpp"
 #include "sl/ecs/ComponentView.hpp"
 #include "sl/gfx/fwd.h"
 #include "sl/physx/pfx/ParticleGenerator.h"

@@ -2,7 +2,7 @@
 
 #include <ranges>
 
-#include "sl/async/AsyncEngine.hpp"
+#include "sl/async/AsyncManager.hpp"
 #include "sl/gfx/Texture.h"
 
 namespace sl::gfx {
@@ -63,6 +63,6 @@ void Cubemap::loadAsync(const CubemapArgs& paths, const std::string& name, std::
         std::array<std::unique_ptr<gfx::Image>, facesCount> m_faces;
     };
 
-    ASYNC_ENGINE().executeAsyncTask<LoadAsync>(paths, name, std::move(output));
+    async::AsyncManager::get()->executeAsyncTask<LoadAsync>(paths, name, std::move(output));
 }
 }

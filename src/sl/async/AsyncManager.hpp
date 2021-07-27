@@ -11,12 +11,12 @@
 #include "TimerEngine.h"
 #include "sl/core/Logger.h"
 #include "sl/core/Macros.h"
+#include "sl/core/Singleton.hpp"
 #include "sl/core/Uuid.h"
 
 namespace sl::async {
 
-class AsyncEngine {
-    SL_SINGLETON(AsyncEngine);
+class AsyncManager : public core::Singleton<AsyncManager> {
 
     struct AsyncTaskSentinel {
         Future<void> future;
@@ -24,8 +24,10 @@ class AsyncEngine {
     };
 
 public:
-    void init();
-    void deinit();
+    using Ptr = std::unique_ptr<AsyncManager>;
+
+    void start();
+    void stop();
 
     template <typename T, typename... Args>
     requires std::derived_from<T, Task> Task::Handle addPeriodicTask(Args&&... args) {
@@ -61,5 +63,3 @@ private:
     std::unordered_map<std::string, AsyncTaskSentinel> m_asyncTasks;
 };
 }
-
-#define ASYNC_ENGINE() sl::async::AsyncEngine::instance()

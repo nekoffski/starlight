@@ -9,8 +9,8 @@
 #include "sl/platform/Platform.h"
 #include "sl/utils/Globals.h"
 
-#include "sl/async/AsyncEngine.hpp"
-#include "sl/core/Clock.h"
+#include "sl/async/AsyncManager.hpp"
+#include "sl/core/ClockManager.h"
 #include "sl/core/Errors.hpp"
 #include "sl/core/FileSystem.h"
 #include "sl/core/Logger.h"
@@ -19,6 +19,7 @@
 #include "sl/utils/Globals.h"
 
 #include "sl/core/InputManager.h"
+#include "sl/core/WindowManager.h"
 
 namespace sl::app {
 
@@ -59,11 +60,10 @@ public:
 
         core::initLogging();
 
+        m_window = m_platform.windowFactory->create({ 1600, 900 }, "Starlight");
+
         SL_INFO("Creating managers");
         initManagers();
-
-        SL_INFO("Initializing factories");
-        Application::initDefaultFactories();
 
         core::FileSystem fileSystem;
         SL_INFO("Loading config from file: {}.", configPath);
@@ -73,7 +73,6 @@ public:
     void run() {
         SL_ASSERT(m_application != nullptr, "Cannot run engine without set application");
 
-        m_application->init();
         m_application->onStart();
 
         while (m_application->isRunning()) {
@@ -81,34 +80,45 @@ public:
         }
 
         m_application->onStop();
-        ASYNC_ENGINE().deinit();
+
+        m_asyncManager->stop();
     }
 
+private:
     void initManagers() {
         m_inputManager = std::make_unique<core::InputManager>();
+        m_windowManager = std::make_unique<core::WindowManager>();
+        m_asyncManager = std::make_unique<async::AsyncManager>();
+        m_clockManager = std::make_unique<core::ClockManager>();
 
-        SL_INFO("Creating async engine");
-        ASYNC_ENGINE().init();
+        m_windowManager->setActiveWindow(m_window.get());
+        m_asyncManager->start();
     }
 
     void loopStep() {
         SL_PROFILE_REGION("main-loop-step");
 
-        float deltaTime = CLOCK().getDeltaTime();
+        float deltaTime = core::ClockManager::get()->getDeltaTime();
 
-        m_application->update(deltaTime, CLOCK().nowAsFloat());
-        m_application->render();
+        m_application->update(deltaTime, core::ClockManager::get()->nowAsFloat());
+        m_application->render(*m_renderer);
 
-        ASYNC_ENGINE().update(deltaTime);
-        CLOCK().update();
+        m_asyncManager->update(deltaTime);
+        core::ClockManager::get()->update();
     }
 
-private:
     platform::Platform m_platform;
+
+    std::unique_ptr<core::Window> m_window;
+    std::unique_ptr<gfx::LowLevelRenderer> m_renderer;
+    std::shared_ptr<gfx::GraphicsContext> m_gfxContext;
 
     std::unique_ptr<Application> m_application;
 
     std::unique_ptr<core::InputManager> m_inputManager;
+    core::WindowManager::Ptr m_windowManager;
+    async::AsyncManager::Ptr m_asyncManager;
+    core::ClockManager::Ptr m_clockManager;
 };
 
 }

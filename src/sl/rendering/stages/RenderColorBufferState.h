@@ -18,9 +18,9 @@ public:
         , m_colorBufferShader(gfx::Shader::load(
               GLOBALS().config.paths.shaders + "/ColorBuffer.vert", GLOBALS().config.paths.shaders + "/ColorBuffer.frag")) {
 
-// clang-format off
+        // clang-format off
         #ifdef DEV_MODE
-            ASYNC_ENGINE().addPeriodicTask<gfx::RecompileShaderOnUpdate>(m_colorBufferShader);
+            async::AsyncManager::get()->addPeriodicTask<gfx::RecompileShaderOnUpdate>(m_colorBufferShader);
         #endif
         // clang-format on
     }

@@ -3,7 +3,6 @@
 #include <fstream>
 #include <unordered_map>
 
-#include "sl/core/Clock.h"
 #include "sl/core/Logger.h"
 #include "sl/math/Utils.hpp"
 
@@ -11,7 +10,7 @@ namespace sl::core {
 
 Profiler::RegionTimer::RegionTimer(float& value)
     : m_value(value)
-    , m_startTime(CLOCK().now()) {
+    , m_startTime(ClockManager::get()->now()) {
 }
 
 Profiler::RegionTimer::~RegionTimer() {
@@ -21,8 +20,8 @@ Profiler::RegionTimer::~RegionTimer() {
 void Profiler::RegionTimer::blendActualValueWithPreviousOne() {
     static constexpr float newValueWeight = 0.3f;
 
-    auto deltaTime = CLOCK().now() - m_startTime;
-    m_value = math::lerp(m_value, CLOCK().toSeconds(deltaTime), newValueWeight);
+    auto deltaTime = ClockManager::get()->now() - m_startTime;
+    m_value = math::lerp(m_value, ClockManager::get()->toSeconds(deltaTime), newValueWeight);
 }
 
 Profiler::RegionTimer Profiler::createRegionTimer(const std::string& name) {

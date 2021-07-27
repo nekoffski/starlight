@@ -1,41 +1,41 @@
-#pragma once
+// #pragma once
 
-#include <concepts>
-#include <memory>
+// #include <concepts>
+// #include <memory>
 
-#include "Application.h"
-#include "sl/core/sig/Signal.h"
+// #include "Application.h"
+// #include "sl/core/sig/Signal.h"
 
-namespace sl::app {
+// namespace sl::app {
 
-class Entrypoint : public core::sig::SignalHandler {
-public:
-    // clang-format off
-    template <typename Application> 
-    requires std::derived_from<Application, app::Application> && std::default_initializable<Application>
-    static std::shared_ptr<Entrypoint> create(int argc, char** argv) {
-        return std::make_unique<Entrypoint>(
-            argc, argv, std::make_unique<Application>());
-    }
-    // clang-format on
+// class Entrypoint : public core::sig::SignalHandler {
+// public:
+//     // clang-format off
+//     template <typename Application>
+//     requires std::derived_from<Application, app::Application> && std::default_initializable<Application>
+//     static std::shared_ptr<Entrypoint> create(int argc, char** argv) {
+//         return std::make_unique<Entrypoint>(
+//             argc, argv, std::make_unique<Application>());
+//     }
+//     // clang-format on
 
-    explicit Entrypoint(int argc, char** argv, std::unique_ptr<Application> app);
+//     explicit Entrypoint(int argc, char** argv, std::unique_ptr<Application> app);
 
-    int start();
-    void onSignal(int sig) override;
+//     int start();
+//     void onSignal(int sig) override;
 
-private:
-    void loopStep();
-    void loadConfig();
+// private:
+//     void loopStep();
+//     void loadConfig();
 
-    std::unique_ptr<Application> m_application;
+//     std::unique_ptr<Application> m_application;
 
-    int m_argc;
-    char** m_argv;
-};
-}
+//     int m_argc;
+//     char** m_argv;
+// };
+// }
 
-#define SL_ENTRYPOINT(App)                                            \
-    int main(int argc, char** argv) {                                 \
-        return sl::app::Entrypoint::create<App>(argc, argv)->start(); \
-    }
+// #define SL_ENTRYPOINT(App)                                            \
+//     int main(int argc, char** argv) {                                 \
+//         return sl::app::Entrypoint::create<App>(argc, argv)->start(); \
+//     }

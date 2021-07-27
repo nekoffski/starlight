@@ -1,22 +1,22 @@
 #pragma once
 
 #include <chrono>
+#include <memory>
 #include <string>
 
-#include "Macros.h"
+#include "Singleton.hpp"
 
 using namespace std::literals::chrono_literals;
 
 namespace sl::core {
 
-class Clock {
+class ClockManager : public Singleton<ClockManager> {
     using ClockType = std::chrono::steady_clock;
 
     inline static constexpr float microsecondsInSecond = 1000 * 1000;
 
 public:
-    SL_SINGLETON(Clock);
-
+    using Ptr = std::unique_ptr<ClockManager>;
     using TimePoint = std::chrono::time_point<ClockType>;
 
     static float toSeconds(const TimePoint& point);
@@ -45,5 +45,3 @@ private:
     float m_deltaTime = 0.0f;
 };
 }
-
-#define CLOCK() sl::core::Clock::instance()

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "sl/async/AsyncEngine.hpp"
+#include "sl/async/AsyncManager.hpp"
 #include "sl/async/ThreadPool.hpp"
 
 struct Task : sl::async::AsyncTask {
@@ -16,12 +16,16 @@ struct Task : sl::async::AsyncTask {
 };
 
 int main() {
-    ASYNC_ENGINE().init();
-    ASYNC_ENGINE().executeAsyncTask<Task>();
+    using namespace sl::async;
 
-    ASYNC_ENGINE().update(1.0f);
+    AsyncManager m;
 
-    ASYNC_ENGINE().deinit();
+    AsyncManager::get()->start();
+    AsyncManager::get()->executeAsyncTask<::Task>();
+
+    AsyncManager::get()->update(1.0f);
+
+    AsyncManager::get()->stop();
 
     std::cout << "Hi\n";
     return 0;

@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "sl/core/Clock.h"
+#include "sl/core/ClockManager.h"
 #include "sl/ecs/Entity.h"
 #include "sl/gfx/Cubemap.h"
 #include "sl/gui/GuiApi.h"
@@ -22,7 +22,7 @@ public:
         if (gui.beginTabItem(ICON_FA_SITEMAP "  System")) {
             if (gui.beginTreeNode("Statistics")) {
                 gui.displayText(fmt::format(" FPS:            {}\n Delta time: {}\n",
-                    CLOCK().getFPS(), CLOCK().getDeltaTime()));
+                    sl::core::ClockManager::get()->getFPS(), sl::core::ClockManager::get()->getDeltaTime()));
 
                 gui.popTreeNode();
             }
