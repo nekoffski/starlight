@@ -69,7 +69,7 @@ void Application::init() {
     SL_INFO("Creating input instance.");
     m_hud = std::make_unique<platform::core::GlfwHud>(windowHandle);
 
-    INPUT_MANAGER().setKeyboard(m_hud.get()).setMouse(m_hud.get());
+    core::InputManager::get()->setKeyboard(m_hud.get()).setMouse(m_hud.get());
 
     SL_INFO("Creating gfx context instance.");
     m_gfxContext = gfx::GraphicsContext::factory->create(windowHandle);
@@ -106,14 +106,14 @@ void Application::update(float deltaTime, float time) {
     GLOBALS().flags.disableMouseInput = m_guiApi->isCapturingMouse();
 
     m_window->changeCursorState(
-        not INPUT_MANAGER().isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE));
+        not core::InputManager::get()->isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE));
 
     m_window->update(deltaTime);
     m_context->update(*m_sceneSystems, deltaTime, time);
 
     m_eventEngine.spreadEvents();
 
-    INPUT_MANAGER().update();
+    core::InputManager::get()->update();
 }
 
 void Application::render() {
