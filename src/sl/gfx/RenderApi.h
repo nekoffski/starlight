@@ -3,7 +3,7 @@
 #include <memory>
 
 // ifdef use_opengl
-#include "sl/platform/gfx/OpenGlDefines.h"
+#include "sl/platform/gl/OpenGlDefines.h"
 
 namespace sl::gfx {
 

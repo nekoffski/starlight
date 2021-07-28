@@ -4,7 +4,7 @@
 
 #include "sl/core/NotNullPtr.hpp"
 
-namespace sl::gfx::buffer {
+namespace sl::gfx {
 
 class ElementBuffer {
 public:
@@ -12,8 +12,6 @@ public:
         virtual std::shared_ptr<ElementBuffer> create(core::NotNullPtr<void>, int, unsigned int) = 0;
         virtual ~Factory() = default;
     };
-
-    inline static std::unique_ptr<Factory> factory = nullptr;
 
     virtual ~ElementBuffer() = default;
 

@@ -1,6 +1,7 @@
 #include "CapturePointDepthMapsStage.h"
 
 #include "sl/core/Profiler.h"
+#include "sl/gfx/ShaderManager.h"
 
 #include "sl/rendering/utils/Mesh.h"
 #include "sl/rendering/utils/Misc.h"
@@ -18,14 +19,14 @@ const float far = 25.0f;
 using namespace sl::scene::components;
 
 CapturePointDepthMapsStage::CapturePointDepthMapsStage()
-    : m_depthShader(gfx::Shader::load(
+    : m_depthShader(gfx::ShaderManager::get()->load(
           GLOBALS().config.paths.shaders + "/PointDepthCapture.vert", GLOBALS().config.paths.shaders + "/PointDepthCapture.frag",
           GLOBALS().config.paths.shaders + "/PointDepthCapture.geom")) {
 
     m_shadowProjection = math::perspective(math::toRadians(90.0f), aspect, near, far);
 }
 
-void CapturePointDepthMapsStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer* frameBuffer) {
+void CapturePointDepthMapsStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) {
     SL_PROFILE_FUNCTION();
 
     prepareRenderer(renderer);
@@ -50,7 +51,7 @@ void CapturePointDepthMapsStage::execute(gfx::LowLevelRenderer& renderer, scene:
 }
 
 void CapturePointDepthMapsStage::processLight(PointLightComponent& light, MeshRendererComponent::View& meshRenderers,
-    TransformComponent::View& transforms, ModelComponent::View& models, gfx::LowLevelRenderer& renderer, gfx::buffer::FrameBuffer* frameBuffer) {
+    TransformComponent::View& transforms, ModelComponent::View& models, gfx::LowLevelRenderer& renderer, gfx::FrameBuffer* frameBuffer) {
 
     const auto& transform = utils::getModelMatrix(light.ownerEntityId, transforms);
     setLightUniforms(transform * light.position);

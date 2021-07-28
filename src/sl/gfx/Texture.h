@@ -7,7 +7,7 @@
 #include "sl/gfx/Image.h"
 
 // todo: abstraction
-#include "sl/platform/gfx/OpenGlDefines.h"
+#include "sl/platform/gl/OpenGlDefines.h"
 
 namespace sl::gfx {
 

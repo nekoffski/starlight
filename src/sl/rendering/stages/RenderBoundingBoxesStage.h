@@ -12,7 +12,7 @@ class RenderBoundingBoxesStage : public Stage {
 public:
     explicit RenderBoundingBoxesStage();
 
-    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer*) override;
+    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) override;
 
 private:
     void renderBoundingBox(gfx::LowLevelRenderer& renderer, physx::BoundingBox& boundingBox);

@@ -9,6 +9,7 @@
 #include "sl/core/InputManager.h"
 #include "sl/core/String.hpp"
 #include "sl/geom/ModelLoader.hpp"
+#include "sl/gfx/ShaderManager.h"
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/Utils.hpp"
 #include "sl/utils/Globals.h"
@@ -180,7 +181,7 @@ void AssetsTab::handleShaderLoader(sl::gui::GuiApi& gui) {
     if (m_loadClicked) {
         validateAssetName(m_assetsArgs.assetName);
 
-        auto shader = sl::gfx::Shader::load(
+        auto shader = sl::gfx::ShaderManager::get()->load(
             m_assetsArgs.faces[0], m_assetsArgs.faces[1], m_assetsArgs.faces[2]);
         // auto shaderAsset = std::make_shared<sl::asset::ShaderAsset>(shader, m_assetsArgs.assetName);
         // m_sharedState->assetManager.addAsset(shaderAsset);

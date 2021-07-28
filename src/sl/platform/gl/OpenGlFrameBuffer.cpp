@@ -24,7 +24,7 @@ void OpenGlFrameBuffer::unbind() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0u);
 }
 
-void OpenGlFrameBuffer::bindRenderBuffer(sl::gfx::buffer::RenderBuffer& buffer) {
+void OpenGlFrameBuffer::bindRenderBuffer(sl::gfx::RenderBuffer& buffer) {
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, buffer.getBufferId());
 }
 

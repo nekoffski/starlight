@@ -6,7 +6,7 @@
 #include "ElementBuffer.h"
 #include "VertexBuffer.h"
 
-namespace sl::gfx::buffer {
+namespace sl::gfx {
 
 class VertexArray {
 public:
@@ -14,8 +14,6 @@ public:
         virtual std::shared_ptr<VertexArray> create() = 0;
         virtual ~Factory() = default;
     };
-
-    inline static std::unique_ptr<Factory> factory = nullptr;
 
     virtual ~VertexArray() = default;
 

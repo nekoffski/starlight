@@ -25,18 +25,18 @@ public:
         virtual ~Factory() = default;
     };
 
-    static std::shared_ptr<Shader> load(const std::string& vertex, const std::string& fragment, const std::string& geometry = "") {
-        auto shader = factory->create(vertex, fragment, geometry);
-        ShaderCompiler::compile(*shader);
+    // static std::shared_ptr<Shader> load(const std::string& vertex, const std::string& fragment, const std::string& geometry = "") {
+    //     auto shader = factory->create(vertex, fragment, geometry);
+    //     ShaderCompiler::compile(*shader);
 
-        shader->name = core::extractNameFromPath(vertex);
+    //     shader->name = core::extractNameFromPath(vertex);
 
-        return shader;
-    }
+    //     return shader;
+    // }
 
     std::string name = "";
 
-    inline static std::unique_ptr<Factory> factory = nullptr;
+    // inline static std::unique_ptr<Factory> factory = nullptr;
 
     virtual ~Shader() = default;
 

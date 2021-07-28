@@ -18,12 +18,12 @@ class CapturePointDepthMapsStage : public Stage {
 public:
     explicit CapturePointDepthMapsStage();
 
-    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer* frameBuffer) override;
+    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) override;
 
 private:
     void processLight(scene::components::PointLightComponent& light, scene::components::MeshRendererComponent::View& meshRenderers,
         scene::components::TransformComponent::View& transforms, scene::components::ModelComponent::View& models,
-        gfx::LowLevelRenderer& renderer, gfx::buffer::FrameBuffer* frameBuffer);
+        gfx::LowLevelRenderer& renderer, gfx::FrameBuffer* frameBuffer);
 
     void setLightUniforms(const math::Vec3& lightPosition);
 

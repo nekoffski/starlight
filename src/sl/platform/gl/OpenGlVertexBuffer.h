@@ -1,10 +1,10 @@
 #pragma once
 
-#include "sl/gfx/buffer/VertexBuffer.h"
+#include "sl/gfx/VertexBuffer.h"
 
 namespace sl::platform::gl {
 
-class OpenGlVertexBuffer : public sl::gfx::buffer::VertexBuffer {
+class OpenGlVertexBuffer : public sl::gfx::VertexBuffer {
 public:
     explicit OpenGlVertexBuffer(void*, int, int);
     ~OpenGlVertexBuffer() override;
@@ -19,8 +19,8 @@ private:
     unsigned m_verticesCount;
 };
 
-struct OpenGlVertexBufferFactory : sl::gfx::buffer::VertexBuffer::Factory {
-    std::shared_ptr<sl::gfx::buffer::VertexBuffer> create(sl::core::NotNullPtr<void> data, int size, int verticesCount) override {
+struct OpenGlVertexBufferFactory : sl::gfx::VertexBuffer::Factory {
+    std::shared_ptr<sl::gfx::VertexBuffer> create(sl::core::NotNullPtr<void> data, int size, int verticesCount) override {
         return std::make_shared<OpenGlVertexBuffer>(data, size, verticesCount);
     }
 };

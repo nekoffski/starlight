@@ -44,7 +44,7 @@
 #include "sl/rendering/stages/RenderSkyboxStage.h"
 #include "sl/rendering/stages/RenderVectorsStage.h"
 
-#include "sl/gfx/buffer/RenderBuffer.h"
+#include "sl/gfx/RenderBuffer.h"
 
 #include <memory>
 
@@ -59,9 +59,9 @@ public:
     explicit EditorContext(const std::string& ident)
         : ApplicationContext(ident)
         , m_engineState(editor::EngineState::stopped)
-        , m_depthFrameBuffer(gfx::buffer::FrameBuffer::factory->create())
+        , m_depthFrameBuffer(gfx:FrameBuffer::factory->create())
         , m_captureDepthMapsRenderPass(m_depthFrameBuffer.get())
-        , m_sceneQuadFrameBuffer(gfx::buffer::FrameBuffer::factory->create())
+        , m_sceneQuadFrameBuffer(gfx:FrameBuffer::factory->create())
         , m_captureSceneRenderPass(m_sceneQuadFrameBuffer.get()) {
     }
 
@@ -238,7 +238,7 @@ public:
         m_activeCamera->viewFrustum.viewport = newViewport;
         m_activeCamera->calculateProjectionMatrix();
 
-        m_depthBuffer = gfx::buffer::RenderBuffer::factory->create(STARL_DEPTH_COMPONENT, width, height);
+        m_depthBuffer = gfx:RenderBuffer::factory->create(STARL_DEPTH_COMPONENT, width, height);
 
         m_colorBuffer = gfx::Texture::factory->create(width, height, STARL_RGBA16F, STARL_RGBA);
         m_bloomBuffer = gfx::Texture::factory->create(width, height, STARL_RGBA16F, STARL_RGBA);
@@ -305,10 +305,10 @@ private:
     editor::EngineState m_engineState;
     editor::EngineMode m_engineMode;
 
-    std::shared_ptr<gfx::buffer::FrameBuffer> m_depthFrameBuffer;
+    std::shared_ptr<gfx:FrameBuffer> m_depthFrameBuffer;
 
-    std::shared_ptr<gfx::buffer::FrameBuffer> m_sceneQuadFrameBuffer;
-    std::unique_ptr<gfx::buffer::RenderBuffer> m_depthBuffer;
+    std::shared_ptr<gfx:FrameBuffer> m_sceneQuadFrameBuffer;
+    std::unique_ptr<gfx:RenderBuffer> m_depthBuffer;
 
     std::unique_ptr<gfx::Texture> m_colorBuffer;
     std::unique_ptr<gfx::Texture> m_bloomBuffer;

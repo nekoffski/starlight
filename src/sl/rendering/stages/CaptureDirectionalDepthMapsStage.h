@@ -4,7 +4,7 @@
 
 #include "sl/gfx/Shader.h"
 #include "sl/gfx/Texture.h"
-#include "sl/gfx/buffer/VertexArray.h"
+#include "sl/gfx/VertexArray.h"
 
 #include "sl/scene/components/DirectionalLightComponent.h"
 #include "sl/scene/components/MeshRendererComponent.h"
@@ -22,7 +22,7 @@ class CaptureDirectionalDepthMapsStage : public Stage {
 public:
     explicit CaptureDirectionalDepthMapsStage();
 
-    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer* frameBuffer) override;
+    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) override;
 
 private:
     void renderDepth(scene::components::DirectionalLightComponent& light, scene::components::MeshRendererComponent::View& meshRenderers,

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "sl/gfx/buffer/RenderBuffer.h"
+#include "sl/gfx/RenderBuffer.h"
 
 namespace sl::platform::gl {
 
-class OpenGlRenderBuffer : public sl::gfx::buffer::RenderBuffer {
+class OpenGlRenderBuffer : public sl::gfx::RenderBuffer {
 public:
     explicit OpenGlRenderBuffer(int format, unsigned int width, unsigned int height);
 
@@ -19,8 +19,8 @@ private:
     unsigned int m_buffferId;
 };
 
-struct OpenGlRenderBufferFactory : public sl::gfx::buffer::RenderBuffer::Factory {
-    std::unique_ptr<sl::gfx::buffer::RenderBuffer> create(int format, unsigned int width, unsigned int height) override {
+struct OpenGlRenderBufferFactory : public sl::gfx::RenderBuffer::Factory {
+    std::unique_ptr<sl::gfx::RenderBuffer> create(int format, unsigned int width, unsigned int height) override {
         return std::make_unique<OpenGlRenderBuffer>(format, width, height);
     }
 };

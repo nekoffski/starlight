@@ -3,13 +3,13 @@
 #include <vector>
 
 #include "Collider.h"
-#include "sl/gfx/buffer/VertexArray.h"
+#include "sl/gfx/VertexArray.h"
 #include "sl/math/Vector.hpp"
 
 namespace sl::physx {
 
 struct BoundingBox {
-    virtual gfx::buffer::VertexArray* getVertexArray() const = 0;
+    virtual gfx::VertexArray* getVertexArray() const = 0;
     virtual std::vector<math::Vec3> getVertices() const = 0;
     virtual std::string getName() const = 0;
     virtual const math::Vec3& getCenterOfMass() const = 0;

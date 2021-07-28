@@ -8,7 +8,7 @@
 #include "sl/gfx/RenderApi.h"
 #include "sl/gfx/Shader.h"
 #include "sl/gfx/Texture.h"
-#include "sl/gfx/buffer/VertexArray.h"
+#include "sl/gfx/VertexArray.h"
 
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Utils.hpp"
@@ -31,7 +31,7 @@ public:
     explicit LowLevelRenderer(std::shared_ptr<gfx::GraphicsContext> gfxContext,
         std::unique_ptr<gfx::RenderApi> renderApi, ViewFrustum::Viewport viewport);
 
-    void renderVertexArray(gfx::buffer::VertexArray&);
+    void renderVertexArray(gfx::VertexArray&);
 
     void renderLine() {
         m_renderApi->drawArrays(STARL_LINES, 0, 2);

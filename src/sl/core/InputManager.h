@@ -8,7 +8,7 @@
 #include "Mouse.h"
 #include "Singleton.hpp"
 
-#include "sl/platform/core/GlfwKeys.h"
+#include "sl/platform/glfw/GlfwKeys.h"
 
 namespace sl::core {
 

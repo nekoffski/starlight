@@ -9,7 +9,7 @@ using namespace sl::scene::components;
 
 namespace sl::rendering::stages {
 
-void PrepareLightsStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer*) {
+void PrepareLightsStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
     SL_PROFILE_FUNCTION();
 
     auto [rendererComponents, transforms, directionalLights, pointLights] =

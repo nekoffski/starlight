@@ -1,8 +1,10 @@
 #pragma once
 
+#include "sl/gfx/BufferManager.h"
 #include "sl/gfx/Shader.h"
+#include "sl/gfx/ShaderManager.h"
 #include "sl/gfx/Texture.h"
-#include "sl/gfx/buffer/VertexArray.h"
+#include "sl/gfx/VertexArray.h"
 #include "sl/rendering/Stage.h"
 #include "sl/utils/Globals.h"
 
@@ -19,13 +21,13 @@ public:
 
     explicit BlurColorBufferStage()
         : m_quadVao(GLOBALS().geom->frontSquareVAO.get())
-        , m_gaussianBlurShader(gfx::Shader::load(
+        , m_gaussianBlurShader(gfx::ShaderManager::get()->load(
               GLOBALS().config.paths.shaders + "/GaussianBlur.vert", GLOBALS().config.paths.shaders + "/GaussianBlur.frag"))
-        , m_horizontalFrameBuffer(gfx::buffer::FrameBuffer::factory->create())
-        , m_verticalFrameBuffer(gfx::buffer::FrameBuffer::factory->create()) {
+        , m_horizontalFrameBuffer(gfx::BufferManager::get()->createFrameBuffer())
+        , m_verticalFrameBuffer(gfx::BufferManager::get()->createFrameBuffer()) {
     }
 
-    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer* frameBuffer) override {
+    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) override {
         auto [width, height] = m_windowProxy->getSize();
         gfx::ViewFrustum::Viewport viewport { width, height };
 
@@ -35,7 +37,7 @@ public:
 
         bool horizontal = true;
 
-        std::unordered_map<bool, std::pair<gfx::buffer::FrameBuffer*, gfx::Texture*>> buffers = {
+        std::unordered_map<bool, std::pair<gfx::FrameBuffer*, gfx::Texture*>> buffers = {
             { true, { m_horizontalFrameBuffer.get(), m_verticalBuffer.get() } },
             { false, { m_verticalFrameBuffer.get(), m_horizontalBuffer.get() } }
         };
@@ -91,15 +93,15 @@ public:
     }
 
 private:
-    gfx::buffer::VertexArray* m_quadVao;
+    gfx::VertexArray* m_quadVao;
 
     gfx::Texture* m_colorBuffer;
 
     std::unique_ptr<gfx::Texture> m_horizontalBuffer;
     std::unique_ptr<gfx::Texture> m_verticalBuffer;
 
-    std::shared_ptr<gfx::buffer::FrameBuffer> m_horizontalFrameBuffer;
-    std::shared_ptr<gfx::buffer::FrameBuffer> m_verticalFrameBuffer;
+    std::shared_ptr<gfx::FrameBuffer> m_horizontalFrameBuffer;
+    std::shared_ptr<gfx::FrameBuffer> m_verticalFrameBuffer;
 
     std::shared_ptr<gfx::Shader> m_gaussianBlurShader;
 

@@ -2,20 +2,21 @@
 
 #include "sl/core/Profiler.h"
 #include "sl/geom/CubemapVertices.h"
+#include "sl/gfx/BufferManager.h"
 
 namespace sl::rendering::stages {
 
 RenderSkyboxStage::RenderSkyboxStage() {
-    auto vertexBuffer = gfx::buffer::VertexBuffer::factory->create(
+    auto vertexBuffer = gfx::BufferManager::get()->createVertexBuffer(
         geom::cubemapVertices, sizeof(geom::cubemapVertices), 36);
 
     vertexBuffer->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
 
-    m_cubemapVertexArray = gfx::buffer::VertexArray::factory->create();
+    m_cubemapVertexArray = gfx::BufferManager::get()->createVertexArray();
     m_cubemapVertexArray->addVertexBuffer(vertexBuffer);
 }
 
-void RenderSkyboxStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer*) {
+void RenderSkyboxStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
     SL_PROFILE_FUNCTION();
 
     if (not scene.skybox.has_value())

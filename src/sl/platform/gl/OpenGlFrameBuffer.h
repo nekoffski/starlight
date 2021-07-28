@@ -1,11 +1,11 @@
 #pragma once
 
+#include "sl/gfx/FrameBuffer.h"
 #include "sl/gfx/Texture.h"
-#include "sl/gfx/buffer/FrameBuffer.h"
 
 namespace sl::platform::gl {
 
-class OpenGlFrameBuffer : public sl::gfx::buffer::FrameBuffer {
+class OpenGlFrameBuffer : public sl::gfx::FrameBuffer {
 public:
     explicit OpenGlFrameBuffer();
     ~OpenGlFrameBuffer() override;
@@ -13,7 +13,7 @@ public:
     void bind() override;
     void unbind() override;
 
-    void bindRenderBuffer(sl::gfx::buffer::RenderBuffer&) override;
+    void bindRenderBuffer(sl::gfx::RenderBuffer&) override;
     void bindTexture(sl::gfx::Texture&, unsigned int attachment) override;
     void bindTexture(sl::gfx::Texture&) override;
     void bindCubemap(sl::gfx::Cubemap&) override;
@@ -24,8 +24,8 @@ private:
     unsigned int m_bufferId;
 };
 
-struct OpenGlFrameBufferFactory : sl::gfx::buffer::FrameBuffer::Factory {
-    std::shared_ptr<sl::gfx::buffer::FrameBuffer> create() override {
+struct OpenGlFrameBufferFactory : sl::gfx::FrameBuffer::Factory {
+    std::shared_ptr<sl::gfx::FrameBuffer> create() override {
         return std::make_shared<OpenGlFrameBuffer>();
     }
 };

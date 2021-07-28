@@ -10,6 +10,8 @@ set(GCC_COVERAGE_LINK_FLAGS    "-lgcov")
 
 add_subdirectory(3rdparty)
 
+set(CMAKE_BUILD_TYPE RelWithDebInfo)
+
 find_package(Threads)
 enable_testing()
 
