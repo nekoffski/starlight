@@ -7,7 +7,9 @@
 #include "Vertex.h"
 #include "sl/core/GameObject.h"
 #include "sl/gfx/Texture.h"
-#include "sl/gfx/buffer/VertexArray.h"
+#include "sl/gfx/VertexArray.h"
+
+#include "sl/gfx/BufferManager.h"
 
 namespace sl::geom {
 
@@ -16,9 +18,9 @@ struct Mesh : core::GameObject {
         if (vertexArray != nullptr)
             vertexArray->unbind();
 
-        auto vao = gfx::buffer::VertexArray::factory->create();
-        auto vbo = gfx::buffer::VertexBuffer::factory->create(&vertices[0], vertices.size() * sizeof(Vertex), vertices.size());
-        auto ebo = gfx::buffer::ElementBuffer::factory->create(&indices[0], indices.size() * sizeof(unsigned), indices.size());
+        auto vao = gfx::BufferManager::get()->createVertexArray();
+        auto vbo = gfx::BufferManager::get()->createVertexBuffer(&vertices[0], vertices.size() * sizeof(Vertex), vertices.size());
+        auto ebo = gfx::BufferManager::get()->createElementBuffer(&indices[0], indices.size() * sizeof(unsigned), indices.size());
 
         // vertices
         vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
@@ -40,7 +42,7 @@ struct Mesh : core::GameObject {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
     std::vector<std::shared_ptr<sl::gfx::Texture>> textures;
-    std::shared_ptr<gfx::buffer::VertexArray> vertexArray;
+    std::shared_ptr<gfx::VertexArray> vertexArray;
 
     std::string name = "ExampleMesh";
     std::optional<std::string> providedBy;

@@ -2,14 +2,14 @@
 
 #include "RenderPass.h"
 #include "Stage.h"
+#include "sl/gfx/FrameBuffer.h"
 #include "sl/gfx/LowLevelRenderer.h"
-#include "sl/gfx/buffer/FrameBuffer.h"
 
 namespace sl::rendering {
 
 class CustomFrameBufferRenderPass : public RenderPass {
 public:
-    explicit CustomFrameBufferRenderPass(gfx::buffer::FrameBuffer* frameBuffer)
+    explicit CustomFrameBufferRenderPass(gfx::FrameBuffer* frameBuffer)
         : m_frameBuffer(frameBuffer) {
     }
 
@@ -31,7 +31,7 @@ public:
     }
 
 private:
-    gfx::buffer::FrameBuffer* m_frameBuffer;
+    gfx::FrameBuffer* m_frameBuffer;
     std::vector<Stage*> m_renderStages;
 };
 

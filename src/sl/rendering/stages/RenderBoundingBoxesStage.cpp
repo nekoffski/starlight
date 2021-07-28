@@ -12,7 +12,7 @@ RenderBoundingBoxesStage::RenderBoundingBoxesStage()
     : m_boundingBoxShader(GLOBALS().shaders->singleColorShader) {
 }
 
-void RenderBoundingBoxesStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer*) {
+void RenderBoundingBoxesStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
     SL_PROFILE_FUNCTION();
 
     setShaderTransforms(*scene.camera);

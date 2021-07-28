@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "sl/gfx/Shader.h"
+#include "sl/gfx/ShaderManager.h"
 #include "sl/utils/Globals.h"
 
 namespace sl::utils::globals {
@@ -11,17 +11,17 @@ namespace sl::utils::globals {
     { shader->name, shader }
 
 Shaders::Shaders() {
-    defaultCubemapShader = gfx::Shader::load(
+    defaultCubemapShader = gfx::ShaderManager::get()->load(
         GLOBALS().config.paths.shaders + "/Cubemap.vert", GLOBALS().config.paths.shaders + "/Cubemap.frag");
 
-    singleColorShader = gfx::Shader::load(
+    singleColorShader = gfx::ShaderManager::get()->load(
         GLOBALS().config.paths.shaders + "/SingleColor.vert", GLOBALS().config.paths.shaders + "/SingleColor.frag");
 
-    defaultModelShader = gfx::Shader::load(
+    defaultModelShader = gfx::ShaderManager::get()->load(
         GLOBALS().config.paths.shaders + "/DefaultModelShader.vert", GLOBALS().config.paths.shaders + "/DefaultModelShader.frag");
     defaultModelShader->name = "default-model-shader";
 
-    pfxShader = gfx::Shader::load(
+    pfxShader = gfx::ShaderManager::get()->load(
         GLOBALS().config.paths.shaders + "/particle.vert", GLOBALS().config.paths.shaders + "/particle.frag");
     pfxShader->name = "pfx-shader";
 

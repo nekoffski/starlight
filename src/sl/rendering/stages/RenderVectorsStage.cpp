@@ -10,7 +10,7 @@ RenderVectorsStage::RenderVectorsStage()
     , m_lineShader(GLOBALS().shaders->singleColorShader) {
 }
 
-void RenderVectorsStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer*) {
+void RenderVectorsStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
     SL_PROFILE_FUNCTION();
 
     setCameraUniforms(*scene.camera);

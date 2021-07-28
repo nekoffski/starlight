@@ -1,16 +1,16 @@
 #pragma once
 
-#include "sl/gfx/buffer/VertexArray.h"
+#include "sl/gfx/VertexArray.h"
 
 namespace sl::platform::gl {
 
-class OpenGlVertexArray : public sl::gfx::buffer::VertexArray {
+class OpenGlVertexArray : public sl::gfx::VertexArray {
 public:
     OpenGlVertexArray();
     ~OpenGlVertexArray() override;
 
-    void addVertexBuffer(std::shared_ptr<sl::gfx::buffer::VertexBuffer>) override;
-    void addElementBuffer(std::shared_ptr<sl::gfx::buffer::ElementBuffer>) override;
+    void addVertexBuffer(std::shared_ptr<sl::gfx::VertexBuffer>) override;
+    void addElementBuffer(std::shared_ptr<sl::gfx::ElementBuffer>) override;
 
     void bind() override;
     void unbind() override;
@@ -22,12 +22,12 @@ private:
     unsigned int m_verticesCount;
     unsigned int m_indicesCount;
 
-    std::vector<std::shared_ptr<sl::gfx::buffer::VertexBuffer>> m_vertexBuffers;
-    std::shared_ptr<sl::gfx::buffer::ElementBuffer> m_elementBuffer;
+    std::vector<std::shared_ptr<sl::gfx::VertexBuffer>> m_vertexBuffers;
+    std::shared_ptr<sl::gfx::ElementBuffer> m_elementBuffer;
 };
 
-struct OpenGlVertexArrayFactory : sl::gfx::buffer::VertexArray::Factory {
-    std::shared_ptr<sl::gfx::buffer::VertexArray> create() {
+struct OpenGlVertexArrayFactory : sl::gfx::VertexArray::Factory {
+    std::shared_ptr<sl::gfx::VertexArray> create() {
         return std::make_shared<OpenGlVertexArray>();
     }
 };

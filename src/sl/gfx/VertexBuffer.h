@@ -6,9 +6,9 @@
 #include "sl/core/NotNullPtr.hpp"
 
 // TODO: IFDEF
-#include "sl/platform/gfx/OpenGlDefines.h"
+#include "sl/platform/gl/OpenGlDefines.h"
 
-namespace sl::gfx::buffer {
+namespace sl::gfx {
 
 class VertexBuffer {
 public:
@@ -16,8 +16,6 @@ public:
         virtual std::shared_ptr<VertexBuffer> create(core::NotNullPtr<void>, int, int) = 0;
         virtual ~Factory() = default;
     };
-
-    inline static std::unique_ptr<Factory> factory = nullptr;
 
     virtual ~VertexBuffer() = default;
 

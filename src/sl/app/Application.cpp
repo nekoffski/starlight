@@ -14,11 +14,11 @@
 // #include "sl/gfx/ShaderCompiler.hpp"
 // #include "sl/gfx/ShaderCompilerImpl.h"
 // #include "sl/gfx/ViewFrustum.h"
-// #include "sl/gfx/buffer/ElementBuffer.h"
-// #include "sl/gfx/buffer/FrameBuffer.h"
-// #include "sl/gfx/buffer/RenderBuffer.h"
-// #include "sl/gfx/buffer/VertexArray.h"
-// #include "sl/gfx/buffer/VertexBuffer.h"
+// #include "sl/gfx/ElementBuffer.h"
+// #include "sl/gfx/FrameBuffer.h"
+// #include "sl/gfx/RenderBuffer.h"
+// #include "sl/gfx/VertexArray.h"
+// #include "sl/gfx/VertexBuffer.h"
 // #include "sl/gui/GuiApi.h"
 // #include "sl/platform/Platform.h"
 // #include "sl/platform/core/GlfwHud.h"
@@ -29,11 +29,11 @@
 // void Application::initDefaultFactories() {
 //     gfx::Image::factory = platform::createImageFactory();
 
-//     gfx::buffer::VertexArray::factory = platform::createVertexArrayFactory();
-//     gfx::buffer::VertexBuffer::factory = platform::createVertexBufferFactory();
-//     gfx::buffer::FrameBuffer::factory = platform::createFrameBufferFactory();
-//     gfx::buffer::ElementBuffer::factory = platform::createElementBufferFactory();
-//     gfx::buffer::RenderBuffer::factory = platform::createRenderBufferFactory();
+//     gfx:VertexArray::factory = platform::createVertexArrayFactory();
+//     gfx:VertexBuffer::factory = platform::createVertexBufferFactory();
+//     gfx:FrameBuffer::factory = platform::createFrameBufferFactory();
+//     gfx:ElementBuffer::factory = platform::createElementBufferFactory();
+//     gfx:RenderBuffer::factory = platform::createRenderBufferFactory();
 
 //     gfx::Texture::factory = platform::createTextureFactory();
 //     gfx::Cubemap::factory = platform::createCubemapFactory();

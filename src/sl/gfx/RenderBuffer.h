@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace sl::gfx::buffer {
+namespace sl::gfx {
 
 struct RenderBuffer {
     struct Factory {

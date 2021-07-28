@@ -3,10 +3,10 @@
 #include <memory>
 
 #include "sl/gfx/Cubemap.h"
+#include "sl/gfx/RenderBuffer.h"
 #include "sl/gfx/Texture.h"
-#include "sl/gfx/buffer/RenderBuffer.h"
 
-namespace sl::gfx::buffer {
+namespace sl::gfx {
 
 class FrameBuffer {
 public:
@@ -14,8 +14,6 @@ public:
         virtual std::shared_ptr<FrameBuffer> create() = 0;
         virtual ~Factory() = default;
     };
-
-    inline static std::unique_ptr<Factory> factory = nullptr;
 
     virtual ~FrameBuffer() = default;
 

@@ -1,8 +1,9 @@
 #pragma once
 
 #include "sl/gfx/Shader.h"
+#include "sl/gfx/ShaderManager.h"
 #include "sl/gfx/Texture.h"
-#include "sl/gfx/buffer/VertexArray.h"
+#include "sl/gfx/VertexArray.h"
 #include "sl/rendering/Stage.h"
 #include "sl/utils/Globals.h"
 
@@ -15,17 +16,17 @@ class RenderColorBufferStage : public Stage {
 public:
     explicit RenderColorBufferStage()
         : m_quadVao(GLOBALS().geom->frontSquareVAO.get())
-        , m_colorBufferShader(gfx::Shader::load(
+        , m_colorBufferShader(gfx::ShaderManager::get()->load(
               GLOBALS().config.paths.shaders + "/ColorBuffer.vert", GLOBALS().config.paths.shaders + "/ColorBuffer.frag")) {
 
-        // clang-format off
+// clang-format off
         #ifdef DEV_MODE
             async::AsyncManager::get()->addPeriodicTask<gfx::RecompileShaderOnUpdate>(m_colorBufferShader);
         #endif
         // clang-format on
     }
 
-    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer*) override {
+    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) override {
         auto [width, height] = m_windowProxy->getSize();
         gfx::ViewFrustum::Viewport viewport { width, height };
 
@@ -67,7 +68,7 @@ public:
     }
 
 private:
-    gfx::buffer::VertexArray* m_quadVao;
+    gfx::VertexArray* m_quadVao;
     gfx::Texture* m_colorBuffer;
     gfx::Texture* m_bloomBuffer;
 

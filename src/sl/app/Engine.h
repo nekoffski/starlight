@@ -16,6 +16,9 @@
 #include "sl/core/Logger.h"
 #include "sl/core/Profiler.h"
 #include "sl/core/sig/Signal.h"
+#include "sl/gfx/BufferManager.h"
+#include "sl/gfx/GraphicsContext.h"
+#include "sl/gfx/ShaderManager.h"
 #include "sl/utils/Globals.h"
 
 #include "sl/core/InputManager.h"
@@ -61,6 +64,9 @@ public:
         core::initLogging();
 
         m_window = m_platform.windowFactory->create({ 1600, 900 }, "Starlight");
+        m_window->init();
+
+        m_gfxContext = m_platform.graphicsContextFactory->create(m_window->getHandle());
 
         SL_INFO("Creating managers");
         initManagers();
@@ -86,10 +92,23 @@ public:
 
 private:
     void initManagers() {
-        m_inputManager = std::make_unique<core::InputManager>();
+        // clang-format off
+        m_inputManager  = std::make_unique<core::InputManager>();
         m_windowManager = std::make_unique<core::WindowManager>();
-        m_asyncManager = std::make_unique<async::AsyncManager>();
-        m_clockManager = std::make_unique<core::ClockManager>();
+        m_asyncManager  = std::make_unique<async::AsyncManager>();
+        m_clockManager  = std::make_unique<core::ClockManager>();
+        m_shaderManager = std::make_unique<gfx::ShaderManager>();
+        m_bufferManager = std::make_unique<gfx::BufferManager>();
+        // clang-format on
+
+        m_shaderManager->setShaderCompiler(m_platform.shaderCompilerFactory->create());
+        m_shaderManager->setShaderFactory(m_platform.shaderFactory.get());
+
+        m_bufferManager->setElementBufferFactory(m_platform.elementBufferFactory.get());
+        m_bufferManager->setVertexBufferFactory(m_platform.vertexBufferFactory.get());
+        m_bufferManager->setRenderBufferFactory(m_platform.renderBufferFactory.get());
+        m_bufferManager->setFrameBufferFactory(m_platform.frameBufferFactory.get());
+        m_bufferManager->setVertexArrayFactory(m_platform.vertexArrayFactory.get());
 
         m_windowManager->setActiveWindow(m_window.get());
         m_asyncManager->start();
@@ -116,9 +135,12 @@ private:
     std::unique_ptr<Application> m_application;
 
     std::unique_ptr<core::InputManager> m_inputManager;
-    core::WindowManager::Ptr m_windowManager;
-    async::AsyncManager::Ptr m_asyncManager;
-    core::ClockManager::Ptr m_clockManager;
+
+    std::unique_ptr<core::WindowManager> m_windowManager;
+    std::unique_ptr<async::AsyncManager> m_asyncManager;
+    std::unique_ptr<core::ClockManager> m_clockManager;
+    std::unique_ptr<gfx::ShaderManager> m_shaderManager;
+    std::unique_ptr<gfx::BufferManager> m_bufferManager;
 };
 
 }

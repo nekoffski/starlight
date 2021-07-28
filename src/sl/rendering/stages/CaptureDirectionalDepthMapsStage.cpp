@@ -1,6 +1,7 @@
 #include "CaptureDirectionalDepthMapsStage.h"
 
 #include "sl/core/Profiler.h"
+#include "sl/gfx/ShaderManager.h"
 #include "sl/rendering/utils/Mesh.h"
 #include "sl/rendering/utils/Misc.h"
 #include "sl/utils/Globals.h"
@@ -10,11 +11,11 @@ namespace sl::rendering::stages {
 using namespace sl::scene::components;
 
 CaptureDirectionalDepthMapsStage::CaptureDirectionalDepthMapsStage()
-    : m_depthShader(gfx::Shader::load(
+    : m_depthShader(gfx::ShaderManager::get()->load(
           GLOBALS().config.paths.shaders + "/DirectionalDepthCapture.vert", GLOBALS().config.paths.shaders + "/DirectionalDepthCapture.frag")) {
 }
 
-void CaptureDirectionalDepthMapsStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::buffer::FrameBuffer* frameBuffer) {
+void CaptureDirectionalDepthMapsStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) {
     SL_PROFILE_FUNCTION();
 
     prepareRenderer(renderer);

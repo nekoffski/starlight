@@ -3,9 +3,9 @@
 #include "sl/core/Logger.h"
 #include "sl/geom/Mesh.h"
 #include "sl/gfx/Texture.h"
-#include "sl/gfx/buffer/ElementBuffer.h"
-#include "sl/gfx/buffer/VertexArray.h"
-#include "sl/gfx/buffer/VertexBuffer.h"
+#include "sl/gfx/ElementBuffer.h"
+#include "sl/gfx/VertexArray.h"
+#include "sl/gfx/VertexBuffer.h"
 
 namespace sl::platform::model {
 

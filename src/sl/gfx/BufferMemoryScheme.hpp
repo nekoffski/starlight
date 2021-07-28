@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-namespace sl::gfx::buffer {
+namespace sl::gfx {
 
 struct BufferMemoryOffset {
     uint32_t index;

@@ -9,7 +9,7 @@
 #include "sl/core/Errors.hpp"
 #include "sl/core/Logger.h"
 
-namespace sl::platform::gfx {
+namespace sl::platform::stb {
 
 class StbImage : public sl::gfx::Image {
 public:
