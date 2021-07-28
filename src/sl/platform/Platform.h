@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "sl/core/Input.h"
 #include "sl/core/Window.h"
 #include "sl/geom/ModelLoaderImpl.h"
 #include "sl/gfx/Cubemap.h"
@@ -17,6 +18,8 @@
 #include "sl/gfx/VertexArray.h"
 #include "sl/gfx/VertexBuffer.h"
 #include "sl/gui/GuiApi.h"
+
+#include "glfw/GlfwInput.h"
 
 namespace sl::platform {
 

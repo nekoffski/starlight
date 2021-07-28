@@ -1,5 +1,6 @@
 #pragma once
 
+#include "sl/core/WindowManager.h"
 #include "sl/gfx/BufferManager.h"
 #include "sl/gfx/Shader.h"
 #include "sl/gfx/ShaderManager.h"
@@ -28,7 +29,7 @@ public:
     }
 
     void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) override {
-        auto [width, height] = m_windowProxy->getSize();
+        auto [width, height] = core::WindowManager::get()->getSize();
         gfx::ViewFrustum::Viewport viewport { width, height };
 
         renderer.setTemporaryViewport(viewport);

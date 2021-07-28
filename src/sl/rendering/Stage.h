@@ -27,13 +27,6 @@ public:
         return m_enabled;
     }
 
-    void setWindowProxy(core::WindowProxy* windowProxy) {
-        m_windowProxy = windowProxy;
-    }
-
-protected:
-    core::WindowProxy* m_windowProxy;
-
 private:
     bool m_enabled;
 };

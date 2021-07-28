@@ -6,6 +6,7 @@
 #include "sl/geom/ModelLoader.hpp"
 #include "sl/gfx/Cubemap.h"
 #include "sl/gfx/Shader.h"
+#include "sl/gfx/TextureManager.h"
 #include "sl/utils/Globals.h"
 
 using namespace sl::core;
@@ -54,7 +55,7 @@ void Deserializer::deserializeAssets(Json::Value& assetsJson) {
         for (int i = 0; i < faces.size(); ++i)
             faces[i] = paths[i].asString();
 
-        auto cubemap = gfx::Cubemap::load(faces, cubemapDescription["name"].asString());
+        auto cubemap = gfx::TextureManager::get()->createCubemap(faces, cubemapDescription["name"].asString());
         auto oldId = cubemapDescription["id"].asString();
         auto newId = cubemap->getId();
 
@@ -65,7 +66,7 @@ void Deserializer::deserializeAssets(Json::Value& assetsJson) {
     }
 
     for (auto& textureDescription : assetsJson["textures"]) {
-        auto texture = gfx::Texture::load(textureDescription["path"].asString(),
+        auto texture = gfx::TextureManager::get()->createTexture(textureDescription["path"].asString(),
             textureDescription["name"].asString());
 
         auto oldId = textureDescription["id"].asString();

@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
                       .setConfigFile("./starlight.json")
                       .build();
 
-    auto application = std::make_unique<StarlightEditor>();
+    auto application = std::make_shared<StarlightEditor>();
 
     engine->setApplication(std::move(application));
     engine->run();

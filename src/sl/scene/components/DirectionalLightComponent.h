@@ -4,6 +4,7 @@
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
 #include "sl/gfx/Texture.h"
+#include "sl/gfx/TextureManager.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
 
@@ -17,7 +18,7 @@ struct DirectionalLightComponent : ecs::Component {
     explicit DirectionalLightComponent(math::Vec3 direction = math::Vec3 { 1.0f, 1.0f, 1.0f }, math::Vec3 color = core::color::white)
         : direction(direction)
         , color(color)
-        , shadowMap(gfx::Texture::createShadowMap())
+        , shadowMap(gfx::TextureManager::get()->createShadowMap())
         , renderDirection(false) {
 
         recalculateMatrices();

@@ -14,10 +14,8 @@ namespace sl::core {
 
 class InputManager : public Singleton<InputManager> {
 public:
-    // clang-format off
-    InputManager& setMouse(Mouse* mouse);
-    InputManager& setKeyboard(Keyboard* keyboard);
-    // clang-format on
+    void setMouse(Mouse* mouse);
+    void setKeyboard(Keyboard* keyboard);
 
     void update();
 

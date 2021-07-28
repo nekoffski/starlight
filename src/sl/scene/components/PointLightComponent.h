@@ -4,6 +4,7 @@
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
 #include "sl/gfx/Cubemap.h"
+#include "sl/gfx/TextureManager.h"
 #include "sl/math/Vector.hpp"
 
 namespace sl::scene::components {
@@ -18,7 +19,7 @@ struct PointLightComponent : ecs::Component {
         , attenuationA(attenuationA)
         , attenuationB(attenuationB)
         , attenuationC(attenuationC)
-        , omnidirectionalShadowMap(gfx::Cubemap::createOmnidirectionalShaderMap()) {
+        , omnidirectionalShadowMap(gfx::TextureManager::get()->createOmnidirectionalShaderMap()) {
 
         name = "PointLightComponent";
     }

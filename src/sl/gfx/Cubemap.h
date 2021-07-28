@@ -14,17 +14,17 @@ constexpr unsigned int facesCount = 6;
 using CubemapArgs = std::array<std::string, facesCount>;
 using CubemapFaces = std::array<gfx::Image*, facesCount>;
 
+class TextureManager;
+
 class Cubemap : public core::GameObject {
+    friend class TextureManager;
+
 public:
     struct Factory {
         virtual std::unique_ptr<Cubemap> create(const CubemapFaces&) = 0;
         virtual std::unique_ptr<Cubemap> create(unsigned int, unsigned int) = 0;
     };
 
-    inline static std::unique_ptr<Factory> factory = nullptr;
-
-    static std::unique_ptr<Cubemap> createOmnidirectionalShaderMap();
-    static std::unique_ptr<Cubemap> load(const CubemapArgs& paths, const std::string& name);
     static void loadAsync(const CubemapArgs& paths, const std::string& name, std::unique_ptr<core::Output<Cubemap>> output);
 
     virtual ~Cubemap() = default;

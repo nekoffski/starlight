@@ -21,17 +21,9 @@ public:
             int = STARL_DEPTH_COMPONENT, int = STARL_DEPTH_COMPONENT) = 0;
     };
 
-    inline static std::unique_ptr<Factory> factory = nullptr;
-
-    static std::unique_ptr<Texture> createShadowMap();
-    static std::unique_ptr<Texture> load(const std::string& path, const std::string& name);
     static void loadAsync(const std::string& path, const std::string& name, std::unique_ptr<core::Output<Texture>> output);
 
-    std::unique_ptr<Texture> clone() {
-        return factory->create(
-            getWidth(), getHeight(), internalFormat, format);
-    }
-
+    std::unique_ptr<Texture> clone();
     virtual ~Texture() = default;
 
     virtual void bind(unsigned int = 0) = 0;
