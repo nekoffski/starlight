@@ -9,20 +9,15 @@ struct ImageSize {
     int height;
 };
 
+class TextureManager;
+
 class Image {
+    friend class TextureManager;
+
 public:
     struct Factory {
         virtual std::unique_ptr<Image> create(const std::string& path, int desiredChannels = 0) = 0;
     };
-
-    inline static std::unique_ptr<Factory> factory = nullptr;
-
-    static std::unique_ptr<Image> load(const std::string& path, int desiredChannels = 0) {
-        auto image = factory->create(path, desiredChannels);
-        image->m_path = path;
-
-        return image;
-    }
 
     virtual ~Image() = default;
 

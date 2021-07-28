@@ -45,6 +45,7 @@
 #include "sl/rendering/stages/RenderVectorsStage.h"
 
 #include "sl/app/Application.h"
+#include "sl/gfx/TextureManager.h"
 
 #include "sl/gfx/BufferManager.h"
 #include "sl/gfx/RenderBuffer.h"
@@ -87,10 +88,7 @@ public:
         recalculateViewportSize(windowWidth, windowHeight);
 
         // setup rendering pipeline
-        // m_renderColorBufferStage.setWindowProxy(m_windowProxy.get());
         m_renderColorBufferStage.setColorBuffer(m_colorBuffer.get());
-
-        // m_blurColorBufferStage.setWindowProxy(m_windowProxy.get());
 
         m_captureDepthMapsRenderPass
             .addRenderStage(&m_captureDirectionalDepthMapsStage)
@@ -117,15 +115,17 @@ public:
         WRITE_DEBUG("{}", "Editor context initialized");
     }
 
-    // void renderGui(gui::GuiApi& gui) override {
-    //     if (m_engineMode == editor::EngineMode::inEditor) {
-    //         m_editorGui->renderEditorGui(gui);
-    //         m_errorDialog.show(gui);
-    //     }
-    // }
+    void renderGui(gui::GuiApi& gui) {
+        gui.begin();
+        if (m_engineMode == editor::EngineMode::inEditor) {
+            m_editorGui->renderEditorGui(gui);
+            m_errorDialog.show(gui);
+        }
+        gui.end();
+    }
 
     void update(float deltaTime, float time) override {
-        // m_activeCamera->update(deltaTime);
+        m_activeCamera->update(deltaTime);
         // auto pfxs = m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>();
         // sceneSystems.pfxEngine.update(pfxs, deltaTime, *m_scene->camera);
 
@@ -139,13 +139,15 @@ public:
         // if (m_engineMode == editor::EngineMode::inGame && core::InputManager::get()->isKeyPressed(STARL_KEY_ESCAPE)) {
         //     m_engineMode = editor::EngineMode::inEditor;
 
-        auto [width, height] = WindowManager::get()->getSize();
+        //     auto [width, height] = WindowManager::get()->getSize();
         //     recalculateViewportSize(width, height);
         // }
     }
 
     void render(gfx::LowLevelRenderer& renderer) override {
-        // m_renderPipeline.run(renderer, *m_scene);
+        m_renderPipeline.run(renderer, *m_scene);
+
+        renderGui(*gui);
     }
 
     bool isRunning() const override {
@@ -158,107 +160,107 @@ public:
     void forceStop() override {
     }
 
-    // void handleEvents(const xvent::EventProvider& eventProvider) override {
-    //     auto events = eventProvider.getByCategories<event::CoreCategory, event::EditorCategory>();
+    void handleEvents(const xvent::EventProvider& eventProvider) override {
+        auto events = eventProvider.getByCategories<event::CoreCategory, event::EditorCategory>();
 
-    //     using namespace sl::event;
+        using namespace sl::event;
 
-    //     for (auto& event : events) {
-    //         SL_INFO("Processing event: {}", event->asString());
+        for (auto& event : events) {
+            SL_INFO("Processing event: {}", event->asString());
 
-    //         if (event->is<SetSkyboxEvent>()) {
-    //             auto cubemap = event->as<SetSkyboxEvent>()->cubemap;
-    //             m_scene->skybox = sl::scene::Skybox { GLOBALS().shaders->defaultCubemapShader, cubemap };
+            if (event->is<SetSkyboxEvent>()) {
+                auto cubemap = event->as<SetSkyboxEvent>()->cubemap;
+                m_scene->skybox = sl::scene::Skybox { GLOBALS().shaders->defaultCubemapShader, cubemap };
 
-    //         } else if (event->is<QuitEvent>()) {
-    //             m_windowProxy->quit();
+            } else if (event->is<QuitEvent>()) {
+                // m_windowProxy->quit();
 
-    //         } else if (event->is<WindowResizedEvent>()) {
-    //             auto windowResizedEvent = event->as<WindowResizedEvent>();
-    //             auto [width, height] = windowResizedEvent->getSize();
+            } else if (event->is<WindowResizedEvent>()) {
+                auto windowResizedEvent = event->as<WindowResizedEvent>();
+                auto [width, height] = windowResizedEvent->getSize();
 
-    //             recalculateViewportSize(width, height);
+                recalculateViewportSize(width, height);
 
-    //         } else if (event->is<ChangeSceneCenterEvent>()) {
-    //             auto& newCenter = event->as<ChangeSceneCenterEvent>()->center;
-    //             auto sceneCamera = std::dynamic_pointer_cast<sl::gfx::camera::EulerCamera>(m_activeCamera);
-    //             if (sceneCamera)
-    //                 sceneCamera->setCenter(newCenter);
+            } else if (event->is<ChangeSceneCenterEvent>()) {
+                auto& newCenter = event->as<ChangeSceneCenterEvent>()->center;
+                auto sceneCamera = std::dynamic_pointer_cast<sl::gfx::camera::EulerCamera>(m_activeCamera);
+                if (sceneCamera)
+                    sceneCamera->setCenter(newCenter);
 
-    //         } else if (event->is<editor::EngineStateChanged>()) {
-    //             handleStateChange(
-    //                 event->as<editor::EngineStateChanged>()->state);
+            } else if (event->is<editor::EngineStateChanged>()) {
+                handleStateChange(
+                    event->as<editor::EngineStateChanged>()->state);
 
-    //         } else if (event->is<editor::EnterGameMode>()) {
-    //             m_engineMode = editor::EngineMode::inGame;
+            } else if (event->is<editor::EnterGameMode>()) {
+                m_engineMode = editor::EngineMode::inGame;
 
-    //             auto [width, height] = WindowManager::get()->getSize();
-    //             recalculateViewportSize(width, height);
-    //         } else if (event->is<DisplayErrorEvent>()) {
-    //             m_errorDialog.setErrorMessage(event->as<DisplayErrorEvent>()->message);
-    //         }
+                auto [width, height] = WindowManager::get()->getSize();
+                recalculateViewportSize(width, height);
+            } else if (event->is<DisplayErrorEvent>()) {
+                m_errorDialog.setErrorMessage(event->as<DisplayErrorEvent>()->message);
+            }
 
-    //         try {
-    //             using namespace sl::app;
+            try {
+                using namespace sl::app;
 
-    //             if (event->is<SerializeSceneEvent>()) {
-    //                 auto& path = event->as<SerializeSceneEvent>()->path;
+                if (event->is<SerializeSceneEvent>()) {
+                    auto& path = event->as<SerializeSceneEvent>()->path;
 
-    //                 SL_INFO("Serializing scene as: {}", path);
-    //                 Serializer { path }.serialize(m_assetManager, m_scene);
-    //             }
+                    SL_INFO("Serializing scene as: {}", path);
+                    Serializer { path }.serialize(m_assetManager, m_scene);
+                }
 
-    //             if (event->is<DeserializeSceneEvent>()) {
-    //                 auto& path = event->as<DeserializeSceneEvent>()->path;
+                if (event->is<DeserializeSceneEvent>()) {
+                    auto& path = event->as<DeserializeSceneEvent>()->path;
 
-    //                 SL_INFO("Deserializing scene from: {}", path);
-    //                 Deserializer { m_assetManager, m_scene }.deserialize(path);
-    //             }
+                    SL_INFO("Deserializing scene from: {}", path);
+                    Deserializer { m_assetManager, m_scene }.deserialize(path);
+                }
 
-    //         } catch (sl::core::Error& err) {
-    //             m_errorDialog.setErrorMessage(err.as<std::string>());
-    //         }
-    //     }
-    // }
+            } catch (sl::core::Error& err) {
+                m_errorDialog.setErrorMessage(err.as<std::string>());
+            }
+        }
+    }
 
     void recalculateViewportSize(float width, float height) {
-        // editor::gui::GuiProperties guiProperties {
-        //     static_cast<int>(width), static_cast<int>(height)
-        // };
-        // m_editorGui->sharedState->guiProperties = guiProperties;
+        editor::gui::GuiProperties guiProperties {
+            static_cast<int>(width), static_cast<int>(height)
+        };
+        m_editorGui->sharedState->guiProperties = guiProperties;
 
-        // gfx::ViewFrustum::Viewport newViewport;
+        gfx::ViewFrustum::Viewport newViewport;
 
-        // if (m_engineMode == editor::EngineMode::inEditor) {
-        //     newViewport.width = static_cast<int>(width - guiProperties.scenePanelProperties.size.x - guiProperties.rightPanelProperties.size.x);
-        //     newViewport.height = static_cast<int>(height - guiProperties.bottomPanelProperties.size.y);
-        //     newViewport.beginX = static_cast<int>(guiProperties.scenePanelProperties.size.x);
-        //     newViewport.beginY = static_cast<int>(guiProperties.bottomPanelProperties.size.y);
-        // } else {
-        //     newViewport.width = static_cast<int>(width);
-        //     newViewport.height = static_cast<int>(height);
-        //     newViewport.beginX = 0;
-        //     newViewport.beginY = 0;
-        // }
+        if (m_engineMode == editor::EngineMode::inEditor) {
+            newViewport.width = static_cast<int>(width - guiProperties.scenePanelProperties.size.x - guiProperties.rightPanelProperties.size.x);
+            newViewport.height = static_cast<int>(height - guiProperties.bottomPanelProperties.size.y);
+            newViewport.beginX = static_cast<int>(guiProperties.scenePanelProperties.size.x);
+            newViewport.beginY = static_cast<int>(guiProperties.bottomPanelProperties.size.y);
+        } else {
+            newViewport.width = static_cast<int>(width);
+            newViewport.height = static_cast<int>(height);
+            newViewport.beginX = 0;
+            newViewport.beginY = 0;
+        }
 
-        // m_activeCamera->viewFrustum.viewport = newViewport;
-        // m_activeCamera->calculateProjectionMatrix();
+        m_activeCamera->viewFrustum.viewport = newViewport;
+        m_activeCamera->calculateProjectionMatrix();
 
-        // m_depthBuffer = gfx:RenderBuffer::factory->create(STARL_DEPTH_COMPONENT, width, height);
+        m_depthBuffer = gfx::BufferManager::get()->createRenderBuffer(STARL_DEPTH_COMPONENT, width, height);
 
-        // m_colorBuffer = gfx::Texture::factory->create(width, height, STARL_RGBA16F, STARL_RGBA);
-        // m_bloomBuffer = gfx::Texture::factory->create(width, height, STARL_RGBA16F, STARL_RGBA);
+        m_colorBuffer = gfx::TextureManager::get()->createTexture(width, height, STARL_RGBA16F, STARL_RGBA);
+        m_bloomBuffer = gfx::TextureManager::get()->createTexture(width, height, STARL_RGBA16F, STARL_RGBA);
 
-        // m_sceneQuadFrameBuffer->bind();
-        // m_sceneQuadFrameBuffer->bindTexture(*m_colorBuffer, STARL_COLOR_ATTACHMENT0);
-        // m_sceneQuadFrameBuffer->bindTexture(*m_bloomBuffer, STARL_COLOR_ATTACHMENT1);
-        // m_sceneQuadFrameBuffer->bindRenderBuffer(*m_depthBuffer);
-        // m_sceneQuadFrameBuffer->unbind();
+        m_sceneQuadFrameBuffer->bind();
+        m_sceneQuadFrameBuffer->bindTexture(*m_colorBuffer, STARL_COLOR_ATTACHMENT0);
+        m_sceneQuadFrameBuffer->bindTexture(*m_bloomBuffer, STARL_COLOR_ATTACHMENT1);
+        m_sceneQuadFrameBuffer->bindRenderBuffer(*m_depthBuffer);
+        m_sceneQuadFrameBuffer->unbind();
 
-        // m_blurColorBufferStage.setColorBuffer(m_bloomBuffer.get());
+        m_blurColorBufferStage.setColorBuffer(m_bloomBuffer.get());
 
-        // m_renderColorBufferStage.setColorBuffer(m_colorBuffer.get());
-        // m_renderColorBufferStage.setBloomBuffer(m_blurColorBufferStage.getOutputColorBuffer());
+        m_renderColorBufferStage.setColorBuffer(m_colorBuffer.get());
+        m_renderColorBufferStage.setBloomBuffer(m_blurColorBufferStage.getOutputColorBuffer());
 
         // m_lowLevelRendererProxy->setViewport(newViewport);
     }

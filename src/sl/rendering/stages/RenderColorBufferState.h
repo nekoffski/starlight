@@ -1,5 +1,6 @@
 #pragma once
 
+#include "sl/core/WindowManager.h"
 #include "sl/gfx/Shader.h"
 #include "sl/gfx/ShaderManager.h"
 #include "sl/gfx/Texture.h"
@@ -27,7 +28,7 @@ public:
     }
 
     void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) override {
-        auto [width, height] = m_windowProxy->getSize();
+        auto [width, height] = core::WindowManager::get()->getSize();
         gfx::ViewFrustum::Viewport viewport { width, height };
 
         auto settings = renderer.getSettings();

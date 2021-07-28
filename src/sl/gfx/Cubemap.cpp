@@ -5,26 +5,9 @@
 #include "sl/async/AsyncManager.hpp"
 #include "sl/gfx/Texture.h"
 
+#include "TextureManager.h"
+
 namespace sl::gfx {
-
-std::unique_ptr<Cubemap> Cubemap::createOmnidirectionalShaderMap() {
-    return factory->create(Texture::shadowMapSize, Texture::shadowMapSize);
-}
-
-std::unique_ptr<Cubemap> Cubemap::load(const CubemapArgs& paths, const std::string& name) {
-    std::array<std::unique_ptr<gfx::Image>, facesCount> faces;
-    std::array<gfx::Image*, facesCount> facesView;
-
-    std::ranges::transform(paths, faces.begin(),
-        [](const auto& path) -> std::unique_ptr<gfx::Image> { return gfx::Image::load(path); });
-    std::ranges::transform(faces, facesView.begin(), [](const auto& face) -> gfx::Image* { return face.get(); });
-
-    auto cubemap = factory->create(facesView);
-    cubemap->m_facesPaths = paths;
-    cubemap->name = name;
-
-    return cubemap;
-}
 
 void Cubemap::loadAsync(const CubemapArgs& paths, const std::string& name, std::unique_ptr<core::Output<Cubemap>> output) {
     class LoadAsync : public async::AsyncTask {
@@ -37,16 +20,12 @@ void Cubemap::loadAsync(const CubemapArgs& paths, const std::string& name, std::
 
         void executeAsync() override {
             std::ranges::transform(m_paths, m_faces.begin(),
-                [](const auto& face) -> std::unique_ptr<gfx::Image> { return gfx::Image::load(face); });
+                [](const auto& face) -> std::unique_ptr<gfx::Image> { return gfx::TextureManager::get()->loadImage(face); });
         }
 
         void finalize() override {
-            std::array<gfx::Image*, facesCount> facesView;
-            std::ranges::transform(m_faces, facesView.begin(), [](const auto& face) -> gfx::Image* { return face.get(); });
-
-            auto cubemap = factory->create(facesView);
+            auto cubemap = gfx::TextureManager::get()->createCubemap(m_paths, m_name);
             cubemap->m_facesPaths = m_paths;
-            cubemap->name = m_name;
 
             m_output->set(std::move(cubemap));
         }

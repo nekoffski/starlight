@@ -1,4 +1,4 @@
-#include "GlfwHud.h"
+#include "GlfwInput.h"
 
 #include <GLFW/glfw3.h>
 
@@ -27,7 +27,7 @@ namespace {
     }
 }
 
-GlfwHud::GlfwHud(void* windowHandle)
+GlfwInput::GlfwInput(void* windowHandle)
     : m_windowHandle(windowHandle) {
 
     GLFWwindow* windowHandle_ = static_cast<GLFWwindow*>(m_windowHandle);
@@ -36,25 +36,25 @@ GlfwHud::GlfwHud(void* windowHandle)
     glfwSetCursorPosCallback(windowHandle_, onMousePositionChange);
 }
 
-bool GlfwHud::isKeyPressed(int keycode) const {
+bool GlfwInput::isKeyPressed(int keycode) const {
     return glfwGetKey(static_cast<GLFWwindow*>(m_windowHandle), keycode) && not GLOBALS().flags.disableKeyboardInput;
 }
 
-bool GlfwHud::isMouseButtonPressed(int button) const {
+bool GlfwInput::isMouseButtonPressed(int button) const {
     return glfwGetMouseButton(static_cast<GLFWwindow*>(m_windowHandle), button) && not GLOBALS().flags.disableMouseInput;
 }
 
-std::pair<double, double> GlfwHud::getMousePosition() const {
+std::pair<double, double> GlfwInput::getMousePosition() const {
     std::pair<double, double> pos;
     glfwGetCursorPos(static_cast<GLFWwindow*>(m_windowHandle), &pos.first, &pos.second);
     return pos;
 }
 
-void GlfwHud::setOnMousePositionChange(sl::core::Mouse::Callback callback) {
+void GlfwInput::setOnMousePositionChange(sl::core::Mouse::Callback callback) {
     glfwSetCursorPosCallback(static_cast<GLFWwindow*>(m_windowHandle), (GLFWcursorposfun)callback);
 }
 
-void GlfwHud::setOnMouseScroll(sl::core::Mouse::Callback callback) {
+void GlfwInput::setOnMouseScroll(sl::core::Mouse::Callback callback) {
     glfwSetScrollCallback(static_cast<GLFWwindow*>(m_windowHandle), (GLFWscrollfun)callback);
 }
 

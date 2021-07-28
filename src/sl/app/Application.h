@@ -17,11 +17,16 @@
 // #include "sl/core/Window.h"
 // #include "sl/gfx/GraphicsContext.h"
 #include "sl/gfx/LowLevelRenderer.h"
-// #include "sl/gui/GuiApi.h"
+#include "sl/gui/GuiApi.h"
+
+#include <xvent/EventListener.h>
 
 namespace sl::app {
 
-struct Application {
+struct Application : xvent::EventListener {
+    explicit Application()
+        : xvent::EventListener("Application") { }
+
     virtual void update(float deltaTime, float now) = 0;
     virtual void render(gfx::LowLevelRenderer& renderer) = 0;
 
@@ -30,6 +35,8 @@ struct Application {
     virtual void onStart() = 0;
     virtual void onStop() = 0;
     virtual void forceStop() = 0;
+
+    gui::GuiApi* gui;
 };
 
 }

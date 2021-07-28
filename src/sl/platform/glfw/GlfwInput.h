@@ -1,13 +1,13 @@
 #pragma once
 
-#include "sl/core/Hud.h"
+#include "sl/core/Input.h"
 #include "sl/core/NotNullPtr.hpp"
 
 namespace sl::platform::glfw {
 
-class GlfwHud : public core::Hud {
+class GlfwInput : public core::Input {
 public:
-    explicit GlfwHud(void* windowHandle);
+    explicit GlfwInput(void* windowHandle);
 
     bool isKeyPressed(int) const override;
 

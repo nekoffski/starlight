@@ -5,6 +5,6 @@
 
 namespace sl::core {
 
-struct Hud : Mouse, Keyboard { };
+struct Input : Mouse, Keyboard { };
 
 }

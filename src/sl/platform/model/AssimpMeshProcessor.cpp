@@ -2,8 +2,9 @@
 
 #include "sl/core/Logger.h"
 #include "sl/geom/Mesh.h"
-#include "sl/gfx/Texture.h"
 #include "sl/gfx/ElementBuffer.h"
+#include "sl/gfx/Texture.h"
+#include "sl/gfx/TextureManager.h"
 #include "sl/gfx/VertexArray.h"
 #include "sl/gfx/VertexBuffer.h"
 
@@ -104,7 +105,7 @@ AssimpMeshProcessor::loadMaterialTextures(aiMaterial* material, aiTextureType te
         material->GetTexture(textureType, i, &str);
 
         // TODO: OPTIMIZE, store texture in models as most of mesh reuse them!
-        textures.push_back(gfx::Texture::load(directory + "/" + str.C_Str(), ""));
+        textures.push_back(gfx::TextureManager::get()->createTexture(directory + "/" + str.C_Str(), ""));
     }
     return textures;
 }

@@ -22,21 +22,16 @@ static void onMouseScroll([[maybe_unused]] void* window, [[maybe_unused]] double
     mouseScrollOffset -= offsetY * speed;
 }
 
-// clang-format off
-InputManager& InputManager::setMouse(Mouse* mouse) {
+void InputManager::setMouse(Mouse* mouse) {
     m_mouse = mouse;
 
     m_mouse->setOnMousePositionChange(onMousePositionChange);
     m_mouse->setOnMouseScroll(onMouseScroll);
-
-    return *this;
 }
 
-InputManager& InputManager::setKeyboard(Keyboard* keyboard) {
+void InputManager::setKeyboard(Keyboard* keyboard) {
     m_keyboard = keyboard;
-    return *this;
 }
-// clang-format on
 
 void InputManager::update() {
     static double previousPositionX = 0.0f;
