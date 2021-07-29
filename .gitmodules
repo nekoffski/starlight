@@ -8,7 +8,7 @@
 [submodule "3rdparty/xvent"]
 	path = 3rdparty/xvent
 	url = https://github.com/nekoffski/xvent.git
-	branch = mt
+	branch = dev
 [submodule "3rdparty/ImGuizmo"]
 	path = 3rdparty/ImGuizmo
 	url = https://github.com/CedricGuillemet/ImGuizmo.git

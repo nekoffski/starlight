@@ -1,6 +1,5 @@
 #include "EntityTab.h"
 
-#include "sl/event/Emitter.hpp"
 #include "sl/event/Event.h"
 #include "sl/gui/Utils.hpp"
 #include "sl/scene/components/DirectionalLightComponent.h"

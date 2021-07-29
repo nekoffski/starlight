@@ -4,8 +4,8 @@
 #include <string>
 
 #include "sl/ecs/Entity.h"
-#include "sl/event/Emitter.hpp"
 #include "sl/event/Event.h"
+#include "sl/event/EventManager.h"
 #include "sl/math/Utils.hpp"
 #include "sl/math/Vector.hpp"
 #include "sl/scene/components/TransformComponent.h"
@@ -55,7 +55,7 @@ public:
 
                         if (entity->hasComponent<TransformComponent>()) {
                             auto& transform = entity->getComponent<TransformComponent>();
-                            event::Emitter::emit<event::ChangeSceneCenterEvent>(transform.position);
+                            event::EventManager::get()->emit<event::ChangeSceneCenterEvent>(transform.position);
                         }
                     };
 

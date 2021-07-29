@@ -13,7 +13,7 @@ protected:
 TEST_F(NotNullPtrTests, givenNotNullPtr_whenPassingNullptr_expectThrow) {
     int* emptyPtr = nullptr;
 
-    EXPECT_THROW(foo<int>(emptyPtr), std::logic_error);
+    EXPECT_THROW(foo<int>(emptyPtr), std::runtime_error);
 }
 
 TEST_F(NotNullPtrTests, givenNotNullPtr_whenPassingValidPtr_expectNoThrow) {
