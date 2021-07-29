@@ -26,11 +26,7 @@
 #include "sl/gfx/TextureManager.h"
 #include "sl/utils/Globals.h"
 
-#include "sl/event/Emitter.hpp"
-
-#include <xvent/EventEmitter.h>
-#include <xvent/EventEngine.h>
-#include <xvent/EventListener.h>
+#include "sl/event/EventManager.h"
 
 #include "sl/core/InputManager.h"
 #include "sl/core/WindowManager.h"
@@ -73,15 +69,12 @@ public:
 
     void setApplication(std::shared_ptr<Application> application) {
         m_application = std::move(application);
-        m_eventEngine.registerEventListener(m_application);
+        m_eventManager->registerListener(m_application.get());
     }
 
     explicit Engine(const std::string& configPath, platform::Platform platform)
         : m_platform(std::move(platform))
-        , m_application(nullptr)
-        , m_eventEmitter(m_eventEngine.createEmitter()) {
-
-        event::Emitter::init(m_eventEmitter->clone());
+        , m_application(nullptr) {
 
         core::initLogging();
 
@@ -137,6 +130,7 @@ private:
         m_shaderManager  = std::make_unique<gfx::ShaderManager>();
         m_bufferManager  = std::make_unique<gfx::BufferManager>();
         m_textureManager = std::make_unique<gfx::TextureManager>();
+        m_eventManager   = std::make_unique<event::EventManager>();
         // clang-format on
 
         geom::ModelLoader::impl = std::make_unique<platform::model::AssimpModelLoaderImpl>();
@@ -169,7 +163,7 @@ private:
         m_window->update(deltaTime);
         m_application->update(deltaTime, core::ClockManager::get()->nowAsFloat());
 
-        m_eventEngine.spreadEvents();
+        m_eventManager->update();
 
         m_renderer->clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
         m_application->render(*m_renderer);
@@ -198,11 +192,9 @@ private:
     std::unique_ptr<gfx::ShaderManager> m_shaderManager;
     std::unique_ptr<gfx::BufferManager> m_bufferManager;
     std::unique_ptr<gfx::TextureManager> m_textureManager;
+    std::unique_ptr<event::EventManager> m_eventManager;
 
     std::unique_ptr<gui::GuiApi> m_gui;
-
-    xvent::EventEngine m_eventEngine;
-    std::shared_ptr<xvent::EventEmitter> m_eventEmitter;
 };
 
 }

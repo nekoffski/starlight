@@ -1,8 +1,8 @@
 #include "PropertiesPanel.h"
 
 #include "sl/core/Utils.hpp"
-#include "sl/event/Emitter.hpp"
 #include "sl/event/Event.h"
+#include "sl/event/EventManager.h"
 #include "sl/gui/Utils.hpp"
 #include "sl/scene/components/DirectionalLightComponent.h"
 #include "sl/scene/components/MeshRendererComponent.h"
@@ -65,7 +65,7 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
             auto cubemap = m_sharedState->assetManager.getCubemaps().getByName(cubemapName);
 
             m_selectedCubemap = cubemap;
-            event::Emitter::emit<event::SetSkyboxEvent>(cubemap);
+            event::EventManager::get()->emit<event::SetSkyboxEvent>(cubemap);
 
             previousSelectedValue = selectedValue;
         }

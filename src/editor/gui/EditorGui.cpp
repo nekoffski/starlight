@@ -1,7 +1,7 @@
 #include "EditorGui.h"
 
-#include "sl/event/Emitter.hpp"
 #include "sl/event/Event.h"
+#include "sl/event/EventManager.h"
 
 using namespace sl::core;
 
@@ -27,16 +27,16 @@ void EditorGui::renderEditorGui(sl::gui::GuiApi& gui) {
         if (gui.beginMenu(ICON_FA_BARS " File")) {
             if (gui.menuItem("Export scene"))
                 callback = [](const std::string& path) -> void {
-                    Emitter::emit<SerializeSceneEvent>(path);
+                    EventManager::get()->emit<SerializeSceneEvent>(path);
                 };
 
             if (gui.menuItem("Import scene"))
                 callback = [](const std::string& path) -> void {
-                    Emitter::emit<DeserializeSceneEvent>(path);
+                    EventManager::get()->emit<DeserializeSceneEvent>(path);
                 };
 
             if (gui.menuItem("Quit"))
-                Emitter::emit<QuitEvent>();
+                EventManager::get()->emit<QuitEvent>();
 
             gui.endMenu();
         }

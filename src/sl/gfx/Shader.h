@@ -6,8 +6,8 @@
 #include "sl/core/FileSystem.h"
 #include "sl/core/GameObject.h"
 #include "sl/core/String.hpp"
-#include "sl/event/Emitter.hpp"
 #include "sl/event/Event.h"
+#include "sl/event/EventManager.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
 
@@ -95,7 +95,7 @@ public:
                     SL_WARN("Could not recompile shader due to {}", err.getDetails());
 
                     using namespace event;
-                    Emitter::emit<DisplayErrorEvent>(err.as<std::string>());
+                    EventManager::get()->emit<DisplayErrorEvent>(err.as<std::string>());
                 }
                 m_wasCompiledCorrectly = false;
             }
