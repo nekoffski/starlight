@@ -2,6 +2,7 @@
 
 #include "sl/async/AsyncManager.hpp"
 #include "sl/gfx/Shader.h"
+#include "sl/gfx/ShaderManager.h"
 
 namespace sl::gui::assets {
 
@@ -29,7 +30,7 @@ void ShaderGui::Provider::render(GuiApi& gui) {
                 shader->disable();
 
                 try {
-                    gfx::ShaderCompiler::compile(*shader);
+                    gfx::ShaderManager::get()->recompileShader(*shader);
                 } catch (core::ShaderError& err) {
                     SL_WARN("Could not recompile shader due to {}", err.getDetails());
 

@@ -3,7 +3,7 @@
 #include "sl/core/Errors.hpp"
 #include "sl/core/Json.h"
 #include "sl/core/Logger.h"
-#include "sl/geom/ModelLoader.hpp"
+#include "sl/geom/GeometryManager.h"
 #include "sl/gfx/Cubemap.h"
 #include "sl/gfx/Shader.h"
 #include "sl/gfx/TextureManager.h"
@@ -82,7 +82,7 @@ void Deserializer::deserializeAssets(Json::Value& assetsJson) {
 
     for (auto& modelToLoad : models["paths"])
         m_assetManager.add(
-            geom::ModelLoader::load(modelToLoad.asString())->meshes);
+            geom::GeometryManager::get()->loadModel(modelToLoad.asString())->meshes);
 
     for (auto& meshDescription : models["meshes"]) {
         auto name = meshDescription["name"].asString();

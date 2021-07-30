@@ -4,10 +4,10 @@
 
 namespace sl::platform::gl {
 
-class OpenGlShaderCompilerImpl;
+class OpenGlShaderCompiler;
 
 class OpenGlShader : public sl::gfx::Shader {
-    friend class OpenGlShaderCompilerImpl;
+    friend class OpenGlShaderCompiler;
 
 public:
     explicit OpenGlShader(const std::string&, const std::string&, const std::string&);

@@ -26,8 +26,8 @@ private:
     std::shared_ptr<sl::gfx::ElementBuffer> m_elementBuffer;
 };
 
-struct OpenGlVertexArrayFactory : sl::gfx::VertexArray::Factory {
-    std::shared_ptr<sl::gfx::VertexArray> create() {
+struct OpenGlVertexArrayFactory : gfx::VertexArray::Factory {
+    std::shared_ptr<gfx::VertexArray> create() {
         return std::make_shared<OpenGlVertexArray>();
     }
 };

@@ -3,7 +3,7 @@
 #include <string>
 
 #include "Shader.h"
-#include "ShaderCompilerImpl.h"
+#include "ShaderCompiler.h"
 #include "sl/core/Singleton.hpp"
 #include "sl/core/String.hpp"
 
@@ -20,7 +20,11 @@ public:
         return shader;
     }
 
-    void setShaderCompiler(std::unique_ptr<ShaderCompilerImpl> shaderCompiler) {
+    void recompileShader(Shader& shader) {
+        m_shaderCompiler->compile(shader);
+    }
+
+    void setShaderCompiler(ShaderCompiler* shaderCompiler) {
         m_shaderCompiler = std::move(shaderCompiler);
     }
 
@@ -29,7 +33,7 @@ public:
     }
 
 private:
-    std::unique_ptr<ShaderCompilerImpl> m_shaderCompiler;
+    ShaderCompiler* m_shaderCompiler;
     Shader::Factory* m_shaderFactory;
 };
 

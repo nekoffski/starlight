@@ -11,13 +11,11 @@
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
 
-#include "ShaderCompiler.hpp"
-
 namespace sl::gfx {
-class ShaderCompilerImpl;
+class ShaderCompiler;
 
 class Shader : public core::GameObject {
-    friend class ShaderCompilerImpl;
+    friend class ShaderCompiler;
 
 public:
     struct Factory {
@@ -88,7 +86,7 @@ public:
     void invoke() override {
         if (auto shader = m_shader.lock(); shader) {
             try {
-                gfx::ShaderCompiler::compile(*shader);
+                // gfx::ShaderCompiler::compile(*shader);
                 m_wasCompiledCorrectly = true;
             } catch (core::ShaderError& err) {
                 if (m_wasCompiledCorrectly) {

@@ -8,7 +8,7 @@
 #include "sl/core/Errors.hpp"
 #include "sl/core/InputManager.h"
 #include "sl/core/String.hpp"
-#include "sl/geom/ModelLoader.hpp"
+#include "sl/geom/GeometryManager.h"
 #include "sl/gfx/ShaderManager.h"
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/Utils.hpp"
@@ -239,7 +239,7 @@ void AssetsTab::handleModelLoader(sl::gui::GuiApi& gui) {
     if (m_loadClicked) {
         validateAssetName(m_assetsArgs.assetName);
 
-        auto model = sl::geom::ModelLoader::load(m_assetsArgs.modelName);
+        auto model = sl::geom::GeometryManager::get()->loadModel(m_assetsArgs.modelName);
         m_sharedState->assetManager.add(model->meshes);
     }
 }

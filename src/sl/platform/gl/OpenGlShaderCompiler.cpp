@@ -1,4 +1,4 @@
-#include "OpenGlShaderCompilerImpl.h"
+#include "OpenGlShaderCompiler.h"
 
 #include <cstring>
 #include <fstream>
@@ -6,10 +6,11 @@
 
 #include <glad/glad.h>
 
-#include "OpenGlShader.h"
 #include "sl/core/ErrorCode.h"
 #include "sl/core/Errors.hpp"
 #include "sl/core/Logger.h"
+
+#include "OpenGlShader.h"
 
 constexpr int InfoBufferSize = 1024;
 
@@ -17,11 +18,11 @@ using namespace sl::core;
 
 namespace sl::platform::gl {
 
-void OpenGlShaderCompilerImpl::compile(sl::gfx::Shader& shader) {
-    compileImpl(dynamic_cast<OpenGlShader&>(shader));
+void OpenGlShaderCompiler::compile(sl::gfx::Shader& shader) {
+    compile(dynamic_cast<OpenGlShader&>(shader));
 }
 
-void OpenGlShaderCompilerImpl::compileImpl(OpenGlShader& shader) {
+void OpenGlShaderCompiler::compile(OpenGlShader& shader) {
     SL_DEBUG("compiling shader: \n{},\n{},\n{}", shader.m_fragmentPath, shader.m_vertexPath, shader.m_geomPath);
 
     GLuint& shaderProgramId = shader.m_shaderProgram;
@@ -67,7 +68,7 @@ void OpenGlShaderCompilerImpl::compileImpl(OpenGlShader& shader) {
     }
 }
 
-unsigned int OpenGlShaderCompilerImpl::compileShader(const std::string& path, unsigned type) {
+unsigned int OpenGlShaderCompiler::compileShader(const std::string& path, unsigned type) {
     char infoBuffer[infoBufferSize];
     int compiled = 0;
 

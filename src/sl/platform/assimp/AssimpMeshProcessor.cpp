@@ -8,7 +8,7 @@
 #include "sl/gfx/VertexArray.h"
 #include "sl/gfx/VertexBuffer.h"
 
-namespace sl::platform::model {
+namespace sl::platform::assimp {
 
 using geom::Vertex;
 

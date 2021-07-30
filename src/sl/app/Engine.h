@@ -7,7 +7,7 @@
 #include "sl/app/ConfigLoader.h"
 #include "sl/core/Logger.h"
 #include "sl/gui/fonts/FontAwesome.h"
-#include "sl/platform/Platform.h"
+#include "sl/platform/Platform.hpp"
 #include "sl/utils/Globals.h"
 
 #include "sl/async/AsyncManager.hpp"
@@ -19,7 +19,6 @@
 #include "sl/core/Logger.h"
 #include "sl/core/Profiler.h"
 #include "sl/core/sig/Signal.h"
-#include "sl/geom/ModelLoader.hpp"
 #include "sl/gfx/BufferManager.h"
 #include "sl/gfx/GraphicsContext.h"
 #include "sl/gfx/ShaderManager.h"
@@ -36,7 +35,6 @@
 #include "sl/gui/GuiApi.h"
 
 #include "sl/platform/gui/ImGuiApi.h"
-#include "sl/platform/model/AssimpModelLoaderImpl.h"
 
 namespace sl::app {
 
@@ -49,47 +47,44 @@ public:
             return std::move(*this);
         }
 
-        Builder&& setPlatform(platform::Platform platform) && {
-            m_platform = std::move(platform);
+        Builder&& setPlatform(platform::Platform* platform) && {
+            m_platform = platform;
             return std::move(*this);
         }
 
         std::unique_ptr<Engine> build() && {
-            SL_ASSERT(m_platform.has_value(), "Platform is not set");
+            SL_ASSERT(m_platform != nullptr, "Platform is not set");
             SL_ASSERT(m_configPath.has_value(), "Config path is not set");
 
             SL_INFO("Creating Engine instance");
-            return std::make_unique<Engine>(*m_configPath, std::move(*m_platform));
+            return std::make_unique<Engine>(*m_configPath, m_platform);
         }
 
     private:
-        std::optional<platform::Platform> m_platform;
+        platform::Platform* m_platform;
         std::optional<std::string> m_configPath;
     };
 
-    void setApplication(std::shared_ptr<Application> application) {
+    void setApplication(std::unique_ptr<Application> application) {
         m_application = std::move(application);
         m_eventManager->registerListener(m_application.get());
     }
 
-    explicit Engine(const std::string& configPath, platform::Platform platform)
-        : m_platform(std::move(platform))
+    explicit Engine(const std::string& configPath, platform::Platform* platform)
+        : m_platform(platform)
         , m_application(nullptr) {
 
-        core::initLogging();
-
-        m_window = m_platform.windowFactory->create({ 1600, 900 }, "Starlight");
+        m_window = m_platform->io.window.get(); //m_platform.windowFactory->create({ 1600, 900 }, "Starlight");
+        m_input = m_platform->io.input.get();
         m_window->init();
 
-        m_gfxContext = m_platform.graphicsContextFactory->create(m_window->getHandle());
-        m_renderApi = m_platform.renderApiFactory->create();
+        // m_gfxContext = m_platform.graphicsContextFactory->create(m_window->getHandle());
+        m_renderApi = m_platform->gpu.renderApi.get();
 
         auto windowSize = m_window->getSize();
         auto viewport = gfx::ViewFrustum::Viewport { windowSize.width, windowSize.height };
 
-        m_renderer = std::make_unique<gfx::LowLevelRenderer>(m_gfxContext, std::move(m_renderApi), viewport);
-
-        m_input = std::make_unique<platform::glfw::GlfwInput>(m_window->getHandle());
+        // m_renderer = std::make_unique<gfx::LowLevelRenderer>(m_gfxContext, std::move(m_renderApi), viewport);
 
         core::FileSystem fileSystem;
         SL_INFO("Loading config from file: {}.", configPath);
@@ -133,25 +128,25 @@ private:
         m_eventManager   = std::make_unique<event::EventManager>();
         // clang-format on
 
-        geom::ModelLoader::impl = std::make_unique<platform::model::AssimpModelLoaderImpl>();
+        // geom::ModelLoader::impl = std::make_unique<platform::model::AssimpModelLoaderImpl>();
 
-        m_inputManager->setKeyboard(m_input.get());
-        m_inputManager->setMouse(m_input.get());
+        m_inputManager->setKeyboard(m_input);
+        m_inputManager->setMouse(m_input);
 
-        m_shaderManager->setShaderCompiler(m_platform.shaderCompilerFactory->create());
-        m_shaderManager->setShaderFactory(m_platform.shaderFactory.get());
+        // m_shaderManager->setShaderCompiler(m_platform->gpu.);
+        // m_shaderManager->setShaderFactory(m_platform.shaderFactory.get());
 
-        m_bufferManager->setElementBufferFactory(m_platform.elementBufferFactory.get());
-        m_bufferManager->setVertexBufferFactory(m_platform.vertexBufferFactory.get());
-        m_bufferManager->setRenderBufferFactory(m_platform.renderBufferFactory.get());
-        m_bufferManager->setFrameBufferFactory(m_platform.frameBufferFactory.get());
-        m_bufferManager->setVertexArrayFactory(m_platform.vertexArrayFactory.get());
+        m_bufferManager->setElementBufferFactory(m_platform->gpu.elementBufferFactory.get());
+        m_bufferManager->setVertexBufferFactory(m_platform->gpu.vertexBufferFactory.get());
+        m_bufferManager->setRenderBufferFactory(m_platform->gpu.renderBufferFactory.get());
+        m_bufferManager->setFrameBufferFactory(m_platform->gpu.frameBufferFactory.get());
+        m_bufferManager->setVertexArrayFactory(m_platform->gpu.vertexArrayFactory.get());
 
-        m_textureManager->setCubemapFactory(m_platform.cubemapFactory.get());
-        m_textureManager->setImageFactory(m_platform.imageFactory.get());
-        m_textureManager->setTextureFactory(m_platform.textureFactory.get());
+        m_textureManager->setCubemapFactory(m_platform->gpu.cubemapFactory.get());
+        m_textureManager->setTextureFactory(m_platform->gpu.textureFactory.get());
+        m_textureManager->setImageFactory(m_platform->imageFactory.get());
 
-        m_windowManager->setActiveWindow(m_window.get());
+        m_windowManager->setActiveWindow(m_window);
         m_asyncManager->start();
     }
 
@@ -174,15 +169,15 @@ private:
         core::ClockManager::get()->update();
     }
 
-    platform::Platform m_platform;
+    platform::Platform* m_platform;
 
-    std::unique_ptr<core::Window> m_window;
-    std::unique_ptr<gfx::RenderApi> m_renderApi;
-    std::unique_ptr<gfx::LowLevelRenderer> m_renderer;
-    std::shared_ptr<gfx::GraphicsContext> m_gfxContext;
-    std::unique_ptr<core::Input> m_input;
+    core::Window* m_window;
+    gfx::RenderApi* m_renderApi;
+    gfx::LowLevelRenderer* m_renderer;
+    gfx::GraphicsContext* m_gfxContext;
+    core::Input* m_input;
 
-    std::shared_ptr<Application> m_application;
+    std::unique_ptr<Application> m_application;
 
     std::unique_ptr<core::InputManager> m_inputManager;
 
