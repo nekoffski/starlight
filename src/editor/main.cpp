@@ -7,7 +7,7 @@
 #include "sl/platform/assimp/AssimpModelLoader.h"
 #include "sl/platform/gl/OpenGl.h"
 #include "sl/platform/glfw/Glfw.h"
-#include "sl/platform/stb/StbImage.hpp"
+#include "sl/platform/stb/StbImage.h"
 
 #include "StarlightEditor.h"
 

@@ -163,6 +163,7 @@ private:
         m_application->update(deltaTime, core::ClockManager::get()->nowAsFloat());
 
         m_eventManager->update();
+        m_inputManager->update();
 
         m_renderer->clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
         m_application->render(*m_renderer);

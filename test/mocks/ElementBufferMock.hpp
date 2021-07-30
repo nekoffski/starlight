@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sl/gfx/buffer/ElementBuffer.h"
+#include "sl/gfx/ElementBuffer.h"
 
 #include <gmock/gmock.h>
 

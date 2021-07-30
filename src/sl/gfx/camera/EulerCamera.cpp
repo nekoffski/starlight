@@ -63,10 +63,10 @@ void EulerCamera::update(float deltaTime) {
         if (m_isMouseMiddlePressed) {
             constexpr float mouseSpeed = 0.0015f;
 
-            auto [deltaX, deltaY] = core::InputManager::get()->getMousePositonDelta();
+            auto mouseDelta = core::InputManager::get()->getMousePositonDelta();
 
-            m_psi += deltaY * mouseSpeed;
-            m_fi += deltaX * mouseSpeed;
+            m_psi += mouseDelta.y * mouseSpeed;
+            m_fi += mouseDelta.x * mouseSpeed;
         }
 
         auto scrollDelta = core::InputManager::get()->getScrollDelta();

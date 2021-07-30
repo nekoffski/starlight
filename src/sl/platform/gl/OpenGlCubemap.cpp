@@ -39,7 +39,7 @@ OpenGlCubemap::OpenGlCubemap(const sl::gfx::CubemapFaces& faces)
     for (int i = 0; i < facesLen; ++i) {
         const auto& img = faces[i];
 
-        auto channels = img->getChannels();
+        auto channels = img->getChannelsCount();
 
         if (not channelsToFormat.contains(channels))
             throw core::TextureError { core::ErrorCode::UnknownTextureFormat };
@@ -49,7 +49,7 @@ OpenGlCubemap::OpenGlCubemap(const sl::gfx::CubemapFaces& faces)
 
         SL_DEBUG("Face: {}, width: {}, height: {}", faces[i]->getPath(), size.width, size.height);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, size.width, size.height,
-            0, format, GL_UNSIGNED_BYTE, img->getRaw());
+            0, format, GL_UNSIGNED_BYTE, img->getBuffer());
     }
 
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

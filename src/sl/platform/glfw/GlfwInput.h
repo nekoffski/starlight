@@ -13,7 +13,7 @@ public:
 
     bool isMouseButtonPressed(int) const override;
 
-    std::pair<double, double> getMousePosition() const override;
+    math::Vec2 getMousePosition() const override;
 
     void setOnMousePositionChange(sl::core::Mouse::Callback) override;
     void setOnMouseScroll(sl::core::Mouse::Callback) override;

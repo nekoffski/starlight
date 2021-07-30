@@ -29,7 +29,7 @@ public:
     void makeContextCurrent() override;
     void swapBuffers() override;
 
-    core::Window::Size getSize() const override;
+    math::Size2D getSize() const override;
 
 private:
     GLFWwindow* m_windowHandle = nullptr;

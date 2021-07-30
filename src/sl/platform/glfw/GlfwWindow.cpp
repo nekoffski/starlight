@@ -24,7 +24,7 @@ void GlfwWindow::init() {
         throw core::WindowError { sl::core::ErrorCode::CouldNotInitializeWindowLibrary };
     }
 
-    SL_INFO("setting window hints");
+    SL_INFO("Setting up window hints");
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -33,13 +33,13 @@ void GlfwWindow::init() {
         SL_ERROR("GLFW ERROR {} - {}", errorCode, message);
     });
 
-    SL_INFO("creating raw window instance");
+    SL_INFO("Creating window's handle instance");
     m_windowHandle = glfwCreateWindow(m_defaultWindowSize.width, m_defaultWindowSize.height,
         m_title.c_str(), nullptr, nullptr);
 
     if (m_windowHandle == nullptr) {
         SL_ERROR("could not create raw window instance");
-        throw sl::core::WindowError { sl::core::ErrorCode::CouldNotCreateWindowInstance };
+        throw core::WindowError { core::ErrorCode::CouldNotCreateWindowInstance };
     }
 }
 
@@ -84,7 +84,7 @@ void* GlfwWindow::getHandle() const {
     return static_cast<void*>(m_windowHandle);
 }
 
-core::Window::Size GlfwWindow::getSize() const {
+math::Size2D GlfwWindow::getSize() const {
     int x, y;
     glfwGetWindowSize(m_windowHandle, &x, &y);
 

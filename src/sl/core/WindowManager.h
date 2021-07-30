@@ -23,7 +23,7 @@ public:
         m_window->disableCursor();
     }
 
-    Window::Size getSize() const {
+    math::Size2D getSize() const {
         return m_window->getSize();
     }
 

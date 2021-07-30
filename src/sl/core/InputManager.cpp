@@ -34,32 +34,32 @@ void InputManager::setKeyboard(Keyboard* keyboard) {
 }
 
 void InputManager::update() {
-    static double previousPositionX = 0.0f;
-    static double previousPositionY = 0.0f;
+    static float previousPositionX = 0.0f;
+    static float previousPositionY = 0.0f;
 
-    auto [mouseX, mouseY] = getMousePosition();
+    auto mousePosition = getMousePosition();
 
-    mousePositionDeltaX = mouseX - previousPositionX;
-    mousePositionDeltaY = mouseY - previousPositionY;
+    mousePositionDeltaX = mousePosition.x - previousPositionX;
+    mousePositionDeltaY = mousePosition.y - previousPositionY;
 
     previousPositionX = mouseX;
     previousPositionY = mouseY;
 
-    static double previousOffsetY = 0.0f;
+    static float previousOffsetY = 0.0f;
 
     mouseScrollDelta = mouseScrollOffset - previousOffsetY;
     previousOffsetY = mouseScrollOffset;
 }
 
 bool InputManager::isMouseButtonPressed(int buttonCode) const {
-    return m_mouse->isMouseButtonPressed(buttonCode);
+    return m_mouse->isMouseButtonPressed(buttonCode) && not GLOBALS().flags.disableMouseInput;
 }
 
-std::pair<double, double> InputManager::getMousePosition() const {
+math::Vec2 InputManager::getMousePosition() const {
     return m_mouse->getMousePosition();
 }
 
-std::pair<double, double> InputManager::getMousePositonDelta() const {
+math::Vec2 InputManager::getMousePositonDelta() const {
     return { mousePositionDeltaX, mousePositionDeltaY };
 }
 
@@ -68,7 +68,7 @@ double InputManager::getScrollDelta() const {
 }
 
 bool InputManager::isKeyPressed(int keyCode) const {
-    return m_keyboard->isKeyPressed(keyCode);
+    return m_keyboard->isKeyPressed(keyCode) && not GLOBALS().flags.disableKeyboardInput;
 }
 
 }

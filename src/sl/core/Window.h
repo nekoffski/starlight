@@ -3,22 +3,18 @@
 #include <functional>
 #include <memory>
 
-#include "sl/math/Vector.hpp"
+#include "sl/math/Size2D.h"
 
 namespace sl::core {
 
 class Window {
 public:
-    struct Size {
-        int width;
-        int height;
-    };
-
     using ResizeCallback = void (*)(void*, int, int);
 
-    explicit Window(Size windowSize, const std::string& title)
+    explicit Window(math::Size2D windowSize, const std::string& title)
         : m_defaultWindowSize(std::move(windowSize))
-        , m_title(title) { }
+        , m_title(title) {
+    }
 
     virtual ~Window() = default;
 
@@ -39,10 +35,10 @@ public:
 
     virtual void* getHandle() const = 0;
 
-    virtual Size getSize() const = 0;
+    virtual math::Size2D getSize() const = 0;
 
 protected:
-    Size m_defaultWindowSize;
+    math::Size2D m_defaultWindowSize;
     std::string m_title;
 };
 }

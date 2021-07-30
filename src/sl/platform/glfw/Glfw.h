@@ -10,7 +10,7 @@ namespace sl::platform::glfw {
 struct Glfw : IO {
     explicit Glfw()
         : IO(
-              std::make_unique<GlfwWindow>(core::Window::Size { 1600, 900 }, "Starlight"),
+              std::make_unique<GlfwWindow>(math::Size2D { 1600, 900 }, "Starlight"),
               std::make_unique<GlfwInput>()) { }
 };
 

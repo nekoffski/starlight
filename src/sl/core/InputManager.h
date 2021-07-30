@@ -8,6 +8,7 @@
 #include "Mouse.h"
 #include "Singleton.hpp"
 
+#include "sl/math/Vector.hpp"
 #include "sl/platform/glfw/GlfwKeys.h"
 
 namespace sl::core {
@@ -21,8 +22,8 @@ public:
 
     bool isMouseButtonPressed(int buttonCode) const;
 
-    std::pair<double, double> getMousePosition() const;
-    std::pair<double, double> getMousePositonDelta() const;
+    math::Vec2 getMousePosition() const;
+    math::Vec2 getMousePositonDelta() const;
 
     double getScrollDelta() const;
 

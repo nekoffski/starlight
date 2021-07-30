@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include "sl/math/Size2D.h"
+
 namespace sl::gfx {
 
 struct ImageSize {
@@ -21,9 +23,9 @@ public:
 
     virtual ~Image() = default;
 
-    virtual unsigned char* getRaw() = 0;
-    virtual ImageSize getSize() = 0;
-    virtual int getChannels() = 0;
+    virtual unsigned char* getBuffer() const = 0;
+    virtual math::Size2D getSize() const = 0;
+    virtual int getChannelsCount() const = 0;
 
     std::string getPath() const {
         return m_path;
