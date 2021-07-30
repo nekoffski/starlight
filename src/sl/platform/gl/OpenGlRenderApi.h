@@ -6,6 +6,10 @@ namespace sl::platform::gl {
 
 class OpenGlRenderApi : public sl::gfx::RenderApi {
 public:
+    void init() override;
+    void setViewport(const gfx::ViewFrustum::Viewport&) override;
+    void clearBuffers(unsigned int buffers) override;
+
     void setCullFace(unsigned int) override;
 
     void drawArrays(unsigned, unsigned, unsigned) override;
@@ -23,9 +27,4 @@ public:
     void disable(unsigned) override;
 };
 
-struct OpenGlRenderApiFactory : sl::gfx::RenderApi::Factory {
-    std::unique_ptr<sl::gfx::RenderApi> create() override {
-        return std::make_unique<OpenGlRenderApi>();
-    }
-};
 }

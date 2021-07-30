@@ -1,7 +1,7 @@
 #include "RenderMeshesStage.h"
 
 #include "sl/core/Profiler.h"
-#include "sl/gfx/LowLevelRenderer.h"
+#include "sl/gfx/Renderer.h"
 #include "sl/rendering/utils/Mesh.h"
 #include "sl/utils/Globals.h"
 
@@ -12,7 +12,7 @@ namespace sl::rendering::stages {
 
 using namespace sl::scene::components;
 
-void RenderMeshesStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) {
+void RenderMeshesStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) {
     SL_PROFILE_FUNCTION();
 
     auto [meshRendererComponents, transforms, models, materials] =
@@ -27,7 +27,7 @@ void RenderMeshesStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& s
 }
 
 void RenderMeshesStage::processMeshRendererComponent(MeshRendererComponent& meshRendererComponent, TransformComponent::View& transforms,
-    ModelComponent::View& models, MaterialComponent::View& materials, gfx::LowLevelRenderer& renderer, scene::Scene& scene) {
+    ModelComponent::View& models, MaterialComponent::View& materials, gfx::Renderer& renderer, scene::Scene& scene) {
 
     const auto& entityId = meshRendererComponent.ownerEntityId;
 
@@ -51,7 +51,7 @@ void RenderMeshesStage::processMeshRendererComponent(MeshRendererComponent& mesh
     renderer.restoreSettings();
 }
 
-void RenderMeshesStage::prepareRenderer(const MeshRendererComponent& meshRendererComponent, gfx::LowLevelRenderer& renderer) {
+void RenderMeshesStage::prepareRenderer(const MeshRendererComponent& meshRendererComponent, gfx::Renderer& renderer) {
     auto settings = renderer.getSettings();
     settings.polygonMode = meshRendererComponent.polygonMode;
     renderer.setTemporarySettings(settings);

@@ -77,7 +77,7 @@
 //     auto viewport = gfx::ViewFrustum::Viewport { windowSize.width, windowSize.height };
 
 //     SL_INFO("Creating low level renderer instance.");
-//     m_lowLevelRenderer = std::make_unique<gfx::LowLevelRenderer>(m_gfxContext,
+//     m_lowLevelRenderer = std::make_unique<gfx::Renderer>(m_gfxContext,
 //         gfx::RenderApi::factory->create(), viewport);
 
 //     SL_INFO("Creating GUI API instance.");

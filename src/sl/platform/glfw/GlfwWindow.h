@@ -15,9 +15,7 @@ public:
     void init() override;
     void update(float) override;
 
-    void* getHandle() const override {
-        return static_cast<void*>(m_windowHandle);
-    }
+    void* getHandle() const override;
 
     void setResizeCallback(ResizeCallback) override;
 
@@ -28,14 +26,13 @@ public:
     bool getShouldClose() const override;
     void setShouldClose(bool) override;
 
-private:
-    GLFWwindow* m_windowHandle { nullptr };
-};
+    void makeContextCurrent() override;
+    void swapBuffers() override;
 
-struct GlfwWindowFactory : core::Window::Factory {
-    std::unique_ptr<core::Window> create(core::Window::Size windowSize, const std::string& title) {
-        return std::make_unique<GlfwWindow>(windowSize, title);
-    }
+    core::Window::Size getSize() const override;
+
+private:
+    GLFWwindow* m_windowHandle = nullptr;
 };
 
 }

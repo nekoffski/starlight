@@ -3,7 +3,7 @@
 #include "RenderPass.h"
 #include "Stage.h"
 #include "sl/gfx/FrameBuffer.h"
-#include "sl/gfx/LowLevelRenderer.h"
+#include "sl/gfx/Renderer.h"
 
 namespace sl::rendering {
 
@@ -19,7 +19,7 @@ public:
         return *this;
     }
 
-    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene) {
+    void execute(gfx::Renderer& renderer, scene::Scene& scene) {
         m_frameBuffer->bind();
 
         renderer.clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);

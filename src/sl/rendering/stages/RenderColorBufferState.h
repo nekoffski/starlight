@@ -27,7 +27,7 @@ public:
         // clang-format on
     }
 
-    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) override {
+    void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) override {
         auto [width, height] = core::WindowManager::get()->getSize();
         gfx::ViewFrustum::Viewport viewport { width, height };
 

@@ -19,8 +19,8 @@
 #include "sl/core/Logger.h"
 #include "sl/core/Profiler.h"
 #include "sl/core/sig/Signal.h"
+#include "sl/geom/GeometryManager.h"
 #include "sl/gfx/BufferManager.h"
-#include "sl/gfx/GraphicsContext.h"
 #include "sl/gfx/ShaderManager.h"
 #include "sl/gfx/TextureManager.h"
 #include "sl/utils/Globals.h"
@@ -75,16 +75,19 @@ public:
         , m_application(nullptr) {
 
         m_window = m_platform->io.window.get(); //m_platform.windowFactory->create({ 1600, 900 }, "Starlight");
-        m_input = m_platform->io.input.get();
         m_window->init();
+        m_window->makeContextCurrent();
 
-        // m_gfxContext = m_platform.graphicsContextFactory->create(m_window->getHandle());
+        m_input = m_platform->io.input.get();
+        m_input->init(m_window->getHandle());
+
         m_renderApi = m_platform->gpu.renderApi.get();
+        m_renderApi->init();
 
         auto windowSize = m_window->getSize();
         auto viewport = gfx::ViewFrustum::Viewport { windowSize.width, windowSize.height };
 
-        // m_renderer = std::make_unique<gfx::LowLevelRenderer>(m_gfxContext, std::move(m_renderApi), viewport);
+        m_renderer = std::make_unique<gfx::Renderer>(m_renderApi, viewport);
 
         core::FileSystem fileSystem;
         SL_INFO("Loading config from file: {}.", configPath);
@@ -118,23 +121,22 @@ public:
 private:
     void initManagers() {
         // clang-format off
-        m_inputManager   = std::make_unique<core::InputManager>();
-        m_windowManager  = std::make_unique<core::WindowManager>();
-        m_asyncManager   = std::make_unique<async::AsyncManager>();
-        m_clockManager   = std::make_unique<core::ClockManager>();
-        m_shaderManager  = std::make_unique<gfx::ShaderManager>();
-        m_bufferManager  = std::make_unique<gfx::BufferManager>();
-        m_textureManager = std::make_unique<gfx::TextureManager>();
-        m_eventManager   = std::make_unique<event::EventManager>();
+        m_inputManager    = std::make_unique<core::InputManager>();
+        m_windowManager   = std::make_unique<core::WindowManager>();
+        m_asyncManager    = std::make_unique<async::AsyncManager>();
+        m_clockManager    = std::make_unique<core::ClockManager>();
+        m_shaderManager   = std::make_unique<gfx::ShaderManager>();
+        m_bufferManager   = std::make_unique<gfx::BufferManager>();
+        m_textureManager  = std::make_unique<gfx::TextureManager>();
+        m_eventManager    = std::make_unique<event::EventManager>();
+        m_geometryManager = std::make_unique<geom::GeometryManager>();
         // clang-format on
-
-        // geom::ModelLoader::impl = std::make_unique<platform::model::AssimpModelLoaderImpl>();
 
         m_inputManager->setKeyboard(m_input);
         m_inputManager->setMouse(m_input);
 
-        // m_shaderManager->setShaderCompiler(m_platform->gpu.);
-        // m_shaderManager->setShaderFactory(m_platform.shaderFactory.get());
+        m_shaderManager->setShaderCompiler(m_platform->gpu.shaderCompiler.get());
+        m_shaderManager->setShaderFactory(m_platform->gpu.shaderFactory.get());
 
         m_bufferManager->setElementBufferFactory(m_platform->gpu.elementBufferFactory.get());
         m_bufferManager->setVertexBufferFactory(m_platform->gpu.vertexBufferFactory.get());
@@ -145,6 +147,8 @@ private:
         m_textureManager->setCubemapFactory(m_platform->gpu.cubemapFactory.get());
         m_textureManager->setTextureFactory(m_platform->gpu.textureFactory.get());
         m_textureManager->setImageFactory(m_platform->imageFactory.get());
+
+        m_geometryManager->setModelLoader(m_platform->modelLoader.get());
 
         m_windowManager->setActiveWindow(m_window);
         m_asyncManager->start();
@@ -163,7 +167,7 @@ private:
         m_renderer->clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
         m_application->render(*m_renderer);
 
-        m_renderer->swapBuffers();
+        m_window->swapBuffers();
 
         m_asyncManager->update(deltaTime);
         core::ClockManager::get()->update();
@@ -173,10 +177,9 @@ private:
 
     core::Window* m_window;
     gfx::RenderApi* m_renderApi;
-    gfx::LowLevelRenderer* m_renderer;
-    gfx::GraphicsContext* m_gfxContext;
     core::Input* m_input;
 
+    std::unique_ptr<gfx::Renderer> m_renderer;
     std::unique_ptr<Application> m_application;
 
     std::unique_ptr<core::InputManager> m_inputManager;
@@ -188,6 +191,7 @@ private:
     std::unique_ptr<gfx::BufferManager> m_bufferManager;
     std::unique_ptr<gfx::TextureManager> m_textureManager;
     std::unique_ptr<event::EventManager> m_eventManager;
+    std::unique_ptr<geom::GeometryManager> m_geometryManager;
 
     std::unique_ptr<gui::GuiApi> m_gui;
 };

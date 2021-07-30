@@ -3,14 +3,14 @@
 #include "RenderPass.h"
 
 #include "sl/core/Profiler.h"
-#include "sl/gfx/LowLevelRenderer.h"
+#include "sl/gfx/Renderer.h"
 #include "sl/scene/Scene.h"
 
 namespace sl::rendering {
 
 class RenderPipeline {
 public:
-    void run(sl::gfx::LowLevelRenderer& renderer, scene::Scene& scene) {
+    void run(sl::gfx::Renderer& renderer, scene::Scene& scene) {
         SL_PROFILE_FUNCTION();
 
         scene.vectors.clear();

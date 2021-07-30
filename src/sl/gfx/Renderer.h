@@ -4,7 +4,6 @@
 
 #include "sl/gfx/camera/Camera.h"
 
-#include "sl/gfx/GraphicsContext.h"
 #include "sl/gfx/RenderApi.h"
 #include "sl/gfx/Shader.h"
 #include "sl/gfx/Texture.h"
@@ -26,10 +25,9 @@ struct RendererSettings {
     unsigned int cullFace = STARL_BACK;
 };
 
-class LowLevelRenderer {
+class Renderer {
 public:
-    explicit LowLevelRenderer(std::shared_ptr<gfx::GraphicsContext> gfxContext,
-        std::unique_ptr<gfx::RenderApi> renderApi, ViewFrustum::Viewport viewport);
+    explicit Renderer(gfx::RenderApi* renderApi, const ViewFrustum::Viewport& viewport);
 
     void renderVertexArray(gfx::VertexArray&);
 
@@ -37,8 +35,8 @@ public:
         m_renderApi->drawArrays(STARL_LINES, 0, 2);
     }
 
-    void clearBuffers(unsigned buff) {
-        m_gfxContext->clearBuffers(buff);
+    void clearBuffers(unsigned buffers) {
+        m_renderApi->clearBuffers(buffers);
     }
 
     void setSettings(const RendererSettings& settings) {
@@ -59,11 +57,11 @@ public:
     }
 
     void setTemporaryViewport(const ViewFrustum::Viewport& viewport) {
-        m_gfxContext->setViewport(viewport);
+        m_renderApi->setViewport(viewport);
     }
 
     void restoreViewport() {
-        m_gfxContext->setViewport(m_viewport);
+        m_renderApi->setViewport(m_viewport);
     }
 
     ViewFrustum::Viewport getViewport() const {
@@ -73,10 +71,6 @@ public:
     void setViewport(const ViewFrustum::Viewport& viewport) {
         m_viewport = viewport;
         restoreViewport();
-    }
-
-    void swapBuffers() {
-        m_gfxContext->swapBuffers();
     }
 
 private:
@@ -90,9 +84,7 @@ private:
             m_renderApi->disable(STARL_BLEND);
     }
 
-    std::shared_ptr<gfx::GraphicsContext> m_gfxContext;
-
-    std::unique_ptr<gfx::RenderApi> m_renderApi;
+    gfx::RenderApi* m_renderApi;
 
     ViewFrustum::Viewport m_viewport;
     RendererSettings m_settings;

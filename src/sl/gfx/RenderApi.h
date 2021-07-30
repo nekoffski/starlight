@@ -3,20 +3,18 @@
 #include <memory>
 
 // ifdef use_opengl
+#include "ViewFrustum.h"
 #include "sl/platform/gl/OpenGlDefines.h"
 
 namespace sl::gfx {
 
 class RenderApi {
 public:
-    struct Factory {
-        virtual std::unique_ptr<RenderApi> create() = 0;
-        virtual ~Factory() = default;
-    };
-
     virtual ~RenderApi() = default;
 
-    inline static std::unique_ptr<Factory> factory = nullptr;
+    virtual void init() = 0;
+    virtual void setViewport(const ViewFrustum::Viewport&) = 0;
+    virtual void clearBuffers(unsigned int buffers) = 0;
 
     virtual void setCullFace(unsigned int) = 0;
 

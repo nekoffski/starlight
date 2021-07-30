@@ -18,21 +18,21 @@ class CapturePointDepthMapsStage : public Stage {
 public:
     explicit CapturePointDepthMapsStage();
 
-    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) override;
+    void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) override;
 
 private:
     void processLight(scene::components::PointLightComponent& light, scene::components::MeshRendererComponent::View& meshRenderers,
         scene::components::TransformComponent::View& transforms, scene::components::ModelComponent::View& models,
-        gfx::LowLevelRenderer& renderer, gfx::FrameBuffer* frameBuffer);
+        gfx::Renderer& renderer, gfx::FrameBuffer* frameBuffer);
 
     void setLightUniforms(const math::Vec3& lightPosition);
 
     void tryToRender(scene::components::MeshRendererComponent& meshRenderer, scene::components::TransformComponent::View& transforms,
-        scene::components::ModelComponent::View& models, gfx::LowLevelRenderer& renderer);
+        scene::components::ModelComponent::View& models, gfx::Renderer& renderer);
 
     std::array<math::Mat4, facesCount> calculateShadowTransforms(const math::Vec3& lightPosition);
 
-    void prepareRenderer(gfx::LowLevelRenderer& renderer);
+    void prepareRenderer(gfx::Renderer& renderer);
 
     std::shared_ptr<gfx::Shader> m_depthShader;
     math::Mat4 m_shadowProjection;

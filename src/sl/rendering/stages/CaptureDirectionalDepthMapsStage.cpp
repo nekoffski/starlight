@@ -15,7 +15,7 @@ CaptureDirectionalDepthMapsStage::CaptureDirectionalDepthMapsStage()
           GLOBALS().config.paths.shaders + "/DirectionalDepthCapture.vert", GLOBALS().config.paths.shaders + "/DirectionalDepthCapture.frag")) {
 }
 
-void CaptureDirectionalDepthMapsStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) {
+void CaptureDirectionalDepthMapsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) {
     SL_PROFILE_FUNCTION();
 
     prepareRenderer(renderer);
@@ -46,7 +46,7 @@ void CaptureDirectionalDepthMapsStage::execute(gfx::LowLevelRenderer& renderer, 
 }
 
 void CaptureDirectionalDepthMapsStage::renderDepth(DirectionalLightComponent& light, MeshRendererComponent::View& meshRenderers,
-    TransformComponent::View& transforms, ModelComponent::View& models, gfx::LowLevelRenderer& renderer) {
+    TransformComponent::View& transforms, ModelComponent::View& models, gfx::Renderer& renderer) {
 
     m_depthShader->setUniform("lightSpaceMatrix", light.spaceMatrix);
 
@@ -56,7 +56,7 @@ void CaptureDirectionalDepthMapsStage::renderDepth(DirectionalLightComponent& li
 }
 
 void CaptureDirectionalDepthMapsStage::tryToRenderModel(MeshRendererComponent& meshRenderer, TransformComponent::View& transforms,
-    ModelComponent::View& models, gfx::LowLevelRenderer& renderer) {
+    ModelComponent::View& models, gfx::Renderer& renderer) {
 
     const auto& entityId = meshRenderer.ownerEntityId;
 
@@ -77,7 +77,7 @@ void CaptureDirectionalDepthMapsStage::queueDirectionVectorForBeingRendered(cons
     scene.vectors.emplace_back(physx::ColoredVector { std::move(vector), core::color::blue });
 }
 
-void CaptureDirectionalDepthMapsStage::prepareRenderer(gfx::LowLevelRenderer& renderer) {
+void CaptureDirectionalDepthMapsStage::prepareRenderer(gfx::Renderer& renderer) {
     renderer.setTemporaryViewport(gfx::ViewFrustum::Viewport { gfx::Texture::shadowMapSize, gfx::Texture::shadowMapSize });
 
     auto settings = renderer.getSettings();

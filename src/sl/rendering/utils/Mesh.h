@@ -1,13 +1,13 @@
 #pragma once
 
 #include "sl/geom/Mesh.h"
-#include "sl/gfx/LowLevelRenderer.h"
+#include "sl/gfx/Renderer.h"
 #include "sl/scene/components/ModelComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 
 namespace sl::rendering::utils {
 
-inline void renderMesh(gfx::LowLevelRenderer& renderer, geom::Mesh& mesh) {
+inline void renderMesh(gfx::Renderer& renderer, geom::Mesh& mesh) {
     int i = 0;
     for (const auto& texture : mesh.textures)
         texture->bind(i++);
@@ -22,7 +22,7 @@ inline void renderMesh(gfx::LowLevelRenderer& renderer, geom::Mesh& mesh) {
         texture->unbind();
 }
 
-inline void renderMeshWithoutTextures(gfx::LowLevelRenderer& renderer, geom::Mesh& mesh) {
+inline void renderMeshWithoutTextures(gfx::Renderer& renderer, geom::Mesh& mesh) {
     auto& vao = mesh.vertexArray;
 
     vao->bind();
@@ -30,7 +30,7 @@ inline void renderMeshWithoutTextures(gfx::LowLevelRenderer& renderer, geom::Mes
     vao->unbind();
 }
 
-inline void renderModel(gfx::LowLevelRenderer& renderer, gfx::Shader& shader, scene::components::ModelComponent& model, const math::Mat4& transform) {
+inline void renderModel(gfx::Renderer& renderer, gfx::Shader& shader, scene::components::ModelComponent& model, const math::Mat4& transform) {
     for (auto& position : model.instances) {
         shader.setUniform("modelMatrix", transform * math::translate(position));
 

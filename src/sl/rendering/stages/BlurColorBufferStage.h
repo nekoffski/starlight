@@ -28,7 +28,7 @@ public:
         , m_verticalFrameBuffer(gfx::BufferManager::get()->createFrameBuffer()) {
     }
 
-    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) override {
+    void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) override {
         auto [width, height] = core::WindowManager::get()->getSize();
         gfx::ViewFrustum::Viewport viewport { width, height };
 

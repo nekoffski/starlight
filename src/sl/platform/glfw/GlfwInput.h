@@ -7,7 +7,7 @@ namespace sl::platform::glfw {
 
 class GlfwInput : public core::Input {
 public:
-    explicit GlfwInput(void* windowHandle);
+    void init(void*) override;
 
     bool isKeyPressed(int) const override;
 

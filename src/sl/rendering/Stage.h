@@ -1,8 +1,7 @@
 #pragma once
 
-#include "sl/core/WindowProxy.hpp"
 #include "sl/gfx/FrameBuffer.h"
-#include "sl/gfx/LowLevelRenderer.h"
+#include "sl/gfx/Renderer.h"
 #include "sl/scene/Scene.h"
 
 namespace sl::rendering {
@@ -13,7 +12,7 @@ public:
         : m_enabled(true) {
     }
 
-    virtual void execute(gfx::LowLevelRenderer&, scene::Scene& scene, gfx::FrameBuffer*) = 0;
+    virtual void execute(gfx::Renderer&, scene::Scene& scene, gfx::FrameBuffer*) = 0;
 
     void enable() {
         m_enabled = true;

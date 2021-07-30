@@ -16,7 +16,7 @@
 
 // #include "sl/core/Window.h"
 // #include "sl/gfx/GraphicsContext.h"
-#include "sl/gfx/LowLevelRenderer.h"
+#include "sl/gfx/Renderer.h"
 #include "sl/gui/GuiApi.h"
 
 #include <xvent/EventListener.h>
@@ -28,7 +28,7 @@ struct Application : xvent::EventListener {
         : xvent::EventListener("Application") { }
 
     virtual void update(float deltaTime, float now) = 0;
-    virtual void render(gfx::LowLevelRenderer& renderer) = 0;
+    virtual void render(gfx::Renderer& renderer) = 0;
 
     virtual bool isRunning() const = 0;
 
@@ -73,7 +73,7 @@ struct Application : xvent::EventListener {
 //         auto context = std::make_shared<T>(ident);
 
 //         context->m_guiApiProxy = std::make_shared<gui::GuiApiProxy>(m_guiApi);
-//         context->m_lowLevelRendererProxy = std::make_shared<gfx::LowLevelRendererProxy>(m_lowLevelRenderer.get());
+//         context->m_lowLevelRendererProxy = std::make_shared<gfx::RendererProxy>(m_lowLevelRenderer.get());
 //         context->m_windowProxy = std::make_shared<core::WindowProxy>(m_window);
 
 //         context->onInit();
@@ -87,7 +87,7 @@ struct Application : xvent::EventListener {
 //     void renderGui();
 
 //     std::shared_ptr<core::Window> m_window;
-//     std::unique_ptr<gfx::LowLevelRenderer> m_lowLevelRenderer;
+//     std::unique_ptr<gfx::Renderer> m_lowLevelRenderer;
 //     std::shared_ptr<gui::GuiApi> m_guiApi;
 //     std::shared_ptr<gfx::GraphicsContext> m_gfxContext;
 

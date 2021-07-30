@@ -144,7 +144,7 @@ public:
         // }
     }
 
-    void render(gfx::LowLevelRenderer& renderer) override {
+    void render(gfx::Renderer& renderer) override {
         m_renderPipeline.run(renderer, *m_scene);
 
         renderGui(*gui);

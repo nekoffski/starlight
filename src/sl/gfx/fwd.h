@@ -4,7 +4,7 @@
 
 namespace sl::gfx {
 
-class LowLevelRenderer;
+class Renderer;
 class Shader;
 class ShaderCompiler;
 class Cubemap;

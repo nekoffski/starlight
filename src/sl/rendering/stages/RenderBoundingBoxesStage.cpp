@@ -12,7 +12,7 @@ RenderBoundingBoxesStage::RenderBoundingBoxesStage()
     : m_boundingBoxShader(GLOBALS().shaders->singleColorShader) {
 }
 
-void RenderBoundingBoxesStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
+void RenderBoundingBoxesStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
     SL_PROFILE_FUNCTION();
 
     setShaderTransforms(*scene.camera);
@@ -31,7 +31,7 @@ void RenderBoundingBoxesStage::execute(gfx::LowLevelRenderer& renderer, scene::S
 }
 
 void RenderBoundingBoxesStage::processRigidBody(RigidBodyComponent& rigidBody, TransformComponent::View& transforms,
-    gfx::LowLevelRenderer& renderer, scene::Scene& scene) {
+    gfx::Renderer& renderer, scene::Scene& scene) {
 
     const auto& entityId = rigidBody.ownerEntityId;
     const auto& modelMatrix = utils::getModelMatrix(entityId, transforms);
@@ -59,13 +59,13 @@ void RenderBoundingBoxesStage::setShaderTransforms(gfx::camera::Camera& camera) 
     m_boundingBoxShader->setUniform("viewMatrix", camera.getViewMatrix());
 }
 
-void RenderBoundingBoxesStage::prepareRenderer(gfx::LowLevelRenderer& renderer) {
+void RenderBoundingBoxesStage::prepareRenderer(gfx::Renderer& renderer) {
     auto settings = renderer.getSettings();
     settings.polygonMode = STARL_LINE;
     renderer.setTemporarySettings(settings);
 }
 
-void RenderBoundingBoxesStage::renderBoundingBox(gfx::LowLevelRenderer& renderer, physx::BoundingBox& boundingBox) {
+void RenderBoundingBoxesStage::renderBoundingBox(gfx::Renderer& renderer, physx::BoundingBox& boundingBox) {
     auto vao = boundingBox.getVertexArray();
 
     vao->bind();

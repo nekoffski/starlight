@@ -7,19 +7,19 @@
 #include "sl/scene/components/ModelComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 
-#include "sl/gfx/LowLevelRenderer.h"
+#include "sl/gfx/Renderer.h"
 
 namespace sl::rendering::stages {
 
 class RenderMeshesStage : public Stage {
 public:
-    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) override;
+    void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) override;
 
 private:
     void processMeshRendererComponent(scene::components::MeshRendererComponent& meshRendererComponent, scene::components::TransformComponent::View& transforms,
-        scene::components::ModelComponent::View& models, scene::components::MaterialComponent::View& materials, gfx::LowLevelRenderer& renderer, scene::Scene& scene);
+        scene::components::ModelComponent::View& models, scene::components::MaterialComponent::View& materials, gfx::Renderer& renderer, scene::Scene& scene);
 
-    void prepareRenderer(const scene::components::MeshRendererComponent& meshRendererComponent, gfx::LowLevelRenderer& renderer);
+    void prepareRenderer(const scene::components::MeshRendererComponent& meshRendererComponent, gfx::Renderer& renderer);
 
     const scene::components::MaterialComponent& getMaterial(const std::string& entityId, scene::components::MaterialComponent::View& materials);
 

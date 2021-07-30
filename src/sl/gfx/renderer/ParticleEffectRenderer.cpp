@@ -2,7 +2,7 @@
 
 #include "sl/core/Profiler.h"
 #include "sl/ecs/ComponentView.hpp"
-#include "sl/gfx/LowLevelRenderer.h"
+#include "sl/gfx/Renderer.h"
 #include "sl/gfx/Shader.h"
 #include "sl/gfx/camera/Camera.h"
 #include "sl/scene/components/TransformComponent.h"
@@ -10,7 +10,7 @@
 
 namespace sl::gfx::renderer {
 
-ParticleEffectRenderer::ParticleEffectRenderer(LowLevelRenderer& renderer)
+ParticleEffectRenderer::ParticleEffectRenderer(Renderer& renderer)
     : m_renderer(renderer)
     , m_vao(GLOBALS().geom->frontSquareVAO)
     , m_shader(GLOBALS().shaders->pfxShader) {

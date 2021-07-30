@@ -3,6 +3,8 @@
 #include <functional>
 #include <memory>
 
+#include "sl/math/Vector.hpp"
+
 namespace sl::core {
 
 class Window {
@@ -12,22 +14,15 @@ public:
         int height;
     };
 
-    using ResizeCallback = std::function<void(int, int)>;
-
-    struct Factory {
-        virtual std::unique_ptr<Window> create(Size windowSize, const std::string& title) = 0;
-        virtual ~Factory() = default;
-    };
-
-    inline static std::unique_ptr<Factory> factory = nullptr;
+    using ResizeCallback = void (*)(void*, int, int);
 
     explicit Window(Size windowSize, const std::string& title)
-        : m_windowSize(std::move(windowSize))
+        : m_defaultWindowSize(std::move(windowSize))
         , m_title(title) { }
 
     virtual ~Window() = default;
 
-    virtual void setResizeCallback(ResizeCallback) { }
+    virtual void setResizeCallback(ResizeCallback) = 0;
 
     virtual void init() = 0;
     virtual void update(float) = 0;
@@ -39,14 +34,15 @@ public:
     virtual void enableCursor() = 0;
     virtual void disableCursor() = 0;
 
+    virtual void makeContextCurrent() = 0;
+    virtual void swapBuffers() = 0;
+
     virtual void* getHandle() const = 0;
 
-    const Size& getSize() const {
-        return m_windowSize;
-    }
+    virtual Size getSize() const = 0;
 
 protected:
-    Size m_windowSize;
+    Size m_defaultWindowSize;
     std::string m_title;
 };
 }

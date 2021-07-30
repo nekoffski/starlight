@@ -33,25 +33,25 @@ struct Platform {
 
         // clang-format off
         template <typename T> requires std::derived_from<T, IO>
-        Builder&& setIO() {
+        Builder&& setIO() && {
             m_io = T{};
             return std::move(*this);
         }
 
         template <typename T> requires std::derived_from<T, GPU>
-        Builder&& setGPU() {
+        Builder&& setGPU() && {
             m_gpu = T{};
             return std::move(*this);
         }
 
         template <typename T> requires std::derived_from<T, gfx::Image::Factory>
-        Builder&& setImageFactory() {
+        Builder&& setImageFactory() && {
             m_imageFactory = std::make_unique<T>();
             return std::move(*this);
         }
 
         template <typename T> requires std::derived_from<T, geom::ModelLoader>
-        Builder&& setModelLoader() {
+        Builder&& setModelLoader() && {
             m_modelLoader = std::make_unique<T>();
             return std::move(*this);
         }

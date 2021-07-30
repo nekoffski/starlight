@@ -6,35 +6,22 @@
 
 #include "sl/core/Errors.hpp"
 #include "sl/core/Logger.h"
+#include "sl/core/Profiler.h"
 
 namespace sl::platform::glfw {
 
-// TODO: this cannot look like this
-static std::optional<sl::core::Window::ResizeCallback> gResizeCallback;
-
-void executeResizeCallback(GLFWwindow* w, int width, int height) {
-    if (gResizeCallback.has_value()) {
-        auto windowSize = (sl::core::Window::Size*)glfwGetWindowUserPointer(w);
-
-        windowSize->width = width;
-        windowSize->height = height;
-
-        (*gResizeCallback)(width, height);
-    }
-}
-
 GlfwWindow::~GlfwWindow() {
     if (m_windowHandle != nullptr) {
-        SL_INFO("destroying");
+        SL_INFO("Destroying glfw window");
         glfwDestroyWindow(m_windowHandle);
     }
 }
 
 void GlfwWindow::init() {
-    SL_INFO("initializing glfw");
+    SL_INFO("Initializing glfw");
     if (auto status = glfwInit(); status < 0) {
         SL_ERROR("could not initialize glfw: {]", status);
-        throw sl::core::WindowError { sl::core::ErrorCode::CouldNotInitializeWindowLibrary };
+        throw core::WindowError { sl::core::ErrorCode::CouldNotInitializeWindowLibrary };
     }
 
     SL_INFO("setting window hints");
@@ -47,20 +34,17 @@ void GlfwWindow::init() {
     });
 
     SL_INFO("creating raw window instance");
-    m_windowHandle = glfwCreateWindow(m_windowSize.width, m_windowSize.height,
+    m_windowHandle = glfwCreateWindow(m_defaultWindowSize.width, m_defaultWindowSize.height,
         m_title.c_str(), nullptr, nullptr);
 
     if (m_windowHandle == nullptr) {
         SL_ERROR("could not create raw window instance");
         throw sl::core::WindowError { sl::core::ErrorCode::CouldNotCreateWindowInstance };
     }
-
-    glfwSetWindowUserPointer(m_windowHandle, (void*)&m_windowSize);
 }
 
-void GlfwWindow::setResizeCallback(sl::core::Window::ResizeCallback resizeCallback) {
-    gResizeCallback = resizeCallback;
-    glfwSetWindowSizeCallback(m_windowHandle, executeResizeCallback);
+void GlfwWindow::setResizeCallback(core::Window::ResizeCallback resizeCallback) {
+    glfwSetWindowSizeCallback(m_windowHandle, (GLFWwindowsizefun)resizeCallback);
 }
 
 bool GlfwWindow::getShouldClose() const {
@@ -87,4 +71,24 @@ void GlfwWindow::changeCursorState(bool enabled) {
 void GlfwWindow::update(float dtime) {
     glfwPollEvents();
 }
+
+void GlfwWindow::makeContextCurrent() {
+    glfwMakeContextCurrent(m_windowHandle);
+}
+
+void GlfwWindow::swapBuffers() {
+    SL_PROFILE_FUNCTION();
+    glfwSwapBuffers(m_windowHandle);
+}
+void* GlfwWindow::getHandle() const {
+    return static_cast<void*>(m_windowHandle);
+}
+
+core::Window::Size GlfwWindow::getSize() const {
+    int x, y;
+    glfwGetWindowSize(m_windowHandle, &x, &y);
+
+    return { x, y };
+}
+
 }

@@ -12,16 +12,16 @@ class RenderBoundingBoxesStage : public Stage {
 public:
     explicit RenderBoundingBoxesStage();
 
-    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) override;
+    void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) override;
 
 private:
-    void renderBoundingBox(gfx::LowLevelRenderer& renderer, physx::BoundingBox& boundingBox);
+    void renderBoundingBox(gfx::Renderer& renderer, physx::BoundingBox& boundingBox);
 
     void setShaderTransforms(gfx::camera::Camera& camera);
-    void prepareRenderer(gfx::LowLevelRenderer& renderer);
+    void prepareRenderer(gfx::Renderer& renderer);
 
     void processRigidBody(scene::components::RigidBodyComponent& rigidBody, scene::components::TransformComponent::View& transforms,
-        gfx::LowLevelRenderer& renderer, scene::Scene& scene);
+        gfx::Renderer& renderer, scene::Scene& scene);
 
     void queueVelocityVectorForBeingRendered(physx::Vector&& velocityVector, scene::Scene& scene);
 

@@ -11,10 +11,10 @@ class RenderVectorsStage : public Stage {
 public:
     explicit RenderVectorsStage();
 
-    void execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) override;
+    void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) override;
 
 private:
-    void renderVector(const physx::ColoredVector& coloredVector, gfx::LowLevelRenderer& renderer);
+    void renderVector(const physx::ColoredVector& coloredVector, gfx::Renderer& renderer);
 
     math::Mat4 calculateModelMatrix(const physx::Vector& vector);
 

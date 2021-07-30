@@ -10,7 +10,7 @@ RenderVectorsStage::RenderVectorsStage()
     , m_lineShader(GLOBALS().shaders->singleColorShader) {
 }
 
-void RenderVectorsStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
+void RenderVectorsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
     SL_PROFILE_FUNCTION();
 
     setCameraUniforms(*scene.camera);
@@ -25,7 +25,7 @@ void RenderVectorsStage::execute(gfx::LowLevelRenderer& renderer, scene::Scene& 
     m_lineShader->disable();
 }
 
-void RenderVectorsStage::renderVector(const physx::ColoredVector& coloredVector, gfx::LowLevelRenderer& renderer) {
+void RenderVectorsStage::renderVector(const physx::ColoredVector& coloredVector, gfx::Renderer& renderer) {
     setVectorUniforms(coloredVector);
     renderer.renderLine();
 }

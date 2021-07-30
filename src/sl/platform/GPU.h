@@ -26,6 +26,7 @@ struct GPU {
         , frameBufferFactory(std::move(frameBufferFactory))
         , renderBufferFactory(std::move(renderBufferFactory))
         , textureFactory(std::move(textureFactory))
+        , cubemapFactory(std::move(cubemapFactory))
         , shaderFactory(std::move(shaderFactory))
         , shaderCompiler(std::move(shaderCompiler))
         , renderApi(std::move(renderApi)) {

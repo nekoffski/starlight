@@ -27,8 +27,8 @@ namespace {
     }
 }
 
-GlfwInput::GlfwInput(void* windowHandle)
-    : m_windowHandle(windowHandle) {
+void GlfwInput::init(void* windowHandle) {
+    m_windowHandle = windowHandle;
 
     GLFWwindow* windowHandle_ = static_cast<GLFWwindow*>(m_windowHandle);
 
