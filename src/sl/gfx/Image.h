@@ -6,11 +6,6 @@
 
 namespace sl::gfx {
 
-struct ImageSize {
-    int width;
-    int height;
-};
-
 class TextureManager;
 
 class Image {

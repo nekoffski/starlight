@@ -1,6 +1,5 @@
 #include "sl/app/ConfigLoader.h"
 #include "sl/app/Engine.h"
-#include "sl/app/Entrypoint.h"
 #include "sl/core/Logger.h"
 
 #include "sl/platform/Platform.hpp"

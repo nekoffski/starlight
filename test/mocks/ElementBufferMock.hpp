@@ -4,13 +4,12 @@
 
 #include <gmock/gmock.h>
 
-namespace sl::gfx::buffer {
+using namespace sl;
+using namespace sl::gfx;
 
 struct ElementBufferMock : public ElementBuffer {
     struct Factory : public ElementBuffer::Factory {
         MOCK_METHOD(std::shared_ptr<ElementBuffer>, create, (core::NotNullPtr<void>, int, unsigned int), (override));
-
-        inline static Factory* instance = nullptr;
     };
 
     MOCK_METHOD(void, bind, (), (override));
@@ -18,4 +17,3 @@ struct ElementBufferMock : public ElementBuffer {
 
     MOCK_METHOD((unsigned int), getIndicesCount, (), (override));
 };
-}

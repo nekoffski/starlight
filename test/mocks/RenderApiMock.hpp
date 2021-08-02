@@ -6,12 +6,10 @@
 
 using namespace sl::gfx;
 
-struct RenderApiMock : public RenderApi {
-    struct Factory : public RenderApi::Factory {
-        MOCK_METHOD(std::unique_ptr<RenderApi>, create, (), (override));
-
-        inline static Factory* instance = nullptr;
-    };
+struct RenderApiMock : RenderApi {
+    MOCK_METHOD(void, init, ());
+    MOCK_METHOD(void, setViewport, (const ViewFrustum::Viewport&));
+    MOCK_METHOD(void, clearBuffers, (unsigned int buffers));
 
     MOCK_METHOD(void, setCullFace, (unsigned int), (override));
 

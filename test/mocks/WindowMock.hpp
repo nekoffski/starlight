@@ -7,12 +7,6 @@
 using namespace sl::core;
 
 struct WindowMock : public Window {
-    struct Factory : public Window::Factory {
-        MOCK_METHOD(std::shared_ptr<Window>, create, (Window::Size, const std::string&), (override));
-
-        inline static Factory* instance = nullptr;
-    };
-
     explicit WindowMock()
         : Window({}, "windowTitle") { }
 
@@ -25,4 +19,7 @@ struct WindowMock : public Window {
     MOCK_METHOD(void, enableCursor, (), (override));
     MOCK_METHOD(void, disableCursor, (), (override));
     MOCK_METHOD(void*, getHandle, (), (const, override));
+    MOCK_METHOD(void, makeContextCurrent, (), (override));
+    MOCK_METHOD(void, swapBuffers, (), (override));
+    MOCK_METHOD(math::Size2D, getSize, (), (const, override));
 };

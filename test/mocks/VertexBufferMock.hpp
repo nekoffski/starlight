@@ -4,17 +4,15 @@
 
 #include <gmock/gmock.h>
 
-#include "sl/gfx/buffer/VertexBuffer.h"
+#include "sl/gfx/VertexBuffer.h"
 #include "sl/gfx/fwd.h"
 
-using namespace sl::gfx::buffer;
+using namespace sl::gfx;
 
 struct VertexBufferMock : public VertexBuffer {
 public:
-    struct Factory : buffer::VertexBuffer::Factory {
+    struct Factory : VertexBuffer::Factory {
         MOCK_METHOD(std::shared_ptr<VertexBuffer>, create, (sl::core::NotNullPtr<void>, int, int), (override));
-
-        inline static Factory* instance = nullptr;
     };
 
     MOCK_METHOD(void, bind, (), (override));
