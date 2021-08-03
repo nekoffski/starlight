@@ -8,6 +8,7 @@
 #include "Util.h"
 
 #include "sl/gfx/Cubemap.h"
+#include "sl/gfx/ViewFrustum.h"
 #include "sl/math/Vector.hpp"
 
 namespace sl::event {
@@ -86,6 +87,13 @@ DECLARE_EVENT(WindowResizedEvent, CoreCategory) {
 
     int width;
     int height;
+};
+
+DECLARE_EVENT(ChangeViewportEvent, CoreCategory) {
+    ChangeViewportEvent(const gfx::ViewFrustum::Viewport& viewport) : viewport(viewport) {
+    }
+
+    gfx::ViewFrustum::Viewport viewport;
 };
 
 DECLARE_EVENT(DisplayErrorEvent, EditorCategory) {

@@ -19,9 +19,9 @@ bool GlfwInput::isMouseButtonPressed(int button) const {
 }
 
 math::Vec2 GlfwInput::getMousePosition() const {
-    math::Vec2 position;
-    glfwGetCursorPos(static_cast<GLFWwindow*>(m_windowHandle), (double*)&position.x, (double*)&position.y);
-    return position;
+    double x, y;
+    glfwGetCursorPos(static_cast<GLFWwindow*>(m_windowHandle), &x, &y);
+    return { x, y };
 }
 
 void GlfwInput::setOnMousePositionChange(sl::core::Mouse::Callback callback) {

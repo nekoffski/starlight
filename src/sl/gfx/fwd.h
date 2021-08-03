@@ -17,4 +17,8 @@ class Texture;
 class VertexArray;
 class VertexBuffer;
 
+class ShaderManager;
+class TextureManager;
+class BufferManager;
+
 }

@@ -151,7 +151,7 @@ public:
     }
 
     bool isRunning() const override {
-        return true;
+        return m_isRunning;
     }
 
     void onStop() override {
@@ -173,7 +173,7 @@ public:
                 m_scene->skybox = sl::scene::Skybox { GLOBALS().shaders->defaultCubemapShader, cubemap };
 
             } else if (event->is<QuitEvent>()) {
-                // m_windowProxy->quit();
+                m_isRunning = false;
 
             } else if (event->is<WindowResizedEvent>()) {
                 auto windowResizedEvent = event->as<WindowResizedEvent>();
@@ -262,7 +262,7 @@ public:
         m_renderColorBufferStage.setColorBuffer(m_colorBuffer.get());
         m_renderColorBufferStage.setBloomBuffer(m_blurColorBufferStage.getOutputColorBuffer());
 
-        // m_lowLevelRendererProxy->setViewport(newViewport);
+        event::EventManager::get()->emitTo<event::ChangeViewportEvent>("Engine", newViewport);
     }
 
 private:
@@ -337,4 +337,6 @@ private:
     rendering::stages::RenderVectorsStage m_renderVectorsStage;
     rendering::stages::RenderColorBufferStage m_renderColorBufferStage;
     rendering::stages::BlurColorBufferStage m_blurColorBufferStage;
+
+    bool m_isRunning = true;
 };

@@ -2,7 +2,10 @@
 
 namespace sl::app {
 
-class Entrypoint;
 class Application;
-class ApplicationContext;
+class ConfigLoader;
+class Deserializer;
+class Serializer;
+class Engine;
+
 }
