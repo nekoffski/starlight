@@ -25,21 +25,14 @@
 #include "sl/gfx/TextureManager.h"
 #include "sl/utils/Globals.h"
 
-#include "sl/event/EventManager.h"
-
 #include "sl/core/InputManager.h"
 #include "sl/core/WindowManager.h"
-
-#include "sl/platform/glfw/GlfwInput.h"
-
-#include "sl/gui/GuiApi.h"
-
-#include "sl/platform/gui/ImGuiApi.h"
+#include "sl/event/EventManager.h"
 
 namespace sl::app {
 
-Engine::Builder&& Engine::Builder::setConfigFile(const std::string& path) && {
-    m_configPath = path;
+Engine::Builder&& Engine::Builder::setConfig(utils::Config* config) && {
+    m_config = config;
     return std::move(*this);
 }
 
@@ -50,26 +43,36 @@ Engine::Builder&& Engine::Builder::setPlatform(platform::Platform* platform) && 
 
 std::unique_ptr<Engine> Engine::Builder::build() && {
     SL_ASSERT(m_platform != nullptr, "Platform is not set");
-    SL_ASSERT(m_configPath.has_value(), "Config path is not set");
+    SL_ASSERT(m_config != nullptr, "Config is not set");
 
     SL_INFO("Creating Engine instance");
-    return std::make_unique<Engine>(*m_configPath, m_platform);
+    return std::make_unique<Engine>(m_config, m_platform);
 }
 
-Engine::Engine(const std::string& configPath, platform::Platform* platform)
+Engine::Engine(utils::Config* config, platform::Platform* platform)
     : EventListener("Engine")
+    , m_config(config)
     , m_platform(platform)
     , m_application(nullptr) {
 
-    core::FileSystem fileSystem;
-    SL_INFO("Loading config from file: {}.", configPath);
-    GLOBALS().config = ConfigLoader {}.loadFromFile(configPath, fileSystem);
+    initLowLevelComponents();
+    initManagers();
 
-    m_window = m_platform->io.window.get(); //m_platform.windowFactory->create({ 1600, 900 }, "Starlight");
+    m_eventManager->registerListener(this);
+}
+
+Engine::~Engine() {
+    m_application->onStop();
+    m_asyncManager->stop();
+}
+
+void Engine::initLowLevelComponents() {
+    m_window = m_platform->io.window.get();
+
     m_window->init();
     m_window->makeContextCurrent();
     m_window->setResizeCallback([](void*, int width, int height) {
-        event::EventManager::get()->emit<event::WindowResizedEvent>(width, height);
+        event::EventManager::get()->emit<event::WindowResizedEvent>(width, height).toAll();
     });
 
     m_input = m_platform->io.input.get();
@@ -82,21 +85,19 @@ Engine::Engine(const std::string& configPath, platform::Platform* platform)
     auto viewport = gfx::ViewFrustum::Viewport { windowSize.width, windowSize.height };
 
     m_renderer = std::make_unique<gfx::Renderer>(m_renderApi, viewport);
+}
 
-    m_gui = std::make_unique<platform::gui::ImGuiApi>(m_window->getHandle());
-    m_gui->addFont("/home/nek0/kapik/projects/starlight/res/fonts/fa-solid-900.ttf",
-        ICON_MIN_FA, ICON_MAX_FA);
-
+void Engine::initManagers() {
     // clang-format off
-    m_inputManager    = std::make_unique<core::InputManager>();
-    m_windowManager   = std::make_unique<core::WindowManager>();
+    m_inputManager    = std::make_unique<core:: InputManager>();
+    m_windowManager   = std::make_unique<core:: WindowManager>();
     m_asyncManager    = std::make_unique<async::AsyncManager>();
-    m_clockManager    = std::make_unique<core::ClockManager>();
-    m_shaderManager   = std::make_unique<gfx::ShaderManager>();
-    m_bufferManager   = std::make_unique<gfx::BufferManager>();
-    m_textureManager  = std::make_unique<gfx::TextureManager>();
+    m_clockManager    = std::make_unique<core:: ClockManager>();
+    m_shaderManager   = std::make_unique<gfx::  ShaderManager>();
+    m_bufferManager   = std::make_unique<gfx::  BufferManager>();
+    m_textureManager  = std::make_unique<gfx::  TextureManager>();
     m_eventManager    = std::make_unique<event::EventManager>();
-    m_geometryManager = std::make_unique<geom::GeometryManager>();
+    m_geometryManager = std::make_unique<geom:: GeometryManager>();
     // clang-format on
 
     m_inputManager->setKeyboard(m_input);
@@ -120,14 +121,8 @@ Engine::Engine(const std::string& configPath, platform::Platform* platform)
     m_windowManager->setActiveWindow(m_window);
     m_asyncManager->start();
 
-    m_eventManager->registerListener(this);
-
+    GLOBALS().config = *m_config;
     GLOBALS().init();
-}
-
-Engine::~Engine() {
-    m_application->onStop();
-    m_asyncManager->stop();
 }
 
 void Engine::setApplication(std::unique_ptr<Application> application) {
@@ -149,7 +144,6 @@ void Engine::run() {
     SL_ASSERT(m_application != nullptr, "Cannot run engine without set application");
 
     m_application->onStart();
-    m_application->gui = m_gui.get(); // temporary
 
     while (m_application->isRunning())
         loopStep();
@@ -157,12 +151,6 @@ void Engine::run() {
 
 void Engine::update() {
     float deltaTime = core::ClockManager::get()->getDeltaTime();
-
-    GLOBALS().flags.disableKeyboardInput = m_gui->isCapturingKeyboard();
-    GLOBALS().flags.disableMouseInput = m_gui->isCapturingMouse();
-
-    m_window->changeCursorState(
-        not core::InputManager::get()->isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE));
 
     m_window->update(deltaTime);
     m_application->update(deltaTime, core::ClockManager::get()->nowAsFloat());

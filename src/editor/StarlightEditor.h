@@ -66,6 +66,10 @@ public:
         , m_captureDepthMapsRenderPass(m_depthFrameBuffer.get())
         , m_sceneQuadFrameBuffer(gfx::BufferManager::get()->createFrameBuffer())
         , m_captureSceneRenderPass(m_sceneQuadFrameBuffer.get()) {
+
+        m_gui = std::make_unique<platform::gui::ImGuiApi>(WindowManager::get()->getWindowHandle());
+        m_gui->addFont("/home/nek0/kapik/projects/starlight/res/fonts/fa-solid-900.ttf",
+            ICON_MIN_FA, ICON_MAX_FA);
     }
 
     void onStart() override {
@@ -126,6 +130,13 @@ public:
 
     void update(float deltaTime, float time) override {
         m_activeCamera->update(deltaTime);
+
+        GLOBALS().flags.disableKeyboardInput = m_gui->isCapturingKeyboard();
+        GLOBALS().flags.disableMouseInput = m_gui->isCapturingMouse();
+
+        core::WindowManager::get()->enableCursor(
+            not core::InputManager::get()->isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE));
+
         // auto pfxs = m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>();
         // sceneSystems.pfxEngine.update(pfxs, deltaTime, *m_scene->camera);
 
@@ -147,7 +158,7 @@ public:
     void render(gfx::Renderer& renderer) override {
         m_renderPipeline.run(renderer, *m_scene);
 
-        renderGui(*gui);
+        renderGui(*m_gui);
     }
 
     bool isRunning() const override {
@@ -262,7 +273,7 @@ public:
         m_renderColorBufferStage.setColorBuffer(m_colorBuffer.get());
         m_renderColorBufferStage.setBloomBuffer(m_blurColorBufferStage.getOutputColorBuffer());
 
-        event::EventManager::get()->emitTo<event::ChangeViewportEvent>("Engine", newViewport);
+        event::EventManager::get()->emit<event::ChangeViewportEvent>(newViewport).to("Engine");
     }
 
 private:
@@ -337,6 +348,8 @@ private:
     rendering::stages::RenderVectorsStage m_renderVectorsStage;
     rendering::stages::RenderColorBufferStage m_renderColorBufferStage;
     rendering::stages::BlurColorBufferStage m_blurColorBufferStage;
+
+    std::unique_ptr<sl::gui::GuiApi> m_gui;
 
     bool m_isRunning = true;
 };

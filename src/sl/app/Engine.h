@@ -3,15 +3,10 @@
 #include <memory>
 #include <optional>
 
-#include "sl/app/Application.h"
-#include "sl/app/ConfigLoader.h"
-#include "sl/core/Logger.h"
-#include "sl/gui/fonts/FontAwesome.h"
-#include "sl/platform/Platform.hpp"
-#include "sl/utils/Globals.h"
-
 #include <xvent/EventListener.h>
 
+#include "sl/app/Application.h"
+#include "sl/app/ConfigLoader.h"
 #include "sl/async/AsyncManager.hpp"
 #include "sl/core/ClockManager.h"
 #include "sl/core/Errors.hpp"
@@ -20,23 +15,17 @@
 #include "sl/core/InputManager.h"
 #include "sl/core/Logger.h"
 #include "sl/core/Profiler.h"
-#include "sl/core/sig/Signal.h"
-#include "sl/geom/GeometryManager.h"
-
-#include "sl/gfx/fwd.h"
-
-#include "sl/utils/Globals.h"
-
-#include "sl/event/EventManager.h"
-
-#include "sl/core/InputManager.h"
 #include "sl/core/WindowManager.h"
-
-#include "sl/platform/glfw/GlfwInput.h"
-
+#include "sl/core/sig/Signal.h"
+#include "sl/event/EventManager.h"
+#include "sl/geom/GeometryManager.h"
+#include "sl/gfx/fwd.h"
 #include "sl/gui/GuiApi.h"
-
+#include "sl/gui/fonts/FontAwesome.h"
+#include "sl/platform/Platform.hpp"
+#include "sl/platform/glfw/GlfwInput.h"
 #include "sl/platform/gui/ImGuiApi.h"
+#include "sl/utils/Globals.h"
 
 namespace sl::app {
 
@@ -44,21 +33,20 @@ class Engine : xvent::EventListener {
 public:
     class Builder {
     public:
-        Builder&& setConfigFile(const std::string& path) &&;
+        Builder&& setConfig(utils::Config* config) &&;
         Builder&& setPlatform(platform::Platform* platform) &&;
 
         std::unique_ptr<Engine> build() &&;
 
     private:
-        platform::Platform* m_platform;
-        std::optional<std::string> m_configPath;
+        platform::Platform* m_platform = nullptr;
+        utils::Config* m_config = nullptr;
     };
 
-    explicit Engine(const std::string& configPath, platform::Platform* platform);
+    explicit Engine(utils::Config* config, platform::Platform* platform);
+    ~Engine();
 
     void handleEvents(const xvent::EventProvider&) override;
-
-    ~Engine();
 
     void setApplication(std::unique_ptr<Application> application);
     void run();
@@ -68,11 +56,16 @@ private:
     void update();
     void loopStep();
 
+    void initManagers();
+    void initLowLevelComponents();
+
     platform::Platform* m_platform;
 
     core::Window* m_window;
-    gfx::RenderApi* m_renderApi;
     core::Input* m_input;
+    gfx::RenderApi* m_renderApi;
+
+    utils::Config* m_config;
 
     std::unique_ptr<gfx::Renderer> m_renderer;
     std::unique_ptr<Application> m_application;
@@ -87,8 +80,6 @@ private:
     std::unique_ptr<gfx::TextureManager> m_textureManager;
     std::unique_ptr<event::EventManager> m_eventManager;
     std::unique_ptr<geom::GeometryManager> m_geometryManager;
-
-    std::unique_ptr<gui::GuiApi> m_gui;
 };
 
 }

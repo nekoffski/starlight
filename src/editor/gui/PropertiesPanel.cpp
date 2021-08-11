@@ -65,7 +65,7 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
             auto cubemap = m_sharedState->assetManager.getCubemaps().getByName(cubemapName);
 
             m_selectedCubemap = cubemap;
-            event::EventManager::get()->emit<event::SetSkyboxEvent>(cubemap);
+            event::EventManager::get()->emit<event::SetSkyboxEvent>(cubemap).toAll();
 
             previousSelectedValue = selectedValue;
         }

@@ -27,16 +27,16 @@ void EditorGui::renderEditorGui(sl::gui::GuiApi& gui) {
         if (gui.beginMenu(ICON_FA_BARS " File")) {
             if (gui.menuItem("Export scene"))
                 callback = [](const std::string& path) -> void {
-                    EventManager::get()->emit<SerializeSceneEvent>(path);
+                    EventManager::get()->emit<SerializeSceneEvent>(path).toAll();
                 };
 
             if (gui.menuItem("Import scene"))
                 callback = [](const std::string& path) -> void {
-                    EventManager::get()->emit<DeserializeSceneEvent>(path);
+                    EventManager::get()->emit<DeserializeSceneEvent>(path).toAll();
                 };
 
             if (gui.menuItem("Quit"))
-                EventManager::get()->emit<QuitEvent>();
+                EventManager::get()->emit<QuitEvent>().toAll();
 
             gui.endMenu();
         }

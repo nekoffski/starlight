@@ -4,25 +4,25 @@
 
 namespace sl::app {
 
-utils::globals::Config ConfigLoader::loadFromFile(const std::string& path, const core::FileSystem& fileSystem) && {
+utils::Config ConfigLoader::loadFromFile(const std::string& path, const core::FileSystem& fileSystem) && {
     if (not fileSystem.isFile(path))
         throw core::ConfigError { core::ErrorCode::FileDoesNotExist, "Could not find config file: " + path };
 
     auto configJson = core::parseJson(fileSystem.readFile(path));
 
-    utils::globals::Config config;
+    utils::Config config;
     config.paths = processPaths(configJson);
 
     return config;
 }
 
-utils::globals::Config::Paths ConfigLoader::processPaths(Json::Value& root) {
+utils::Config::Paths ConfigLoader::processPaths(Json::Value& root) {
     if (not root.isMember("paths"))
         raise("Config does not contain paths key.");
 
     auto& pathsJson = root["paths"];
 
-    utils::globals::Config::Paths paths;
+    utils::Config::Paths paths;
 
     auto processPath = [&root, &pathsJson, this](const std::string& path) -> std::string {
         if (not pathsJson.isMember(path))

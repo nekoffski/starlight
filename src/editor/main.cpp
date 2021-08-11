@@ -17,8 +17,12 @@ int main(int argc, char** argv) {
 
     core::initLogging();
 
+    static const std::string configPath = "./starlight.json";
+    core::FileSystem fileSystem;
+    auto config = ConfigLoader {}.loadFromFile(configPath, fileSystem);
+
     auto platform = Platform::Builder {}
-                        .setIO<glfw::Glfw>()
+                        .setIO<glfw::Glfw>(config.window)
                         .setGPU<gl::OpenGl>()
                         .setImageFactory<stb::StbImageFactory>()
                         .setModelLoader<assimp::AssimpModelLoader>()
@@ -26,7 +30,7 @@ int main(int argc, char** argv) {
 
     auto engine = Engine::Builder {}
                       .setPlatform(platform.get())
-                      .setConfigFile("./starlight.json")
+                      .setConfig(&config)
                       .build();
 
     auto application = std::make_unique<StarlightEditor>();

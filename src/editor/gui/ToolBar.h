@@ -28,7 +28,7 @@ public:
                 gui.pushTextColor(sl::gui::selectedEntryColor);
 
             if (gui.button(label)) {
-                sl::event::EventManager::get()->emit<EngineStateChanged>(state);
+                sl::event::EventManager::get()->emit<EngineStateChanged>(state).toAll();
                 m_engineState = state;
             }
 
@@ -37,7 +37,7 @@ public:
         };
 
         if (gui.button(ICON_FA_GAMEPAD))
-            sl::event::EventManager::get()->emit<EnterGameMode>();
+            sl::event::EventManager::get()->emit<EnterGameMode>().toAll();
 
         gui.sameLine();
         gui.displayText("  " ICON_FA_ELLIPSIS_V "  ");

@@ -19,9 +19,9 @@ struct Platform {
         std::unique_ptr<Platform> build() &&;
 
         // clang-format off
-        template <typename T> requires std::derived_from<T, IO>
-        Builder&& setIO() && {
-            m_io = T{};
+        template <typename T, typename ...Args> requires std::derived_from<T, IO>
+        Builder&& setIO(Args&& ...args) && {
+            m_io = T{std::forward<Args>(args)...};
             return std::move(*this);
         }
 

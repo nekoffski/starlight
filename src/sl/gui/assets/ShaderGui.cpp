@@ -35,7 +35,7 @@ void ShaderGui::Provider::render(GuiApi& gui) {
                     SL_WARN("Could not recompile shader due to {}", err.getDetails());
 
                     using namespace event;
-                    EventManager::get()->emit<DisplayErrorEvent>(err.as<std::string>());
+                    EventManager::get()->emit<DisplayErrorEvent>(err.as<std::string>()).toAll();
                 }
             }
 

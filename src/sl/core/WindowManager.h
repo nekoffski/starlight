@@ -9,10 +9,12 @@ namespace sl::core {
 
 class WindowManager : public Singleton<WindowManager> {
 public:
-    using Ptr = std::unique_ptr<WindowManager>;
-
     void setActiveWindow(Window* window) {
         m_window = window;
+    }
+
+    void enableCursor(bool shouldEnable) {
+        m_window->changeCursorState(shouldEnable);
     }
 
     void enableCursor() {
@@ -25,6 +27,10 @@ public:
 
     math::Size2D getSize() const {
         return m_window->getSize();
+    }
+
+    void* getWindowHandle() const {
+        return m_window->getHandle();
     }
 
 private:

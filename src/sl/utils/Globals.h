@@ -5,13 +5,13 @@
 
 #include "sl/core/Macros.h"
 
-#include "globals/Config.h"
-#include "globals/Flags.h"
-#include "globals/Geometry.h"
-#include "globals/Info.h"
-#include "globals/Shaders.h"
-#include "globals/Visual.h"
-#include "globals/World.h"
+#include "Config.h"
+#include "Flags.h"
+#include "Geometry.h"
+#include "Info.h"
+#include "Shaders.h"
+#include "Visual.h"
+#include "World.h"
 
 namespace sl::utils {
 
@@ -20,14 +20,14 @@ struct Globals {
 
     void init();
 
-    globals::World world;
-    globals::Config config;
-    globals::Flags flags;
-    globals::Visual visual;
-    globals::Info info;
+    World world;
+    Config config;
+    Flags flags;
+    Visual visual;
+    Info info;
 
-    std::unique_ptr<globals::Shaders> shaders;
-    std::unique_ptr<globals::Geometry> geom;
+    std::unique_ptr<Shaders> shaders;
+    std::unique_ptr<Geometry> geom;
 };
 
 }

@@ -5,7 +5,7 @@
 #include "sl/gfx/ShaderManager.h"
 #include "sl/utils/Globals.h"
 
-namespace sl::utils::globals {
+namespace sl::utils {
 
 #define BIND_SHADER(shader) \
     { shader->name, shader }

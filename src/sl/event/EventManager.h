@@ -27,18 +27,8 @@ public:
 
     // clang-format off
     template <typename Ev, typename... Args> requires std::derived_from<Ev, xvent::Event>
-    void emit(Args&&... args) {
-        m_eventEmitter->emit<Ev>(std::forward<Args>(args)...);
-    }
-
-    template <typename Ev, typename... Args> requires std::derived_from<Ev, xvent::Event>
-    void emitTo(std::string destination, Args&&... args) {
-        m_eventEmitter->emitTo<Ev>(std::move(destination), std::forward<Args>(args)...);
-    }
-
-    template <typename Ev, typename... Args> requires std::derived_from<Ev, xvent::Event>
-    void emitTo(std::vector<std::string> destinations, Args&&... args) {
-        m_eventEmitter->emitTo<Ev>(std::move(destinations), std::forward<Args>(args)...);
+    auto emit(Args&&... args) {
+        return m_eventEmitter->emit<Ev>(std::forward<Args>(args)...);
     }
     // clang-format on
 

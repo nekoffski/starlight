@@ -1,13 +1,13 @@
 #include "Globals.h"
 
-#include "globals/Geometry.h"
-#include "globals/Shaders.h"
+#include "Geometry.h"
+#include "Shaders.h"
 
 namespace sl::utils {
 
 void Globals::init() {
-    shaders = std::make_unique<globals::Shaders>();
-    geom = std::make_unique<globals::Geometry>();
+    shaders = std::make_unique<Shaders>();
+    geom = std::make_unique<Geometry>();
 }
 
 }
