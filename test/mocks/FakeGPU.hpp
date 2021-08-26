@@ -28,5 +28,29 @@ struct FakeGPU : platform::GPU {
               std::make_unique<ShaderMock::Factory>(),
               std::make_unique<ShaderCompilerMock>(),
               std::make_unique<RenderApiMock>()) {
+
+        vertexArrayFactoryMock = static_cast<VertexArrayMock::Factory*>(vertexArrayFactory.get());
+        vertexBufferFactoryMock = static_cast<VertexBufferMock::Factory*>(vertexBufferFactory.get());
+        elementBufferFactoryMock = static_cast<ElementBufferMock::Factory*>(elementBufferFactory.get());
+        frameBufferFactoryMock = static_cast<FrameBufferMock::Factory*>(frameBufferFactory.get());
+        renderBufferFactoryMock = static_cast<RenderBufferMock::Factory*>(renderBufferFactory.get());
+        textureFactoryMock = static_cast<TextureMock::Factory*>(textureFactory.get());
+        cubemapFactoryMock = static_cast<CubemapMock::Factory*>(cubemapFactory.get());
+        shaderFactoryMock = static_cast<ShaderMock::Factory*>(shaderFactory.get());
+        shaderCompilerMock = static_cast<ShaderCompilerMock*>(shaderCompiler.get());
+        renderApiMock = static_cast<RenderApiMock*>(renderApi.get());
     }
+
+    // clang-format off
+    inline static VertexArrayMock::Factory*   vertexArrayFactoryMock;
+    inline static VertexBufferMock::Factory*  vertexBufferFactoryMock;
+    inline static ElementBufferMock::Factory* elementBufferFactoryMock;
+    inline static FrameBufferMock::Factory*   frameBufferFactoryMock;
+    inline static RenderBufferMock::Factory*  renderBufferFactoryMock;
+    inline static TextureMock::Factory*       textureFactoryMock;
+    inline static CubemapMock::Factory*       cubemapFactoryMock;
+    inline static ShaderMock::Factory*        shaderFactoryMock;
+    inline static ShaderCompilerMock*         shaderCompilerMock;
+    inline static RenderApiMock*              renderApiMock;
+    // clang-format on
 };

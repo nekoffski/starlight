@@ -57,13 +57,11 @@ Engine::Engine(utils::Config* config, platform::Platform* platform)
 
     initLowLevelComponents();
     initManagers();
-
-    m_eventManager->registerListener(this);
 }
 
 Engine::~Engine() {
-    m_application->onStop();
-    m_asyncManager->stop();
+    if (m_asyncManager != nullptr)
+        m_asyncManager->stop();
 }
 
 void Engine::initLowLevelComponents() {
@@ -121,6 +119,10 @@ void Engine::initManagers() {
     m_windowManager->setActiveWindow(m_window);
     m_asyncManager->start();
 
+    m_eventManager->registerListener(this);
+}
+
+void Engine::initGlobalState() {
     GLOBALS().config = *m_config;
     GLOBALS().init();
 }
@@ -142,8 +144,6 @@ void Engine::handleEvents(const xvent::EventProvider& eventProvider) {
 
 void Engine::run() {
     SL_ASSERT(m_application != nullptr, "Cannot run engine without set application");
-
-    m_application->onStart();
 
     while (m_application->isRunning())
         loopStep();

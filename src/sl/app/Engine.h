@@ -49,6 +49,7 @@ public:
     void handleEvents(const xvent::EventProvider&) override;
 
     void setApplication(std::unique_ptr<Application> application);
+    void initGlobalState();
     void run();
 
 private:

@@ -33,10 +33,16 @@ int main(int argc, char** argv) {
                       .setConfig(&config)
                       .build();
 
+    engine->initGlobalState();
+
     auto application = std::make_unique<StarlightEditor>();
+
+    application->onStart(); // move to ctor
 
     engine->setApplication(std::move(application));
     engine->run();
+
+    application->onStop(); // move to dtor
 
     return 0;
 }
