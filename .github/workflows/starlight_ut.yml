@@ -10,13 +10,13 @@ jobs:
         compiler: [gcc-10]
     steps:
       - uses: actions/checkout@v2
+      - name: Pull submodules
+        run: ./bin/pull_submodules.sh
       - name: Set scripts permissions
         run: chmod +x ./bin/*
       - name: Install dependencies
         run: |
           ./bin/install_deps.sh
-      - name: Pull submodules
-        run: ./bin/pull_submodules.sh
       - name: Build
         run: |
           rm -f build && mkdir build && pushd build && cmake .. && make -j16 && popd
