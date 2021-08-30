@@ -18,3 +18,8 @@ sudo apt-get install -y libgtest-dev
 sudo apt-get install -y libgmock-dev
 sudo apt-get install -y libfmt-dev
 
+if [ -d ./3rdparty/libkc ]; then
+    chmod +x ./3rdparty/libkc/bin/deps.sh
+    ./3rdparty/libkc/bin/deps.sh
+fi;
+
