@@ -2,13 +2,14 @@
 
 #include <memory>
 
+#include <kc/core/Singleton.hpp>
+
 #include "Model.h"
 #include "ModelLoader.h"
-#include "sl/core/Singleton.hpp"
 
 namespace sl::geom {
 
-class GeometryManager : public core::Singleton<GeometryManager> {
+class GeometryManager : public kc::core::Singleton<GeometryManager> {
 public:
     std::shared_ptr<Model> loadModel(const std::string& path) {
         return m_modelLoader->load(path);

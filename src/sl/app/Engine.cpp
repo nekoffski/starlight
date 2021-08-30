@@ -132,7 +132,7 @@ void Engine::setApplication(std::unique_ptr<Application> application) {
     m_eventManager->registerListener(m_application.get());
 }
 
-void Engine::handleEvents(const xvent::EventProvider& eventProvider) {
+void Engine::handleEvents(const kc::event::EventProvider& eventProvider) {
     auto events = eventProvider.getByCategories<event::CoreCategory, event::EditorCategory>();
 
     for (auto& event : events) {

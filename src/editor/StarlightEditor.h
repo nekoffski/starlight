@@ -171,7 +171,7 @@ public:
     void forceStop() override {
     }
 
-    void handleEvents(const xvent::EventProvider& eventProvider) override {
+    void handleEvents(const kc::event::EventProvider& eventProvider) override {
         auto events = eventProvider.getByCategories<event::CoreCategory, event::EditorCategory>();
 
         using namespace sl::event;

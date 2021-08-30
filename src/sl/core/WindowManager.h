@@ -2,12 +2,13 @@
 
 #include <memory>
 
-#include "Singleton.hpp"
+#include <kc/core/Singleton.hpp>
+
 #include "Window.h"
 
 namespace sl::core {
 
-class WindowManager : public Singleton<WindowManager> {
+class WindowManager : public kc::core::Singleton<WindowManager> {
 public:
     void setActiveWindow(Window* window) {
         m_window = window;

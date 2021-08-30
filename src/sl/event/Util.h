@@ -1,5 +1,5 @@
 #pragma once
 
-#include <xvent/Event.h>
+#include <kc/event/Event.h>
 
-#define DECLARE_EVENT(Event, Category) struct Event : xvent::EventBase<Event, Category>
+#define DECLARE_EVENT(Event, Category) struct Event : kc::event::EventBase<Event, Category>

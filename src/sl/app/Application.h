@@ -1,14 +1,15 @@
 #pragma once
 
-#include <xvent/EventListener.h>
+#include <kc/event/EventListener.h>
 
 #include "sl/gfx/Renderer.h"
 
 namespace sl::app {
 
-struct Application : xvent::EventListener {
+struct Application : kc::event::EventListener {
     explicit Application()
-        : xvent::EventListener("Application") { }
+        : EventListener("Application") {
+    }
 
     virtual void update(float deltaTime, float now) = 0;
     virtual void render(gfx::Renderer& renderer) = 0;

@@ -2,16 +2,12 @@
 	path = 3rdparty/spdlog
 	url = https://github.com/gabime/spdlog.git
         branch = v1.x
-[submodule "3rdparty/crossguid"]
-	path = 3rdparty/crossguid
-	url = https://github.com/graeme-hill/crossguid.git
-[submodule "3rdparty/xvent"]
-	path = 3rdparty/xvent
-	url = https://github.com/nekoffski/xvent.git
-	branch = dev
 [submodule "3rdparty/ImGuizmo"]
 	path = 3rdparty/ImGuizmo
 	url = https://github.com/CedricGuillemet/ImGuizmo.git
 [submodule "3rdparty/imgui"]
 	path = 3rdparty/imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "3rdparty/klibc"]
+	path = 3rdparty/klibc
+	url = https://github.com/krystal-smart-home/klibc.git

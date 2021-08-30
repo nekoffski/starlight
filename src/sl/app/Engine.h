@@ -3,7 +3,7 @@
 #include <memory>
 #include <optional>
 
-#include <xvent/EventListener.h>
+#include <kc/event/EventListener.h>
 
 #include "sl/app/Application.h"
 #include "sl/app/ConfigLoader.h"
@@ -29,7 +29,7 @@
 
 namespace sl::app {
 
-class Engine : xvent::EventListener {
+class Engine : kc::event::EventListener {
 public:
     class Builder {
     public:
@@ -46,7 +46,7 @@ public:
     explicit Engine(utils::Config* config, platform::Platform* platform);
     ~Engine();
 
-    void handleEvents(const xvent::EventProvider&) override;
+    void handleEvents(const kc::event::EventProvider&) override;
 
     void setApplication(std::unique_ptr<Application> application);
     void initGlobalState();

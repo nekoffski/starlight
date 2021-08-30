@@ -4,6 +4,9 @@
 #include <memory>
 #include <type_traits>
 
+#include <kc/core/Singleton.hpp>
+#include <kc/core/Uuid.h>
+
 #include "AsyncTask.h"
 #include "TaskManager.h"
 #include "ThreadPool.hpp"
@@ -11,12 +14,10 @@
 #include "TimerEngine.h"
 #include "sl/core/Logger.h"
 #include "sl/core/Macros.h"
-#include "sl/core/Singleton.hpp"
-#include "sl/core/Uuid.h"
 
 namespace sl::async {
 
-class AsyncManager : public core::Singleton<AsyncManager> {
+class AsyncManager : public kc::core::Singleton<AsyncManager> {
 
     struct AsyncTaskSentinel {
         Future<void> future;
@@ -42,7 +43,7 @@ public:
     template <typename T, typename... Args>
     requires std::derived_from<T, AsyncTask> void executeAsyncTask(Args&&... args) {
         auto task = std::make_unique<T>(std::forward<Args>(args)...);
-        auto id = core::generateUuid();
+        auto id = kc::core::generateUuid();
 
         SL_INFO("Creating async task: {} with assigned id: {}", task->asString(), id);
 

@@ -2,18 +2,19 @@
 
 #include <memory>
 
+#include <kc/core/Singleton.hpp>
+
 #include "Keyboard.h"
 #include "Logger.h"
 #include "Macros.h"
 #include "Mouse.h"
-#include "Singleton.hpp"
 
 #include "sl/math/Vector.hpp"
 #include "sl/platform/glfw/GlfwKeys.h"
 
 namespace sl::core {
 
-class InputManager : public Singleton<InputManager> {
+class InputManager : public kc::core::Singleton<InputManager> {
 public:
     void setMouse(Mouse* mouse);
     void setKeyboard(Keyboard* keyboard);

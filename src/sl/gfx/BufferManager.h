@@ -1,7 +1,8 @@
 #pragma once
 
+#include <kc/core/Singleton.hpp>
+
 #include "sl/core/NotNullPtr.hpp"
-#include "sl/core/Singleton.hpp"
 
 #include "ElementBuffer.h"
 #include "FrameBuffer.h"
@@ -11,7 +12,7 @@
 
 namespace sl::gfx {
 
-class BufferManager : public core::Singleton<BufferManager> {
+class BufferManager : public kc::core::Singleton<BufferManager> {
 public:
     std::shared_ptr<FrameBuffer> createFrameBuffer() {
         return m_frameBufferFactory->create();

@@ -4,12 +4,12 @@
 
 #include "Shader.h"
 #include "ShaderCompiler.h"
-#include "sl/core/Singleton.hpp"
 #include "sl/core/String.hpp"
+#include <kc/core/Singleton.hpp>
 
 namespace sl::gfx {
 
-class ShaderManager : public core::Singleton<ShaderManager> {
+class ShaderManager : public kc::core::Singleton<ShaderManager> {
 public:
     std::shared_ptr<Shader> load(const std::string& vertex, const std::string& fragment, const std::string& geometry = "") {
         auto shader = m_shaderFactory->create(vertex, fragment, geometry);

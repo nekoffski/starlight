@@ -1,13 +1,12 @@
 #pragma once
 
-#include <xvent/EventEmitter.h>
-#include <xvent/EventEngine.h>
-
-#include "sl/core/Singleton.hpp"
+#include <kc/core/Singleton.hpp>
+#include <kc/event/EventEmitter.h>
+#include <kc/event/EventEngine.h>
 
 namespace sl::event {
 
-class EventManager : public core::Singleton<EventManager> {
+class EventManager : public kc::core::Singleton<EventManager> {
 public:
     explicit EventManager()
         : m_eventEmitter(m_eventEngine.createEmitter()) {
@@ -17,24 +16,24 @@ public:
         m_eventEngine.spreadEvents();
     }
 
-    void registerListener(xvent::EventListener* listener) {
+    void registerListener(kc::event::EventListener* listener) {
         m_eventEngine.registerEventListener(listener);
     }
 
-    void unregisterListener(xvent::EventListener* listener) {
+    void unregisterListener(kc::event::EventListener* listener) {
         m_eventEngine.unregisterEventListener(listener);
     }
 
     // clang-format off
-    template <typename Ev, typename... Args> requires std::derived_from<Ev, xvent::Event>
+    template <typename Ev, typename... Args> requires std::derived_from<Ev, kc::event::Event>
     auto emit(Args&&... args) {
         return m_eventEmitter->emit<Ev>(std::forward<Args>(args)...);
     }
     // clang-format on
 
 private:
-    xvent::EventEngine m_eventEngine;
-    std::shared_ptr<xvent::EventEmitter> m_eventEmitter;
+    kc::event::EventEngine m_eventEngine;
+    std::shared_ptr<kc::event::EventEmitter> m_eventEmitter;
 };
 
 }

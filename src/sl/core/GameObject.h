@@ -3,17 +3,18 @@
 #include <memory>
 #include <string>
 
+#include <kc/core/Uuid.h>
+
 #include "Errors.hpp"
 #include "Logger.h"
 #include "OptionalPtr.hpp"
-#include "Uuid.h"
 
 namespace sl::core {
 
 class GameObject {
 public:
     GameObject()
-        : m_id(generateUuid()) {
+        : m_id(kc::core::generateUuid()) {
         SL_INFO("Creating GameObject: {}", m_id);
     }
 

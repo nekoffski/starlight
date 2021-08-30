@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sl/core/Singleton.hpp"
+#include <kc/core/Singleton.hpp>
 
 #include "Cubemap.h"
 #include "Image.h"
@@ -8,7 +8,7 @@
 
 namespace sl::gfx {
 
-class TextureManager : public core::Singleton<TextureManager> {
+class TextureManager : public kc::core::Singleton<TextureManager> {
 public:
     std::unique_ptr<Image> loadImage(const std::string& path, int desiredChannels = 0) {
         auto image = m_imageFactory->create(path, desiredChannels);

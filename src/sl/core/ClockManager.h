@@ -4,13 +4,13 @@
 #include <memory>
 #include <string>
 
-#include "Singleton.hpp"
+#include <kc/core/Singleton.hpp>
 
 using namespace std::literals::chrono_literals;
 
 namespace sl::core {
 
-class ClockManager : public Singleton<ClockManager> {
+class ClockManager : public kc::core::Singleton<ClockManager> {
     using ClockType = std::chrono::steady_clock;
 
     inline static constexpr float microsecondsInSecond = 1000 * 1000;
