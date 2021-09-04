@@ -26,19 +26,19 @@ jobs:
       - name: Run unit tests
         run: |
           pushd build && make test && popd
-      # - name: Build with coverage
-      #   run: |
-      #     mkdir cov_build && pushd cov_build && cmake .. -DCOV_BUILD=1 && make -j16 && popd
-      #   env:
-      #     CC: /usr/bin/gcc-10
-      #     CXX: /usr/bin/g++-10
-      # - name: Run unit tests on coverage build
-      #   run: |
-      #     pushd cov_build && make test && popd
-      # - name: Generate unit tests coverage
-      #   run: |
-      #     ./bin/generate_ut_cov.sh
-      # - name: Send raport to Codecov
-      #   uses: codecov/codecov-action@v1
-      #   with:
-      #     files: ./coverage.xml
+      - name: Build with coverage
+        run: |
+          mkdir cov_build && pushd cov_build && cmake .. -DCOV_BUILD=1 && make -j16 && popd
+        env:
+          CC: /usr/bin/gcc-10
+          CXX: /usr/bin/g++-10
+      - name: Run unit tests on coverage build
+        run: |
+          pushd cov_build && make test && popd
+      - name: Generate unit tests coverage
+        run: |
+          ./bin/generate_ut_cov.sh
+      - name: Send raport to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          files: ./coverage.xml

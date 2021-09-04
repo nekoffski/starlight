@@ -1,7 +1,7 @@
 add_subdirectory(glad)
 add_subdirectory(stb)
 add_subdirectory(libkc)
-add_subdirectory(spdlog)
+# add_subdirectory(spdlog)
 
 file (GLOB SRC ${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.cpp)
 add_library(imgui STATIC ${SRC})
@@ -12,5 +12,3 @@ add_library(imguizmo STATIC ${CMAKE_CURRENT_SOURCE_DIR}/ImGuizmo/ImGuizmo.cpp)
 target_include_directories(imguizmo PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
 target_include_directories(imguizmo PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/ImGuizmo)
 target_link_libraries(imguizmo PUBLIC imgui dl)
-
-

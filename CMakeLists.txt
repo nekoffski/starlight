@@ -16,6 +16,7 @@ find_package(Threads)
 enable_testing()
 
 add_definitions(-DDEV_MODE=1)
+add_definitions(-DSPDLOG_COMPILED_LIB=1)
 
 if (COV_BUILD)
 	message("-- Triggering build with coverage support")
