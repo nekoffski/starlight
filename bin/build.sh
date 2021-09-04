@@ -8,4 +8,4 @@ mkdir ./build
 cd ./build
 
 CC=/usr/bin/gcc-10 CXX=/usr/bin/g++-10 cmake ..
-make -j 16
+make -j `nproc`
