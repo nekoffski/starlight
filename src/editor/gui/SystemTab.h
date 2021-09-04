@@ -32,8 +32,8 @@ public:
             if (gui.beginTreeNode("Renderer")) {
                 const auto& info = GLOBALS().info;
 
-                const auto formatString = "GPU Vendor:\n       {}\n\nGPU API Release:\n       {}\n\nGPU: \n       {}\n\n"
-                                          "Shading language version:\n       {}\n\n";
+                constexpr auto formatString = "GPU Vendor:\n       {}\n\nGPU API Release:\n       {}\n\nGPU: \n       {}\n\n"
+                                              "Shading language version:\n       {}\n\n";
 
                 gui.displayText(fmt::format(formatString, info.gpuApiVendor, info.gpuApiRelease,
                     info.rendererName, info.shadingLanguageVersion));

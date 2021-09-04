@@ -20,7 +20,7 @@ GlfwWindow::~GlfwWindow() {
 void GlfwWindow::init() {
     SL_INFO("Initializing glfw");
     if (auto status = glfwInit(); status < 0) {
-        SL_ERROR("could not initialize glfw: {]", status);
+        SL_ERROR("could not initialize glfw: {}", status);
         throw core::WindowError { sl::core::ErrorCode::CouldNotInitializeWindowLibrary };
     }
 

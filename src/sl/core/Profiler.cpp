@@ -1,5 +1,6 @@
 #include "Profiler.h"
 
+#include <algorithm>
 #include <fstream>
 #include <unordered_map>
 

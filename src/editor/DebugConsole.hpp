@@ -17,8 +17,8 @@ class DebugConsole {
 
 public:
     template <typename... Args>
-    static void write(const std::string& format, Args&&... args) {
-        auto line = fmt::format(format, std::forward<Args>(args)...);
+    static void write(std::string_view format, Args&&... args) {
+        auto line = fmt::vformat(format, fmt::make_format_args(std::forward<Args>(args)...));
         auto time = sl::core::ClockManager::get()->getTimeString("%H:%M:%S");
 
         m_buffer.emplace_front("[ " + time + " ] " + line + '\n');

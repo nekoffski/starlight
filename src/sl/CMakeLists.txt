@@ -1,4 +1,4 @@
-set (SL_LIBS spdlog jsoncpp glfw glad stb assimp imgui dl imguizmo fmt libkc)
+set (SL_LIBS spdlog glad stb assimp imgui dl imguizmo libkc fmt)
 file (GLOB_RECURSE SL_SRC ./*.cpp)
 
 add_library(sl STATIC ${SL_SRC})

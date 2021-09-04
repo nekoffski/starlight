@@ -151,7 +151,7 @@ void AssetsTab::showLoaderPopUp(sl::gui::GuiApi& gui) {
         }
     } catch (sl::core::AssetError& err) {
         m_errorDialog.setErrorMessage(err.getDetails());
-        WRITE_DEBUG(err.as<std::string>());
+        WRITE_DEBUG("%s", err.as<std::string>());
         m_loadClicked = false;
     }
 

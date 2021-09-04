@@ -2,6 +2,8 @@
 
 #include <kc/core/Singleton.hpp>
 
+#include <algorithm>
+
 #include "Cubemap.h"
 #include "Image.h"
 #include "Texture.h"
