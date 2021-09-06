@@ -8,10 +8,8 @@
 #include "sl/app/Deserializer.h"
 #include "sl/app/Serializer.h"
 #include "sl/asset/AssetManager.h"
-#include "sl/core/BaseError.hpp"
 #include "sl/core/FileSystem.h"
 #include "sl/core/InputManager.h"
-#include <kc/core/Log.h>
 #include "sl/ecs/Entity.h"
 #include "sl/event/Categories.h"
 #include "sl/event/Event.h"
@@ -28,6 +26,7 @@
 #include "sl/scene/components/RigidBodyComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 #include "sl/utils/Globals.h"
+#include <kc/core/Log.h>
 
 #include "sl/core/WindowManager.h"
 #include "sl/rendering/CustomFrameBufferRenderPass.h"
@@ -228,8 +227,8 @@ public:
                     Deserializer { m_assetManager, m_scene }.deserialize(path);
                 }
 
-            } catch (sl::core::Error& err) {
-                m_errorDialog.setErrorMessage(err.as<std::string>());
+            } catch (kc::core::ErrorBase& err) {
+                m_errorDialog.setErrorMessage(err.asString());
             }
         }
     }

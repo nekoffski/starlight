@@ -2,9 +2,9 @@
 
 #include "AssimpMeshProcessor.h"
 #include "sl/core/Errors.hpp"
-#include <kc/core/Log.h>
 #include "sl/core/String.hpp"
 #include "sl/geom/Model.h"
+#include <kc/core/Log.h>
 
 namespace sl::platform::assimp {
 
@@ -26,7 +26,7 @@ std::shared_ptr<geom::Model> AssimpModelLoader::load(const std::string& path) {
 
     if (not scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || not scene->mRootNode) {
         LOG_ERROR("could not load scene");
-        throw core::ModelError { core::ErrorCode::CouldNotLoadModel };
+        throw core::ModelError {};
     }
 
     AssimpMeshProcessor meshProcessor;

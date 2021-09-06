@@ -39,8 +39,7 @@ static void handleComponent(int index, ecs::Entity& entity) {
             auto& componentName = entity.getComponent<T>().name;
             LOG_WARN("Could not add {} to {}", componentName, entity.asString());
 
-            throw core::GuiUserError{ core::ErrorCode::GuiUserError, 
-                "Entity already has " + componentName };
+            throw core::GuiUserError{ "Entity already has " + componentName };
         }
         
         auto& component = entity.addComponent<T>();

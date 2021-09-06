@@ -23,7 +23,7 @@ Deserializer::Deserializer(asset::AssetManager& assetManager, std::shared_ptr<sc
 void Deserializer::deserialize(const std::string& path, std::shared_ptr<core::FileSystem> fileSystem) {
 
     if (not fileSystem->isFile(path))
-        throw DeserializationError { ErrorCode::FileDoesNotExist, "Could not find file: " + path };
+        throw DeserializationError { "Could not find file: " + path };
 
     auto fileContent = fileSystem->readFile(path);
 
@@ -31,7 +31,7 @@ void Deserializer::deserialize(const std::string& path, std::shared_ptr<core::Fi
         auto json = kc::json::loadJson(fileContent);
 
         if (not json.isMember("assets") || not json.isMember("scene"))
-            throw DeserializationError { ErrorCode::ProjectJsonIsInvalid };
+            throw DeserializationError {};
 
         m_scene->clear();
         m_assetManager.clear();
@@ -40,9 +40,9 @@ void Deserializer::deserialize(const std::string& path, std::shared_ptr<core::Fi
         deserializeScene(json["scene"]);
 
     } catch (JsonError& e) {
-        throw DeserializationError { ErrorCode::InvalidJsonString, e.getDetails() };
+        throw DeserializationError { e.getDetails() };
     } catch (Json::Exception& e) {
-        throw DeserializationError { ErrorCode::ProjectJsonIsInvalid };
+        throw DeserializationError { e.what() };
     }
 }
 

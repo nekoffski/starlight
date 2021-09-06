@@ -1,30 +1,31 @@
 #pragma once
 
-#include "BaseError.hpp"
+#include <kc/core/ErrorBase.hpp>
 
 namespace sl::core {
 
-LOG_DEFINE_ERROR(CoreError);
-LOG_DEFINE_ERROR(GraphicsError);
-LOG_DEFINE_ERROR(GeometryError);
-LOG_DEFINE_ERROR(ApplicationError);
-LOG_DEFINE_ERROR(AssetError);
-LOG_DEFINE_ERROR(GuiError);
+DEFINE_ERROR(CoreError);
+DEFINE_ERROR(GraphicsError);
+DEFINE_ERROR(GeometryError);
+DEFINE_ERROR(ApplicationError);
+DEFINE_ERROR(AssetError);
+DEFINE_ERROR(GuiError);
 
-LOG_DEFINE_SUB_ERROR(GuiUserError, GuiError);
+DEFINE_SUB_ERROR(GuiUserError, GuiError);
 
-LOG_DEFINE_SUB_ERROR(ModelError, GeometryError);
+DEFINE_SUB_ERROR(ModelError, GeometryError);
 
-LOG_DEFINE_SUB_ERROR_DF(NullValueAccessError, CoreError, ErrorCode::NullValueAccess);
+DEFINE_SUB_ERROR(NullValueAccessError, CoreError);
 
-LOG_DEFINE_SUB_ERROR(ShaderError, GraphicsError);
-LOG_DEFINE_SUB_ERROR(TextureError, GraphicsError);
-LOG_DEFINE_SUB_ERROR(ImageError, GraphicsError);
+DEFINE_SUB_ERROR(ShaderError, GraphicsError);
+DEFINE_SUB_ERROR(TextureError, GraphicsError);
+DEFINE_SUB_ERROR(ImageError, GraphicsError);
 
-LOG_DEFINE_SUB_ERROR(WindowError, CoreError);
-LOG_DEFINE_SUB_ERROR(JsonError, CoreError);
+DEFINE_SUB_ERROR(WindowError, CoreError);
+DEFINE_SUB_ERROR(JsonError, CoreError);
 
-LOG_DEFINE_SUB_ERROR(SerializationError, ApplicationError);
-LOG_DEFINE_SUB_ERROR(DeserializationError, ApplicationError);
-LOG_DEFINE_SUB_ERROR(ConfigError, ApplicationError);
+DEFINE_SUB_ERROR(SerializationError, ApplicationError);
+DEFINE_SUB_ERROR(DeserializationError, ApplicationError);
+DEFINE_SUB_ERROR(ConfigError, ApplicationError);
+
 }

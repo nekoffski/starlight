@@ -12,7 +12,7 @@ StbImage::StbImage(const std::string& path, int desiredChannels)
 
     if (!m_buffer) {
         LOG_ERROR("Could not load {}", path);
-        throw core::ImageError { core::ErrorCode::CouldNotLoadImage };
+        throw core::ImageError {};
     }
 }
 

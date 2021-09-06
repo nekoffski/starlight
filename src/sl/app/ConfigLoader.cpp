@@ -6,7 +6,7 @@ namespace sl::app {
 
 utils::Config ConfigLoader::loadFromFile(const std::string& path, const core::FileSystem& fileSystem) && {
     if (not fileSystem.isFile(path))
-        throw core::ConfigError { core::ErrorCode::FileDoesNotExist, "Could not find config file: " + path };
+        throw core::ConfigError { "Could not find config file: " + path };
 
     auto configJson = kc::json::loadJson(fileSystem.readFile(path));
 
@@ -45,7 +45,7 @@ utils::Config::Paths ConfigLoader::processPaths(kc::json::Node& root) {
 }
 
 void ConfigLoader::raise(const std::string& reason) {
-    throw core::ConfigError { core::ErrorCode::CorruptedConfig, reason };
+    throw core::ConfigError { reason };
 }
 
 }

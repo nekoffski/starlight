@@ -100,7 +100,6 @@ void ComponentsDeserializer::deserializeModelComponent(Json::Value& componentDes
                     return mesh;
 
             throw core::DeserializationError {
-                core::ErrorCode::CouldNotDeserializeScene,
                 fmt::format("Could not deserialize scene json, mesh with id {} not found", meshId)
             };
         }();

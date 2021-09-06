@@ -3,7 +3,6 @@
 #include <glad/glad.h>
 
 #include "Utils.hpp"
-#include "sl/core/ErrorCode.h"
 #include "sl/core/Errors.hpp"
 
 namespace sl::platform::gl {
@@ -22,7 +21,7 @@ OpenGlTexture::OpenGlTexture(sl::gfx::Image& image)
     const auto& format = channelsToFormat.find(image.getChannelsCount());
 
     if (format == channelsToFormat.end())
-        throw core::TextureError { core::ErrorCode::UnknownTextureFormat };
+        throw core::TextureError {};
 
     glTexImage2D(GL_TEXTURE_2D, 0, format->second, s.width, s.height, 0, format->second,
         GL_UNSIGNED_BYTE, image.getBuffer());

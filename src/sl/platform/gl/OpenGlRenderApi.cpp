@@ -6,8 +6,8 @@
 #include "OpenGlRenderApi.h"
 
 #include "sl/core/Errors.hpp"
-#include <kc/core/Log.h>
 #include "sl/utils/Globals.h"
+#include <kc/core/Log.h>
 
 static void GLAPIENTRY messageCallback(GLenum source, GLenum type, GLuint id,
     GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
@@ -21,7 +21,7 @@ namespace sl::platform::gl {
 void OpenGlRenderApi::init() {
     LOG_INFO("Loading glad memory proccess");
     if (auto status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress); status <= 0)
-        throw core::GraphicsError { core::ErrorCode::CouldNotLoadGraphicsApi };
+        throw core::GraphicsError {};
 
     // TODO: make it configurable
     // glEnable(GL_DEBUG_OUTPUT);

@@ -22,7 +22,7 @@ public:
 
 protected:
     void raise(const std::string& reason) {
-        throw sl::core::GuiError { sl::core::ErrorCode::GuiUserError, reason };
+        throw sl::core::GuiError { reason };
     }
 
     std::shared_ptr<SharedState> m_sharedState;

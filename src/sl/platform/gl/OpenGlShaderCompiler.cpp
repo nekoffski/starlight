@@ -6,9 +6,9 @@
 
 #include <glad/glad.h>
 
-#include "sl/core/ErrorCode.h"
-#include "sl/core/Errors.hpp"
 #include <kc/core/Log.h>
+
+#include "sl/core/Errors.hpp"
 
 #include "OpenGlShader.h"
 
@@ -64,7 +64,7 @@ void OpenGlShaderCompiler::compile(OpenGlShader& shader) {
     if (!linked) {
         glGetProgramInfoLog(shaderProgramId, infoBufferSize, nullptr, infoBuffer);
         LOG_ERROR("could not link: ", infoBuffer);
-        throw core::ShaderError { core::ErrorCode::CouldNotLinkShaderProgram };
+        throw core::ShaderError {};
     }
 }
 
@@ -76,8 +76,7 @@ unsigned int OpenGlShaderCompiler::compileShader(const std::string& path, unsign
 
     if (!shaderSource.good()) {
         LOG_ERROR("could not find source: {}", path);
-        auto code = type == GL_VERTEX_SHADER ? ErrorCode::CouldNotReadVertexShader : ErrorCode::CouldNotReadFragmentShader;
-        throw ShaderError { code };
+        throw ShaderError {};
     }
 
     std::stringstream vertex_data;
@@ -101,8 +100,7 @@ unsigned int OpenGlShaderCompiler::compileShader(const std::string& path, unsign
     if (!compiled) {
         glGetShaderInfoLog(shader, infoBufferSize, nullptr, infoBuffer);
         LOG_ERROR("could not compile: {}", infoBuffer);
-        auto code = type == GL_VERTEX_SHADER ? ErrorCode::CouldNotCompileVertexShader : ErrorCode::CouldNotCompileFragmentShader;
-        throw ShaderError { code };
+        throw ShaderError {};
     }
 
     return shader;

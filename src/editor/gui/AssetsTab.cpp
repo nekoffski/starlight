@@ -22,7 +22,7 @@ static void validateAssetName(const std::string& name) {
     using namespace sl::core;
 
     if (sl::core::isStringEmpty(name))
-        throw AssetError(ErrorCode::AssetError, "Asset name cannot be empty");
+        throw AssetError("Asset name cannot be empty");
 }
 
 AssetsTab::AssetsTab(std::shared_ptr<SharedState> sharedState)
@@ -151,7 +151,7 @@ void AssetsTab::showLoaderPopUp(sl::gui::GuiApi& gui) {
         }
     } catch (sl::core::AssetError& err) {
         m_errorDialog.setErrorMessage(err.getDetails());
-        WRITE_DEBUG("%s", err.as<std::string>());
+        WRITE_DEBUG("%s", err.asString());
         m_loadClicked = false;
     }
 

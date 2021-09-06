@@ -20,14 +20,14 @@ struct ConfigLoaderTests : testing::Test {
 TEST_F(ConfigLoaderTests, whenFileDoesNotExists_shouldThrowError) {
     EXPECT_CALL(fileSystemMock, isFile(_)).Times(1).WillOnce(Return(false));
 
-    EXPECT_THROW(ConfigLoader {}.loadFromFile("", fileSystemMock), core::ConfigError);
+    EXPECT_THROW(ConfigLoader {}.loadFromFile("", fileSystemMock), kc::core::ErrorBase);
 }
 
 TEST_F(ConfigLoaderTests, givenCorruptedJson_whenLoadingConfig_shouldThrow) {
     EXPECT_CALL(fileSystemMock, isFile(_)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(fileSystemMock, readFile(_)).Times(1).WillOnce(Return("}not a json at all{"));
 
-    EXPECT_THROW(ConfigLoader {}.loadFromFile("", fileSystemMock), core::JsonError);
+    EXPECT_THROW(ConfigLoader {}.loadFromFile("", fileSystemMock), kc::core::ErrorBase);
 }
 
 struct ConfigLoaderInvalidConfigTests : ConfigLoaderTests, WithParamInterface<std::string> {

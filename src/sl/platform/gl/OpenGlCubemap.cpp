@@ -1,11 +1,12 @@
 #include "OpenGlCubemap.h"
 
+#include <glad/glad.h>
+
+#include <kc/core/Log.h>
+
 #include "Utils.hpp"
 #include "sl/core/Errors.hpp"
-#include <kc/core/Log.h>
 #include "sl/gfx/Image.h"
-
-#include <glad/glad.h>
 
 namespace sl::platform::gl {
 
@@ -42,7 +43,7 @@ OpenGlCubemap::OpenGlCubemap(const sl::gfx::CubemapFaces& faces)
         auto channels = img->getChannelsCount();
 
         if (not channelsToFormat.contains(channels))
-            throw core::TextureError { core::ErrorCode::UnknownTextureFormat };
+            throw core::TextureError {};
 
         const auto format = channelsToFormat.at(channels);
         const auto size = img->getSize();
