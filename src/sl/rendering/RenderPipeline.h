@@ -11,7 +11,7 @@ namespace sl::rendering {
 class RenderPipeline {
 public:
     void run(sl::gfx::Renderer& renderer, scene::Scene& scene) {
-        SL_PROFILE_FUNCTION();
+        LOG_PROFILE_FUNCTION();
 
         scene.vectors.clear();
 

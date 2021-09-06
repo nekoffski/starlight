@@ -2,7 +2,8 @@
 
 #include <unordered_set>
 
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
+
 #include "sl/ecs/Entity.h"
 #include "sl/utils/Globals.h"
 

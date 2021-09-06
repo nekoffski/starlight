@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 
 namespace sl::gfx {
 
@@ -8,7 +8,7 @@ Renderer::Renderer(gfx::RenderApi* renderApi, const ViewFrustum::Viewport& viewp
     : m_renderApi(renderApi)
     , m_viewport(viewport) {
 
-    SL_INFO("initializing");
+    LOG_INFO("initializing");
     setViewport(m_viewport);
 
     m_renderApi->enable(STARL_DEPTH_TEST);

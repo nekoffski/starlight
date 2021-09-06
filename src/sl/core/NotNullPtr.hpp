@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Logger.h"
+#include <kc/core/Log.h>
 
 namespace sl::core {
 
@@ -10,7 +10,7 @@ public:
     NotNullPtrBase(T* ptr)
         : m_ptr(ptr) {
 
-        SL_ASSERT(ptr != nullptr, "Pointer could not be empty");
+        ASSERT(ptr != nullptr, "Pointer could not be empty");
     }
 
     operator T*() const { return m_ptr; }

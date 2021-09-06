@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "sl/core/Json.h"
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
+
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
 #include "sl/gui/Utils.hpp"
@@ -45,9 +45,9 @@ public:
     }
 
     void restore() {
-        SL_INFO("Trying to restore transform");
+        LOG_INFO("Trying to restore transform");
         if (m_memento.has_value()) {
-            SL_INFO("Restoring transform component");
+            LOG_INFO("Restoring transform component");
             position = m_memento->position;
             rotation = m_memento->rotation;
             scale = m_memento->scale;

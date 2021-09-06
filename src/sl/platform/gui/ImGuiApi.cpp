@@ -7,7 +7,7 @@
 
 #include <ImGuizmo.h>
 
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 #include "sl/core/String.hpp"
 
 #include "sl/math/Utils.hpp"
@@ -53,7 +53,7 @@ static void setStyle() {
 }
 
 ImGuiApi::ImGuiApi(void* windowHandle) {
-    SL_INFO("creating imgui context");
+    LOG_INFO("creating imgui context");
 
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -61,10 +61,10 @@ ImGuiApi::ImGuiApi(void* windowHandle) {
 
     ImGui::StyleColorsDark();
 
-    SL_INFO("initializing glfw implementation");
+    LOG_INFO("initializing glfw implementation");
     ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(windowHandle), true);
 
-    SL_INFO("initializing opengl implementation");
+    LOG_INFO("initializing opengl implementation");
     const std::string openGlVersionString = "#version 440 core";
     ImGui_ImplOpenGL3_Init(openGlVersionString.c_str());
 
@@ -72,7 +72,7 @@ ImGuiApi::ImGuiApi(void* windowHandle) {
 }
 
 ImGuiApi::~ImGuiApi() {
-    SL_INFO("cleaning up");
+    LOG_INFO("cleaning up");
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();

@@ -37,14 +37,14 @@ static void handleComponent(int index, ecs::Entity& entity) {
     if (index == expectedIndex) {
         if (entity.hasComponent<T>()) {
             auto& componentName = entity.getComponent<T>().name;
-            SL_WARN("Could not add {} to {}", componentName, entity.asString());
+            LOG_WARN("Could not add {} to {}", componentName, entity.asString());
 
             throw core::GuiUserError{ core::ErrorCode::GuiUserError, 
                 "Entity already has " + componentName };
         }
         
         auto& component = entity.addComponent<T>();
-        SL_INFO("Added {} to {}", component.name, entity.asString());
+        LOG_INFO("Added {} to {}", component.name, entity.asString());
     }
 }
 // clang-format on

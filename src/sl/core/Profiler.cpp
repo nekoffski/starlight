@@ -4,7 +4,7 @@
 #include <fstream>
 #include <unordered_map>
 
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 #include "sl/math/Utils.hpp"
 
 namespace sl::core {

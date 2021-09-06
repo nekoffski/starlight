@@ -13,7 +13,7 @@
 namespace editor {
 
 class DebugConsole {
-    SL_STATIC_CLASS(DebugConsole);
+    LOG_STATIC_CLASS(DebugConsole);
 
 public:
     template <typename... Args>

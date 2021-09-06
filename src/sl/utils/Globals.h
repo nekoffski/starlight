@@ -16,7 +16,7 @@
 namespace sl::utils {
 
 struct Globals {
-    SL_SINGLETON(Globals);
+    LOG_SINGLETON(Globals);
 
     void init();
 

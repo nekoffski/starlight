@@ -3,14 +3,14 @@
 #include "sl/core/Profiler.h"
 #include "sl/rendering/utils/Misc.h"
 
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 
 using namespace sl::scene::components;
 
 namespace sl::rendering::stages {
 
 void PrepareLightsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
-    SL_PROFILE_FUNCTION();
+    LOG_PROFILE_FUNCTION();
 
     auto [rendererComponents, transforms, directionalLights, pointLights] =
         scene.ecsRegistry.getComponentsViews<MeshRendererComponent,

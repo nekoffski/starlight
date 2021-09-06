@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/fwd.h"

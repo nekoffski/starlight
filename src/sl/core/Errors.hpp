@@ -4,27 +4,27 @@
 
 namespace sl::core {
 
-SL_DEFINE_ERROR(CoreError);
-SL_DEFINE_ERROR(GraphicsError);
-SL_DEFINE_ERROR(GeometryError);
-SL_DEFINE_ERROR(ApplicationError);
-SL_DEFINE_ERROR(AssetError);
-SL_DEFINE_ERROR(GuiError);
+LOG_DEFINE_ERROR(CoreError);
+LOG_DEFINE_ERROR(GraphicsError);
+LOG_DEFINE_ERROR(GeometryError);
+LOG_DEFINE_ERROR(ApplicationError);
+LOG_DEFINE_ERROR(AssetError);
+LOG_DEFINE_ERROR(GuiError);
 
-SL_DEFINE_SUB_ERROR(GuiUserError, GuiError);
+LOG_DEFINE_SUB_ERROR(GuiUserError, GuiError);
 
-SL_DEFINE_SUB_ERROR(ModelError, GeometryError);
+LOG_DEFINE_SUB_ERROR(ModelError, GeometryError);
 
-SL_DEFINE_SUB_ERROR_DF(NullValueAccessError, CoreError, ErrorCode::NullValueAccess);
+LOG_DEFINE_SUB_ERROR_DF(NullValueAccessError, CoreError, ErrorCode::NullValueAccess);
 
-SL_DEFINE_SUB_ERROR(ShaderError, GraphicsError);
-SL_DEFINE_SUB_ERROR(TextureError, GraphicsError);
-SL_DEFINE_SUB_ERROR(ImageError, GraphicsError);
+LOG_DEFINE_SUB_ERROR(ShaderError, GraphicsError);
+LOG_DEFINE_SUB_ERROR(TextureError, GraphicsError);
+LOG_DEFINE_SUB_ERROR(ImageError, GraphicsError);
 
-SL_DEFINE_SUB_ERROR(WindowError, CoreError);
-SL_DEFINE_SUB_ERROR(JsonError, CoreError);
+LOG_DEFINE_SUB_ERROR(WindowError, CoreError);
+LOG_DEFINE_SUB_ERROR(JsonError, CoreError);
 
-SL_DEFINE_SUB_ERROR(SerializationError, ApplicationError);
-SL_DEFINE_SUB_ERROR(DeserializationError, ApplicationError);
-SL_DEFINE_SUB_ERROR(ConfigError, ApplicationError);
+LOG_DEFINE_SUB_ERROR(SerializationError, ApplicationError);
+LOG_DEFINE_SUB_ERROR(DeserializationError, ApplicationError);
+LOG_DEFINE_SUB_ERROR(ConfigError, ApplicationError);
 }

@@ -8,7 +8,7 @@
 
 #include "sl/core/ErrorCode.h"
 #include "sl/core/Errors.hpp"
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 
 #include "OpenGlShader.h"
 
@@ -23,21 +23,21 @@ void OpenGlShaderCompiler::compile(sl::gfx::Shader& shader) {
 }
 
 void OpenGlShaderCompiler::compile(OpenGlShader& shader) {
-    SL_DEBUG("compiling shader: \n{},\n{},\n{}", shader.m_fragmentPath, shader.m_vertexPath, shader.m_geomPath);
+    LOG_DEBUG("compiling shader: \n{},\n{},\n{}", shader.m_fragmentPath, shader.m_vertexPath, shader.m_geomPath);
 
     GLuint& shaderProgramId = shader.m_shaderProgram;
     shaderProgramId = glCreateProgram();
 
-    SL_DEBUG("compiling vertex shader");
+    LOG_DEBUG("compiling vertex shader");
     auto vertexShaderId = compileShader(shader.m_vertexPath, GL_VERTEX_SHADER);
-    SL_DEBUG("compiling fragment shader");
+    LOG_DEBUG("compiling fragment shader");
     auto fragmentShaderId = compileShader(shader.m_fragmentPath, GL_FRAGMENT_SHADER);
 
     bool hasGeometryShader = shader.m_geomPath != "";
     std::optional<unsigned int> geometryShaderId;
 
     if (hasGeometryShader) {
-        SL_DEBUG("compiling geometry shader");
+        LOG_DEBUG("compiling geometry shader");
         geometryShaderId = compileShader(shader.m_geomPath, GL_GEOMETRY_SHADER);
 
         glAttachShader(shaderProgramId, geometryShaderId.value());
@@ -46,7 +46,7 @@ void OpenGlShaderCompiler::compile(OpenGlShader& shader) {
     glAttachShader(shaderProgramId, vertexShaderId);
     glAttachShader(shaderProgramId, fragmentShaderId);
 
-    SL_DEBUG("linking shader");
+    LOG_DEBUG("linking shader");
     glLinkProgram(shaderProgramId);
 
     char infoBuffer[infoBufferSize];
@@ -63,7 +63,7 @@ void OpenGlShaderCompiler::compile(OpenGlShader& shader) {
 
     if (!linked) {
         glGetProgramInfoLog(shaderProgramId, infoBufferSize, nullptr, infoBuffer);
-        SL_ERROR("could not link: ", infoBuffer);
+        LOG_ERROR("could not link: ", infoBuffer);
         throw core::ShaderError { core::ErrorCode::CouldNotLinkShaderProgram };
     }
 }
@@ -75,7 +75,7 @@ unsigned int OpenGlShaderCompiler::compileShader(const std::string& path, unsign
     std::fstream shaderSource(path);
 
     if (!shaderSource.good()) {
-        SL_ERROR("could not find source: {}", path);
+        LOG_ERROR("could not find source: {}", path);
         auto code = type == GL_VERTEX_SHADER ? ErrorCode::CouldNotReadVertexShader : ErrorCode::CouldNotReadFragmentShader;
         throw ShaderError { code };
     }
@@ -100,7 +100,7 @@ unsigned int OpenGlShaderCompiler::compileShader(const std::string& path, unsign
 
     if (!compiled) {
         glGetShaderInfoLog(shader, infoBufferSize, nullptr, infoBuffer);
-        SL_ERROR("could not compile: {}", infoBuffer);
+        LOG_ERROR("could not compile: {}", infoBuffer);
         auto code = type == GL_VERTEX_SHADER ? ErrorCode::CouldNotCompileVertexShader : ErrorCode::CouldNotCompileFragmentShader;
         throw ShaderError { code };
     }

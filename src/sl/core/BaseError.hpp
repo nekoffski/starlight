@@ -62,7 +62,7 @@ private:
 };
 }
 
-#define SL_DEFINE_SUB_ERROR(ClassName, BaseError)  \
+#define LOG_DEFINE_SUB_ERROR(ClassName, BaseError)  \
     class ClassName : public BaseError {           \
     public:                                        \
         using BaseError::BaseError;                \
@@ -77,7 +77,7 @@ private:
         }                                          \
     };
 
-#define SL_DEFINE_SUB_ERROR_DF(ClassName, BaseError, DefErrorCode)              \
+#define LOG_DEFINE_SUB_ERROR_DF(ClassName, BaseError, DefErrorCode)              \
     class ClassName : public BaseError {                                        \
     public:                                                                     \
         explicit ClassName(const std::string& details = "No details specified", \
@@ -95,4 +95,4 @@ private:
         }                                                                       \
     };
 
-#define SL_DEFINE_ERROR(ClassName) SL_DEFINE_SUB_ERROR(ClassName, Error)
+#define LOG_DEFINE_ERROR(ClassName) LOG_DEFINE_SUB_ERROR(ClassName, Error)

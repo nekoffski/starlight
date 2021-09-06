@@ -8,7 +8,7 @@
 #include "ComponentContainer.hpp"
 #include "ComponentMap.hpp"
 #include "ComponentView.hpp"
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 #include "sl/core/Misc.hpp"
 
 namespace sl::ecs {
@@ -27,7 +27,7 @@ public:
 
         updateComponentIndexes(entityId, core::typeIndex<T>());
 
-        SL_INFO("Added {} to entity with id: {}", component.name, entityId);
+        LOG_INFO("Added {} to entity with id: {}", component.name, entityId);
 
         return component;
     }

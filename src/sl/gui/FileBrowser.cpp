@@ -1,6 +1,6 @@
 #include "FileBrowser.h"
 
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 #include "sl/gui/GuiStyle.h"
 #include "sl/gui/fonts/FontAwesome.h"
 
@@ -21,7 +21,7 @@ void FileBrowser::open(GuiApi& gui, Callback&& callback) {
 
     m_callback = callback;
 
-    SL_DEBUG("Opening file browser");
+    LOG_DEBUG("Opening file browser");
     gui.openPopUp(m_id);
 }
 

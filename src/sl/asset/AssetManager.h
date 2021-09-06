@@ -6,7 +6,7 @@
 
 #include "AssetContainer.h"
 #include "AssetContainer2.h"
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 #include "sl/geom/Mesh.h"
 #include "sl/geom/Model.h"
 #include "sl/gfx/Cubemap.h"

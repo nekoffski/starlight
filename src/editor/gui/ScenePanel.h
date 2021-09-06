@@ -10,7 +10,7 @@
 #include "sl/math/Vector.hpp"
 #include "sl/scene/components/TransformComponent.h"
 
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 
 #include "editor/DebugConsole.hpp"
 
@@ -68,7 +68,9 @@ public:
 
                     gui.pushTextColor(entryColor);
 
-                    bool isEntityOpened = gui.beginTreeNode(" " ICON_FA_CUBE "  "s + entity->getName(), false);
+                    static std::string gap = "  ";
+
+                    bool isEntityOpened = gui.beginTreeNode(gap + ICON_FA_CUBE + gap + entity->getName(), false);
                     bool isClicked = gui.isPreviousWidgetClicked();
 
                     gui.popColor();
@@ -77,7 +79,7 @@ public:
                     gui.setFontScale(0.55f);
 
                     if (gui.checkbox("##isActive", entity->isActive)) {
-                        SL_INFO("click");
+                        LOG_INFO("click");
                         for (auto& componentIndex : entity->getComponentsIndexes())
                             entity->getComponent(componentIndex).isActive = entity->isActive;
                     }

@@ -2,7 +2,7 @@
 
 #include <glad/glad.h>
 
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 #include "sl/gfx/ElementBuffer.h"
 #include "sl/gfx/VertexBuffer.h"
 

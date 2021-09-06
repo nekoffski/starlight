@@ -13,7 +13,7 @@
 #include "sl/core/FileSystem.h"
 #include "sl/core/Input.h"
 #include "sl/core/InputManager.h"
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 #include "sl/core/Profiler.h"
 #include "sl/core/WindowManager.h"
 #include "sl/core/sig/Signal.h"

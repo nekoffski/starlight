@@ -1,7 +1,7 @@
 #include "Registry.hpp"
 
 #include "Entity.h"
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 
 namespace sl::ecs {
 
@@ -14,7 +14,7 @@ Entity& Registry::createEntity(const std::string& name) {
 
     auto& entityRef = *m_entities[id];
 
-    SL_INFO("Created entity: {}", entityRef.asString());
+    LOG_INFO("Created entity: {}", entityRef.asString());
 
     return entityRef;
 }
@@ -24,7 +24,7 @@ void Registry::updateComponentIndexes(const std::string& entityId, std::type_ind
 }
 
 void Registry::clear() {
-    SL_INFO("Cleaning up ecs registry");
+    LOG_INFO("Cleaning up ecs registry");
 
     m_entities.clear();
     m_entityNameToId.clear();
@@ -38,7 +38,7 @@ void Registry::removeComponent(const std::string& entityId, std::type_index comp
 void Registry::removeEntity(const std::string& entityId) {
     auto entity = m_entities[entityId].get();
 
-    SL_INFO("Removing entity: {}", entity->asString());
+    LOG_INFO("Removing entity: {}", entity->asString());
 
     for (const auto& componentIndex : entity->m_componentsIndexes)
         removeComponent(entityId, componentIndex);

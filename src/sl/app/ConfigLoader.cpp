@@ -8,7 +8,7 @@ utils::Config ConfigLoader::loadFromFile(const std::string& path, const core::Fi
     if (not fileSystem.isFile(path))
         throw core::ConfigError { core::ErrorCode::FileDoesNotExist, "Could not find config file: " + path };
 
-    auto configJson = core::parseJson(fileSystem.readFile(path));
+    auto configJson = kc::json::loadJson(fileSystem.readFile(path));
 
     utils::Config config;
     config.paths = processPaths(configJson);
@@ -16,7 +16,7 @@ utils::Config ConfigLoader::loadFromFile(const std::string& path, const core::Fi
     return config;
 }
 
-utils::Config::Paths ConfigLoader::processPaths(Json::Value& root) {
+utils::Config::Paths ConfigLoader::processPaths(kc::json::Node& root) {
     if (not root.isMember("paths"))
         raise("Config does not contain paths key.");
 

@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 
-#include <jsoncpp/json/value.h>
 #include <memory>
+
+#include <kc/json/Json.h>
 
 #include "sl/app/Serializer.h"
 #include "sl/asset/AssetManager.h"
-#include "sl/core/Json.h"
 #include "sl/ecs/Entity.h"
 #include "sl/scene/Scene.h"
 
@@ -13,6 +13,7 @@
 
 using namespace testing;
 
+using namespace kc::json;
 using namespace sl::core;
 using namespace sl::app;
 using namespace sl::asset;
@@ -48,7 +49,7 @@ TEST_F(SerializerTests, givenEmptySceneAndEmptyAssetManager_whenSerializing_shou
 
     m_serializer.serialize(m_assetManager, m_scene);
 
-    auto json = parseJson(FileSystemMock::capturedFileContent);
+    auto json = loadJson(FileSystemMock::capturedFileContent);
     prevalidateSerializerJson(json);
     EXPECT_TRUE(json.isMember("assets"));
     EXPECT_EQ(json["assets"]["cubemaps"].size(), 0);

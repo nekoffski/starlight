@@ -13,7 +13,7 @@ RenderBoundingBoxesStage::RenderBoundingBoxesStage()
 }
 
 void RenderBoundingBoxesStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
-    SL_PROFILE_FUNCTION();
+    LOG_PROFILE_FUNCTION();
 
     setShaderTransforms(*scene.camera);
     prepareRenderer(renderer);

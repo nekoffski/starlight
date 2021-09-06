@@ -27,7 +27,7 @@ CapturePointDepthMapsStage::CapturePointDepthMapsStage()
 }
 
 void CapturePointDepthMapsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) {
-    SL_PROFILE_FUNCTION();
+    LOG_PROFILE_FUNCTION();
 
     prepareRenderer(renderer);
 

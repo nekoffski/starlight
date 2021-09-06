@@ -6,12 +6,12 @@
 #include "OpenGlRenderApi.h"
 
 #include "sl/core/Errors.hpp"
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 #include "sl/utils/Globals.h"
 
 static void GLAPIENTRY messageCallback(GLenum source, GLenum type, GLuint id,
     GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
-    SL_DEBUG("GL CALLBACK: {} type = {}, severity = {}, message = {}\n",
+    LOG_DEBUG("GL CALLBACK: {} type = {}, severity = {}, message = {}\n",
         (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
         type, severity, message);
 }
@@ -19,7 +19,7 @@ static void GLAPIENTRY messageCallback(GLenum source, GLenum type, GLuint id,
 namespace sl::platform::gl {
 
 void OpenGlRenderApi::init() {
-    SL_INFO("Loading glad memory proccess");
+    LOG_INFO("Loading glad memory proccess");
     if (auto status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress); status <= 0)
         throw core::GraphicsError { core::ErrorCode::CouldNotLoadGraphicsApi };
 

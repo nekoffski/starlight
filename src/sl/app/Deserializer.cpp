@@ -1,8 +1,9 @@
 #include "Deserializer.h"
 
+#include <kc/core/Log.h>
+#include <kc/json/Json.h>
+
 #include "sl/core/Errors.hpp"
-#include "sl/core/Json.h"
-#include "sl/core/Logger.h"
 #include "sl/geom/GeometryManager.h"
 #include "sl/gfx/Cubemap.h"
 #include "sl/gfx/Shader.h"
@@ -27,7 +28,7 @@ void Deserializer::deserialize(const std::string& path, std::shared_ptr<core::Fi
     auto fileContent = fileSystem->readFile(path);
 
     try {
-        auto json = core::parseJson(fileContent);
+        auto json = kc::json::loadJson(fileContent);
 
         if (not json.isMember("assets") || not json.isMember("scene"))
             throw DeserializationError { ErrorCode::ProjectJsonIsInvalid };
@@ -45,8 +46,8 @@ void Deserializer::deserialize(const std::string& path, std::shared_ptr<core::Fi
     }
 }
 
-void Deserializer::deserializeAssets(Json::Value& assetsJson) {
-    SL_INFO("Deserializing assets");
+void Deserializer::deserializeAssets(kc::json::Node& assetsJson) {
+    LOG_INFO("Deserializing assets");
 
     for (auto& cubemapDescription : assetsJson["cubemaps"]) {
         auto& paths = cubemapDescription["paths"];
@@ -62,7 +63,7 @@ void Deserializer::deserializeAssets(Json::Value& assetsJson) {
         m_assetsIdRedirections[oldId] = newId;
         m_assetManager.add(std::move(cubemap));
 
-        SL_INFO("Found cubemap redirection: {} -> {}", oldId, newId);
+        LOG_INFO("Found cubemap redirection: {} -> {}", oldId, newId);
     }
 
     for (auto& textureDescription : assetsJson["textures"]) {
@@ -75,7 +76,7 @@ void Deserializer::deserializeAssets(Json::Value& assetsJson) {
         m_assetsIdRedirections[oldId] = newId;
         m_assetManager.add(std::move(texture));
 
-        SL_INFO("Found texture redirection: {} -> {}", oldId, newId);
+        LOG_INFO("Found texture redirection: {} -> {}", oldId, newId);
     }
 
     auto& models = assetsJson["models"];
@@ -91,13 +92,13 @@ void Deserializer::deserializeAssets(Json::Value& assetsJson) {
 
         m_assetsIdRedirections[oldId] = mesh->getId();
 
-        SL_INFO("Found mesh redirection: {} -> {}", oldId, mesh->getId());
+        LOG_INFO("Found mesh redirection: {} -> {}", oldId, mesh->getId());
     }
 
     deserializeDefaultAssets(assetsJson["default-assets"]);
 }
 
-void Deserializer::deserializeDefaultAssets(Json::Value& defaultAssets) {
+void Deserializer::deserializeDefaultAssets(kc::json::Node& defaultAssets) {
     auto& globalShaders = GLOBALS().shaders->shadersByName;
 
     for (auto& shaderDescription : defaultAssets["shaders"]) {
@@ -108,7 +109,7 @@ void Deserializer::deserializeDefaultAssets(Json::Value& defaultAssets) {
             auto newId = globalShaders.at(name)->getId();
             m_assetsIdRedirections[oldId] = newId;
 
-            SL_INFO("Found redirection for default shader: {} - {} -> {}", name, oldId, newId);
+            LOG_INFO("Found redirection for default shader: {} - {} -> {}", name, oldId, newId);
         }
     }
 
@@ -122,13 +123,13 @@ void Deserializer::deserializeDefaultAssets(Json::Value& defaultAssets) {
             auto newId = globalMeshes.at(name)->getId();
             m_assetsIdRedirections[oldId] = newId;
 
-            SL_INFO("Found redirection for default mesh: {} - {} -> {}", name, oldId, newId);
+            LOG_INFO("Found redirection for default mesh: {} - {} -> {}", name, oldId, newId);
         }
     }
 }
 
-void Deserializer::deserializeScene(Json::Value& sceneJson) {
-    SL_INFO("Deserializing scene");
+void Deserializer::deserializeScene(kc::json::Node& sceneJson) {
+    LOG_INFO("Deserializing scene");
 
     if (sceneJson.isMember("skybox-id")) {
         auto skyboxOldId = sceneJson["skybox-id"].asString();
@@ -140,20 +141,20 @@ void Deserializer::deserializeScene(Json::Value& sceneJson) {
             GLOBALS().shaders->defaultCubemapShader, cubemap
         };
 
-        SL_INFO("Setting skybox: {}", m_scene->skybox->cubemap->getId());
+        LOG_INFO("Setting skybox: {}", m_scene->skybox->cubemap->getId());
     }
 
-    SL_INFO("Deserializing entities");
+    LOG_INFO("Deserializing entities");
     for (auto& entityDescription : sceneJson["entities"]) {
         auto name = entityDescription["name"].asString();
         auto& entity = m_scene->addEntity(name);
 
-        SL_INFO("Deserializing entity: {}", name);
-        SL_INFO("Deserializing components");
+        LOG_INFO("Deserializing entity: {}", name);
+        LOG_INFO("Deserializing components");
 
         for (auto& componentDescription : entityDescription["components"]) {
             auto componentName = componentDescription["name"].asString();
-            SL_INFO("Deserializing {}", componentName);
+            LOG_INFO("Deserializing {}", componentName);
 
             m_componentsDeserializer.deserializeComponent(componentName,
                 componentDescription, entity, m_assetManager);

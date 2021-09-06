@@ -3,7 +3,7 @@
 namespace sl::async {
 
 void AsyncManager::start() {
-    m_threadPool = std::make_unique<ThreadPool<>>(std::thread::hardware_concurrency());
+    m_threadPool = std::make_unique<kc::async::ThreadPool>(std::thread::hardware_concurrency());
 }
 
 void AsyncManager::stop() {
@@ -15,7 +15,7 @@ void AsyncManager::parallelLoop(const int iterations, const std::function<void(c
     auto threadCount = m_threadPool->getSize();
     auto batch = iterations / threadCount;
 
-    std::vector<Future<void>> futures;
+    std::vector<kc::async::Future<void>> futures;
     futures.reserve(threadCount);
 
     for (int i = 0; i < threadCount; ++i) {
@@ -47,12 +47,12 @@ void AsyncManager::update(float dtime) {
         auto& [future, task] = taskSentinel;
 
         if (future.isReady()) {
-            SL_INFO("Task {}/{} finished, finalizing.", task->asString(), id);
+            LOG_INFO("Task {}/{} finished, finalizing.", task->asString(), id);
 
             task->finalize();
             idsToRemove.push_back(id);
 
-            SL_INFO("Task {}/{} finalized, will remove.", task->asString(), id);
+            LOG_INFO("Task {}/{} finalized, will remove.", task->asString(), id);
         }
     }
 

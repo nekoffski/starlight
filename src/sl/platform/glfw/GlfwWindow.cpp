@@ -5,40 +5,40 @@
 #include <GLFW/glfw3.h>
 
 #include "sl/core/Errors.hpp"
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 #include "sl/core/Profiler.h"
 
 namespace sl::platform::glfw {
 
 GlfwWindow::~GlfwWindow() {
     if (m_windowHandle != nullptr) {
-        SL_INFO("Destroying glfw window");
+        LOG_INFO("Destroying glfw window");
         glfwDestroyWindow(m_windowHandle);
     }
 }
 
 void GlfwWindow::init() {
-    SL_INFO("Initializing glfw");
+    LOG_INFO("Initializing glfw");
     if (auto status = glfwInit(); status < 0) {
-        SL_ERROR("could not initialize glfw: {}", status);
+        LOG_ERROR("could not initialize glfw: {}", status);
         throw core::WindowError { sl::core::ErrorCode::CouldNotInitializeWindowLibrary };
     }
 
-    SL_INFO("Setting up window hints");
+    LOG_INFO("Setting up window hints");
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     glfwSetErrorCallback([](int errorCode, const char* message) {
-        SL_ERROR("GLFW ERROR {} - {}", errorCode, message);
+        LOG_ERROR("GLFW ERROR {} - {}", errorCode, message);
     });
 
-    SL_INFO("Creating window's handle instance");
+    LOG_INFO("Creating window's handle instance");
     m_windowHandle = glfwCreateWindow(m_defaultWindowSize.width, m_defaultWindowSize.height,
         m_title.c_str(), nullptr, nullptr);
 
     if (m_windowHandle == nullptr) {
-        SL_ERROR("could not create raw window instance");
+        LOG_ERROR("could not create raw window instance");
         throw core::WindowError { core::ErrorCode::CouldNotCreateWindowInstance };
     }
 }
@@ -77,7 +77,7 @@ void GlfwWindow::makeContextCurrent() {
 }
 
 void GlfwWindow::swapBuffers() {
-    SL_PROFILE_FUNCTION();
+    LOG_PROFILE_FUNCTION();
     glfwSwapBuffers(m_windowHandle);
 }
 void* GlfwWindow::getHandle() const {

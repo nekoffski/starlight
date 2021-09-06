@@ -9,7 +9,7 @@
 #include "sl/math/Utils.hpp"
 #include "sl/utils/Globals.h"
 
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 
 namespace sl::gfx::camera {
 

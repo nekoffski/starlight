@@ -8,6 +8,7 @@
 using namespace sl;
 using namespace sl::app;
 using namespace sl::core;
+using namespace kc::json;
 using namespace testing;
 
 namespace {

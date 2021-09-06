@@ -1,9 +1,10 @@
 #pragma once
 
+#include <kc/json/Json.h>
+
 #include "ComponentsSerializer.h"
 #include "sl/asset/AssetManager.h"
 #include "sl/core/FileSystem.h"
-#include "sl/core/Json.h"
 #include "sl/scene/Scene.h"
 
 namespace sl::app {
@@ -23,7 +24,7 @@ private:
 
     void serializeDefaultAssets();
 
-    core::JsonBuilder m_jsonBuilder;
+    kc::json::JsonBuilder m_jsonBuilder;
 
     std::string m_path;
 

@@ -7,13 +7,13 @@ void TaskManager::processTasks() {
 
     for (auto& [id, task] : m_tasks) {
         if (not task->isActive) {
-            SL_DEBUG("Task {} not active, will remove", task->getName());
+            LOG_DEBUG("Task {} not active, will remove", task->getName());
             tasksToRemove.push_back(id);
             continue;
         }
 
         if (task->shouldInvoke()) {
-            SL_DEBUG("Invoking task: {}", task->getName());
+            LOG_DEBUG("Invoking task: {}", task->getName());
             task->invoke();
         }
     }

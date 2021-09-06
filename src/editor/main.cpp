@@ -1,6 +1,6 @@
 #include "sl/app/ConfigLoader.h"
 #include "sl/app/Engine.h"
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 
 #include "sl/platform/Platform.hpp"
 #include "sl/platform/assimp/AssimpModelLoader.h"
@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
     using namespace sl::platform;
     using namespace sl::app;
 
-    core::initLogging();
+    kc::core::initLogging("Starlight");
 
     static const std::string configPath = "./starlight.json";
     core::FileSystem fileSystem;

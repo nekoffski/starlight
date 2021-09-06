@@ -5,7 +5,7 @@
 #include <kc/core/Singleton.hpp>
 
 #include "Keyboard.h"
-#include "Logger.h"
+#include <kc/core/Log.h>
 #include "Macros.h"
 #include "Mouse.h"
 

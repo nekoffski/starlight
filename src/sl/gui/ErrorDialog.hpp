@@ -18,7 +18,7 @@ public:
         gui.pushId(m_id);
 
         if (m_errorMessage.has_value() && not m_showed) {
-            SL_DEBUG("Opening error dialog {} with message: {}", m_id, m_errorMessage.value());
+            LOG_DEBUG("Opening error dialog {} with message: {}", m_id, m_errorMessage.value());
             m_showed = true;
             gui.openPopUp(m_id);
         }
@@ -30,7 +30,7 @@ public:
                 m_errorMessage = std::nullopt;
                 m_showed = false;
 
-                SL_DEBUG("Closing error dialog");
+                LOG_DEBUG("Closing error dialog");
                 gui.closeCurrentPopUp();
             }
 

@@ -11,7 +11,7 @@ RenderVectorsStage::RenderVectorsStage()
 }
 
 void RenderVectorsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
-    SL_PROFILE_FUNCTION();
+    LOG_PROFILE_FUNCTION();
 
     setCameraUniforms(*scene.camera);
 

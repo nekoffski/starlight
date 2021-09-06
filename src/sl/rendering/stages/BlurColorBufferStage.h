@@ -9,7 +9,7 @@
 #include "sl/rendering/Stage.h"
 #include "sl/utils/Globals.h"
 
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 
 namespace sl::rendering::stages {
 

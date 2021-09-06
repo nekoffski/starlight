@@ -5,7 +5,7 @@
 
 #include "sl/app/Application.h"
 #include "sl/app/ConfigLoader.h"
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 #include "sl/gui/fonts/FontAwesome.h"
 #include "sl/platform/Platform.hpp"
 #include "sl/utils/Globals.h"
@@ -16,7 +16,7 @@
 #include "sl/core/FileSystem.h"
 #include "sl/core/Input.h"
 #include "sl/core/InputManager.h"
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 #include "sl/core/Profiler.h"
 #include "sl/core/sig/Signal.h"
 #include "sl/geom/GeometryManager.h"
@@ -42,10 +42,10 @@ Engine::Builder&& Engine::Builder::setPlatform(platform::Platform* platform) && 
 }
 
 std::unique_ptr<Engine> Engine::Builder::build() && {
-    SL_ASSERT(m_platform != nullptr, "Platform is not set");
-    SL_ASSERT(m_config != nullptr, "Config is not set");
+    ASSERT(m_platform != nullptr, "Platform is not set");
+    ASSERT(m_config != nullptr, "Config is not set");
 
-    SL_INFO("Creating Engine instance");
+    LOG_INFO("Creating Engine instance");
     return std::make_unique<Engine>(m_config, m_platform);
 }
 
@@ -143,7 +143,7 @@ void Engine::handleEvents(const kc::event::EventProvider& eventProvider) {
 }
 
 void Engine::run() {
-    SL_ASSERT(m_application != nullptr, "Cannot run engine without set application");
+    ASSERT(m_application != nullptr, "Cannot run engine without set application");
 
     while (m_application->isRunning())
         loopStep();
@@ -170,7 +170,7 @@ void Engine::render() {
 }
 
 void Engine::loopStep() {
-    SL_PROFILE_REGION("main-loop-step");
+    LOG_PROFILE_REGION("main-loop-step");
 
     update();
     render();

@@ -1,6 +1,6 @@
 #include "ModelComponentGui.h"
 
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 #include "sl/gui/GuiStyle.h"
 #include "sl/utils/Globals.h"
 

@@ -6,7 +6,7 @@
 #include <kc/core/Uuid.h>
 
 #include "Errors.hpp"
-#include "Logger.h"
+#include <kc/core/Log.h>
 #include "OptionalPtr.hpp"
 
 namespace sl::core {
@@ -15,11 +15,11 @@ class GameObject {
 public:
     GameObject()
         : m_id(kc::core::generateUuid()) {
-        SL_INFO("Creating GameObject: {}", m_id);
+        LOG_INFO("Creating GameObject: {}", m_id);
     }
 
     ~GameObject() {
-        SL_INFO("Destroying GameObject: {}", m_id);
+        LOG_INFO("Destroying GameObject: {}", m_id);
     }
 
     GameObject(GameObject&& oth) {

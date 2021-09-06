@@ -13,7 +13,7 @@ namespace sl::rendering::stages {
 using namespace sl::scene::components;
 
 void RenderMeshesStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) {
-    SL_PROFILE_FUNCTION();
+    LOG_PROFILE_FUNCTION();
 
     auto [meshRendererComponents, transforms, models, materials] =
         scene.ecsRegistry.getComponentsViews<MeshRendererComponent, TransformComponent, ModelComponent, MaterialComponent>();

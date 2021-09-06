@@ -5,7 +5,7 @@
 #include <limits>
 #include <new>
 
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 
 template <typename T>
 class Mallocator {
@@ -38,7 +38,7 @@ public:
 
 private:
     void report(T* p, std::size_t n, bool alloc = true) const {
-        SL_INFO("{} {} bytes at {}", alloc ? "Alloc: " : "Dealloc: ", sizeof(T) * n, reinterpret_cast<void*>(p));
+        LOG_INFO("{} {} bytes at {}", alloc ? "Alloc: " : "Dealloc: ", sizeof(T) * n, reinterpret_cast<void*>(p));
     }
 };
 

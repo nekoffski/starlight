@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 
 namespace sl::core {
 

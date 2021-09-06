@@ -2,7 +2,7 @@
 
 #include "Utils.hpp"
 #include "sl/core/Errors.hpp"
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 #include "sl/gfx/Image.h"
 
 #include <glad/glad.h>
@@ -11,7 +11,7 @@ namespace sl::platform::gl {
 
 OpenGlCubemap::OpenGlCubemap(unsigned int width, unsigned int height)
     : m_cubemapId(0u) {
-    SL_INFO("Creating cubemap without textures attached");
+    LOG_INFO("Creating cubemap without textures attached");
 
     glGenTextures(1, &m_cubemapId);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemapId);
@@ -33,7 +33,7 @@ OpenGlCubemap::OpenGlCubemap(const sl::gfx::CubemapFaces& faces)
     glGenTextures(1, &m_cubemapId);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemapId);
 
-    SL_INFO("Loading cubemap");
+    LOG_INFO("Loading cubemap");
 
     const auto facesLen = faces.size();
     for (int i = 0; i < facesLen; ++i) {
@@ -47,7 +47,7 @@ OpenGlCubemap::OpenGlCubemap(const sl::gfx::CubemapFaces& faces)
         const auto format = channelsToFormat.at(channels);
         const auto size = img->getSize();
 
-        SL_DEBUG("Face: {}, width: {}, height: {}", faces[i]->getPath(), size.width, size.height);
+        LOG_DEBUG("Face: {}, width: {}, height: {}", faces[i]->getPath(), size.width, size.height);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, size.width, size.height,
             0, format, GL_UNSIGNED_BYTE, img->getBuffer());
     }

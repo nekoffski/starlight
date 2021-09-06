@@ -3,7 +3,7 @@
 #include <unordered_map>
 
 #include "Task.h"
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 #include "sl/core/Macros.h"
 
 namespace sl::async {
@@ -16,7 +16,7 @@ public:
     requires std::derived_from<T, Task> Task::Handle addPeriodicTask(Args&&... args) {
         auto task = std::make_unique<T>(std::forward<Args>(args)...);
 
-        SL_DEBUG("Adding task to TaskManager: {}", task->getName());
+        LOG_DEBUG("Adding task to TaskManager: {}", task->getName());
 
         auto id = task->id;
         m_tasks[id] = std::move(task);

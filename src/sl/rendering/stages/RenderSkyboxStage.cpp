@@ -17,7 +17,7 @@ RenderSkyboxStage::RenderSkyboxStage() {
 }
 
 void RenderSkyboxStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
-    SL_PROFILE_FUNCTION();
+    LOG_PROFILE_FUNCTION();
 
     if (not scene.skybox.has_value())
         return;

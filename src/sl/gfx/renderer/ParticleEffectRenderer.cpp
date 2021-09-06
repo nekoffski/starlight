@@ -18,7 +18,7 @@ ParticleEffectRenderer::ParticleEffectRenderer(Renderer& renderer)
 
 void ParticleEffectRenderer::renderParticleEffects(ecs::ComponentView<scene::components::ParticleEffectComponent> pfxs,
     ecs::ComponentView<scene::components::TransformComponent> transforms, gfx::camera::Camera& camera) {
-    SL_PROFILE_FUNCTION();
+    LOG_PROFILE_FUNCTION();
 
     m_shader->enable();
     m_shader->setUniform("view", camera.getViewMatrix());

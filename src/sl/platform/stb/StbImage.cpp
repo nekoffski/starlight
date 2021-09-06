@@ -3,7 +3,7 @@
 #include <stb/stb.h>
 
 #include "sl/core/Errors.hpp"
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 
 namespace sl::platform::stb {
 
@@ -11,7 +11,7 @@ StbImage::StbImage(const std::string& path, int desiredChannels)
     : m_buffer(stbi_load(path.c_str(), &m_imageSize.width, &m_imageSize.height, &m_channels, desiredChannels)) {
 
     if (!m_buffer) {
-        SL_ERROR("Could not load {}", path);
+        LOG_ERROR("Could not load {}", path);
         throw core::ImageError { core::ErrorCode::CouldNotLoadImage };
     }
 }

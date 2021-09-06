@@ -32,7 +32,7 @@ void ShaderGui::Provider::render(GuiApi& gui) {
                 try {
                     gfx::ShaderManager::get()->recompileShader(*shader);
                 } catch (core::ShaderError& err) {
-                    SL_WARN("Could not recompile shader due to {}", err.getDetails());
+                    LOG_WARN("Could not recompile shader due to {}", err.getDetails());
 
                     using namespace event;
                     EventManager::get()->emit<DisplayErrorEvent>(err.as<std::string>()).toAll();

@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "Component.h"
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 
 namespace sl::ecs {
 
@@ -40,9 +40,9 @@ public:
     void remove(const std::string& entityId) override {
         m_entityIdToComponent.erase(entityId);
         std::erase_if(m_components, [&entityId](T& component) {
-            SL_INFO("{}/{}", component.ownerEntityId, entityId);
+            LOG_INFO("{}/{}", component.ownerEntityId, entityId);
             if (component.ownerEntityId == entityId) {
-                SL_INFO("Removing {} from entity with id: {}", component.name, entityId);
+                LOG_INFO("Removing {} from entity with id: {}", component.name, entityId);
                 return true;
             }
             return false;

@@ -8,12 +8,12 @@
 #include "FileSystem.h"
 #include "Macros.h"
 
-#define SL_PROFILER_ENABLED 1
+#define LOG_PROFILER_ENABLED 1
 
 namespace sl::core {
 
 class Profiler {
-    SL_SINGLETON(Profiler);
+    LOG_SINGLETON(Profiler);
 
     class RegionTimer {
     public:
@@ -41,11 +41,11 @@ private:
 #define PROFILER() sl::core::Profiler::instance()
 
 // clang-format off
-#ifdef SL_PROFILER_ENABLED
-    #define SL_PROFILE_REGION(name) auto __sl_prf_region_timer = PROFILER().createRegionTimer("Tag: " + std::string{name}); 
-    #define SL_PROFILE_FUNCTION() auto __sl_prf_func_timer = PROFILER().createRegionTimer("Function: " + std::string{__PRETTY_FUNCTION__});
+#ifdef LOG_PROFILER_ENABLED
+    #define LOG_PROFILE_REGION(name) auto __sl_prf_region_timer = PROFILER().createRegionTimer("Tag: " + std::string{name}); 
+    #define LOG_PROFILE_FUNCTION() auto __sl_prf_func_timer = PROFILER().createRegionTimer("Function: " + std::string{__PRETTY_FUNCTION__});
 #else
-    #define SL_PROFILE_REGION(name)
-    #define SL_PROFILE_FUNCTION
+    #define LOG_PROFILE_REGION(name)
+    #define LOG_PROFILE_FUNCTION
 #endif
 // clang-format on

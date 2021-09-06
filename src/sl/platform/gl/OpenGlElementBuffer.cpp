@@ -2,7 +2,7 @@
 
 #include <glad/glad.h>
 
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 
 namespace sl::platform::gl {
 

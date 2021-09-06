@@ -1,6 +1,6 @@
 #include "AssimpMeshProcessor.h"
 
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 #include "sl/geom/Mesh.h"
 #include "sl/gfx/ElementBuffer.h"
 #include "sl/gfx/Texture.h"

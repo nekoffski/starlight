@@ -2,7 +2,7 @@
 
 #include "AxisAlignedCollider.h"
 
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 #include "sl/gfx/BufferManager.h"
 
 namespace sl::physx {
@@ -25,7 +25,7 @@ std::string AxisAlignedBoundingBox::getName() const {
 }
 
 void AxisAlignedBoundingBox::build(const std::vector<std::shared_ptr<geom::Mesh>> meshes) {
-    SL_ASSERT(meshes.size() > 0, "Cannot build bounding box for empty meshes vector");
+    ASSERT(meshes.size() > 0, "Cannot build bounding box for empty meshes vector");
 
     min = meshes[0]->vertices[0].position;
     max = min;

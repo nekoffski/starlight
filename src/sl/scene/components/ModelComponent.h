@@ -2,7 +2,6 @@
 
 #include <memory>
 
-#include "sl/core/Json.h"
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
 #include "sl/gfx/Shader.h"

@@ -2,7 +2,7 @@
 
 #include "Camera.h"
 
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/gfx/camera/Camera.h"
 #include "sl/gui/GuiApi.h"

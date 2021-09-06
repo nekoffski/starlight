@@ -12,7 +12,7 @@
 #include "sl/core/BaseError.hpp"
 #include "sl/core/FileSystem.h"
 #include "sl/core/InputManager.h"
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 #include "sl/ecs/Entity.h"
 #include "sl/event/Categories.h"
 #include "sl/event/Event.h"
@@ -158,7 +158,7 @@ public:
         using namespace sl::event;
 
         for (auto& event : events) {
-            SL_INFO("Processing event: {}", event->asString());
+            LOG_INFO("Processing event: {}", event->asString());
 
             if (event->is<SetSkyboxEvent>()) {
                 auto cubemap = event->as<SetSkyboxEvent>()->cubemap;
@@ -198,14 +198,14 @@ public:
                 if (event->is<SerializeSceneEvent>()) {
                     auto& path = event->as<SerializeSceneEvent>()->path;
 
-                    SL_INFO("Serializing scene as: {}", path);
+                    LOG_INFO("Serializing scene as: {}", path);
                     Serializer { path }.serialize(m_assetManager, m_scene);
                 }
 
                 if (event->is<DeserializeSceneEvent>()) {
                     auto& path = event->as<DeserializeSceneEvent>()->path;
 
-                    SL_INFO("Deserializing scene from: {}", path);
+                    LOG_INFO("Deserializing scene from: {}", path);
                     Deserializer { m_assetManager, m_scene }.deserialize(path);
                 }
 
@@ -259,7 +259,7 @@ public:
 
 private:
     void handleStateChange(editor::EngineState state) {
-        SL_INFO("Engine state changed to: {}", toString(state));
+        LOG_INFO("Engine state changed to: {}", toString(state));
 
         m_engineState = state;
 

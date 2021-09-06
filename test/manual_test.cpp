@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include "sl/async/AsyncManager.hpp"
-#include "sl/async/ThreadPool.hpp"
 
 struct Task : sl::async::AsyncTask {
     void executeAsync() override {

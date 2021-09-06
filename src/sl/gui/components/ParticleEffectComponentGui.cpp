@@ -1,6 +1,6 @@
 #include "ParticleEffectComponentGui.h"
 
-#include "sl/core/Logger.h"
+#include <kc/core/Log.h>
 
 #include <ranges>
 
@@ -29,10 +29,10 @@ void ParticleEffectComponentGui::renderComponentGuiImpl(ParticleEffectComponent&
         if (gui.combo("##pfx_texture", params.selectedTexture, names)) {
             if (params.selectedTexture == 0) {
                 component.texture.reset();
-                SL_INFO("Setting null texture for component: {}", entity.asString());
+                LOG_INFO("Setting null texture for component: {}", entity.asString());
             } else {
                 auto& name = names[params.selectedTexture];
-                SL_INFO("Setting {} texture for component: {}", name, entity.asString());
+                LOG_INFO("Setting {} texture for component: {}", name, entity.asString());
                 component.texture = textures.getByName(name);
             }
         }
