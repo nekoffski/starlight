@@ -1,6 +1,6 @@
 #include "CapturePointDepthMapsStage.h"
 
-#include "sl/core/Profiler.h"
+#include <kc/core/Profiler.h>
 #include "sl/gfx/ShaderManager.h"
 
 #include "sl/rendering/utils/Mesh.h"
@@ -27,7 +27,7 @@ CapturePointDepthMapsStage::CapturePointDepthMapsStage()
 }
 
 void CapturePointDepthMapsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) {
-    LOG_PROFILE_FUNCTION();
+    PROFILE_FUNCTION();
 
     prepareRenderer(renderer);
 

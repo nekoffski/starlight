@@ -2,7 +2,7 @@
 
 #include "RenderPass.h"
 
-#include "sl/core/Profiler.h"
+#include <kc/core/Profiler.h>
 #include "sl/gfx/Renderer.h"
 #include "sl/scene/Scene.h"
 
@@ -11,7 +11,7 @@ namespace sl::rendering {
 class RenderPipeline {
 public:
     void run(sl::gfx::Renderer& renderer, scene::Scene& scene) {
-        LOG_PROFILE_FUNCTION();
+        PROFILE_FUNCTION();
 
         scene.vectors.clear();
 

@@ -5,8 +5,9 @@
 #include <GLFW/glfw3.h>
 
 #include "sl/core/Errors.hpp"
-#include "sl/core/Profiler.h"
+
 #include <kc/core/Log.h>
+#include <kc/core/Profiler.h>
 
 namespace sl::platform::glfw {
 
@@ -77,7 +78,7 @@ void GlfwWindow::makeContextCurrent() {
 }
 
 void GlfwWindow::swapBuffers() {
-    LOG_PROFILE_FUNCTION();
+    PROFILE_FUNCTION();
     glfwSwapBuffers(m_windowHandle);
 }
 void* GlfwWindow::getHandle() const {

@@ -3,12 +3,15 @@
 #include <memory>
 #include <optional>
 
+#include <kc/core/Log.h>
+#include <kc/core/Profiler.h>
+
 #include "sl/app/Application.h"
 #include "sl/app/ConfigLoader.h"
-#include <kc/core/Log.h>
 #include "sl/gui/fonts/FontAwesome.h"
 #include "sl/platform/Platform.hpp"
 #include "sl/utils/Globals.h"
+#include <kc/core/Log.h>
 
 #include "sl/async/AsyncManager.hpp"
 #include "sl/core/ClockManager.h"
@@ -16,8 +19,7 @@
 #include "sl/core/FileSystem.h"
 #include "sl/core/Input.h"
 #include "sl/core/InputManager.h"
-#include <kc/core/Log.h>
-#include "sl/core/Profiler.h"
+
 #include "sl/core/sig/Signal.h"
 #include "sl/geom/GeometryManager.h"
 #include "sl/gfx/BufferManager.h"
@@ -145,15 +147,24 @@ void Engine::handleEvents(const kc::event::EventProvider& eventProvider) {
 void Engine::run() {
     ASSERT(m_application != nullptr, "Cannot run engine without set application");
 
-    while (m_application->isRunning())
+    kc::core::Profiler profiler;
+
+    while (m_application->isRunning()) {
         loopStep();
+
+// clang-format off
+        #if 0
+        LOG_TRACE("\n\n{}\n\n", profiler.formatTimers());
+        #endif
+        // clang-format on
+    }
 }
 
 void Engine::update() {
     float deltaTime = core::ClockManager::get()->getDeltaTime();
 
     m_window->update(deltaTime);
-    m_application->update(deltaTime, core::ClockManager::get()->nowAsFloat());
+    m_application->update(deltaTime, core::ClockManager::get()->getClock().nowAsFloat());
 
     m_eventManager->update();
     m_inputManager->update();
@@ -170,7 +181,7 @@ void Engine::render() {
 }
 
 void Engine::loopStep() {
-    LOG_PROFILE_REGION("main-loop-step");
+    PROFILE_REGION(main_loop_step);
 
     update();
     render();

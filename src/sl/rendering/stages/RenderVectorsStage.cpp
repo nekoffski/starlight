@@ -1,6 +1,6 @@
 #include "RenderVectorsStage.h"
 
-#include "sl/core/Profiler.h"
+#include <kc/core/Profiler.h>
 #include "sl/utils/Globals.h"
 
 namespace sl::rendering::stages {
@@ -11,7 +11,7 @@ RenderVectorsStage::RenderVectorsStage()
 }
 
 void RenderVectorsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
-    LOG_PROFILE_FUNCTION();
+    PROFILE_FUNCTION();
 
     setCameraUniforms(*scene.camera);
 

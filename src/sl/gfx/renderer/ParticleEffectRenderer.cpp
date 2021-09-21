@@ -1,6 +1,6 @@
 #include "ParticleEffectRenderer.h"
 
-#include "sl/core/Profiler.h"
+#include <kc/core/Profiler.h>
 #include "sl/ecs/ComponentView.hpp"
 #include "sl/gfx/Renderer.h"
 #include "sl/gfx/Shader.h"
@@ -18,7 +18,7 @@ ParticleEffectRenderer::ParticleEffectRenderer(Renderer& renderer)
 
 void ParticleEffectRenderer::renderParticleEffects(ecs::ComponentView<scene::components::ParticleEffectComponent> pfxs,
     ecs::ComponentView<scene::components::TransformComponent> transforms, gfx::camera::Camera& camera) {
-    LOG_PROFILE_FUNCTION();
+    PROFILE_FUNCTION();
 
     m_shader->enable();
     m_shader->setUniform("view", camera.getViewMatrix());

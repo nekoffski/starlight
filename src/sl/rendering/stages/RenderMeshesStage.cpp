@@ -1,11 +1,11 @@
 #include "RenderMeshesStage.h"
 
-#include "sl/core/Profiler.h"
+#include <kc/core/Profiler.h>
 #include "sl/gfx/Renderer.h"
 #include "sl/rendering/utils/Mesh.h"
 #include "sl/utils/Globals.h"
 
-#include "sl/core/Profiler.h"
+#include <kc/core/Profiler.h>
 #include "sl/rendering/utils/Misc.h"
 
 namespace sl::rendering::stages {
@@ -13,7 +13,7 @@ namespace sl::rendering::stages {
 using namespace sl::scene::components;
 
 void RenderMeshesStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) {
-    LOG_PROFILE_FUNCTION();
+    PROFILE_FUNCTION();
 
     auto [meshRendererComponents, transforms, models, materials] =
         scene.ecsRegistry.getComponentsViews<MeshRendererComponent, TransformComponent, ModelComponent, MaterialComponent>();

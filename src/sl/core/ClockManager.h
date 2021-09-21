@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 
+#include <kc/core/Clock.h>
 #include <kc/core/Singleton.hpp>
 
 using namespace std::literals::chrono_literals;
@@ -11,37 +12,22 @@ using namespace std::literals::chrono_literals;
 namespace sl::core {
 
 class ClockManager : public kc::core::Singleton<ClockManager> {
-    using ClockType = std::chrono::steady_clock;
-
-    inline static constexpr float microsecondsInSecond = 1000 * 1000;
+    using Clock = kc::core::Clock;
 
 public:
-    using Ptr = std::unique_ptr<ClockManager>;
-    using TimePoint = std::chrono::time_point<ClockType>;
-
-    static float toSeconds(const TimePoint& point);
-
-    template <typename U, typename T>
-    static float toSeconds(const std::chrono::duration<U, T>& duration) {
-        return std::chrono::duration_cast<std::chrono::microseconds>(duration).count() / microsecondsInSecond;
-    }
+    explicit ClockManager();
 
     float getFPS() const;
-
     float getDeltaTime() const;
 
     void update();
 
-    std::string getTimeString(const std::string& format) const;
-
-    TimePoint now() const;
-
-    float nowAsFloat() const;
+    const Clock& getClock();
 
 private:
-    ClockType m_clock;
-    TimePoint m_previousNow;
+    Clock m_clock;
+    Clock::TimePoint m_previousNow;
 
-    float m_deltaTime = 0.0f;
+    float m_deltaTime;
 };
 }

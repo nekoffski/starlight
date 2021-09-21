@@ -1,6 +1,6 @@
 #include "PrepareLightsStage.h"
 
-#include "sl/core/Profiler.h"
+#include <kc/core/Profiler.h>
 #include "sl/rendering/utils/Misc.h"
 
 #include <kc/core/Log.h>
@@ -10,7 +10,7 @@ using namespace sl::scene::components;
 namespace sl::rendering::stages {
 
 void PrepareLightsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
-    LOG_PROFILE_FUNCTION();
+    PROFILE_FUNCTION();
 
     auto [rendererComponents, transforms, directionalLights, pointLights] =
         scene.ecsRegistry.getComponentsViews<MeshRendererComponent,

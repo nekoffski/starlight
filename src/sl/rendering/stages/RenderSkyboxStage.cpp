@@ -1,6 +1,6 @@
 #include "RenderSkyboxStage.h"
 
-#include "sl/core/Profiler.h"
+#include <kc/core/Profiler.h>
 #include "sl/geom/CubemapVertices.h"
 #include "sl/gfx/BufferManager.h"
 
@@ -17,7 +17,7 @@ RenderSkyboxStage::RenderSkyboxStage() {
 }
 
 void RenderSkyboxStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
-    LOG_PROFILE_FUNCTION();
+    PROFILE_FUNCTION();
 
     if (not scene.skybox.has_value())
         return;

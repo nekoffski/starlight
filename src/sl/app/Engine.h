@@ -3,6 +3,7 @@
 #include <memory>
 #include <optional>
 
+#include <kc/core/Log.h>
 #include <kc/event/EventListener.h>
 
 #include "sl/app/Application.h"
@@ -13,8 +14,6 @@
 #include "sl/core/FileSystem.h"
 #include "sl/core/Input.h"
 #include "sl/core/InputManager.h"
-#include <kc/core/Log.h>
-#include "sl/core/Profiler.h"
 #include "sl/core/WindowManager.h"
 #include "sl/core/sig/Signal.h"
 #include "sl/event/EventManager.h"

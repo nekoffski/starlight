@@ -1,6 +1,6 @@
 #include "ParticleEffectsEngine.h"
 
-#include "sl/core/Profiler.h"
+#include <kc/core/Profiler.h>
 #include "sl/ecs/ComponentView.hpp"
 #include "sl/gfx/Shader.h"
 #include "sl/gfx/camera/Camera.h"
