@@ -42,6 +42,7 @@ int main(int argc, char** argv) {
     engine->setApplication(std::move(application));
     engine->run();
 
+    // nullptr here
     application->onStop(); // move to dtor
 
     return 0;

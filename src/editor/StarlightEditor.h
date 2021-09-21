@@ -184,7 +184,6 @@ public:
 
             } else if (event->is<QuitEvent>()) {
                 m_isRunning = false;
-
             } else if (event->is<WindowResizedEvent>()) {
                 auto windowResizedEvent = event->as<WindowResizedEvent>();
                 auto [width, height] = windowResizedEvent->getSize();
@@ -208,27 +207,25 @@ public:
                 recalculateViewportSize(width, height);
             } else if (event->is<DisplayErrorEvent>()) {
                 m_errorDialog.setErrorMessage(event->as<DisplayErrorEvent>()->message);
-            }
+            } else {
+                try {
+                    using namespace sl::app;
 
-            try {
-                using namespace sl::app;
+                    if (event->is<SerializeSceneEvent>()) {
+                        auto& path = event->as<SerializeSceneEvent>()->path;
 
-                if (event->is<SerializeSceneEvent>()) {
-                    auto& path = event->as<SerializeSceneEvent>()->path;
+                        LOG_INFO("Serializing scene as: {}", path);
+                        Serializer { path }.serialize(m_assetManager, m_scene);
+                    } else if (event->is<DeserializeSceneEvent>()) {
+                        auto& path = event->as<DeserializeSceneEvent>()->path;
 
-                    LOG_INFO("Serializing scene as: {}", path);
-                    Serializer { path }.serialize(m_assetManager, m_scene);
+                        LOG_INFO("Deserializing scene from: {}", path);
+                        Deserializer { m_assetManager, m_scene }.deserialize(path);
+                    }
+
+                } catch (kc::core::ErrorBase& err) {
+                    m_errorDialog.setErrorMessage(err.asString());
                 }
-
-                if (event->is<DeserializeSceneEvent>()) {
-                    auto& path = event->as<DeserializeSceneEvent>()->path;
-
-                    LOG_INFO("Deserializing scene from: {}", path);
-                    Deserializer { m_assetManager, m_scene }.deserialize(path);
-                }
-
-            } catch (kc::core::ErrorBase& err) {
-                m_errorDialog.setErrorMessage(err.asString());
             }
         }
     }

@@ -47,7 +47,7 @@ std::unique_ptr<Engine> Engine::Builder::build() && {
     ASSERT(m_platform != nullptr, "Platform is not set");
     ASSERT(m_config != nullptr, "Config is not set");
 
-    LOG_INFO("Creating Engine instance");
+    LOG_TRACE("Creating Engine instance");
     return std::make_unique<Engine>(m_config, m_platform);
 }
 
@@ -88,6 +88,8 @@ void Engine::initLowLevelComponents() {
 }
 
 void Engine::initManagers() {
+    LOG_INFO("Initializing managers");
+
     // clang-format off
     m_inputManager    = std::make_unique<core:: InputManager>();
     m_windowManager   = std::make_unique<core:: WindowManager>();
@@ -152,12 +154,14 @@ void Engine::run() {
     while (m_application->isRunning()) {
         loopStep();
 
-// clang-format off
+        // clang-format off
         #if 0
         LOG_TRACE("\n\n{}\n\n", profiler.formatTimers());
         #endif
         // clang-format on
     }
+
+    LOG_INFO("Main loop ended");
 }
 
 void Engine::update() {
