@@ -8,6 +8,7 @@
 #include "sl/asset/AssetManager.h"
 #include "sl/ecs/Entity.h"
 #include "sl/scene/Scene.h"
+#include "sl/utils/Globals.h"
 
 #include "mocks/FileSystemMock.hpp"
 
@@ -26,6 +27,8 @@ protected:
     std::shared_ptr<FileSystemMock> m_fsMock = std::make_shared<FileSystemMock>();
 
     const std::string m_filename = "/path/exampleFilename";
+
+    sl::utils::Globals globals;
 
     std::shared_ptr<Scene> m_scene = std::make_shared<Scene>();
     AssetManager m_assetManager;
