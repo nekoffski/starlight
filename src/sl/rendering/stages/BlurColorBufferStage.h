@@ -21,9 +21,9 @@ public:
     };
 
     explicit BlurColorBufferStage()
-        : m_quadVao(GLOBALS().geom->frontSquareVAO.get())
+        : m_quadVao(utils::Globals::get()->geom->frontSquareVAO.get())
         , m_gaussianBlurShader(gfx::ShaderManager::get()->load(
-              GLOBALS().config.paths.shaders + "/GaussianBlur.vert", GLOBALS().config.paths.shaders + "/GaussianBlur.frag"))
+              utils::Globals::get()->config.paths.shaders + "/GaussianBlur.vert", utils::Globals::get()->config.paths.shaders + "/GaussianBlur.frag"))
         , m_horizontalFrameBuffer(gfx::BufferManager::get()->createFrameBuffer())
         , m_verticalFrameBuffer(gfx::BufferManager::get()->createFrameBuffer()) {
     }

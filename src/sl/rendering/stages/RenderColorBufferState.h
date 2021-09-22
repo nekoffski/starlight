@@ -16,11 +16,12 @@ namespace sl::rendering::stages {
 class RenderColorBufferStage : public Stage {
 public:
     explicit RenderColorBufferStage()
-        : m_quadVao(GLOBALS().geom->frontSquareVAO.get())
+        : m_quadVao(sl::utils::Globals::get()->geom->frontSquareVAO.get())
         , m_colorBufferShader(gfx::ShaderManager::get()->load(
-              GLOBALS().config.paths.shaders + "/ColorBuffer.vert", GLOBALS().config.paths.shaders + "/ColorBuffer.frag")) {
+              sl::utils::Globals::get()->config.paths.shaders + "/ColorBuffer.vert",
+              sl::utils::Globals::get()->config.paths.shaders + "/ColorBuffer.frag")) {
 
-// clang-format off
+        // clang-format off
         #ifdef DEV_MODE
             async::AsyncManager::get()->addPeriodicTask<gfx::RecompileShaderOnUpdate>(m_colorBufferShader);
         #endif
@@ -42,7 +43,7 @@ public:
         m_colorBuffer->bind(1);
         m_bloomBuffer->bind(2);
 
-        auto& visualSettings = GLOBALS().visual;
+        auto& visualSettings = sl::utils::Globals::get()->visual;
 
         m_colorBufferShader->setUniform("gamma", visualSettings.gammaCorrection);
         m_colorBufferShader->setUniform("exposure", visualSettings.exposure);

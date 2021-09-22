@@ -12,8 +12,8 @@ namespace sl::gfx::renderer {
 
 ParticleEffectRenderer::ParticleEffectRenderer(Renderer& renderer)
     : m_renderer(renderer)
-    , m_vao(GLOBALS().geom->frontSquareVAO)
-    , m_shader(GLOBALS().shaders->pfxShader) {
+    , m_vao(utils::Globals::get()->geom->frontSquareVAO)
+    , m_shader(utils::Globals::get()->shaders->pfxShader) {
 }
 
 void ParticleEffectRenderer::renderParticleEffects(ecs::ComponentView<scene::components::ParticleEffectComponent> pfxs,

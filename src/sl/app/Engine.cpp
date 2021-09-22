@@ -127,8 +127,9 @@ void Engine::initManagers() {
 }
 
 void Engine::initGlobalState() {
-    GLOBALS().config = *m_config;
-    GLOBALS().init();
+    m_globals = std::make_unique<utils::Globals>();
+    m_globals->config = *m_config;
+    m_globals->init();
 }
 
 void Engine::setApplication(std::unique_ptr<Application> application) {
@@ -154,7 +155,7 @@ void Engine::run() {
     while (m_application->isRunning()) {
         loopStep();
 
-        // clang-format off
+// clang-format off
         #if 0
         LOG_TRACE("\n\n{}\n\n", profiler.formatTimers());
         #endif

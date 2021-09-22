@@ -69,9 +69,11 @@ public:
         m_gui = std::make_unique<platform::gui::ImGuiApi>(WindowManager::get()->getWindowHandle());
         m_gui->addFont("/home/nek0/kapik/projects/starlight/res/fonts/fa-solid-900.ttf",
             ICON_MIN_FA, ICON_MAX_FA);
+
+        onStart();
     }
 
-    void onStart() override {
+    void onStart() {
         auto [windowWidth, windowHeight] = WindowManager::get()->getSize();
 
         auto viewFrustum = gfx::ViewFrustum { windowWidth, windowHeight };
@@ -130,8 +132,8 @@ public:
     void update(float deltaTime, float time) override {
         m_activeCamera->update(deltaTime);
 
-        GLOBALS().flags.disableKeyboardInput = m_gui->isCapturingKeyboard();
-        GLOBALS().flags.disableMouseInput = m_gui->isCapturingMouse();
+        utils::Globals::get()->flags.disableKeyboardInput = m_gui->isCapturingKeyboard();
+        utils::Globals::get()->flags.disableMouseInput = m_gui->isCapturingMouse();
 
         core::WindowManager::get()->enableCursor(
             not core::InputManager::get()->isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE));
@@ -164,9 +166,6 @@ public:
         return m_isRunning;
     }
 
-    void onStop() override {
-    }
-
     void forceStop() override {
     }
 
@@ -180,7 +179,7 @@ public:
 
             if (event->is<SetSkyboxEvent>()) {
                 auto cubemap = event->as<SetSkyboxEvent>()->cubemap;
-                m_scene->skybox = sl::scene::Skybox { GLOBALS().shaders->defaultCubemapShader, cubemap };
+                m_scene->skybox = sl::scene::Skybox { utils::Globals::get()->shaders->defaultCubemapShader, cubemap };
 
             } else if (event->is<QuitEvent>()) {
                 m_isRunning = false;

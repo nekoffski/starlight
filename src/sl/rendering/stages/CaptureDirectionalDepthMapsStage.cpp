@@ -1,6 +1,7 @@
 #include "CaptureDirectionalDepthMapsStage.h"
 
 #include <kc/core/Profiler.h>
+
 #include "sl/gfx/ShaderManager.h"
 #include "sl/rendering/utils/Mesh.h"
 #include "sl/rendering/utils/Misc.h"
@@ -12,7 +13,8 @@ using namespace sl::scene::components;
 
 CaptureDirectionalDepthMapsStage::CaptureDirectionalDepthMapsStage()
     : m_depthShader(gfx::ShaderManager::get()->load(
-          GLOBALS().config.paths.shaders + "/DirectionalDepthCapture.vert", GLOBALS().config.paths.shaders + "/DirectionalDepthCapture.frag")) {
+          sl::utils::Globals::get()->config.paths.shaders + "/DirectionalDepthCapture.vert",
+          sl::utils::Globals::get()->config.paths.shaders + "/DirectionalDepthCapture.frag")) {
 }
 
 void CaptureDirectionalDepthMapsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) {

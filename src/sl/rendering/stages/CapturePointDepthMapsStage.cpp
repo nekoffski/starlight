@@ -1,7 +1,7 @@
 #include "CapturePointDepthMapsStage.h"
 
-#include <kc/core/Profiler.h>
 #include "sl/gfx/ShaderManager.h"
+#include <kc/core/Profiler.h>
 
 #include "sl/rendering/utils/Mesh.h"
 #include "sl/rendering/utils/Misc.h"
@@ -20,8 +20,9 @@ using namespace sl::scene::components;
 
 CapturePointDepthMapsStage::CapturePointDepthMapsStage()
     : m_depthShader(gfx::ShaderManager::get()->load(
-          GLOBALS().config.paths.shaders + "/PointDepthCapture.vert", GLOBALS().config.paths.shaders + "/PointDepthCapture.frag",
-          GLOBALS().config.paths.shaders + "/PointDepthCapture.geom")) {
+          sl::utils::Globals::get()->config.paths.shaders + "/PointDepthCapture.vert",
+          sl::utils::Globals::get()->config.paths.shaders + "/PointDepthCapture.frag",
+          sl::utils::Globals::get()->config.paths.shaders + "/PointDepthCapture.geom")) {
 
     m_shadowProjection = math::perspective(math::toRadians(90.0f), aspect, near, far);
 }

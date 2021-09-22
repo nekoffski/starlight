@@ -80,6 +80,7 @@ private:
     std::unique_ptr<gfx::TextureManager> m_textureManager;
     std::unique_ptr<event::EventManager> m_eventManager;
     std::unique_ptr<geom::GeometryManager> m_geometryManager;
+    std::unique_ptr<utils::Globals> m_globals;
 };
 
 }

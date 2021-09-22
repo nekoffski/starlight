@@ -83,7 +83,7 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
 
     if (gui.beginTreeNode(ICON_FA_COGS "  Properties")) {
         gui.displayText("Gravity acceleration");
-        gui.sliderFloat("##Gravity acceleration", GLOBALS().world.gravity.y, 0.0f, 25.0f);
+        gui.sliderFloat("##Gravity acceleration", utils::Globals::get()->world.gravity.y, 0.0f, 25.0f);
         gui.popTreeNode();
     }
 
@@ -91,12 +91,12 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
 
     if (gui.beginTreeNode(ICON_FA_EYE "  Visual")) {
         gui.displayText("Gamma corection");
-        gui.sliderFloat("##Gamma correction", GLOBALS().visual.gammaCorrection, 0.0f, 5.0f);
+        gui.sliderFloat("##Gamma correction", utils::Globals::get()->visual.gammaCorrection, 0.0f, 5.0f);
 
         gui.displayText("Exposure");
-        gui.sliderFloat("##Exposure", GLOBALS().visual.exposure, 0.0f, 5.0f);
+        gui.sliderFloat("##Exposure", utils::Globals::get()->visual.exposure, 0.0f, 5.0f);
 
-        gui.checkbox("Enable bloom", GLOBALS().visual.enableBloom);
+        gui.checkbox("Enable bloom", utils::Globals::get()->visual.enableBloom);
 
         gui.popTreeNode();
     }

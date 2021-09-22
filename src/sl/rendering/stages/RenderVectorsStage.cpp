@@ -6,8 +6,8 @@
 namespace sl::rendering::stages {
 
 RenderVectorsStage::RenderVectorsStage()
-    : m_lineVertexArray(GLOBALS().geom->lineVAO)
-    , m_lineShader(GLOBALS().shaders->singleColorShader) {
+    : m_lineVertexArray(utils::Globals::get()->geom->lineVAO)
+    , m_lineShader(utils::Globals::get()->shaders->singleColorShader) {
 }
 
 void RenderVectorsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {

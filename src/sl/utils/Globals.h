@@ -3,6 +3,8 @@
 #include <memory>
 #include <unordered_map>
 
+#include <kc/core/Singleton.hpp>
+
 #include "sl/core/Macros.h"
 
 #include "Config.h"
@@ -15,9 +17,7 @@
 
 namespace sl::utils {
 
-struct Globals {
-    LOG_SINGLETON(Globals);
-
+struct Globals : kc::core::Singleton<Globals> {
     void init();
 
     World world;
@@ -31,5 +31,3 @@ struct Globals {
 };
 
 }
-
-#define GLOBALS() sl::utils::Globals::instance()

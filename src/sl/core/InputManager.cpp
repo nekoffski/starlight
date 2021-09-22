@@ -52,7 +52,7 @@ void InputManager::update() {
 }
 
 bool InputManager::isMouseButtonPressed(int buttonCode) const {
-    return m_mouse->isMouseButtonPressed(buttonCode) && not GLOBALS().flags.disableMouseInput;
+    return m_mouse->isMouseButtonPressed(buttonCode) && not utils::Globals::get()->flags.disableMouseInput;
 }
 
 math::Vec2 InputManager::getMousePosition() const {
@@ -64,11 +64,11 @@ math::Vec2 InputManager::getMousePositonDelta() const {
 }
 
 double InputManager::getScrollDelta() const {
-    return mouseScrollDelta * not GLOBALS().flags.disableMouseInput;
+    return mouseScrollDelta * not utils::Globals::get()->flags.disableMouseInput;
 }
 
 bool InputManager::isKeyPressed(int keyCode) const {
-    return m_keyboard->isKeyPressed(keyCode) && not GLOBALS().flags.disableKeyboardInput;
+    return m_keyboard->isKeyPressed(keyCode) && not utils::Globals::get()->flags.disableKeyboardInput;
 }
 
 }

@@ -12,17 +12,17 @@ namespace sl::utils {
 
 Shaders::Shaders() {
     defaultCubemapShader = gfx::ShaderManager::get()->load(
-        GLOBALS().config.paths.shaders + "/Cubemap.vert", GLOBALS().config.paths.shaders + "/Cubemap.frag");
+        utils::Globals::get()->config.paths.shaders + "/Cubemap.vert", utils::Globals::get()->config.paths.shaders + "/Cubemap.frag");
 
     singleColorShader = gfx::ShaderManager::get()->load(
-        GLOBALS().config.paths.shaders + "/SingleColor.vert", GLOBALS().config.paths.shaders + "/SingleColor.frag");
+        utils::Globals::get()->config.paths.shaders + "/SingleColor.vert", utils::Globals::get()->config.paths.shaders + "/SingleColor.frag");
 
     defaultModelShader = gfx::ShaderManager::get()->load(
-        GLOBALS().config.paths.shaders + "/DefaultModelShader.vert", GLOBALS().config.paths.shaders + "/DefaultModelShader.frag");
+        utils::Globals::get()->config.paths.shaders + "/DefaultModelShader.vert", utils::Globals::get()->config.paths.shaders + "/DefaultModelShader.frag");
     defaultModelShader->name = "default-model-shader";
 
     pfxShader = gfx::ShaderManager::get()->load(
-        GLOBALS().config.paths.shaders + "/particle.vert", GLOBALS().config.paths.shaders + "/particle.frag");
+        utils::Globals::get()->config.paths.shaders + "/particle.vert", utils::Globals::get()->config.paths.shaders + "/particle.frag");
     pfxShader->name = "pfx-shader";
 
     shadersByName = {

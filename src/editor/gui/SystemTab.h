@@ -30,7 +30,7 @@ public:
             gui.breakLine();
 
             if (gui.beginTreeNode("Renderer")) {
-                const auto& info = GLOBALS().info;
+                const auto& info = sl::utils::Globals::get()->info;
 
                 constexpr auto formatString = "GPU Vendor:\n       {}\n\nGPU API Release:\n       {}\n\nGPU: \n       {}\n\n"
                                               "Shading language version:\n       {}\n\n";

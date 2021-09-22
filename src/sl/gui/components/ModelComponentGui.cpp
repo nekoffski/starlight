@@ -47,7 +47,7 @@ void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
                 const auto childHeight = math::Vec2 { 0, gui.getCurrentWindowHeight() * sectionHeightRatio };
                 gui.beginChild("Meshes: ", childHeight);
 
-                showMeshesSection("Predefined", gui, params, GLOBALS().geom->meshes);
+                showMeshesSection("Predefined", gui, params, utils::Globals::get()->geom->meshes);
                 showMeshesSection("Loaded", gui, params, assetManager.getMeshes().getAll());
 
                 gui.endChild();

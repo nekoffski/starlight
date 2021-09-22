@@ -16,8 +16,6 @@ struct Application : kc::event::EventListener {
 
     virtual bool isRunning() const = 0;
 
-    virtual void onStart() = 0;
-    virtual void onStop() = 0;
     virtual void forceStop() = 0;
 };
 

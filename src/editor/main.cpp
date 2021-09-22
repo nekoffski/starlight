@@ -37,13 +37,8 @@ int main(int argc, char** argv) {
 
     auto application = std::make_unique<StarlightEditor>();
 
-    application->onStart(); // move to ctor
-
     engine->setApplication(std::move(application));
     engine->run();
-
-    // nullptr here
-    application->onStop(); // move to dtor
 
     return 0;
 }

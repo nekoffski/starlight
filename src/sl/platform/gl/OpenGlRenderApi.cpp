@@ -26,12 +26,13 @@ void OpenGlRenderApi::init() {
     // TODO: make it configurable
     // glEnable(GL_DEBUG_OUTPUT);
 
-    auto& info = GLOBALS().info;
+    // TODO: make as getter
+    // auto& info = utils::Globals::get()->info;
 
-    info.gpuApiVendor = fmt::format("{}", glGetString(GL_VENDOR));
-    info.gpuApiRelease = fmt::format("{}", glGetString(GL_VERSION));
-    info.rendererName = fmt::format("{}", glGetString(GL_RENDERER));
-    info.shadingLanguageVersion = fmt::format("{}", glGetString(GL_SHADING_LANGUAGE_VERSION));
+    // info.gpuApiVendor = fmt::format("{}", glGetString(GL_VENDOR));
+    // info.gpuApiRelease = fmt::format("{}", glGetString(GL_VERSION));
+    // info.rendererName = fmt::format("{}", glGetString(GL_RENDERER));
+    // info.shadingLanguageVersion = fmt::format("{}", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
     glDebugMessageCallback(messageCallback, 0);
 }

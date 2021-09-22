@@ -11,7 +11,7 @@ struct MeshRendererComponent : ecs::Component {
     using View = ecs::ComponentView<MeshRendererComponent>;
 
     explicit MeshRendererComponent()
-        : shader(GLOBALS().shaders->defaultModelShader)
+        : shader(utils::Globals::get()->shaders->defaultModelShader)
         , polygonMode(STARL_FILL) {
 
         name = "MeshRendererComponent";

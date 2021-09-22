@@ -99,7 +99,7 @@ void Deserializer::deserializeAssets(kc::json::Node& assetsJson) {
 }
 
 void Deserializer::deserializeDefaultAssets(kc::json::Node& defaultAssets) {
-    auto& globalShaders = GLOBALS().shaders->shadersByName;
+    auto& globalShaders = utils::Globals::get()->shaders->shadersByName;
 
     for (auto& shaderDescription : defaultAssets["shaders"]) {
         auto name = shaderDescription["name"].asString();
@@ -113,7 +113,7 @@ void Deserializer::deserializeDefaultAssets(kc::json::Node& defaultAssets) {
         }
     }
 
-    auto& globalMeshes = GLOBALS().geom->meshes;
+    auto& globalMeshes = utils::Globals::get()->geom->meshes;
 
     for (auto& meshDescription : defaultAssets["meshes"]) {
         auto name = meshDescription["name"].asString();
@@ -138,7 +138,7 @@ void Deserializer::deserializeScene(kc::json::Node& sceneJson) {
             m_assetsIdRedirections.at(skyboxOldId));
 
         m_scene->skybox = scene::Skybox {
-            GLOBALS().shaders->defaultCubemapShader, cubemap
+            utils::Globals::get()->shaders->defaultCubemapShader, cubemap
         };
 
         LOG_INFO("Setting skybox: {}", m_scene->skybox->cubemap->getId());

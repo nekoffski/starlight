@@ -1,15 +1,15 @@
 #include "RenderBoundingBoxesStage.h"
 
 #include "sl/core/Colors.h"
-#include <kc/core/Profiler.h>
 #include "sl/rendering/utils/Misc.h"
+#include <kc/core/Profiler.h>
 
 namespace sl::rendering::stages {
 
 using namespace sl::scene::components;
 
 RenderBoundingBoxesStage::RenderBoundingBoxesStage()
-    : m_boundingBoxShader(GLOBALS().shaders->singleColorShader) {
+    : m_boundingBoxShader(sl::utils::Globals::get()->shaders->singleColorShader) {
 }
 
 void RenderBoundingBoxesStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {

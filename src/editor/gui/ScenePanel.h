@@ -108,6 +108,8 @@ public:
 
                 for (auto& entityId : entitiesToRemove)
                     scene->ecsRegistry.removeEntity(entityId);
+
+                gui.popTreeNode();
             }
         }
 

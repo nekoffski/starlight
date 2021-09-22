@@ -162,7 +162,7 @@ public:
 
             if (event->is<SetSkyboxEvent>()) {
                 auto cubemap = event->as<SetSkyboxEvent>()->cubemap;
-                m_scene->skybox = sl::scene::Skybox { GLOBALS().shaders->defaultCubemapShader, cubemap };
+                m_scene->skybox = sl::scene::Skybox { utils::Globals::get()->shaders->defaultCubemapShader, cubemap };
 
             } else if (event->is<QuitEvent>()) {
                 m_windowProxy->quit();

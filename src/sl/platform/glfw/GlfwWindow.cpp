@@ -3,11 +3,12 @@
 #include <optional>
 
 #include <GLFW/glfw3.h>
-
-#include "sl/core/Errors.hpp"
-
 #include <kc/core/Log.h>
 #include <kc/core/Profiler.h>
+
+#include "sl/core/Errors.hpp"
+#include "sl/event/Event.h"
+#include "sl/event/EventManager.h"
 
 namespace sl::platform::glfw {
 
@@ -15,13 +16,14 @@ GlfwWindow::~GlfwWindow() {
     if (m_windowHandle != nullptr) {
         LOG_INFO("Destroying glfw window");
         glfwDestroyWindow(m_windowHandle);
+        glfwTerminate();
     }
 }
 
 void GlfwWindow::init() {
     LOG_INFO("Initializing glfw");
     if (auto status = glfwInit(); status < 0) {
-        LOG_ERROR("could not initialize glfw: {}", status);
+        LOG_FATAL("could not initialize glfw: {}", status);
         throw core::WindowError {};
     }
 
@@ -31,7 +33,7 @@ void GlfwWindow::init() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     glfwSetErrorCallback([](int errorCode, const char* message) {
-        LOG_ERROR("GLFW ERROR {} - {}", errorCode, message);
+        LOG_FATAL("GLFW ERROR {} - {}", errorCode, message);
     });
 
     LOG_INFO("Creating window's handle instance");
@@ -39,9 +41,14 @@ void GlfwWindow::init() {
         m_title.c_str(), nullptr, nullptr);
 
     if (m_windowHandle == nullptr) {
-        LOG_ERROR("could not create raw window instance");
+        LOG_FATAL("could not create raw window instance");
         throw core::WindowError {};
     }
+
+    glfwSetWindowCloseCallback(m_windowHandle, []([[maybe_unused]] GLFWwindow*) {
+        LOG_DEBUG("Window's close button pressed, emitting QuitEvent");
+        event::EventManager::get()->emit<event::QuitEvent>().toAll();
+    });
 }
 
 void GlfwWindow::setResizeCallback(core::Window::ResizeCallback resizeCallback) {
@@ -81,6 +88,7 @@ void GlfwWindow::swapBuffers() {
     PROFILE_FUNCTION();
     glfwSwapBuffers(m_windowHandle);
 }
+
 void* GlfwWindow::getHandle() const {
     return static_cast<void*>(m_windowHandle);
 }
