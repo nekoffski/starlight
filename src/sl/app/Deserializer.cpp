@@ -20,12 +20,12 @@ Deserializer::Deserializer(asset::AssetManager& assetManager, std::shared_ptr<sc
     , m_componentsDeserializer(m_assetsIdRedirections) {
 }
 
-void Deserializer::deserialize(const std::string& path, std::shared_ptr<core::FileSystem> fileSystem) {
+void Deserializer::deserialize(const std::string& path, const kc::core::FileSystem& fileSystem) {
 
-    if (not fileSystem->isFile(path))
+    if (not fileSystem.isFile(path))
         throw DeserializationError { "Could not find file: " + path };
 
-    auto fileContent = fileSystem->readFile(path);
+    auto fileContent = fileSystem.readFile(path);
 
     try {
         auto json = kc::json::loadJson(fileContent);

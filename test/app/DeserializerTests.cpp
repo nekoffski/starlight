@@ -37,7 +37,7 @@ protected:
 TEST_F(DeserializerTests, whenFileDoesNotExists_shouldThrow) {
     EXPECT_CALL(*m_fsMock, isFile(_)).Times(1).WillOnce(Return(false));
 
-    EXPECT_THROW(deserializer.deserialize(m_filename, m_fsMock), kc::core::ErrorBase);
+    EXPECT_THROW(deserializer.deserialize(m_filename, *m_fsMock), kc::core::ErrorBase);
 }
 
 class DeserializerTestsInvalidJson : public DeserializerTests, public WithParamInterface<std::string> { };
@@ -46,7 +46,7 @@ TEST_P(DeserializerTestsInvalidJson, givenInvalidJson_whenDeserializing_shouldTh
     EXPECT_CALL(*m_fsMock, isFile(_)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(*m_fsMock, readFile(_)).Times(1).WillOnce(Return(GetParam()));
 
-    EXPECT_THROW(deserializer.deserialize(m_filename, m_fsMock), kc::core::ErrorBase);
+    EXPECT_THROW(deserializer.deserialize(m_filename, *m_fsMock), kc::core::ErrorBase);
 };
 
 static const std::vector<std::string> invalidJsonTestData = {

@@ -11,7 +11,6 @@
 #include "sl/async/AsyncManager.hpp"
 #include "sl/core/ClockManager.h"
 #include "sl/core/Errors.hpp"
-#include "sl/core/FileSystem.h"
 #include "sl/core/Input.h"
 #include "sl/core/InputManager.h"
 #include "sl/core/WindowManager.h"

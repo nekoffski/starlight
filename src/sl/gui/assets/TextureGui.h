@@ -3,7 +3,6 @@
 #include <unordered_map>
 
 #include "AssetGuiProvider.h"
-#include "sl/core/FileSystem.h"
 #include "sl/core/GameObject.h"
 #include "sl/gfx/Texture.h"
 

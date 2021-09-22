@@ -8,7 +8,6 @@
 #include "sl/app/Deserializer.h"
 #include "sl/app/Serializer.h"
 #include "sl/asset/AssetManager.h"
-#include "sl/core/FileSystem.h"
 #include "sl/core/InputManager.h"
 #include "sl/ecs/Entity.h"
 #include "sl/event/Categories.h"

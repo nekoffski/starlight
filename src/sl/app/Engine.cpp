@@ -16,7 +16,6 @@
 #include "sl/async/AsyncManager.hpp"
 #include "sl/core/ClockManager.h"
 #include "sl/core/Errors.hpp"
-#include "sl/core/FileSystem.h"
 #include "sl/core/Input.h"
 #include "sl/core/InputManager.h"
 
@@ -155,7 +154,7 @@ void Engine::run() {
     while (m_application->isRunning()) {
         loopStep();
 
-// clang-format off
+        // clang-format off
         #if 0
         LOG_TRACE("\n\n{}\n\n", profiler.formatTimers());
         #endif

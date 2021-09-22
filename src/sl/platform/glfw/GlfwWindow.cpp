@@ -14,20 +14,21 @@ namespace sl::platform::glfw {
 
 GlfwWindow::~GlfwWindow() {
     if (m_windowHandle != nullptr) {
-        LOG_INFO("Destroying glfw window");
+        LOG_TRACE("Destroying GLFW window and terminating glfw");
         glfwDestroyWindow(m_windowHandle);
         glfwTerminate();
     }
 }
 
 void GlfwWindow::init() {
-    LOG_INFO("Initializing glfw");
+    LOG_TRACE("Initializing GLFW");
+
     if (auto status = glfwInit(); status < 0) {
-        LOG_FATAL("could not initialize glfw: {}", status);
+        LOG_FATAL("Could not initialize glfw, status code={}", status);
         throw core::WindowError {};
     }
 
-    LOG_INFO("Setting up window hints");
+    LOG_TRACE("Setting up GLFW hints");
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -36,12 +37,12 @@ void GlfwWindow::init() {
         LOG_FATAL("GLFW ERROR {} - {}", errorCode, message);
     });
 
-    LOG_INFO("Creating window's handle instance");
+    LOG_TRACE("Creating GLFW window instance");
     m_windowHandle = glfwCreateWindow(m_defaultWindowSize.width, m_defaultWindowSize.height,
         m_title.c_str(), nullptr, nullptr);
 
     if (m_windowHandle == nullptr) {
-        LOG_FATAL("could not create raw window instance");
+        LOG_FATAL("Could not create GLFW window instance");
         throw core::WindowError {};
     }
 

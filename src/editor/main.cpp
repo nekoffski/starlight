@@ -18,8 +18,7 @@ int main(int argc, char** argv) {
     kc::core::initLogging("Starlight");
 
     static const std::string configPath = "./starlight.json";
-    core::FileSystem fileSystem;
-    auto config = ConfigLoader {}.loadFromFile(configPath, fileSystem);
+    auto config = ConfigLoader {}.loadFromFile(configPath);
 
     auto platform = Platform::Builder {}
                         .setIO<glfw::Glfw>(config.window)

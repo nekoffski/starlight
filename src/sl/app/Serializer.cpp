@@ -9,12 +9,13 @@
 
 namespace sl::app {
 
-Serializer::Serializer(const std::string& path, std::shared_ptr<core::FileSystem> fileSystem)
-    : m_path(path)
-    , m_fileSystem(fileSystem) {
+Serializer::Serializer(const std::string& path)
+    : m_path(path) {
 }
 
-void Serializer::serialize(asset::AssetManager& assetManager, std::shared_ptr<scene::Scene> scene) {
+void Serializer::serialize(asset::AssetManager& assetManager, std::shared_ptr<scene::Scene> scene,
+    const kc::core::FileSystem& fileSystem) {
+
     auto filePath = m_path;
 
     if (not filePath.ends_with(extension))
@@ -23,7 +24,7 @@ void Serializer::serialize(asset::AssetManager& assetManager, std::shared_ptr<sc
     serializeAssets(assetManager);
     serializeScene(scene);
 
-    m_fileSystem->writeFile(filePath, m_jsonBuilder.asString());
+    fileSystem.writeFile(filePath, m_jsonBuilder.asString());
 }
 
 void Serializer::serializeAssets(asset::AssetManager& assetManager) {

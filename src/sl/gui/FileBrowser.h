@@ -3,8 +3,9 @@
 #include <functional>
 #include <string>
 
+#include <kc/core/FileSystem.h>
+
 #include "GuiApi.h"
-#include "sl/core/FileSystem.h"
 
 namespace sl::gui {
 
@@ -13,7 +14,7 @@ public:
     using Callback = std::function<void(const std::string&)>;
 
     explicit FileBrowser(const std::string& id,
-        std::unique_ptr<core::FileSystem> fileSystem = std::make_unique<core::FileSystem>());
+        std::unique_ptr<kc::core::FileSystem> fileSystem = std::make_unique<kc::core::FileSystem>());
 
     void open(GuiApi& gui, Callback&&);
     void show(GuiApi& gui);
@@ -28,7 +29,7 @@ private:
     std::string m_id;
     std::string m_currentSelection = "";
 
-    std::unique_ptr<core::FileSystem> m_fileSystem;
+    std::unique_ptr<kc::core::FileSystem> m_fileSystem;
 
     std::optional<Callback> m_callback;
 

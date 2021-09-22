@@ -4,7 +4,7 @@
 
 namespace sl::app {
 
-utils::Config ConfigLoader::loadFromFile(const std::string& path, const core::FileSystem& fileSystem) && {
+utils::Config ConfigLoader::loadFromFile(const std::string& path, const kc::core::FileSystem& fileSystem) && {
     if (not fileSystem.isFile(path))
         throw core::ConfigError { "Could not find config file: " + path };
 

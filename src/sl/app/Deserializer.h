@@ -3,11 +3,11 @@
 #include <memory>
 #include <string>
 
+#include <kc/core/FileSystem.h>
 #include <kc/json/Json.h>
 
 #include "ComponentsDeserializer.h"
 #include "sl/asset/AssetManager.h"
-#include "sl/core/FileSystem.h"
 #include "sl/scene/Scene.h"
 
 namespace sl::app {
@@ -16,7 +16,7 @@ class Deserializer {
 public:
     explicit Deserializer(asset::AssetManager& assetManager, std::shared_ptr<scene::Scene> scene);
 
-    void deserialize(const std::string& path, std::shared_ptr<core::FileSystem> fileSystem = std::make_shared<core::FileSystem>());
+    void deserialize(const std::string& path, const kc::core::FileSystem& fileSystem = kc::core::FileSystem {});
 
 private:
     void deserializeAssets(kc::json::Node&);

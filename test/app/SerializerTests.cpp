@@ -33,7 +33,7 @@ protected:
     std::shared_ptr<Scene> m_scene = std::make_shared<Scene>();
     AssetManager m_assetManager;
 
-    Serializer m_serializer = Serializer { m_filename, m_fsMock };
+    Serializer m_serializer = Serializer { m_filename };
 
     void prevalidateSerializerJson(Json::Value root) {
         ASSERT_EQ(root.size(), 2);
@@ -50,7 +50,7 @@ TEST_F(SerializerTests, whenCreatingSerializerWithDefaultFileSystem_shouldBeCrea
 TEST_F(SerializerTests, givenEmptySceneAndEmptyAssetManager_whenSerializing_shouldReturnEmptyAssetsAndEntities) {
     EXPECT_CALL(*m_fsMock, writeFile(_, _, _)).Times(1).WillOnce(Invoke(writeFileArgsHijacker));
 
-    m_serializer.serialize(m_assetManager, m_scene);
+    m_serializer.serialize(m_assetManager, m_scene, *m_fsMock);
 
     auto json = loadJson(FileSystemMock::capturedFileContent);
     prevalidateSerializerJson(json);

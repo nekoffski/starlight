@@ -1,14 +1,14 @@
 #include "FileBrowser.h"
 
-#include <kc/core/Log.h>
 #include "sl/gui/GuiStyle.h"
 #include "sl/gui/fonts/FontAwesome.h"
+#include <kc/core/Log.h>
 
 const std::string rootPath = "/home/nek0/kapik/projects/starlight";
 
 namespace sl::gui {
 
-FileBrowser::FileBrowser(const std::string& id, std::unique_ptr<core::FileSystem> fileSystem)
+FileBrowser::FileBrowser(const std::string& id, std::unique_ptr<kc::core::FileSystem> fileSystem)
     : m_id(id)
     , m_fileSystem(std::move(fileSystem)) {
 }
