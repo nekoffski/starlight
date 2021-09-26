@@ -3,7 +3,7 @@
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
 #include "sl/gfx/Shader.h"
-#include "sl/utils/Globals.h"
+#include "sl/glob/Globals.h"
 
 namespace sl::scene::components {
 
@@ -11,7 +11,7 @@ struct MeshRendererComponent : ecs::Component {
     using View = ecs::ComponentView<MeshRendererComponent>;
 
     explicit MeshRendererComponent()
-        : shader(utils::Globals::get()->shaders->defaultModelShader)
+        : shader(glob::Globals::get()->shaders->defaultModelShader)
         , polygonMode(STARL_FILL) {
 
         name = "MeshRendererComponent";

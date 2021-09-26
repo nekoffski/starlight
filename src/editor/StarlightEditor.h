@@ -15,6 +15,7 @@
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/gfx/camera/EulerCamera.h"
 #include "sl/gfx/camera/FPSCamera.h"
+#include "sl/glob/Globals.h"
 #include "sl/gui/ErrorDialog.hpp"
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/Utils.hpp"
@@ -24,7 +25,6 @@
 #include "sl/scene/components/ModelComponent.h"
 #include "sl/scene/components/RigidBodyComponent.h"
 #include "sl/scene/components/TransformComponent.h"
-#include "sl/utils/Globals.h"
 #include <kc/core/Log.h>
 
 #include "sl/core/WindowManager.h"
@@ -131,8 +131,8 @@ public:
     void update(float deltaTime, float time) override {
         m_activeCamera->update(deltaTime);
 
-        utils::Globals::get()->flags.disableKeyboardInput = m_gui->isCapturingKeyboard();
-        utils::Globals::get()->flags.disableMouseInput = m_gui->isCapturingMouse();
+        glob::Globals::get()->flags.disableKeyboardInput = m_gui->isCapturingKeyboard();
+        glob::Globals::get()->flags.disableMouseInput = m_gui->isCapturingMouse();
 
         core::WindowManager::get()->enableCursor(
             not core::InputManager::get()->isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE));
@@ -178,7 +178,7 @@ public:
 
             if (event->is<SetSkyboxEvent>()) {
                 auto cubemap = event->as<SetSkyboxEvent>()->cubemap;
-                m_scene->skybox = sl::scene::Skybox { utils::Globals::get()->shaders->defaultCubemapShader, cubemap };
+                m_scene->skybox = sl::scene::Skybox { glob::Globals::get()->shaders->defaultCubemapShader, cubemap };
 
             } else if (event->is<QuitEvent>()) {
                 m_isRunning = false;

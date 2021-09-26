@@ -5,7 +5,7 @@
 #include "AssetGuiProvider.h"
 #include "sl/async/Task.h"
 #include "sl/gfx/Shader.h"
-#include "sl/utils/Globals.h"
+#include "sl/glob/Globals.h"
 
 namespace sl::gui::assets {
 

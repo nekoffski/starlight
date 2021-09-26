@@ -11,7 +11,7 @@ using namespace testing;
 
 struct EngineTests : Test {
     std::unique_ptr<platform::Platform> fakePlatform = createFakePlatform();
-    utils::Config config {};
+    cfg::Config config {};
 };
 
 TEST_F(EngineTests, givenEngineBuilderWithoutFieldsSet_whenCreating_shouldThrow) {

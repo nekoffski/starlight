@@ -2,8 +2,6 @@
 
 #include <GLFW/glfw3.h>
 
-#include "sl/utils/Globals.h"
-
 namespace sl::platform::glfw {
 
 void GlfwInput::init(void* windowHandle) {

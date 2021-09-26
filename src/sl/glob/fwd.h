@@ -1,10 +1,9 @@
 #pragma once
 
-namespace sl::utils::globals {
+namespace sl::glob {
 
 class Geometry;
 class Shaders;
-class Config;
 class Flags;
 class Globals;
 class Info;

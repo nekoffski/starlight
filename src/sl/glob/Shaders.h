@@ -5,7 +5,7 @@
 
 #include "sl/gfx/fwd.h"
 
-namespace sl::utils {
+namespace sl::glob {
 
 struct Shaders {
     explicit Shaders();

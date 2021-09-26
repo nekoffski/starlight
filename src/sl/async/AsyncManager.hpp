@@ -30,6 +30,10 @@ public:
     void start();
     void stop();
 
+    ~AsyncManager() {
+        stop();
+    }
+
     template <typename T, typename... Args>
     requires std::derived_from<T, Task> Task::Handle addPeriodicTask(Args&&... args) {
         return m_taskManager.addPeriodicTask<T, Args...>(std::forward<Args>(args)...);

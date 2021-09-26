@@ -5,8 +5,8 @@
 #include "sl/core/ClockManager.h"
 #include "sl/ecs/Entity.h"
 #include "sl/gfx/Cubemap.h"
+#include "sl/glob/Globals.h"
 #include "sl/gui/GuiApi.h"
-#include "sl/utils/Globals.h"
 
 #include "Widget.h"
 
@@ -30,7 +30,7 @@ public:
             gui.breakLine();
 
             if (gui.beginTreeNode("Renderer")) {
-                const auto& info = sl::utils::Globals::get()->info;
+                const auto& info = sl::glob::Globals::get()->info;
 
                 constexpr auto formatString = "GPU Vendor:\n       {}\n\nGPU API Release:\n       {}\n\nGPU: \n       {}\n\n"
                                               "Shading language version:\n       {}\n\n";

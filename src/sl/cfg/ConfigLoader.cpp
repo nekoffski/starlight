@@ -2,27 +2,27 @@
 
 #include "sl/core/Errors.hpp"
 
-namespace sl::app {
+namespace sl::cfg {
 
-utils::Config ConfigLoader::loadFromFile(const std::string& path, const kc::core::FileSystem& fileSystem) && {
+Config ConfigLoader::loadFromFile(const std::string& path, const kc::core::FileSystem& fileSystem) && {
     if (not fileSystem.isFile(path))
         throw core::ConfigError { "Could not find config file: " + path };
 
     auto configJson = kc::json::loadJson(fileSystem.readFile(path));
 
-    utils::Config config;
+    Config config;
     config.paths = processPaths(configJson);
 
     return config;
 }
 
-utils::Config::Paths ConfigLoader::processPaths(kc::json::Node& root) {
+Config::Paths ConfigLoader::processPaths(kc::json::Node& root) {
     if (not root.isMember("paths"))
         raise("Config does not contain paths key.");
 
     auto& pathsJson = root["paths"];
 
-    utils::Config::Paths paths;
+    Config::Paths paths;
 
     auto processPath = [&root, &pathsJson, this](const std::string& path) -> std::string {
         if (not pathsJson.isMember(path))

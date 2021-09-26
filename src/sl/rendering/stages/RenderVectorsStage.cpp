@@ -1,13 +1,13 @@
 #include "RenderVectorsStage.h"
 
+#include "sl/glob/Globals.h"
 #include <kc/core/Profiler.h>
-#include "sl/utils/Globals.h"
 
 namespace sl::rendering::stages {
 
 RenderVectorsStage::RenderVectorsStage()
-    : m_lineVertexArray(utils::Globals::get()->geom->lineVAO)
-    , m_lineShader(utils::Globals::get()->shaders->singleColorShader) {
+    : m_lineVertexArray(glob::Globals::get()->geom->lineVAO)
+    , m_lineShader(glob::Globals::get()->shaders->singleColorShader) {
 }
 
 void RenderVectorsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {

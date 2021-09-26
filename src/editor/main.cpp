@@ -1,7 +1,7 @@
-#include "sl/app/ConfigLoader.h"
-#include "sl/app/Engine.h"
 #include <kc/core/Log.h>
 
+#include "sl/app/Engine.h"
+#include "sl/cfg/ConfigLoader.h"
 #include "sl/platform/Platform.hpp"
 #include "sl/platform/assimp/AssimpModelLoader.h"
 #include "sl/platform/gl/OpenGl.h"
@@ -14,6 +14,7 @@ int main(int argc, char** argv) {
     using namespace sl;
     using namespace sl::platform;
     using namespace sl::app;
+    using namespace sl::cfg;
 
     kc::core::initLogging("Starlight");
 
@@ -34,9 +35,9 @@ int main(int argc, char** argv) {
 
     engine->initGlobalState();
 
-    auto application = std::make_unique<StarlightEditor>();
+    StarlightEditor starlightEditor;
 
-    engine->setApplication(std::move(application));
+    engine->setApplication(&starlightEditor);
     engine->run();
 
     return 0;

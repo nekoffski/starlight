@@ -1,19 +1,19 @@
 #include "ParticleEffectRenderer.h"
 
-#include <kc/core/Profiler.h>
 #include "sl/ecs/ComponentView.hpp"
 #include "sl/gfx/Renderer.h"
 #include "sl/gfx/Shader.h"
 #include "sl/gfx/camera/Camera.h"
+#include "sl/glob/Globals.h"
 #include "sl/scene/components/TransformComponent.h"
-#include "sl/utils/Globals.h"
+#include <kc/core/Profiler.h>
 
 namespace sl::gfx::renderer {
 
 ParticleEffectRenderer::ParticleEffectRenderer(Renderer& renderer)
     : m_renderer(renderer)
-    , m_vao(utils::Globals::get()->geom->frontSquareVAO)
-    , m_shader(utils::Globals::get()->shaders->pfxShader) {
+    , m_vao(glob::Globals::get()->geom->frontSquareVAO)
+    , m_shader(glob::Globals::get()->shaders->pfxShader) {
 }
 
 void ParticleEffectRenderer::renderParticleEffects(ecs::ComponentView<scene::components::ParticleEffectComponent> pfxs,

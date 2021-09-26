@@ -6,7 +6,7 @@
 #include "OpenGlRenderApi.h"
 
 #include "sl/core/Errors.hpp"
-#include "sl/utils/Globals.h"
+
 #include <kc/core/Log.h>
 
 static void GLAPIENTRY messageCallback(GLenum source, GLenum type, GLuint id,

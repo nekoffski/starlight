@@ -14,7 +14,6 @@
 
 #include "sl/rendering/utils/Mesh.h"
 #include "sl/rendering/utils/Misc.h"
-#include "sl/utils/Globals.h"
 
 namespace sl::rendering::stages {
 

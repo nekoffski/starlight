@@ -1,6 +1,6 @@
 #pragma once
 
-namespace sl::utils {
+namespace sl::glob {
 
 struct Flags {
     bool disableMouseInput = false;

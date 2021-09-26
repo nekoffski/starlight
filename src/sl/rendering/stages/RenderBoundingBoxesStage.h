@@ -2,9 +2,9 @@
 
 #include "sl/rendering/DefaultFrameBufferRenderPass.h"
 
+#include "sl/glob/Globals.h"
 #include "sl/scene/components/RigidBodyComponent.h"
 #include "sl/scene/components/TransformComponent.h"
-#include "sl/utils/Globals.h"
 
 namespace sl::rendering::stages {
 

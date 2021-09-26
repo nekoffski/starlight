@@ -1,12 +1,12 @@
 #include "RenderMeshesStage.h"
 
-#include <kc/core/Profiler.h>
 #include "sl/gfx/Renderer.h"
+#include "sl/glob/Globals.h"
 #include "sl/rendering/utils/Mesh.h"
-#include "sl/utils/Globals.h"
-
 #include <kc/core/Profiler.h>
+
 #include "sl/rendering/utils/Misc.h"
+#include <kc/core/Profiler.h>
 
 namespace sl::rendering::stages {
 

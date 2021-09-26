@@ -1,6 +1,6 @@
 #pragma once
 
-namespace sl::utils {
+namespace sl::glob {
 
 struct Visual {
     float gammaCorrection = 2.2f;

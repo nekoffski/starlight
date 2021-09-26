@@ -1,8 +1,9 @@
 #include "ModelComponentGui.h"
 
 #include <kc/core/Log.h>
+
+#include "sl/glob/Globals.h"
 #include "sl/gui/GuiStyle.h"
-#include "sl/utils/Globals.h"
 
 namespace sl::gui::components {
 
@@ -47,7 +48,7 @@ void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
                 const auto childHeight = math::Vec2 { 0, gui.getCurrentWindowHeight() * sectionHeightRatio };
                 gui.beginChild("Meshes: ", childHeight);
 
-                showMeshesSection("Predefined", gui, params, utils::Globals::get()->geom->meshes);
+                showMeshesSection("Predefined", gui, params, glob::Globals::get()->geom->meshes);
                 showMeshesSection("Loaded", gui, params, assetManager.getMeshes().getAll());
 
                 gui.endChild();

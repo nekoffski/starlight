@@ -6,8 +6,8 @@
 #include "sl/gfx/ShaderManager.h"
 #include "sl/gfx/Texture.h"
 #include "sl/gfx/VertexArray.h"
+#include "sl/glob/Globals.h"
 #include "sl/rendering/Stage.h"
-#include "sl/utils/Globals.h"
 
 #include <kc/core/Log.h>
 
@@ -21,9 +21,9 @@ public:
     };
 
     explicit BlurColorBufferStage()
-        : m_quadVao(utils::Globals::get()->geom->frontSquareVAO.get())
+        : m_quadVao(glob::Globals::get()->geom->frontSquareVAO.get())
         , m_gaussianBlurShader(gfx::ShaderManager::get()->load(
-              utils::Globals::get()->config.paths.shaders + "/GaussianBlur.vert", utils::Globals::get()->config.paths.shaders + "/GaussianBlur.frag"))
+              glob::Globals::get()->config.paths.shaders + "/GaussianBlur.vert", glob::Globals::get()->config.paths.shaders + "/GaussianBlur.frag"))
         , m_horizontalFrameBuffer(gfx::BufferManager::get()->createFrameBuffer())
         , m_verticalFrameBuffer(gfx::BufferManager::get()->createFrameBuffer()) {
     }

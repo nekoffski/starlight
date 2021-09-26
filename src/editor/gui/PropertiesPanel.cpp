@@ -3,6 +3,7 @@
 #include "sl/core/Utils.hpp"
 #include "sl/event/Event.h"
 #include "sl/event/EventManager.h"
+#include "sl/glob/Globals.h"
 #include "sl/gui/Utils.hpp"
 #include "sl/scene/components/DirectionalLightComponent.h"
 #include "sl/scene/components/MeshRendererComponent.h"
@@ -10,7 +11,6 @@
 #include "sl/scene/components/ParticleEffectComponent.h"
 #include "sl/scene/components/PointLightComponent.h"
 #include "sl/scene/components/TransformComponent.h"
-#include "sl/utils/Globals.h"
 
 namespace editor::gui {
 
@@ -83,7 +83,7 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
 
     if (gui.beginTreeNode(ICON_FA_COGS "  Properties")) {
         gui.displayText("Gravity acceleration");
-        gui.sliderFloat("##Gravity acceleration", utils::Globals::get()->world.gravity.y, 0.0f, 25.0f);
+        gui.sliderFloat("##Gravity acceleration", glob::Globals::get()->world.gravity.y, 0.0f, 25.0f);
         gui.popTreeNode();
     }
 
@@ -91,12 +91,12 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
 
     if (gui.beginTreeNode(ICON_FA_EYE "  Visual")) {
         gui.displayText("Gamma corection");
-        gui.sliderFloat("##Gamma correction", utils::Globals::get()->visual.gammaCorrection, 0.0f, 5.0f);
+        gui.sliderFloat("##Gamma correction", glob::Globals::get()->visual.gammaCorrection, 0.0f, 5.0f);
 
         gui.displayText("Exposure");
-        gui.sliderFloat("##Exposure", utils::Globals::get()->visual.exposure, 0.0f, 5.0f);
+        gui.sliderFloat("##Exposure", glob::Globals::get()->visual.exposure, 0.0f, 5.0f);
 
-        gui.checkbox("Enable bloom", utils::Globals::get()->visual.enableBloom);
+        gui.checkbox("Enable bloom", glob::Globals::get()->visual.enableBloom);
 
         gui.popTreeNode();
     }

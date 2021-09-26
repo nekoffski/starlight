@@ -5,8 +5,8 @@
 #include "sl/gfx/ShaderManager.h"
 #include "sl/gfx/Texture.h"
 #include "sl/gfx/VertexArray.h"
+#include "sl/glob/Globals.h"
 #include "sl/rendering/Stage.h"
-#include "sl/utils/Globals.h"
 
 #include "sl/async/TaskManager.h"
 #include <kc/core/Log.h>
@@ -16,12 +16,12 @@ namespace sl::rendering::stages {
 class RenderColorBufferStage : public Stage {
 public:
     explicit RenderColorBufferStage()
-        : m_quadVao(sl::utils::Globals::get()->geom->frontSquareVAO.get())
+        : m_quadVao(sl::glob::Globals::get()->geom->frontSquareVAO.get())
         , m_colorBufferShader(gfx::ShaderManager::get()->load(
-              sl::utils::Globals::get()->config.paths.shaders + "/ColorBuffer.vert",
-              sl::utils::Globals::get()->config.paths.shaders + "/ColorBuffer.frag")) {
+              sl::glob::Globals::get()->config.paths.shaders + "/ColorBuffer.vert",
+              sl::glob::Globals::get()->config.paths.shaders + "/ColorBuffer.frag")) {
 
-        // clang-format off
+// clang-format off
         #ifdef DEV_MODE
             async::AsyncManager::get()->addPeriodicTask<gfx::RecompileShaderOnUpdate>(m_colorBufferShader);
         #endif
@@ -43,7 +43,7 @@ public:
         m_colorBuffer->bind(1);
         m_bloomBuffer->bind(2);
 
-        auto& visualSettings = sl::utils::Globals::get()->visual;
+        auto& visualSettings = sl::glob::Globals::get()->visual;
 
         m_colorBufferShader->setUniform("gamma", visualSettings.gammaCorrection);
         m_colorBufferShader->setUniform("exposure", visualSettings.exposure);

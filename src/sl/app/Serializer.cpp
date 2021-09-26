@@ -5,7 +5,7 @@
 #include <kc/core/Log.h>
 
 #include "sl/ecs/Entity.h"
-#include "sl/utils/Globals.h"
+#include "sl/glob/Globals.h"
 
 namespace sl::app {
 
@@ -94,8 +94,8 @@ void Serializer::serializeDefaultAssets() {
         .beginObject("default-assets")
         .beginArray("shaders");
 
-    if (utils::Globals::get()->shaders)
-        for (auto& [name, shader] : utils::Globals::get()->shaders->shadersByName)
+    if (glob::Globals::get()->shaders)
+        for (auto& [name, shader] : glob::Globals::get()->shaders->shadersByName)
             m_jsonBuilder
                 .beginObject()
                 .addField("name", name)
@@ -106,8 +106,8 @@ void Serializer::serializeDefaultAssets() {
         .endArray()
         .beginArray("meshes");
 
-    if (utils::Globals::get()->geom)
-        for (auto& [name, mesh] : utils::Globals::get()->geom->meshes)
+    if (glob::Globals::get()->geom)
+        for (auto& [name, mesh] : glob::Globals::get()->geom->meshes)
             m_jsonBuilder
                 .beginObject()
                 .addField("name", name)

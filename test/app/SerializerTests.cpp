@@ -7,8 +7,8 @@
 #include "sl/app/Serializer.h"
 #include "sl/asset/AssetManager.h"
 #include "sl/ecs/Entity.h"
+#include "sl/glob/Globals.h"
 #include "sl/scene/Scene.h"
-#include "sl/utils/Globals.h"
 
 #include "mocks/FileSystemMock.hpp"
 
@@ -28,7 +28,7 @@ protected:
 
     const std::string m_filename = "/path/exampleFilename";
 
-    sl::utils::Globals globals;
+    sl::glob::Globals globals;
 
     std::shared_ptr<Scene> m_scene = std::make_shared<Scene>();
     AssetManager m_assetManager;

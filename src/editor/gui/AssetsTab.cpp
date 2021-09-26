@@ -10,9 +10,9 @@
 #include "sl/core/String.hpp"
 #include "sl/geom/GeometryManager.h"
 #include "sl/gfx/ShaderManager.h"
+#include "sl/glob/Globals.h"
 #include "sl/gui/GuiApi.h"
 #include "sl/gui/Utils.hpp"
-#include "sl/utils/Globals.h"
 
 namespace editor::gui {
 
@@ -80,7 +80,7 @@ void AssetsTab::render(sl::gui::GuiApi& gui) {
     gui.sameLine();
 
     auto shaders = m_sharedState->assetManager.getShaders().getAll();
-    auto& globalShaders = sl::utils::Globals::get()->shaders->shadersByName;
+    auto& globalShaders = sl::glob::Globals::get()->shaders->shadersByName;
 
     for (auto& [name, shader] : globalShaders)
         shaders[name] = shader;
@@ -220,7 +220,7 @@ void AssetsTab::handleCubemapLoader(sl::gui::GuiApi& gui) {
 
         auto faces = m_assetsArgs.faces;
         for (auto& face : faces)
-            face = sl::utils::Globals::get()->config.paths.cubemaps + face;
+            face = sl::glob::Globals::get()->config.paths.cubemaps + face;
 
         auto output = std::make_unique<sl::asset::AssetManager::Output<
             sl::gfx::Cubemap>>(m_sharedState->assetManager);

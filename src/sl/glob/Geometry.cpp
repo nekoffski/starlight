@@ -5,7 +5,7 @@
 #include "sl/gfx/ElementBuffer.h"
 #include "sl/gfx/VertexBuffer.h"
 
-namespace sl::utils {
+namespace sl::glob {
 
 Geometry::Geometry() {
     initSquares();

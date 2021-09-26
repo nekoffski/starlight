@@ -5,7 +5,7 @@
 #include "sl/geom/Model.h"
 #include "sl/gfx/VertexArray.h"
 
-namespace sl::utils {
+namespace sl::glob {
 
 class Geometry {
     using MeshVaoPair = std::pair<std::shared_ptr<geom::Mesh>, std::shared_ptr<gfx::VertexArray>>;

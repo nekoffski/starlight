@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace sl::utils {
+namespace sl::cfg {
 
 struct Config {
     struct Paths {

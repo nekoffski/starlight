@@ -1,11 +1,11 @@
 #include "ParticleEffectsEngine.h"
 
-#include <kc/core/Profiler.h>
 #include "sl/ecs/ComponentView.hpp"
 #include "sl/gfx/Shader.h"
 #include "sl/gfx/camera/Camera.h"
+#include "sl/glob/Globals.h"
 #include "sl/scene/components/TransformComponent.h"
-#include "sl/utils/Globals.h"
+#include <kc/core/Profiler.h>
 
 namespace sl::physx::pfx {
 

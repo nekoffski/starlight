@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace sl::utils {
+namespace sl::glob {
 
 struct Info {
     std::string gpuApiVendor;

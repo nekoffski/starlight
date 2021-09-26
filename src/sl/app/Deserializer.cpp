@@ -8,7 +8,7 @@
 #include "sl/gfx/Cubemap.h"
 #include "sl/gfx/Shader.h"
 #include "sl/gfx/TextureManager.h"
-#include "sl/utils/Globals.h"
+#include "sl/glob/Globals.h"
 
 using namespace sl::core;
 
@@ -99,7 +99,7 @@ void Deserializer::deserializeAssets(kc::json::Node& assetsJson) {
 }
 
 void Deserializer::deserializeDefaultAssets(kc::json::Node& defaultAssets) {
-    auto& globalShaders = utils::Globals::get()->shaders->shadersByName;
+    auto& globalShaders = glob::Globals::get()->shaders->shadersByName;
 
     for (auto& shaderDescription : defaultAssets["shaders"]) {
         auto name = shaderDescription["name"].asString();
@@ -113,7 +113,7 @@ void Deserializer::deserializeDefaultAssets(kc::json::Node& defaultAssets) {
         }
     }
 
-    auto& globalMeshes = utils::Globals::get()->geom->meshes;
+    auto& globalMeshes = glob::Globals::get()->geom->meshes;
 
     for (auto& meshDescription : defaultAssets["meshes"]) {
         auto name = meshDescription["name"].asString();
@@ -138,7 +138,7 @@ void Deserializer::deserializeScene(kc::json::Node& sceneJson) {
             m_assetsIdRedirections.at(skyboxOldId));
 
         m_scene->skybox = scene::Skybox {
-            utils::Globals::get()->shaders->defaultCubemapShader, cubemap
+            glob::Globals::get()->shaders->defaultCubemapShader, cubemap
         };
 
         LOG_INFO("Setting skybox: {}", m_scene->skybox->cubemap->getId());
