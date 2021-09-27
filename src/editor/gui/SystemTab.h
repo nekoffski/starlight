@@ -19,10 +19,12 @@ public:
     }
 
     void render(sl::gui::GuiApi& gui) override {
+        using namespace sl;
+
         if (gui.beginTabItem(ICON_FA_SITEMAP "  System")) {
             if (gui.beginTreeNode("Statistics")) {
                 gui.displayText(fmt::format(" FPS:            {}\n Delta time: {}\n",
-                    sl::core::ClockManager::get()->getFPS(), sl::core::ClockManager::get()->getDeltaTime()));
+                    core::ClockManager::get()->getFPS(), core::ClockManager::get()->getDeltaTime()));
 
                 gui.popTreeNode();
             }
@@ -30,7 +32,7 @@ public:
             gui.breakLine();
 
             if (gui.beginTreeNode("Renderer")) {
-                const auto& info = sl::glob::Globals::get()->info;
+                const auto& info = glob::Globals::get()->rendererInfo;
 
                 constexpr auto formatString = "GPU Vendor:\n       {}\n\nGPU API Release:\n       {}\n\nGPU: \n       {}\n\n"
                                               "Shading language version:\n       {}\n\n";

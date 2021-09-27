@@ -26,15 +26,16 @@ void OpenGlRenderApi::init() {
     // TODO: make it configurable
     // glEnable(GL_DEBUG_OUTPUT);
 
-    // TODO: make as getter
-    // auto& info = utils::Globals::get()->info;
-
-    // info.gpuApiVendor = fmt::format("{}", glGetString(GL_VENDOR));
-    // info.gpuApiRelease = fmt::format("{}", glGetString(GL_VERSION));
-    // info.rendererName = fmt::format("{}", glGetString(GL_RENDERER));
-    // info.shadingLanguageVersion = fmt::format("{}", glGetString(GL_SHADING_LANGUAGE_VERSION));
+    m_rendererInfo.gpuApiVendor = fmt::format("{}", glGetString(GL_VENDOR));
+    m_rendererInfo.gpuApiRelease = fmt::format("{}", glGetString(GL_VERSION));
+    m_rendererInfo.rendererName = fmt::format("{}", glGetString(GL_RENDERER));
+    m_rendererInfo.shadingLanguageVersion = fmt::format("{}", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
     glDebugMessageCallback(messageCallback, 0);
+}
+
+glob::RendererInfo OpenGlRenderApi::getRendererInfo() const {
+    return m_rendererInfo;
 }
 
 void OpenGlRenderApi::setViewport(const gfx::ViewFrustum::Viewport& viewport) {

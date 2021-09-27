@@ -10,7 +10,7 @@
 
 #include "Flags.h"
 #include "Geometry.h"
-#include "Info.h"
+#include "RendererInfo.h"
 #include "Shaders.h"
 #include "Visual.h"
 #include "World.h"
@@ -23,7 +23,7 @@ struct Globals : kc::core::Singleton<Globals> {
     World world;
     Flags flags;
     Visual visual;
-    Info info;
+    RendererInfo rendererInfo;
 
     cfg::Config config;
 

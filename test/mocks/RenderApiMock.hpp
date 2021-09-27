@@ -25,4 +25,6 @@ struct RenderApiMock : RenderApi {
 
     MOCK_METHOD(void, enable, (unsigned), (override));
     MOCK_METHOD(void, disable, (unsigned), (override));
+
+    MOCK_METHOD(sl::glob::RendererInfo, getRendererInfo, (), (const, override));
 };

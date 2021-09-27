@@ -1,22 +1,18 @@
 #pragma once
 
-#include <string>
-
-#include <kc/core/FileSystem.h>
-#include <kc/json/Json.h>
+#include <kc/json/JsonConfigLoader.hpp>
+#include <kc/json/Utils.hpp>
 
 #include "Config.h"
+#include "sl/core/Errors.hpp"
 
 namespace sl::cfg {
 
-class ConfigLoader {
+DEFINE_ERROR(ConfigError);
+
+class ConfigLoader : public kc::json::JsonConfigLoader<Config>, protected kc::json::NodeHelper<kc::json::JsonError> {
 public:
-    Config loadFromFile(const std::string& path, const kc::core::FileSystem& fileSystem = kc::core::FileSystem {}) &&;
-
-private:
-    Config::Paths processPaths(kc::json::Node& root);
-
-    void raise(const std::string& reason);
+    void processFields(const kc::json::Node& root) override;
 };
 
 }

@@ -110,6 +110,7 @@ void Engine::initManagers() {
 
 void Engine::initGlobalState() {
     m_globals.config = *m_config;
+    m_globals.rendererInfo = m_renderApi->getRendererInfo();
     m_globals.init();
 }
 
@@ -124,7 +125,7 @@ void Engine::handleEvents(const kc::event::EventProvider& eventProvider) {
     for (auto& event : events) {
         if (event->is<event::ChangeViewportEvent>())
             m_renderer->setViewport(
-                event->as<event::ChangeViewportEvent>()->viewport);
+                event->asView<event::ChangeViewportEvent>()->viewport);
     }
 }
 

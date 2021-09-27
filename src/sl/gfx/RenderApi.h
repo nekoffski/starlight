@@ -4,6 +4,7 @@
 
 // ifdef use_opengl
 #include "ViewFrustum.h"
+#include "sl/glob/RendererInfo.h"
 #include "sl/platform/gl/OpenGlDefines.h"
 
 namespace sl::gfx {
@@ -30,5 +31,7 @@ public:
 
     virtual void enable(unsigned) = 0;
     virtual void disable(unsigned) = 0;
+
+    virtual glob::RendererInfo getRendererInfo() const = 0;
 };
 }

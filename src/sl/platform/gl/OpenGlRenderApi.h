@@ -25,6 +25,11 @@ public:
 
     void enable(unsigned) override;
     void disable(unsigned) override;
+
+    glob::RendererInfo getRendererInfo() const override;
+
+private:
+    glob::RendererInfo m_rendererInfo;
 };
 
 }

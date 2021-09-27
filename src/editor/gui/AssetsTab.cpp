@@ -21,7 +21,7 @@ constexpr int padding = 65;
 static void validateAssetName(const std::string& name) {
     using namespace sl::core;
 
-    if (sl::core::isStringEmpty(name))
+    if (name.empty())
         throw AssetError("Asset name cannot be empty");
 }
 

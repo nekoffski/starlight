@@ -4,7 +4,7 @@
 
 namespace sl::glob {
 
-struct Info {
+struct RendererInfo {
     std::string gpuApiVendor;
     std::string gpuApiRelease;
     std::string rendererName;

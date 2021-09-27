@@ -1,51 +1,35 @@
 #include "ConfigLoader.h"
 
+#include <kc/core/Log.h>
+
 #include "sl/core/Errors.hpp"
 
 namespace sl::cfg {
 
-Config ConfigLoader::loadFromFile(const std::string& path, const kc::core::FileSystem& fileSystem) && {
-    if (not fileSystem.isFile(path))
-        throw core::ConfigError { "Could not find config file: " + path };
+void ConfigLoader::processFields(const kc::json::Node& root) {
+    using namespace kc::json;
 
-    auto configJson = kc::json::loadJson(fileSystem.readFile(path));
+    LOG_DEBUG("Processing config fields");
+    LOG_TRACE("Processing paths config");
+    auto paths = fieldFrom(root).ofName("paths").asObject().get();
 
-    Config config;
-    config.paths = processPaths(configJson);
+    // clang-format off
+    config().paths.cubemaps = fieldFrom(paths).ofName("cubemaps").ofType<std::string>().nonEmpty().get();
+    config().paths.models   = fieldFrom(paths).ofName("models")  .ofType<std::string>().nonEmpty().get();
+    config().paths.shaders  = fieldFrom(paths).ofName("shaders") .ofType<std::string>().nonEmpty().get();
+    config().paths.textures = fieldFrom(paths).ofName("textures").ofType<std::string>().nonEmpty().get();
+    // clang-format on
 
-    return config;
-}
+    LOG_TRACE("Processing window config");
+    auto window = fieldFrom(root).ofName("window").asObject().get();
 
-Config::Paths ConfigLoader::processPaths(kc::json::Node& root) {
-    if (not root.isMember("paths"))
-        raise("Config does not contain paths key.");
+    // clang-format off
+    config().window.height = fieldFrom(window).ofName("height").ofType<unsigned int>().get();
+    config().window.width  = fieldFrom(window).ofName("width") .ofType<unsigned int>().get();
+    config().window.name   = fieldFrom(window).ofName("name") .ofType<std::string>()  .get();
+    // clang-format on
 
-    auto& pathsJson = root["paths"];
-
-    Config::Paths paths;
-
-    auto processPath = [&root, &pathsJson, this](const std::string& path) -> std::string {
-        if (not pathsJson.isMember(path))
-            raise("Config does not contain " + path + " path.");
-
-        auto& pathJson = pathsJson[path];
-
-        if (not pathJson.isString())
-            raise("Config record for paths::" + path + " has invalid type.");
-
-        return pathJson.asString();
-    };
-
-    paths.shaders = processPath("shaders");
-    paths.models = processPath("models");
-    paths.textures = processPath("textures");
-    paths.cubemaps = processPath("cubemaps");
-
-    return paths;
-}
-
-void ConfigLoader::raise(const std::string& reason) {
-    throw core::ConfigError { reason };
+    LOG_DEBUG("Config processed successfully");
 }
 
 }

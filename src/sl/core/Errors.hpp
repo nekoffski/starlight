@@ -26,6 +26,5 @@ DEFINE_SUB_ERROR(JsonError, CoreError);
 
 DEFINE_SUB_ERROR(SerializationError, ApplicationError);
 DEFINE_SUB_ERROR(DeserializationError, ApplicationError);
-DEFINE_SUB_ERROR(ConfigError, ApplicationError);
 
 }

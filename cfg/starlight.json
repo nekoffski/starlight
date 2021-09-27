@@ -4,5 +4,10 @@
         "models": "/home/nek0/kapik/projects/starlight/res/models/",
         "textures": "/home/nek0/kapik/projects/starlight/res/textures/",
         "cubemaps": "/home/nek0/kapik/projects/starlight/res/cubemaps/"
+    },
+    "window": {
+        "width": 1600,
+        "height": 900,
+        "name": "Starlight editor"
     }
 }

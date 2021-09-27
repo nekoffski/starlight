@@ -16,29 +16,39 @@ int main(int argc, char** argv) {
     using namespace sl::app;
     using namespace sl::cfg;
 
-    kc::core::initLogging("Starlight");
+    try {
+        kc::core::initLogging("Starlight");
 
-    static const std::string configPath = "./starlight.json";
-    auto config = ConfigLoader {}.loadFromFile(configPath);
+        static const std::string configPath = "./starlight.json";
+        auto config = ConfigLoader {}.fromFile(configPath).load();
 
-    auto platform = Platform::Builder {}
-                        .setIO<glfw::Glfw>(config.window)
-                        .setGPU<gl::OpenGl>()
-                        .setImageFactory<stb::StbImageFactory>()
-                        .setModelLoader<assimp::AssimpModelLoader>()
-                        .build();
+        LOG_DEBUG("Assembling platform module");
+        auto platform = Platform::Builder {}
+                            .setIO<glfw::Glfw>(config.window)
+                            .setGPU<gl::OpenGl>()
+                            .setImageFactory<stb::StbImageFactory>()
+                            .setModelLoader<assimp::AssimpModelLoader>()
+                            .build();
 
-    auto engine = Engine::Builder {}
-                      .setPlatform(platform.get())
-                      .setConfig(&config)
-                      .build();
+        LOG_DEBUG("Creating engine instance");
+        auto engine = Engine::Builder {}
+                          .setPlatform(platform.get())
+                          .setConfig(&config)
+                          .build();
 
-    engine->initGlobalState();
+        engine->initGlobalState();
 
-    StarlightEditor starlightEditor;
+        LOG_DEBUG("Creating application instance");
+        StarlightEditor starlightEditor;
 
-    engine->setApplication(&starlightEditor);
-    engine->run();
+        engine->setApplication(&starlightEditor);
+        engine->run();
 
+    } catch (kc::core::ErrorBase& error) {
+        LOG_FATAL("Catched exception in main: {}", error.asString());
+        return -1;
+    }
+
+    LOG_INFO("Main quits");
     return 0;
 }

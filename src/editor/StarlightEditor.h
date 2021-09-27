@@ -177,26 +177,26 @@ public:
             LOG_INFO("Processing event: {}", event->asString());
 
             if (event->is<SetSkyboxEvent>()) {
-                auto cubemap = event->as<SetSkyboxEvent>()->cubemap;
+                auto cubemap = event->asView<SetSkyboxEvent>()->cubemap;
                 m_scene->skybox = sl::scene::Skybox { glob::Globals::get()->shaders->defaultCubemapShader, cubemap };
 
             } else if (event->is<QuitEvent>()) {
                 m_isRunning = false;
             } else if (event->is<WindowResizedEvent>()) {
-                auto windowResizedEvent = event->as<WindowResizedEvent>();
+                auto windowResizedEvent = event->asView<WindowResizedEvent>();
                 auto [width, height] = windowResizedEvent->getSize();
 
                 recalculateViewportSize(width, height);
 
             } else if (event->is<ChangeSceneCenterEvent>()) {
-                auto& newCenter = event->as<ChangeSceneCenterEvent>()->center;
+                auto& newCenter = event->asView<ChangeSceneCenterEvent>()->center;
                 auto sceneCamera = std::dynamic_pointer_cast<sl::gfx::camera::EulerCamera>(m_activeCamera);
                 if (sceneCamera)
                     sceneCamera->setCenter(newCenter);
 
             } else if (event->is<editor::EngineStateChanged>()) {
                 handleStateChange(
-                    event->as<editor::EngineStateChanged>()->state);
+                    event->asView<editor::EngineStateChanged>()->state);
 
             } else if (event->is<editor::EnterGameMode>()) {
                 m_engineMode = editor::EngineMode::inGame;
@@ -204,18 +204,18 @@ public:
                 auto [width, height] = WindowManager::get()->getSize();
                 recalculateViewportSize(width, height);
             } else if (event->is<DisplayErrorEvent>()) {
-                m_errorDialog.setErrorMessage(event->as<DisplayErrorEvent>()->message);
+                m_errorDialog.setErrorMessage(event->asView<DisplayErrorEvent>()->message);
             } else {
                 try {
                     using namespace sl::app;
 
                     if (event->is<SerializeSceneEvent>()) {
-                        auto& path = event->as<SerializeSceneEvent>()->path;
+                        auto& path = event->asView<SerializeSceneEvent>()->path;
 
                         LOG_INFO("Serializing scene as: {}", path);
                         Serializer { path }.serialize(m_assetManager, m_scene);
                     } else if (event->is<DeserializeSceneEvent>()) {
-                        auto& path = event->as<DeserializeSceneEvent>()->path;
+                        auto& path = event->asView<DeserializeSceneEvent>()->path;
 
                         LOG_INFO("Deserializing scene from: {}", path);
                         Deserializer { m_assetManager, m_scene }.deserialize(path);
