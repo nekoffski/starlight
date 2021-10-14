@@ -16,8 +16,8 @@ void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
         auto& params = m_params[component.ownerEntityId];
 
         if (beginComponentTreeNode(ICON_FA_FIGHTER_JET "  Model", component)) {
-            with_TreeNode("Meshes") {
-                with_TreeNode("Added") {
+            with_OpenedTreeNode("Meshes") {
+                with_OpenedTreeNode("Added") {
                     with_ID("added") {
 
                         std::vector<std::string> meshesToRemove;
@@ -28,7 +28,7 @@ void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
                             ImGui::SetWindowFontScale(0.7f);
                             ImGui::Text(ICON_FA_TIMES);
 
-                            if (ImGui::IsItemClicked)
+                            if (ImGui::IsItemClicked())
                                 meshesToRemove.push_back(mesh->getId());
 
                             ImGui::SetWindowFontScale(1.0f);
@@ -40,7 +40,7 @@ void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
                     }
                 }
 
-                with_TreeNode("Available") {
+                with_OpenedTreeNode("Available") {
                     constexpr float sectionHeightRatio = 0.07f;
 
                     const auto childHeight = ImGui::GetWindowHeight() * sectionHeightRatio;
@@ -63,7 +63,7 @@ void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
 }
 
 void ModelComponentGui::showMeshesSection(const std::string& header, Params& params, MeshesMap& meshes) {
-    with_TreeNode(header.c_str()) {
+    with_OpenedTreeNode(header.c_str()) {
         for (auto& [name, mesh] : meshes) {
             bool isSelected = name == params.selectedMeshName;
 
@@ -75,7 +75,7 @@ void ModelComponentGui::showMeshesSection(const std::string& header, Params& par
             if (isSelected)
                 gui::popTextColor();
 
-            if (ImGui::IsItemClicked) {
+            if (ImGui::IsItemClicked()) {
                 params.selectedMeshName = name;
                 params.selectedMesh = mesh;
             }

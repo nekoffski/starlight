@@ -22,6 +22,10 @@ namespace {
 const std::string HIDDEN_LABEL_PREFIX = "##";
 }
 
+#define with_OpenedTreeNode(...)                      \
+    ImGui::SetNextTreeNodeOpen(true, ImGuiCond_Once); \
+    with_TreeNode(__VA_ARGS__)
+
 namespace sl::gui {
 
 static void setStyle() {

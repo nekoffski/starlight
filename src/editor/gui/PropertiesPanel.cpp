@@ -40,7 +40,7 @@ void PropertiesPanel::render() {
 }
 
 void PropertiesPanel::showSceneProperties() {
-    with_TreeNode(ICON_FA_CLOUD " Skybox") {
+    with_OpenedTreeNode(ICON_FA_CLOUD " Skybox") {
         auto cubemapsNames = m_sharedState->assetManager.getCubemaps().getNames();
         cubemapsNames.insert(cubemapsNames.begin(), "None");
 
@@ -70,19 +70,19 @@ void PropertiesPanel::showSceneProperties() {
         }
     }
 
-    with_TreeNode(ICON_FA_VIDEO "  Camera") if (auto scene = m_sharedState->activeScene.lock(); scene)
+    with_OpenedTreeNode(ICON_FA_VIDEO "  Camera") if (auto scene = m_sharedState->activeScene.lock(); scene)
         scene->camera->onGui();
 
     ImGui::Text("\n");
 
-    with_TreeNode(ICON_FA_COGS "  Properties") {
+    with_OpenedTreeNode(ICON_FA_COGS "  Properties") {
         ImGui::Text("Gravity acceleration");
         ImGui::SliderFloat2("##Gravity acceleration", &glob::Globals::get()->world.gravity.y, 0.0f, 25.0f);
     }
 
     ImGui::Text("\n");
 
-    with_TreeNode(ICON_FA_EYE "  Visual") {
+    with_OpenedTreeNode(ICON_FA_EYE "  Visual") {
         ImGui::Text("Gamma corection");
         ImGui::SliderFloat("##Gamma correction", &glob::Globals::get()->visual.gammaCorrection, 0.0f, 5.0f);
         ImGui::Text("Exposure");

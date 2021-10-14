@@ -22,7 +22,7 @@ public:
         using namespace sl;
 
         with_TabItem(ICON_FA_SITEMAP "  System") {
-            with_TreeNode("Statistics") {
+            with_OpenedTreeNode("Statistics") {
                 auto message = fmt::format(" FPS:            {}\n Delta time: {}\n",
                     core::ClockManager::get()->getFPS(), core::ClockManager::get()->getDeltaTime());
                 ImGui::Text("%s", message.c_str());
@@ -30,7 +30,7 @@ public:
 
             ImGui::Separator();
 
-            with_TreeNode("Renderer") {
+            with_OpenedTreeNode("Renderer") {
                 const auto& info = glob::Globals::get()->rendererInfo;
 
                 constexpr auto formatString = "GPU Vendor:\n       {}\n\nGPU API Release:\n       {}\n\nGPU: \n       {}\n\n"

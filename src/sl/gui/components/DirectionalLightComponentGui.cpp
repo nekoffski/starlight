@@ -21,7 +21,7 @@ void DirectionalLightComponentGui::renderComponentGuiImpl(DirectionalLightCompon
             ImGui::Text("Color");
             ImGui::ColorPicker3("##dlcColor", &component.color[0]);
 
-            with_TreeNode("Shadow map") {
+            with_OpenedTreeNode("Shadow map") {
                 gui::showImage(*component.shadowMap, { 250, 250 }, { 0.0f, 1.0f }, { 1.0f, 0.0f });
             }
         }

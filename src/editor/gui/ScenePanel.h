@@ -46,7 +46,7 @@ public:
 
                 std::vector<std::string> entitiesToRemove;
 
-                with_TreeNode(" " ICON_FA_CUBES "  Scene") {
+                with_OpenedTreeNode(" " ICON_FA_CUBES "  Scene") {
                     for (auto& [entityId, entity] : scene->ecsRegistry.getEntities()) {
                         with_ID(entityId.c_str()) {
 
@@ -89,7 +89,7 @@ public:
                             ImGui::SameLine();
                             ImGui::Text(ICON_FA_TIMES);
 
-                            if (ImGui::IsItemClicked)
+                            if (ImGui::IsItemClicked())
                                 entitiesToRemove.push_back(entityId);
 
                             ImGui::SetWindowFontScale(1.0f);

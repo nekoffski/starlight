@@ -58,13 +58,9 @@ Engine::Engine(cfg::Config* config, platform::Platform* platform)
 
     initLowLevelComponents();
     initManagers();
-
-    gui::setupGui(m_window->getHandle());
 }
 
-Engine::~Engine() {
-    gui::shutdownGui();
-}
+Engine::~Engine() = default;
 
 void Engine::initLowLevelComponents() {
     m_window = m_platform->io.window.get();

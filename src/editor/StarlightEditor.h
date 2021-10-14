@@ -65,10 +65,15 @@ public:
         , m_sceneQuadFrameBuffer(gfx::BufferManager::get()->createFrameBuffer())
         , m_captureSceneRenderPass(m_sceneQuadFrameBuffer.get()) {
 
+        sl::gui::setupGui(sl::core::WindowManager::get()->getWindowHandle());
         sl::gui::addFont("/home/nek0/kapik/projects/starlight/res/fonts/fa-solid-900.ttf",
             ICON_MIN_FA, ICON_MAX_FA);
 
         onStart();
+    }
+
+    ~StarlightEditor() {
+        sl::gui::shutdownGui();
     }
 
     void onStart() {

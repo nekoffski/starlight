@@ -6,6 +6,7 @@
 #include "sl/async/AsyncManager.hpp"
 #include "sl/gfx/Shader.h"
 #include "sl/gfx/ShaderManager.h"
+#include "sl/gui/Utils.hpp"
 
 namespace sl::gui::assets {
 
@@ -19,7 +20,7 @@ void ShaderGui::Provider::render() {
         ImGui::Text("Shader resource");
         ImGui::Separator();
 
-        with_TreeNode("Paths:") {
+        with_OpenedTreeNode("Paths:") {
             ImGui::Text("%s", shader->getVertexShaderPath().c_str());
             ImGui::Text("%s", shader->getFragmentShaderPath().c_str());
             ImGui::Text("%s", shader->getGeometryShaderPath().c_str());
@@ -27,7 +28,7 @@ void ShaderGui::Provider::render() {
 
         ImGui::Separator();
 
-        with_TreeNode("Build") {
+        with_OpenedTreeNode("Build") {
             if (ImGui::Button("Recompile", ImVec2(ImGui::GetWindowWidth() * 0.85f, 0.0f))) {
                 shader->disable();
 

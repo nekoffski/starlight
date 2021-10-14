@@ -89,7 +89,7 @@ void FileBrowser::handleFileExplorer() {
             ImGui::Text("%s", entryRecord.c_str());
         }
 
-        if (ImGui::IsItemClicked) {
+        if (ImGui::IsItemClicked()) {
             m_currentSelection = entry;
 
             if (isDirectory)

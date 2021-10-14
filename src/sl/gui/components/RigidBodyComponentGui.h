@@ -25,19 +25,19 @@ private:
             if (beginComponentTreeNode(ICON_FA_VECTOR_SQUARE " Rigid body", component)) {
                 ImGui::Checkbox("Use gravity", &component.useGravity);
 
-                with_TreeNode("Properties") {
+                with_OpenedTreeNode("Properties") {
                     ImGui::DragFloat("Mass", &component.mass);
                     ImGui::DragFloat3("Velocity", &component.velocity[0]);
                 }
 
-                with_TreeNode("Collider") {
+                with_OpenedTreeNode("Collider") {
                     ImGui::Checkbox("Enable collisions", &component.enableCollisions);
                     ImGui::Checkbox("Fixed", &component.fixed);
 
                     if (component.boundingBox != nullptr && params.selectedBoundingBox == 0)
                         params.selectedBoundingBox = sl::core::indexOf(m_boundingBoxes, component.boundingBox->getName(), 0);
 
-                    with_TreeNode("Bounding box") {
+                    with_OpenedTreeNode("Bounding box") {
                         if (gui::combo("##Bounding box type", &params.selectedBoundingBox, m_boundingBoxes))
                             addBoundingBox(component, entity, params);
 

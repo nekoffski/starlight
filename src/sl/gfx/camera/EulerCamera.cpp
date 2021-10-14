@@ -8,7 +8,7 @@
 #include "sl/core/InputManager.h"
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/glob/Globals.h"
-#include "sl/gui/GuiApi.h"
+#include "sl/gui/Utils.hpp"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Utils.hpp"
 
@@ -96,7 +96,7 @@ void EulerCamera::calculateVectors() {
 }
 
 void EulerCamera::onGui() {
-    with_TreeNode("Euler camera") {
+    with_OpenedTreeNode("Euler camera") {
         ImGui::SliderFloat("Fi", &m_fi, minFi, maxFi);
         ImGui::SliderFloat("Psi", &m_psi, minPsi, maxPsi);
         ImGui::SliderFloat("R", &m_radius, 1.0f, 25.0f);
