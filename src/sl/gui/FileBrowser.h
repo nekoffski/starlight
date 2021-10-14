@@ -16,13 +16,13 @@ public:
     explicit FileBrowser(const std::string& id,
         std::unique_ptr<kc::core::FileSystem> fileSystem = std::make_unique<kc::core::FileSystem>());
 
-    void open(GuiApi& gui, Callback&&);
-    void show(GuiApi& gui);
+    void open(Callback&&);
+    void show();
 
 private:
-    void handleHistory(GuiApi& gui);
-    void handleFileExplorer(GuiApi& gui);
-    void handleBottomPanel(GuiApi& gui);
+    void handleHistory();
+    void handleFileExplorer();
+    void handleBottomPanel();
 
     std::string extractNameFromPath(const std::string& path);
 

@@ -15,72 +15,71 @@ public:
         , m_engineState(EngineState::stopped) {
     }
 
-    void render(sl::gui::GuiApi& gui) {
+    void render() {
         auto& properties = m_sharedState->guiProperties.toolBarProperties;
 
-        gui.beginTransparentPanel("Toolbar", properties.origin, properties.size);
-        gui.pushId("ToolBar");
+        sl::gui::beginTransparentPanel("Toolbar", properties.origin, properties.size);
 
-        auto handleEngineStateButton = [&](const std::string& label, EngineState state) -> void {
-            bool isSelected = m_engineState == state;
+        with_ID("ToolBar") {
 
-            if (isSelected)
-                gui.pushTextColor(sl::gui::selectedEntryColor);
+            auto handleEngineStateButton = [&](const std::string& label, EngineState state) -> void {
+                bool isSelected = m_engineState == state;
 
-            if (gui.button(label)) {
-                sl::event::EventManager::get()->emit<EngineStateChanged>(state).toAll();
-                m_engineState = state;
-            }
+                if (isSelected)
+                    sl::gui::pushTextColor(sl::gui::selectedEntryColor);
 
-            if (isSelected)
-                gui.popColor();
-        };
+                if (ImGui::Button(label.c_str())) {
+                    sl::event::EventManager::get()->emit<EngineStateChanged>(state).toAll();
+                    m_engineState = state;
+                }
 
-        if (gui.button(ICON_FA_GAMEPAD))
-            sl::event::EventManager::get()->emit<EnterGameMode>().toAll();
+                if (isSelected)
+                    sl::gui::popTextColor();
+            };
 
-        gui.sameLine();
-        gui.displayText("  " ICON_FA_ELLIPSIS_V "  ");
-        gui.sameLine();
+            if (ImGui::Button(ICON_FA_GAMEPAD))
+                sl::event::EventManager::get()->emit<EnterGameMode>().toAll();
 
-        handleEngineStateButton(ICON_FA_PLAY, EngineState::started);
-        gui.sameLine();
+            ImGui::SameLine();
+            ImGui::Text("  " ICON_FA_ELLIPSIS_V "  ");
+            ImGui::SameLine();
 
-        handleEngineStateButton(ICON_FA_PAUSE, EngineState::paused);
-        gui.sameLine();
+            handleEngineStateButton(ICON_FA_PLAY, EngineState::started);
+            ImGui::SameLine();
 
-        handleEngineStateButton(ICON_FA_STOP, EngineState::stopped);
-        gui.sameLine();
+            handleEngineStateButton(ICON_FA_PAUSE, EngineState::paused);
+            ImGui::SameLine();
 
-        gui.displayText("  " ICON_FA_ELLIPSIS_V "  ");
+            handleEngineStateButton(ICON_FA_STOP, EngineState::stopped);
+            ImGui::SameLine();
 
-        gui.sameLine();
+            ImGui::Text("  " ICON_FA_ELLIPSIS_V "  ");
+            ImGui::SameLine();
 
-        auto handleGizmoOperation = [&](const std::string& label, sl::gui::GizmoOperation operation) -> void {
-            bool isSelected = (m_gizmoOperation == operation);
+            auto handleGizmoOperation = [&](const std::string& label, sl::gui::GizmoOperation operation) -> void {
+                bool isSelected = (m_gizmoOperation == operation);
 
-            if (isSelected)
-                gui.pushTextColor(sl::gui::selectedEntryColor);
+                if (isSelected)
+                    sl::gui::pushTextColor(sl::gui::selectedEntryColor);
 
-            if (gui.button(label)) {
-                m_gizmoOperation = operation;
-                m_sharedState->gizmoOperation = operation;
-            }
+                if (ImGui::Button(label.c_str())) {
+                    m_gizmoOperation = operation;
+                    m_sharedState->gizmoOperation = operation;
+                }
 
-            if (isSelected)
-                gui.popColor();
-        };
+                if (isSelected)
+                    sl::gui::popTextColor();
+            };
 
-        handleGizmoOperation(ICON_FA_ARROWS_ALT, sl::gui::GizmoOperation::translate);
-        gui.sameLine();
+            handleGizmoOperation(ICON_FA_ARROWS_ALT, sl::gui::GizmoOperation::translate);
+            ImGui::SameLine();
 
-        handleGizmoOperation(ICON_FA_SYNC_ALT, sl::gui::GizmoOperation::rotate);
-        gui.sameLine();
+            handleGizmoOperation(ICON_FA_SYNC_ALT, sl::gui::GizmoOperation::rotate);
+            ImGui::SameLine();
 
-        handleGizmoOperation(ICON_FA_EXPAND_ALT, sl::gui::GizmoOperation::scale);
-
-        gui.popId();
-        gui.endPanel();
+            handleGizmoOperation(ICON_FA_EXPAND_ALT, sl::gui::GizmoOperation::scale);
+        }
+        sl::gui::endPanel();
     }
 
 private:

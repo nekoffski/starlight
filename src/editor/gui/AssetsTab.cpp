@@ -1,8 +1,11 @@
 #include "AssetsTab.h"
 
 #include <any>
-
 #include <ranges>
+
+#include <imgui_sugar.hpp>
+
+#include "sl/gui/Utils.hpp"
 
 #include "editor/DebugConsole.hpp"
 #include "sl/core/Errors.hpp"
@@ -30,69 +33,64 @@ AssetsTab::AssetsTab(std::shared_ptr<SharedState> sharedState)
     , m_fileBrowser("Assets file browser") {
 }
 
-void AssetsTab::render(sl::gui::GuiApi& gui) {
-    gui.beginGroup();
-    if (gui.button(ICON_FA_PLUS "  Load new asset")) {
-        resetArgs();
-        gui.openPopUp("AssetLoadPopUp");
-    }
+void AssetsTab::render() {
+    with_Group {
+        if (ImGui::Button(ICON_FA_PLUS "  Load new asset")) {
+            resetArgs();
+            ImGui::OpenPopup("AssetLoadPopUp");
+        }
 
-    if (gui.beginPopUp("AssetLoadPopUp")) {
-        showLoaderPopUp(gui);
-        gui.endPopUp();
-    }
+        with_Popup("AssetLoadPopUp")
+            showLoaderPopUp();
 
-    gui.displayText("\n");
+        ImGui::Text("\n");
 
-    static std::string selectedAssetName = "";
+        static std::string selectedAssetName = "";
 
-    auto displayAssetSection = [&](const std::string& header, auto& assetsMap) {
-        gui.beginGroup();
+        auto displayAssetSection = [&](const std::string& header, auto& assetsMap) {
+            with_Group {
+                with_TreeNode(header.c_str()) {
+                    for (auto& [name, asset] : assetsMap) {
+                        bool isSelected = (name == selectedAssetName);
 
-        if (gui.beginTreeNode(header)) {
-            for (auto& [name, asset] : assetsMap) {
-                bool isSelected = (name == selectedAssetName);
+                        if (isSelected)
+                            sl::gui::pushTextColor(sl::gui::selectedEntryColor);
 
-                if (isSelected)
-                    gui.pushTextColor(sl::gui::selectedEntryColor);
+                        ImGui::Text("%s", name.c_str());
 
-                gui.displayText(name);
+                        if (isSelected)
+                            sl::gui::popTextColor();
 
-                if (isSelected)
-                    gui.popColor();
-
-                if (gui.isPreviousWidgetClicked()) {
-                    selectedAssetName = name;
-                    m_sharedState->activeAssetGuiProvider = m_assetsGui.createGuiProvider(asset);
+                        if (ImGui::IsItemClicked()) {
+                            selectedAssetName = name;
+                            m_sharedState->activeAssetGuiProvider = m_assetsGui.createGuiProvider(asset);
+                        }
+                    }
                 }
             }
-            gui.popTreeNode();
-        }
-        gui.endGroup();
-    };
+        };
 
-    auto& cubemaps = m_sharedState->assetManager.getCubemaps().getAll();
-    displayAssetSection("Cubemaps", cubemaps);
-    gui.sameLine();
+        auto& cubemaps = m_sharedState->assetManager.getCubemaps().getAll();
+        displayAssetSection("Cubemaps", cubemaps);
+        ImGui::SameLine();
 
-    auto& meshes = m_sharedState->assetManager.getMeshes().getAll();
-    displayAssetSection("Meshes", meshes);
-    gui.sameLine();
+        auto& meshes = m_sharedState->assetManager.getMeshes().getAll();
+        displayAssetSection("Meshes", meshes);
+        ImGui::SameLine();
 
-    auto shaders = m_sharedState->assetManager.getShaders().getAll();
-    auto& globalShaders = sl::glob::Globals::get()->shaders->shadersByName;
+        auto shaders = m_sharedState->assetManager.getShaders().getAll();
+        auto& globalShaders = sl::glob::Globals::get()->shaders->shadersByName;
 
-    for (auto& [name, shader] : globalShaders)
-        shaders[name] = shader;
+        for (auto& [name, shader] : globalShaders)
+            shaders[name] = shader;
 
-    displayAssetSection("Shader", shaders);
+        displayAssetSection("Shader", shaders);
 
-    gui.sameLine();
+        ImGui::SameLine();
 
-    auto& textures = m_sharedState->assetManager.getTextures().getAll();
-    displayAssetSection("Textures", textures);
-
-    gui.endGroup();
+        auto& textures = m_sharedState->assetManager.getTextures().getAll();
+        displayAssetSection("Textures", textures);
+    }
 }
 
 void AssetsTab::resetArgs() {
@@ -105,78 +103,77 @@ void AssetsTab::resetArgs() {
     };
 }
 
-void AssetsTab::showLoaderPopUp(sl::gui::GuiApi& gui) {
+void AssetsTab::showLoaderPopUp() {
     static const std::vector<std::string> labels = { "Cubemap", "Texture", "Model", "Shader" };
 
-    gui.combo(sl::gui::createHiddenLabel("AssetsCombo"), m_assetsArgs.activeItem, labels);
+    sl::gui::combo("##AssetsCombo", &m_assetsArgs.activeItem, labels);
 
     m_loadClicked = false;
 
-    if (gui.button("Quit"))
-        gui.closeCurrentPopUp();
+    if (ImGui::Button("Quit"))
+        ImGui::CloseCurrentPopup();
 
-    gui.sameLine();
-    if (gui.button("Load")) {
+    ImGui::SameLine();
+    if (ImGui::Button("Load")) {
         m_loadClicked = true;
     }
 
-    gui.sameLine(250);
-    gui.beginGroup();
+    ImGui::SameLine(250);
 
-    gui.displayText("Name");
-    gui.sameLine(padding);
-    gui.inputText(sl::gui::createHiddenLabel("Name"), m_assetsArgs.assetName);
+    with_Group {
+        ImGui::Text("Name");
+        ImGui::SameLine(padding);
+        sl::gui::inputText("##Name", m_assetsArgs.assetName);
 
-    try {
-        switch (m_assetsArgs.activeItem) {
-        case 0: {
-            handleCubemapLoader(gui);
-            break;
+        try {
+            switch (m_assetsArgs.activeItem) {
+            case 0: {
+                handleCubemapLoader();
+                break;
+            }
+
+            case 1: {
+                handleTextureLoader();
+                break;
+            }
+
+            case 2: {
+                handleModelLoader();
+                break;
+            }
+
+            case 3: {
+                handleShaderLoader();
+                break;
+            }
+            }
+        } catch (sl::core::AssetError& err) {
+            m_errorDialog.setErrorMessage(err.getDetails());
+            WRITE_DEBUG("%s", err.asString());
+            m_loadClicked = false;
         }
 
-        case 1: {
-            handleTextureLoader(gui);
-            break;
-        }
-
-        case 2: {
-            handleModelLoader(gui);
-            break;
-        }
-
-        case 3: {
-            handleShaderLoader(gui);
-            break;
-        }
-        }
-    } catch (sl::core::AssetError& err) {
-        m_errorDialog.setErrorMessage(err.getDetails());
-        WRITE_DEBUG("%s", err.asString());
-        m_loadClicked = false;
+        if (m_loadClicked)
+            ImGui::CloseCurrentPopup();
     }
 
-    if (m_loadClicked) {
-        gui.closeCurrentPopUp();
-    }
-
-    gui.endGroup();
-    m_errorDialog.show(gui);
+    m_errorDialog.show();
 }
 
-void AssetsTab::handleShaderLoader(sl::gui::GuiApi& gui) {
-    sl::gui::labeledTextInput(gui, "Vertex shader", m_assetsArgs.faces[0], padding);
-    if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(gui, [&v = m_assetsArgs.faces[0]](const std::string& value) { v = value; });
+void AssetsTab::handleShaderLoader() {
+    sl::gui::labeledTextInput("Vertex shader", m_assetsArgs.faces[0], padding);
+    if (ImGui::IsItemClicked)
+        m_fileBrowser.open([&v = m_assetsArgs.faces[0]](const std::string& value) { v = value; });
 
-    sl::gui::labeledTextInput(gui, "Fragment shader", m_assetsArgs.faces[1], padding);
-    if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(gui, [&v = m_assetsArgs.faces[1]](const std::string& value) { v = value; });
+    sl::gui::labeledTextInput("Fragment shader", m_assetsArgs.faces[1], padding);
+    if (ImGui::IsItemClicked)
+        m_fileBrowser.open([&v = m_assetsArgs.faces[1]](const std::string& value) { v = value; });
 
-    sl::gui::labeledTextInput(gui, "Geometry shader", m_assetsArgs.faces[2], padding);
-    if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(gui, [&v = m_assetsArgs.faces[2]](const std::string& value) { v = value; });
+    sl::gui::labeledTextInput("Geometry shader", m_assetsArgs.faces[2], padding);
+    if (ImGui::IsItemClicked)
+        m_fileBrowser.open([&v = m_assetsArgs.faces[2]](const std::string& value) { v = value; });
 
-    m_fileBrowser.show(gui);
+    m_fileBrowser.show();
 
     if (m_loadClicked) {
         validateAssetName(m_assetsArgs.assetName);
@@ -188,32 +185,32 @@ void AssetsTab::handleShaderLoader(sl::gui::GuiApi& gui) {
     }
 }
 
-void AssetsTab::handleCubemapLoader(sl::gui::GuiApi& gui) {
-    sl::gui::labeledTextInput(gui, "Right", m_assetsArgs.faces[0], padding);
-    if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(gui, [&v = m_assetsArgs.faces[0]](const std::string& value) { v = value; });
+void AssetsTab::handleCubemapLoader() {
+    sl::gui::labeledTextInput("Right", m_assetsArgs.faces[0], padding);
+    if (ImGui::IsItemClicked)
+        m_fileBrowser.open([&v = m_assetsArgs.faces[0]](const std::string& value) { v = value; });
 
-    sl::gui::labeledTextInput(gui, "Left", m_assetsArgs.faces[1], padding);
-    if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(gui, [&v = m_assetsArgs.faces[1]](const std::string& value) { v = value; });
+    sl::gui::labeledTextInput("Left", m_assetsArgs.faces[1], padding);
+    if (ImGui::IsItemClicked)
+        m_fileBrowser.open([&v = m_assetsArgs.faces[1]](const std::string& value) { v = value; });
 
-    sl::gui::labeledTextInput(gui, "Top", m_assetsArgs.faces[2], padding);
-    if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(gui, [&v = m_assetsArgs.faces[2]](const std::string& value) { v = value; });
+    sl::gui::labeledTextInput("Top", m_assetsArgs.faces[2], padding);
+    if (ImGui::IsItemClicked)
+        m_fileBrowser.open([&v = m_assetsArgs.faces[2]](const std::string& value) { v = value; });
 
-    sl::gui::labeledTextInput(gui, "Bottom", m_assetsArgs.faces[3], padding);
-    if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(gui, [&v = m_assetsArgs.faces[3]](const std::string& value) { v = value; });
+    sl::gui::labeledTextInput("Bottom", m_assetsArgs.faces[3], padding);
+    if (ImGui::IsItemClicked)
+        m_fileBrowser.open([&v = m_assetsArgs.faces[3]](const std::string& value) { v = value; });
 
-    sl::gui::labeledTextInput(gui, "Front", m_assetsArgs.faces[4], padding);
-    if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(gui, [&v = m_assetsArgs.faces[4]](const std::string& value) { v = value; });
+    sl::gui::labeledTextInput("Front", m_assetsArgs.faces[4], padding);
+    if (ImGui::IsItemClicked)
+        m_fileBrowser.open([&v = m_assetsArgs.faces[4]](const std::string& value) { v = value; });
 
-    sl::gui::labeledTextInput(gui, "Back", m_assetsArgs.faces[5], padding);
-    if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(gui, [&v = m_assetsArgs.faces[5]](const std::string& value) { v = value; });
+    sl::gui::labeledTextInput("Back", m_assetsArgs.faces[5], padding);
+    if (ImGui::IsItemClicked)
+        m_fileBrowser.open([&v = m_assetsArgs.faces[5]](const std::string& value) { v = value; });
 
-    m_fileBrowser.show(gui);
+    m_fileBrowser.show();
 
     if (m_loadClicked) {
         validateAssetName(m_assetsArgs.assetName);
@@ -229,12 +226,12 @@ void AssetsTab::handleCubemapLoader(sl::gui::GuiApi& gui) {
     }
 }
 
-void AssetsTab::handleModelLoader(sl::gui::GuiApi& gui) {
-    sl::gui::labeledTextInput(gui, "Model", m_assetsArgs.modelName, padding);
-    if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(gui, [&v = m_assetsArgs.modelName](const std::string& value) { v = value; });
+void AssetsTab::handleModelLoader() {
+    sl::gui::labeledTextInput("Model", m_assetsArgs.modelName, padding);
+    if (ImGui::IsItemClicked)
+        m_fileBrowser.open([&v = m_assetsArgs.modelName](const std::string& value) { v = value; });
 
-    m_fileBrowser.show(gui);
+    m_fileBrowser.show();
 
     if (m_loadClicked) {
         validateAssetName(m_assetsArgs.assetName);
@@ -244,13 +241,13 @@ void AssetsTab::handleModelLoader(sl::gui::GuiApi& gui) {
     }
 }
 
-void AssetsTab::handleTextureLoader(sl::gui::GuiApi& gui) {
-    sl::gui::labeledTextInput(gui, "Texture", m_assetsArgs.modelName, padding);
+void AssetsTab::handleTextureLoader() {
+    sl::gui::labeledTextInput("Texture", m_assetsArgs.modelName, padding);
 
-    if (gui.isPreviousWidgetClicked())
-        m_fileBrowser.open(gui, [&v = m_assetsArgs.modelName](const std::string& value) { v = value; });
+    if (ImGui::IsItemClicked)
+        m_fileBrowser.open([&v = m_assetsArgs.modelName](const std::string& value) { v = value; });
 
-    m_fileBrowser.show(gui);
+    m_fileBrowser.show();
 
     if (m_loadClicked) {
         validateAssetName(m_assetsArgs.assetName);

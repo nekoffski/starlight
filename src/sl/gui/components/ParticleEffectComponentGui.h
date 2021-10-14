@@ -12,7 +12,7 @@ class ParticleEffectComponentGui : public ComponentGuiImpl<scene::components::Pa
 
 private:
     void renderComponentGuiImpl(scene::components::ParticleEffectComponent& component,
-        gui::GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity) override;
+        asset::AssetManager& assetManager, ecs::Entity& entity) override;
 
     std::unordered_map<std::string, Params> m_params;
 };

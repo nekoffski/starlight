@@ -10,23 +10,19 @@ BottomPanel::BottomPanel(std::shared_ptr<SharedState> sharedState)
     , m_debugConsoleTab(sharedState) {
 }
 
-void BottomPanel::render(sl::gui::GuiApi& gui) {
+void BottomPanel::render() {
     auto& widgetProperties = m_sharedState->guiProperties.bottomPanelProperties;
-    gui.beginPanel(sl::gui::createHiddenLabel("BottomMenu"), widgetProperties.origin, widgetProperties.size);
 
-    gui.beginTabBar("bottomTabBar");
+    sl::gui::beginPanel("##BottomMenu", widgetProperties.origin, widgetProperties.size);
 
-    if (gui.beginTabItem("Assets")) {
-        m_assetsTab.render(gui);
-        gui.endTabItem();
+    with_TabBar("bottomTabBar") {
+
+        with_TabItem("Assets")
+            m_assetsTab.render();
+
+        with_TabItem("Debug console")
+            m_debugConsoleTab.render();
     }
-
-    if (gui.beginTabItem("Debug console")) {
-        m_debugConsoleTab.render(gui);
-        gui.endTabItem();
-    }
-
-    gui.endTabBar();
-    gui.endPanel();
+    sl::gui::endPanel();
 }
 }

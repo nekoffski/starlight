@@ -12,3 +12,6 @@
 	path = 3rdparty/libkc
 	url = https://github.com/nekoffski/libkc.git
 	branch = dev
+[submodule "3rdparty/imgui_sugar"]
+	path = 3rdparty/imgui_sugar
+	url = https://github.com/mnesarco/imgui_sugar.git

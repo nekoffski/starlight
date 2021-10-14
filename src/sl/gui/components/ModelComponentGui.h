@@ -18,9 +18,9 @@ class ModelComponentGui : public ComponentGuiImpl<scene::components::ModelCompon
 
 private:
     void renderComponentGuiImpl(scene::components::ModelComponent& component,
-        gui::GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity) override;
+        asset::AssetManager& assetManager, ecs::Entity& entity) override;
 
-    void showMeshesSection(const std::string& header, gui::GuiApi& gui, Params& params, MeshesMap&);
+    void showMeshesSection(const std::string& header, Params& params, MeshesMap&);
 
     std::unordered_map<std::string, Params> m_params;
 };

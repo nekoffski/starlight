@@ -1,5 +1,7 @@
 #include "PropertiesPanel.h"
 
+#include <imgui_sugar.hpp>
+
 #include "sl/core/Utils.hpp"
 #include "sl/event/Event.h"
 #include "sl/event/EventManager.h"
@@ -22,35 +24,32 @@ PropertiesPanel::PropertiesPanel(std::shared_ptr<SharedState> sharedState)
     , m_systemTab(sharedState) {
 }
 
-void PropertiesPanel::render(sl::gui::GuiApi& gui) {
+void PropertiesPanel::render() {
     auto& widgetProperties = m_sharedState->guiProperties.propertiesPanelProperties;
 
-    gui.beginPanel("Properties", widgetProperties.origin, widgetProperties.size);
-    gui.beginTabBar("lowerLeftTabBar");
+    sl::gui::beginPanel("Properties", widgetProperties.origin, widgetProperties.size);
+    with_TabBar("lowerLeftTabBar") {
 
-    if (gui.beginTabItem(ICON_FA_GLOBE_EUROPE "  Scene")) {
-        showSceneProperties(gui);
-        gui.endTabItem();
+        with_TabItem(ICON_FA_GLOBE_EUROPE "  Scene")
+            showSceneProperties();
+
+        m_assetTab.render();
+        m_systemTab.render();
     }
-
-    m_assetTab.render(gui);
-    m_systemTab.render(gui);
-
-    gui.endTabBar();
-    gui.endPanel();
+    sl::gui::endPanel();
 }
 
-void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
-    if (gui.beginTreeNode(ICON_FA_CLOUD " Skybox")) {
+void PropertiesPanel::showSceneProperties() {
+    with_TreeNode(ICON_FA_CLOUD " Skybox") {
         auto cubemapsNames = m_sharedState->assetManager.getCubemaps().getNames();
         cubemapsNames.insert(cubemapsNames.begin(), "None");
 
         static int selectedValue = 0;
         static int previousSelectedValue = -1;
 
-        gui.displayText("Cubemap");
-        gui.sameLine();
-        gui.combo(sl::gui::createHiddenLabel("Cubemap"), selectedValue, cubemapsNames);
+        ImGui::Text("Cubemap");
+        ImGui::SameLine();
+        sl::gui::combo(sl::gui::createHiddenLabel("Cubemap"), &selectedValue, cubemapsNames);
 
         if (auto scene = m_sharedState->activeScene.lock(); scene) {
             // if (selectedValue == 0 && scene->skybox != nullptr)
@@ -69,36 +68,26 @@ void PropertiesPanel::showSceneProperties(sl::gui::GuiApi& gui) {
 
             previousSelectedValue = selectedValue;
         }
-
-        gui.popTreeNode();
     }
 
-    if (gui.beginTreeNode(ICON_FA_VIDEO "  Camera")) {
-        if (auto scene = m_sharedState->activeScene.lock(); scene)
-            scene->camera->onGui(gui);
-        gui.popTreeNode();
+    with_TreeNode(ICON_FA_VIDEO "  Camera") if (auto scene = m_sharedState->activeScene.lock(); scene)
+        scene->camera->onGui();
+
+    ImGui::Text("\n");
+
+    with_TreeNode(ICON_FA_COGS "  Properties") {
+        ImGui::Text("Gravity acceleration");
+        ImGui::SliderFloat2("##Gravity acceleration", &glob::Globals::get()->world.gravity.y, 0.0f, 25.0f);
     }
 
-    gui.displayText("\n");
+    ImGui::Text("\n");
 
-    if (gui.beginTreeNode(ICON_FA_COGS "  Properties")) {
-        gui.displayText("Gravity acceleration");
-        gui.sliderFloat("##Gravity acceleration", glob::Globals::get()->world.gravity.y, 0.0f, 25.0f);
-        gui.popTreeNode();
-    }
-
-    gui.displayText("\n");
-
-    if (gui.beginTreeNode(ICON_FA_EYE "  Visual")) {
-        gui.displayText("Gamma corection");
-        gui.sliderFloat("##Gamma correction", glob::Globals::get()->visual.gammaCorrection, 0.0f, 5.0f);
-
-        gui.displayText("Exposure");
-        gui.sliderFloat("##Exposure", glob::Globals::get()->visual.exposure, 0.0f, 5.0f);
-
-        gui.checkbox("Enable bloom", glob::Globals::get()->visual.enableBloom);
-
-        gui.popTreeNode();
+    with_TreeNode(ICON_FA_EYE "  Visual") {
+        ImGui::Text("Gamma corection");
+        ImGui::SliderFloat("##Gamma correction", &glob::Globals::get()->visual.gammaCorrection, 0.0f, 5.0f);
+        ImGui::Text("Exposure");
+        ImGui::SliderFloat("##Exposure", &glob::Globals::get()->visual.exposure, 0.0f, 5.0f);
+        ImGui::Checkbox("Enable bloom", &glob::Globals::get()->visual.enableBloom);
     }
 }
 }

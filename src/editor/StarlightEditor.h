@@ -65,8 +65,7 @@ public:
         , m_sceneQuadFrameBuffer(gfx::BufferManager::get()->createFrameBuffer())
         , m_captureSceneRenderPass(m_sceneQuadFrameBuffer.get()) {
 
-        m_gui = std::make_unique<platform::gui::ImGuiApi>(WindowManager::get()->getWindowHandle());
-        m_gui->addFont("/home/nek0/kapik/projects/starlight/res/fonts/fa-solid-900.ttf",
+        sl::gui::addFont("/home/nek0/kapik/projects/starlight/res/fonts/fa-solid-900.ttf",
             ICON_MIN_FA, ICON_MAX_FA);
 
         onStart();
@@ -119,20 +118,20 @@ public:
         WRITE_DEBUG("{}", "Editor context initialized");
     }
 
-    void renderGui(gui::GuiApi& gui) {
-        gui.begin();
+    void renderGui() {
+        sl::gui::begin();
         if (m_engineMode == editor::EngineMode::inEditor) {
-            m_editorGui->renderEditorGui(gui);
-            m_errorDialog.show(gui);
+            m_editorGui->renderEditorGui();
+            m_errorDialog.show();
         }
-        gui.end();
+        sl::gui::end();
     }
 
     void update(float deltaTime, float time) override {
         m_activeCamera->update(deltaTime);
 
-        glob::Globals::get()->flags.disableKeyboardInput = m_gui->isCapturingKeyboard();
-        glob::Globals::get()->flags.disableMouseInput = m_gui->isCapturingMouse();
+        glob::Globals::get()->flags.disableKeyboardInput = ImGui::GetIO().WantCaptureKeyboard;
+        glob::Globals::get()->flags.disableMouseInput = ImGui::GetIO().WantCaptureMouse;
 
         core::WindowManager::get()->enableCursor(
             not core::InputManager::get()->isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE));
@@ -158,7 +157,7 @@ public:
     void render(gfx::Renderer& renderer) override {
         m_renderPipeline.run(renderer, *m_scene);
 
-        renderGui(*m_gui);
+        renderGui();
     }
 
     bool isRunning() const override {
@@ -342,8 +341,6 @@ private:
     rendering::stages::RenderVectorsStage m_renderVectorsStage;
     rendering::stages::RenderColorBufferStage m_renderColorBufferStage;
     rendering::stages::BlurColorBufferStage m_blurColorBufferStage;
-
-    std::unique_ptr<sl::gui::GuiApi> m_gui;
 
     bool m_isRunning = true;
 };

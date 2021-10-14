@@ -1,5 +1,7 @@
 #pragma once
 
+#include <imgui_sugar.hpp>
+
 #include "sl/asset/AssetManager.h"
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
@@ -8,37 +10,37 @@ namespace sl::gui::components {
 
 struct ComponentGui {
     virtual void renderComponentGui(
-        ecs::Component& component, gui::GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity) = 0;
+        ecs::Component& component, asset::AssetManager& assetManager, ecs::Entity& entity) = 0;
 };
 
 template <typename T>
 class ComponentGuiImpl : public ComponentGui {
 public:
     void renderComponentGui(
-        ecs::Component& component, gui::GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity) override {
+        ecs::Component& component, asset::AssetManager& assetManager, ecs::Entity& entity) override {
 
-        renderComponentGuiImpl(static_cast<T&>(component), gui, assetManager, entity);
+        renderComponentGuiImpl(static_cast<T&>(component), assetManager, entity);
     }
 
 protected:
     virtual void renderComponentGuiImpl(
-        T&, gui::GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity) = 0;
+        T&, asset::AssetManager& assetManager, ecs::Entity& entity) = 0;
 
-    bool beginComponentTreeNode(gui::GuiApi& gui, const std::string& name, ecs::Component& component) const {
-        gui.separator();
+    bool beginComponentTreeNode(const std::string& name, ecs::Component& component) const {
+        ImGui::Separator();
 
-        bool isOpened = gui.beginTreeNode(name);
+        bool isOpened = ImGui::TreeNode(name.c_str());
 
-        gui.sameLine();
-        gui.setFontScale(0.6f);
-        gui.checkbox("##" + name, component.isActive);
+        ImGui::SameLine();
+        ImGui::SetWindowFontScale(0.6f);
+        ImGui::Checkbox(("##" + name).c_str(), &component.isActive);
 
-        gui.setFontScale(1.0f);
+        ImGui::SetWindowFontScale(1.0f);
 
-        gui.sameLine(gui.getCurrentWindowWidth() - 35);
-        gui.displayText(ICON_FA_TIMES);
+        ImGui::SameLine(ImGui::GetWindowWidth() - 35);
+        ImGui::Text(ICON_FA_TIMES);
 
-        component.shouldBeRemoved = gui.isPreviousWidgetClicked();
+        component.shouldBeRemoved = ImGui::IsItemClicked();
         return isOpened;
     }
 };

@@ -18,7 +18,7 @@ public:
         : m_sharedState(sharedState) {
     }
 
-    virtual void render(sl::gui::GuiApi& gui) = 0;
+    virtual void render() = 0;
 
 protected:
     void raise(const std::string& reason) {

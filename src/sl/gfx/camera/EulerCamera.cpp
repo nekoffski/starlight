@@ -2,14 +2,15 @@
 
 #include <algorithm>
 
+#include <imgui_sugar.hpp>
+#include <kc/core/Log.h>
+
 #include "sl/core/InputManager.h"
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/glob/Globals.h"
 #include "sl/gui/GuiApi.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Utils.hpp"
-
-#include <kc/core/Log.h>
 
 namespace sl::gfx::camera {
 
@@ -94,12 +95,11 @@ void EulerCamera::calculateVectors() {
     m_up = math::normalize(math::cross(m_right, m_front));
 }
 
-void EulerCamera::onGui(gui::GuiApi& gui) {
-    if (gui.beginTreeNode("Euler camera")) {
-        gui.sliderFloat("Fi", m_fi, minFi, maxFi);
-        gui.sliderFloat("Psi", m_psi, minPsi, maxPsi);
-        gui.sliderFloat("R", m_radius, 1.0f, 25.0f);
-        gui.popTreeNode();
+void EulerCamera::onGui() {
+    with_TreeNode("Euler camera") {
+        ImGui::SliderFloat("Fi", &m_fi, minFi, maxFi);
+        ImGui::SliderFloat("Psi", &m_psi, minPsi, maxPsi);
+        ImGui::SliderFloat("R", &m_radius, 1.0f, 25.0f);
     }
 }
 }

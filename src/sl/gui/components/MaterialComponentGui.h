@@ -7,7 +7,7 @@ namespace sl::gui::components {
 
 class MaterialComponentGui : public ComponentGuiImpl<scene::components::MaterialComponent> {
 private:
-    void renderComponentGuiImpl(scene::components::MaterialComponent& component, gui::GuiApi& gui,
+    void renderComponentGuiImpl(scene::components::MaterialComponent& component,
         asset::AssetManager& assetManager, ecs::Entity& entity) override;
 };
 

@@ -30,10 +30,10 @@ ComponentsGui::ComponentsGui() {
 }
 
 void ComponentsGui::renderComponentGui(std::type_index index, ecs::Component& component,
-    GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity) {
+    asset::AssetManager& assetManager, ecs::Entity& entity) {
 
     if (m_componentsGui.contains(index))
-        m_componentsGui.at(index)->renderComponentGui(component, gui, assetManager, entity);
+        m_componentsGui.at(index)->renderComponentGui(component, assetManager, entity);
 }
 
 }

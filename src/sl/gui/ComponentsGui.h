@@ -15,7 +15,7 @@ public:
     explicit ComponentsGui();
 
     void renderComponentGui(std::type_index index, ecs::Component& component,
-        GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity);
+        asset::AssetManager& assetManager, ecs::Entity& entity);
 
 private:
     std::unordered_map<std::type_index, ComponentGuiPtr> m_componentsGui;

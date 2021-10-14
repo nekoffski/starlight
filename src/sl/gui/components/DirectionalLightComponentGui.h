@@ -8,7 +8,7 @@ namespace sl::gui::components {
 class DirectionalLightComponentGui : public ComponentGuiImpl<scene::components::DirectionalLightComponent> {
 private:
     void renderComponentGuiImpl(scene::components::DirectionalLightComponent& component,
-        gui::GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity) override;
+        asset::AssetManager& assetManager, ecs::Entity& entity) override;
 };
 
 }

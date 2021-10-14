@@ -4,10 +4,10 @@
 
 namespace editor::gui {
 
-void DebugConsoleTab::render(sl::gui::GuiApi& gui) {
-    if (gui.button("Clear"))
+void DebugConsoleTab::render() {
+    if (ImGui::Button("Clear"))
         DebugConsole::clear();
 
-    gui.displayText(DebugConsole::getContext());
+    ImGui::Text("%s", DebugConsole::getContext().c_str());
 }
 }

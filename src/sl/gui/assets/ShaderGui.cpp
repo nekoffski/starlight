@@ -1,5 +1,8 @@
 #include "ShaderGui.h"
 
+#include <imgui/imgui.h>
+#include <imgui_sugar.hpp>
+
 #include "sl/async/AsyncManager.hpp"
 #include "sl/gfx/Shader.h"
 #include "sl/gfx/ShaderManager.h"
@@ -11,22 +14,21 @@ ShaderGui::Provider::Provider(std::shared_ptr<gfx::Shader> shader, ShaderGui::Pa
     , m_params(params) {
 }
 
-void ShaderGui::Provider::render(GuiApi& gui) {
+void ShaderGui::Provider::render() {
     if (auto shader = m_shader.lock(); shader) {
-        gui.displayText("Shader resource");
-        gui.breakLine();
+        ImGui::Text("Shader resource");
+        ImGui::Separator();
 
-        if (gui.beginTreeNode("Paths:")) {
-            gui.displayText(shader->getVertexShaderPath());
-            gui.displayText(shader->getFragmentShaderPath());
-            gui.displayText(shader->getGeometryShaderPath());
-            gui.popTreeNode();
+        with_TreeNode("Paths:") {
+            ImGui::Text("%s", shader->getVertexShaderPath().c_str());
+            ImGui::Text("%s", shader->getFragmentShaderPath().c_str());
+            ImGui::Text("%s", shader->getGeometryShaderPath().c_str());
         }
 
-        gui.breakLine();
+        ImGui::Separator();
 
-        if (gui.beginTreeNode("Build")) {
-            if (gui.button("Recompile", gui.getCurrentWindowWidth() * 0.85f)) {
+        with_TreeNode("Build") {
+            if (ImGui::Button("Recompile", ImVec2(ImGui::GetWindowWidth() * 0.85f, 0.0f))) {
                 shader->disable();
 
                 try {
@@ -39,12 +41,10 @@ void ShaderGui::Provider::render(GuiApi& gui) {
                 }
             }
 
-            gui.displayText("\n");
+            ImGui::Text("\n");
 
-            if (gui.checkbox("Recompile on save", m_params.recompileOnSave))
+            if (ImGui::Checkbox("Recompile on save", &m_params.recompileOnSave))
                 processRecompileOnSaveRequest(shader);
-
-            gui.popTreeNode();
         }
     }
 }

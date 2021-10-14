@@ -1,8 +1,12 @@
 #include "FileBrowser.h"
 
-#include "sl/gui/GuiStyle.h"
-#include "sl/gui/fonts/FontAwesome.h"
 #include <kc/core/Log.h>
+
+#include <imgui_sugar.hpp>
+
+#include "GuiStyle.h"
+#include "Utils.hpp"
+#include "fonts/FontAwesome.h"
 
 const std::string rootPath = "/home/nek0/kapik/projects/starlight";
 
@@ -13,7 +17,7 @@ FileBrowser::FileBrowser(const std::string& id, std::unique_ptr<kc::core::FileSy
     , m_fileSystem(std::move(fileSystem)) {
 }
 
-void FileBrowser::open(GuiApi& gui, Callback&& callback) {
+void FileBrowser::open(Callback&& callback) {
     m_currentSelection = rootPath;
 
     m_history.clear();
@@ -22,34 +26,30 @@ void FileBrowser::open(GuiApi& gui, Callback&& callback) {
     m_callback = callback;
 
     LOG_DEBUG("Opening file browser");
-    gui.openPopUp(m_id);
+    ImGui::OpenPopup(m_id.c_str());
 }
 
-void FileBrowser::show(GuiApi& gui) {
+void FileBrowser::show() {
     constexpr float windowWidth = 700.0f;
-    gui.setNextWindowSize({ windowWidth, 0.0f });
+    ImGui::SetNextWindowSize(ImVec2(windowWidth, 0.0f));
 
-    if (gui.beginPopUp(m_id)) {
-        handleHistory(gui);
-        gui.breakLine();
+    with_Popup(m_id.c_str()) {
+        handleHistory();
+        ImGui::Separator();
 
         constexpr float mainContentRatio = 0.6f;
         const float mainContentHeight = 450.0f * mainContentRatio;
 
-        gui.beginChild("##fileBrowserChild", math::Vec2 { 0.0f, mainContentHeight });
-        handleFileExplorer(gui);
-        gui.endChild();
+        with_Child("##fileBrowserChild", ImVec2(0.0f, mainContentHeight))
+            handleFileExplorer();
 
-        gui.breakLine();
-
-        handleBottomPanel(gui);
-
-        gui.endPopUp();
+        ImGui::Separator();
+        handleBottomPanel();
     }
 }
 
-void FileBrowser::handleHistory(GuiApi& gui) {
-    if (gui.button("..")) {
+void FileBrowser::handleHistory() {
+    if (ImGui::Button("..")) {
         if (m_history.size() > 1) {
             m_history.pop_back();
             m_currentSelection = m_history.back();
@@ -62,8 +62,8 @@ void FileBrowser::handleHistory(GuiApi& gui) {
     }
 
     for (auto entry = m_history.begin(); entry != m_history.end(); ++entry) {
-        gui.sameLine();
-        if (auto name = extractNameFromPath(*entry); gui.button(name)) {
+        ImGui::SameLine();
+        if (auto name = extractNameFromPath(*entry); ImGui::Button(name.c_str())) {
             m_currentSelection = *entry;
             m_history = std::vector(m_history.begin(), std::next(entry));
 
@@ -72,7 +72,7 @@ void FileBrowser::handleHistory(GuiApi& gui) {
     }
 }
 
-void FileBrowser::handleFileExplorer(GuiApi& gui) {
+void FileBrowser::handleFileExplorer() {
     auto root = m_fileSystem->isDirectory(m_currentSelection) ? m_currentSelection : m_history.back();
 
     for (auto& entry : m_fileSystem->listDirectory(root)) {
@@ -82,14 +82,14 @@ void FileBrowser::handleFileExplorer(GuiApi& gui) {
         auto entryRecord = fmt::format("  {} {}", isDirectory ? ICON_FA_FOLDER_OPEN : ICON_FA_FILE, entryName);
 
         if (entry == m_currentSelection) {
-            gui.pushTextColor(gui::selectedEntryColor);
-            gui.displayText(entryRecord);
-            gui.pushTextColor(gui::guiDefaultTextColor);
+            gui::pushTextColor(gui::selectedEntryColor);
+            ImGui::Text("%s", entryRecord.c_str());
+            gui::popTextColor();
         } else {
-            gui.displayText(entryRecord);
+            ImGui::Text("%s", entryRecord.c_str());
         }
 
-        if (gui.isPreviousWidgetClicked()) {
+        if (ImGui::IsItemClicked) {
             m_currentSelection = entry;
 
             if (isDirectory)
@@ -98,29 +98,29 @@ void FileBrowser::handleFileExplorer(GuiApi& gui) {
     }
 }
 
-void FileBrowser::handleBottomPanel(GuiApi& gui) {
-    if (gui.button(ICON_FA_CHECK_CIRCLE "  Ok")) {
+void FileBrowser::handleBottomPanel() {
+    if (ImGui::Button(ICON_FA_CHECK_CIRCLE "  Ok")) {
         if (m_callback.has_value())
             std::invoke(m_callback.value(), m_currentSelection);
 
-        gui.closeCurrentPopUp();
+        ImGui::CloseCurrentPopup();
     }
 
-    gui.sameLine();
+    ImGui::SameLine();
 
-    if (gui.button(ICON_FA_TIMES_CIRCLE "  Cancel"))
-        gui.closeCurrentPopUp();
+    if (ImGui::Button(ICON_FA_TIMES_CIRCLE "  Cancel"))
+        ImGui::CloseCurrentPopup();
 
-    gui.sameLine();
-    gui.displayText("Full path: ");
-    gui.sameLine();
-    gui.pushItemWidth(400);
-    gui.inputText("##fileSelection", m_currentSelection);
+    ImGui::SameLine();
+    ImGui::Text("Full path: ");
+    ImGui::SameLine();
+    ImGui::PushItemWidth(400);
+    gui::inputText("##fileSelection", m_currentSelection);
 
     if (m_history.size() == 0)
         m_history.push_back(m_currentSelection);
 
-    gui.popItemWidth();
+    ImGui::PopItemWidth();
 }
 
 std::string FileBrowser::extractNameFromPath(const std::string& path) {

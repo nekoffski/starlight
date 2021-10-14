@@ -16,10 +16,10 @@ namespace editor::gui {
 class EntityTab : public Widget {
 public:
     explicit EntityTab(std::shared_ptr<SharedState> sharedState);
-    void render(sl::gui::GuiApi& gui) override;
+    void render() override;
 
 private:
-    void showEntityProperties(sl::gui::GuiApi& gui);
+    void showEntityProperties();
 
     sl::gui::EntityGui m_entityGui;
     int m_selectedComponent;

@@ -22,12 +22,10 @@ EntityTab::EntityTab(std::shared_ptr<SharedState> sharedState)
     , m_selectedComponent(0) {
 }
 
-void EntityTab::render(sl::gui::GuiApi& gui) {
+void EntityTab::render() {
     auto& widgetProperties = m_sharedState->guiProperties.propertiesPanelProperties;
-    if (gui.beginTabItem(ICON_FA_CUBE " Entity")) {
-        showEntityProperties(gui);
-        gui.endTabItem();
-    }
+    with_TabItem(ICON_FA_CUBE " Entity")
+        showEntityProperties();
 }
 
 // clang-format off
@@ -48,7 +46,7 @@ static void handleComponent(int index, ecs::Entity& entity) {
 }
 // clang-format on
 
-void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
+void EntityTab::showEntityProperties() {
     if (m_sharedState->hasSelectedEntity()) {
         auto& selectedEntity = m_sharedState->getSelectedEntity();
 
@@ -59,11 +57,11 @@ void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
 
         auto& namePlaceholder = m_entityNamePlacehoders.at(entityId);
 
-        gui.displayText("Entity name:");
-        gui.inputText("##entity_name", namePlaceholder);
-        gui.sameLine();
+        ImGui::Text("Entity name:");
+        sl::gui::inputText("##entity_name", namePlaceholder);
+        ImGui::SameLine();
 
-        if (gui.button(ICON_FA_CHECK_CIRCLE)) {
+        if (ImGui::Button(ICON_FA_CHECK_CIRCLE)) {
             auto& ecs = m_sharedState->activeScene.lock()->ecsRegistry;
 
             if (ecs.hasEntityByName(namePlaceholder))
@@ -72,51 +70,47 @@ void EntityTab::showEntityProperties(sl::gui::GuiApi& gui) {
                 selectedEntity.setName(namePlaceholder);
         }
 
-        gui.displayText("\n");
-        gui.breakLine();
+        ImGui::Text("\n");
+        ImGui::Separator();
 
         auto& widgetProperties = m_sharedState->guiProperties.rightPanelProperties;
-        if (gui.button(ICON_FA_PLUS " Add component", gui.getCurrentWindowWidth())) {
+        if (ImGui::Button(ICON_FA_PLUS " Add component", ImVec2(ImGui::GetWindowWidth(), 0))) {
             m_selectedComponent = 0;
-            gui.openPopUp("AddComponentPopUp");
+            ImGui::OpenPopup("AddComponentPopUp");
         }
 
-        if (gui.beginPopUp("AddComponentPopUp")) {
+        with_Popup("AddComponentPopUp") {
             static std::vector<std::string> componentsNames = {
                 "Model", "Renderer", "Rigid body", "Particle effect", "Transform", "Point light", "Directional light", "Material"
             };
 
-            gui.beginGroup();
-            gui.combo(sl::gui::createHiddenLabel("ComponentCombo"), m_selectedComponent, componentsNames);
+            with_Group {
+                sl::gui::combo(sl::gui::createHiddenLabel("ComponentCombo"), &m_selectedComponent, componentsNames);
 
-            if (gui.button("Add")) {
-                using namespace scene::components;
-                gui.closeCurrentPopUp();
+                if (ImGui::Button("Add")) {
+                    using namespace scene::components;
+                    ImGui::CloseCurrentPopup();
 
-                try {
-                    // clang-format off
-                    handleComponent<ModelComponent,            0>(m_selectedComponent, selectedEntity);
-                    handleComponent<MeshRendererComponent,     1>(m_selectedComponent, selectedEntity);
-                    handleComponent<RigidBodyComponent,        2>(m_selectedComponent, selectedEntity);
-                    handleComponent<ParticleEffectComponent,   3>(m_selectedComponent, selectedEntity);
-                    handleComponent<TransformComponent,        4>(m_selectedComponent, selectedEntity);
-                    handleComponent<PointLightComponent,       5>(m_selectedComponent, selectedEntity);
-                    handleComponent<DirectionalLightComponent, 6>(m_selectedComponent, selectedEntity);
-                    handleComponent<MaterialComponent,         7>(m_selectedComponent, selectedEntity);
-                    // clang-format on
+                    try {
+                        // clang-format off
+                        handleComponent<ModelComponent,            0>(m_selectedComponent, selectedEntity);
+                        handleComponent<MeshRendererComponent,     1>(m_selectedComponent, selectedEntity);
+                        handleComponent<RigidBodyComponent,        2>(m_selectedComponent, selectedEntity);
+                        handleComponent<ParticleEffectComponent,   3>(m_selectedComponent, selectedEntity);
+                        handleComponent<TransformComponent,        4>(m_selectedComponent, selectedEntity);
+                        handleComponent<PointLightComponent,       5>(m_selectedComponent, selectedEntity);
+                        handleComponent<DirectionalLightComponent, 6>(m_selectedComponent, selectedEntity);
+                        handleComponent<MaterialComponent,         7>(m_selectedComponent, selectedEntity);
+                        // clang-format on
 
-                } catch (core::GuiUserError& e) {
-                    m_errorDialog.setErrorMessage(e.getDetails());
+                    } catch (core::GuiUserError& e) {
+                        m_errorDialog.setErrorMessage(e.getDetails());
+                    }
                 }
             }
-
-            gui.endGroup();
-            gui.endPopUp();
         }
-
-        m_errorDialog.show(gui);
-
-        m_entityGui.renderEntityGui(selectedEntity, gui, m_sharedState->assetManager);
+        m_errorDialog.show();
+        m_entityGui.renderEntityGui(selectedEntity, m_sharedState->assetManager);
     }
 }
 }

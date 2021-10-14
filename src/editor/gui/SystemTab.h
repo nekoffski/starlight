@@ -18,32 +18,28 @@ public:
         : Widget(sharedState) {
     }
 
-    void render(sl::gui::GuiApi& gui) override {
+    void render() override {
         using namespace sl;
 
-        if (gui.beginTabItem(ICON_FA_SITEMAP "  System")) {
-            if (gui.beginTreeNode("Statistics")) {
-                gui.displayText(fmt::format(" FPS:            {}\n Delta time: {}\n",
-                    core::ClockManager::get()->getFPS(), core::ClockManager::get()->getDeltaTime()));
-
-                gui.popTreeNode();
+        with_TabItem(ICON_FA_SITEMAP "  System") {
+            with_TreeNode("Statistics") {
+                auto message = fmt::format(" FPS:            {}\n Delta time: {}\n",
+                    core::ClockManager::get()->getFPS(), core::ClockManager::get()->getDeltaTime());
+                ImGui::Text("%s", message.c_str());
             }
 
-            gui.breakLine();
+            ImGui::Separator();
 
-            if (gui.beginTreeNode("Renderer")) {
+            with_TreeNode("Renderer") {
                 const auto& info = glob::Globals::get()->rendererInfo;
 
                 constexpr auto formatString = "GPU Vendor:\n       {}\n\nGPU API Release:\n       {}\n\nGPU: \n       {}\n\n"
                                               "Shading language version:\n       {}\n\n";
 
-                gui.displayText(fmt::format(formatString, info.gpuApiVendor, info.gpuApiRelease,
-                    info.rendererName, info.shadingLanguageVersion));
-
-                gui.popTreeNode();
+                auto message = fmt::format(formatString, info.gpuApiVendor,
+                    info.gpuApiRelease, info.rendererName, info.shadingLanguageVersion);
+                ImGui::Text("%s", message.c_str());
             }
-
-            gui.endTabItem();
         }
     }
 };

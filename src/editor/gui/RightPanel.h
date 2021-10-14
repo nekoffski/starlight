@@ -17,14 +17,14 @@ public:
         , m_entityTab(sharedState) {
     }
 
-    void render(sl::gui::GuiApi& gui) override {
+    void render() override {
         auto& widgetProperties = m_sharedState->guiProperties.rightPanelProperties;
-        gui.beginPanel(" " ICON_FA_WRENCH " Inspector", widgetProperties.origin, widgetProperties.size);
-        gui.beginTabBar("lowerLeftTabBar");
+        sl::gui::beginPanel(" " ICON_FA_WRENCH " Inspector", widgetProperties.origin, widgetProperties.size);
 
-        m_entityTab.render(gui);
-        gui.endTabBar();
-        gui.endPanel();
+        with_TabBar("lowerLeftTabBar")
+            m_entityTab.render();
+
+        sl::gui::endPanel();
     }
 
 private:

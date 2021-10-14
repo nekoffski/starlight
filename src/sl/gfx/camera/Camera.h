@@ -2,12 +2,12 @@
 
 #include <cstdint>
 
-#include <kc/core/Log.h>
 #include "sl/gfx/ViewFrustum.h"
-#include "sl/gui/GuiApi.h"
 #include "sl/gui/fwd.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
+
+#include <kc/core/Log.h>
 
 namespace sl::gfx::camera {
 
@@ -38,7 +38,7 @@ public:
 
     virtual void update(float) = 0;
 
-    virtual void onGui(gui::GuiApi&) { }
+    virtual void onGui() { }
 
     const math::Vec3& getPosition() {
         return m_position;

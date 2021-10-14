@@ -16,9 +16,9 @@ public:
         , m_propertiesPanel(sharedState) {
     }
 
-    void render(sl::gui::GuiApi& gui) override {
-        m_scenePanel.render(gui);
-        m_propertiesPanel.render(gui);
+    void render() override {
+        m_scenePanel.render();
+        m_propertiesPanel.render();
     }
 
 private:

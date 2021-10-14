@@ -17,43 +17,36 @@ class RigidBodyComponentGui : public ComponentGuiImpl<scene::components::RigidBo
 
 private:
     void renderComponentGuiImpl(scene::components::RigidBodyComponent& component,
-        gui::GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity) override {
+        asset::AssetManager& assetManager, ecs::Entity& entity) override {
 
-        gui.pushId(component.ownerEntityId);
+        with_ID(component.ownerEntityId.c_str()) {
+            auto& params = m_params[component.ownerEntityId];
 
-        auto& params = m_params[component.ownerEntityId];
+            if (beginComponentTreeNode(ICON_FA_VECTOR_SQUARE " Rigid body", component)) {
+                ImGui::Checkbox("Use gravity", &component.useGravity);
 
-        if (beginComponentTreeNode(gui, ICON_FA_VECTOR_SQUARE " Rigid body", component)) {
-            gui.checkbox("Use gravity", component.useGravity);
-
-            if (gui.beginTreeNode("Properties")) {
-                gui.dragFloat("Mass", component.mass);
-                gui.dragFloat3("Velocity", component.velocity);
-
-                gui.popTreeNode();
-            }
-
-            if (gui.beginTreeNode("Collider")) {
-                gui.checkbox("Enable collisions", component.enableCollisions);
-                gui.checkbox("Fixed", component.fixed);
-
-                if (component.boundingBox != nullptr && params.selectedBoundingBox == 0)
-                    params.selectedBoundingBox = sl::core::indexOf(m_boundingBoxes, component.boundingBox->getName(), 0);
-
-                if (gui.beginTreeNode("Bounding box")) {
-                    if (gui.combo("##Bounding box type", params.selectedBoundingBox, m_boundingBoxes))
-                        addBoundingBox(component, entity, params);
-
-                    gui.checkbox("Render bounding box frame", component.renderBoundingBox);
-
-                    gui.popTreeNode();
+                with_TreeNode("Properties") {
+                    ImGui::DragFloat("Mass", &component.mass);
+                    ImGui::DragFloat3("Velocity", &component.velocity[0]);
                 }
-                gui.popTreeNode();
-            }
-            gui.popTreeNode();
-        }
 
-        gui.popId();
+                with_TreeNode("Collider") {
+                    ImGui::Checkbox("Enable collisions", &component.enableCollisions);
+                    ImGui::Checkbox("Fixed", &component.fixed);
+
+                    if (component.boundingBox != nullptr && params.selectedBoundingBox == 0)
+                        params.selectedBoundingBox = sl::core::indexOf(m_boundingBoxes, component.boundingBox->getName(), 0);
+
+                    with_TreeNode("Bounding box") {
+                        if (gui::combo("##Bounding box type", &params.selectedBoundingBox, m_boundingBoxes))
+                            addBoundingBox(component, entity, params);
+
+                        ImGui::Checkbox("Render bounding box frame", &component.renderBoundingBox);
+                    }
+                }
+                ImGui::TreePop();
+            }
+        }
     }
 
     void addBoundingBox(scene::components::RigidBodyComponent& component, ecs::Entity& entity, Params& params) {

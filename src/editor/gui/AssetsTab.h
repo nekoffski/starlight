@@ -22,17 +22,17 @@ class AssetsTab : public Widget {
 
 public:
     explicit AssetsTab(std::shared_ptr<SharedState>);
-    void render(sl::gui::GuiApi& gui) override;
+    void render() override;
 
 private:
-    void handleCubemapLoader(sl::gui::GuiApi& gui);
-    void handleModelLoader(sl::gui::GuiApi& gui);
-    void handleTextureLoader(sl::gui::GuiApi& gui);
-    void handleShaderLoader(sl::gui::GuiApi& gui);
+    void handleCubemapLoader();
+    void handleModelLoader();
+    void handleTextureLoader();
+    void handleShaderLoader();
 
     void resetArgs();
 
-    void showLoaderPopUp(sl::gui::GuiApi& gui);
+    void showLoaderPopUp();
 
     bool m_loadClicked;
 

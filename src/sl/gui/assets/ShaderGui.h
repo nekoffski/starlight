@@ -19,7 +19,7 @@ class ShaderGui {
     public:
         explicit Provider(std::shared_ptr<gfx::Shader> shader, Params& params);
 
-        void render(GuiApi& gui);
+        void render();
 
     private:
         void processRecompileOnSaveRequest(std::shared_ptr<gfx::Shader>& shader);

@@ -16,7 +16,7 @@ class EditorGui {
 
 public:
     explicit EditorGui(std::shared_ptr<SharedState> sharedState);
-    void renderEditorGui(sl::gui::GuiApi& gui);
+    void renderEditorGui();
 
     std::shared_ptr<SharedState> sharedState;
 

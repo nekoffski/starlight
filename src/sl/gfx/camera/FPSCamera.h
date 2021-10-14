@@ -2,12 +2,11 @@
 
 #include "Camera.h"
 
-#include <kc/core/Log.h>
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/gfx/camera/Camera.h"
-#include "sl/gui/GuiApi.h"
 #include "sl/math/Utils.hpp"
 #include "sl/math/Vector.hpp"
+#include <kc/core/Log.h>
 
 namespace sl::gfx::camera {
 
@@ -81,7 +80,7 @@ public:
         return math::lookAt(m_position, m_position + m_front, m_up);
     }
 
-    void onGui(gui::GuiApi&) override {
+    void onGui() override {
     }
 
 private:

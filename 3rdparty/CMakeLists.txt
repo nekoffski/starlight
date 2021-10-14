@@ -4,7 +4,7 @@ add_subdirectory(libkc)
 
 file (GLOB SRC ${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.cpp)
 add_library(imgui STATIC ${SRC})
-target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/imgui_sugar)
 target_link_libraries(imgui PUBLIC glfw glad)
 
 add_library(imguizmo STATIC ${CMAKE_CURRENT_SOURCE_DIR}/ImGuizmo/ImGuizmo.cpp)

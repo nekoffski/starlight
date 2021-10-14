@@ -16,10 +16,10 @@ namespace editor::gui {
 class PropertiesPanel : public Widget {
 public:
     explicit PropertiesPanel(std::shared_ptr<SharedState> sharedState);
-    void render(sl::gui::GuiApi& gui) override;
+    void render() override;
 
 private:
-    void showSceneProperties(sl::gui::GuiApi& gui);
+    void showSceneProperties();
 
     sl::core::GameObjectPtr<sl::gfx::Cubemap> m_selectedCubemap;
 

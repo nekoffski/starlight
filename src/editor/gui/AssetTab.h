@@ -6,6 +6,8 @@
 #include "sl/gfx/Cubemap.h"
 #include "sl/gui/GuiApi.h"
 
+#include <imgui_sugar.hpp>
+
 #include "Widget.h"
 
 namespace editor::gui {
@@ -16,12 +18,10 @@ public:
         : Widget(sharedState) {
     }
 
-    void render(sl::gui::GuiApi& gui) override {
-        if (gui.beginTabItem(ICON_FA_CLOUD "  Asset")) {
+    void render() override {
+        with_TabItem(ICON_FA_CLOUD "  Asset") {
             if (auto& activeAssetGuiProvider = m_sharedState->activeAssetGuiProvider; activeAssetGuiProvider != nullptr)
-                activeAssetGuiProvider->render(gui);
-
-            gui.endTabItem();
+                activeAssetGuiProvider->render();
         }
     }
 };

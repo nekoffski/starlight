@@ -2,9 +2,12 @@
 
 #include <unordered_map>
 
+#include <imgui/imgui.h>
+
 #include "AssetGuiProvider.h"
 #include "sl/core/GameObject.h"
 #include "sl/gfx/Texture.h"
+#include "sl/gui/Utils.hpp"
 
 namespace sl::gui::assets {
 
@@ -15,19 +18,19 @@ class TextureGui {
             : m_texture(texture) {
         }
 
-        void render(GuiApi& gui) {
+        void render() {
             if (m_texture.hasValue()) {
-                gui.displayText("Texture resource");
-                gui.displayText(m_texture->name);
-                gui.breakLine();
+                ImGui::Text("Texture resource");
+                ImGui::Text("%s", m_texture->name.c_str());
+                ImGui::Separator();
 
-                gui.displayText("Path:");
-                gui.displayText(m_texture->path);
+                ImGui::Text("Path:");
+                ImGui::Text("%s", m_texture->path.c_str());
 
-                gui.breakLine();
+                ImGui::Separator();
 
-                auto width = gui.getCurrentWindowWidth();
-                gui.showImage(*m_texture, { width, width });
+                const auto width = ImGui::GetWindowWidth();
+                gui::showImage(*m_texture, { width, width });
             }
         }
 

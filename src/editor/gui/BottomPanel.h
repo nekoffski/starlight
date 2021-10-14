@@ -11,7 +11,7 @@ namespace editor::gui {
 class BottomPanel : public Widget {
 public:
     explicit BottomPanel(std::shared_ptr<SharedState>);
-    void render(sl::gui::GuiApi& gui) override;
+    void render() override;
 
 private:
     AssetsTab m_assetsTab;

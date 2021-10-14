@@ -12,7 +12,6 @@
 #include "sl/core/BaseError.hpp"
 #include "sl/core/FileSystem.h"
 #include "sl/core/InputManager.h"
-#include <kc/core/Log.h>
 #include "sl/ecs/Entity.h"
 #include "sl/event/Categories.h"
 #include "sl/event/Event.h"
@@ -29,6 +28,7 @@
 #include "sl/scene/components/RigidBodyComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 #include "sl/utils/Globals.h"
+#include <kc/core/Log.h>
 
 #include "sl/rendering/CustomFrameBufferRenderPass.h"
 #include "sl/rendering/DefaultFrameBufferRenderPass.h"
@@ -59,9 +59,9 @@ public:
     explicit EditorContext(const std::string& ident)
         : ApplicationContext(ident)
         , m_engineState(editor::EngineState::stopped)
-        , m_depthFrameBuffer(gfx:FrameBuffer::factory->create())
+        , m_depthFrameBuffer(gfx::FrameBuffer::factory->create())
         , m_captureDepthMapsRenderPass(m_depthFrameBuffer.get())
-        , m_sceneQuadFrameBuffer(gfx:FrameBuffer::factory->create())
+        , m_sceneQuadFrameBuffer(gfx::FrameBuffer::factory->create())
         , m_captureSceneRenderPass(m_sceneQuadFrameBuffer.get()) {
     }
 
@@ -121,10 +121,10 @@ public:
     void onDetach() override {
     }
 
-    void renderGui(gui::GuiApi& gui) override {
+    void renderGui() override {
         if (m_engineMode == editor::EngineMode::inEditor) {
-            m_editorGui->renderEditorGui(gui);
-            m_errorDialog.show(gui);
+            m_editorGui->renderEditorGui();
+            m_errorDialog.show();
         }
     }
 
@@ -238,7 +238,7 @@ public:
         m_activeCamera->viewFrustum.viewport = newViewport;
         m_activeCamera->calculateProjectionMatrix();
 
-        m_depthBuffer = gfx:RenderBuffer::factory->create(STARL_DEPTH_COMPONENT, width, height);
+        m_depthBuffer = gfx : RenderBuffer::factory->create(STARL_DEPTH_COMPONENT, width, height);
 
         m_colorBuffer = gfx::Texture::factory->create(width, height, STARL_RGBA16F, STARL_RGBA);
         m_bloomBuffer = gfx::Texture::factory->create(width, height, STARL_RGBA16F, STARL_RGBA);
@@ -305,10 +305,10 @@ private:
     editor::EngineState m_engineState;
     editor::EngineMode m_engineMode;
 
-    std::shared_ptr<gfx:FrameBuffer> m_depthFrameBuffer;
+    std::shared_ptr<gfx : FrameBuffer> m_depthFrameBuffer;
 
-    std::shared_ptr<gfx:FrameBuffer> m_sceneQuadFrameBuffer;
-    std::unique_ptr<gfx:RenderBuffer> m_depthBuffer;
+    std::shared_ptr<gfx : FrameBuffer> m_sceneQuadFrameBuffer;
+    std::unique_ptr<gfx : RenderBuffer> m_depthBuffer;
 
     std::unique_ptr<gfx::Texture> m_colorBuffer;
     std::unique_ptr<gfx::Texture> m_bloomBuffer;

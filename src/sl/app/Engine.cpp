@@ -28,6 +28,8 @@
 #include "sl/core/WindowManager.h"
 #include "sl/event/EventManager.h"
 
+#include "sl/gui/Utils.hpp"
+
 namespace sl::app {
 
 Engine::Builder&& Engine::Builder::setConfig(cfg::Config* config) && {
@@ -56,9 +58,13 @@ Engine::Engine(cfg::Config* config, platform::Platform* platform)
 
     initLowLevelComponents();
     initManagers();
+
+    gui::setupGui(m_window->getHandle());
 }
 
-Engine::~Engine() = default;
+Engine::~Engine() {
+    gui::shutdownGui();
+}
 
 void Engine::initLowLevelComponents() {
     m_window = m_platform->io.window.get();

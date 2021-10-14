@@ -10,83 +10,76 @@ namespace sl::gui::components {
 using namespace scene::components;
 
 void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
-    gui::GuiApi& gui, asset::AssetManager& assetManager, ecs::Entity& entity) {
+    asset::AssetManager& assetManager, ecs::Entity& entity) {
 
-    gui.pushId(component.ownerEntityId);
-    auto& params = m_params[component.ownerEntityId];
+    with_ID(component.ownerEntityId.c_str()) {
+        auto& params = m_params[component.ownerEntityId];
 
-    if (beginComponentTreeNode(gui, ICON_FA_FIGHTER_JET "  Model", component)) {
-        if (gui.beginTreeNode("Meshes")) {
-            if (gui.beginTreeNode("Added")) {
-                gui.pushId("added");
+        if (beginComponentTreeNode(ICON_FA_FIGHTER_JET "  Model", component)) {
+            with_TreeNode("Meshes") {
+                with_TreeNode("Added") {
+                    with_ID("added") {
 
-                std::vector<std::string> meshesToRemove;
+                        std::vector<std::string> meshesToRemove;
 
-                for (auto& mesh : component.meshes) {
-                    gui.displayText(mesh->name);
-                    gui.sameLine(gui.getCurrentWindowWidth() - 55);
-                    gui.setFontScale(0.7f);
-                    gui.displayText(ICON_FA_TIMES);
+                        for (auto& mesh : component.meshes) {
+                            ImGui::Text("%s", mesh->name.c_str());
+                            ImGui::SameLine(ImGui::GetWindowWidth() - 55);
+                            ImGui::SetWindowFontScale(0.7f);
+                            ImGui::Text(ICON_FA_TIMES);
 
-                    if (gui.isPreviousWidgetClicked())
-                        meshesToRemove.push_back(mesh->getId());
+                            if (ImGui::IsItemClicked)
+                                meshesToRemove.push_back(mesh->getId());
 
-                    gui.setFontScale(1.0f);
+                            ImGui::SetWindowFontScale(1.0f);
+                        }
+
+                        for (auto& meshId : meshesToRemove)
+                            std::erase_if(component.meshes,
+                                [&meshId](auto& element) -> bool { return meshId == element->getId(); });
+                    }
                 }
 
-                for (auto& meshId : meshesToRemove)
-                    std::erase_if(component.meshes,
-                        [&meshId](auto& element) -> bool { return meshId == element->getId(); });
+                with_TreeNode("Available") {
+                    constexpr float sectionHeightRatio = 0.07f;
 
-                gui.popId();
-                gui.popTreeNode();
-            }
+                    const auto childHeight = ImGui::GetWindowHeight() * sectionHeightRatio;
 
-            if (gui.beginTreeNode("Available")) {
-                constexpr float sectionHeightRatio = 0.07f;
-
-                const auto childHeight = math::Vec2 { 0, gui.getCurrentWindowHeight() * sectionHeightRatio };
-                gui.beginChild("Meshes: ", childHeight);
-
-                showMeshesSection("Predefined", gui, params, glob::Globals::get()->geom->meshes);
-                showMeshesSection("Loaded", gui, params, assetManager.getMeshes().getAll());
-
-                gui.endChild();
-
-                if (gui.button("Add mesh to model"))
-                    if (auto selectedMesh = params.selectedMesh.lock(); selectedMesh) {
-                        component.meshes.push_back(selectedMesh);
-                        params.selectedMesh.reset();
+                    with_Child("Meshes: ", ImVec2(0, childHeight)) {
+                        showMeshesSection("Predefined", params, glob::Globals::get()->geom->meshes);
+                        showMeshesSection("Loaded", params, assetManager.getMeshes().getAll());
                     }
 
-                gui.popTreeNode();
+                    if (ImGui::Button("Add mesh to model"))
+                        if (auto selectedMesh = params.selectedMesh.lock(); selectedMesh) {
+                            component.meshes.push_back(selectedMesh);
+                            params.selectedMesh.reset();
+                        }
+                }
             }
-            gui.popTreeNode();
+            ImGui::TreePop();
         }
-        gui.popTreeNode();
     }
-    gui.popId();
 }
 
-void ModelComponentGui::showMeshesSection(const std::string& header, gui::GuiApi& gui, Params& params, MeshesMap& meshes) {
-    if (gui.beginTreeNode(header)) {
+void ModelComponentGui::showMeshesSection(const std::string& header, Params& params, MeshesMap& meshes) {
+    with_TreeNode(header.c_str()) {
         for (auto& [name, mesh] : meshes) {
             bool isSelected = name == params.selectedMeshName;
 
             if (isSelected)
-                gui.pushTextColor(gui::selectedEntryColor);
+                gui::pushTextColor(gui::selectedEntryColor);
 
-            gui.displayText(name);
+            ImGui::Text("%s", name.c_str());
 
             if (isSelected)
-                gui.popColor();
+                gui::popTextColor();
 
-            if (gui.isPreviousWidgetClicked()) {
+            if (ImGui::IsItemClicked) {
                 params.selectedMeshName = name;
                 params.selectedMesh = mesh;
             }
         }
-        gui.popTreeNode();
     }
 }
 

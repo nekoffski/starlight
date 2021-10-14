@@ -11,7 +11,7 @@ public:
     explicit EulerCamera(const ViewFrustum& viewFrustum, math::Vec3, float, float);
 
     void update(float) override;
-    void onGui(gui::GuiApi&) override;
+    void onGui() override;
 
     const math::Mat4 getViewMatrix() override {
         return math::lookAt(m_position, m_center, m_up);

@@ -16,46 +16,42 @@ EditorGui::EditorGui(std::shared_ptr<SharedState> sharedState)
     , m_fileBrowser("editorGuiFileBrowser") {
 }
 
-void EditorGui::renderEditorGui(sl::gui::GuiApi& gui) {
+void EditorGui::renderEditorGui() {
     using namespace event;
 
-    gui.pushTextColor(sl::gui::guiDefaultTextColor);
+    sl::gui::pushTextColor(sl::gui::guiDefaultTextColor);
 
     std::optional<sl::gui::FileBrowser::Callback> callback;
 
-    if (gui.beginMainMenuBar()) {
-        if (gui.beginMenu(ICON_FA_BARS " File")) {
-            if (gui.menuItem("Export scene"))
+    with_MainMenuBar {
+        with_Menu(ICON_FA_BARS " File") {
+            if (ImGui::MenuItem("Export scene"))
                 callback = [](const std::string& path) -> void {
                     EventManager::get()->emit<SerializeSceneEvent>(path).toAll();
                 };
 
-            if (gui.menuItem("Import scene"))
+            if (ImGui::MenuItem("Import scene"))
                 callback = [](const std::string& path) -> void {
                     EventManager::get()->emit<DeserializeSceneEvent>(path).toAll();
                 };
 
-            if (gui.menuItem("Quit"))
+            if (ImGui::MenuItem("Quit"))
                 EventManager::get()->emit<QuitEvent>().toAll();
-
-            gui.endMenu();
         }
-
-        gui.endMainMenuBar();
     }
 
     if (callback.has_value()) {
-        m_fileBrowser.open(gui, std::move(callback.value()));
+        m_fileBrowser.open(std::move(callback.value()));
         callback.reset();
     }
 
-    m_fileBrowser.show(gui);
+    m_fileBrowser.show();
 
-    m_leftPanel.render(gui);
-    m_bottomPanel.render(gui);
-    m_rightPanel.render(gui);
-    m_toolBar.render(gui);
+    m_leftPanel.render();
+    m_bottomPanel.render();
+    m_rightPanel.render();
+    m_toolBar.render();
 
-    gui.popColor();
+    sl::gui::popTextColor();
 }
 }
