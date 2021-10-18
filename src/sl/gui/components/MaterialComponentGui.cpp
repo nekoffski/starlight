@@ -17,6 +17,8 @@ void MaterialComponentGui::renderComponentGuiImpl(MaterialComponent& component,
             ImGui::ColorPicker3("#Specular color", &component.specularColor[0]);
             ImGui::Text("Shininess");
             ImGui::DragFloat("#rotation", &component.shininess, 0.5f, 0.0f, 128.0f);
+
+            ImGui::TreePop();
         }
     }
 }

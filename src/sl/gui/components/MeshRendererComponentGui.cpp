@@ -20,6 +20,7 @@ void MeshRendererComponentGui::renderComponentGuiImpl(MeshRendererComponent& com
 
             ImGui::Text("\n");
             ImGui::Checkbox("Is transparent for light", &component.isTransparentForLight);
+            ImGui::TreePop();
         }
     }
 }

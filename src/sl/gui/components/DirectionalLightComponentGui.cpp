@@ -24,6 +24,8 @@ void DirectionalLightComponentGui::renderComponentGuiImpl(DirectionalLightCompon
             with_OpenedTreeNode("Shadow map") {
                 gui::showImage(*component.shadowMap, { 250, 250 }, { 0.0f, 1.0f }, { 1.0f, 0.0f });
             }
+
+            ImGui::TreePop();
         }
     }
 }

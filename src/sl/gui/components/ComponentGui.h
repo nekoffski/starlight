@@ -29,6 +29,7 @@ protected:
     bool beginComponentTreeNode(const std::string& name, ecs::Component& component) const {
         ImGui::Separator();
 
+        ImGui::SetNextItemOpen(ImGuiCond_Once, true);
         bool isOpened = ImGui::TreeNode(name.c_str());
 
         ImGui::SameLine();
