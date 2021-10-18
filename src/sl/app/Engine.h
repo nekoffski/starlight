@@ -19,11 +19,10 @@
 #include "sl/geom/GeometryManager.h"
 #include "sl/gfx/fwd.h"
 #include "sl/glob/Globals.h"
-#include "sl/gui/GuiApi.h"
+
 #include "sl/gui/fonts/FontAwesome.h"
 #include "sl/platform/Platform.hpp"
 #include "sl/platform/glfw/GlfwInput.h"
-#include "sl/platform/gui/ImGuiApi.h"
 
 #include "sl/async/AsyncManager.hpp"
 #include "sl/core/ClockManager.h"

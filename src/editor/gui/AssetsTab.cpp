@@ -14,7 +14,7 @@
 #include "sl/geom/GeometryManager.h"
 #include "sl/gfx/ShaderManager.h"
 #include "sl/glob/Globals.h"
-#include "sl/gui/GuiApi.h"
+
 #include "sl/gui/Utils.hpp"
 
 namespace editor::gui {

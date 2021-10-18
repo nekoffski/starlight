@@ -7,7 +7,7 @@
 #include "sl/gfx/Cubemap.h"
 #include "sl/gui/EntityGui.h"
 #include "sl/gui/ErrorDialog.hpp"
-#include "sl/gui/GuiApi.h"
+
 
 #include "Widget.h"
 

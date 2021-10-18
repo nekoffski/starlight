@@ -3,7 +3,7 @@
 #include <string>
 
 #include "sl/asset/AssetManager.h"
-#include "sl/gui/GuiApi.h"
+
 #include "sl/gui/Utils.hpp"
 #include "sl/gui/fonts/FontAwesome.h"
 

@@ -5,8 +5,6 @@
 
 #include <kc/core/FileSystem.h>
 
-#include "GuiApi.h"
-
 namespace sl::gui {
 
 class FileBrowser {

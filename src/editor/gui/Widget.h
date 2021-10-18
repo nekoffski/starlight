@@ -4,7 +4,7 @@
 
 #include "SharedState.hpp"
 #include "sl/core/Errors.hpp"
-#include "sl/gui/GuiApi.h"
+
 #include "sl/gui/GuiStyle.h"
 #include "sl/gui/fonts/FontAwesome.h"
 #include "sl/math/Vector.hpp"

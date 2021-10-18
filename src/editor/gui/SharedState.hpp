@@ -5,7 +5,7 @@
 
 #include "GuiProperties.h"
 #include "sl/ecs/Entity.h"
-#include "sl/gui/GuiApi.h"
+
 #include "sl/gui/assets/AssetGuiProvider.h"
 #include "sl/scene/Scene.h"
 

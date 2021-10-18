@@ -8,7 +8,7 @@
 #include "sl/gui/AssetsGui.hpp"
 #include "sl/gui/ErrorDialog.hpp"
 #include "sl/gui/FileBrowser.h"
-#include "sl/gui/GuiApi.h"
+
 
 namespace editor::gui {
 

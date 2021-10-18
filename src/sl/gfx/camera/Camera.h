@@ -3,7 +3,6 @@
 #include <cstdint>
 
 #include "sl/gfx/ViewFrustum.h"
-#include "sl/gui/fwd.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
 

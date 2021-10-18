@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sl/gui/GuiApi.h"
+
 
 #include "PropertiesPanel.h"
 #include "ScenePanel.h"

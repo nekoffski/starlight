@@ -17,7 +17,7 @@
 #include "sl/gfx/camera/FPSCamera.h"
 #include "sl/glob/Globals.h"
 #include "sl/gui/ErrorDialog.hpp"
-#include "sl/gui/GuiApi.h"
+
 #include "sl/gui/Utils.hpp"
 #include "sl/gui/fonts/FontAwesome.h"
 #include "sl/scene/Scene.h"

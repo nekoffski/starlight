@@ -6,7 +6,7 @@
 #include "sl/ecs/Entity.h"
 #include "sl/gfx/Cubemap.h"
 #include "sl/glob/Globals.h"
-#include "sl/gui/GuiApi.h"
+
 
 #include "Widget.h"
 

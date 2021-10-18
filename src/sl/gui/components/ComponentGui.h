@@ -34,6 +34,7 @@ protected:
 
         ImGui::SameLine();
         ImGui::SetWindowFontScale(0.6f);
+
         ImGui::Checkbox(("##" + name).c_str(), &component.isActive);
 
         ImGui::SetWindowFontScale(1.0f);
