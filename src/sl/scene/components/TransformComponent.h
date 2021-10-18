@@ -6,7 +6,7 @@
 
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
-#include "sl/gui/Utils.hpp"
+#include "sl/gui/Utils.h"
 #include "sl/gui/fonts/FontAwesome.h"
 #include "sl/math/Utils.hpp"
 #include "sl/math/Vector.hpp"

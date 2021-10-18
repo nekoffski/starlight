@@ -11,7 +11,7 @@ class ToolBar : public Widget {
 public:
     explicit ToolBar(std::shared_ptr<SharedState> sharedState)
         : Widget(sharedState)
-        , m_gizmoOperation(sl::gui::GizmoOperation::translate)
+        , m_gizmoOperation(sl::gui::GizmoOp::translate)
         , m_engineState(EngineState::stopped) {
     }
 
@@ -56,7 +56,7 @@ public:
             ImGui::Text("  " ICON_FA_ELLIPSIS_V "  ");
             ImGui::SameLine();
 
-            auto handleGizmoOperation = [&](const std::string& label, sl::gui::GizmoOperation operation) -> void {
+            auto handleGizmoOp = [&](const std::string& label, sl::gui::GizmoOp operation) -> void {
                 bool isSelected = (m_gizmoOperation == operation);
 
                 if (isSelected)
@@ -71,19 +71,19 @@ public:
                     sl::gui::popTextColor();
             };
 
-            handleGizmoOperation(ICON_FA_ARROWS_ALT, sl::gui::GizmoOperation::translate);
+            handleGizmoOp(ICON_FA_ARROWS_ALT, sl::gui::GizmoOp::translate);
             ImGui::SameLine();
 
-            handleGizmoOperation(ICON_FA_SYNC_ALT, sl::gui::GizmoOperation::rotate);
+            handleGizmoOp(ICON_FA_SYNC_ALT, sl::gui::GizmoOp::rotate);
             ImGui::SameLine();
 
-            handleGizmoOperation(ICON_FA_EXPAND_ALT, sl::gui::GizmoOperation::scale);
+            handleGizmoOp(ICON_FA_EXPAND_ALT, sl::gui::GizmoOp::scale);
         }
         sl::gui::endPanel();
     }
 
 private:
-    sl::gui::GizmoOperation m_gizmoOperation;
+    sl::gui::GizmoOp m_gizmoOperation;
     EngineState m_engineState;
 };
 

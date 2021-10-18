@@ -1,6 +1,6 @@
 #include "DirectionalLightComponentGui.h"
 
-#include "sl/gui/Utils.hpp"
+#include "sl/gui/Utils.h"
 
 namespace sl::gui::components {
 

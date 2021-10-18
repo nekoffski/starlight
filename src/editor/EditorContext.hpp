@@ -20,7 +20,7 @@
 #include "sl/gfx/camera/FPSCamera.h"
 #include "sl/gui/ErrorDialog.hpp"
 
-#include "sl/gui/Utils.hpp"
+#include "sl/gui/Utils.h"
 #include "sl/gui/fonts/FontAwesome.h"
 #include "sl/scene/Scene.h"
 #include "sl/scene/components/MaterialComponent.h"

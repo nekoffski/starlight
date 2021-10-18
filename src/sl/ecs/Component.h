@@ -4,7 +4,7 @@
 
 #include "sl/asset/AssetManager.h"
 
-#include "sl/gui/Utils.hpp"
+#include "sl/gui/Utils.h"
 #include "sl/gui/fonts/FontAwesome.h"
 
 #include "imgui/imgui.h"

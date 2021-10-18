@@ -1,6 +1,6 @@
 #include "BottomPanel.h"
 
-#include "sl/gui/Utils.hpp"
+#include "sl/gui/Utils.h"
 
 namespace editor::gui {
 

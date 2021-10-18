@@ -1,7 +1,7 @@
 #include "EntityTab.h"
 
 #include "sl/event/Event.h"
-#include "sl/gui/Utils.hpp"
+#include "sl/gui/Utils.h"
 #include "sl/scene/components/DirectionalLightComponent.h"
 #include "sl/scene/components/MaterialComponent.h"
 #include "sl/scene/components/MeshRendererComponent.h"
@@ -58,7 +58,7 @@ void EntityTab::showEntityProperties() {
         auto& namePlaceholder = m_entityNamePlacehoders.at(entityId);
 
         ImGui::Text("Entity name:");
-        sl::gui::inputText("##entity_name", namePlaceholder);
+        sl::gui::textInput("##entity_name", namePlaceholder);
         ImGui::SameLine();
 
         if (ImGui::Button(ICON_FA_CHECK_CIRCLE)) {
@@ -85,7 +85,7 @@ void EntityTab::showEntityProperties() {
             };
 
             with_Group {
-                sl::gui::combo(sl::gui::createHiddenLabel("ComponentCombo"), &m_selectedComponent, componentsNames);
+                sl::gui::combo("##ComponentCombo", &m_selectedComponent, componentsNames);
 
                 if (ImGui::Button("Add")) {
                     using namespace scene::components;

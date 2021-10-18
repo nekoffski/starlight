@@ -6,7 +6,7 @@
 #include "sl/event/Event.h"
 #include "sl/event/EventManager.h"
 #include "sl/glob/Globals.h"
-#include "sl/gui/Utils.hpp"
+#include "sl/gui/Utils.h"
 #include "sl/scene/components/DirectionalLightComponent.h"
 #include "sl/scene/components/MeshRendererComponent.h"
 #include "sl/scene/components/ModelComponent.h"
@@ -49,7 +49,7 @@ void PropertiesPanel::showSceneProperties() {
 
         ImGui::Text("Cubemap");
         ImGui::SameLine();
-        sl::gui::combo(sl::gui::createHiddenLabel("Cubemap"), &selectedValue, cubemapsNames);
+        sl::gui::combo("##Cubemap", &selectedValue, cubemapsNames);
 
         if (auto scene = m_sharedState->activeScene.lock(); scene) {
             // if (selectedValue == 0 && scene->skybox != nullptr)

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <kc/core/Scope.hpp>
+
 #include "DebugConsole.hpp"
 #include "EngineMode.h"
 #include "EngineState.h"
@@ -18,7 +20,7 @@
 #include "sl/glob/Globals.h"
 #include "sl/gui/ErrorDialog.hpp"
 
-#include "sl/gui/Utils.hpp"
+#include "sl/gui/Utils.h"
 #include "sl/gui/fonts/FontAwesome.h"
 #include "sl/scene/Scene.h"
 #include "sl/scene/components/MaterialComponent.h"
@@ -48,6 +50,8 @@
 #include "sl/gfx/BufferManager.h"
 #include "sl/gfx/RenderBuffer.h"
 
+#include "sl/gui/Core.h"
+
 #include <memory>
 
 using namespace sl;
@@ -65,7 +69,7 @@ public:
         , m_sceneQuadFrameBuffer(gfx::BufferManager::get()->createFrameBuffer())
         , m_captureSceneRenderPass(m_sceneQuadFrameBuffer.get()) {
 
-        sl::gui::setupGui(sl::core::WindowManager::get()->getWindowHandle());
+        sl::gui::initGui(sl::core::WindowManager::get()->getWindowHandle());
         sl::gui::addFont("/home/nek0/kapik/projects/starlight/res/fonts/fa-solid-900.ttf",
             ICON_MIN_FA, ICON_MAX_FA);
 
@@ -124,12 +128,13 @@ public:
     }
 
     void renderGui() {
-        sl::gui::begin();
+        sl::gui::beginGui();
+        ON_SCOPE_EXIT { sl::gui::endGui(); };
+
         if (m_engineMode == editor::EngineMode::inEditor) {
             m_editorGui->renderEditorGui();
             m_errorDialog.show();
         }
-        sl::gui::end();
     }
 
     void update(float deltaTime, float time) override {

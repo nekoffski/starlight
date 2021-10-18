@@ -28,7 +28,7 @@
 #include "sl/core/WindowManager.h"
 #include "sl/event/EventManager.h"
 
-#include "sl/gui/Utils.hpp"
+#include "sl/gui/Utils.h"
 
 namespace sl::app {
 

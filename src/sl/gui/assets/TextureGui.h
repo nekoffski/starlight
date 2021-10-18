@@ -7,7 +7,7 @@
 #include "AssetGuiProvider.h"
 #include "sl/core/GameObject.h"
 #include "sl/gfx/Texture.h"
-#include "sl/gui/Utils.hpp"
+#include "sl/gui/Utils.h"
 
 namespace sl::gui::assets {
 

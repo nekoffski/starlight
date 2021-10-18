@@ -8,7 +8,7 @@
 #include "sl/core/InputManager.h"
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/glob/Globals.h"
-#include "sl/gui/Utils.hpp"
+#include "sl/gui/Utils.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Utils.hpp"
 

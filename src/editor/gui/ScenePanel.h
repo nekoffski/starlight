@@ -129,7 +129,7 @@ public:
                     auto transformationMatrix = transform.transformation;
 
                     sl::gui::manipulateGizmo(viewMatrix, projectionMatrix, transformationMatrix,
-                        m_sharedState->gizmoOperation, m_sharedState->gizmoSystem);
+                        m_sharedState->gizmoOperation, m_sharedState->gizmoSpace);
 
                     if (sl::gui::isUsingGizmo()) {
                         math::Vec3 rotation;

@@ -5,7 +5,7 @@
 #include <imgui_sugar.hpp>
 
 #include "GuiStyle.h"
-#include "Utils.hpp"
+#include "Utils.h"
 #include "fonts/FontAwesome.h"
 
 const std::string rootPath = "/home/nek0/kapik/projects/starlight";
@@ -115,7 +115,7 @@ void FileBrowser::handleBottomPanel() {
     ImGui::Text("Full path: ");
     ImGui::SameLine();
     ImGui::PushItemWidth(400);
-    gui::inputText("##fileSelection", m_currentSelection);
+    gui::textInput("##fileSelection", m_currentSelection);
 
     if (m_history.size() == 0)
         m_history.push_back(m_currentSelection);

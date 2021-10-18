@@ -5,7 +5,7 @@
 
 #include <imgui_sugar.hpp>
 
-#include "sl/gui/Utils.hpp"
+#include "sl/gui/Utils.h"
 
 #include "editor/DebugConsole.hpp"
 #include "sl/core/Errors.hpp"
@@ -15,7 +15,7 @@
 #include "sl/gfx/ShaderManager.h"
 #include "sl/glob/Globals.h"
 
-#include "sl/gui/Utils.hpp"
+#include "sl/gui/Utils.h"
 
 namespace editor::gui {
 
@@ -123,7 +123,7 @@ void AssetsTab::showLoaderPopUp() {
     with_Group {
         ImGui::Text("Name");
         ImGui::SameLine(padding);
-        sl::gui::inputText("##Name", m_assetsArgs.assetName);
+        sl::gui::textInput("##Name", m_assetsArgs.assetName);
 
         try {
             switch (m_assetsArgs.activeItem) {

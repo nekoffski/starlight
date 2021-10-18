@@ -6,6 +6,7 @@
 #include "GuiProperties.h"
 #include "sl/ecs/Entity.h"
 
+#include "sl/gui/Gizmo.h"
 #include "sl/gui/assets/AssetGuiProvider.h"
 #include "sl/scene/Scene.h"
 
@@ -16,8 +17,8 @@ struct SharedState {
         : assetManager(assetManager)
         , guiProperties(windowWidth, windowHeight)
         , activeAssetGuiProvider(nullptr)
-        , gizmoOperation(sl::gui::GizmoOperation::translate)
-        , gizmoSystem(sl::gui::GizmoSystem::world) {
+        , gizmoOperation(sl::gui::GizmoOp::translate)
+        , gizmoSpace(sl::gui::GizmoSpace::world) {
     }
 
     bool hasSelectedEntity() const {
@@ -40,7 +41,8 @@ struct SharedState {
 
     GuiProperties guiProperties;
     std::unique_ptr<sl::gui::assets::AssetGuiProvider> activeAssetGuiProvider;
-    sl::gui::GizmoOperation gizmoOperation;
-    sl::gui::GizmoSystem gizmoSystem;
+
+    sl::gui::GizmoOp gizmoOperation;
+    sl::gui::GizmoSpace gizmoSpace;
 };
 }

@@ -6,7 +6,7 @@
 #include "sl/async/AsyncManager.hpp"
 #include "sl/gfx/Shader.h"
 #include "sl/gfx/ShaderManager.h"
-#include "sl/gui/Utils.hpp"
+#include "sl/gui/Utils.h"
 
 namespace sl::gui::assets {
 
