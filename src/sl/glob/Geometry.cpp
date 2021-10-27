@@ -25,8 +25,8 @@ void Geometry::initLine() {
         1.0f, 1.0f, 1.0f
     };
 
-    lineVAO = gfx::BufferManager::get()->createVertexArray();
-    auto vbo = gfx::BufferManager::get()->createVertexBuffer(&vertices[0], vertices.size() * sizeof(float), vertices.size());
+    lineVAO = gfx::BufferManager::get().createVertexArray();
+    auto vbo = gfx::BufferManager::get().createVertexBuffer(&vertices[0], vertices.size() * sizeof(float), vertices.size());
 
     vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
 
@@ -76,9 +76,9 @@ void Geometry::initCube() {
     mesh->vertices = std::move(vertices);
 
     // TODO: move this logic to mesh contstructor
-    cubeVAO = gfx::BufferManager::get()->createVertexArray();
-    auto vbo = gfx::BufferManager::get()->createVertexBuffer(&mesh->vertices[0], mesh->vertices.size() * sizeof(geom::Vertex), mesh->vertices.size());
-    auto ebo = gfx::BufferManager::get()->createElementBuffer(&mesh->indices[0], mesh->indices.size() * sizeof(unsigned), mesh->indices.size());
+    cubeVAO = gfx::BufferManager::get().createVertexArray();
+    auto vbo = gfx::BufferManager::get().createVertexBuffer(&mesh->vertices[0], mesh->vertices.size() * sizeof(geom::Vertex), mesh->vertices.size());
+    auto ebo = gfx::BufferManager::get().createElementBuffer(&mesh->indices[0], mesh->indices.size() * sizeof(unsigned), mesh->indices.size());
 
     // vertices
     vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
@@ -112,9 +112,9 @@ Geometry::MeshVaoPair Geometry::initSquare(std::vector<geom::Vertex> vertices, c
     mesh->vertices = std::move(vertices);
 
     // // TODO: move this logic to mesh contstructor
-    auto vao = gfx::BufferManager::get()->createVertexArray();
-    auto vbo = gfx::BufferManager::get()->createVertexBuffer(&mesh->vertices[0], mesh->vertices.size() * sizeof(geom::Vertex), mesh->vertices.size());
-    auto ebo = gfx::BufferManager::get()->createElementBuffer(&mesh->indices[0], mesh->indices.size() * sizeof(unsigned), mesh->indices.size());
+    auto vao = gfx::BufferManager::get().createVertexArray();
+    auto vbo = gfx::BufferManager::get().createVertexBuffer(&mesh->vertices[0], mesh->vertices.size() * sizeof(geom::Vertex), mesh->vertices.size());
+    auto ebo = gfx::BufferManager::get().createElementBuffer(&mesh->indices[0], mesh->indices.size() * sizeof(unsigned), mesh->indices.size());
 
     // vertices
     vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));

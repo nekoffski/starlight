@@ -27,16 +27,16 @@ void EditorGui::renderEditorGui() {
         with_Menu(ICON_FA_BARS " File") {
             if (ImGui::MenuItem("Export scene"))
                 callback = [](const std::string& path) -> void {
-                    EventManager::get()->emit<SerializeSceneEvent>(path).toAll();
+                    EventManager::get().emit<SerializeSceneEvent>(path).toAll();
                 };
 
             if (ImGui::MenuItem("Import scene"))
                 callback = [](const std::string& path) -> void {
-                    EventManager::get()->emit<DeserializeSceneEvent>(path).toAll();
+                    EventManager::get().emit<DeserializeSceneEvent>(path).toAll();
                 };
 
             if (ImGui::MenuItem("Quit"))
-                EventManager::get()->emit<QuitEvent>().toAll();
+                EventManager::get().emit<QuitEvent>().toAll();
         }
     }
 

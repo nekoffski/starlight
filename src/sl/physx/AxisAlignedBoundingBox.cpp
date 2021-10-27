@@ -84,9 +84,9 @@ void AxisAlignedBoundingBox::build(const std::vector<std::shared_ptr<geom::Mesh>
         6, 7, 3
     };
 
-    m_vao = gfx::BufferManager::get()->createVertexArray();
-    auto vbo = gfx::BufferManager::get()->createVertexBuffer(&m_vertices[0], m_vertices.size() * sizeof(math::Vec3), m_vertices.size());
-    auto ebo = gfx::BufferManager::get()->createElementBuffer(&m_indices[0], m_indices.size() * sizeof(unsigned), m_indices.size());
+    m_vao = gfx::BufferManager::get().createVertexArray();
+    auto vbo = gfx::BufferManager::get().createVertexBuffer(&m_vertices[0], m_vertices.size() * sizeof(math::Vec3), m_vertices.size());
+    auto ebo = gfx::BufferManager::get().createElementBuffer(&m_indices[0], m_indices.size() * sizeof(unsigned), m_indices.size());
 
     vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
 

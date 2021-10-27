@@ -18,7 +18,7 @@
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/gfx/camera/EulerCamera.h"
 #include "sl/gfx/camera/FPSCamera.h"
-#include "sl/gui/ErrorDialog.hpp"
+#include "sl/gui/ErrorDialog.h"
 
 #include "sl/gui/Utils.h"
 #include "sl/gui/fonts/FontAwesome.h"
@@ -140,7 +140,7 @@ public:
             sceneSystems.physxEngine.processRigidBodies(rigidBodies, transforms, deltaTime);
         }
 
-        if (m_engineMode == editor::EngineMode::inGame && core::InputManager::get()->isKeyPressed(STARL_KEY_ESCAPE)) {
+        if (m_engineMode == editor::EngineMode::inGame && core::InputManager::get().isKeyPressed(STARL_KEY_ESCAPE)) {
             m_engineMode = editor::EngineMode::inEditor;
 
             auto [width, height] = m_windowProxy->getSize();
@@ -162,7 +162,7 @@ public:
 
             if (event->is<SetSkyboxEvent>()) {
                 auto cubemap = event->as<SetSkyboxEvent>()->cubemap;
-                m_scene->skybox = sl::scene::Skybox { utils::Globals::get()->shaders->defaultCubemapShader, cubemap };
+                m_scene->skybox = sl::scene::Skybox { utils::Globals::get().shaders->defaultCubemapShader, cubemap };
 
             } else if (event->is<QuitEvent>()) {
                 m_windowProxy->quit();

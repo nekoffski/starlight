@@ -17,7 +17,7 @@ static void cleanRetiredParticles(std::vector<physx::pfx::Particle>& particles) 
 }
 
 ParticleEffectsEngine::ParticleEffectsEngine() {
-    m_pfxTimer = async::AsyncManager::get()->createTimer(particleCleanerSleepTime);
+    m_pfxTimer = async::AsyncManager::get().createTimer(particleCleanerSleepTime);
 }
 
 void ParticleEffectsEngine::update(ecs::ComponentView<components::ParticleEffectComponent>& pfxs, float deltaTime, gfx::camera::Camera& camera) {

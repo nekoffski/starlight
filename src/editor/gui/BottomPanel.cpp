@@ -1,5 +1,8 @@
 #include "BottomPanel.h"
 
+#include <imgui_sugar.hpp>
+#include <kc/core/Scope.hpp>
+
 #include "sl/gui/Utils.h"
 
 namespace editor::gui {
@@ -14,6 +17,7 @@ void BottomPanel::render() {
     auto& widgetProperties = m_sharedState->guiProperties.bottomPanelProperties;
 
     sl::gui::beginPanel("##BottomMenu", widgetProperties.origin, widgetProperties.size);
+    ON_SCOPE_EXIT { sl::gui::endPanel(); };
 
     with_TabBar("bottomTabBar") {
 
@@ -23,6 +27,5 @@ void BottomPanel::render() {
         with_TabItem("Debug console")
             m_debugConsoleTab.render();
     }
-    sl::gui::endPanel();
 }
 }

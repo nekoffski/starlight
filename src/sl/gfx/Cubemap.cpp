@@ -20,11 +20,11 @@ void Cubemap::loadAsync(const CubemapArgs& paths, const std::string& name, std::
 
         void executeAsync() override {
             std::ranges::transform(m_paths, m_faces.begin(),
-                [](const auto& face) -> std::unique_ptr<gfx::Image> { return gfx::TextureManager::get()->loadImage(face); });
+                [](const auto& face) -> std::unique_ptr<gfx::Image> { return gfx::TextureManager::get().loadImage(face); });
         }
 
         void finalize() override {
-            auto cubemap = gfx::TextureManager::get()->createCubemap(m_paths, m_name);
+            auto cubemap = gfx::TextureManager::get().createCubemap(m_paths, m_name);
             cubemap->m_facesPaths = m_paths;
 
             m_output->set(std::move(cubemap));
@@ -42,6 +42,6 @@ void Cubemap::loadAsync(const CubemapArgs& paths, const std::string& name, std::
         std::array<std::unique_ptr<gfx::Image>, facesCount> m_faces;
     };
 
-    async::AsyncManager::get()->executeAsyncTask<LoadAsync>(paths, name, std::move(output));
+    async::AsyncManager::get().executeAsyncTask<LoadAsync>(paths, name, std::move(output));
 }
 }

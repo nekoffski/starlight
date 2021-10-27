@@ -19,7 +19,7 @@ struct PointLightComponent : ecs::Component {
         , attenuationA(attenuationA)
         , attenuationB(attenuationB)
         , attenuationC(attenuationC)
-        , omnidirectionalShadowMap(gfx::TextureManager::get()->createOmnidirectionalShaderMap()) {
+        , omnidirectionalShadowMap(gfx::TextureManager::get().createOmnidirectionalShaderMap()) {
 
         name = "PointLightComponent";
     }

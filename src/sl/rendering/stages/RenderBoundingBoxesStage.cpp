@@ -9,7 +9,7 @@ namespace sl::rendering::stages {
 using namespace sl::scene::components;
 
 RenderBoundingBoxesStage::RenderBoundingBoxesStage()
-    : m_boundingBoxShader(sl::glob::Globals::get()->shaders->singleColorShader) {
+    : m_boundingBoxShader(sl::glob::Globals::get().shaders->singleColorShader) {
 }
 
 void RenderBoundingBoxesStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {

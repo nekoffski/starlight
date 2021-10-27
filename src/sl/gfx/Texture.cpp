@@ -6,7 +6,7 @@
 namespace sl::gfx {
 
 // std::unique_ptr<Texture> Texture::load(const std::string& path, const std::string& name) {
-//     auto textureImage = TextureManager::get()->loadImage(path);
+//     auto textureImage = TextureManager::get().loadImage(path);
 //     auto texture = factory->create(*textureImage);
 
 //     texture->path = path;
@@ -20,7 +20,7 @@ namespace sl::gfx {
 // }
 
 std::unique_ptr<Texture> Texture::clone() {
-    return TextureManager::get()->createTexture(
+    return TextureManager::get().createTexture(
         getWidth(), getHeight(), internalFormat, format);
 }
 
@@ -35,7 +35,7 @@ void Texture::loadAsync(const std::string& path, const std::string& name, std::u
         }
 
         void executeAsync() override {
-            m_image = TextureManager::get()->loadImage(m_path);
+            m_image = TextureManager::get().loadImage(m_path);
         }
 
         std::string asString() const override {
@@ -46,7 +46,7 @@ void Texture::loadAsync(const std::string& path, const std::string& name, std::u
             if (not m_image)
                 return;
 
-            auto texture = TextureManager::get()->createTexture(*m_image, m_name);
+            auto texture = TextureManager::get().createTexture(*m_image, m_name);
 
             texture->path = m_path;
             texture->name = m_name;
@@ -61,7 +61,7 @@ void Texture::loadAsync(const std::string& path, const std::string& name, std::u
         std::unique_ptr<Image> m_image;
     };
 
-    async::AsyncManager::get()->executeAsyncTask<LoadAsync>(path, name, std::move(output));
+    async::AsyncManager::get().executeAsyncTask<LoadAsync>(path, name, std::move(output));
 }
 
 }

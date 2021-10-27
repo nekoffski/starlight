@@ -55,7 +55,7 @@ public:
 
                                 if (entity->hasComponent<TransformComponent>()) {
                                     auto& transform = entity->getComponent<TransformComponent>();
-                                    event::EventManager::get()->emit<event::ChangeSceneCenterEvent>(transform.position).toAll();
+                                    event::EventManager::get().emit<event::ChangeSceneCenterEvent>(transform.position).toAll();
                                 }
                             };
 

@@ -94,7 +94,7 @@ public:
                     LOG_WARN("Could not recompile shader due to {}", err.getDetails());
 
                     using namespace event;
-                    EventManager::get()->emit<DisplayErrorEvent>(err.asString()).toAll();
+                    EventManager::get().emit<DisplayErrorEvent>(err.asString()).toAll();
                 }
                 m_wasCompiledCorrectly = false;
             }

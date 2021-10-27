@@ -25,7 +25,7 @@ private:
     std::string extractNameFromPath(const std::string& path);
 
     std::string m_id;
-    std::string m_currentSelection = "";
+    std::string m_currentSelection;
 
     std::unique_ptr<kc::core::FileSystem> m_fileSystem;
 

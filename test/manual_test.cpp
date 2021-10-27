@@ -19,12 +19,12 @@ int main() {
 
     AsyncManager m;
 
-    AsyncManager::get()->start();
-    AsyncManager::get()->executeAsyncTask<::Task>();
+    AsyncManager::get().start();
+    AsyncManager::get().executeAsyncTask<::Task>();
 
-    AsyncManager::get()->update(1.0f);
+    AsyncManager::get().update(1.0f);
 
-    AsyncManager::get()->stop();
+    AsyncManager::get().stop();
 
     std::cout << "Hi\n";
     return 0;

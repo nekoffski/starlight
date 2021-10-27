@@ -56,7 +56,7 @@ void Deserializer::deserializeAssets(kc::json::Node& assetsJson) {
         for (int i = 0; i < faces.size(); ++i)
             faces[i] = paths[i].asString();
 
-        auto cubemap = gfx::TextureManager::get()->createCubemap(faces, cubemapDescription["name"].asString());
+        auto cubemap = gfx::TextureManager::get().createCubemap(faces, cubemapDescription["name"].asString());
         auto oldId = cubemapDescription["id"].asString();
         auto newId = cubemap->getId();
 
@@ -67,7 +67,7 @@ void Deserializer::deserializeAssets(kc::json::Node& assetsJson) {
     }
 
     for (auto& textureDescription : assetsJson["textures"]) {
-        auto texture = gfx::TextureManager::get()->createTexture(textureDescription["path"].asString(),
+        auto texture = gfx::TextureManager::get().createTexture(textureDescription["path"].asString(),
             textureDescription["name"].asString());
 
         auto oldId = textureDescription["id"].asString();
@@ -83,7 +83,7 @@ void Deserializer::deserializeAssets(kc::json::Node& assetsJson) {
 
     for (auto& modelToLoad : models["paths"])
         m_assetManager.add(
-            geom::GeometryManager::get()->loadModel(modelToLoad.asString())->meshes);
+            geom::GeometryManager::get().loadModel(modelToLoad.asString())->meshes);
 
     for (auto& meshDescription : models["meshes"]) {
         auto name = meshDescription["name"].asString();
@@ -99,7 +99,7 @@ void Deserializer::deserializeAssets(kc::json::Node& assetsJson) {
 }
 
 void Deserializer::deserializeDefaultAssets(kc::json::Node& defaultAssets) {
-    auto& globalShaders = glob::Globals::get()->shaders->shadersByName;
+    auto& globalShaders = glob::Globals::get().shaders->shadersByName;
 
     for (auto& shaderDescription : defaultAssets["shaders"]) {
         auto name = shaderDescription["name"].asString();
@@ -113,7 +113,7 @@ void Deserializer::deserializeDefaultAssets(kc::json::Node& defaultAssets) {
         }
     }
 
-    auto& globalMeshes = glob::Globals::get()->geom->meshes;
+    auto& globalMeshes = glob::Globals::get().geom->meshes;
 
     for (auto& meshDescription : defaultAssets["meshes"]) {
         auto name = meshDescription["name"].asString();
@@ -138,7 +138,7 @@ void Deserializer::deserializeScene(kc::json::Node& sceneJson) {
             m_assetsIdRedirections.at(skyboxOldId));
 
         m_scene->skybox = scene::Skybox {
-            glob::Globals::get()->shaders->defaultCubemapShader, cubemap
+            glob::Globals::get().shaders->defaultCubemapShader, cubemap
         };
 
         LOG_INFO("Setting skybox: {}", m_scene->skybox->cubemap->getId());

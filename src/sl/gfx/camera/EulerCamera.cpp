@@ -42,16 +42,16 @@ void EulerCamera::update(float deltaTime) {
     } else {
         float velocity = deltaTime * m_speed;
 
-        if (core::InputManager::get()->isKeyPressed(STARL_KEY_UP))
+        if (core::InputManager::get().isKeyPressed(STARL_KEY_UP))
             m_psi += velocity;
 
-        if (core::InputManager::get()->isKeyPressed(STARL_KEY_RIGHT))
+        if (core::InputManager::get().isKeyPressed(STARL_KEY_RIGHT))
             m_fi += velocity;
 
-        if (core::InputManager::get()->isKeyPressed(STARL_KEY_DOWN))
+        if (core::InputManager::get().isKeyPressed(STARL_KEY_DOWN))
             m_psi -= velocity;
 
-        if (core::InputManager::get()->isKeyPressed(STARL_KEY_LEFT))
+        if (core::InputManager::get().isKeyPressed(STARL_KEY_LEFT))
             m_fi -= velocity;
 
         m_fi = math::circularRange(m_fi, minFi, maxFi);
@@ -59,18 +59,18 @@ void EulerCamera::update(float deltaTime) {
         // TODO: FIX
         m_psi = std::clamp(m_psi, minPsi, maxPsi);
 
-        m_isMouseMiddlePressed = core::InputManager::get()->isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE);
+        m_isMouseMiddlePressed = core::InputManager::get().isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE);
 
         if (m_isMouseMiddlePressed) {
             constexpr float mouseSpeed = 0.0015f;
 
-            auto mouseDelta = core::InputManager::get()->getMousePositonDelta();
+            auto mouseDelta = core::InputManager::get().getMousePositonDelta();
 
             m_psi += mouseDelta.y * mouseSpeed;
             m_fi += mouseDelta.x * mouseSpeed;
         }
 
-        auto scrollDelta = core::InputManager::get()->getScrollDelta();
+        auto scrollDelta = core::InputManager::get().getScrollDelta();
         const float scrollDeltaSpeed = 5.0f;
         m_radius += scrollDelta * scrollDeltaSpeed;
     }

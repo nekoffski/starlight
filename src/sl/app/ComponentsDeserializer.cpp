@@ -72,7 +72,7 @@ void ComponentsDeserializer::deserializeMeshRendererComponent(Json::Value& compo
     ecs::Entity& entity, asset::AssetManager& assetManager, const std::unordered_map<std::string, std::string>& assetsIdRedirections) {
     auto& component = entity.addComponent<MeshRendererComponent>();
 
-    auto& defaultShader = glob::Globals::get()->shaders->defaultModelShader;
+    auto& defaultShader = glob::Globals::get().shaders->defaultModelShader;
 
     if (defaultShader->getId() == assetsIdRedirections.at(componentDescription["shader-id"].asString()))
         component.shader = defaultShader;
@@ -95,7 +95,7 @@ void ComponentsDeserializer::deserializeModelComponent(Json::Value& componentDes
             if (meshes.hasId(targetId))
                 return meshes.getById(targetId);
 
-            for (auto& mesh : glob::Globals::get()->geom->meshes | std::views::values)
+            for (auto& mesh : glob::Globals::get().geom->meshes | std::views::values)
                 if (mesh->getId() == targetId)
                     return mesh;
 

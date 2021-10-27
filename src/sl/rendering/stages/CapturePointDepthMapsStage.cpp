@@ -19,10 +19,10 @@ const float far = 25.0f;
 using namespace sl::scene::components;
 
 CapturePointDepthMapsStage::CapturePointDepthMapsStage()
-    : m_depthShader(gfx::ShaderManager::get()->load(
-          sl::glob::Globals::get()->config.paths.shaders + "/PointDepthCapture.vert",
-          sl::glob::Globals::get()->config.paths.shaders + "/PointDepthCapture.frag",
-          sl::glob::Globals::get()->config.paths.shaders + "/PointDepthCapture.geom")) {
+    : m_depthShader(gfx::ShaderManager::get().load(
+          sl::glob::Globals::get().config.paths.shaders + "/PointDepthCapture.vert",
+          sl::glob::Globals::get().config.paths.shaders + "/PointDepthCapture.frag",
+          sl::glob::Globals::get().config.paths.shaders + "/PointDepthCapture.geom")) {
 
     m_shadowProjection = math::perspective(math::toRadians(90.0f), aspect, near, far);
 }

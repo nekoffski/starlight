@@ -6,7 +6,7 @@
 #include "sl/ecs/Entity.h"
 #include "sl/gfx/Cubemap.h"
 #include "sl/gui/EntityGui.h"
-#include "sl/gui/ErrorDialog.hpp"
+#include "sl/gui/ErrorDialog.h"
 
 
 #include "Widget.h"

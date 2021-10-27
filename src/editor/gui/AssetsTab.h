@@ -6,7 +6,7 @@
 
 #include "sl/asset/AssetManager.h"
 #include "sl/gui/AssetsGui.hpp"
-#include "sl/gui/ErrorDialog.hpp"
+#include "sl/gui/ErrorDialog.h"
 #include "sl/gui/FileBrowser.h"
 
 

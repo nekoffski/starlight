@@ -12,9 +12,9 @@ namespace sl::rendering::stages {
 using namespace sl::scene::components;
 
 CaptureDirectionalDepthMapsStage::CaptureDirectionalDepthMapsStage()
-    : m_depthShader(gfx::ShaderManager::get()->load(
-          sl::glob::Globals::get()->config.paths.shaders + "/DirectionalDepthCapture.vert",
-          sl::glob::Globals::get()->config.paths.shaders + "/DirectionalDepthCapture.frag")) {
+    : m_depthShader(gfx::ShaderManager::get().load(
+          sl::glob::Globals::get().config.paths.shaders + "/DirectionalDepthCapture.vert",
+          sl::glob::Globals::get().config.paths.shaders + "/DirectionalDepthCapture.frag")) {
 }
 
 void CaptureDirectionalDepthMapsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) {

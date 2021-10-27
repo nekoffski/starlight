@@ -32,6 +32,7 @@
 #include "sl/gfx/BufferManager.h"
 #include "sl/gfx/ShaderManager.h"
 #include "sl/gfx/TextureManager.h"
+#include "sl/gui/GuiHelper.h"
 
 namespace sl::app {
 
@@ -87,7 +88,8 @@ private:
     gfx::TextureManager   m_textureManager;
     event::EventManager   m_eventManager;
     geom::GeometryManager m_geometryManager;
-    glob::Globals        m_globals;
+    glob::Globals         m_globals;
+    gui::GuiHelper        m_guiHelper;
     // clang-format on
 };
 

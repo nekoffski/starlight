@@ -68,7 +68,7 @@ void Engine::initLowLevelComponents() {
     m_window->init();
     m_window->makeContextCurrent();
     m_window->setResizeCallback([](void*, int width, int height) {
-        event::EventManager::get()->emit<event::WindowResizedEvent>(width, height).toAll();
+        event::EventManager::get().emit<event::WindowResizedEvent>(width, height).toAll();
     });
 
     m_input = m_platform->io.input.get();
@@ -150,16 +150,16 @@ void Engine::run() {
 }
 
 void Engine::update() {
-    float deltaTime = core::ClockManager::get()->getDeltaTime();
+    float deltaTime = core::ClockManager::get().getDeltaTime();
 
     m_window->update(deltaTime);
-    m_application->update(deltaTime, core::ClockManager::get()->getClock().nowAsFloat());
+    m_application->update(deltaTime, core::ClockManager::get().getClock().nowAsFloat());
 
     m_eventManager.update();
     m_inputManager.update();
 
     m_asyncManager.update(deltaTime);
-    core::ClockManager::get()->update();
+    core::ClockManager::get().update();
 }
 
 void Engine::render() {

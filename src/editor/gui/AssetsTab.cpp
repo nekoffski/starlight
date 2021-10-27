@@ -79,7 +79,7 @@ void AssetsTab::render() {
         ImGui::SameLine();
 
         auto shaders = m_sharedState->assetManager.getShaders().getAll();
-        auto& globalShaders = sl::glob::Globals::get()->shaders->shadersByName;
+        auto& globalShaders = sl::glob::Globals::get().shaders->shadersByName;
 
         for (auto& [name, shader] : globalShaders)
             shaders[name] = shader;
@@ -178,7 +178,7 @@ void AssetsTab::handleShaderLoader() {
     if (m_loadClicked) {
         validateAssetName(m_assetsArgs.assetName);
 
-        auto shader = sl::gfx::ShaderManager::get()->load(
+        auto shader = sl::gfx::ShaderManager::get().load(
             m_assetsArgs.faces[0], m_assetsArgs.faces[1], m_assetsArgs.faces[2]);
         // auto shaderAsset = std::make_shared<sl::asset::ShaderAsset>(shader, m_assetsArgs.assetName);
         // m_sharedState->assetManager.addAsset(shaderAsset);
@@ -217,7 +217,7 @@ void AssetsTab::handleCubemapLoader() {
 
         auto faces = m_assetsArgs.faces;
         for (auto& face : faces)
-            face = sl::glob::Globals::get()->config.paths.cubemaps + face;
+            face = sl::glob::Globals::get().config.paths.cubemaps + face;
 
         auto output = std::make_unique<sl::asset::AssetManager::Output<
             sl::gfx::Cubemap>>(m_sharedState->assetManager);
@@ -236,7 +236,7 @@ void AssetsTab::handleModelLoader() {
     if (m_loadClicked) {
         validateAssetName(m_assetsArgs.assetName);
 
-        auto model = sl::geom::GeometryManager::get()->loadModel(m_assetsArgs.modelName);
+        auto model = sl::geom::GeometryManager::get().loadModel(m_assetsArgs.modelName);
         m_sharedState->assetManager.add(model->meshes);
     }
 }

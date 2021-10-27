@@ -13,7 +13,7 @@ void PhysicsEngine::processRigidBodies(ecs::ComponentView<scene::components::Rig
 
     for (auto& rigidBody : rigidBodies) {
         if (rigidBody.useGravity && not rigidBody.fixed)
-            rigidBody.velocity += -glob::Globals::get()->world.gravity * deltaTime;
+            rigidBody.velocity += -glob::Globals::get().world.gravity * deltaTime;
 
         auto& entityId = rigidBody.ownerEntityId;
 

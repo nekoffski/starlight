@@ -18,7 +18,7 @@
 #include "sl/gfx/camera/EulerCamera.h"
 #include "sl/gfx/camera/FPSCamera.h"
 #include "sl/glob/Globals.h"
-#include "sl/gui/ErrorDialog.hpp"
+#include "sl/gui/ErrorDialog.h"
 
 #include "sl/gui/Utils.h"
 #include "sl/gui/fonts/FontAwesome.h"
@@ -51,6 +51,7 @@
 #include "sl/gfx/RenderBuffer.h"
 
 #include "sl/gui/Core.h"
+#include "sl/gui/GuiHelper.h"
 
 #include <memory>
 
@@ -64,14 +65,17 @@ class StarlightEditor : public app::Application {
 public:
     explicit StarlightEditor()
         : m_engineState(editor::EngineState::stopped)
-        , m_depthFrameBuffer(gfx::BufferManager::get()->createFrameBuffer())
+        , m_depthFrameBuffer(gfx::BufferManager::get().createFrameBuffer())
         , m_captureDepthMapsRenderPass(m_depthFrameBuffer.get())
-        , m_sceneQuadFrameBuffer(gfx::BufferManager::get()->createFrameBuffer())
+        , m_sceneQuadFrameBuffer(gfx::BufferManager::get().createFrameBuffer())
         , m_captureSceneRenderPass(m_sceneQuadFrameBuffer.get()) {
 
-        sl::gui::initGui(sl::core::WindowManager::get()->getWindowHandle());
-        sl::gui::addFont("/home/nek0/kapik/projects/starlight/res/fonts/fa-solid-900.ttf",
-            ICON_MIN_FA, ICON_MAX_FA);
+        sl::gui::initGui(sl::core::WindowManager::get().getWindowHandle());
+
+        constexpr int fontSize = 15;
+        sl::gui::GuiHelper::get()
+            .addFont("font1", "/home/nek0/kapik/projects/starlight/res/fonts/Roboto-Regular.ttf", fontSize)
+            .mergeWith("/home/nek0/kapik/projects/starlight/res/fonts/fa-solid-900.ttf", ICON_MIN_FA, ICON_MAX_FA);
 
         onStart();
     }
@@ -81,7 +85,7 @@ public:
     }
 
     void onStart() {
-        auto [windowWidth, windowHeight] = WindowManager::get()->getSize();
+        auto [windowWidth, windowHeight] = WindowManager::get().getSize();
 
         auto viewFrustum = gfx::ViewFrustum { windowWidth, windowHeight };
         m_activeCamera = std::make_shared<gfx::camera::EulerCamera>(viewFrustum, math::Vec3(0.0f), 1.0f, 8.0f);
@@ -140,11 +144,11 @@ public:
     void update(float deltaTime, float time) override {
         m_activeCamera->update(deltaTime);
 
-        glob::Globals::get()->flags.disableKeyboardInput = ImGui::GetIO().WantCaptureKeyboard;
-        glob::Globals::get()->flags.disableMouseInput = ImGui::GetIO().WantCaptureMouse;
+        glob::Globals::get().flags.disableKeyboardInput = ImGui::GetIO().WantCaptureKeyboard;
+        glob::Globals::get().flags.disableMouseInput = ImGui::GetIO().WantCaptureMouse;
 
-        core::WindowManager::get()->enableCursor(
-            not core::InputManager::get()->isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE));
+        core::WindowManager::get().enableCursor(
+            not core::InputManager::get().isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE));
 
         // auto pfxs = m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>();
         // sceneSystems.pfxEngine.update(pfxs, deltaTime, *m_scene->camera);
@@ -156,10 +160,10 @@ public:
         //     sceneSystems.physxEngine.processRigidBodies(rigidBodies, transforms, deltaTime);
         // }
 
-        // if (m_engineMode == editor::EngineMode::inGame && core::InputManager::get()->isKeyPressed(STARL_KEY_ESCAPE)) {
+        // if (m_engineMode == editor::EngineMode::inGame && core::InputManager::get().isKeyPressed(STARL_KEY_ESCAPE)) {
         //     m_engineMode = editor::EngineMode::inEditor;
 
-        //     auto [width, height] = WindowManager::get()->getSize();
+        //     auto [width, height] = WindowManager::get().getSize();
         //     recalculateViewportSize(width, height);
         // }
     }
@@ -187,7 +191,7 @@ public:
 
             if (event->is<SetSkyboxEvent>()) {
                 auto cubemap = event->asView<SetSkyboxEvent>()->cubemap;
-                m_scene->skybox = sl::scene::Skybox { glob::Globals::get()->shaders->defaultCubemapShader, cubemap };
+                m_scene->skybox = sl::scene::Skybox { glob::Globals::get().shaders->defaultCubemapShader, cubemap };
 
             } else if (event->is<QuitEvent>()) {
                 m_isRunning = false;
@@ -210,7 +214,7 @@ public:
             } else if (event->is<editor::EnterGameMode>()) {
                 m_engineMode = editor::EngineMode::inGame;
 
-                auto [width, height] = WindowManager::get()->getSize();
+                auto [width, height] = WindowManager::get().getSize();
                 recalculateViewportSize(width, height);
             } else if (event->is<DisplayErrorEvent>()) {
                 m_errorDialog.setErrorMessage(event->asView<DisplayErrorEvent>()->message);
@@ -260,10 +264,10 @@ public:
         m_activeCamera->viewFrustum.viewport = newViewport;
         m_activeCamera->calculateProjectionMatrix();
 
-        m_depthBuffer = gfx::BufferManager::get()->createRenderBuffer(STARL_DEPTH_COMPONENT, width, height);
+        m_depthBuffer = gfx::BufferManager::get().createRenderBuffer(STARL_DEPTH_COMPONENT, width, height);
 
-        m_colorBuffer = gfx::TextureManager::get()->createTexture(width, height, STARL_RGBA16F, STARL_RGBA);
-        m_bloomBuffer = gfx::TextureManager::get()->createTexture(width, height, STARL_RGBA16F, STARL_RGBA);
+        m_colorBuffer = gfx::TextureManager::get().createTexture(width, height, STARL_RGBA16F, STARL_RGBA);
+        m_bloomBuffer = gfx::TextureManager::get().createTexture(width, height, STARL_RGBA16F, STARL_RGBA);
 
         m_sceneQuadFrameBuffer->bind();
         m_sceneQuadFrameBuffer->bindTexture(*m_colorBuffer, STARL_COLOR_ATTACHMENT0);
@@ -276,7 +280,7 @@ public:
         m_renderColorBufferStage.setColorBuffer(m_colorBuffer.get());
         m_renderColorBufferStage.setBloomBuffer(m_blurColorBufferStage.getOutputColorBuffer());
 
-        event::EventManager::get()->emit<event::ChangeViewportEvent>(newViewport).to("Engine");
+        event::EventManager::get().emit<event::ChangeViewportEvent>(newViewport).to("Engine");
     }
 
 private:

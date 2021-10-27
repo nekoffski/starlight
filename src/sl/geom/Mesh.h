@@ -18,9 +18,9 @@ struct Mesh : core::GameObject {
         if (vertexArray != nullptr)
             vertexArray->unbind();
 
-        auto vao = gfx::BufferManager::get()->createVertexArray();
-        auto vbo = gfx::BufferManager::get()->createVertexBuffer(&vertices[0], vertices.size() * sizeof(Vertex), vertices.size());
-        auto ebo = gfx::BufferManager::get()->createElementBuffer(&indices[0], indices.size() * sizeof(unsigned), indices.size());
+        auto vao = gfx::BufferManager::get().createVertexArray();
+        auto vbo = gfx::BufferManager::get().createVertexBuffer(&vertices[0], vertices.size() * sizeof(Vertex), vertices.size());
+        auto ebo = gfx::BufferManager::get().createElementBuffer(&indices[0], indices.size() * sizeof(unsigned), indices.size());
 
         // vertices
         vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));

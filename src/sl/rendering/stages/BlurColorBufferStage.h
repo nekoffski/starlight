@@ -21,15 +21,15 @@ public:
     };
 
     explicit BlurColorBufferStage()
-        : m_quadVao(glob::Globals::get()->geom->frontSquareVAO.get())
-        , m_gaussianBlurShader(gfx::ShaderManager::get()->load(
-              glob::Globals::get()->config.paths.shaders + "/GaussianBlur.vert", glob::Globals::get()->config.paths.shaders + "/GaussianBlur.frag"))
-        , m_horizontalFrameBuffer(gfx::BufferManager::get()->createFrameBuffer())
-        , m_verticalFrameBuffer(gfx::BufferManager::get()->createFrameBuffer()) {
+        : m_quadVao(glob::Globals::get().geom->frontSquareVAO.get())
+        , m_gaussianBlurShader(gfx::ShaderManager::get().load(
+              glob::Globals::get().config.paths.shaders + "/GaussianBlur.vert", glob::Globals::get().config.paths.shaders + "/GaussianBlur.frag"))
+        , m_horizontalFrameBuffer(gfx::BufferManager::get().createFrameBuffer())
+        , m_verticalFrameBuffer(gfx::BufferManager::get().createFrameBuffer()) {
     }
 
     void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) override {
-        auto [width, height] = core::WindowManager::get()->getSize();
+        auto [width, height] = core::WindowManager::get().getSize();
         gfx::ViewFrustum::Viewport viewport { width, height };
 
         renderer.setTemporaryViewport(viewport);

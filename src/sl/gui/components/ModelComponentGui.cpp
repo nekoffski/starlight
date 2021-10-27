@@ -46,7 +46,7 @@ void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
                     const auto childHeight = ImGui::GetWindowHeight() * sectionHeightRatio;
 
                     with_Child("Meshes: ", ImVec2(0, childHeight)) {
-                        showMeshesSection("Predefined", params, glob::Globals::get()->geom->meshes);
+                        showMeshesSection("Predefined", params, glob::Globals::get().geom->meshes);
                         showMeshesSection("Loaded", params, assetManager.getMeshes().getAll());
                     }
 

@@ -75,24 +75,6 @@ void shutdownGui() {
     ImGui::DestroyContext();
 }
 
-void addFont(const std::string& path, short unsigned min, short unsigned max) {
-    ImGuiIO& io = ImGui::GetIO();
-
-    constexpr int sizePixels = 15;
-    io.Fonts->AddFontFromFileTTF("/home/nek0/kapik/projects/starlight/res/fonts/Roboto-Regular.ttf", sizePixels);
-
-    // io.Fonts->AddFontDefault();
-
-    ImFontConfig config;
-    config.MergeMode = true;
-    config.GlyphMinAdvanceX = 11.0f;
-    config.GlyphMaxAdvanceX = 15.0f;
-
-    // TODO: THIS CAN'T BE STATIC!!
-    static const ImWchar iconRanges[] = { min, max, 0 };
-    io.Fonts->AddFontFromFileTTF(path.c_str(), 15.0f, &config, iconRanges);
-}
-
 void beginGui() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();

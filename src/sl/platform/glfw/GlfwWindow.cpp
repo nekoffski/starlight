@@ -48,7 +48,7 @@ void GlfwWindow::init() {
 
     glfwSetWindowCloseCallback(m_windowHandle, []([[maybe_unused]] GLFWwindow*) {
         LOG_DEBUG("Window's close button pressed, emitting QuitEvent");
-        event::EventManager::get()->emit<event::QuitEvent>().toAll();
+        event::EventManager::get().emit<event::QuitEvent>().toAll();
     });
 }
 

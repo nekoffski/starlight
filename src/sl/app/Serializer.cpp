@@ -94,8 +94,8 @@ void Serializer::serializeDefaultAssets() {
         .beginObject("default-assets")
         .beginArray("shaders");
 
-    if (glob::Globals::get()->shaders)
-        for (auto& [name, shader] : glob::Globals::get()->shaders->shadersByName)
+    if (glob::Globals::get().shaders)
+        for (auto& [name, shader] : glob::Globals::get().shaders->shadersByName)
             m_jsonBuilder
                 .beginObject()
                 .addField("name", name)
@@ -106,8 +106,8 @@ void Serializer::serializeDefaultAssets() {
         .endArray()
         .beginArray("meshes");
 
-    if (glob::Globals::get()->geom)
-        for (auto& [name, mesh] : glob::Globals::get()->geom->meshes)
+    if (glob::Globals::get().geom)
+        for (auto& [name, mesh] : glob::Globals::get().geom->meshes)
             m_jsonBuilder
                 .beginObject()
                 .addField("name", name)

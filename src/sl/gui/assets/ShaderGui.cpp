@@ -33,12 +33,12 @@ void ShaderGui::Provider::render() {
                 shader->disable();
 
                 try {
-                    gfx::ShaderManager::get()->recompileShader(*shader);
+                    gfx::ShaderManager::get().recompileShader(*shader);
                 } catch (core::ShaderError& err) {
                     LOG_WARN("Could not recompile shader due to {}", err.getDetails());
 
                     using namespace event;
-                    EventManager::get()->emit<DisplayErrorEvent>(err.asString()).toAll();
+                    EventManager::get().emit<DisplayErrorEvent>(err.asString()).toAll();
                 }
             }
 
@@ -54,7 +54,7 @@ void ShaderGui::Provider::processRecompileOnSaveRequest(std::shared_ptr<gfx::Sha
     auto& taskHandle = m_params.taskHandle;
 
     if (m_params.recompileOnSave) {
-        taskHandle = async::AsyncManager::get()->addPeriodicTask<gfx::RecompileShaderOnUpdate>(shader);
+        taskHandle = async::AsyncManager::get().addPeriodicTask<gfx::RecompileShaderOnUpdate>(shader);
     } else {
         if (taskHandle.has_value()) {
             taskHandle.value().disable();

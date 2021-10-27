@@ -8,8 +8,6 @@
 #include "Utils.h"
 #include "fonts/FontAwesome.h"
 
-const std::string rootPath = "/home/nek0/kapik/projects/starlight";
-
 namespace sl::gui {
 
 FileBrowser::FileBrowser(const std::string& id, std::unique_ptr<kc::core::FileSystem> fileSystem)
@@ -18,6 +16,7 @@ FileBrowser::FileBrowser(const std::string& id, std::unique_ptr<kc::core::FileSy
 }
 
 void FileBrowser::open(Callback&& callback) {
+    static const std::string rootPath = "/home/nek0/kapik/projects/starlight"; // TODO: get current directory
     m_currentSelection = rootPath;
 
     m_history.clear();
@@ -25,13 +24,13 @@ void FileBrowser::open(Callback&& callback) {
 
     m_callback = callback;
 
-    LOG_DEBUG("Opening file browser");
+    LOG_TRACE("Opening file browser");
     ImGui::OpenPopup(m_id.c_str());
 }
 
 void FileBrowser::show() {
-    constexpr float windowWidth = 700.0f;
-    ImGui::SetNextWindowSize(ImVec2(windowWidth, 0.0f));
+    constexpr float errorDialogWidth = 700.0f;
+    ImGui::SetNextWindowSize(ImVec2(errorDialogWidth, 0.0f));
 
     with_Popup(m_id.c_str()) {
         handleHistory();
@@ -117,12 +116,13 @@ void FileBrowser::handleBottomPanel() {
     ImGui::PushItemWidth(400);
     gui::textInput("##fileSelection", m_currentSelection);
 
-    if (m_history.size() == 0)
+    if (m_history.empty())
         m_history.push_back(m_currentSelection);
 
     ImGui::PopItemWidth();
 }
 
+// TODO: extract to libkc
 std::string FileBrowser::extractNameFromPath(const std::string& path) {
     const auto fileNamePosition = path.find_last_of("/\\");
     return path.substr(fileNamePosition + 1);
