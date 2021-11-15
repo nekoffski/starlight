@@ -29,7 +29,7 @@ bool labeledTextInput(const std::string& label, std::string& value, const int pa
 
 void showImage(gfx::Texture& texture, math::Vec2 size, math::Vec2 uv0 = { 0.0f, 0.0f }, math::Vec2 uv1 = { 1.0f, 1.0f });
 
-bool combo(const std::string& label, int* currentItem, std::vector<std::string> items);
+bool combo(const std::string& label, int* currentItem, const std::vector<std::string>& items);
 
 void pushTextColor(const math::Vec4& color);
 void popTextColor(int count = 1);

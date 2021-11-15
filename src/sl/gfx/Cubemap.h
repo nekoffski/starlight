@@ -11,6 +11,7 @@
 namespace sl::gfx {
 
 constexpr unsigned int facesCount = 6;
+
 using CubemapArgs = std::array<std::string, facesCount>;
 using CubemapFaces = std::array<gfx::Image*, facesCount>;
 
@@ -25,7 +26,9 @@ public:
         virtual std::unique_ptr<Cubemap> create(unsigned int, unsigned int) = 0;
     };
 
-    static void loadAsync(const CubemapArgs& paths, const std::string& name, std::unique_ptr<core::Output<Cubemap>> output);
+    template <typename Callback>
+    static void loadAsync(const CubemapArgs& paths, const std::string& name, Callback&& callback) {
+    }
 
     virtual ~Cubemap() = default;
 
@@ -34,11 +37,16 @@ public:
     virtual void bind(unsigned int index = s_currentTextureId) = 0;
     virtual void unbind() = 0;
 
+    std::unique_ptr<Cubemap> clone();
+
     CubemapArgs getFacesPaths() const {
         return m_facesPaths;
     }
 
     std::string name;
+
+    unsigned int width;
+    unsigned int height;
 
 protected:
     inline static unsigned int s_currentTextureId = 0u;

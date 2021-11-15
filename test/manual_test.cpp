@@ -20,7 +20,7 @@ int main() {
     AsyncManager m;
 
     AsyncManager::get().start();
-    AsyncManager::get().executeAsyncTask<::Task>();
+    AsyncManager::get().callAsync<::Task>();
 
     AsyncManager::get().update(1.0f);
 

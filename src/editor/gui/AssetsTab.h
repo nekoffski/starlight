@@ -9,7 +9,6 @@
 #include "sl/gui/ErrorDialog.h"
 #include "sl/gui/FileBrowser.h"
 
-
 namespace editor::gui {
 
 class AssetsTab : public Widget {

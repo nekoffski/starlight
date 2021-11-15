@@ -13,6 +13,7 @@
 #include "sl/core/String.hpp"
 #include "sl/geom/GeometryManager.h"
 #include "sl/gfx/ShaderManager.h"
+#include "sl/gfx/TextureManager.h"
 #include "sl/glob/Globals.h"
 
 #include "sl/gui/Utils.h"
@@ -215,14 +216,22 @@ void AssetsTab::handleCubemapLoader() {
     if (m_loadClicked) {
         validateAssetName(m_assetsArgs.assetName);
 
-        auto faces = m_assetsArgs.faces;
-        for (auto& face : faces)
-            face = sl::glob::Globals::get().config.paths.cubemaps + face;
+        auto facesPaths = m_assetsArgs.faces;
+        const auto& cubemapsPath = sl::glob::Globals::get().config.paths.cubemaps;
 
-        auto output = std::make_unique<sl::asset::AssetManager::Output<
-            sl::gfx::Cubemap>>(m_sharedState->assetManager);
+        std::ranges::transform(facesPaths, facesPaths.begin(), [&cubemapsPath](const auto& facePath) -> std::string {
+            return cubemapsPath + facePath;
+        });
 
-        sl::gfx::Cubemap::loadAsync(faces, m_assetsArgs.assetName, std::move(output));
+        using namespace sl::gfx;
+
+        TextureManager::get()
+            .createCubemap()
+            .fromPaths(facesPaths)
+            .withName(m_assetsArgs.assetName)
+            .getAsync([&](auto&& cubemap) {
+                m_sharedState->assetManager.add(std::move(cubemap));
+            });
     }
 }
 
@@ -252,10 +261,14 @@ void AssetsTab::handleTextureLoader() {
     if (m_loadClicked) {
         validateAssetName(m_assetsArgs.assetName);
 
-        auto output = std::make_unique<sl::asset::AssetManager::Output<
-            sl::gfx::Texture>>(m_sharedState->assetManager);
+        // auto output = std::make_unique<sl::asset::AssetManager::Output<
+        // sl::gfx::Texture>>(m_sharedState->assetManager);
 
-        sl::gfx::Texture::loadAsync(m_assetsArgs.modelName, m_assetsArgs.assetName, std::move(output));
+        // sl::gfx::Texture::loadAsync(m_assetsArgs.modelName, m_assetsArgs.assetName, std::move(output));
+
+        // sl::gfx::Texture::loadAsync(m_assetsArgs.modelName, m_assetsArgs.assetName, [&](auto&& texture) {
+        //     m_sharedState->assetManager.add(std::move(texture));
+        // });
     }
 }
 }

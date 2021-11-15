@@ -45,7 +45,7 @@ public:
     }
 
     template <typename T, typename... Args>
-    requires std::derived_from<T, AsyncTask> void executeAsyncTask(Args&&... args) {
+    requires std::derived_from<T, AsyncTask> void callAsync(Args&&... args) {
         auto task = std::make_unique<T>(std::forward<Args>(args)...);
         auto id = kc::core::generateUuid();
 
@@ -57,6 +57,7 @@ public:
 
     void parallelLoop(const int iterations, const std::function<void(const int)>& func);
     void update(float dtime);
+
     std::shared_ptr<Timer> createTimer(float sleepTime);
 
 private:

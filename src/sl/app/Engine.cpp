@@ -54,7 +54,10 @@ Engine::Engine(cfg::Config* config, platform::Platform* platform)
     : EventListener("Engine")
     , m_config(config)
     , m_platform(platform)
-    , m_application(nullptr) {
+    , m_application(nullptr)
+    // managers
+    , m_textureManager(
+          m_platform->gpu.textureFactory.get(), m_platform->gpu.cubemapFactory.get(), m_platform->imageFactory.get()) {
 
     initLowLevelComponents();
     initManagers();
@@ -98,10 +101,6 @@ void Engine::initManagers() {
     m_bufferManager.setFrameBufferFactory(m_platform->gpu.frameBufferFactory.get());
     m_bufferManager.setVertexArrayFactory(m_platform->gpu.vertexArrayFactory.get());
 
-    m_textureManager.setCubemapFactory(m_platform->gpu.cubemapFactory.get());
-    m_textureManager.setTextureFactory(m_platform->gpu.textureFactory.get());
-    m_textureManager.setImageFactory(m_platform->imageFactory.get());
-
     m_geometryManager.setModelLoader(m_platform->modelLoader.get());
 
     m_windowManager.setActiveWindow(m_window);
@@ -139,7 +138,7 @@ void Engine::run() {
     while (m_application->isRunning()) {
         loopStep();
 
-        // clang-format off
+// clang-format off
         #if 0
         LOG_TRACE("\n\n{}\n\n", profiler.formatTimers());
         #endif

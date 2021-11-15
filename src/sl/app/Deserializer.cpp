@@ -56,7 +56,12 @@ void Deserializer::deserializeAssets(kc::json::Node& assetsJson) {
         for (int i = 0; i < faces.size(); ++i)
             faces[i] = paths[i].asString();
 
-        auto cubemap = gfx::TextureManager::get().createCubemap(faces, cubemapDescription["name"].asString());
+        auto cubemap = gfx::TextureManager::get()
+                           .createCubemap()
+                           .fromPaths(faces)
+                           .withName(cubemapDescription["name"].asString())
+                           .get();
+
         auto oldId = cubemapDescription["id"].asString();
         auto newId = cubemap->getId();
 

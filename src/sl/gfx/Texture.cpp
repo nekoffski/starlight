@@ -61,7 +61,7 @@ void Texture::loadAsync(const std::string& path, const std::string& name, std::u
         std::unique_ptr<Image> m_image;
     };
 
-    async::AsyncManager::get().executeAsyncTask<LoadAsync>(path, name, std::move(output));
+    async::AsyncManager::get().callAsync<LoadAsync>(path, name, std::move(output));
 }
 
 }

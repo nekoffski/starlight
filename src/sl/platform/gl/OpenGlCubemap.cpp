@@ -26,6 +26,9 @@ OpenGlCubemap::OpenGlCubemap(unsigned int width, unsigned int height)
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    this->width = width;
+    this->height = height;
 }
 
 OpenGlCubemap::OpenGlCubemap(const sl::gfx::CubemapFaces& faces)
@@ -51,6 +54,12 @@ OpenGlCubemap::OpenGlCubemap(const sl::gfx::CubemapFaces& faces)
         LOG_DEBUG("Face: {}, width: {}, height: {}", faces[i]->getPath(), size.width, size.height);
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, size.width, size.height,
             0, format, GL_UNSIGNED_BYTE, img->getBuffer());
+
+        // TODO: check if without 'if' below statement is faster
+        if (i == 0) {
+            this->width = size.width;
+            this->height = size.height;
+        }
     }
 
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

@@ -25,15 +25,14 @@ void showImage(gfx::Texture& texture, math::Vec2 size, math::Vec2 uv0, math::Vec
         ImVec2(uv0.x, uv0.y), ImVec2(uv1.x, uv1.y));
 }
 
-bool combo(const std::string& label, int* currentItem, std::vector<std::string> items) {
-    const auto itemsSize = items.size();
-    std::vector<const char*> imguiItems(itemsSize);
+bool combo(const std::string& label, int* currentItem, const std::vector<std::string>& items) {
+    std::vector<const char*> imguiItems;
+    auto itemsSize = items.size();
+    imguiItems.reserve(itemsSize);
 
-    static auto toConstChar = [](const std::string& item) -> const char* {
-        return item.c_str();
-    };
+    for (auto& item : items)
+        imguiItems.push_back(item.c_str());
 
-    std::ranges::transform(items, std::back_inserter(imguiItems), toConstChar);
     return ImGui::Combo(label.c_str(), currentItem, imguiItems.data(), itemsSize);
 }
 
