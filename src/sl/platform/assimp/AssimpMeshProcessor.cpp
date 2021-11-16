@@ -1,12 +1,12 @@
 #include "AssimpMeshProcessor.h"
 
-#include <kc/core/Log.h>
 #include "sl/geom/Mesh.h"
 #include "sl/gfx/ElementBuffer.h"
 #include "sl/gfx/Texture.h"
 #include "sl/gfx/TextureManager.h"
 #include "sl/gfx/VertexArray.h"
 #include "sl/gfx/VertexBuffer.h"
+#include <kc/core/Log.h>
 
 namespace sl::platform::assimp {
 
@@ -105,7 +105,9 @@ AssimpMeshProcessor::loadMaterialTextures(aiMaterial* material, aiTextureType te
         material->GetTexture(textureType, i, &str);
 
         // TODO: OPTIMIZE, store texture in models as most of mesh reuse them!
-        textures.push_back(gfx::TextureManager::get().createTexture(directory + "/" + str.C_Str(), ""));
+        auto& textureManager = gfx::TextureManager::get();
+        textures.push_back(
+            textureManager.createTexture().fromPath(directory + "/" + str.C_Str()).get());
     }
     return textures;
 }

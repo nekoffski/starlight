@@ -21,8 +21,6 @@ public:
             int = STARL_DEPTH_COMPONENT, int = STARL_DEPTH_COMPONENT) = 0;
     };
 
-    static void loadAsync(const std::string& path, const std::string& name, std::unique_ptr<core::Output<Texture>> output);
-
     std::unique_ptr<Texture> clone();
     virtual ~Texture() = default;
 

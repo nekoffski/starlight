@@ -26,10 +26,6 @@ public:
         virtual std::unique_ptr<Cubemap> create(unsigned int, unsigned int) = 0;
     };
 
-    template <typename Callback>
-    static void loadAsync(const CubemapArgs& paths, const std::string& name, Callback&& callback) {
-    }
-
     virtual ~Cubemap() = default;
 
     virtual unsigned int getBufferId() const = 0;

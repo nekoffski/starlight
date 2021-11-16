@@ -266,8 +266,17 @@ public:
 
         m_depthBuffer = gfx::BufferManager::get().createRenderBuffer(STARL_DEPTH_COMPONENT, width, height);
 
-        m_colorBuffer = gfx::TextureManager::get().createTexture(width, height, STARL_RGBA16F, STARL_RGBA);
-        m_bloomBuffer = gfx::TextureManager::get().createTexture(width, height, STARL_RGBA16F, STARL_RGBA);
+        auto& textureManager = gfx::TextureManager::get();
+
+        m_colorBuffer = textureManager
+                            .createTexture()
+                            .withWidth(width)
+                            .withHeight(height)
+                            .withColorComponents(STARL_RGBA16F)
+                            .withFormat(STARL_RGBA)
+                            .get();
+
+        m_bloomBuffer = m_colorBuffer->clone();
 
         m_sceneQuadFrameBuffer->bind();
         m_sceneQuadFrameBuffer->bindTexture(*m_colorBuffer, STARL_COLOR_ATTACHMENT0);

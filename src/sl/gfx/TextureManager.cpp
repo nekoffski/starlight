@@ -87,6 +87,74 @@ TextureManager::CubemapFacesView TextureManager::createCubemapFacesView(const Cu
 
     return facesView;
 }
+TextureManager::TextureBuilder::TextureBuilder(TextureManager* textureManager)
+    : m_textureManager(textureManager) {
+}
+
+std::unique_ptr<Texture> TextureManager::TextureBuilder::get() && {
+    auto texture = std::invoke(m_buildFunction, this);
+    texture->name = m_name;
+
+    if (m_imageView != nullptr)
+        texture->path = m_imageView->getPath();
+
+    return texture;
+}
+
+TextureManager::TextureBuilder&& TextureManager::TextureBuilder::fromImage(Image* imageView) && {
+    m_buildFunction = &TextureBuilder::buildFromImage;
+    m_imageView = imageView;
+    return std::move(*this);
+}
+
+TextureManager::TextureBuilder&& TextureManager::TextureBuilder::fromPath(const std::string& path) && {
+    m_buildFunction = &TextureBuilder::buildFromPath;
+    m_path = path;
+    return std::move(*this);
+}
+
+TextureManager::TextureBuilder&& TextureManager::TextureBuilder::withWidth(const int width) && {
+    m_buildFunction = &TextureBuilder::buildFromDimension;
+    m_width = width;
+    return std::move(*this);
+}
+
+TextureManager::TextureBuilder&& TextureManager::TextureBuilder::withHeight(const int height) && {
+    m_buildFunction = &TextureBuilder::buildFromDimension;
+    m_height = height;
+    return std::move(*this);
+}
+
+TextureManager::TextureBuilder&& TextureManager::TextureBuilder::withName(const std::string& name) && {
+    m_name = name;
+    return std::move(*this);
+}
+
+TextureManager::TextureBuilder&& TextureManager::TextureBuilder::withColorComponents(int colorComponents) && {
+    m_colorComponents = colorComponents;
+    return std::move(*this);
+}
+
+TextureManager::TextureBuilder&& TextureManager::TextureBuilder::withFormat(int format) && {
+    m_format = format;
+    return std::move(*this);
+}
+
+std::unique_ptr<Texture> TextureManager::TextureBuilder::buildFromImage() {
+    return m_textureManager->m_textureFactory->create(*m_imageView);
+}
+
+std::unique_ptr<Texture> TextureManager::TextureBuilder::buildFromPath() {
+    m_image = m_textureManager->loadImage(m_path);
+    m_imageView = m_image.get();
+
+    return buildFromImage();
+}
+
+std::unique_ptr<Texture> TextureManager::TextureBuilder::buildFromDimension() {
+    return m_textureManager->m_textureFactory->create(
+        m_width.value(), m_height.value(), m_colorComponents, m_format);
+}
 
 std::unique_ptr<Cubemap> TextureManager::loadCubemap(const CubemapFaces& faces) {
     std::array<gfx::Image*, facesCount> facesView;
@@ -108,30 +176,24 @@ TextureManager::CubemapBuilder TextureManager::createCubemap() {
 }
 
 std::unique_ptr<Cubemap> TextureManager::createOmniShadowMap() {
-    static auto shadowMapSize = Texture::shadowMapSize;
+    static const auto shadowMapSize = Texture::shadowMapSize;
+
     return createCubemap().withWidth(shadowMapSize).withHeight(shadowMapSize).get();
 }
 
+TextureManager::TextureBuilder TextureManager::createTexture() {
+    return TextureBuilder { this };
+}
+
 std::unique_ptr<Texture> TextureManager::createShadowMap() {
-    return m_textureFactory->create(Texture::shadowMapSize, Texture::shadowMapSize);
-}
+    static const auto shadowMapSize = Texture::shadowMapSize;
 
-std::unique_ptr<Texture> TextureManager::createTexture(const std::string& path, const std::string& name) {
-    auto textureImage = loadImage(path);
-    return createTexture(*textureImage, name);
-}
-
-std::unique_ptr<Texture> TextureManager::createTexture(gfx::Image& image, const std::string& name) {
-    auto texture = m_textureFactory->create(image);
-
-    texture->path = image.getPath();
-    texture->name = name;
-
-    return texture;
-}
-
-std::unique_ptr<Texture> TextureManager::createTexture(unsigned int width, unsigned int height, int internalFormat, int format) {
-    return m_textureFactory->create(width, height, internalFormat, format);
+    return createTexture()
+        .withHeight(shadowMapSize)
+        .withWidth(shadowMapSize)
+        .withColorComponents(STARL_DEPTH_COMPONENT)
+        .withFormat(STARL_DEPTH_COMPONENT)
+        .get();
 }
 
 }

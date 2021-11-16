@@ -72,8 +72,11 @@ void Deserializer::deserializeAssets(kc::json::Node& assetsJson) {
     }
 
     for (auto& textureDescription : assetsJson["textures"]) {
-        auto texture = gfx::TextureManager::get().createTexture(textureDescription["path"].asString(),
-            textureDescription["name"].asString());
+        auto texture = gfx::TextureManager::get()
+                           .createTexture()
+                           .fromPath(textureDescription["path"].asString())
+                           .withName(textureDescription["name"].asString())
+                           .get();
 
         auto oldId = textureDescription["id"].asString();
         auto newId = texture->getId();
