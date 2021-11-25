@@ -1,7 +1,6 @@
 #pragma once
 
 #include "sl/core/Input.h"
-#include "sl/core/NotNullPtr.hpp"
 
 namespace sl::platform::glfw {
 

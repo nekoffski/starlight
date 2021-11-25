@@ -6,7 +6,6 @@
 
 #include "sl/async/Task.h"
 #include "sl/core/GameObject.h"
-#include "sl/core/String.hpp"
 #include "sl/event/Event.h"
 #include "sl/event/EventManager.h"
 #include "sl/math/Matrix.hpp"

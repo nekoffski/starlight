@@ -10,7 +10,6 @@
 
 #include <ImGuizmo.h>
 
-#include "sl/core/String.hpp"
 #include "sl/gfx/Texture.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Utils.hpp"

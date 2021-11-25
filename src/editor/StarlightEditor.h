@@ -181,6 +181,11 @@ public:
     void forceStop() override {
     }
 
+    void closeProject() {
+        m_scene->clear();
+        m_assetManager.clear();
+    }
+
     void handleEvents(const kc::event::EventProvider& eventProvider) override {
         auto events = eventProvider.getByCategories<event::CoreCategory, event::EditorCategory>();
 
@@ -195,6 +200,8 @@ public:
 
             } else if (event->is<QuitEvent>()) {
                 m_isRunning = false;
+            } else if (event->is<CloseSceneEvent>()) {
+                closeProject();
             } else if (event->is<WindowResizedEvent>()) {
                 auto windowResizedEvent = event->asView<WindowResizedEvent>();
                 auto [width, height] = windowResizedEvent->getSize();

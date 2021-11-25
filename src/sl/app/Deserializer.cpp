@@ -68,7 +68,7 @@ void Deserializer::deserializeAssets(kc::json::Node& assetsJson) {
         m_assetsIdRedirections[oldId] = newId;
         m_assetManager.add(std::move(cubemap));
 
-        LOG_INFO("Found cubemap redirection: {} -> {}", oldId, newId);
+        LOG_DEBUG("Found cubemap redirection: {} -> {}", oldId, newId);
     }
 
     for (auto& textureDescription : assetsJson["textures"]) {
@@ -84,29 +84,34 @@ void Deserializer::deserializeAssets(kc::json::Node& assetsJson) {
         m_assetsIdRedirections[oldId] = newId;
         m_assetManager.add(std::move(texture));
 
-        LOG_INFO("Found texture redirection: {} -> {}", oldId, newId);
+        LOG_DEBUG("Found texture redirection: {} -> {}", oldId, newId);
     }
 
     auto& models = assetsJson["models"];
 
+    LOG_TRACE("Loading models");
     for (auto& modelToLoad : models["paths"])
         m_assetManager.add(
             geom::GeometryManager::get().loadModel(modelToLoad.asString())->meshes);
 
+    LOG_TRACE("Updating meshes parents");
     for (auto& meshDescription : models["meshes"]) {
         auto name = meshDescription["name"].asString();
         auto oldId = meshDescription["id"].asString();
+
+        LOG_TRACE("Quering for a mesh with name: {}", name);
         auto mesh = m_assetManager.getMeshes().getByName(name);
 
-        m_assetsIdRedirections[oldId] = mesh->getId();
+        LOG_DEBUG("Found mesh redirection: {} -> {}", oldId, mesh->getId());
 
-        LOG_INFO("Found mesh redirection: {} -> {}", oldId, mesh->getId());
+        m_assetsIdRedirections[oldId] = mesh->getId();
     }
 
     deserializeDefaultAssets(assetsJson["default-assets"]);
 }
 
 void Deserializer::deserializeDefaultAssets(kc::json::Node& defaultAssets) {
+    LOG_TRACE("Deserializing default assets");
     auto& globalShaders = glob::Globals::get().shaders->shadersByName;
 
     for (auto& shaderDescription : defaultAssets["shaders"]) {

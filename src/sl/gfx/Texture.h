@@ -3,7 +3,6 @@
 #include <memory>
 
 #include "sl/core/GameObject.h"
-#include "sl/core/Output.h"
 #include "sl/gfx/Image.h"
 
 // todo: abstraction
@@ -27,9 +26,7 @@ public:
     virtual void bind(unsigned int = 0) = 0;
     virtual void unbind() = 0;
 
-    std::pair<unsigned int, unsigned int> getSize() const {
-        return { getWidth(), getHeight() };
-    }
+    std::pair<unsigned int, unsigned int> getSize() const;
 
     virtual unsigned int getWidth() const = 0;
     virtual unsigned int getHeight() const = 0;

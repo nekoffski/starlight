@@ -2,7 +2,8 @@
 
 #include <imgui_sugar.hpp>
 
-#include "sl/core/Utils.hpp"
+#include <kc/core/Utils.hpp>
+
 #include "sl/event/Event.h"
 #include "sl/event/EventManager.h"
 #include "sl/glob/Globals.h"
@@ -55,8 +56,8 @@ void PropertiesPanel::showSceneProperties() {
             // if (selectedValue == 0 && scene->skybox != nullptr)
             //     scene->skybox = nullptr;
 
-            if (scene->skybox.has_value())
-                selectedValue = core::indexOf(cubemapsNames, scene->skybox->cubemap->name, 0);
+            if (scene->skybox)
+                selectedValue = kc::core::indexOf(cubemapsNames, scene->skybox->cubemap->name, 0);
         }
 
         if (selectedValue != 0 && selectedValue != previousSelectedValue) {

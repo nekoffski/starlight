@@ -8,7 +8,6 @@
 #include "sl/ecs/Entity.h"
 #include "sl/gfx/Cubemap.h"
 
-
 #include "Widget.h"
 
 namespace editor::gui {
@@ -21,7 +20,7 @@ public:
 private:
     void showSceneProperties();
 
-    sl::core::GameObjectPtr<sl::gfx::Cubemap> m_selectedCubemap;
+    sl::gfx::Cubemap* m_selectedCubemap = nullptr;
 
     AssetTab m_assetTab;
     SystemTab m_systemTab;

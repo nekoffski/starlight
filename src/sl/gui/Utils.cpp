@@ -1,6 +1,7 @@
 #include "Utils.h"
 
 #include <kc/core/Scope.hpp>
+#include <kc/core/String.h>
 
 namespace sl::gui {
 
@@ -8,7 +9,7 @@ bool textInput(const std::string& label, std::string& text) {
     static constexpr int bufferSize = 256;
 
     text.resize(bufferSize);
-    ON_SCOPE_EXIT { core::stripString(text); };
+    ON_SCOPE_EXIT { kc::core::strip(text); };
 
     return ImGui::InputText(label.c_str(), &text[0], text.size());
 }

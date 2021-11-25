@@ -10,7 +10,6 @@
 #include "editor/DebugConsole.hpp"
 #include "sl/core/Errors.hpp"
 #include "sl/core/InputManager.h"
-#include "sl/core/String.hpp"
 #include "sl/geom/GeometryManager.h"
 #include "sl/gfx/ShaderManager.h"
 #include "sl/gfx/TextureManager.h"

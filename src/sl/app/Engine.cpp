@@ -5,6 +5,7 @@
 
 #include <kc/core/Log.h>
 #include <kc/core/Profiler.h>
+#include <kc/sig/Signal.h>
 
 #include "sl/app/Application.h"
 #include "sl/cfg/Config.h"
@@ -18,7 +19,6 @@
 #include "sl/core/Input.h"
 #include "sl/core/InputManager.h"
 
-#include "sl/core/sig/Signal.h"
 #include "sl/geom/GeometryManager.h"
 #include "sl/gfx/BufferManager.h"
 #include "sl/gfx/ShaderManager.h"

@@ -2,7 +2,8 @@
 
 #include "ComponentGui.h"
 
-#include "sl/core/Utils.hpp"
+#include <kc/core/Utils.hpp>
+
 #include "sl/physx/AxisAlignedBoundingBox.h"
 #include "sl/physx/AxisAlignedCollider.h"
 #include "sl/scene/components/ModelComponent.h"
@@ -35,7 +36,7 @@ private:
                     ImGui::Checkbox("Fixed", &component.fixed);
 
                     if (component.boundingBox != nullptr && params.selectedBoundingBox == 0)
-                        params.selectedBoundingBox = sl::core::indexOf(m_boundingBoxes, component.boundingBox->getName(), 0);
+                        params.selectedBoundingBox = kc::core::indexOf(m_boundingBoxes, component.boundingBox->getName(), 0);
 
                     with_OpenedTreeNode("Bounding box") {
                         if (gui::combo("##Bounding box type", &params.selectedBoundingBox, m_boundingBoxes))

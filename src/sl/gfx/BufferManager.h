@@ -2,8 +2,6 @@
 
 #include <kc/core/Singleton.hpp>
 
-#include "sl/core/NotNullPtr.hpp"
-
 #include "ElementBuffer.h"
 #include "FrameBuffer.h"
 #include "RenderBuffer.h"
@@ -26,11 +24,11 @@ public:
         return m_vertexArrayFactory->create();
     }
 
-    std::shared_ptr<VertexBuffer> createVertexBuffer(core::NotNullPtr<void> data, int size, int verticesCount) {
+    std::shared_ptr<VertexBuffer> createVertexBuffer(void* data, int size, int verticesCount) {
         return m_vertexBufferFactory->create(data, size, verticesCount);
     }
 
-    std::shared_ptr<ElementBuffer> createElementBuffer(core::NotNullPtr<void> data, int size, unsigned int indicesCount) {
+    std::shared_ptr<ElementBuffer> createElementBuffer(void* data, int size, unsigned int indicesCount) {
         return m_elementBufferFactory->create(data, size, indicesCount);
     }
 

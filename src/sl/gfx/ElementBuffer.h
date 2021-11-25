@@ -2,14 +2,12 @@
 
 #include <memory>
 
-#include "sl/core/NotNullPtr.hpp"
-
 namespace sl::gfx {
 
 class ElementBuffer {
 public:
     struct Factory {
-        virtual std::shared_ptr<ElementBuffer> create(core::NotNullPtr<void>, int, unsigned int) = 0;
+        virtual std::shared_ptr<ElementBuffer> create(void* data, int, unsigned int) = 0;
         virtual ~Factory() = default;
     };
 

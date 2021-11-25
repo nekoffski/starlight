@@ -7,8 +7,10 @@
 #include "sl/gfx/Shader.h"
 
 namespace sl::scene {
+
 struct Skybox {
     std::shared_ptr<gfx::Shader> shader;
-    core::GameObjectPtr<sl::gfx::Cubemap> cubemap;
+    sl::gfx::Cubemap* cubemap = nullptr;
 };
+
 }

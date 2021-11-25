@@ -1,10 +1,11 @@
 #include "AssimpModelLoader.h"
 
+#include <kc/core/Log.h>
+#include <kc/core/String.h>
+
 #include "AssimpMeshProcessor.h"
 #include "sl/core/Errors.hpp"
-#include "sl/core/String.hpp"
 #include "sl/geom/Model.h"
-#include <kc/core/Log.h>
 
 namespace sl::platform::assimp {
 
@@ -16,6 +17,8 @@ std::string getModelName(const std::string& modelPath) {
 }
 
 std::shared_ptr<geom::Model> AssimpModelLoader::load(const std::string& path) {
+    LOG_DEBUG("Loading model: {}", path);
+
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(path,
         aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenNormals);
@@ -32,12 +35,19 @@ std::shared_ptr<geom::Model> AssimpModelLoader::load(const std::string& path) {
     AssimpMeshProcessor meshProcessor;
     processNode(scene->mRootNode, scene, meshProcessor, model);
 
-    auto modelName = core::extractNameFromPath(path);
+    using namespace kc::core;
+
+    auto modelName = extractNameFromPath(path, ExtractingMode::withoutExtension);
 
     int i = 0;
+
+    LOG_DEBUG("Loaded meshes for model: {}", path);
+
     for (auto& mesh : model->meshes) {
         mesh->providedBy = path;
         mesh->name = fmt::format("{}_part_{}", modelName, i++);
+
+        LOG_DEBUG("{}", mesh->name);
     }
 
     return model;

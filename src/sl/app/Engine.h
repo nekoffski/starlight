@@ -5,6 +5,7 @@
 
 #include <kc/core/Log.h>
 #include <kc/event/EventListener.h>
+#include <kc/sig/SignalHandler.h>
 
 #include "sl/app/Application.h"
 #include "sl/async/AsyncManager.hpp"
@@ -14,7 +15,6 @@
 #include "sl/core/Input.h"
 #include "sl/core/InputManager.h"
 #include "sl/core/WindowManager.h"
-#include "sl/core/sig/Signal.h"
 #include "sl/event/EventManager.h"
 #include "sl/geom/GeometryManager.h"
 #include "sl/gfx/fwd.h"

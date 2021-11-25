@@ -2,10 +2,11 @@
 
 #include <string>
 
+#include <kc/core/Singleton.hpp>
+#include <kc/core/String.h>
+
 #include "Shader.h"
 #include "ShaderCompiler.h"
-#include "sl/core/String.hpp"
-#include <kc/core/Singleton.hpp>
 
 namespace sl::gfx {
 
@@ -15,7 +16,9 @@ public:
         auto shader = m_shaderFactory->create(vertex, fragment, geometry);
         m_shaderCompiler->compile(*shader);
 
-        shader->name = core::extractNameFromPath(vertex);
+        using namespace kc::core;
+
+        shader->name = extractNameFromPath(vertex, ExtractingMode::withoutExtension);
 
         return shader;
     }

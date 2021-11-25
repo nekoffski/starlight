@@ -19,7 +19,7 @@ class TextureGui {
         }
 
         void render() {
-            if (m_texture.hasValue()) {
+            if (m_texture != nullptr) {
                 ImGui::Text("Texture resource");
                 ImGui::Text("%s", m_texture->name.c_str());
                 ImGui::Separator();
@@ -35,7 +35,7 @@ class TextureGui {
         }
 
     private:
-        core::GameObjectPtr<gfx::Texture> m_texture;
+        gfx::Texture* m_texture;
     };
 
 public:

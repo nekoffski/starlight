@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "sl/core/GameObject.h"
-#include "sl/core/Output.h"
 #include "sl/gfx/Image.h"
 
 namespace sl::gfx {

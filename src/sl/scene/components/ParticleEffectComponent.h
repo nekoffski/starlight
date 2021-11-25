@@ -29,6 +29,6 @@ struct ParticleEffectComponent : ecs::Component {
     float minY = 0.0f;
     float maxY = 0.0f;
 
-    core::GameObjectPtr<gfx::Texture> texture;
+    gfx::Texture* texture = nullptr;
 };
 }

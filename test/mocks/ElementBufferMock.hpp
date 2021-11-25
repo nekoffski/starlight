@@ -9,7 +9,7 @@ using namespace sl::gfx;
 
 struct ElementBufferMock : public ElementBuffer {
     struct Factory : public ElementBuffer::Factory {
-        MOCK_METHOD(std::shared_ptr<ElementBuffer>, create, (core::NotNullPtr<void>, int, unsigned int), (override));
+        MOCK_METHOD(std::shared_ptr<ElementBuffer>, create, (void*, int, unsigned int), (override));
     };
 
     MOCK_METHOD(void, bind, (), (override));

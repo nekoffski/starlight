@@ -8,7 +8,6 @@
 
 #include "sl/core/ClockManager.h"
 #include "sl/core/Macros.h"
-#include "sl/core/String.hpp"
 
 namespace editor {
 
@@ -29,10 +28,9 @@ public:
     }
 
     static std::string getContext() {
-        std::string context;
-        for (auto& line : m_buffer)
-            context += line;
-        return context;
+        return std::accumulate(m_buffer.begin(), m_buffer.end(), std::string {}, [](const auto& sum, const auto& element) {
+            return sum + element;
+        });
     }
 
 private:

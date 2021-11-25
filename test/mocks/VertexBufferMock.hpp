@@ -12,7 +12,7 @@ using namespace sl::gfx;
 struct VertexBufferMock : public VertexBuffer {
 public:
     struct Factory : VertexBuffer::Factory {
-        MOCK_METHOD(std::shared_ptr<VertexBuffer>, create, (sl::core::NotNullPtr<void>, int, int), (override));
+        MOCK_METHOD(std::shared_ptr<VertexBuffer>, create, (void*, int, int), (override));
     };
 
     MOCK_METHOD(void, bind, (), (override));

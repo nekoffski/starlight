@@ -6,30 +6,16 @@
 
 #include "AssetContainer.h"
 #include "AssetContainer2.h"
-#include <kc/core/Log.h>
 #include "sl/geom/Mesh.h"
 #include "sl/geom/Model.h"
 #include "sl/gfx/Cubemap.h"
 #include "sl/gfx/Shader.h"
+#include <kc/core/Log.h>
 
 namespace sl::asset {
 
 class AssetManager {
 public:
-    template <typename T>
-    class Output : public core::Output<T> {
-    public:
-        explicit Output(AssetManager& assetManager)
-            : m_assetManager(assetManager) { }
-
-        void set(std::unique_ptr<T> result) override {
-            m_assetManager.add(std::move(result));
-        }
-
-    private:
-        AssetManager& m_assetManager;
-    };
-
     void clear() {
         m_textures.clear();
         m_cubemaps.clear();

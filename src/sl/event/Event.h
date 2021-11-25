@@ -109,5 +109,11 @@ DECLARE_EVENT(QuitEvent, CoreCategory) {
     }
 };
 
+DECLARE_EVENT(CloseSceneEvent, CoreCategory) {
+    std::string asString() const override {
+        return "[CloseSceneEvent]";
+    }
+};
+
 // clang-format on
 }
