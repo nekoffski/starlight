@@ -5,7 +5,8 @@ namespace sl::async {
 Timer::Timer(float sleepTime)
     : m_sleepTime(sleepTime)
     , m_activated(false)
-    , m_timer(m_sleepTime) {}
+    , m_timer(m_sleepTime) {
+}
 
 void Timer::setSleepTime(float sleepTime) {
     m_sleepTime = sleepTime;
@@ -22,4 +23,5 @@ bool Timer::asyncSleep() {
     }
     return true;
 }
+
 }

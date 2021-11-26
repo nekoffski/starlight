@@ -1,5 +1,7 @@
 #pragma once
 
+#include <kc/core/Log.h>
+
 #include "sl/core/WindowManager.h"
 #include "sl/gfx/Shader.h"
 #include "sl/gfx/ShaderManager.h"
@@ -7,9 +9,6 @@
 #include "sl/gfx/VertexArray.h"
 #include "sl/glob/Globals.h"
 #include "sl/rendering/Stage.h"
-
-#include "sl/async/TaskManager.h"
-#include <kc/core/Log.h>
 
 namespace sl::rendering::stages {
 

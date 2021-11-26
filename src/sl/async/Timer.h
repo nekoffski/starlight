@@ -1,13 +1,11 @@
 #pragma once
 
+#include "fwd.h"
+
 namespace sl::async {
 
-namespace detail {
-    class TimerEngine;
-}
-
 class Timer {
-    friend class detail::TimerEngine;
+    friend class AsyncManager;
 
 public:
     explicit Timer(float sleepTime);
@@ -18,6 +16,7 @@ public:
 private:
     float m_sleepTime;
     float m_timer;
+
     bool m_activated;
 };
 }

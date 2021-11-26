@@ -10,33 +10,24 @@
 #include <kc/core/Uuid.h>
 
 #include "AsyncTask.h"
-#include "TaskManager.h"
+#include "PeriodicTask.h"
 #include "Timer.h"
-#include "TimerEngine.h"
-#include "sl/core/Macros.h"
 
 namespace sl::async {
 
 class AsyncManager : public kc::core::Singleton<AsyncManager> {
-
     struct AsyncTaskSentinel {
         kc::async::Future<void> future;
         std::unique_ptr<AsyncTask> task;
     };
 
 public:
-    using Ptr = std::unique_ptr<AsyncManager>;
-
-    void start();
-    void stop();
-
-    ~AsyncManager() {
-        stop();
-    }
+    explicit AsyncManager();
+    ~AsyncManager();
 
     template <typename T, typename... Args>
-    requires std::derived_from<T, Task> Task::Handle addPeriodicTask(Args&&... args) {
-        return m_taskManager.addPeriodicTask<T, Args...>(std::forward<Args>(args)...);
+    requires std::derived_from<T, PeriodicTask> PeriodicTask::Handle addPeriodicTask(Args&&... args) {
+        return addPeriodicTaskImpl(std::make_unique<T>(std::forward<Args>(args)...));
     }
 
     template <typename F, typename... Args>
@@ -46,26 +37,52 @@ public:
 
     template <typename T, typename... Args>
     requires std::derived_from<T, AsyncTask> void callAsync(Args&&... args) {
-        auto task = std::make_unique<T>(std::forward<Args>(args)...);
-        auto id = kc::core::generateUuid();
-
-        LOG_INFO("Creating async task: {} with assigned id: {}", task->asString(), id);
-
-        m_asyncTasks.emplace(id,
-            AsyncTaskSentinel { callAsync(&T::executeAsync, task.get()), std::move(task) });
+        callAsyncImpl(std::make_unique<T>(std::forward<Args>(args)...));
     }
 
-    void parallelLoop(const int iterations, const std::function<void(const int)>& func);
+    template <typename F, typename... Args>
+    void parallelLoop(const int iterations, F&& function, Args&&... args) {
+        static const auto threadCount = m_threadPool->getSize();
+        auto batch = iterations / threadCount;
+
+        std::vector<kc::async::Future<void>> futures;
+        futures.reserve(threadCount);
+
+        for (int i = 0; i < threadCount; ++i) {
+            int beginIndex = i * batch;
+            int endIndex = (i + 1) * batch;
+
+            if (i == threadCount - 1)
+                endIndex += iterations % batch;
+
+            auto executeCallback = [=] {
+                for (int i = beginIndex; i < endIndex; ++i)
+                    function(i, std::forward<Args>(args)...);
+            };
+
+            futures.emplace_back(m_threadPool->callAsync(executeCallback));
+        }
+
+        for (auto& future : futures)
+            future.wait();
+    }
+
     void update(float dtime);
 
     std::shared_ptr<Timer> createTimer(float sleepTime);
 
 private:
-    TaskManager m_taskManager;
-    detail::TimerEngine m_timerEngine;
+    PeriodicTask::Handle addPeriodicTaskImpl(std::unique_ptr<PeriodicTask> periodicTask);
+    void callAsyncImpl(std::unique_ptr<AsyncTask> asyncTask);
+
+    void processPeriodicTasks();
+    void processAsyncTasks();
+    void processTimers(float dtime);
 
     std::unique_ptr<kc::async::ThreadPool> m_threadPool = nullptr;
 
     std::unordered_map<std::string, AsyncTaskSentinel> m_asyncTasks;
+    std::unordered_map<std::string, std::unique_ptr<PeriodicTask>> m_periodicTasks;
+    std::vector<std::shared_ptr<Timer>> m_timers;
 };
 }

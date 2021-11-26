@@ -4,7 +4,7 @@
 
 #include <kc/core/FileSystem.h>
 
-#include "sl/async/Task.h"
+#include "sl/async/PeriodicTask.h"
 #include "sl/core/GameObject.h"
 #include "sl/event/Event.h"
 #include "sl/event/EventManager.h"
@@ -54,7 +54,7 @@ public:
     virtual std::string getGeometryShaderPath() = 0;
 };
 
-class RecompileShaderOnUpdate : public async::Task {
+class RecompileShaderOnUpdate : public async::PeriodicTask {
 public:
     explicit RecompileShaderOnUpdate(std::shared_ptr<gfx::Shader> shader,
         const kc::core::FileSystem& fileSystem = kc::core::FileSystem {})

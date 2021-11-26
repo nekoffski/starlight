@@ -104,7 +104,6 @@ void Engine::initManagers() {
     m_geometryManager.setModelLoader(m_platform->modelLoader.get());
 
     m_windowManager.setActiveWindow(m_window);
-    m_asyncManager.start();
 
     m_eventManager.registerListener(this);
 }
@@ -138,7 +137,7 @@ void Engine::run() {
     while (m_application->isRunning()) {
         loopStep();
 
-// clang-format off
+        // clang-format off
         #if 0
         LOG_TRACE("\n\n{}\n\n", profiler.formatTimers());
         #endif

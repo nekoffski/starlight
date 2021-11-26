@@ -1,46 +1,101 @@
 #include "AsyncManager.hpp"
 
+#include <kc/core/Log.h>
+
 namespace sl::async {
 
-void AsyncManager::start() {
-    m_threadPool = std::make_unique<kc::async::ThreadPool>(std::thread::hardware_concurrency());
+AsyncManager::AsyncManager() {
+    m_threadPool = std::make_unique<kc::async::ThreadPool>(4);
 }
 
-void AsyncManager::stop() {
+AsyncManager::~AsyncManager() {
     m_threadPool->stop();
 }
 
-// TODO: replace std::function with template
-void AsyncManager::parallelLoop(const int iterations, const std::function<void(const int)>& func) {
-    auto threadCount = m_threadPool->getSize();
-    auto batch = iterations / threadCount;
+// // TODO: replace std::function with template
+// void AsyncManager::parallelLoop(const int iterations, const std::function<void(const int)>& func) {
+// auto threadCount = m_threadPool->getSize();
+// auto batch = iterations / threadCount;
 
-    std::vector<kc::async::Future<void>> futures;
-    futures.reserve(threadCount);
+// std::vector<kc::async::Future<void>> futures;
+// futures.reserve(threadCount);
 
-    for (int i = 0; i < threadCount; ++i) {
-        int beg = i * batch;
-        int end = (i + 1) * batch;
+// for (int i = 0; i < threadCount; ++i) {
+//     int beg = i * batch;
+//     int end = (i + 1) * batch;
 
-        if (i == threadCount - 1)
-            end += iterations % batch;
+//     if (i == threadCount - 1)
+//         end += iterations % batch;
 
-        // clang-format off
-            futures.emplace_back(
-                m_threadPool->callAsync([func](int beg, int end) {
-                    for (int i = beg; i < end; ++i)
-                        func(i);
-                }, beg, end));
-        // clang-format on
-    }
+//     // clang-format off
+//     futures.emplace_back(
+//         m_threadPool->callAsync([func](int beg, int end) {
+//             for (int i = beg; i < end; ++i)
+//                 func(i);
+//         }, beg, end));
+//     // clang-format on
+// }
 
-    wait(futures);
-}
+// for (auto& future : futures)
+//     future.wait();
+// }
 
 void AsyncManager::update(float dtime) {
-    m_timerEngine.update(dtime);
-    m_taskManager.processTasks();
+    processTimers(dtime);
+    processPeriodicTasks();
+    processAsyncTasks();
+}
 
+std::shared_ptr<Timer> AsyncManager::createTimer(float sleepTime) {
+    auto timer = std::make_shared<Timer>(sleepTime);
+    m_timers.push_back(timer);
+
+    return timer;
+}
+
+PeriodicTask::Handle AsyncManager::addPeriodicTaskImpl(std::unique_ptr<PeriodicTask> periodicTask) {
+    LOG_DEBUG("Adding periodic task to TaskManager: {}", periodicTask->getName());
+
+    const auto& id = periodicTask->id;
+    m_periodicTasks[id] = std::move(periodicTask);
+
+    return PeriodicTask::Handle { m_periodicTasks.at(id).get() };
+}
+
+void AsyncManager::callAsyncImpl(std::unique_ptr<AsyncTask> asyncTask) {
+    auto id = kc::core::generateUuid();
+
+    LOG_INFO("Creating async task: {} with assigned id: {}", asyncTask->asString(), id);
+
+    auto executeTask = [taskView = asyncTask.get()] {
+        taskView->executeAsync();
+    };
+
+    m_asyncTasks.emplace(id,
+        AsyncTaskSentinel { callAsync(executeTask), std::move(asyncTask) });
+}
+
+void AsyncManager::processPeriodicTasks() {
+    std::vector<std::string> tasksToRemove;
+
+    for (auto& [id, task] : m_periodicTasks) {
+        if (not task->isActive) {
+            LOG_DEBUG("Task {} not active, will remove", task->getName());
+            tasksToRemove.push_back(id);
+            continue;
+        }
+
+        if (task->shouldInvoke()) {
+            LOG_DEBUG("Invoking task: {}", task->getName());
+            task->invoke();
+        }
+    }
+
+    for (auto& id : tasksToRemove)
+        m_periodicTasks.erase(id);
+}
+
+void AsyncManager::processAsyncTasks() {
     std::vector<std::string> idsToRemove;
 
     for (auto& [id, taskSentinel] : m_asyncTasks) {
@@ -60,7 +115,13 @@ void AsyncManager::update(float dtime) {
         m_asyncTasks.erase(idToRemove);
 }
 
-std::shared_ptr<Timer> AsyncManager::createTimer(float sleepTime) {
-    return m_timerEngine.createTimer(sleepTime);
+void AsyncManager::processTimers(float dtime) {
+    for (auto& timer : m_timers) {
+        if (timer->m_activated) {
+            timer->m_timer -= dtime;
+            timer->m_activated = false;
+        }
+    }
 }
+
 }

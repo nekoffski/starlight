@@ -3,7 +3,7 @@
 #include <unordered_map>
 
 #include "AssetGuiProvider.h"
-#include "sl/async/Task.h"
+#include "sl/async/PeriodicTask.h"
 #include "sl/gfx/Shader.h"
 #include "sl/glob/Globals.h"
 
@@ -12,7 +12,7 @@ namespace sl::gui::assets {
 class ShaderGui {
     struct Params {
         bool recompileOnSave = false;
-        std::optional<async::Task::Handle> taskHandle = std::nullopt;
+        std::optional<async::PeriodicTask::Handle> taskHandle = {};
     };
 
     class Provider : public AssetGuiProvider {

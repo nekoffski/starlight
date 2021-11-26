@@ -16,16 +16,12 @@ struct Task : sl::async::AsyncTask {
 
 int main() {
     using namespace sl::async;
+    {
+        AsyncManager m;
 
-    AsyncManager m;
-
-    AsyncManager::get().start();
-    AsyncManager::get().callAsync<::Task>();
-
-    AsyncManager::get().update(1.0f);
-
-    AsyncManager::get().stop();
-
+        AsyncManager::get().callAsync<::Task>();
+        AsyncManager::get().update(1.0f);
+    }
     std::cout << "Hi\n";
     return 0;
 }

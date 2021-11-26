@@ -4,25 +4,25 @@
 
 namespace sl::async {
 
-struct Task {
+struct PeriodicTask {
     class Handle {
     public:
-        explicit Handle(Task* task);
+        Handle(PeriodicTask* task);
 
         void disable();
 
     private:
-        Task* m_task;
+        PeriodicTask* m_task;
     };
 
-    explicit Task();
+    explicit PeriodicTask();
 
     virtual bool shouldInvoke() = 0;
     virtual void invoke() = 0;
 
     virtual std::string getName() const = 0;
 
-    bool isActive = true;
+    bool isActive;
 
     std::string id;
 };
