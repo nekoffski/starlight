@@ -40,33 +40,6 @@ public:
         callAsyncImpl(std::make_unique<T>(std::forward<Args>(args)...));
     }
 
-    template <typename F, typename... Args>
-    void parallelLoop(const int iterations, F&& function, Args&&... args) {
-        static const auto threadCount = m_threadPool->getSize();
-        auto batch = iterations / threadCount;
-
-        std::vector<kc::async::Future<void>> futures;
-        futures.reserve(threadCount);
-
-        for (int i = 0; i < threadCount; ++i) {
-            int beginIndex = i * batch;
-            int endIndex = (i + 1) * batch;
-
-            if (i == threadCount - 1)
-                endIndex += iterations % batch;
-
-            auto executeCallback = [=] {
-                for (int i = beginIndex; i < endIndex; ++i)
-                    function(i, std::forward<Args>(args)...);
-            };
-
-            futures.emplace_back(m_threadPool->callAsync(executeCallback));
-        }
-
-        for (auto& future : futures)
-            future.wait();
-    }
-
     void update(float dtime);
 
     std::shared_ptr<Timer> createTimer(float sleepTime);

@@ -107,22 +107,6 @@ TEST_F(AsyncManagerTests, givenAsyncManager_whenCallingFunctionAsync_shouldBeCal
     EXPECT_EQ(future.getValue(), result + delta);
 }
 
-TEST_F(AsyncManagerTests, givenAsyncManager_whenCallingParallelLoop_shouldLoopCorrectTimes) {
-    static constexpr int iterations = 1337;
-
-    int expectedSum = 0;
-    for (int i = 0; i < iterations; ++i)
-        expectedSum += i;
-
-    std::atomic_int receivedSum = 0;
-
-    asyncManager.parallelLoop(iterations, [&](int index) {
-        receivedSum += index;
-    });
-
-    EXPECT_EQ(expectedSum, receivedSum);
-}
-
 TEST_F(AsyncManagerTests, givenAsyncManager_whenCallingAsyncTask_shouldInvokeAsyncAndSyncParts) {
     ASSERT_FALSE(FakeAsyncTask::s_asyncInvoked);
     ASSERT_FALSE(FakeAsyncTask::s_finalized);
