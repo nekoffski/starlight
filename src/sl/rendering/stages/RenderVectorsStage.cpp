@@ -59,7 +59,7 @@ void RenderVectorsStage::setVectorUniforms(const physx::ColoredVector& coloredVe
     m_lineShader->setUniform("modelMatrix", calculateModelMatrix(vector));
 }
 
-void RenderVectorsStage::setCameraUniforms(gfx::camera::Camera& camera) {
+void RenderVectorsStage::setCameraUniforms(cam::Camera& camera) {
     m_lineShader->setUniform("projectionMatrix", camera.getProjectionMatrix());
     m_lineShader->setUniform("viewMatrix", camera.getViewMatrix());
 }

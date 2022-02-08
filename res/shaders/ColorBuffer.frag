@@ -19,9 +19,9 @@ void main() {
     if (enableBloom == 1)
         hdrColor += texture(bloomBuffer, textureCoordinates).rgb;
 
-    vec3 result = vec3(1.0) - exp(-hdrColor * exposure);
+    // vec3 result = vec3(1.0) - exp(-hdrColor * exposure);
 
-    result = pow(result, vec3(1.0 / gamma));
+    // result = pow(result, vec3(1.0 / gamma));
 
-    fragmentColor = vec4(result, 1.0f);
+    fragmentColor = vec4(hdrColor, 1.0f);
 }

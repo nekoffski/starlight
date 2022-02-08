@@ -62,7 +62,7 @@ const MaterialComponent& RenderMeshesStage::getMaterial(const std::string& entit
     return materials.doesEntityOwnComponent(entityId) ? materials.getByEntityId(entityId) : defaultMaterial;
 }
 
-void RenderMeshesStage::setUniforms(gfx::Shader& shader, gfx::camera::Camera& camera, const MaterialComponent& material) {
+void RenderMeshesStage::setUniforms(gfx::Shader& shader, cam::Camera& camera, const MaterialComponent& material) {
     shader.setUniform("viewMatrix", camera.getViewMatrix());
     shader.setUniform("projectionMatrix", camera.getProjectionMatrix());
     shader.setUniform("viewPosition", camera.getPosition());

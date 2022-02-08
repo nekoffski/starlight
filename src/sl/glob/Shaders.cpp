@@ -11,23 +11,25 @@ namespace sl::glob {
     { shader->name, shader }
 
 Shaders::Shaders() {
+    const std::string shadersPath = glob::Globals::get().config.paths.shaders;
+
     defaultCubemapShader = gfx::ShaderManager::get().load(
-        glob::Globals::get().config.paths.shaders + "/Cubemap.vert", glob::Globals::get().config.paths.shaders + "/Cubemap.frag");
+        shadersPath + "/Cubemap.vert", shadersPath + "/Cubemap.frag");
 
     singleColorShader = gfx::ShaderManager::get().load(
-        glob::Globals::get().config.paths.shaders + "/SingleColor.vert", glob::Globals::get().config.paths.shaders + "/SingleColor.frag");
+        shadersPath + "/SingleColor.vert", shadersPath + "/SingleColor.frag");
 
     defaultModelShader = gfx::ShaderManager::get().load(
-        glob::Globals::get().config.paths.shaders + "/DefaultModelShader.vert", glob::Globals::get().config.paths.shaders + "/DefaultModelShader.frag");
+        shadersPath + "/DefaultModelShader.vert", shadersPath + "/DefaultModelShader.frag");
     defaultModelShader->name = "default-model-shader";
 
     pfxShader = gfx::ShaderManager::get().load(
-        glob::Globals::get().config.paths.shaders + "/particle.vert", glob::Globals::get().config.paths.shaders + "/particle.frag");
+        shadersPath + "/particle.vert", shadersPath + "/particle.frag");
     pfxShader->name = "pfx-shader";
 
     shadersByName = {
         BIND_SHADER(defaultModelShader),
-        BIND_SHADER(pfxShader)
+        BIND_SHADER(pfxShader),
     };
 }
 

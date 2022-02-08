@@ -57,7 +57,8 @@ Engine::Engine(cfg::Config* config, platform::Platform* platform)
     , m_application(nullptr)
     // managers
     , m_textureManager(
-          m_platform->gpu.textureFactory.get(), m_platform->gpu.cubemapFactory.get(), m_platform->imageFactory.get()) {
+          m_platform->gpu.textureFactory.get(), m_platform->gpu.cubemapFactory.get(), m_platform->imageFactory.get())
+    , m_shaderManager(m_platform->gpu.shaderCompiler.get(), m_platform->gpu.shaderFactory.get()) {
 
     initLowLevelComponents();
     initManagers();
@@ -91,9 +92,6 @@ void Engine::initManagers() {
 
     m_inputManager.setKeyboard(m_input);
     m_inputManager.setMouse(m_input);
-
-    m_shaderManager.setShaderCompiler(m_platform->gpu.shaderCompiler.get());
-    m_shaderManager.setShaderFactory(m_platform->gpu.shaderFactory.get());
 
     m_bufferManager.setElementBufferFactory(m_platform->gpu.elementBufferFactory.get());
     m_bufferManager.setVertexBufferFactory(m_platform->gpu.vertexBufferFactory.get());
@@ -137,7 +135,7 @@ void Engine::run() {
     while (m_application->isRunning()) {
         loopStep();
 
-        // clang-format off
+// clang-format off
         #if 0
         LOG_TRACE("\n\n{}\n\n", profiler.formatTimers());
         #endif

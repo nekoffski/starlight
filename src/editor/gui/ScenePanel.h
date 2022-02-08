@@ -30,18 +30,18 @@ public:
     void render() override {
         auto& widgetProperties = m_sharedState->guiProperties.scenePanelProperties;
 
-        auto scene = m_sharedState->activeScene.lock();
+        auto scene = m_sharedState->activeScene;
 
         sl::gui::beginPanel("Scene entities", widgetProperties.origin, widgetProperties.size);
         if (ImGui::Button(ICON_FA_PLUS "  Add entity", ImVec2(ImGui::GetWindowWidth(), 0)))
-            if (scene)
+            if (scene != nullptr)
                 scene->addEntity("Entity" + std::to_string(scene->getEntitiesCount()));
 
         using sl::scene::components::TransformComponent;
 
         with_ID("scene-panel") {
 
-            if (scene) {
+            if (scene != nullptr) {
                 ImGui::Separator();
 
                 std::vector<std::string> entitiesToRemove;
@@ -70,7 +70,7 @@ public:
 
                             static std::string gap = "  ";
 
-                            ImGui::SetNextTreeNodeOpen(false, ImGuiCond_Once);
+                            ImGui::SetNextItemOpen(false, ImGuiCond_Once);
                             bool isEntityOpened = ImGui::TreeNode((gap + ICON_FA_CUBE + gap + entity->getName()).c_str());
                             bool isClicked = ImGui::IsItemClicked();
 

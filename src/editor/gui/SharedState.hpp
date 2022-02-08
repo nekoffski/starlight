@@ -15,6 +15,7 @@ namespace editor::gui {
 struct SharedState {
     explicit SharedState(sl::asset::AssetManager& assetManager, int windowWidth, int windowHeight)
         : assetManager(assetManager)
+        , activeScene(nullptr)
         , guiProperties(windowWidth, windowHeight)
         , activeAssetGuiProvider(nullptr)
         , gizmoOperation(sl::gui::GizmoOp::translate)
@@ -22,21 +23,16 @@ struct SharedState {
     }
 
     bool hasSelectedEntity() const {
-        auto scene = activeScene.lock();
-
-        if (not scene)
-            return false;
-
-        return selectedEntityId.has_value() &&
-            scene->ecsRegistry.hasEntityById(selectedEntityId.value());
+        return activeScene != nullptr && selectedEntityId.has_value() &&
+            activeScene->ecsRegistry.hasEntityById(selectedEntityId.value());
     }
 
     sl::ecs::Entity& getSelectedEntity() {
-        return activeScene.lock()->ecsRegistry.getEntityById(selectedEntityId.value());
+        return activeScene->ecsRegistry.getEntityById(selectedEntityId.value());
     }
 
     sl::asset::AssetManager& assetManager;
-    std::weak_ptr<sl::scene::Scene> activeScene;
+    sl::scene::Scene* activeScene;
     std::optional<std::string> selectedEntityId;
 
     GuiProperties guiProperties;

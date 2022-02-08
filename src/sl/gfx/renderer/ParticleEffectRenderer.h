@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "sl/cam/Camera.h"
 #include "sl/ecs/ComponentView.hpp"
 #include "sl/gfx/Renderer.h"
 #include "sl/gfx/VertexArray.h"
@@ -15,10 +16,10 @@ public:
     explicit ParticleEffectRenderer(Renderer& renderer);
 
     void renderParticleEffects(ecs::ComponentView<scene::components::ParticleEffectComponent> pfxs,
-        ecs::ComponentView<scene::components::TransformComponent> transforms, camera::Camera& camera);
+        ecs::ComponentView<scene::components::TransformComponent> transforms, cam::Camera& camera);
 
 private:
-    void beginParticleEffect(gfx::camera::Camera&);
+    void beginParticleEffect(cam::Camera&);
     void renderParticle();
     void endParticleEffect();
 

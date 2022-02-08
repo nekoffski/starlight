@@ -2,6 +2,7 @@
 
 #include "sl/core/Misc.hpp"
 
+#include "components/CameraComponentGui.h"
 #include "components/DirectionalLightComponentGui.h"
 #include "components/MaterialComponentGui.h"
 #include "components/MeshRendererComponentGui.h"
@@ -25,7 +26,8 @@ ComponentsGui::ComponentsGui() {
         BIND_COMPONENT_GUI(ParticleEffectComponent),
         BIND_COMPONENT_GUI(PointLightComponent),
         BIND_COMPONENT_GUI(TransformComponent),
-        BIND_COMPONENT_GUI(RigidBodyComponent)
+        BIND_COMPONENT_GUI(RigidBodyComponent),
+        BIND_COMPONENT_GUI(CameraComponent)
     };
 }
 

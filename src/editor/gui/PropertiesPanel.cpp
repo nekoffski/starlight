@@ -52,7 +52,7 @@ void PropertiesPanel::showSceneProperties() {
         ImGui::SameLine();
         sl::gui::combo("##Cubemap", &selectedValue, cubemapsNames);
 
-        if (auto scene = m_sharedState->activeScene.lock(); scene) {
+        if (auto scene = m_sharedState->activeScene; scene) {
             // if (selectedValue == 0 && scene->skybox != nullptr)
             //     scene->skybox = nullptr;
 
@@ -71,8 +71,10 @@ void PropertiesPanel::showSceneProperties() {
         }
     }
 
-    with_OpenedTreeNode(ICON_FA_VIDEO "  Camera") if (auto scene = m_sharedState->activeScene.lock(); scene)
-        scene->camera->onGui();
+    with_OpenedTreeNode(ICON_FA_VIDEO "  Camera") {
+        if (auto scene = m_sharedState->activeScene; scene)
+            scene->camera->onGui();
+    }
 
     ImGui::Text("\n");
 

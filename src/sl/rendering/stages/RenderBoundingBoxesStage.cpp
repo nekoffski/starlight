@@ -54,7 +54,7 @@ void RenderBoundingBoxesStage::queueVelocityVectorForBeingRendered(physx::Vector
     scene.vectors.emplace_back(physx::ColoredVector { std::move(velocityVector), core::color::green });
 }
 
-void RenderBoundingBoxesStage::setShaderTransforms(gfx::camera::Camera& camera) {
+void RenderBoundingBoxesStage::setShaderTransforms(cam::Camera& camera) {
     m_boundingBoxShader->setUniform("projectionMatrix", camera.getProjectionMatrix());
     m_boundingBoxShader->setUniform("viewMatrix", camera.getViewMatrix());
 }

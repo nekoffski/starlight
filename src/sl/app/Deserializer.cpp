@@ -14,7 +14,7 @@ using namespace sl::core;
 
 namespace sl::app {
 
-Deserializer::Deserializer(asset::AssetManager& assetManager, std::shared_ptr<scene::Scene> scene)
+Deserializer::Deserializer(asset::AssetManager& assetManager, scene::Scene* scene)
     : m_assetManager(assetManager)
     , m_scene(scene)
     , m_componentsDeserializer(m_assetsIdRedirections) {

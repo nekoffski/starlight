@@ -3,7 +3,7 @@
 #include "sl/ecs/ComponentView.hpp"
 #include "sl/gfx/Renderer.h"
 #include "sl/gfx/Shader.h"
-#include "sl/gfx/camera/Camera.h"
+#include "sl/cam/Camera.h"
 #include "sl/glob/Globals.h"
 #include "sl/scene/components/TransformComponent.h"
 #include <kc/core/Profiler.h>
@@ -17,7 +17,7 @@ ParticleEffectRenderer::ParticleEffectRenderer(Renderer& renderer)
 }
 
 void ParticleEffectRenderer::renderParticleEffects(ecs::ComponentView<scene::components::ParticleEffectComponent> pfxs,
-    ecs::ComponentView<scene::components::TransformComponent> transforms, gfx::camera::Camera& camera) {
+    ecs::ComponentView<scene::components::TransformComponent> transforms, cam::Camera& camera) {
     PROFILE_FUNCTION();
 
     m_shader->enable();
@@ -57,7 +57,7 @@ void ParticleEffectRenderer::renderParticleEffects(ecs::ComponentView<scene::com
     m_shader->disable();
 }
 
-void ParticleEffectRenderer::beginParticleEffect(gfx::camera::Camera& camera) {
+void ParticleEffectRenderer::beginParticleEffect(cam::Camera& camera) {
     m_shader->setUniform("projection", camera.getProjectionMatrix());
     m_vao->bind();
 }

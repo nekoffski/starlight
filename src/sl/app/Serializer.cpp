@@ -13,7 +13,7 @@ Serializer::Serializer(const std::string& path)
     : m_path(path) {
 }
 
-void Serializer::serialize(asset::AssetManager& assetManager, std::shared_ptr<scene::Scene> scene,
+void Serializer::serialize(asset::AssetManager& assetManager, scene::Scene* scene,
     const kc::core::FileSystem& fileSystem) {
 
     auto filePath = m_path;
@@ -119,7 +119,7 @@ void Serializer::serializeDefaultAssets() {
         .endObject();
 }
 
-void Serializer::serializeScene(std::shared_ptr<scene::Scene> scene) {
+void Serializer::serializeScene(scene::Scene* scene) {
     m_jsonBuilder.beginObject("scene").beginArray("entities");
 
     for (auto& [entityId, entity] : scene->ecsRegistry.getEntities()) {

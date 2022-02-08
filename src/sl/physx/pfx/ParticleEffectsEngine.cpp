@@ -2,7 +2,7 @@
 
 #include "sl/ecs/ComponentView.hpp"
 #include "sl/gfx/Shader.h"
-#include "sl/gfx/camera/Camera.h"
+#include "sl/cam/Camera.h"
 #include "sl/glob/Globals.h"
 #include "sl/scene/components/TransformComponent.h"
 #include <kc/core/Profiler.h>
@@ -20,12 +20,12 @@ ParticleEffectsEngine::ParticleEffectsEngine() {
     m_pfxTimer = async::AsyncManager::get().createTimer(particleCleanerSleepTime);
 }
 
-void ParticleEffectsEngine::update(ecs::ComponentView<components::ParticleEffectComponent>& pfxs, float deltaTime, gfx::camera::Camera& camera) {
+void ParticleEffectsEngine::update(ecs::ComponentView<components::ParticleEffectComponent>& pfxs, float deltaTime, cam::Camera& camera) {
     for (auto& pfx : pfxs)
         updateParticleEffect(pfx, deltaTime, camera);
 }
 
-void ParticleEffectsEngine::updateParticleEffect(components::ParticleEffectComponent& pfx, float deltaTime, gfx::camera::Camera& camera) {
+void ParticleEffectsEngine::updateParticleEffect(components::ParticleEffectComponent& pfx, float deltaTime, cam::Camera& camera) {
     auto& particles = pfx.particles;
 
     pfx.maxX = pfx.maxY = std::numeric_limits<int>::min();

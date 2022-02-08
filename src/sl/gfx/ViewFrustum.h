@@ -1,6 +1,7 @@
 #pragma once
 
 namespace sl::gfx {
+
 struct ViewFrustum {
     struct Viewport {
         int width;
@@ -21,4 +22,5 @@ struct ViewFrustum {
     float nearZ;
     float farZ;
 };
+
 }

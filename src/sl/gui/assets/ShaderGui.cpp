@@ -54,7 +54,7 @@ void ShaderGui::Provider::processRecompileOnSaveRequest(std::shared_ptr<gfx::Sha
     auto& taskHandle = m_params.taskHandle;
 
     if (m_params.recompileOnSave) {
-        taskHandle = async::AsyncManager::get().addPeriodicTask<gfx::RecompileShaderOnUpdate>(shader);
+        taskHandle = async::AsyncManager::get().addPeriodicTask<gfx::Shader::RecompileOnUpdate>(shader);
     } else {
         if (taskHandle.has_value()) {
             taskHandle.value().disable();

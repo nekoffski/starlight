@@ -8,8 +8,20 @@
 
 namespace sl::scene {
 
-std::shared_ptr<Scene> Scene::create() {
-    auto scene = std::make_shared<Scene>();
-    return scene;
+ecs::Entity& Scene::addEntity(std::string name) {
+    return ecsRegistry.createEntity(std::move(name));
 }
+
+int Scene::getEntitiesCount() const {
+    return ecsRegistry.getEntitiesCount();
+}
+
+void Scene::clear() {
+    LOG_INFO("Cleaning up scene");
+
+    skybox.reset();
+    ecsRegistry.clear();
+    vectors.clear();
+}
+
 }

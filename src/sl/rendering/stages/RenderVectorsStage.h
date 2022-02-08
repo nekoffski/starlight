@@ -19,7 +19,7 @@ private:
     math::Mat4 calculateModelMatrix(const physx::Vector& vector);
 
     void setVectorUniforms(const physx::ColoredVector& coloredVector);
-    void setCameraUniforms(gfx::camera::Camera& camera);
+    void setCameraUniforms(cam::Camera& camera);
 
     std::shared_ptr<gfx::VertexArray> m_lineVertexArray;
     std::shared_ptr<gfx::Shader> m_lineShader;

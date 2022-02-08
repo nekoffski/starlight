@@ -17,7 +17,7 @@ public:
 private:
     void renderBoundingBox(gfx::Renderer& renderer, physx::BoundingBox& boundingBox);
 
-    void setShaderTransforms(gfx::camera::Camera& camera);
+    void setShaderTransforms(cam::Camera& camera);
     void prepareRenderer(gfx::Renderer& renderer);
 
     void processRigidBody(scene::components::RigidBodyComponent& rigidBody, scene::components::TransformComponent::View& transforms,

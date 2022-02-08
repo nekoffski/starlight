@@ -6,32 +6,22 @@
 #include <vector>
 
 #include "Skybox.h"
+#include "sl/cam/Camera.h"
 #include "sl/ecs/Registry.hpp"
 #include "sl/ecs/fwd.h"
-#include "sl/gfx/camera/Camera.h"
 #include "sl/physx/Vector.h"
 
 namespace sl::scene {
-struct Scene {
-    static std::shared_ptr<Scene> create();
 
-    ecs::Entity& addEntity(std::string name) {
-        return ecsRegistry.createEntity(std::move(name));
-    }
+class Scene {
+public:
+    ecs::Entity& addEntity(std::string name);
 
-    int getEntitiesCount() const {
-        return ecsRegistry.getEntitiesCount();
-    }
+    int getEntitiesCount() const;
 
-    void clear() {
-        LOG_INFO("Cleaning up scene");
+    void clear();
 
-        skybox.reset();
-        ecsRegistry.clear();
-        vectors.clear();
-    }
-
-    std::shared_ptr<gfx::camera::Camera> camera;
+    cam::Camera* camera;
     ecs::Registry ecsRegistry;
 
     std::optional<Skybox> skybox;

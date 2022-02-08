@@ -20,6 +20,14 @@ public:
         return m_components.end();
     }
 
+    auto cbegin() const {
+        return m_components.cbegin();
+    }
+
+    auto cend() const {
+        return m_components.cend();
+    }
+
     auto size() const {
         return m_components.size();
     }

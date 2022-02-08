@@ -4,16 +4,16 @@
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/math/Utils.hpp"
 
-namespace sl::gfx::camera {
+namespace sl::cam {
 
 class EulerCamera : public Camera {
 public:
-    explicit EulerCamera(const ViewFrustum& viewFrustum, math::Vec3, float, float);
+    explicit EulerCamera(const gfx::ViewFrustum& viewFrustum, math::Vec3, float, float);
 
     void update(float) override;
     void onGui() override;
 
-    const math::Mat4 getViewMatrix() override {
+    const math::Mat4 getViewMatrix() const override {
         return math::lookAt(m_position, m_center, m_up);
     }
 
@@ -26,16 +26,9 @@ public:
 
     void calculateVectors();
 
-    void calculateProjectionMatrix() override {
-        float aspect = static_cast<float>(viewFrustum.viewport.width) / viewFrustum.viewport.height;
-        m_projectionMatrix = math::perspective(viewFrustum.fieldOfView, aspect, viewFrustum.nearZ, viewFrustum.farZ);
-    }
-
 private:
     bool m_isInAnimation = false;
     float m_alpha = 0.0f;
-
-    Direction m_direction;
 
     math::Vec3 m_center;
     math::Vec3 m_previousCenter;

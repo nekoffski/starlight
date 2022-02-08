@@ -14,7 +14,7 @@ namespace sl::app {
 
 class Deserializer {
 public:
-    explicit Deserializer(asset::AssetManager& assetManager, std::shared_ptr<scene::Scene> scene);
+    explicit Deserializer(asset::AssetManager& assetManager, scene::Scene* scene);
 
     void deserialize(const std::string& path, const kc::core::FileSystem& fileSystem = kc::core::FileSystem {});
 
@@ -25,7 +25,7 @@ private:
     void deserializeDefaultAssets(kc::json::Node&);
 
     asset::AssetManager& m_assetManager;
-    std::shared_ptr<scene::Scene> m_scene;
+    scene::Scene* m_scene;
 
     ComponentsDeserializer m_componentsDeserializer;
 

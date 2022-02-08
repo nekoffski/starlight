@@ -16,8 +16,8 @@
 #include "sl/event/Categories.h"
 #include "sl/event/Event.h"
 #include "sl/gfx/ViewFrustum.h"
-#include "sl/gfx/camera/EulerCamera.h"
-#include "sl/gfx/camera/FPSCamera.h"
+#include "sl/cam/EulerCamera.h"
+#include "sl/cam/FPSCamera.h"
 #include "sl/gui/ErrorDialog.h"
 
 #include "sl/gui/Utils.h"
@@ -69,7 +69,7 @@ public:
         auto [windowWidth, windowHeight] = m_windowProxy->getSize();
 
         auto viewFrustum = gfx::ViewFrustum { windowWidth, windowHeight };
-        m_activeCamera = std::make_shared<gfx::camera::EulerCamera>(viewFrustum, math::Vec3(0.0f), 1.0f, 8.0f);
+        m_activeCamera = std::make_shared<cam::EulerCamera>(viewFrustum, math::Vec3(0.0f), 1.0f, 8.0f);
         m_scene = scene::Scene::create();
 
         // TODO: remove!
@@ -175,7 +175,7 @@ public:
 
             } else if (event->is<ChangeSceneCenterEvent>()) {
                 auto& newCenter = event->as<ChangeSceneCenterEvent>()->center;
-                auto sceneCamera = std::dynamic_pointer_cast<sl::gfx::camera::EulerCamera>(m_activeCamera);
+                auto sceneCamera = std::dynamic_pointer_cast<sl::cam::EulerCamera>(m_activeCamera);
                 if (sceneCamera)
                     sceneCamera->setCenter(newCenter);
 
@@ -299,7 +299,7 @@ private:
     sl::asset::AssetManager m_assetManager;
 
     std::shared_ptr<editor::gui::EditorGui> m_editorGui;
-    std::shared_ptr<gfx::camera::Camera> m_activeCamera;
+    std::shared_ptr<cam::Camera> m_activeCamera;
     std::shared_ptr<scene::Scene> m_scene;
 
     editor::EngineState m_engineState;

@@ -28,10 +28,10 @@ protected:
 
     const std::string m_filename = "exampleFilename.starlscene";
 
-    std::shared_ptr<Scene> m_scene = std::make_shared<Scene>();
+    Scene m_scene;
     AssetManager m_assetManager;
 
-    Deserializer deserializer = Deserializer { m_assetManager, m_scene };
+    Deserializer deserializer = Deserializer { m_assetManager, &m_scene };
 };
 
 TEST_F(DeserializerTests, whenFileDoesNotExists_shouldThrow) {

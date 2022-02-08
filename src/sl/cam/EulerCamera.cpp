@@ -12,20 +12,21 @@
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Utils.hpp"
 
-namespace sl::gfx::camera {
+namespace sl::cam {
 
 const float EulerCamera::minPsi = -std::numbers::pi / 2.0f;
 const float EulerCamera::maxPsi = std::numbers::pi / 2.0f;
 const float EulerCamera::minFi = 0.0f;
 const float EulerCamera::maxFi = 2.0f * std::numbers::pi;
 
-EulerCamera::EulerCamera(const ViewFrustum& viewFrustum, math::Vec3 center, float speed, float radius)
+EulerCamera::EulerCamera(const gfx::ViewFrustum& viewFrustum, math::Vec3 center, float speed, float radius)
     : Camera(viewFrustum)
     , m_center(center)
     , m_speed(speed)
     , m_radius(radius)
     , m_fi(0.0f)
     , m_psi(0.0f) {
+
     calculateVectors();
     calculateProjectionMatrix();
 }
@@ -91,7 +92,7 @@ void EulerCamera::calculateVectors() {
     m_position += m_center;
 
     m_front = math::normalize(-m_position + m_center);
-    m_right = math::normalize(math::cross(m_front, worldUp));
+    m_right = math::normalize(math::cross(m_front, math::worldUp));
     m_up = math::normalize(math::cross(m_right, m_front));
 }
 

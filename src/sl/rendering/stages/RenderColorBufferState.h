@@ -22,7 +22,7 @@ public:
 
 // clang-format off
         #ifdef DEV_MODE
-            async::AsyncManager::get().addPeriodicTask<gfx::RecompileShaderOnUpdate>(m_colorBufferShader);
+            async::AsyncManager::get().addPeriodicTask<gfx::Shader::RecompileOnUpdate>(m_colorBufferShader);
         #endif
         // clang-format on
     }

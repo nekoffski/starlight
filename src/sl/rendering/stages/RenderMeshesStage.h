@@ -23,7 +23,7 @@ private:
 
     const scene::components::MaterialComponent& getMaterial(const std::string& entityId, scene::components::MaterialComponent::View& materials);
 
-    void setUniforms(gfx::Shader& shader, gfx::camera::Camera& camera, const scene::components::MaterialComponent& material);
+    void setUniforms(gfx::Shader& shader, cam::Camera& camera, const scene::components::MaterialComponent& material);
     void setMaterialUniforms(const scene::components::MaterialComponent& material, gfx::Shader& shader);
 };
 

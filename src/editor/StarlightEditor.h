@@ -1,5 +1,6 @@
 #pragma once
 
+#include <kc/core/Log.h>
 #include <kc/core/Scope.hpp>
 
 #include "DebugConsole.hpp"
@@ -10,24 +11,24 @@
 #include "sl/app/Deserializer.h"
 #include "sl/app/Serializer.h"
 #include "sl/asset/AssetManager.h"
+#include "sl/cam/EulerCamera.h"
+#include "sl/cam/FPSCamera.h"
 #include "sl/core/InputManager.h"
 #include "sl/ecs/Entity.h"
 #include "sl/event/Categories.h"
 #include "sl/event/Event.h"
 #include "sl/gfx/ViewFrustum.h"
-#include "sl/gfx/camera/EulerCamera.h"
-#include "sl/gfx/camera/FPSCamera.h"
 #include "sl/glob/Globals.h"
 #include "sl/gui/ErrorDialog.h"
 
 #include "sl/gui/Utils.h"
 #include "sl/gui/fonts/FontAwesome.h"
 #include "sl/scene/Scene.h"
+#include "sl/scene/components/CameraComponent.h"
 #include "sl/scene/components/MaterialComponent.h"
 #include "sl/scene/components/ModelComponent.h"
 #include "sl/scene/components/RigidBodyComponent.h"
 #include "sl/scene/components/TransformComponent.h"
-#include <kc/core/Log.h>
 
 #include "sl/core/WindowManager.h"
 #include "sl/rendering/CustomFrameBufferRenderPass.h"
@@ -43,6 +44,8 @@
 #include "sl/rendering/stages/RenderMeshesStage.h"
 #include "sl/rendering/stages/RenderSkyboxStage.h"
 #include "sl/rendering/stages/RenderVectorsStage.h"
+
+#include "sl/cam/FirstPersonCamera.h"
 
 #include "sl/app/Application.h"
 #include "sl/gfx/TextureManager.h"
@@ -88,16 +91,18 @@ public:
         auto [windowWidth, windowHeight] = WindowManager::get().getSize();
 
         auto viewFrustum = gfx::ViewFrustum { windowWidth, windowHeight };
-        m_activeCamera = std::make_shared<gfx::camera::EulerCamera>(viewFrustum, math::Vec3(0.0f), 1.0f, 8.0f);
-        m_scene = scene::Scene::create();
+        m_editorCamera = std::make_unique<cam::EulerCamera>(viewFrustum, math::Vec3(0.0f), 1.0f, 8.0f);
+        m_currentScene = &m_mainScene;
+
+        m_fpsCamera = std::make_unique<cam::FirstPersonCamera>(viewFrustum);
 
         // // TODO: remove!
-        auto& viewport = m_activeCamera->viewFrustum.viewport;
+        auto& viewport = m_editorCamera->viewFrustum.viewport;
         auto guiSharedState = std::make_shared<editor::gui::SharedState>(m_assetManager, viewport.width, viewport.height);
         m_editorGui = std::make_shared<editor::gui::EditorGui>(guiSharedState);
 
-        m_scene->camera = m_activeCamera;
-        m_editorGui->sharedState->activeScene = m_scene;
+        m_currentScene->camera = m_editorCamera.get();
+        m_editorGui->sharedState->activeScene = m_currentScene;
 
         m_engineMode = editor::EngineMode::inEditor;
 
@@ -110,7 +115,6 @@ public:
             .addRenderStage(&m_captureDirectionalDepthMapsStage)
             .addRenderStage(&m_capturePointDepthMapsStage);
 
-        // m_finalRenderPass
         m_captureSceneRenderPass
             .addRenderStage(&m_prepareLightsStage)
             .addRenderStage(&m_renderMeshesStage)
@@ -142,7 +146,7 @@ public:
     }
 
     void update(float deltaTime, float time) override {
-        m_activeCamera->update(deltaTime);
+        m_currentScene->camera->update(deltaTime);
 
         glob::Globals::get().flags.disableKeyboardInput = ImGui::GetIO().WantCaptureKeyboard;
         glob::Globals::get().flags.disableMouseInput = ImGui::GetIO().WantCaptureMouse;
@@ -150,26 +154,28 @@ public:
         core::WindowManager::get().enableCursor(
             not core::InputManager::get().isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE));
 
-        // auto pfxs = m_scene->ecsRegistry.getComponentView<components::ParticleEffectComponent>();
-        // sceneSystems.pfxEngine.update(pfxs, deltaTime, *m_scene->camera);
+        // auto pfxs = m_currentScene->ecsRegistry.getComponentView<components::ParticleEffectComponent>();
+        // sceneSystems.pfxEngine.update(pfxs, deltaTime, *m_currentScene->camera);
 
-        // if (m_engineState == editor::EngineState::started) {
-        //     using namespace sl::scene::components;
+        if (m_engineState == editor::EngineState::started) {
+            using namespace sl::scene::components;
 
-        //     auto [rigidBodies, transforms] = m_scene->ecsRegistry.getComponentsViews<RigidBodyComponent, TransformComponent>();
-        //     sceneSystems.physxEngine.processRigidBodies(rigidBodies, transforms, deltaTime);
-        // }
+            auto [rigidBodies, transforms] = m_currentScene->ecsRegistry.getComponentsViews<RigidBodyComponent, TransformComponent>();
+            // sceneSystems.physxEngine.processRigidBodies(rigidBodies, transforms, deltaTime);
+        }
 
-        // if (m_engineMode == editor::EngineMode::inGame && core::InputManager::get().isKeyPressed(STARL_KEY_ESCAPE)) {
-        //     m_engineMode = editor::EngineMode::inEditor;
+        if (m_engineMode == editor::EngineMode::inGame && core::InputManager::get().isKeyPressed(STARL_KEY_ESCAPE)) {
+            m_engineMode = editor::EngineMode::inEditor;
+            m_currentScene->camera = m_editorCamera.get();
+            core::WindowManager::get().enableCursor();
 
-        //     auto [width, height] = WindowManager::get().getSize();
-        //     recalculateViewportSize(width, height);
-        // }
+            auto [width, height] = WindowManager::get().getSize();
+            recalculateViewportSize(width, height);
+        }
     }
 
     void render(gfx::Renderer& renderer) override {
-        m_renderPipeline.run(renderer, *m_scene);
+        m_renderPipeline.run(renderer, *m_currentScene);
 
         renderGui();
     }
@@ -182,7 +188,7 @@ public:
     }
 
     void closeProject() {
-        m_scene->clear();
+        m_currentScene->clear();
         m_assetManager.clear();
     }
 
@@ -196,7 +202,7 @@ public:
 
             if (event->is<SetSkyboxEvent>()) {
                 auto cubemap = event->asView<SetSkyboxEvent>()->cubemap;
-                m_scene->skybox = sl::scene::Skybox { glob::Globals::get().shaders->defaultCubemapShader, cubemap };
+                m_currentScene->skybox = sl::scene::Skybox { glob::Globals::get().shaders->defaultCubemapShader, cubemap };
 
             } else if (event->is<QuitEvent>()) {
                 m_isRunning = false;
@@ -209,20 +215,17 @@ public:
                 recalculateViewportSize(width, height);
 
             } else if (event->is<ChangeSceneCenterEvent>()) {
-                auto& newCenter = event->asView<ChangeSceneCenterEvent>()->center;
-                auto sceneCamera = std::dynamic_pointer_cast<sl::gfx::camera::EulerCamera>(m_activeCamera);
-                if (sceneCamera)
-                    sceneCamera->setCenter(newCenter);
+                if (m_engineMode == editor::EngineMode::inEditor)
+                    m_editorCamera->setCenter(
+                        event->asView<ChangeSceneCenterEvent>()->center);
 
             } else if (event->is<editor::EngineStateChanged>()) {
                 handleStateChange(
                     event->asView<editor::EngineStateChanged>()->state);
 
             } else if (event->is<editor::EnterGameMode>()) {
-                m_engineMode = editor::EngineMode::inGame;
-
-                auto [width, height] = WindowManager::get().getSize();
-                recalculateViewportSize(width, height);
+                LOG_INFO("Entering game mode");
+                enterGameMode();
             } else if (event->is<DisplayErrorEvent>()) {
                 m_errorDialog.setErrorMessage(event->asView<DisplayErrorEvent>()->message);
             } else {
@@ -233,12 +236,12 @@ public:
                         auto& path = event->asView<SerializeSceneEvent>()->path;
 
                         LOG_INFO("Serializing scene as: {}", path);
-                        Serializer { path }.serialize(m_assetManager, m_scene);
+                        Serializer { path }.serialize(m_assetManager, m_currentScene);
                     } else if (event->is<DeserializeSceneEvent>()) {
                         auto& path = event->asView<DeserializeSceneEvent>()->path;
 
                         LOG_INFO("Deserializing scene from: {}", path);
-                        Deserializer { m_assetManager, m_scene }.deserialize(path);
+                        Deserializer { m_assetManager, m_currentScene }.deserialize(path);
                     }
 
                 } catch (kc::core::ErrorBase& err) {
@@ -246,6 +249,29 @@ public:
                 }
             }
         }
+    }
+
+    void enterGameMode() {
+        auto camerasComponents = m_currentScene->ecsRegistry.getComponentView<scene::components::CameraComponent>();
+
+        auto activeCameras = std::views::filter(camerasComponents, [](ecs::Component& component) -> bool {
+            return component.isActive;
+        });
+
+        if (auto activeCamerasCount = std::ranges::distance(activeCameras); activeCamerasCount > 1) {
+            m_errorDialog.setErrorMessage("Only 1 camera can be active on scene when entering game mode");
+            return;
+
+        } else if (activeCamerasCount == 1) {
+            m_currentScene->camera = &(std::begin(activeCameras)->camera);
+        }
+
+        m_engineMode = editor::EngineMode::inGame;
+
+        core::WindowManager::get().disableCursor();
+
+        auto [width, height] = WindowManager::get().getSize();
+        recalculateViewportSize(width, height);
     }
 
     void recalculateViewportSize(float width, float height) {
@@ -268,8 +294,8 @@ public:
             newViewport.beginY = 0;
         }
 
-        m_activeCamera->viewFrustum.viewport = newViewport;
-        m_activeCamera->calculateProjectionMatrix();
+        m_currentScene->camera->viewFrustum.viewport = newViewport;
+        m_currentScene->camera->calculateProjectionMatrix();
 
         m_depthBuffer = gfx::BufferManager::get().createRenderBuffer(STARL_DEPTH_COMPONENT, width, height);
 
@@ -308,7 +334,7 @@ private:
         using editor::EngineState;
         using namespace sl::scene::components;
 
-        auto [rigidBodies, transforms] = m_scene->ecsRegistry.getComponentsViews<RigidBodyComponent, TransformComponent>();
+        auto [rigidBodies, transforms] = m_currentScene->ecsRegistry.getComponentsViews<RigidBodyComponent, TransformComponent>();
 
         switch (state) {
         case EngineState::started: {
@@ -340,9 +366,13 @@ private:
 
     sl::asset::AssetManager m_assetManager;
 
+    scene::Scene m_mainScene;
+    scene::Scene* m_currentScene;
+
+    std::unique_ptr<cam::EulerCamera> m_editorCamera; // go to stack
+    std::unique_ptr<cam::FirstPersonCamera> m_fpsCamera;
+
     std::shared_ptr<editor::gui::EditorGui> m_editorGui;
-    std::shared_ptr<gfx::camera::Camera> m_activeCamera;
-    std::shared_ptr<scene::Scene> m_scene;
 
     editor::EngineState m_engineState;
     editor::EngineMode m_engineMode;

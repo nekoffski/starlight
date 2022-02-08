@@ -2,7 +2,7 @@
 
 #include <unordered_map>
 
-#include "sl/gfx/camera/Camera.h"
+#include "sl/cam/Camera.h"
 
 #include "sl/gfx/RenderApi.h"
 #include "sl/gfx/Shader.h"

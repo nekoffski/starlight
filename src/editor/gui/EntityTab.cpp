@@ -2,6 +2,7 @@
 
 #include "sl/event/Event.h"
 #include "sl/gui/Utils.h"
+#include "sl/scene/components/CameraComponent.h"
 #include "sl/scene/components/DirectionalLightComponent.h"
 #include "sl/scene/components/MaterialComponent.h"
 #include "sl/scene/components/MeshRendererComponent.h"
@@ -62,7 +63,7 @@ void EntityTab::showEntityProperties() {
         ImGui::SameLine();
 
         if (ImGui::Button(ICON_FA_CHECK_CIRCLE)) {
-            auto& ecs = m_sharedState->activeScene.lock()->ecsRegistry;
+            auto& ecs = m_sharedState->activeScene->ecsRegistry;
 
             if (ecs.hasEntityByName(namePlaceholder))
                 m_errorDialog.setErrorMessage(fmt::format("Entity with name {} already exists", namePlaceholder));
@@ -81,7 +82,7 @@ void EntityTab::showEntityProperties() {
 
         with_Popup("AddComponentPopUp") {
             static std::vector<std::string> componentsNames = {
-                "Model", "Renderer", "Rigid body", "Particle effect", "Transform", "Point light", "Directional light", "Material"
+                "Model", "Renderer", "Rigid body", "Particle effect", "Transform", "Point light", "Directional light", "Material", "Camera"
             };
 
             with_Group {
@@ -101,6 +102,7 @@ void EntityTab::showEntityProperties() {
                         handleComponent<PointLightComponent,       5>(m_selectedComponent, selectedEntity);
                         handleComponent<DirectionalLightComponent, 6>(m_selectedComponent, selectedEntity);
                         handleComponent<MaterialComponent,         7>(m_selectedComponent, selectedEntity);
+                        handleComponent<CameraComponent,           8>(m_selectedComponent, selectedEntity);
                         // clang-format on
 
                     } catch (core::GuiUserError& e) {

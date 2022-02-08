@@ -13,14 +13,14 @@ class Serializer {
 public:
     explicit Serializer(const std::string& path);
 
-    void serialize(asset::AssetManager& assetManager,
-        std::shared_ptr<scene::Scene> scene, const kc::core::FileSystem& fileSystem = kc::core::FileSystem {});
+    void serialize(asset::AssetManager& assetManager, scene::Scene* scene,
+        const kc::core::FileSystem& fileSystem = kc::core::FileSystem {});
 
     inline static const std::string extension = ".starscene";
 
 private:
     void serializeAssets(asset::AssetManager& assetManager);
-    void serializeScene(std::shared_ptr<scene::Scene> scene);
+    void serializeScene(scene::Scene* scene);
 
     void serializeDefaultAssets();
 

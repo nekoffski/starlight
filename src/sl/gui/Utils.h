@@ -17,8 +17,8 @@
 
 #include "sl/gfx/ViewFrustum.h"
 
-#define with_OpenedTreeNode(...)                      \
-    ImGui::SetNextTreeNodeOpen(true, ImGuiCond_Once); \
+#define with_OpenedTreeNode(...)                  \
+    ImGui::SetNextItemOpen(true, ImGuiCond_Once); \
     with_TreeNode(__VA_ARGS__)
 
 namespace sl::gui {
