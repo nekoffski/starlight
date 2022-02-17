@@ -10,7 +10,7 @@ namespace sl::cam {
 
 class FirstPersonCamera : public Camera {
 public:
-    explicit FirstPersonCamera(const gfx::ViewFrustum& viewFrustum = gfx::ViewFrustum{0, 0}) // pass view frustum there somehow
+    explicit FirstPersonCamera(const gfx::ViewFrustum& viewFrustum = gfx::ViewFrustum { 0, 0 }) // pass view frustum there somehow
         : Camera(viewFrustum) {
         m_position = math::Vec3 { 0.0f, 0.0f, 0.0f };
     }
@@ -31,10 +31,10 @@ public:
             m_position -= m_front * velocity;
 
         if (inputManager.isKeyPressed(STARL_KEY_A))
-            m_position += m_right * velocity;
+            m_position -= m_right * velocity;
 
         if (inputManager.isKeyPressed(STARL_KEY_D))
-            m_position -= m_right * velocity;
+            m_position += m_right * velocity;
 
         if (m_x == 0.0f && m_y == 0.0f)
             return;
@@ -49,19 +49,21 @@ public:
         yoffset /= (360.0f * 4.0f);
 
         m_yaw += xoffset;
-        m_pitch = math::circularRange(m_pitch - yoffset, -3.13f, 3.13f);
+        m_pitch = math::circularRange(m_pitch + yoffset, -3.13f, 3.13f);
+
+        // m_front = math::Vec3 { 0.0f, 0.0f, 1.0f };
 
         m_front = math::normalize(-math::Vec3 {
             std::cos(m_yaw) * std::cos(m_pitch),
             std::sin(m_pitch),
             std::sin(m_yaw) * std::cos(m_pitch) });
 
-        m_right = math::cross(m_front, math::worldUp);
-        m_up = math::cross(m_right, m_front);
+        m_right = math::normalize(math::cross(m_front, math::worldUp));
+        m_up = math::normalize(math::cross(m_right, m_front));
     }
 
-    virtual const math::Mat4 getViewMatrix() {
-        return math::lookAt(m_position, m_position + m_front, m_up);
+    virtual const math::Mat4 getViewMatrix() const override {
+        return math::lookAt(m_position, m_position + m_front, math::worldUp);
     }
 
     void onGui() override {

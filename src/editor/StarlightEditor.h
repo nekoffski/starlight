@@ -151,8 +151,9 @@ public:
         glob::Globals::get().flags.disableKeyboardInput = ImGui::GetIO().WantCaptureKeyboard;
         glob::Globals::get().flags.disableMouseInput = ImGui::GetIO().WantCaptureMouse;
 
-        core::WindowManager::get().enableCursor(
-            not core::InputManager::get().isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE));
+        if (m_engineMode == editor::EngineMode::inEditor)
+            core::WindowManager::get().enableCursor(
+                not core::InputManager::get().isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE));
 
         // auto pfxs = m_currentScene->ecsRegistry.getComponentView<components::ParticleEffectComponent>();
         // sceneSystems.pfxEngine.update(pfxs, deltaTime, *m_currentScene->camera);
