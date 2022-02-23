@@ -1,9 +1,10 @@
 #pragma once
 
-#include <memory>
-
 #include <kc/core/FileSystem.h>
 
+#include <memory>
+
+#include "fwd.h"
 #include "sl/async/PeriodicTask.h"
 #include "sl/core/GameObject.h"
 #include "sl/event/Event.h"
@@ -11,25 +12,23 @@
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
 
-#include "fwd.h"
-
 namespace sl::gfx {
 
 class Shader : public core::GameObject {
     friend class ShaderCompiler;
 
-public:
+   public:
     class RecompileOnUpdate : public async::PeriodicTask {
-    public:
+       public:
         explicit RecompileOnUpdate(std::shared_ptr<gfx::Shader> shader,
-            const kc::core::FileSystem& fileSystem = kc::core::FileSystem {});
+                                   const kc::core::FileSystem& fileSystem = kc::core::FileSystem{});
 
         bool shouldInvoke() override;
         void invoke() override;
 
         std::string getName() const;
 
-    private:
+       private:
         std::weak_ptr<gfx::Shader> m_shader;
 
         kc::core::FileSystem m_fileSystem;
@@ -44,7 +43,8 @@ public:
     };
 
     struct Factory {
-        virtual std::shared_ptr<Shader> create(const std::string&, const std::string&, const std::string& = "") = 0;
+        virtual std::shared_ptr<Shader> create(const std::string&, const std::string&,
+                                               const std::string& = "") = 0;
         virtual ~Factory() = default;
     };
 
@@ -68,4 +68,4 @@ public:
     virtual std::string getGeometryShaderPath() = 0;
 };
 
-}
+}  // namespace sl::gfx

@@ -14,12 +14,11 @@ namespace sl::platform::assimp {
 class AssimpMeshProcessor;
 
 class AssimpModelLoader : public geom::ModelLoader {
-
-public:
+   public:
     std::shared_ptr<geom::Model> load(const std::string&) override;
 
-private:
+   private:
     void processNode(aiNode*, const aiScene*, AssimpMeshProcessor&, std::shared_ptr<geom::Model>&);
 };
 
-}
+}  // namespace sl::platform::assimp

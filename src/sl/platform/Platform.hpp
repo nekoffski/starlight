@@ -3,19 +3,19 @@
 #include <memory>
 #include <optional>
 
-#include "sl/geom/ModelLoader.h"
-#include "sl/gfx/Image.h"
-
 #include "GPU.h"
 #include "IO.h"
+#include "sl/geom/ModelLoader.h"
+#include "sl/gfx/Image.h"
 
 namespace sl::platform {
 
 struct Platform {
-    explicit Platform(IO&& io, GPU&& gpu, std::unique_ptr<gfx::Image::Factory> imageFactory, std::unique_ptr<geom::ModelLoader> modelLoader);
+    explicit Platform(IO&& io, GPU&& gpu, std::unique_ptr<gfx::Image::Factory> imageFactory,
+                      std::unique_ptr<geom::ModelLoader> modelLoader);
 
     class Builder {
-    public:
+       public:
         std::unique_ptr<Platform> build() &&;
 
         // clang-format off
@@ -44,7 +44,7 @@ struct Platform {
         }
         // clang-format on
 
-    private:
+       private:
         std::optional<IO> m_io;
         std::optional<GPU> m_gpu;
         std::unique_ptr<gfx::Image::Factory> m_imageFactory = nullptr;
@@ -58,4 +58,4 @@ struct Platform {
     std::unique_ptr<geom::ModelLoader> modelLoader;
 };
 
-}
+}  // namespace sl::platform

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <kc/core/Log.h>
+
 #include "sl/core/WindowManager.h"
 #include "sl/gfx/BufferManager.h"
 #include "sl/gfx/Shader.h"
@@ -9,28 +11,24 @@
 #include "sl/glob/Globals.h"
 #include "sl/rendering/Stage.h"
 
-#include <kc/core/Log.h>
-
 namespace sl::rendering::stages {
 
 class BlurColorBufferStage : public Stage {
-public:
-    enum class Direction {
-        horizontal = 0,
-        vertical
-    };
+   public:
+    enum class Direction { horizontal = 0, vertical };
 
     explicit BlurColorBufferStage()
-        : m_quadVao(glob::Globals::get().geom->frontSquareVAO.get())
-        , m_gaussianBlurShader(gfx::ShaderManager::get().load(
-              glob::Globals::get().config.paths.shaders + "/GaussianBlur.vert", glob::Globals::get().config.paths.shaders + "/GaussianBlur.frag"))
-        , m_horizontalFrameBuffer(gfx::BufferManager::get().createFrameBuffer())
-        , m_verticalFrameBuffer(gfx::BufferManager::get().createFrameBuffer()) {
-    }
+        : m_quadVao(glob::Globals::get().geom->frontSquareVAO.get()),
+          m_gaussianBlurShader(gfx::ShaderManager::get().load(
+              glob::Globals::get().config.paths.shaders + "/GaussianBlur.vert",
+              glob::Globals::get().config.paths.shaders + "/GaussianBlur.frag")),
+          m_horizontalFrameBuffer(gfx::BufferManager::get().createFrameBuffer()),
+          m_verticalFrameBuffer(gfx::BufferManager::get().createFrameBuffer()) {}
 
-    void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer) override {
+    void execute(gfx::Renderer& renderer, scene::Scene& scene,
+                 gfx::FrameBuffer* frameBuffer) override {
         auto [width, height] = core::WindowManager::get().getSize();
-        gfx::ViewFrustum::Viewport viewport { width, height };
+        gfx::ViewFrustum::Viewport viewport{width, height};
 
         renderer.setTemporaryViewport(viewport);
 
@@ -39,15 +37,14 @@ public:
         bool horizontal = true;
 
         std::unordered_map<bool, std::pair<gfx::FrameBuffer*, gfx::Texture*>> buffers = {
-            { true, { m_horizontalFrameBuffer.get(), m_verticalBuffer.get() } },
-            { false, { m_verticalFrameBuffer.get(), m_horizontalBuffer.get() } }
-        };
+            {true, {m_horizontalFrameBuffer.get(), m_verticalBuffer.get()}},
+            {false, {m_verticalFrameBuffer.get(), m_horizontalBuffer.get()}}};
 
         for (int i = 0; i < passes; ++i) {
             auto [frameBuffer, colorBuffer] = buffers[horizontal];
 
             frameBuffer->bind();
-            frameBuffer->specifyColorBuffers({ STARL_COLOR_ATTACHMENT0 });
+            frameBuffer->specifyColorBuffers({STARL_COLOR_ATTACHMENT0});
 
             if (i != 0)
                 colorBuffer->bind(0);
@@ -63,8 +60,7 @@ public:
 
             frameBuffer->unbind();
 
-            if (i != 0)
-                colorBuffer->unbind();
+            if (i != 0) colorBuffer->unbind();
 
             horizontal = !horizontal;
         }
@@ -75,9 +71,7 @@ public:
         renderer.restoreViewport();
     }
 
-    gfx::Texture* getOutputColorBuffer() const {
-        return m_verticalBuffer.get();
-    }
+    gfx::Texture* getOutputColorBuffer() const { return m_verticalBuffer.get(); }
 
     void setColorBuffer(gfx::Texture* colorBuffer) {
         m_colorBuffer = colorBuffer;
@@ -93,7 +87,7 @@ public:
         m_horizontalFrameBuffer->unbind();
     }
 
-private:
+   private:
     gfx::VertexArray* m_quadVao;
 
     gfx::Texture* m_colorBuffer;
@@ -109,4 +103,4 @@ private:
     Direction m_direction;
 };
 
-}
+}  // namespace sl::rendering::stages

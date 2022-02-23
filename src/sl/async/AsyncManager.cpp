@@ -4,13 +4,9 @@
 
 namespace sl::async {
 
-AsyncManager::AsyncManager()
-    : m_threadPool(std::make_unique<kc::async::ThreadPool>(4)) {
-}
+AsyncManager::AsyncManager() : m_threadPool(std::make_unique<kc::async::ThreadPool>(4)) {}
 
-AsyncManager::~AsyncManager() {
-    m_threadPool->stop();
-}
+AsyncManager::~AsyncManager() { m_threadPool->stop(); }
 
 void AsyncManager::update(float dtime) {
     processTimers(dtime);
@@ -31,7 +27,7 @@ PeriodicTask::Handle AsyncManager::addPeriodicTaskImpl(std::unique_ptr<PeriodicT
     const auto& id = periodicTask->id;
     m_periodicTasks[id] = std::move(periodicTask);
 
-    return PeriodicTask::Handle { m_periodicTasks.at(id).get() };
+    return PeriodicTask::Handle{m_periodicTasks.at(id).get()};
 }
 
 void AsyncManager::callAsyncImpl(std::unique_ptr<AsyncTask> asyncTask) {
@@ -39,12 +35,9 @@ void AsyncManager::callAsyncImpl(std::unique_ptr<AsyncTask> asyncTask) {
 
     LOG_INFO("Creating async task: {} with assigned id: {}", asyncTask->asString(), id);
 
-    auto executeTask = [taskView = asyncTask.get()] {
-        taskView->executeAsync();
-    };
+    auto executeTask = [taskView = asyncTask.get()] { taskView->executeAsync(); };
 
-    m_asyncTasks.emplace(id,
-        AsyncTaskSentinel { callAsync(executeTask), std::move(asyncTask) });
+    m_asyncTasks.emplace(id, AsyncTaskSentinel{callAsync(executeTask), std::move(asyncTask)});
 }
 
 void AsyncManager::processPeriodicTasks() {
@@ -63,8 +56,7 @@ void AsyncManager::processPeriodicTasks() {
         }
     }
 
-    for (auto& id : tasksToRemove)
-        m_periodicTasks.erase(id);
+    for (auto& id : tasksToRemove) m_periodicTasks.erase(id);
 }
 
 void AsyncManager::processAsyncTasks() {
@@ -83,8 +75,7 @@ void AsyncManager::processAsyncTasks() {
         }
     }
 
-    for (const auto& idToRemove : idsToRemove)
-        m_asyncTasks.erase(idToRemove);
+    for (const auto& idToRemove : idsToRemove) m_asyncTasks.erase(idToRemove);
 }
 
 void AsyncManager::processTimers(float dtime) {
@@ -96,4 +87,4 @@ void AsyncManager::processTimers(float dtime) {
     }
 }
 
-}
+}  // namespace sl::async

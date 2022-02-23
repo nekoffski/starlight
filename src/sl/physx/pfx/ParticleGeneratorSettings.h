@@ -15,4 +15,4 @@ struct ParticleGeneratorSettings {
     math::Vec3 minColor = math::VEC_ZEROS;
     math::Vec3 maxColor = math::VEC_ONES;
 };
-}
+}  // namespace sl::physx::pfx

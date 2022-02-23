@@ -1,9 +1,8 @@
 #pragma once
 
-#include "ComponentGui.h"
-
 #include <kc/core/Utils.hpp>
 
+#include "ComponentGui.h"
 #include "sl/physx/AxisAlignedBoundingBox.h"
 #include "sl/physx/AxisAlignedCollider.h"
 #include "sl/scene/components/ModelComponent.h"
@@ -16,10 +15,9 @@ class RigidBodyComponentGui : public ComponentGuiImpl<scene::components::RigidBo
         int selectedBoundingBox = 0;
     };
 
-private:
+   private:
     void renderComponentGuiImpl(scene::components::RigidBodyComponent& component,
-        asset::AssetManager& assetManager, ecs::Entity& entity) override {
-
+                                asset::AssetManager& assetManager, ecs::Entity& entity) override {
         with_ID(component.ownerEntityId.c_str()) {
             auto& params = m_params[component.ownerEntityId];
 
@@ -36,10 +34,12 @@ private:
                     ImGui::Checkbox("Fixed", &component.fixed);
 
                     if (component.boundingBox != nullptr && params.selectedBoundingBox == 0)
-                        params.selectedBoundingBox = kc::core::indexOf(m_boundingBoxes, component.boundingBox->getName(), 0);
+                        params.selectedBoundingBox =
+                            kc::core::indexOf(m_boundingBoxes, component.boundingBox->getName(), 0);
 
                     with_OpenedTreeNode("Bounding box") {
-                        if (gui::combo("##Bounding box type", &params.selectedBoundingBox, m_boundingBoxes))
+                        if (gui::combo("##Bounding box type", &params.selectedBoundingBox,
+                                       m_boundingBoxes))
                             addBoundingBox(component, entity, params);
 
                         ImGui::Checkbox("Render bounding box frame", &component.renderBoundingBox);
@@ -50,7 +50,8 @@ private:
         }
     }
 
-    void addBoundingBox(scene::components::RigidBodyComponent& component, ecs::Entity& entity, Params& params) {
+    void addBoundingBox(scene::components::RigidBodyComponent& component, ecs::Entity& entity,
+                        Params& params) {
         using scene::components::ModelComponent;
 
         if (not entity.hasComponent<ModelComponent>()) {
@@ -62,16 +63,16 @@ private:
 
         component.boundingBox = [&]() -> std::unique_ptr<physx::BoundingBox> {
             switch (params.selectedBoundingBox) {
-            case 1:
-                return std::make_unique<physx::AxisAlignedBoundingBox>(model.meshes);
+                case 1:
+                    return std::make_unique<physx::AxisAlignedBoundingBox>(model.meshes);
             }
 
             return nullptr;
         }();
     }
 
-    std::vector<std::string> m_boundingBoxes = { "None", "AABB" };
+    std::vector<std::string> m_boundingBoxes = {"None", "AABB"};
     std::unordered_map<std::string, Params> m_params;
 };
 
-}
+}  // namespace sl::gui::components

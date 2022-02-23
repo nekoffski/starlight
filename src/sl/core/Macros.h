@@ -9,16 +9,16 @@
 #define ANONYMOUS_VAR(str) CONCATENATE(str, __LINE__)
 #endif
 
-#define LOG_STATIC_CLASS(T)           \
-public:                              \
+#define LOG_STATIC_CLASS(T)          \
+   public:                           \
     T() = delete;                    \
     T(const T&) = delete;            \
     T(const T&&) = delete;           \
     T& operator=(const T&) = delete; \
     T& operator=(T&&) = delete;
 
-#define LOG_SINGLETON(T)              \
-public:                              \
+#define LOG_SINGLETON(T)             \
+   public:                           \
     T(const T&) = delete;            \
     T(const T&&) = delete;           \
     T& operator=(const T&) = delete; \
@@ -29,7 +29,7 @@ public:                              \
         return s_instance;           \
     }                                \
                                      \
-private:                             \
+   private:                          \
     T() = default;                   \
                                      \
-public:
+   public:

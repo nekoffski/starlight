@@ -3,24 +3,17 @@
 namespace sl::rendering {
 
 class StageBase {
-public:
-    explicit StageBase()
-        : m_enabled(true) { }
+   public:
+    explicit StageBase() : m_enabled(true) {}
 
-    void enable() {
-        m_enabled = true;
-    }
+    void enable() { m_enabled = true; }
 
-    void disable() {
-        m_enabled = false;
-    }
+    void disable() { m_enabled = false; }
 
-    bool isEnabled() const {
-        return m_enabled;
-    }
+    bool isEnabled() const { return m_enabled; }
 
-private:
+   private:
     bool m_enabled;
 };
 
-}
+}  // namespace sl::rendering

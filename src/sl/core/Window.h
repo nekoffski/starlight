@@ -8,13 +8,11 @@
 namespace sl::core {
 
 class Window {
-public:
+   public:
     using ResizeCallback = void (*)(void*, int, int);
 
     explicit Window(math::Size2D windowSize, const std::string& title)
-        : m_defaultWindowSize(std::move(windowSize))
-        , m_title(title) {
-    }
+        : m_defaultWindowSize(std::move(windowSize)), m_title(title) {}
 
     virtual ~Window() = default;
 
@@ -37,8 +35,8 @@ public:
 
     virtual math::Size2D getSize() const = 0;
 
-protected:
+   protected:
     math::Size2D m_defaultWindowSize;
     std::string m_title;
 };
-}
+}  // namespace sl::core

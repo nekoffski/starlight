@@ -1,8 +1,8 @@
 #pragma once
 
-#include <memory>
-
 #include <kc/core/Log.h>
+
+#include <memory>
 
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
@@ -20,14 +20,13 @@ class TransformComponent : public ecs::Component {
         math::Vec3 scale;
     };
 
-public:
+   public:
     using View = ecs::ComponentView<TransformComponent>;
 
-    explicit TransformComponent(math::Vec3 position = math::Vec3 { 0.0f },
-        math::Vec3 rotation = math::Vec3 { 0.0f }, math::Vec3 scale = math::Vec3 { 1.0f })
-        : position(position)
-        , rotation(rotation)
-        , scale(scale) {
+    explicit TransformComponent(math::Vec3 position = math::Vec3{0.0f},
+                                math::Vec3 rotation = math::Vec3{0.0f},
+                                math::Vec3 scale = math::Vec3{1.0f})
+        : position(position), rotation(rotation), scale(scale) {
         recalculateTransformation();
 
         name = "TransformComponent";
@@ -35,14 +34,10 @@ public:
 
     void recalculateTransformation() {
         transformation = math::translate(position) * math::scale(scale) *
-            math::createRotationMatrix(math::toRadians(rotation));
+                         math::createRotationMatrix(math::toRadians(rotation));
     }
 
-    void save() {
-        m_memento = Memento {
-            position, rotation, scale
-        };
-    }
+    void save() { m_memento = Memento{position, rotation, scale}; }
 
     void restore() {
         LOG_INFO("Trying to restore transform");
@@ -63,7 +58,7 @@ public:
     math::Vec3 scale;
     math::Mat4 transformation;
 
-private:
+   private:
     std::optional<Memento> m_memento;
 };
-}
+}  // namespace sl::scene::components

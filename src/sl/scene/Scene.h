@@ -14,7 +14,7 @@
 namespace sl::scene {
 
 class Scene {
-public:
+   public:
     ecs::Entity& addEntity(std::string name);
 
     int getEntitiesCount() const;
@@ -28,4 +28,4 @@ public:
 
     std::vector<physx::ColoredVector> vectors;
 };
-}
+}  // namespace sl::scene

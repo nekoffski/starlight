@@ -2,17 +2,12 @@
 
 namespace sl::async {
 
-Timer::Timer(float sleepTime)
-    : m_sleepTime(sleepTime)
-    , m_activated(false)
-    , m_timer(m_sleepTime) {
-}
+Timer::Timer(float sleepTime) : m_sleepTime(sleepTime), m_activated(false), m_timer(m_sleepTime) {}
 
 void Timer::setSleepTime(float sleepTime) {
     m_sleepTime = sleepTime;
 
-    if (m_timer > sleepTime)
-        m_timer = sleepTime;
+    if (m_timer > sleepTime) m_timer = sleepTime;
 }
 
 bool Timer::asyncSleep() {
@@ -24,4 +19,4 @@ bool Timer::asyncSleep() {
     return true;
 }
 
-}
+}  // namespace sl::async

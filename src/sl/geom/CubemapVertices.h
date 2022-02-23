@@ -48,4 +48,4 @@ inline float cubemapVertices[] = {
 };
 // clang-format on
 
-}
+}  // namespace sl::geom

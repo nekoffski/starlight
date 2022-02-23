@@ -11,4 +11,4 @@ class Shaders;
 class Visual;
 class World;
 
-}
+}  // namespace sl::glob

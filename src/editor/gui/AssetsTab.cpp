@@ -1,11 +1,8 @@
 #include "AssetsTab.h"
 
 #include <any>
-#include <ranges>
-
 #include <imgui_sugar.hpp>
-
-#include "sl/gui/Utils.h"
+#include <ranges>
 
 #include "editor/DebugConsole.hpp"
 #include "sl/core/Errors.hpp"
@@ -14,7 +11,6 @@
 #include "sl/gfx/ShaderManager.h"
 #include "sl/gfx/TextureManager.h"
 #include "sl/glob/Globals.h"
-
 #include "sl/gui/Utils.h"
 
 namespace editor::gui {
@@ -24,14 +20,11 @@ constexpr int padding = 65;
 static void validateAssetName(const std::string& name) {
     using namespace sl::core;
 
-    if (name.empty())
-        throw AssetError("Asset name cannot be empty");
+    if (name.empty()) throw AssetError("Asset name cannot be empty");
 }
 
 AssetsTab::AssetsTab(std::shared_ptr<SharedState> sharedState)
-    : Widget(sharedState)
-    , m_fileBrowser("Assets file browser") {
-}
+    : Widget(sharedState), m_fileBrowser("Assets file browser") {}
 
 void AssetsTab::render() {
     with_Group {
@@ -40,8 +33,7 @@ void AssetsTab::render() {
             ImGui::OpenPopup("AssetLoadPopUp");
         }
 
-        with_Popup("AssetLoadPopUp")
-            showLoaderPopUp();
+        with_Popup("AssetLoadPopUp") showLoaderPopUp();
 
         ImGui::Text("\n");
 
@@ -53,17 +45,16 @@ void AssetsTab::render() {
                     for (auto& [name, asset] : assetsMap) {
                         bool isSelected = (name == selectedAssetName);
 
-                        if (isSelected)
-                            sl::gui::pushTextColor(sl::gui::selectedEntryColor);
+                        if (isSelected) sl::gui::pushTextColor(sl::gui::selectedEntryColor);
 
                         ImGui::Text("%s", name.c_str());
 
-                        if (isSelected)
-                            sl::gui::popTextColor();
+                        if (isSelected) sl::gui::popTextColor();
 
                         if (ImGui::IsItemClicked()) {
                             selectedAssetName = name;
-                            m_sharedState->activeAssetGuiProvider = m_assetsGui.createGuiProvider(asset);
+                            m_sharedState->activeAssetGuiProvider =
+                                m_assetsGui.createGuiProvider(asset);
                         }
                     }
                 }
@@ -81,8 +72,7 @@ void AssetsTab::render() {
         auto shaders = m_sharedState->assetManager.getShaders().getAll();
         auto& globalShaders = sl::glob::Globals::get().shaders->shadersByName;
 
-        for (auto& [name, shader] : globalShaders)
-            shaders[name] = shader;
+        for (auto& [name, shader] : globalShaders) shaders[name] = shader;
 
         displayAssetSection("Shader", shaders);
 
@@ -97,21 +87,18 @@ void AssetsTab::resetArgs() {
     m_assetsArgs.assetName = "";
     m_assetsArgs.activeItem = 0;
     m_assetsArgs.modelName = "/tow/tower.obj";
-    m_assetsArgs.faces = {
-        "/skybox/right.jpg", "/skybox/left.jpg", "/skybox/top.jpg",
-        "/skybox/bottom.jpg", "/skybox/front.jpg", "/skybox/back.jpg"
-    };
+    m_assetsArgs.faces = {"/skybox/right.jpg",  "/skybox/left.jpg",  "/skybox/top.jpg",
+                          "/skybox/bottom.jpg", "/skybox/front.jpg", "/skybox/back.jpg"};
 }
 
 void AssetsTab::showLoaderPopUp() {
-    static const std::vector<std::string> labels = { "Cubemap", "Texture", "Model", "Shader" };
+    static const std::vector<std::string> labels = {"Cubemap", "Texture", "Model", "Shader"};
 
     sl::gui::combo("##AssetsCombo", &m_assetsArgs.activeItem, labels);
 
     m_loadClicked = false;
 
-    if (ImGui::Button("Quit"))
-        ImGui::CloseCurrentPopup();
+    if (ImGui::Button("Quit")) ImGui::CloseCurrentPopup();
 
     ImGui::SameLine();
     if (ImGui::Button("Load")) {
@@ -127,25 +114,25 @@ void AssetsTab::showLoaderPopUp() {
 
         try {
             switch (m_assetsArgs.activeItem) {
-            case 0: {
-                handleCubemapLoader();
-                break;
-            }
+                case 0: {
+                    handleCubemapLoader();
+                    break;
+                }
 
-            case 1: {
-                handleTextureLoader();
-                break;
-            }
+                case 1: {
+                    handleTextureLoader();
+                    break;
+                }
 
-            case 2: {
-                handleModelLoader();
-                break;
-            }
+                case 2: {
+                    handleModelLoader();
+                    break;
+                }
 
-            case 3: {
-                handleShaderLoader();
-                break;
-            }
+                case 3: {
+                    handleShaderLoader();
+                    break;
+                }
             }
         } catch (sl::core::AssetError& err) {
             m_errorDialog.setErrorMessage(err.getDetails());
@@ -153,8 +140,7 @@ void AssetsTab::showLoaderPopUp() {
             m_loadClicked = false;
         }
 
-        if (m_loadClicked)
-            ImGui::CloseCurrentPopup();
+        if (m_loadClicked) ImGui::CloseCurrentPopup();
     }
 
     m_errorDialog.show();
@@ -180,8 +166,8 @@ void AssetsTab::handleShaderLoader() {
 
         auto shader = sl::gfx::ShaderManager::get().load(
             m_assetsArgs.faces[0], m_assetsArgs.faces[1], m_assetsArgs.faces[2]);
-        // auto shaderAsset = std::make_shared<sl::asset::ShaderAsset>(shader, m_assetsArgs.assetName);
-        // m_sharedState->assetManager.addAsset(shaderAsset);
+        // auto shaderAsset = std::make_shared<sl::asset::ShaderAsset>(shader,
+        // m_assetsArgs.assetName); m_sharedState->assetManager.addAsset(shaderAsset);
     }
 }
 
@@ -218,9 +204,10 @@ void AssetsTab::handleCubemapLoader() {
         auto facesPaths = m_assetsArgs.faces;
         const auto& cubemapsPath = sl::glob::Globals::get().config.paths.cubemaps;
 
-        std::ranges::transform(facesPaths, facesPaths.begin(), [&cubemapsPath](const auto& facePath) -> std::string {
-            return cubemapsPath + facePath;
-        });
+        std::ranges::transform(facesPaths, facesPaths.begin(),
+                               [&cubemapsPath](const auto& facePath) -> std::string {
+                                   return cubemapsPath + facePath;
+                               });
 
         using namespace sl::gfx;
 
@@ -228,9 +215,7 @@ void AssetsTab::handleCubemapLoader() {
             .createCubemap()
             .fromPaths(facesPaths)
             .withName(m_assetsArgs.assetName)
-            .getAsync([&](auto&& cubemap) {
-                m_sharedState->assetManager.add(std::move(cubemap));
-            });
+            .getAsync([&](auto&& cubemap) { m_sharedState->assetManager.add(std::move(cubemap)); });
     }
 }
 
@@ -263,11 +248,13 @@ void AssetsTab::handleTextureLoader() {
         // auto output = std::make_unique<sl::asset::AssetManager::Output<
         // sl::gfx::Texture>>(m_sharedState->assetManager);
 
-        // sl::gfx::Texture::loadAsync(m_assetsArgs.modelName, m_assetsArgs.assetName, std::move(output));
+        // sl::gfx::Texture::loadAsync(m_assetsArgs.modelName, m_assetsArgs.assetName,
+        // std::move(output));
 
-        // sl::gfx::Texture::loadAsync(m_assetsArgs.modelName, m_assetsArgs.assetName, [&](auto&& texture) {
+        // sl::gfx::Texture::loadAsync(m_assetsArgs.modelName, m_assetsArgs.assetName, [&](auto&&
+        // texture) {
         //     m_sharedState->assetManager.add(std::move(texture));
         // });
     }
 }
-}
+}  // namespace editor::gui

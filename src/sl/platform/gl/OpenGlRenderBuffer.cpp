@@ -12,19 +12,11 @@ OpenGlRenderBuffer::OpenGlRenderBuffer(int format, unsigned int width, unsigned 
     unbind();
 }
 
-OpenGlRenderBuffer::~OpenGlRenderBuffer() {
-    glDeleteRenderbuffers(1, &m_buffferId);
-}
+OpenGlRenderBuffer::~OpenGlRenderBuffer() { glDeleteRenderbuffers(1, &m_buffferId); }
 
-unsigned int OpenGlRenderBuffer::getBufferId() const {
-    return m_buffferId;
-}
+unsigned int OpenGlRenderBuffer::getBufferId() const { return m_buffferId; }
 
-void OpenGlRenderBuffer::bind() {
-    glBindRenderbuffer(GL_RENDERBUFFER, m_buffferId);
-}
+void OpenGlRenderBuffer::bind() { glBindRenderbuffer(GL_RENDERBUFFER, m_buffferId); }
 
-void OpenGlRenderBuffer::unbind() {
-    glBindRenderbuffer(GL_RENDERBUFFER, 0u);
-}
-}
+void OpenGlRenderBuffer::unbind() { glBindRenderbuffer(GL_RENDERBUFFER, 0u); }
+}  // namespace sl::platform::gl

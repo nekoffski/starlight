@@ -1,16 +1,15 @@
 #pragma once
 
-#include "sl/platform/Platform.hpp"
-
 #include "FakeGPU.hpp"
 #include "FakeIO.hpp"
 #include "ImageMock.hpp"
 #include "ModelLoaderMock.hpp"
+#include "sl/platform/Platform.hpp"
 
 using namespace sl::platform;
 
 auto createFakePlatform() {
-    auto platform = Platform::Builder {}
+    auto platform = Platform::Builder{}
                         .setIO<FakeIO>()
                         .setGPU<FakeGPU>()
                         .setImageFactory<ImageMock::Factory>()

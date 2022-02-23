@@ -1,8 +1,7 @@
 #pragma once
 
-#include "sl/math/Matrix.hpp"
-
 #include "fwd.h"
+#include "sl/math/Matrix.hpp"
 
 namespace sl::physx {
 
@@ -11,4 +10,4 @@ struct Collider {
     virtual void setModelMatrix(const math::Mat4&) = 0;
 };
 
-}
+}  // namespace sl::physx

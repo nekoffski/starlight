@@ -4,10 +4,10 @@
 /* Printable keys */
 #define STARL_KEY_SPACE 32
 #define STARL_KEY_APOSTROPHE 39 /* ' */
-#define STARL_KEY_COMMA 44 /* , */
-#define STARL_KEY_MINUS 45 /* - */
-#define STARL_KEY_PERIOD 46 /* . */
-#define STARL_KEY_SLASH 47 /* / */
+#define STARL_KEY_COMMA 44      /* , */
+#define STARL_KEY_MINUS 45      /* - */
+#define STARL_KEY_PERIOD 46     /* . */
+#define STARL_KEY_SLASH 47      /* / */
 #define STARL_KEY_0 48
 #define STARL_KEY_1 49
 #define STARL_KEY_2 50
@@ -19,7 +19,7 @@
 #define STARL_KEY_8 56
 #define STARL_KEY_9 57
 #define STARL_KEY_SEMICOLON 59 /* ; */
-#define STARL_KEY_EQUAL 61 /* = */
+#define STARL_KEY_EQUAL 61     /* = */
 #define STARL_KEY_A 65
 #define STARL_KEY_B 66
 #define STARL_KEY_C 67
@@ -46,12 +46,12 @@
 #define STARL_KEY_X 88
 #define STARL_KEY_Y 89
 #define STARL_KEY_Z 90
-#define STARL_KEY_LEFT_BRACKET 91 /* [ */
-#define STARL_KEY_BACKSLASH 92 /* \ */
+#define STARL_KEY_LEFT_BRACKET 91  /* [ */
+#define STARL_KEY_BACKSLASH 92     /* \ */
 #define STARL_KEY_RIGHT_BRACKET 93 /* ] */
-#define STARL_KEY_GRAVE_ACCENT 96 /* ` */
-#define STARL_KEY_WORLD_1 161 /* non-US #1 */
-#define STARL_KEY_WORLD_2 162 /* non-US #2 */
+#define STARL_KEY_GRAVE_ACCENT 96  /* ` */
+#define STARL_KEY_WORLD_1 161      /* non-US #1 */
+#define STARL_KEY_WORLD_2 162      /* non-US #2 */
 
 /* Function keys */
 #define STARL_KEY_ESCAPE 256

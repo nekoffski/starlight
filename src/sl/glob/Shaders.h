@@ -17,4 +17,4 @@ struct Shaders {
 
     std::unordered_map<std::string, std::shared_ptr<gfx::Shader>&> shadersByName;
 };
-}
+}  // namespace sl::glob

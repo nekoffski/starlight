@@ -10,4 +10,4 @@ void Globals::init() {
     geom = std::make_unique<Geometry>();
 }
 
-}
+}  // namespace sl::glob

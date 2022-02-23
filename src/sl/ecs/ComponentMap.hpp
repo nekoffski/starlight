@@ -10,7 +10,7 @@
 namespace sl::ecs {
 
 class ComponentMap {
-public:
+   public:
     template <typename T>
     ComponentContainer<T>& get() {
         auto id = core::typeIndex<T>();
@@ -27,7 +27,7 @@ public:
         return m_componentContainers.contains(core::typeIndex<T>());
     }
 
-private:
+   private:
     std::unordered_map<std::type_index, std::unique_ptr<IComponentContainer>> m_componentContainers;
 };
-}
+}  // namespace sl::ecs

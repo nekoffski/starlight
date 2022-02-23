@@ -4,7 +4,6 @@
 
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
-
 #include "sl/physx/BoundingBox.h"
 
 namespace sl::scene::components {
@@ -14,25 +13,23 @@ class RigidBodyComponent : public ecs::Component {
         math::Vec3 velocity;
     };
 
-public:
+   public:
     using View = ecs::ComponentView<RigidBodyComponent>;
 
     explicit RigidBodyComponent()
-        : useGravity(false)
-        , enableCollisions(false)
-        , renderBoundingBox(false)
-        , fixed(false)
-        , mass(1.0f)
-        , velocity({ 0.0f, 0.0f, 0.0f })
-        , boundingBox(nullptr)
+        : useGravity(false),
+          enableCollisions(false),
+          renderBoundingBox(false),
+          fixed(false),
+          mass(1.0f),
+          velocity({0.0f, 0.0f, 0.0f}),
+          boundingBox(nullptr)
 
     {
         name = "RigidBodyComponent";
     }
 
-    void save() {
-        m_memento = Memento { velocity };
-    }
+    void save() { m_memento = Memento{velocity}; }
 
     void restore() {
         if (m_memento.has_value()) {
@@ -56,8 +53,8 @@ public:
 
     std::unique_ptr<physx::BoundingBox> boundingBox;
 
-private:
+   private:
     std::optional<Memento> m_memento;
 };
 
-}
+}  // namespace sl::scene::components

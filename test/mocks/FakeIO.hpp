@@ -1,13 +1,11 @@
 #pragma once
 
-#include "sl/platform/IO.h"
-
 #include "InputMock.hpp"
 #include "WindowMock.hpp"
+#include "sl/platform/IO.h"
 
 struct FakeIO : sl::platform::IO {
-    explicit FakeIO()
-        : IO(std::make_unique<WindowMock>(), std::make_unique<InputMock>()) {
+    explicit FakeIO() : IO(std::make_unique<WindowMock>(), std::make_unique<InputMock>()) {
         windowMock = static_cast<WindowMock*>(this->window.get());
         inputMock = static_cast<InputMock*>(this->input.get());
     }

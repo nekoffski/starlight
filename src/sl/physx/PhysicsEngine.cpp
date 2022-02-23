@@ -4,11 +4,11 @@
 
 namespace sl::physx {
 
-const math::Vec3 gravityAcceleration = { 0.0f, -10.0f, 0.0f };
+const math::Vec3 gravityAcceleration = {0.0f, -10.0f, 0.0f};
 
-void PhysicsEngine::processRigidBodies(ecs::ComponentView<scene::components::RigidBodyComponent> rigidBodies,
+void PhysicsEngine::processRigidBodies(
+    ecs::ComponentView<scene::components::RigidBodyComponent> rigidBodies,
     ecs::ComponentView<scene::components::TransformComponent> transforms, float deltaTime) {
-
     std::vector<CollisionProcessor::DynamicBody> collidableEntities;
 
     for (auto& rigidBody : rigidBodies) {
@@ -29,11 +29,11 @@ void PhysicsEngine::processRigidBodies(ecs::ComponentView<scene::components::Rig
 
             if (canCollide(rigidBody))
                 collidableEntities.emplace_back(
-                    CollisionProcessor::DynamicBody { &rigidBody, &transform });
+                    CollisionProcessor::DynamicBody{&rigidBody, &transform});
         }
     }
 
     m_collisionProcessor.processCollisions(collidableEntities);
 }
 
-}
+}  // namespace sl::physx

@@ -1,9 +1,8 @@
-#include "sl/ecs/ComponentMap.hpp"
-
 #include <gtest/gtest.h>
 
 #include "mocks/TestComponent.h"
 #include "sl/ecs/Component.h"
+#include "sl/ecs/ComponentMap.hpp"
 
 using namespace testing;
 using namespace sl::ecs;
@@ -25,9 +24,7 @@ TEST_F(ComponentMapTests, givenEmptyMap_whenGettingNotExistingContainer_shouldCr
     componentMap.get<TestComponent>();
 
     EXPECT_TRUE(componentMap.exists<TestComponent>());
-    EXPECT_NO_FATAL_FAILURE({
-        componentMap.getByIndex(sl::core::typeIndex<TestComponent>());
-    });
+    EXPECT_NO_FATAL_FAILURE({ componentMap.getByIndex(sl::core::typeIndex<TestComponent>()); });
 }
 
 TEST_F(ComponentMapTests, givenMap_whenClearing_shouldRemoveContainers) {
@@ -40,4 +37,4 @@ TEST_F(ComponentMapTests, givenMap_whenClearing_shouldRemoveContainers) {
     EXPECT_FALSE(componentMap.exists<TestComponent>());
 }
 
-}
+}  // namespace

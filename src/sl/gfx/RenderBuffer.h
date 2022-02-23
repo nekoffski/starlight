@@ -6,7 +6,8 @@ namespace sl::gfx {
 
 struct RenderBuffer {
     struct Factory {
-        virtual std::unique_ptr<RenderBuffer> create(int format, unsigned int width, unsigned int height) = 0;
+        virtual std::unique_ptr<RenderBuffer> create(int format, unsigned int width,
+                                                     unsigned int height) = 0;
     };
 
     virtual ~RenderBuffer() = default;
@@ -19,4 +20,4 @@ struct RenderBuffer {
     inline static std::unique_ptr<Factory> factory = nullptr;
 };
 
-}
+}  // namespace sl::gfx

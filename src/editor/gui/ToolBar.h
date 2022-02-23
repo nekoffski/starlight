@@ -1,19 +1,17 @@
 #pragma once
 
 #include "Widget.h"
-
 #include "editor/EngineState.h"
 #include "editor/Events.h"
 
 namespace editor::gui {
 
 class ToolBar : public Widget {
-public:
+   public:
     explicit ToolBar(std::shared_ptr<SharedState> sharedState)
-        : Widget(sharedState)
-        , m_gizmoOperation(sl::gui::GizmoOp::translate)
-        , m_engineState(EngineState::stopped) {
-    }
+        : Widget(sharedState),
+          m_gizmoOperation(sl::gui::GizmoOp::translate),
+          m_engineState(EngineState::stopped) {}
 
     void render() {
         auto& properties = m_sharedState->guiProperties.toolBarProperties;
@@ -21,20 +19,18 @@ public:
         sl::gui::beginTransparentPanel("Toolbar", properties.origin, properties.size);
 
         with_ID("ToolBar") {
-
-            auto handleEngineStateButton = [&](const std::string& label, EngineState state) -> void {
+            auto handleEngineStateButton = [&](const std::string& label,
+                                               EngineState state) -> void {
                 bool isSelected = m_engineState == state;
 
-                if (isSelected)
-                    sl::gui::pushTextColor(sl::gui::selectedEntryColor);
+                if (isSelected) sl::gui::pushTextColor(sl::gui::selectedEntryColor);
 
                 if (ImGui::Button(label.c_str())) {
                     sl::event::EventManager::get().emit<EngineStateChanged>(state).toAll();
                     m_engineState = state;
                 }
 
-                if (isSelected)
-                    sl::gui::popTextColor();
+                if (isSelected) sl::gui::popTextColor();
             };
 
             if (ImGui::Button(ICON_FA_GAMEPAD))
@@ -59,16 +55,14 @@ public:
             auto handleGizmoOp = [&](const std::string& label, sl::gui::GizmoOp operation) -> void {
                 bool isSelected = (m_gizmoOperation == operation);
 
-                if (isSelected)
-                    sl::gui::pushTextColor(sl::gui::selectedEntryColor);
+                if (isSelected) sl::gui::pushTextColor(sl::gui::selectedEntryColor);
 
                 if (ImGui::Button(label.c_str())) {
                     m_gizmoOperation = operation;
                     m_sharedState->gizmoOperation = operation;
                 }
 
-                if (isSelected)
-                    sl::gui::popTextColor();
+                if (isSelected) sl::gui::popTextColor();
             };
 
             handleGizmoOp(ICON_FA_ARROWS_ALT, sl::gui::GizmoOp::translate);
@@ -82,9 +76,9 @@ public:
         sl::gui::endPanel();
     }
 
-private:
+   private:
     sl::gui::GizmoOp m_gizmoOperation;
     EngineState m_engineState;
 };
 
-}
+}  // namespace editor::gui

@@ -28,13 +28,11 @@ TEST(UtilsTests, givenTooLowValue_whenCalculatingCircularRange_shouldClamp) {
     EXPECT_EQ(circularRange(value, low, high), high);
 }
 
-TEST(UtilsTests, givenNegativeNumber_whenCalculatingRelu_shouldReturn0) {
-	EXPECT_EQ(ReLU(-5), 0);
-}
+TEST(UtilsTests, givenNegativeNumber_whenCalculatingRelu_shouldReturn0) { EXPECT_EQ(ReLU(-5), 0); }
 
 TEST(UtilsTests, givenPositiveNumber_whenCalculatingRelu_shouldReturnSameNumber) {
-	const int value = 5;
-	EXPECT_EQ(ReLU(value), value);
+    const int value = 5;
+    EXPECT_EQ(ReLU(value), value);
 }
 
-}
+}  // namespace

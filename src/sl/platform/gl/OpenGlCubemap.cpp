@@ -1,7 +1,6 @@
 #include "OpenGlCubemap.h"
 
 #include <glad/glad.h>
-
 #include <kc/core/Log.h>
 
 #include "Utils.hpp"
@@ -10,16 +9,15 @@
 
 namespace sl::platform::gl {
 
-OpenGlCubemap::OpenGlCubemap(unsigned int width, unsigned int height)
-    : m_cubemapId(0u) {
+OpenGlCubemap::OpenGlCubemap(unsigned int width, unsigned int height) : m_cubemapId(0u) {
     LOG_INFO("Creating cubemap without textures attached");
 
     glGenTextures(1, &m_cubemapId);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemapId);
 
     for (unsigned int i = 0u; i < 6; ++i)
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
-            width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, width, height, 0,
+                     GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -31,9 +29,7 @@ OpenGlCubemap::OpenGlCubemap(unsigned int width, unsigned int height)
     this->height = height;
 }
 
-OpenGlCubemap::OpenGlCubemap(const sl::gfx::CubemapFaces& faces)
-    : m_cubemapId(0u) {
-
+OpenGlCubemap::OpenGlCubemap(const sl::gfx::CubemapFaces& faces) : m_cubemapId(0u) {
     glGenTextures(1, &m_cubemapId);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemapId);
 
@@ -45,15 +41,14 @@ OpenGlCubemap::OpenGlCubemap(const sl::gfx::CubemapFaces& faces)
 
         auto channels = img->getChannelsCount();
 
-        if (not channelsToFormat.contains(channels))
-            throw core::TextureError {};
+        if (not channelsToFormat.contains(channels)) throw core::TextureError{};
 
         const auto format = channelsToFormat.at(channels);
         const auto size = img->getSize();
 
         LOG_DEBUG("Face: {}, width: {}, height: {}", faces[i]->getPath(), size.width, size.height);
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, size.width, size.height,
-            0, format, GL_UNSIGNED_BYTE, img->getBuffer());
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, size.width, size.height, 0,
+                     format, GL_UNSIGNED_BYTE, img->getBuffer());
 
         // TODO: check if without 'if' below statement is faster
         if (i == 0) {
@@ -70,8 +65,7 @@ OpenGlCubemap::OpenGlCubemap(const sl::gfx::CubemapFaces& faces)
 }
 
 OpenGlCubemap::~OpenGlCubemap() {
-    if (m_cubemapId)
-        glDeleteTextures(1, &m_cubemapId);
+    if (m_cubemapId) glDeleteTextures(1, &m_cubemapId);
 }
 
 void OpenGlCubemap::bind(unsigned int index) {
@@ -85,4 +79,4 @@ void OpenGlCubemap::unbind() {
     glActiveTexture(GL_TEXTURE0 + m_lastBoundIndex);
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0u);
 }
-}
+}  // namespace sl::platform::gl

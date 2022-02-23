@@ -10,15 +10,15 @@
 namespace sl::app {
 
 class Serializer {
-public:
+   public:
     explicit Serializer(const std::string& path);
 
     void serialize(asset::AssetManager& assetManager, scene::Scene* scene,
-        const kc::core::FileSystem& fileSystem = kc::core::FileSystem {});
+                   const kc::core::FileSystem& fileSystem = kc::core::FileSystem{});
 
     inline static const std::string extension = ".starscene";
 
-private:
+   private:
     void serializeAssets(asset::AssetManager& assetManager);
     void serializeScene(scene::Scene* scene);
 
@@ -30,4 +30,4 @@ private:
 
     ComponentsSerializer m_componentsSerializer;
 };
-}
+}  // namespace sl::app

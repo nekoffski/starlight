@@ -10,7 +10,7 @@
 namespace sl::gfx {
 
 class VertexBuffer {
-public:
+   public:
     struct Factory {
         virtual std::shared_ptr<VertexBuffer> create(void* data, int, int) = 0;
         virtual ~Factory() = default;
@@ -23,15 +23,14 @@ public:
 
     virtual unsigned int getVerticesCount() = 0;
 
-    const BufferMemoryScheme& getMemoryScheme() {
-        return m_bufferMemoryScheme;
-    }
+    const BufferMemoryScheme& getMemoryScheme() { return m_bufferMemoryScheme; }
 
-    void addMemoryOffsetScheme(uint32_t elementsCount, uint32_t type, uint32_t typeSize, bool normalized = false) {
+    void addMemoryOffsetScheme(uint32_t elementsCount, uint32_t type, uint32_t typeSize,
+                               bool normalized = false) {
         m_bufferMemoryScheme.addScheme(elementsCount, type, typeSize, normalized);
     }
 
-protected:
+   protected:
     BufferMemoryScheme m_bufferMemoryScheme;
 };
-}
+}  // namespace sl::gfx

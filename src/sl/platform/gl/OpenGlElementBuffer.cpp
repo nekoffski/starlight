@@ -1,14 +1,12 @@
 #include "OpenGlElementBuffer.h"
 
 #include <glad/glad.h>
-
 #include <kc/core/Log.h>
 
 namespace sl::platform::gl {
 
 OpenGlElementBuffer::OpenGlElementBuffer(void* data, int size, unsigned int indicesCount)
-    : m_indicesCount(indicesCount)
-    , m_bufferId(0u) {
+    : m_indicesCount(indicesCount), m_bufferId(0u) {
     glGenBuffers(1, &m_bufferId);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bufferId);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
@@ -16,15 +14,10 @@ OpenGlElementBuffer::OpenGlElementBuffer(void* data, int size, unsigned int indi
 }
 
 OpenGlElementBuffer::~OpenGlElementBuffer() {
-    if (m_bufferId)
-        glDeleteBuffers(1, &m_bufferId);
+    if (m_bufferId) glDeleteBuffers(1, &m_bufferId);
 }
 
-void OpenGlElementBuffer::bind() {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bufferId);
-}
+void OpenGlElementBuffer::bind() { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bufferId); }
 
-void OpenGlElementBuffer::unbind() {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0u);
-}
-}
+void OpenGlElementBuffer::unbind() { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0u); }
+}  // namespace sl::platform::gl

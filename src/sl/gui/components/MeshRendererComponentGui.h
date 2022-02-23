@@ -12,17 +12,15 @@ class MeshRendererComponentGui : public ComponentGuiImpl<scene::components::Mesh
         int polygonModeItem = 0;
     };
 
-private:
+   private:
     void renderComponentGuiImpl(scene::components::MeshRendererComponent& component,
-        asset::AssetManager& assetManager, ecs::Entity& entity) override;
+                                asset::AssetManager& assetManager, ecs::Entity& entity) override;
 
     int getPolygonMode(int) const;
 
-    std::vector<std::string> m_polygonModeLabels = {
-        "Fill", "Lines", "Points"
-    };
+    std::vector<std::string> m_polygonModeLabels = {"Fill", "Lines", "Points"};
 
     std::unordered_map<std::string, Params> m_params;
 };
 
-}
+}  // namespace sl::gui::components

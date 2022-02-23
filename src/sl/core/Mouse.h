@@ -17,4 +17,4 @@ struct Mouse {
     virtual void setOnMouseScroll(Callback) = 0;
 };
 
-}
+}  // namespace sl::core

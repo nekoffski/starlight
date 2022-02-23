@@ -1,14 +1,13 @@
 #pragma once
 
-#include "sl/core/Window.h"
-
 #include <gmock/gmock.h>
+
+#include "sl/core/Window.h"
 
 using namespace sl::core;
 
 struct WindowMock : public Window {
-    explicit WindowMock()
-        : Window({}, "windowTitle") { }
+    explicit WindowMock() : Window({}, "windowTitle") {}
 
     MOCK_METHOD(void, setResizeCallback, (ResizeCallback), (override));
     MOCK_METHOD(void, init, (), (override));

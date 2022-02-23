@@ -1,8 +1,8 @@
 #pragma once
 
-#include "sl/core/Input.h"
-
 #include <gmock/gmock.h>
+
+#include "sl/core/Input.h"
 
 using namespace sl;
 

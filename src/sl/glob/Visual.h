@@ -9,4 +9,4 @@ struct Visual {
     bool enableBloom = false;
 };
 
-}
+}  // namespace sl::glob

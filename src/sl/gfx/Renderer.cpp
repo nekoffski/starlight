@@ -2,14 +2,13 @@
 
 #include <kc/core/Log.h>
 
+#include "sl/event/EventManager.h"
+
 namespace sl::gfx {
 
 Renderer::Renderer(gfx::RenderApi* renderApi, const ViewFrustum::Viewport& viewport)
-    : m_renderApi(renderApi)
-    , m_viewport(viewport) {
-
-    LOG_INFO("initializing");
-    setViewport(m_viewport);
+    : EventListener("Renderer"), m_renderApi(renderApi), m_viewport(viewport) {
+    sl::event::EventManager::get().registerListener(this);
 
     m_renderApi->enable(STARL_DEPTH_TEST);
     // m_renderApi->enable(STARL_BLEND);
@@ -25,4 +24,4 @@ void Renderer::renderVertexArray(gfx::VertexArray& vertexArray) {
     else
         m_renderApi->drawArrays(STARL_TRIANGLES, 0, vertexArray.getVerticesCount());
 }
-}
+}  // namespace sl::gfx

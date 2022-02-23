@@ -9,7 +9,7 @@
 namespace sl::gfx {
 
 class FrameBuffer {
-public:
+   public:
     struct Factory {
         virtual std::shared_ptr<FrameBuffer> create() = 0;
         virtual ~Factory() = default;
@@ -27,4 +27,4 @@ public:
     virtual void bind() = 0;
     virtual void unbind() = 0;
 };
-}
+}  // namespace sl::gfx

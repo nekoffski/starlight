@@ -7,8 +7,8 @@ namespace sl::gui::components {
 using namespace scene::components;
 
 void DirectionalLightComponentGui::renderComponentGuiImpl(DirectionalLightComponent& component,
-    asset::AssetManager& assetManager, ecs::Entity& entity) {
-
+                                                          asset::AssetManager& assetManager,
+                                                          ecs::Entity& entity) {
     with_ID(component.ownerEntityId.c_str()) {
         if (beginComponentTreeNode(ICON_FA_SUN "  Directional light", component)) {
             ImGui::Checkbox("Render direction vector", &component.renderDirection);
@@ -22,11 +22,11 @@ void DirectionalLightComponentGui::renderComponentGuiImpl(DirectionalLightCompon
             ImGui::ColorPicker3("##dlcColor", &component.color[0]);
 
             with_OpenedTreeNode("Shadow map") {
-                gui::showImage(*component.shadowMap, { 250, 250 }, { 0.0f, 1.0f }, { 1.0f, 0.0f });
+                gui::showImage(*component.shadowMap, {250, 250}, {0.0f, 1.0f}, {1.0f, 0.0f});
             }
 
             ImGui::TreePop();
         }
     }
 }
-}
+}  // namespace sl::gui::components

@@ -1,9 +1,9 @@
 #include "PrepareLightsStage.h"
 
-#include <kc/core/Profiler.h>
-#include "sl/rendering/utils/Misc.h"
-
 #include <kc/core/Log.h>
+#include <kc/core/Profiler.h>
+
+#include "sl/rendering/utils/Misc.h"
 
 using namespace sl::scene::components;
 
@@ -13,8 +13,8 @@ void PrepareLightsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, g
     PROFILE_FUNCTION();
 
     auto [rendererComponents, transforms, directionalLights, pointLights] =
-        scene.ecsRegistry.getComponentsViews<MeshRendererComponent,
-            TransformComponent, DirectionalLightComponent, PointLightComponent>();
+        scene.ecsRegistry.getComponentsViews<MeshRendererComponent, TransformComponent,
+                                             DirectionalLightComponent, PointLightComponent>();
 
     for (auto& rendererComponent : rendererComponents) {
         prepareDirectionalLights(directionalLights, *rendererComponent.shader);
@@ -22,7 +22,8 @@ void PrepareLightsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, g
     }
 }
 
-void PrepareLightsStage::prepareDirectionalLights(DirectionalLightComponent::View& lights, gfx::Shader& shader) {
+void PrepareLightsStage::prepareDirectionalLights(DirectionalLightComponent::View& lights,
+                                                  gfx::Shader& shader) {
     unsigned int lightIndex = 0u;
     for (const auto& directionalLight : lights)
         if (directionalLight.isActive)
@@ -31,7 +32,9 @@ void PrepareLightsStage::prepareDirectionalLights(DirectionalLightComponent::Vie
     shader.setUniform("directionalLightsCount", lightIndex);
 }
 
-void PrepareLightsStage::preparePointLights(PointLightComponent::View& lights, TransformComponent::View& transforms, gfx::Shader& shader) {
+void PrepareLightsStage::preparePointLights(PointLightComponent::View& lights,
+                                            TransformComponent::View& transforms,
+                                            gfx::Shader& shader) {
     unsigned int lightIndex = 0u;
     for (const auto& pointLight : lights)
         if (pointLight.isActive) {
@@ -42,7 +45,9 @@ void PrepareLightsStage::preparePointLights(PointLightComponent::View& lights, T
     shader.setUniform("pointLightsCount", lightIndex);
 }
 
-void PrepareLightsStage::setDirectionalLightProperties(gfx::Shader& shader, const DirectionalLightComponent& light, unsigned int index) {
+void PrepareLightsStage::setDirectionalLightProperties(gfx::Shader& shader,
+                                                       const DirectionalLightComponent& light,
+                                                       unsigned int index) {
     std::string strIndex = std::to_string(index);
     light.shadowMap->bind(index + 1);
 
@@ -51,7 +56,9 @@ void PrepareLightsStage::setDirectionalLightProperties(gfx::Shader& shader, cons
     shader.setUniform("directionalLights[" + strIndex + "].color", light.color);
 }
 
-void PrepareLightsStage::setPointLightProperties(gfx::Shader& shader, const PointLightComponent& light, const math::Mat4& transform, unsigned int index) {
+void PrepareLightsStage::setPointLightProperties(gfx::Shader& shader,
+                                                 const PointLightComponent& light,
+                                                 const math::Mat4& transform, unsigned int index) {
     std::string strIndex = std::to_string(index);
 
     light.omnidirectionalShadowMap->bind(3);
@@ -66,4 +73,4 @@ void PrepareLightsStage::setPointLightProperties(gfx::Shader& shader, const Poin
     shader.setUniform("pointLights[" + strIndex + "].attenuationC", light.attenuationC);
 }
 
-}
+}  // namespace sl::rendering::stages

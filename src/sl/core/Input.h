@@ -11,4 +11,4 @@ struct Input : Mouse, Keyboard {
     virtual void init(void*) = 0;
 };
 
-}
+}  // namespace sl::core

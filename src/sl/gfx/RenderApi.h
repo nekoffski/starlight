@@ -10,7 +10,7 @@
 namespace sl::gfx {
 
 class RenderApi {
-public:
+   public:
     virtual ~RenderApi() = default;
 
     virtual void init() = 0;
@@ -34,4 +34,4 @@ public:
 
     virtual glob::RendererInfo getRendererInfo() const = 0;
 };
-}
+}  // namespace sl::gfx

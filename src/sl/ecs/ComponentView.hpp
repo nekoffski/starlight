@@ -6,35 +6,21 @@ namespace sl::ecs {
 
 template <typename T>
 class ComponentView {
-public:
+   public:
     explicit ComponentView(ComponentContainer<T>& componentContainer)
-        : m_componentContainer(componentContainer)
-        , m_components(componentContainer.getAll()) {
-    }
+        : m_componentContainer(componentContainer), m_components(componentContainer.getAll()) {}
 
-    auto begin() {
-        return m_components.begin();
-    }
+    auto begin() { return m_components.begin(); }
 
-    auto end() {
-        return m_components.end();
-    }
+    auto end() { return m_components.end(); }
 
-    auto cbegin() const {
-        return m_components.cbegin();
-    }
+    auto cbegin() const { return m_components.cbegin(); }
 
-    auto cend() const {
-        return m_components.cend();
-    }
+    auto cend() const { return m_components.cend(); }
 
-    auto size() const {
-        return m_components.size();
-    }
+    auto size() const { return m_components.size(); }
 
-    T& operator[](int index) {
-        return m_components[index];
-    }
+    T& operator[](int index) { return m_components[index]; }
 
     T& getByEntityId(const std::string& entityId) {
         return m_componentContainer.getByEntityId(entityId);
@@ -42,11 +28,11 @@ public:
 
     bool doesEntityOwnComponent(const std::string& entityId) {
         return m_componentContainer.doesEntityOwnComponent(entityId) &&
-            m_componentContainer.getByEntityId(entityId).isActive;
+               m_componentContainer.getByEntityId(entityId).isActive;
     }
 
-private:
+   private:
     std::vector<T>& m_components;
     ComponentContainer<T>& m_componentContainer;
 };
-}
+}  // namespace sl::ecs

@@ -9,4 +9,4 @@ struct RenderPass {
     virtual void execute(gfx::Renderer& renderer, scene::Scene& scene) = 0;
 };
 
-}
+}  // namespace sl::rendering

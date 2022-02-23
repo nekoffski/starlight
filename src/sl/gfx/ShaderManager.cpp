@@ -3,11 +3,10 @@
 namespace sl::gfx {
 
 ShaderManager::ShaderManager(ShaderCompiler* shaderCompiler, Shader::Factory* shaderFactory)
-    : m_shaderCompiler(shaderCompiler)
-    , m_shaderFactory(shaderFactory) {
-}
+    : m_shaderCompiler(shaderCompiler), m_shaderFactory(shaderFactory) {}
 
-std::shared_ptr<Shader> ShaderManager::load(const std::string& vertex, const std::string& fragment, const std::string& geometry) {
+std::shared_ptr<Shader> ShaderManager::load(const std::string& vertex, const std::string& fragment,
+                                            const std::string& geometry) {
     auto shader = m_shaderFactory->create(vertex, fragment, geometry);
     m_shaderCompiler->compile(*shader);
 
@@ -18,8 +17,6 @@ std::shared_ptr<Shader> ShaderManager::load(const std::string& vertex, const std
     return shader;
 }
 
-void ShaderManager::recompileShader(Shader& shader) {
-    m_shaderCompiler->compile(shader);
-}
+void ShaderManager::recompileShader(Shader& shader) { m_shaderCompiler->compile(shader); }
 
-}
+}  // namespace sl::gfx

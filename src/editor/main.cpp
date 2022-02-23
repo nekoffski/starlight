@@ -1,5 +1,6 @@
 #include <kc/core/Log.h>
 
+#include "StarlightEditor.h"
 #include "sl/app/Engine.h"
 #include "sl/cfg/ConfigLoader.h"
 #include "sl/platform/Platform.hpp"
@@ -7,8 +8,6 @@
 #include "sl/platform/gl/OpenGl.h"
 #include "sl/platform/glfw/Glfw.h"
 #include "sl/platform/stb/StbImage.h"
-
-#include "StarlightEditor.h"
 
 int main(int argc, char** argv) {
     using namespace sl;
@@ -20,10 +19,10 @@ int main(int argc, char** argv) {
         kc::core::initLogging("Starlight");
 
         static const std::string configPath = "./starlight.json";
-        auto config = ConfigLoader {}.fromFile(configPath).load();
+        auto config = ConfigLoader{}.fromFile(configPath).load();
 
         LOG_DEBUG("Assembling platform module");
-        auto platform = Platform::Builder {}
+        auto platform = Platform::Builder{}
                             .setIO<glfw::Glfw>(config.window)
                             .setGPU<gl::OpenGl>()
                             .setImageFactory<stb::StbImageFactory>()
@@ -31,10 +30,7 @@ int main(int argc, char** argv) {
                             .build();
 
         LOG_DEBUG("Creating engine instance");
-        auto engine = Engine::Builder {}
-                          .setPlatform(platform.get())
-                          .setConfig(&config)
-                          .build();
+        auto engine = Engine::Builder{}.setPlatform(platform.get()).setConfig(&config).build();
 
         engine->initGlobalState();
 

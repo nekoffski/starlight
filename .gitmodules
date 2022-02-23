@@ -15,3 +15,4 @@
 [submodule "3rdparty/imgui_sugar"]
 	path = 3rdparty/imgui_sugar
 	url = https://github.com/mnesarco/imgui_sugar.git
+	branch = main

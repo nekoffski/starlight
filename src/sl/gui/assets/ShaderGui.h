@@ -16,23 +16,23 @@ class ShaderGui {
     };
 
     class Provider : public AssetGuiProvider {
-    public:
+       public:
         explicit Provider(std::shared_ptr<gfx::Shader> shader, Params& params);
 
         void render();
 
-    private:
+       private:
         void processRecompileOnSaveRequest(std::shared_ptr<gfx::Shader>& shader);
 
         std::weak_ptr<gfx::Shader> m_shader;
         Params& m_params;
     };
 
-public:
+   public:
     std::unique_ptr<AssetGuiProvider> createGuiProvider(std::shared_ptr<gfx::Shader> shader);
 
-private:
+   private:
     std::unordered_map<std::string, Params> m_params;
 };
 
-}
+}  // namespace sl::gui::assets

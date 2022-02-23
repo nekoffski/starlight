@@ -13,4 +13,4 @@ struct Model : public core::GameObject {
     std::string path;
     std::string directory;
 };
-}
+}  // namespace sl::geom

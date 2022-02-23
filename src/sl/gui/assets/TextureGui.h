@@ -1,8 +1,8 @@
 #pragma once
 
-#include <unordered_map>
-
 #include <imgui/imgui.h>
+
+#include <unordered_map>
 
 #include "AssetGuiProvider.h"
 #include "sl/core/GameObject.h"
@@ -13,10 +13,8 @@ namespace sl::gui::assets {
 
 class TextureGui {
     class Provider : public AssetGuiProvider {
-    public:
-        explicit Provider(gfx::Texture* texture)
-            : m_texture(texture) {
-        }
+       public:
+        explicit Provider(gfx::Texture* texture) : m_texture(texture) {}
 
         void render() {
             if (m_texture != nullptr) {
@@ -30,18 +28,18 @@ class TextureGui {
                 ImGui::Separator();
 
                 const auto width = ImGui::GetWindowWidth();
-                gui::showImage(*m_texture, { width, width });
+                gui::showImage(*m_texture, {width, width});
             }
         }
 
-    private:
+       private:
         gfx::Texture* m_texture;
     };
 
-public:
+   public:
     std::unique_ptr<AssetGuiProvider> createGuiProvider(gfx::Texture* texture) {
         return std::make_unique<Provider>(texture);
     }
 };
 
-}
+}  // namespace sl::gui::assets

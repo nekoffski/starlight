@@ -3,13 +3,9 @@
 #include "sl/async/AsyncManager.hpp"
 
 struct Task : sl::async::AsyncTask {
-    void executeAsync() override {
-        std::cout << "Async call: " << ++x << '\n';
-    }
+    void executeAsync() override { std::cout << "Async call: " << ++x << '\n'; }
 
-    void finalize() override {
-        std::cout << "Finalize: " << ++x << '\n';
-    }
+    void finalize() override { std::cout << "Finalize: " << ++x << '\n'; }
 
     int x = 5;
 };

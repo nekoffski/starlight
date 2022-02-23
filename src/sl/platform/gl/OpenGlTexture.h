@@ -5,7 +5,7 @@
 namespace sl::platform::gl {
 
 class OpenGlTexture : public sl::gfx::Texture {
-public:
+   public:
     explicit OpenGlTexture(sl::gfx::Image&);
     explicit OpenGlTexture(unsigned int, unsigned int, int, int);
 
@@ -18,7 +18,7 @@ public:
     unsigned int getHeight() const override;
     unsigned int getBuffer() const override;
 
-private:
+   private:
     unsigned int m_textureId;
     unsigned int m_w;
     unsigned int m_h;
@@ -31,8 +31,9 @@ struct OpenGlTextureFactory : sl::gfx::Texture::Factory {
         return std::make_unique<OpenGlTexture>(image);
     }
 
-    std::unique_ptr<sl::gfx::Texture> create(unsigned int w, unsigned int h, int internalFormat, int format) override {
+    std::unique_ptr<sl::gfx::Texture> create(unsigned int w, unsigned int h, int internalFormat,
+                                             int format) override {
         return std::make_unique<OpenGlTexture>(w, h, internalFormat, format);
     }
 };
-}
+}  // namespace sl::platform::gl

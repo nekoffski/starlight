@@ -8,13 +8,12 @@ using namespace sl::core;
 namespace editor::gui {
 
 EditorGui::EditorGui(std::shared_ptr<SharedState> sharedState)
-    : m_leftPanel(sharedState)
-    , m_bottomPanel(sharedState)
-    , m_rightPanel(sharedState)
-    , m_toolBar(sharedState)
-    , sharedState(sharedState)
-    , m_fileBrowser("editorGuiFileBrowser") {
-}
+    : m_leftPanel(sharedState),
+      m_bottomPanel(sharedState),
+      m_rightPanel(sharedState),
+      m_toolBar(sharedState),
+      sharedState(sharedState),
+      m_fileBrowser("editorGuiFileBrowser") {}
 
 void EditorGui::renderEditorGui() {
     using namespace event;
@@ -25,7 +24,6 @@ void EditorGui::renderEditorGui() {
 
     with_MainMenuBar {
         with_Menu(ICON_FA_BARS " File") {
-
             if (ImGui::MenuItem("Export scene")) {
                 callback = [](const std::string& path) -> void {
                     EventManager::get().emit<SerializeSceneEvent>(path).toAll();
@@ -38,11 +36,9 @@ void EditorGui::renderEditorGui() {
                 };
             }
 
-            if (ImGui::MenuItem("Close scene"))
-                EventManager::get().emit<CloseSceneEvent>().toAll();
+            if (ImGui::MenuItem("Close scene")) EventManager::get().emit<CloseSceneEvent>().toAll();
 
-            if (ImGui::MenuItem("Quit"))
-                EventManager::get().emit<QuitEvent>().toAll();
+            if (ImGui::MenuItem("Quit")) EventManager::get().emit<QuitEvent>().toAll();
         }
     }
 
@@ -60,4 +56,4 @@ void EditorGui::renderEditorGui() {
 
     sl::gui::popTextColor();
 }
-}
+}  // namespace editor::gui

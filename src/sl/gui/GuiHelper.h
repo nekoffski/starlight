@@ -1,11 +1,10 @@
 #pragma once
 
-#include <string>
-#include <unordered_map>
-
 #include <imgui/imgui.h>
 
 #include <kc/core/Singleton.hpp>
+#include <string>
+#include <unordered_map>
 
 namespace sl::gui {
 
@@ -18,24 +17,24 @@ class GuiHelper : public kc::core::Singleton<GuiHelper> {
     };
 
     struct FontWrapper {
-    public:
+       public:
         explicit FontWrapper(const int size, MergedFontsRanges& parentMergedFontsRanges);
 
-        FontWrapper&& mergeWith(const std::string& path,
-            const unsigned short minCode, const unsigned short maxCode) &&;
+        FontWrapper&& mergeWith(const std::string& path, const unsigned short minCode,
+                                const unsigned short maxCode) &&;
 
-    private:
+       private:
         const int m_size;
         MergedFontsRanges& m_parentMergedFontsRanges;
     };
 
-public:
+   public:
     FontWrapper addFont(const std::string& name, const std::string& path, const int size);
 
     ImFont* getFontHandle(const std::string& name) const;
 
-private:
+   private:
     std::unordered_map<std::string, Font> m_fonts;
 };
 
-}
+}  // namespace sl::gui

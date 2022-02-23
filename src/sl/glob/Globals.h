@@ -1,12 +1,8 @@
 #pragma once
 
+#include <kc/core/Singleton.hpp>
 #include <memory>
 #include <unordered_map>
-
-#include <kc/core/Singleton.hpp>
-
-#include "sl/cfg/Config.h"
-#include "sl/core/Macros.h"
 
 #include "Flags.h"
 #include "Geometry.h"
@@ -14,6 +10,8 @@
 #include "Shaders.h"
 #include "Visual.h"
 #include "World.h"
+#include "sl/cfg/Config.h"
+#include "sl/core/Macros.h"
 
 namespace sl::glob {
 
@@ -31,4 +29,4 @@ struct Globals : kc::core::Singleton<Globals> {
     std::unique_ptr<Geometry> geom;
 };
 
-}
+}  // namespace sl::glob

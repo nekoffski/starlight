@@ -7,9 +7,7 @@
 
 namespace sl::platform::gl {
 
-OpenGlTexture::OpenGlTexture(sl::gfx::Image& image)
-    : m_textureId(0u) {
-
+OpenGlTexture::OpenGlTexture(sl::gfx::Image& image) : m_textureId(0u) {
     glGenTextures(1, &m_textureId);
     glBindTexture(GL_TEXTURE_2D, m_textureId);
 
@@ -20,11 +18,10 @@ OpenGlTexture::OpenGlTexture(sl::gfx::Image& image)
 
     const auto& format = channelsToFormat.find(image.getChannelsCount());
 
-    if (format == channelsToFormat.end())
-        throw core::TextureError {};
+    if (format == channelsToFormat.end()) throw core::TextureError{};
 
     glTexImage2D(GL_TEXTURE_2D, 0, format->second, s.width, s.height, 0, format->second,
-        GL_UNSIGNED_BYTE, image.getBuffer());
+                 GL_UNSIGNED_BYTE, image.getBuffer());
     glGenerateMipmap(GL_TEXTURE_2D);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -35,9 +32,7 @@ OpenGlTexture::OpenGlTexture(sl::gfx::Image& image)
 }
 
 OpenGlTexture::OpenGlTexture(unsigned int w, unsigned int h, int internalFormat, int format)
-    : m_w(w)
-    , m_h(h) {
-
+    : m_w(w), m_h(h) {
     // TODO: virtual getters in Texture instead
 
     this->internalFormat = internalFormat;
@@ -55,8 +50,7 @@ OpenGlTexture::OpenGlTexture(unsigned int w, unsigned int h, int internalFormat,
 }
 
 OpenGlTexture::~OpenGlTexture() {
-    if (m_textureId)
-        glDeleteTextures(1, &m_textureId);
+    if (m_textureId) glDeleteTextures(1, &m_textureId);
 }
 
 void OpenGlTexture::bind(unsigned int index) {
@@ -71,15 +65,9 @@ void OpenGlTexture::unbind() {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-unsigned int OpenGlTexture::getWidth() const {
-    return m_w;
-}
+unsigned int OpenGlTexture::getWidth() const { return m_w; }
 
-unsigned int OpenGlTexture::getHeight() const {
-    return m_h;
-}
+unsigned int OpenGlTexture::getHeight() const { return m_h; }
 
-unsigned int OpenGlTexture::getBuffer() const {
-    return m_textureId;
-}
-}
+unsigned int OpenGlTexture::getBuffer() const { return m_textureId; }
+}  // namespace sl::platform::gl

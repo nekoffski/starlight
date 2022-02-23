@@ -10,4 +10,4 @@ void shutdownGui();
 void beginGui();
 void endGui();
 
-}
+}  // namespace sl::gui

@@ -4,23 +4,23 @@
 
 namespace sl::gfx {
 
-Shader::RecompileOnUpdate::RecompileOnUpdate(std::shared_ptr<gfx::Shader> shader, const kc::core::FileSystem& fileSystem)
-    : m_shader(shader)
-    , m_fileSystem(fileSystem)
-    , m_vertexShaderPath(shader->getVertexShaderPath())
-    , m_fragmentShaderPath(shader->getFragmentShaderPath())
-    , m_previousFragmentWrite(m_fileSystem.getLastFileModificationTime(m_fragmentShaderPath))
-    , m_previousVertexWrite(m_fileSystem.getLastFileModificationTime(m_vertexShaderPath))
-    , m_wasCompiledCorrectly(true) {
-}
+Shader::RecompileOnUpdate::RecompileOnUpdate(std::shared_ptr<gfx::Shader> shader,
+                                             const kc::core::FileSystem& fileSystem)
+    : m_shader(shader),
+      m_fileSystem(fileSystem),
+      m_vertexShaderPath(shader->getVertexShaderPath()),
+      m_fragmentShaderPath(shader->getFragmentShaderPath()),
+      m_previousFragmentWrite(m_fileSystem.getLastFileModificationTime(m_fragmentShaderPath)),
+      m_previousVertexWrite(m_fileSystem.getLastFileModificationTime(m_vertexShaderPath)),
+      m_wasCompiledCorrectly(true) {}
 
 bool Shader::RecompileOnUpdate::shouldInvoke() {
     if (auto shader = m_shader.lock(); shader) {
         auto newVertexWrite = m_fileSystem.getLastFileModificationTime(m_vertexShaderPath);
         auto newFragmentWrite = m_fileSystem.getLastFileModificationTime(m_fragmentShaderPath);
 
-        auto shouldRecompile = m_previousVertexWrite != newVertexWrite ||
-            m_previousFragmentWrite != newFragmentWrite;
+        auto shouldRecompile =
+            m_previousVertexWrite != newVertexWrite || m_previousFragmentWrite != newFragmentWrite;
 
         m_previousVertexWrite = newVertexWrite;
         m_previousFragmentWrite = newFragmentWrite;
@@ -47,8 +47,6 @@ void Shader::RecompileOnUpdate::invoke() {
     }
 }
 
-std::string Shader::RecompileOnUpdate::getName() const {
-    return "RecompileShaderOnUpdate";
-}
+std::string Shader::RecompileOnUpdate::getName() const { return "RecompileShaderOnUpdate"; }
 
-}
+}  // namespace sl::gfx

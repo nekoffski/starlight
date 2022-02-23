@@ -10,24 +10,21 @@
 namespace sl::gui {
 
 class EntityGui {
-public:
+   public:
     void renderEntityGui(ecs::Entity& entity, asset::AssetManager& assetManager) {
         std::vector<std::type_index> indexesToRemove;
         for (const auto& index : entity.getComponentsIndexes()) {
             auto& component = entity.getComponent(index);
 
-            m_componentsGui.renderComponentGui(
-                index, component, assetManager, entity);
+            m_componentsGui.renderComponentGui(index, component, assetManager, entity);
 
-            if (component.shouldBeRemoved)
-                indexesToRemove.push_back(index);
+            if (component.shouldBeRemoved) indexesToRemove.push_back(index);
         }
 
-        for (const auto& index : indexesToRemove)
-            entity.removeComponent(index);
+        for (const auto& index : indexesToRemove) entity.removeComponent(index);
     }
 
-private:
+   private:
     ComponentsGui m_componentsGui;
 };
-}
+}  // namespace sl::gui

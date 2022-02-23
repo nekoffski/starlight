@@ -7,12 +7,12 @@
 namespace sl::physx {
 
 class PhysicsEngine {
-
-public:
+   public:
     void processRigidBodies(ecs::ComponentView<scene::components::RigidBodyComponent> rigidBodies,
-        ecs::ComponentView<scene::components::TransformComponent> transforms, float deltaTime);
+                            ecs::ComponentView<scene::components::TransformComponent> transforms,
+                            float deltaTime);
 
-private:
+   private:
     CollisionProcessor m_collisionProcessor;
 };
-}
+}  // namespace sl::physx

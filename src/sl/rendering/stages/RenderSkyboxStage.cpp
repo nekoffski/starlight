@@ -1,6 +1,7 @@
 #include "RenderSkyboxStage.h"
 
 #include <kc/core/Profiler.h>
+
 #include "sl/geom/CubemapVertices.h"
 #include "sl/gfx/BufferManager.h"
 
@@ -19,8 +20,7 @@ RenderSkyboxStage::RenderSkyboxStage() {
 void RenderSkyboxStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
     PROFILE_FUNCTION();
 
-    if (not scene.skybox.has_value())
-        return;
+    if (not scene.skybox.has_value()) return;
 
     auto& skybox = scene.skybox;
 
@@ -45,4 +45,4 @@ void RenderSkyboxStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gf
     skybox->shader->disable();
 }
 
-}
+}  // namespace sl::rendering::stages

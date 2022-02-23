@@ -11,11 +11,10 @@ struct PeriodicTaskTests : Test {
     async::PeriodicTask* periodicTask = &periodicTaskMock;
 };
 
-TEST_F(PeriodicTaskTests, givenPeriodicTask_shouldBeActive) {
-    EXPECT_TRUE(periodicTask->isActive);
-}
+TEST_F(PeriodicTaskTests, givenPeriodicTask_shouldBeActive) { EXPECT_TRUE(periodicTask->isActive); }
 
-TEST_F(PeriodicTaskTests, givenPeriodicTaskHandle_whenCallingDisable_shouldChangeStateOfPeriodicTask) {
+TEST_F(PeriodicTaskTests,
+       givenPeriodicTaskHandle_whenCallingDisable_shouldChangeStateOfPeriodicTask) {
     async::PeriodicTask::Handle taskHandle = periodicTask;
 
     ASSERT_TRUE(periodicTask->isActive);

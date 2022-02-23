@@ -11,4 +11,4 @@ struct RendererInfo {
     std::string shadingLanguageVersion;
 };
 
-}
+}  // namespace sl::glob

@@ -1,8 +1,7 @@
-#include "sl/app/Engine.h"
-
 #include <gtest/gtest.h>
 
 #include "mocks/FakePlatform.hpp"
+#include "sl/app/Engine.h"
 
 using namespace sl;
 using namespace sl::app;
@@ -11,13 +10,13 @@ using namespace testing;
 
 struct EngineTests : Test {
     std::unique_ptr<platform::Platform> fakePlatform = createFakePlatform();
-    cfg::Config config {};
+    cfg::Config config{};
 };
 
 TEST_F(EngineTests, givenEngineBuilderWithoutFieldsSet_whenCreating_shouldThrow) {
-    EXPECT_THROW(Engine::Builder {}.build(), std::runtime_error);
-    EXPECT_THROW(Engine::Builder {}.setPlatform(fakePlatform.get()).build(), std::runtime_error);
-    EXPECT_THROW(Engine::Builder {}.setConfig(&config).build(), std::runtime_error);
+    EXPECT_THROW(Engine::Builder{}.build(), std::runtime_error);
+    EXPECT_THROW(Engine::Builder{}.setPlatform(fakePlatform.get()).build(), std::runtime_error);
+    EXPECT_THROW(Engine::Builder{}.setConfig(&config).build(), std::runtime_error);
 }
 
 TEST_F(EngineTests, givenEngineBuilderWithFieldsSet_whenCreating_shouldNotThrowAndInitSystems) {
@@ -30,7 +29,6 @@ TEST_F(EngineTests, givenEngineBuilderWithFieldsSet_whenCreating_shouldNotThrowA
 
     EXPECT_CALL(*FakeGPU::renderApiMock, init()).Times(1);
 
-    EXPECT_NO_THROW(
-        EXPECT_NE(
-            Engine::Builder {}.setConfig(&config).setPlatform(fakePlatform.get()).build(), nullptr));
+    EXPECT_NO_THROW(EXPECT_NE(
+        Engine::Builder{}.setConfig(&config).setPlatform(fakePlatform.get()).build(), nullptr));
 }

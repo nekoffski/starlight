@@ -11,12 +11,11 @@
 namespace sl::gui {
 
 FileBrowser::FileBrowser(const std::string& id, std::unique_ptr<kc::core::FileSystem> fileSystem)
-    : m_id(id)
-    , m_fileSystem(std::move(fileSystem)) {
-}
+    : m_id(id), m_fileSystem(std::move(fileSystem)) {}
 
 void FileBrowser::open(Callback&& callback) {
-    static const std::string rootPath = "/home/nek0/kapik/projects/starlight"; // TODO: get current directory
+    static const std::string rootPath =
+        "/home/nek0/kapik/projects/starlight";  // TODO: get current directory
     m_currentSelection = rootPath;
 
     m_history.clear();
@@ -39,8 +38,7 @@ void FileBrowser::show() {
         constexpr float mainContentRatio = 0.6f;
         const float mainContentHeight = 450.0f * mainContentRatio;
 
-        with_Child("##fileBrowserChild", ImVec2(0.0f, mainContentHeight))
-            handleFileExplorer();
+        with_Child("##fileBrowserChild", ImVec2(0.0f, mainContentHeight)) handleFileExplorer();
 
         ImGui::Separator();
         handleBottomPanel();
@@ -72,13 +70,15 @@ void FileBrowser::handleHistory() {
 }
 
 void FileBrowser::handleFileExplorer() {
-    auto root = m_fileSystem->isDirectory(m_currentSelection) ? m_currentSelection : m_history.back();
+    auto root =
+        m_fileSystem->isDirectory(m_currentSelection) ? m_currentSelection : m_history.back();
 
     for (auto& entry : m_fileSystem->listDirectory(root)) {
         auto entryName = extractNameFromPath(entry);
         bool isDirectory = m_fileSystem->isDirectory(entry);
 
-        auto entryRecord = fmt::format("  {} {}", isDirectory ? ICON_FA_FOLDER_OPEN : ICON_FA_FILE, entryName);
+        auto entryRecord =
+            fmt::format("  {} {}", isDirectory ? ICON_FA_FOLDER_OPEN : ICON_FA_FILE, entryName);
 
         if (entry == m_currentSelection) {
             gui::pushTextColor(gui::selectedEntryColor);
@@ -91,24 +91,21 @@ void FileBrowser::handleFileExplorer() {
         if (ImGui::IsItemClicked()) {
             m_currentSelection = entry;
 
-            if (isDirectory)
-                m_history.push_back(entry);
+            if (isDirectory) m_history.push_back(entry);
         }
     }
 }
 
 void FileBrowser::handleBottomPanel() {
     if (ImGui::Button(ICON_FA_CHECK_CIRCLE "  Ok")) {
-        if (m_callback.has_value())
-            std::invoke(m_callback.value(), m_currentSelection);
+        if (m_callback.has_value()) std::invoke(m_callback.value(), m_currentSelection);
 
         ImGui::CloseCurrentPopup();
     }
 
     ImGui::SameLine();
 
-    if (ImGui::Button(ICON_FA_TIMES_CIRCLE "  Cancel"))
-        ImGui::CloseCurrentPopup();
+    if (ImGui::Button(ICON_FA_TIMES_CIRCLE "  Cancel")) ImGui::CloseCurrentPopup();
 
     ImGui::SameLine();
     ImGui::Text("Full path: ");
@@ -116,8 +113,7 @@ void FileBrowser::handleBottomPanel() {
     ImGui::PushItemWidth(400);
     gui::textInput("##fileSelection", m_currentSelection);
 
-    if (m_history.empty())
-        m_history.push_back(m_currentSelection);
+    if (m_history.empty()) m_history.push_back(m_currentSelection);
 
     ImGui::PopItemWidth();
 }
@@ -128,4 +124,4 @@ std::string FileBrowser::extractNameFromPath(const std::string& path) {
     return path.substr(fileNamePosition + 1);
 }
 
-}
+}  // namespace sl::gui

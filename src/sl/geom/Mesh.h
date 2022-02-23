@@ -6,21 +6,21 @@
 
 #include "Vertex.h"
 #include "sl/core/GameObject.h"
+#include "sl/gfx/BufferManager.h"
 #include "sl/gfx/Texture.h"
 #include "sl/gfx/VertexArray.h"
-
-#include "sl/gfx/BufferManager.h"
 
 namespace sl::geom {
 
 struct Mesh : core::GameObject {
     void buildVertexArray() {
-        if (vertexArray != nullptr)
-            vertexArray->unbind();
+        if (vertexArray != nullptr) vertexArray->unbind();
 
         auto vao = gfx::BufferManager::get().createVertexArray();
-        auto vbo = gfx::BufferManager::get().createVertexBuffer(&vertices[0], vertices.size() * sizeof(Vertex), vertices.size());
-        auto ebo = gfx::BufferManager::get().createElementBuffer(&indices[0], indices.size() * sizeof(unsigned), indices.size());
+        auto vbo = gfx::BufferManager::get().createVertexBuffer(
+            &vertices[0], vertices.size() * sizeof(Vertex), vertices.size());
+        auto ebo = gfx::BufferManager::get().createElementBuffer(
+            &indices[0], indices.size() * sizeof(unsigned), indices.size());
 
         // vertices
         vbo->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
@@ -48,4 +48,4 @@ struct Mesh : core::GameObject {
     std::optional<std::string> providedBy;
 };
 
-} // namespace
+}  // namespace sl::geom

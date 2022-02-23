@@ -5,10 +5,9 @@ namespace sl::gui::components {
 using namespace scene::components;
 
 void PointLightComponentGui::renderComponentGuiImpl(PointLightComponent& component,
-    asset::AssetManager& assetManager, ecs::Entity& entity) {
-
+                                                    asset::AssetManager& assetManager,
+                                                    ecs::Entity& entity) {
     with_ID(component.ownerEntityId.c_str()) {
-
         if (beginComponentTreeNode(ICON_FA_LIGHTBULB "  Point light", component)) {
             ImGui::Text("Position");
             ImGui::DragFloat3("##plcPositon", &component.position[0], 0.1f);
@@ -26,4 +25,4 @@ void PointLightComponentGui::renderComponentGuiImpl(PointLightComponent& compone
     }
 }
 
-}
+}  // namespace sl::gui::components

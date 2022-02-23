@@ -6,7 +6,7 @@
 namespace sl::platform::gl {
 
 class OpenGlFrameBuffer : public sl::gfx::FrameBuffer {
-public:
+   public:
     explicit OpenGlFrameBuffer();
     ~OpenGlFrameBuffer() override;
 
@@ -20,7 +20,7 @@ public:
 
     void specifyColorBuffers(const std::vector<unsigned int>&) override;
 
-private:
+   private:
     unsigned int m_bufferId;
 };
 
@@ -29,4 +29,4 @@ struct OpenGlFrameBufferFactory : sl::gfx::FrameBuffer::Factory {
         return std::make_shared<OpenGlFrameBuffer>();
     }
 };
-}
+}  // namespace sl::platform::gl

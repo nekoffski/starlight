@@ -5,9 +5,9 @@
 namespace sl::gfx {
 
 class ShaderCompiler {
-public:
+   public:
     virtual ~ShaderCompiler() = default;
 
     virtual void compile(Shader&) = 0;
 };
-}
+}  // namespace sl::gfx

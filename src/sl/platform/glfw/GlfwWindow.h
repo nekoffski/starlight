@@ -7,7 +7,7 @@
 namespace sl::platform::glfw {
 
 class GlfwWindow : public core::Window {
-public:
+   public:
     using core::Window::Window;
 
     ~GlfwWindow() override;
@@ -31,8 +31,8 @@ public:
 
     math::Size2D getSize() const override;
 
-private:
+   private:
     GLFWwindow* m_windowHandle = nullptr;
 };
 
-}
+}  // namespace sl::platform::glfw

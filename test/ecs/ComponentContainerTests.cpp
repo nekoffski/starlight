@@ -1,9 +1,8 @@
-#include "sl/ecs/ComponentContainer.hpp"
-
 #include <gtest/gtest.h>
 
 #include "mocks/TestComponent.h"
 #include "sl/ecs/Component.h"
+#include "sl/ecs/ComponentContainer.hpp"
 
 using namespace testing;
 using namespace sl::ecs;
@@ -15,26 +14,31 @@ struct ComponentContainerTests : public Test {
     const std::string id = "abcdefgh";
 };
 
-TEST_F(ComponentContainerTests, givenContainerWithDefaultCtor_whenAccessingCapacity_shouldReturnDefault) {
-    EXPECT_EQ(ComponentContainer<TestComponent> {}.capacity(), ComponentContainer<TestComponent>::defaultCapacity);
+TEST_F(ComponentContainerTests,
+       givenContainerWithDefaultCtor_whenAccessingCapacity_shouldReturnDefault) {
+    EXPECT_EQ(ComponentContainer<TestComponent>{}.capacity(),
+              ComponentContainer<TestComponent>::defaultCapacity);
 }
 
-TEST_F(ComponentContainerTests, givenContainerWithGivenCapacity_whenAccessingCapacity_shouldReturnCorrectValue) {
+TEST_F(ComponentContainerTests,
+       givenContainerWithGivenCapacity_whenAccessingCapacity_shouldReturnCorrectValue) {
     constexpr int capacity = 123556;
-    EXPECT_EQ(ComponentContainer<TestComponent> { capacity }.capacity(), capacity);
+    EXPECT_EQ(ComponentContainer<TestComponent>{capacity}.capacity(), capacity);
 }
 
 TEST_F(ComponentContainerTests, givenEmptyContainer_whenAccessingSize_shouldReturnZero) {
     EXPECT_EQ(componentContainer.size(), 0);
 }
 
-TEST_F(ComponentContainerTests, givenContainerWithAddedComponent_whenAccessingSize_shouldReturnOne) {
+TEST_F(ComponentContainerTests,
+       givenContainerWithAddedComponent_whenAccessingSize_shouldReturnOne) {
     componentContainer.add(id, 1, 5.0f);
 
     EXPECT_EQ(componentContainer.size(), 1);
 }
 
-TEST_F(ComponentContainerTests, givenContainerWithAddedComponent_whenAccessingAllComponents_shouldReturnCorrectComponent) {
+TEST_F(ComponentContainerTests,
+       givenContainerWithAddedComponent_whenAccessingAllComponents_shouldReturnCorrectComponent) {
     constexpr int x = 1;
     constexpr float y = 5.0f;
 
@@ -49,7 +53,8 @@ TEST_F(ComponentContainerTests, givenContainerWithAddedComponent_whenAccessingAl
     EXPECT_EQ(y, component.y);
 }
 
-TEST_F(ComponentContainerTests, givenContainerWithAddedComponent_whenAccessingById_shouldReturnCorrectComponent) {
+TEST_F(ComponentContainerTests,
+       givenContainerWithAddedComponent_whenAccessingById_shouldReturnCorrectComponent) {
     constexpr int x = 1;
     constexpr float y = 5.0f;
 
@@ -73,7 +78,8 @@ TEST_F(ComponentContainerTests, givenContainer_whenAddingComponent_shouldReturnC
     EXPECT_EQ(y, component.y);
 }
 
-TEST_F(ComponentContainerTests, givenContainer_whenRemovingComponet_shouldRemoveComponentAndDoNotAffectOthers) {
+TEST_F(ComponentContainerTests,
+       givenContainer_whenRemovingComponet_shouldRemoveComponentAndDoNotAffectOthers) {
     auto id2 = id + "2";
 
     componentContainer.add(id, 1, 1.0f);
@@ -88,4 +94,4 @@ TEST_F(ComponentContainerTests, givenContainer_whenRemovingComponet_shouldRemove
     EXPECT_FALSE(componentContainer.doesEntityOwnComponent(id));
 }
 
-}
+}  // namespace

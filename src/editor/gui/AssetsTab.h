@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Widget.h"
-
 #include <exception>
 
+#include "Widget.h"
 #include "sl/asset/AssetManager.h"
 #include "sl/gui/AssetsGui.hpp"
 #include "sl/gui/ErrorDialog.h"
@@ -19,11 +18,11 @@ class AssetsTab : public Widget {
         std::array<std::string, 6> faces;
     };
 
-public:
+   public:
     explicit AssetsTab(std::shared_ptr<SharedState>);
     void render() override;
 
-private:
+   private:
     void handleCubemapLoader();
     void handleModelLoader();
     void handleTextureLoader();
@@ -40,4 +39,4 @@ private:
     sl::gui::AssetsGui m_assetsGui;
     AssetsArgs m_assetsArgs;
 };
-}
+}  // namespace editor::gui

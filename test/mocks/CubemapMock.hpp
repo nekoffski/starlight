@@ -1,8 +1,8 @@
 #pragma once
 
-#include "sl/gfx/Cubemap.h"
-
 #include <gmock/gmock.h>
+
+#include "sl/gfx/Cubemap.h"
 
 using namespace sl::gfx;
 

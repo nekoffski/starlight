@@ -1,21 +1,20 @@
 #pragma once
 
-#include <memory>
+#include <kc/core/Log.h>
 
 #include <kc/core/Singleton.hpp>
+#include <memory>
 
 #include "Keyboard.h"
-#include <kc/core/Log.h>
 #include "Macros.h"
 #include "Mouse.h"
-
 #include "sl/math/Vector.hpp"
 #include "sl/platform/glfw/GlfwKeys.h"
 
 namespace sl::core {
 
 class InputManager : public kc::core::Singleton<InputManager> {
-public:
+   public:
     void setMouse(Mouse* mouse);
     void setKeyboard(Keyboard* keyboard);
 
@@ -30,9 +29,9 @@ public:
 
     bool isKeyPressed(int keyCode) const;
 
-private:
+   private:
     Keyboard* m_keyboard;
     Mouse* m_mouse;
 };
 
-}
+}  // namespace sl::core

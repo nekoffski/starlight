@@ -3,16 +3,15 @@
 #include <memory>
 #include <vector>
 
+#include "AxisAlignedCollider.h"
 #include "BoundingBox.h"
 #include "fwd.h"
 #include "sl/geom/Mesh.h"
 
-#include "AxisAlignedCollider.h"
-
 namespace sl::physx {
 
 class AxisAlignedBoundingBox : public BoundingBox {
-public:
+   public:
     explicit AxisAlignedBoundingBox(const std::vector<std::shared_ptr<geom::Mesh>> meshes);
 
     gfx::VertexArray* getVertexArray() const override;
@@ -27,7 +26,7 @@ public:
     math::Vec3 min;
     math::Vec3 max;
 
-private:
+   private:
     void build(const std::vector<std::shared_ptr<geom::Mesh>> meshes);
 
     std::shared_ptr<gfx::VertexArray> m_vao;
@@ -39,4 +38,4 @@ private:
     math::Vec3 m_centerOfMass;
 };
 
-}
+}  // namespace sl::physx

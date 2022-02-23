@@ -5,7 +5,7 @@
 namespace sl::platform::glfw {
 
 class GlfwInput : public core::Input {
-public:
+   public:
     void init(void*) override;
 
     bool isKeyPressed(int) const override;
@@ -17,8 +17,8 @@ public:
     void setOnMousePositionChange(sl::core::Mouse::Callback) override;
     void setOnMouseScroll(sl::core::Mouse::Callback) override;
 
-private:
+   private:
     void* m_windowHandle;
 };
 
-}
+}  // namespace sl::platform::glfw

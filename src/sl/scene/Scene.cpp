@@ -12,9 +12,7 @@ ecs::Entity& Scene::addEntity(std::string name) {
     return ecsRegistry.createEntity(std::move(name));
 }
 
-int Scene::getEntitiesCount() const {
-    return ecsRegistry.getEntitiesCount();
-}
+int Scene::getEntitiesCount() const { return ecsRegistry.getEntitiesCount(); }
 
 void Scene::clear() {
     LOG_INFO("Cleaning up scene");
@@ -24,4 +22,4 @@ void Scene::clear() {
     vectors.clear();
 }
 
-}
+}  // namespace sl::scene

@@ -8,15 +8,15 @@ namespace sl::platform::gl {
 class OpenGlShader;
 
 class OpenGlShaderCompiler : public gfx::ShaderCompiler {
-public:
+   public:
     void compile(sl::gfx::Shader& shader) override;
 
-private:
+   private:
     void compile(OpenGlShader&);
 
     unsigned int compileShader(const std::string&, unsigned);
 
-    inline static constexpr int infoBufferSize { 1024 };
+    inline static constexpr int infoBufferSize{1024};
 };
 
-}
+}  // namespace sl::platform::gl

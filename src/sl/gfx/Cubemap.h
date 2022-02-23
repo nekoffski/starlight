@@ -19,7 +19,7 @@ class TextureManager;
 class Cubemap : public core::GameObject {
     friend class TextureManager;
 
-public:
+   public:
     struct Factory {
         virtual std::unique_ptr<Cubemap> create(const CubemapFaces&) = 0;
         virtual std::unique_ptr<Cubemap> create(unsigned int, unsigned int) = 0;
@@ -34,19 +34,17 @@ public:
 
     std::unique_ptr<Cubemap> clone();
 
-    CubemapArgs getFacesPaths() const {
-        return m_facesPaths;
-    }
+    CubemapArgs getFacesPaths() const { return m_facesPaths; }
 
     std::string name;
 
     unsigned int width;
     unsigned int height;
 
-protected:
+   protected:
     inline static unsigned int s_currentTextureId = 0u;
 
-private:
+   private:
     CubemapArgs m_facesPaths;
 };
-}
+}  // namespace sl::gfx

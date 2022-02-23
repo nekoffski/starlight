@@ -13,4 +13,4 @@ struct Skybox {
     sl::gfx::Cubemap* cubemap = nullptr;
 };
 
-}
+}  // namespace sl::scene

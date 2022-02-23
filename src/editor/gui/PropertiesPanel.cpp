@@ -1,7 +1,6 @@
 #include "PropertiesPanel.h"
 
 #include <imgui_sugar.hpp>
-
 #include <kc/core/Utils.hpp>
 
 #include "sl/event/Event.h"
@@ -20,19 +19,14 @@ namespace editor::gui {
 using namespace sl;
 
 PropertiesPanel::PropertiesPanel(std::shared_ptr<SharedState> sharedState)
-    : Widget(sharedState)
-    , m_assetTab(sharedState)
-    , m_systemTab(sharedState) {
-}
+    : Widget(sharedState), m_assetTab(sharedState), m_systemTab(sharedState) {}
 
 void PropertiesPanel::render() {
     auto& widgetProperties = m_sharedState->guiProperties.propertiesPanelProperties;
 
     sl::gui::beginPanel("Properties", widgetProperties.origin, widgetProperties.size);
     with_TabBar("lowerLeftTabBar") {
-
-        with_TabItem(ICON_FA_GLOBE_EUROPE "  Scene")
-            showSceneProperties();
+        with_TabItem(ICON_FA_GLOBE_EUROPE "  Scene") showSceneProperties();
 
         m_assetTab.render();
         m_systemTab.render();
@@ -72,25 +66,26 @@ void PropertiesPanel::showSceneProperties() {
     }
 
     with_OpenedTreeNode(ICON_FA_VIDEO "  Camera") {
-        if (auto scene = m_sharedState->activeScene; scene)
-            scene->camera->onGui();
+        if (auto scene = m_sharedState->activeScene; scene) scene->camera->onGui();
     }
 
     ImGui::Text("\n");
 
     with_OpenedTreeNode(ICON_FA_COGS "  Properties") {
         ImGui::Text("Gravity acceleration");
-        ImGui::SliderFloat2("##Gravity acceleration", &glob::Globals::get().world.gravity.y, 0.0f, 25.0f);
+        ImGui::SliderFloat2("##Gravity acceleration", &glob::Globals::get().world.gravity.y, 0.0f,
+                            25.0f);
     }
 
     ImGui::Text("\n");
 
     with_OpenedTreeNode(ICON_FA_EYE "  Visual") {
         ImGui::Text("Gamma corection");
-        ImGui::SliderFloat("##Gamma correction", &glob::Globals::get().visual.gammaCorrection, 0.0f, 5.0f);
+        ImGui::SliderFloat("##Gamma correction", &glob::Globals::get().visual.gammaCorrection, 0.0f,
+                           5.0f);
         ImGui::Text("Exposure");
         ImGui::SliderFloat("##Exposure", &glob::Globals::get().visual.exposure, 0.0f, 5.0f);
         ImGui::Checkbox("Enable bloom", &glob::Globals::get().visual.enableBloom);
     }
 }
-}
+}  // namespace editor::gui

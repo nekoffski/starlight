@@ -8,4 +8,4 @@ class Deserializer;
 class Serializer;
 class Engine;
 
-}
+}  // namespace sl::app

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "sl/gfx/RenderApi.h"
-
 #include <gmock/gmock.h>
+
+#include "sl/gfx/RenderApi.h"
 
 using namespace sl::gfx;
 

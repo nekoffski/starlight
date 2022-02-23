@@ -1,19 +1,18 @@
 #pragma once
 
-#include "sl/rendering/DefaultFrameBufferRenderPass.h"
-
 #include "sl/gfx/VertexArray.h"
 #include "sl/physx/Vector.h"
+#include "sl/rendering/DefaultFrameBufferRenderPass.h"
 
 namespace sl::rendering::stages {
 
 class RenderVectorsStage : public Stage {
-public:
+   public:
     explicit RenderVectorsStage();
 
     void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) override;
 
-private:
+   private:
     void renderVector(const physx::ColoredVector& coloredVector, gfx::Renderer& renderer);
 
     math::Mat4 calculateModelMatrix(const physx::Vector& vector);
@@ -25,4 +24,4 @@ private:
     std::shared_ptr<gfx::Shader> m_lineShader;
 };
 
-}
+}  // namespace sl::rendering::stages

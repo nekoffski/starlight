@@ -1,10 +1,10 @@
 #pragma once
 
-#include <memory>
-#include <string>
-
 #include <kc/core/FileSystem.h>
 #include <kc/json/Json.h>
+
+#include <memory>
+#include <string>
 
 #include "ComponentsDeserializer.h"
 #include "sl/asset/AssetManager.h"
@@ -13,12 +13,13 @@
 namespace sl::app {
 
 class Deserializer {
-public:
+   public:
     explicit Deserializer(asset::AssetManager& assetManager, scene::Scene* scene);
 
-    void deserialize(const std::string& path, const kc::core::FileSystem& fileSystem = kc::core::FileSystem {});
+    void deserialize(const std::string& path,
+                     const kc::core::FileSystem& fileSystem = kc::core::FileSystem{});
 
-private:
+   private:
     void deserializeAssets(kc::json::Node&);
     void deserializeScene(kc::json::Node&);
 
@@ -31,4 +32,4 @@ private:
 
     std::unordered_map<std::string, std::string> m_assetsIdRedirections;
 };
-}
+}  // namespace sl::app

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "sl/gfx/ShaderCompiler.h"
-
 #include <gmock/gmock.h>
+
+#include "sl/gfx/ShaderCompiler.h"
 
 using namespace sl::gfx;
 

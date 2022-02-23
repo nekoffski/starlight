@@ -32,4 +32,4 @@ void ConfigLoader::processFields(const kc::json::Node& root) {
     LOG_DEBUG("Config processed successfully");
 }
 
-}
+}  // namespace sl::cfg

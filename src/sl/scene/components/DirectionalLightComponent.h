@@ -15,18 +15,18 @@ static const auto lightProjectionMatrix = glm::ortho(-25.0f, 25.0f, -25.0f, 25.0
 struct DirectionalLightComponent : ecs::Component {
     using View = ecs::ComponentView<DirectionalLightComponent>;
 
-    explicit DirectionalLightComponent(math::Vec3 direction = math::Vec3 { 1.0f, 1.0f, 1.0f }, math::Vec3 color = core::color::white)
-        : direction(direction)
-        , color(color)
-        , shadowMap(gfx::TextureManager::get().createShadowMap())
-        , renderDirection(false) {
-
+    explicit DirectionalLightComponent(math::Vec3 direction = math::Vec3{1.0f, 1.0f, 1.0f},
+                                       math::Vec3 color = core::color::white)
+        : direction(direction),
+          color(color),
+          shadowMap(gfx::TextureManager::get().createShadowMap()),
+          renderDirection(false) {
         recalculateMatrices();
         name = "DirectionalLightComponent";
     }
 
     void recalculateMatrices() {
-        viewMatrix = math::lookAt(direction, math::Vec3 { 0.0f }, math::Vec3 { 0.0f, 1.0f, 0.0f });
+        viewMatrix = math::lookAt(direction, math::Vec3{0.0f}, math::Vec3{0.0f, 1.0f, 0.0f});
         spaceMatrix = lightProjectionMatrix * viewMatrix;
     }
 
@@ -40,4 +40,4 @@ struct DirectionalLightComponent : ecs::Component {
     bool renderDirection;
 };
 
-}
+}  // namespace sl::scene::components

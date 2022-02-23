@@ -15,23 +15,19 @@ using namespace sl::core;
 namespace sl::app {
 
 Deserializer::Deserializer(asset::AssetManager& assetManager, scene::Scene* scene)
-    : m_assetManager(assetManager)
-    , m_scene(scene)
-    , m_componentsDeserializer(m_assetsIdRedirections) {
-}
+    : m_assetManager(assetManager),
+      m_scene(scene),
+      m_componentsDeserializer(m_assetsIdRedirections) {}
 
 void Deserializer::deserialize(const std::string& path, const kc::core::FileSystem& fileSystem) {
-
-    if (not fileSystem.isFile(path))
-        throw DeserializationError { "Could not find file: " + path };
+    if (not fileSystem.isFile(path)) throw DeserializationError{"Could not find file: " + path};
 
     auto fileContent = fileSystem.readFile(path);
 
     try {
         auto json = kc::json::loadJson(fileContent);
 
-        if (not json.isMember("assets") || not json.isMember("scene"))
-            throw DeserializationError {};
+        if (not json.isMember("assets") || not json.isMember("scene")) throw DeserializationError{};
 
         m_scene->clear();
         m_assetManager.clear();
@@ -40,9 +36,9 @@ void Deserializer::deserialize(const std::string& path, const kc::core::FileSyst
         deserializeScene(json["scene"]);
 
     } catch (JsonError& e) {
-        throw DeserializationError { e.getDetails() };
+        throw DeserializationError{e.getDetails()};
     } catch (Json::Exception& e) {
-        throw DeserializationError { e.what() };
+        throw DeserializationError{e.what()};
     }
 }
 
@@ -53,8 +49,7 @@ void Deserializer::deserializeAssets(kc::json::Node& assetsJson) {
         auto& paths = cubemapDescription["paths"];
         gfx::CubemapArgs faces;
 
-        for (int i = 0; i < faces.size(); ++i)
-            faces[i] = paths[i].asString();
+        for (int i = 0; i < faces.size(); ++i) faces[i] = paths[i].asString();
 
         auto cubemap = gfx::TextureManager::get()
                            .createCubemap()
@@ -91,8 +86,7 @@ void Deserializer::deserializeAssets(kc::json::Node& assetsJson) {
 
     LOG_TRACE("Loading models");
     for (auto& modelToLoad : models["paths"])
-        m_assetManager.add(
-            geom::GeometryManager::get().loadModel(modelToLoad.asString())->meshes);
+        m_assetManager.add(geom::GeometryManager::get().loadModel(modelToLoad.asString())->meshes);
 
     LOG_TRACE("Updating meshes parents");
     for (auto& meshDescription : models["meshes"]) {
@@ -147,12 +141,10 @@ void Deserializer::deserializeScene(kc::json::Node& sceneJson) {
     if (sceneJson.isMember("skybox-id")) {
         auto skyboxOldId = sceneJson["skybox-id"].asString();
 
-        auto cubemap = m_assetManager.getCubemaps().getById(
-            m_assetsIdRedirections.at(skyboxOldId));
+        auto cubemap = m_assetManager.getCubemaps().getById(m_assetsIdRedirections.at(skyboxOldId));
 
-        m_scene->skybox = scene::Skybox {
-            glob::Globals::get().shaders->defaultCubemapShader, cubemap
-        };
+        m_scene->skybox =
+            scene::Skybox{glob::Globals::get().shaders->defaultCubemapShader, cubemap};
 
         LOG_INFO("Setting skybox: {}", m_scene->skybox->cubemap->getId());
     }
@@ -169,9 +161,9 @@ void Deserializer::deserializeScene(kc::json::Node& sceneJson) {
             auto componentName = componentDescription["name"].asString();
             LOG_INFO("Deserializing {}", componentName);
 
-            m_componentsDeserializer.deserializeComponent(componentName,
-                componentDescription, entity, m_assetManager);
+            m_componentsDeserializer.deserializeComponent(componentName, componentDescription,
+                                                          entity, m_assetManager);
         }
     }
 }
-}
+}  // namespace sl::app

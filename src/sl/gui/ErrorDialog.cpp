@@ -1,7 +1,8 @@
 #include "ErrorDialog.h"
 
-#include <imgui_sugar.hpp>
 #include <kc/core/Log.h>
+
+#include <imgui_sugar.hpp>
 
 namespace sl::gui {
 
@@ -12,10 +13,7 @@ static std::string generateId() {
     return idBase + std::to_string(intGenerator++);
 }
 
-ErrorDialog::ErrorDialog()
-    : m_showed(false)
-    , m_id(generateId()) {
-}
+ErrorDialog::ErrorDialog() : m_showed(false), m_id(generateId()) {}
 
 void ErrorDialog::setErrorMessage(const std::string& errorMessage) {
     m_errorMessage = errorMessage;
@@ -43,4 +41,4 @@ void ErrorDialog::show() {
     }
 }
 
-}
+}  // namespace sl::gui

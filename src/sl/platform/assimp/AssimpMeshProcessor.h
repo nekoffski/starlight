@@ -1,10 +1,10 @@
 #pragma once
 
-#include <memory>
-
-#include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+
+#include <assimp/Importer.hpp>
+#include <memory>
 
 #include "sl/geom/Mesh.h"
 
@@ -15,14 +15,16 @@ class Texture;
 namespace sl::platform::assimp {
 
 class AssimpMeshProcessor {
-public:
+   public:
     std::shared_ptr<geom::Mesh> processMesh(aiMesh*, const aiScene*, const std::string&);
 
-private:
+   private:
     void initVertexArray(std::shared_ptr<geom::Mesh>&);
     std::vector<std::shared_ptr<sl::gfx::Texture>> loadTextures(aiMaterial*, const std::string&);
     std::vector<geom::Vertex> loadVertices(aiMesh*);
     std::vector<unsigned> loadIndices(aiMesh*);
-    std::vector<std::shared_ptr<sl::gfx::Texture>> loadMaterialTextures(aiMaterial*, aiTextureType, const std::string&, const std::string&);
+    std::vector<std::shared_ptr<sl::gfx::Texture>> loadMaterialTextures(aiMaterial*, aiTextureType,
+                                                                        const std::string&,
+                                                                        const std::string&);
 };
-}
+}  // namespace sl::platform::assimp

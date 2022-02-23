@@ -1,10 +1,9 @@
-#include "sl/ecs/Registry.hpp"
-
 #include <gtest/gtest.h>
 
 #include "mocks/TestComponent.h"
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
+#include "sl/ecs/Registry.hpp"
 
 using namespace testing;
 using namespace sl::ecs;
@@ -17,9 +16,7 @@ struct EntityTests : Test {
     Entity& entity = reg.createEntity(name);
 };
 
-TEST_F(EntityTests, givenEntity_shouldBeActiveAsDefault) {
-    EXPECT_TRUE(entity.isActive);
-}
+TEST_F(EntityTests, givenEntity_shouldBeActiveAsDefault) { EXPECT_TRUE(entity.isActive); }
 
 TEST_F(EntityTests, givenEntity_whenGettingName_shouldReturnCorrectName) {
     EXPECT_EQ(entity.getName(), name);
@@ -50,4 +47,4 @@ TEST_F(EntityTests, givenEntity_whenAddingEntity_shouldAddEntity) {
 
     EXPECT_FALSE(entity.hasComponent<TestComponent>());
 }
-}
+}  // namespace

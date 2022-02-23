@@ -12,7 +12,7 @@ struct ModelComponent : ecs::Component {
     using View = ecs::ComponentView<ModelComponent>;
 
     explicit ModelComponent() {
-        instances.push_back(math::Vec3 { 0.0f, 0.0f, 0.0f });
+        instances.push_back(math::Vec3{0.0f, 0.0f, 0.0f});
 
         name = "ModelComponent";
     }
@@ -20,4 +20,4 @@ struct ModelComponent : ecs::Component {
     std::vector<std::shared_ptr<geom::Mesh>> meshes;
     std::vector<math::Vec3> instances;
 };
-}
+}  // namespace sl::scene::components

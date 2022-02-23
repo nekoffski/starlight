@@ -1,8 +1,8 @@
 #pragma once
 
-#include "sl/gfx/Texture.h"
-
 #include <gmock/gmock.h>
+
+#include "sl/gfx/Texture.h"
 
 using namespace sl::gfx;
 

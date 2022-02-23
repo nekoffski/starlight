@@ -10,8 +10,8 @@ namespace sl::gui::components {
 using namespace scene::components;
 
 void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
-    asset::AssetManager& assetManager, ecs::Entity& entity) {
-
+                                               asset::AssetManager& assetManager,
+                                               ecs::Entity& entity) {
     with_ID(component.ownerEntityId.c_str()) {
         auto& params = m_params[component.ownerEntityId];
 
@@ -19,7 +19,6 @@ void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
             with_OpenedTreeNode("Meshes") {
                 with_OpenedTreeNode("Added") {
                     with_ID("added") {
-
                         std::vector<std::string> meshesToRemove;
 
                         for (auto& mesh : component.meshes) {
@@ -28,15 +27,15 @@ void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
                             ImGui::SetWindowFontScale(0.7f);
                             ImGui::Text(ICON_FA_TIMES);
 
-                            if (ImGui::IsItemClicked())
-                                meshesToRemove.push_back(mesh->getId());
+                            if (ImGui::IsItemClicked()) meshesToRemove.push_back(mesh->getId());
 
                             ImGui::SetWindowFontScale(1.0f);
                         }
 
                         for (auto& meshId : meshesToRemove)
-                            std::erase_if(component.meshes,
-                                [&meshId](auto& element) -> bool { return meshId == element->getId(); });
+                            std::erase_if(component.meshes, [&meshId](auto& element) -> bool {
+                                return meshId == element->getId();
+                            });
                     }
                 }
 
@@ -62,18 +61,17 @@ void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
     }
 }
 
-void ModelComponentGui::showMeshesSection(const std::string& header, Params& params, MeshesMap& meshes) {
+void ModelComponentGui::showMeshesSection(const std::string& header, Params& params,
+                                          MeshesMap& meshes) {
     with_OpenedTreeNode(header.c_str()) {
         for (auto& [name, mesh] : meshes) {
             bool isSelected = name == params.selectedMeshName;
 
-            if (isSelected)
-                gui::pushTextColor(gui::selectedEntryColor);
+            if (isSelected) gui::pushTextColor(gui::selectedEntryColor);
 
             ImGui::Text("%s", name.c_str());
 
-            if (isSelected)
-                gui::popTextColor();
+            if (isSelected) gui::popTextColor();
 
             if (ImGui::IsItemClicked()) {
                 params.selectedMeshName = name;
@@ -83,4 +81,4 @@ void ModelComponentGui::showMeshesSection(const std::string& header, Params& par
     }
 }
 
-}
+}  // namespace sl::gui::components

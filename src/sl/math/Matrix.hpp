@@ -16,13 +16,14 @@ using Mat3 = glm::mat3;
 using Quaternion = glm::quat;
 
 template <class T, glm::qualifier Q>
-glm::mat<4, 4, T, Q> lookAt(glm::vec<3, T, Q> const& eye, glm::vec<3, T, Q> const& center, glm::vec<3, T, Q> const& up) {
+glm::mat<4, 4, T, Q> lookAt(glm::vec<3, T, Q> const& eye, glm::vec<3, T, Q> const& center,
+                            glm::vec<3, T, Q> const& up) {
     return glm::lookAt(eye, center, up);
 }
 
-const Mat4 identityMatrix = Mat4 { 1.0f };
+const Mat4 identityMatrix = Mat4{1.0f};
 
-}
+}  // namespace sl::math
 
 inline std::ostream& operator<<(std::ostream& ss, const sl::math::Mat4& m) {
     ss << m[0].x << " " << m[0].y << " " << m[0].z << " " << m[0].w << '\n'
@@ -47,4 +48,4 @@ inline std::string toString(const sl::math::Mat4& m) {
     return ss.str();
 }
 
-}
+}  // namespace sl::math

@@ -2,9 +2,6 @@
 
 namespace sl::core {
 
-enum class PathType {
-    local,
-    global
-};
+enum class PathType { local, global };
 
 }

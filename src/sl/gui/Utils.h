@@ -1,21 +1,18 @@
 #pragma once
 
-#include <string>
-#include <string_view>
-
+#include <ImGuizmo.h>
 #include <imgui/imgui.h>
-
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
 
-#include <ImGuizmo.h>
+#include <string>
+#include <string_view>
 
 #include "sl/gfx/Texture.h"
+#include "sl/gfx/ViewFrustum.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Utils.hpp"
 #include "sl/math/Vector.hpp"
-
-#include "sl/gfx/ViewFrustum.h"
 
 #define with_OpenedTreeNode(...)                  \
     ImGui::SetNextItemOpen(true, ImGuiCond_Once); \
@@ -26,7 +23,8 @@ namespace sl::gui {
 bool textInput(const std::string& label, std::string& text);
 bool labeledTextInput(const std::string& label, std::string& value, const int padding);
 
-void showImage(gfx::Texture& texture, math::Vec2 size, math::Vec2 uv0 = { 0.0f, 0.0f }, math::Vec2 uv1 = { 1.0f, 1.0f });
+void showImage(gfx::Texture& texture, math::Vec2 size, math::Vec2 uv0 = {0.0f, 0.0f},
+               math::Vec2 uv1 = {1.0f, 1.0f});
 
 bool combo(const std::string& label, int* currentItem, const std::vector<std::string>& items);
 
@@ -37,4 +35,4 @@ void beginPanel(const std::string& title, math::Vec2 pos, math::Vec2 size);
 void beginTransparentPanel(const std::string& title, math::Vec2 pos, math::Vec2 size);
 void endPanel();
 
-}
+}  // namespace sl::gui

@@ -5,7 +5,7 @@
 namespace sl::platform::gl {
 
 class OpenGlRenderApi : public sl::gfx::RenderApi {
-public:
+   public:
     void init() override;
     void setViewport(const gfx::ViewFrustum::Viewport&) override;
     void clearBuffers(unsigned int buffers) override;
@@ -28,8 +28,8 @@ public:
 
     glob::RendererInfo getRendererInfo() const override;
 
-private:
+   private:
     glob::RendererInfo m_rendererInfo;
 };
 
-}
+}  // namespace sl::platform::gl

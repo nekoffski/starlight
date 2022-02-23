@@ -15,4 +15,4 @@ struct Particle {
     float ttl;
     float directionFactor;
 };
-}
+}  // namespace sl::physx::pfx

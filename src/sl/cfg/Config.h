@@ -21,4 +21,4 @@ struct Config {
     Paths paths;
     Window window;
 };
-}
+}  // namespace sl::cfg

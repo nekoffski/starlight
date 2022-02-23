@@ -15,8 +15,6 @@ std::unique_ptr<Texture> Texture::clone() {
         .get();
 }
 
-std::pair<unsigned int, unsigned int> Texture::getSize() const {
-    return { getWidth(), getHeight() };
-}
+std::pair<unsigned int, unsigned int> Texture::getSize() const { return {getWidth(), getHeight()}; }
 
-}
+}  // namespace sl::gfx

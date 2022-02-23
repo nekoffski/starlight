@@ -1,15 +1,16 @@
 #pragma once
 
-#include "sl/gfx/Shader.h"
-
 #include <gmock/gmock.h>
+
+#include "sl/gfx/Shader.h"
 
 using namespace sl::gfx;
 using namespace sl;
 
 struct ShaderMock : public Shader {
     struct Factory : public Shader::Factory {
-        MOCK_METHOD(std::shared_ptr<Shader>, create, (const std::string&, const std::string&, const std::string&), (override));
+        MOCK_METHOD(std::shared_ptr<Shader>, create,
+                    (const std::string&, const std::string&, const std::string&), (override));
     };
 
     MOCK_METHOD(void, enable, (), (override));

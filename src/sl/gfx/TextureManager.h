@@ -1,14 +1,13 @@
 
 #pragma once
 #include <kc/core/Log.h>
-#include <kc/core/Singleton.hpp>
 
 #include <algorithm>
+#include <kc/core/Singleton.hpp>
 
 #include "Cubemap.h"
 #include "Image.h"
 #include "Texture.h"
-
 #include "sl/async/AsyncManager.hpp"
 #include "sl/gfx/Texture.h"
 
@@ -29,17 +28,15 @@ class TextureManager : public kc::core::Singleton<TextureManager> {
 
     template <typename Callback>
     class LoadCubemapAsync : public async::AsyncTask {
-    public:
-        explicit LoadCubemapAsync(TextureManager* textureManager, const CubemapArgs& paths, const std::string& name, Callback&& callback)
-            : m_textureManager(textureManager)
-            , m_paths(paths)
-            , m_name(name)
-            , m_callback(std::forward<Callback>(callback)) {
-        }
+       public:
+        explicit LoadCubemapAsync(TextureManager* textureManager, const CubemapArgs& paths,
+                                  const std::string& name, Callback&& callback)
+            : m_textureManager(textureManager),
+              m_paths(paths),
+              m_name(name),
+              m_callback(std::forward<Callback>(callback)) {}
 
-        void executeAsync() override {
-            m_faces = m_textureManager->loadCubemapFaces(m_paths);
-        }
+        void executeAsync() override { m_faces = m_textureManager->loadCubemapFaces(m_paths); }
 
         void finalize() override {
             auto cubemap = m_textureManager->m_cubemapFactory->create(
@@ -51,11 +48,9 @@ class TextureManager : public kc::core::Singleton<TextureManager> {
             std::invoke(m_callback, std::move(cubemap));
         }
 
-        std::string asString() const override {
-            return fmt::format("AsyncLoadCubemap");
-        }
+        std::string asString() const override { return fmt::format("AsyncLoadCubemap"); }
 
-    private:
+       private:
         CubemapArgs m_paths;
         std::string m_name;
 
@@ -68,25 +63,20 @@ class TextureManager : public kc::core::Singleton<TextureManager> {
 
     template <typename Callback>
     class LoadTextureAsync : public async::AsyncTask {
-    public:
-        explicit LoadTextureAsync(TextureManager* textureManager, const std::string& path, const std::string& name, Callback&& callback)
-            : m_textureManager(textureManager)
-            , m_path(path)
-            , m_name(name)
-            , m_callback(std::forward<Callback>(callback)) {
-        }
+       public:
+        explicit LoadTextureAsync(TextureManager* textureManager, const std::string& path,
+                                  const std::string& name, Callback&& callback)
+            : m_textureManager(textureManager),
+              m_path(path),
+              m_name(name),
+              m_callback(std::forward<Callback>(callback)) {}
 
-        void executeAsync() override {
-            m_image = TextureManager::get().loadImage(m_path);
-        }
+        void executeAsync() override { m_image = TextureManager::get().loadImage(m_path); }
 
-        std::string asString() const override {
-            return fmt::format("AsyncLoadTexture_{}", m_path);
-        }
+        std::string asString() const override { return fmt::format("AsyncLoadTexture_{}", m_path); }
 
         void finalize() override {
-            if (not m_image)
-                return;
+            if (not m_image) return;
 
             auto texture = m_textureManager->m_textureFactory->create(*m_image);
 
@@ -96,7 +86,7 @@ class TextureManager : public kc::core::Singleton<TextureManager> {
             std::invoke(m_callback, std::move(texture));
         }
 
-    private:
+       private:
         TextureManager* m_textureManager;
 
         std::string m_path;
@@ -109,16 +99,16 @@ class TextureManager : public kc::core::Singleton<TextureManager> {
     class CubemapBuilder {
         typedef std::unique_ptr<Cubemap> (CubemapBuilder::*BuildFunction)();
 
-    public:
+       public:
         explicit CubemapBuilder(TextureManager* textureManager);
 
         template <typename Callback>
         void getAsync(Callback&& callback) {
-            ASSERT(m_cubemapArgs.has_value(), "Could not load cubemap async without args specified");
+            ASSERT(m_cubemapArgs.has_value(),
+                   "Could not load cubemap async without args specified");
 
-            async::AsyncManager::get()
-                .callAsync<LoadCubemapAsync<Callback>>(
-                    m_textureManager, m_cubemapArgs.value(), m_name, std::forward<Callback>(callback));
+            async::AsyncManager::get().callAsync<LoadCubemapAsync<Callback>>(
+                m_textureManager, m_cubemapArgs.value(), m_name, std::forward<Callback>(callback));
         }
 
         std::unique_ptr<Cubemap> get() &&;
@@ -129,7 +119,7 @@ class TextureManager : public kc::core::Singleton<TextureManager> {
         CubemapBuilder&& withHeight(const int height) &&;
         CubemapBuilder&& withName(const std::string& name) &&;
 
-    private:
+       private:
         std::unique_ptr<Cubemap> buildFromDimensions();
         std::unique_ptr<Cubemap> buildFromFaces();
         std::unique_ptr<Cubemap> buildFromPaths();
@@ -150,7 +140,7 @@ class TextureManager : public kc::core::Singleton<TextureManager> {
     class TextureBuilder {
         typedef std::unique_ptr<Texture> (TextureBuilder::*BuildFunction)();
 
-    public:
+       public:
         explicit TextureBuilder(TextureManager* textureManager);
         std::unique_ptr<Texture> get() &&;
 
@@ -158,9 +148,8 @@ class TextureManager : public kc::core::Singleton<TextureManager> {
         void getAsync(Callback&& callback) {
             ASSERT(not m_path.empty(), "Could not load texture async without path specified");
 
-            async::AsyncManager::get()
-                .callAsync<LoadTextureAsync<Callback>>(
-                    m_textureManager, m_path, m_name, std::forward<Callback>(callback));
+            async::AsyncManager::get().callAsync<LoadTextureAsync<Callback>>(
+                m_textureManager, m_path, m_name, std::forward<Callback>(callback));
         }
 
         TextureBuilder&& fromImage(Image* imageView) &&;
@@ -171,7 +160,7 @@ class TextureManager : public kc::core::Singleton<TextureManager> {
         TextureBuilder&& withColorComponents(int colorComponents) &&;
         TextureBuilder&& withFormat(int format) &&;
 
-    private:
+       private:
         std::unique_ptr<Texture> buildFromImage();
         std::unique_ptr<Texture> buildFromPath();
         std::unique_ptr<Texture> buildFromDimension();
@@ -193,8 +182,9 @@ class TextureManager : public kc::core::Singleton<TextureManager> {
         int m_format = STARL_DEPTH_COMPONENT;
     };
 
-public:
-    explicit TextureManager(Texture::Factory* textureFactory, Cubemap::Factory* cubemapFactory, Image::Factory* imageFactory);
+   public:
+    explicit TextureManager(Texture::Factory* textureFactory, Cubemap::Factory* cubemapFactory,
+                            Image::Factory* imageFactory);
 
     std::unique_ptr<Image> loadImage(const std::string& path, int desiredChannels = 0);
 
@@ -204,7 +194,7 @@ public:
     std::unique_ptr<Cubemap> createOmniShadowMap();
     std::unique_ptr<Texture> createShadowMap();
 
-private:
+   private:
     CubemapFaces loadCubemapFaces(const CubemapArgs& args);
     CubemapFacesView createCubemapFacesView(const CubemapFaces& cubemapFaces);
     std::unique_ptr<Cubemap> loadCubemap(const CubemapFaces& faces);
@@ -214,4 +204,4 @@ private:
     Image::Factory* m_imageFactory;
 };
 
-}
+}  // namespace sl::gfx

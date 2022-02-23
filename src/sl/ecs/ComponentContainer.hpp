@@ -1,17 +1,18 @@
 #pragma once
 
+#include <kc/core/Log.h>
+
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include "Component.h"
-#include <kc/core/Log.h>
 
 namespace sl::ecs {
 
 class IComponentContainer {
-public:
+   public:
     virtual ~IComponentContainer() = default;
     virtual void remove(const std::string& entityId) = 0;
     virtual Component& getByEntityId(const std::string& entityId) = 0;
@@ -19,7 +20,7 @@ public:
 
 template <typename T>
 class ComponentContainer : public IComponentContainer {
-public:
+   public:
     inline static constexpr int defaultCapacity = 1000;
 
     explicit ComponentContainer(const int capacity = defaultCapacity) {
@@ -28,7 +29,7 @@ public:
 
     template <typename... Args>
     T& add(const std::string& entityId, Args&&... args) {
-        m_components.emplace_back(T { std::forward<Args>(args)... });
+        m_components.emplace_back(T{std::forward<Args>(args)...});
         auto& component = m_components.back();
 
         component.ownerEntityId = entityId;
@@ -50,17 +51,11 @@ public:
         rebuildMap();
     }
 
-    std::size_t size() const {
-        return m_components.size();
-    }
+    std::size_t size() const { return m_components.size(); }
 
-    std::size_t capacity() const {
-        return m_components.capacity();
-    }
+    std::size_t capacity() const { return m_components.capacity(); }
 
-    std::vector<T>& getAll() {
-        return m_components;
-    }
+    std::vector<T>& getAll() { return m_components; }
 
     T& getByEntityId(const std::string& entityId) override {
         return *m_entityIdToComponent[entityId];
@@ -70,7 +65,7 @@ public:
         return m_entityIdToComponent.contains(entityId);
     }
 
-private:
+   private:
     void rebuildMap() {
         m_entityIdToComponent.clear();
         for (auto& component : m_components)
@@ -80,4 +75,4 @@ private:
     std::vector<T> m_components;
     std::unordered_map<std::string, T*> m_entityIdToComponent;
 };
-}
+}  // namespace sl::ecs

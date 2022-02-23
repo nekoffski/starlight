@@ -1,9 +1,8 @@
-#include "sl/ecs/ComponentView.hpp"
-
 #include <gtest/gtest.h>
 
 #include "mocks/TestComponent.h"
 #include "sl/ecs/Component.h"
+#include "sl/ecs/ComponentView.hpp"
 
 using namespace testing;
 using namespace sl::ecs;
@@ -16,39 +15,38 @@ struct ComponentViewTests : Test {
 };
 
 TEST_F(ComponentViewTests, givenEmptyView_whenAccessingSize_shouldReturnZero) {
-    auto view = ComponentView<TestComponent> { container };
+    auto view = ComponentView<TestComponent>{container};
 
     EXPECT_EQ(view.size(), 0);
 
     int iterations = 0;
 
-    for (auto& _ : view)
-        ++iterations;
+    for (auto& _ : view) ++iterations;
 
     EXPECT_EQ(iterations, 0);
 }
 
 TEST_F(ComponentViewTests, givenEmptyView_whenCheckingIfEntityOwnComponent_shouldReturnFalse) {
-    auto view = ComponentView<TestComponent> { container };
+    auto view = ComponentView<TestComponent>{container};
 
     EXPECT_FALSE(view.doesEntityOwnComponent(id));
 }
 
-TEST_F(ComponentViewTests, givenViewWithFilledContainer_whenCheckingIfEntityOwnComponent_shouldReturnTrue) {
+TEST_F(ComponentViewTests,
+       givenViewWithFilledContainer_whenCheckingIfEntityOwnComponent_shouldReturnTrue) {
     container.add(id, 1, 1.0f);
-    auto view = ComponentView<TestComponent> { container };
+    auto view = ComponentView<TestComponent>{container};
 
     EXPECT_TRUE(view.doesEntityOwnComponent(id));
 }
 
 TEST_F(ComponentViewTests, givenViewWithFilledContainer_shouldAllowToAccessComponnet) {
     container.add(id, 1, 1.0f);
-    auto view = ComponentView<TestComponent> { container };
+    auto view = ComponentView<TestComponent>{container};
 
     int iterations = 0;
 
-    for (auto& _ : view)
-        ++iterations;
+    for (auto& _ : view) ++iterations;
 
     EXPECT_EQ(iterations, 1);
     EXPECT_EQ(view.size(), 1);
@@ -63,4 +61,4 @@ TEST_F(ComponentViewTests, givenViewWithFilledContainer_shouldAllowToAccessCompo
     EXPECT_EQ(component.ownerEntityId, component2.ownerEntityId);
 }
 
-}
+}  // namespace

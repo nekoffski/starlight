@@ -4,8 +4,8 @@
 
 namespace sl::event {
 
-struct CoreCategory : kc::event::Category { };
-struct EditorCategory : kc::event::Category { };
-struct InputCategory : kc::event::Category { };
+struct CoreCategory : kc::event::Category {};
+struct EditorCategory : kc::event::Category {};
+struct InputCategory : kc::event::Category {};
 
-}
+}  // namespace sl::event

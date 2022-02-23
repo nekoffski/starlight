@@ -7,7 +7,7 @@
 namespace sl::rendering {
 
 class DefaultFrameBufferRenderPass : public RenderPass {
-public:
+   public:
     DefaultFrameBufferRenderPass& addRenderStage(Stage* renderStage) {
         m_renderStages.push_back(renderStage);
         return *this;
@@ -18,18 +18,15 @@ public:
 
         bool hasSkybox = scene.skybox.has_value();
 
-        if (hasSkybox)
-            scene.skybox->cubemap->bind();
+        if (hasSkybox) scene.skybox->cubemap->bind();
 
-        for (auto& renderStage : m_renderStages)
-            renderStage->execute(renderer, scene, nullptr);
+        for (auto& renderStage : m_renderStages) renderStage->execute(renderer, scene, nullptr);
 
-        if (hasSkybox)
-            scene.skybox->cubemap->unbind();
+        if (hasSkybox) scene.skybox->cubemap->unbind();
     }
 
-private:
+   private:
     std::vector<Stage*> m_renderStages;
 };
 
-}
+}  // namespace sl::rendering

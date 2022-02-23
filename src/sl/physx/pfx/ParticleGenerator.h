@@ -9,7 +9,7 @@
 namespace sl::physx::pfx {
 
 class ParticleGenerator {
-public:
+   public:
     std::vector<Particle> generate(const ParticleGeneratorSettings& settings, int n) {
         std::vector<Particle> particles;
         particles.reserve(n);
@@ -30,10 +30,10 @@ public:
             auto fi = fiDist(rand);
             auto r = radiusDist(rand);
 
-            auto pos = math::Vec3{ r * cos(fi), 0.0f, r * sin(fi) };
+            auto pos = math::Vec3{r * cos(fi), 0.0f, r * sin(fi)};
 
-            auto c = math::Vec3{ rDist(rand), gDist(rand), bDist(rand) };
-            auto direction = math::Vec3{ -pos.x * dir(rand), 1.0f, -pos.z * dir(rand) };
+            auto c = math::Vec3{rDist(rand), gDist(rand), bDist(rand)};
+            auto direction = math::Vec3{-pos.x * dir(rand), 1.0f, -pos.z * dir(rand)};
 
             Particle p;
             p.position = pos;
@@ -42,7 +42,7 @@ public:
             p.deltaScale = settings.deltaScale;
             p.color = c;
             p.direction = direction;
-            p.deltaDirection = math::Vec3{ direction.x, 0.0f, direction.z };
+            p.deltaDirection = math::Vec3{direction.x, 0.0f, direction.z};
             p.directionFactor = settings.directionFactor;
 
             particles.emplace_back(std::move(p));
@@ -51,7 +51,7 @@ public:
         return particles;
     }
 
-private:
+   private:
     std::random_device m_rd;
 };
-}
+}  // namespace sl::physx::pfx

@@ -5,7 +5,7 @@
 namespace sl::gfx {
 
 class ElementBuffer {
-public:
+   public:
     struct Factory {
         virtual std::shared_ptr<ElementBuffer> create(void* data, int, unsigned int) = 0;
         virtual ~Factory() = default;
@@ -18,4 +18,4 @@ public:
 
     virtual unsigned int getIndicesCount() = 0;
 };
-}
+}  // namespace sl::gfx

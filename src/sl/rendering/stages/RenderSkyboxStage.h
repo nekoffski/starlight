@@ -1,19 +1,18 @@
 #pragma once
 
-#include "sl/rendering/DefaultFrameBufferRenderPass.h"
-
 #include "sl/gfx/VertexArray.h"
+#include "sl/rendering/DefaultFrameBufferRenderPass.h"
 
 namespace sl::rendering::stages {
 
 class RenderSkyboxStage : public Stage {
-public:
+   public:
     explicit RenderSkyboxStage();
 
     void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) override;
 
-private:
+   private:
     std::shared_ptr<gfx::VertexArray> m_cubemapVertexArray;
 };
 
-}
+}  // namespace sl::rendering::stages

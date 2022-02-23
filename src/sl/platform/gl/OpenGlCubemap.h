@@ -1,13 +1,13 @@
 #pragma once
 
-#include "sl/gfx/Cubemap.h"
-
 #include <kc/core/Log.h>
+
+#include "sl/gfx/Cubemap.h"
 
 namespace sl::platform::gl {
 
 class OpenGlCubemap : public sl::gfx::Cubemap {
-public:
+   public:
     explicit OpenGlCubemap(unsigned int width, unsigned int height);
     explicit OpenGlCubemap(const sl::gfx::CubemapFaces&);
 
@@ -16,11 +16,9 @@ public:
     void bind(unsigned int index) override;
     void unbind() override;
 
-    unsigned int getBufferId() const override {
-        return m_cubemapId;
-    }
+    unsigned int getBufferId() const override { return m_cubemapId; }
 
-private:
+   private:
     unsigned int m_cubemapId;
     unsigned int m_lastBoundIndex = 0u;
 };
@@ -34,4 +32,4 @@ struct OpenGlCubemapFactory : sl::gfx::Cubemap::Factory {
         return std::make_unique<OpenGlCubemap>(width, height);
     }
 };
-}
+}  // namespace sl::platform::gl

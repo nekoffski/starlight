@@ -12,4 +12,4 @@ struct ModelLoader {
     virtual std::shared_ptr<geom::Model> load(const std::string&) = 0;
 };
 
-}
+}  // namespace sl::geom

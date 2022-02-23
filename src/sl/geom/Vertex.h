@@ -11,4 +11,4 @@ struct Vertex {
     math::Vec3 tangent;
     math::Vec3 bitangent;
 };
-}
+}  // namespace sl::geom

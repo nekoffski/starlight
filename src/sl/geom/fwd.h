@@ -7,4 +7,4 @@ struct Model;
 struct ModelLoader;
 struct Vertex;
 
-}
+}  // namespace sl::geom

@@ -5,7 +5,7 @@
 namespace sl::platform::gl {
 
 class OpenGlVertexArray : public sl::gfx::VertexArray {
-public:
+   public:
     OpenGlVertexArray();
     ~OpenGlVertexArray() override;
 
@@ -17,7 +17,7 @@ public:
     unsigned int getVerticesCount() override;
     unsigned int getIndicesCount() override;
 
-private:
+   private:
     unsigned int m_bufferId;
     unsigned int m_verticesCount;
     unsigned int m_indicesCount;
@@ -27,8 +27,6 @@ private:
 };
 
 struct OpenGlVertexArrayFactory : gfx::VertexArray::Factory {
-    std::shared_ptr<gfx::VertexArray> create() {
-        return std::make_shared<OpenGlVertexArray>();
-    }
+    std::shared_ptr<gfx::VertexArray> create() { return std::make_shared<OpenGlVertexArray>(); }
 };
-}
+}  // namespace sl::platform::gl

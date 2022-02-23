@@ -10,7 +10,7 @@ namespace sl::glob {
 class Geometry {
     using MeshVaoPair = std::pair<std::shared_ptr<geom::Mesh>, std::shared_ptr<gfx::VertexArray>>;
 
-public:
+   public:
     explicit Geometry();
 
     std::shared_ptr<gfx::VertexArray> frontSquareVAO;
@@ -26,11 +26,11 @@ public:
 
     std::unordered_map<std::string, std::shared_ptr<geom::Mesh>> meshes;
 
-private:
+   private:
     void initSquares();
     void initCube();
     void initLine();
 
     MeshVaoPair initSquare(std::vector<geom::Vertex> vertices, const std::string& name);
 };
-}
+}  // namespace sl::glob

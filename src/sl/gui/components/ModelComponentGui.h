@@ -16,13 +16,13 @@ class ModelComponentGui : public ComponentGuiImpl<scene::components::ModelCompon
 
     using MeshesMap = std::unordered_map<std::string, std::shared_ptr<geom::Mesh>>;
 
-private:
+   private:
     void renderComponentGuiImpl(scene::components::ModelComponent& component,
-        asset::AssetManager& assetManager, ecs::Entity& entity) override;
+                                asset::AssetManager& assetManager, ecs::Entity& entity) override;
 
     void showMeshesSection(const std::string& header, Params& params, MeshesMap&);
 
     std::unordered_map<std::string, Params> m_params;
 };
 
-}
+}  // namespace sl::gui::components

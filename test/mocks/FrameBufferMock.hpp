@@ -1,8 +1,8 @@
 #pragma once
 
-#include "sl/gfx/FrameBuffer.h"
-
 #include <gmock/gmock.h>
+
+#include "sl/gfx/FrameBuffer.h"
 
 using namespace sl::gfx;
 

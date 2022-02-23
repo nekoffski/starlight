@@ -1,16 +1,14 @@
 #include <gtest/gtest.h>
+#include <kc/json/Json.h>
 
 #include <memory>
 
-#include <kc/json/Json.h>
-
+#include "mocks/FileSystemMock.hpp"
 #include "sl/app/Serializer.h"
 #include "sl/asset/AssetManager.h"
 #include "sl/ecs/Entity.h"
 #include "sl/glob/Globals.h"
 #include "sl/scene/Scene.h"
-
-#include "mocks/FileSystemMock.hpp"
 
 using namespace testing;
 
@@ -23,7 +21,7 @@ using namespace sl::scene;
 namespace {
 
 class SerializerTests : public Test {
-protected:
+   protected:
     std::shared_ptr<FileSystemMock> m_fsMock = std::make_shared<FileSystemMock>();
 
     const std::string m_filename = "/path/exampleFilename";
@@ -33,7 +31,7 @@ protected:
     Scene m_scene;
     AssetManager m_assetManager;
 
-    Serializer m_serializer = Serializer { m_filename };
+    Serializer m_serializer = Serializer{m_filename};
 
     void prevalidateSerializerJson(Json::Value root) {
         ASSERT_EQ(root.size(), 2);
@@ -44,10 +42,11 @@ protected:
 };
 
 TEST_F(SerializerTests, whenCreatingSerializerWithDefaultFileSystem_shouldBeCreatedWell) {
-    Serializer serializer { m_filename };
+    Serializer serializer{m_filename};
 }
 
-TEST_F(SerializerTests, givenEmptySceneAndEmptyAssetManager_whenSerializing_shouldReturnEmptyAssetsAndEntities) {
+TEST_F(SerializerTests,
+       givenEmptySceneAndEmptyAssetManager_whenSerializing_shouldReturnEmptyAssetsAndEntities) {
     EXPECT_CALL(*m_fsMock, writeFile(_, _, _)).Times(1).WillOnce(Invoke(writeFileArgsHijacker));
 
     m_serializer.serialize(m_assetManager, &m_scene, *m_fsMock);
@@ -59,4 +58,4 @@ TEST_F(SerializerTests, givenEmptySceneAndEmptyAssetManager_whenSerializing_shou
 
     EXPECT_EQ(json["scene"]["entities"].size(), 0);
 }
-}
+}  // namespace

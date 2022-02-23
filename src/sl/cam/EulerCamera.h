@@ -7,7 +7,7 @@
 namespace sl::cam {
 
 class EulerCamera : public Camera {
-public:
+   public:
     explicit EulerCamera(const gfx::ViewFrustum& viewFrustum, math::Vec3, float, float);
 
     void update(float) override;
@@ -26,7 +26,7 @@ public:
 
     void calculateVectors();
 
-private:
+   private:
     bool m_isInAnimation = false;
     float m_alpha = 0.0f;
 
@@ -52,4 +52,4 @@ private:
     static const float minFi;
     static const float maxFi;
 };
-}
+}  // namespace sl::cam

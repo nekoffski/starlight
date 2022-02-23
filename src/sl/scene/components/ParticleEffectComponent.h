@@ -1,10 +1,9 @@
 #pragma once
 
-#include "sl/ecs/Component.h"
-
 #include <memory>
 
 #include "sl/core/GameObject.h"
+#include "sl/ecs/Component.h"
 #include "sl/physx/pfx/Particle.h"
 #include "sl/physx/pfx/ParticleGeneratorSettings.h"
 
@@ -14,8 +13,7 @@ struct ParticleEffectComponent : ecs::Component {
     using View = ecs::ComponentView<ParticleEffectComponent>;
 
     explicit ParticleEffectComponent(math::Vec3 position = math::VEC_ZEROS, int maxParticles = 2500)
-        : position(position)
-        , maxParticles(maxParticles) {
+        : position(position), maxParticles(maxParticles) {
         name = "ParticleEffectComponent";
     }
 
@@ -31,4 +29,4 @@ struct ParticleEffectComponent : ecs::Component {
 
     gfx::Texture* texture = nullptr;
 };
-}
+}  // namespace sl::scene::components

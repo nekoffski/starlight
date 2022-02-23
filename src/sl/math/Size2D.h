@@ -7,4 +7,4 @@ struct Size2D {
     int height;
 };
 
-}
+}  // namespace sl::math

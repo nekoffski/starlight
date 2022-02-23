@@ -13,14 +13,13 @@ using namespace sl::core;
 namespace editor::gui {
 
 class EditorGui {
-
-public:
+   public:
     explicit EditorGui(std::shared_ptr<SharedState> sharedState);
     void renderEditorGui();
 
     std::shared_ptr<SharedState> sharedState;
 
-private:
+   private:
     LeftPanel m_leftPanel;
     BottomPanel m_bottomPanel;
     RightPanel m_rightPanel;
@@ -28,4 +27,4 @@ private:
 
     sl::gui::FileBrowser m_fileBrowser;
 };
-}
+}  // namespace editor::gui

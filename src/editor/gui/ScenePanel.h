@@ -1,8 +1,12 @@
 #pragma once
 
+#include <kc/core/Log.h>
+
 #include <memory>
 #include <string>
 
+#include "Widget.h"
+#include "editor/DebugConsole.hpp"
 #include "sl/ecs/Entity.h"
 #include "sl/event/Event.h"
 #include "sl/event/EventManager.h"
@@ -10,22 +14,14 @@
 #include "sl/math/Vector.hpp"
 #include "sl/scene/components/TransformComponent.h"
 
-#include <kc/core/Log.h>
-
-#include "editor/DebugConsole.hpp"
-
-#include "Widget.h"
-
 namespace editor::gui {
 
 using namespace sl;
 
 class ScenePanel : public Widget {
-public:
+   public:
     explicit ScenePanel(std::shared_ptr<SharedState> sharedState)
-        : Widget(sharedState)
-        , m_entityIndex(0) {
-    }
+        : Widget(sharedState), m_entityIndex(0) {}
 
     void render() override {
         auto& widgetProperties = m_sharedState->guiProperties.scenePanelProperties;
@@ -40,7 +36,6 @@ public:
         using sl::scene::components::TransformComponent;
 
         with_ID("scene-panel") {
-
             if (scene != nullptr) {
                 ImGui::Separator();
 
@@ -49,29 +44,32 @@ public:
                 with_OpenedTreeNode(" " ICON_FA_CUBES "  Scene") {
                     for (auto& [entityId, entity] : scene->ecsRegistry.getEntities()) {
                         with_ID(entityId.c_str()) {
-
                             auto onEntityClick = [&]() {
                                 m_sharedState->selectedEntityId = entity->getId();
 
                                 if (entity->hasComponent<TransformComponent>()) {
                                     auto& transform = entity->getComponent<TransformComponent>();
-                                    event::EventManager::get().emit<event::ChangeSceneCenterEvent>(transform.position).toAll();
+                                    event::EventManager::get()
+                                        .emit<event::ChangeSceneCenterEvent>(transform.position)
+                                        .toAll();
                                 }
                             };
 
-                            bool isEntitySelected = m_sharedState->selectedEntityId.has_value() &&
+                            bool isEntitySelected =
+                                m_sharedState->selectedEntityId.has_value() &&
                                 m_sharedState->selectedEntityId.value() == entityId;
 
-                            auto entryColor =
-                                isEntitySelected ? sl::gui::selectedEntryColor : entity->isActive ? sl::gui::guiDefaultTextColor
-                                                                                                  : sl::gui::disabledEntryColor;
+                            auto entryColor = isEntitySelected   ? sl::gui::selectedEntryColor
+                                              : entity->isActive ? sl::gui::guiDefaultTextColor
+                                                                 : sl::gui::disabledEntryColor;
 
                             sl::gui::pushTextColor(entryColor);
 
                             static std::string gap = "  ";
 
                             ImGui::SetNextItemOpen(false, ImGuiCond_Once);
-                            bool isEntityOpened = ImGui::TreeNode((gap + ICON_FA_CUBE + gap + entity->getName()).c_str());
+                            bool isEntityOpened = ImGui::TreeNode(
+                                (gap + ICON_FA_CUBE + gap + entity->getName()).c_str());
                             bool isClicked = ImGui::IsItemClicked();
 
                             sl::gui::popTextColor();
@@ -82,27 +80,25 @@ public:
                             if (ImGui::Checkbox("##isActive", &entity->isActive)) {
                                 LOG_INFO("click");
                                 for (auto& componentIndex : entity->getComponentsIndexes())
-                                    entity->getComponent(componentIndex).isActive = entity->isActive;
+                                    entity->getComponent(componentIndex).isActive =
+                                        entity->isActive;
                             }
 
                             ImGui::SetWindowFontScale(0.8);
                             ImGui::SameLine();
                             ImGui::Text(ICON_FA_TIMES);
 
-                            if (ImGui::IsItemClicked())
-                                entitiesToRemove.push_back(entityId);
+                            if (ImGui::IsItemClicked()) entitiesToRemove.push_back(entityId);
 
                             ImGui::SetWindowFontScale(1.0f);
 
                             if (isEntityOpened) {
-                                if (isClicked)
-                                    onEntityClick();
+                                if (isClicked) onEntityClick();
 
                                 ImGui::TreePop();
                             }
 
-                            if (isClicked)
-                                onEntityClick();
+                            if (isClicked) onEntityClick();
                         }
                     }
 
@@ -129,12 +125,13 @@ public:
                     auto transformationMatrix = transform.transformation;
 
                     sl::gui::manipulateGizmo(viewMatrix, projectionMatrix, transformationMatrix,
-                        m_sharedState->gizmoOperation, m_sharedState->gizmoSpace);
+                                             m_sharedState->gizmoOperation,
+                                             m_sharedState->gizmoSpace);
 
                     if (sl::gui::isUsingGizmo()) {
                         math::Vec3 rotation;
-                        math::decomposeMatrix(transformationMatrix, transform.position,
-                            rotation, transform.scale);
+                        math::decomposeMatrix(transformationMatrix, transform.position, rotation,
+                                              transform.scale);
 
                         transform.rotation = sl::math::toDegrees(rotation);
                         transform.recalculateTransformation();
@@ -144,7 +141,7 @@ public:
         }
     }
 
-private:
+   private:
     int m_entityIndex;
 };
-}
+}  // namespace editor::gui

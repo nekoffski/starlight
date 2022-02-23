@@ -1,12 +1,11 @@
 #pragma once
 
-#include <memory>
-
 #include <kc/event/Event.h>
+
+#include <memory>
 
 #include "Categories.h"
 #include "Util.h"
-
 #include "sl/gfx/Cubemap.h"
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/math/Vector.hpp"

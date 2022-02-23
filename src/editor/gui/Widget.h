@@ -4,7 +4,6 @@
 
 #include "SharedState.hpp"
 #include "sl/core/Errors.hpp"
-
 #include "sl/gui/GuiStyle.h"
 #include "sl/gui/fonts/FontAwesome.h"
 #include "sl/math/Vector.hpp"
@@ -13,17 +12,13 @@
 namespace editor::gui {
 
 class Widget {
-public:
-    explicit Widget(std::shared_ptr<SharedState> sharedState)
-        : m_sharedState(sharedState) {
-    }
+   public:
+    explicit Widget(std::shared_ptr<SharedState> sharedState) : m_sharedState(sharedState) {}
 
     virtual void render() = 0;
 
-protected:
-    void raise(const std::string& reason) {
-        throw sl::core::GuiError { reason };
-    }
+   protected:
+    void raise(const std::string& reason) { throw sl::core::GuiError{reason}; }
 
     std::shared_ptr<SharedState> m_sharedState;
 };
@@ -32,4 +27,4 @@ struct WidgetPosition {
     sl::math::Vec2 origin;
     sl::math::Vec2 size;
 };
-}
+}  // namespace editor::gui

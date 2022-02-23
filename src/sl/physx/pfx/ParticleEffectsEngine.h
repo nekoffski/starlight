@@ -15,17 +15,19 @@ namespace sl::physx::pfx {
 using namespace scene;
 
 class ParticleEffectsEngine {
-public:
+   public:
     explicit ParticleEffectsEngine();
 
-    void update(ecs::ComponentView<components::ParticleEffectComponent>& pfxs, float deltaTime, cam::Camera&);
+    void update(ecs::ComponentView<components::ParticleEffectComponent>& pfxs, float deltaTime,
+                cam::Camera&);
 
-private:
-    void updateParticleEffect(components::ParticleEffectComponent& pfx, float deltaTime, cam::Camera&);
+   private:
+    void updateParticleEffect(components::ParticleEffectComponent& pfx, float deltaTime,
+                              cam::Camera&);
     void updateParticle(physx::pfx::Particle& particle, float deltaTime);
 
     std::shared_ptr<async::Timer> m_pfxTimer;
 
     physx::pfx::ParticleGenerator m_particleGenerator;
 };
-}
+}  // namespace sl::physx::pfx

@@ -12,13 +12,14 @@
 namespace sl::gfx::renderer {
 
 class ParticleEffectRenderer {
-public:
+   public:
     explicit ParticleEffectRenderer(Renderer& renderer);
 
     void renderParticleEffects(ecs::ComponentView<scene::components::ParticleEffectComponent> pfxs,
-        ecs::ComponentView<scene::components::TransformComponent> transforms, cam::Camera& camera);
+                               ecs::ComponentView<scene::components::TransformComponent> transforms,
+                               cam::Camera& camera);
 
-private:
+   private:
     void beginParticleEffect(cam::Camera&);
     void renderParticle();
     void endParticleEffect();
@@ -28,4 +29,4 @@ private:
     std::shared_ptr<gfx::Shader> m_shader;
     Renderer& m_renderer;
 };
-}
+}  // namespace sl::gfx::renderer

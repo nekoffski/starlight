@@ -7,6 +7,7 @@
 
 namespace sl::rendering::utils {
 
-const math::Mat4& getModelMatrix(const std::string& entityId, scene::components::TransformComponent::View& transforms);
+const math::Mat4& getModelMatrix(const std::string& entityId,
+                                 scene::components::TransformComponent::View& transforms);
 
 }

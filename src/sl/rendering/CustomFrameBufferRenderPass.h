@@ -8,10 +8,9 @@
 namespace sl::rendering {
 
 class CustomFrameBufferRenderPass : public RenderPass {
-public:
+   public:
     explicit CustomFrameBufferRenderPass(gfx::FrameBuffer* frameBuffer)
-        : m_frameBuffer(frameBuffer) {
-    }
+        : m_frameBuffer(frameBuffer) {}
 
     CustomFrameBufferRenderPass& addRenderStage(Stage* renderStage) {
         m_renderStages.push_back(renderStage);
@@ -30,9 +29,9 @@ public:
         m_frameBuffer->unbind();
     }
 
-private:
+   private:
     gfx::FrameBuffer* m_frameBuffer;
     std::vector<Stage*> m_renderStages;
 };
 
-}
+}  // namespace sl::rendering

@@ -1,23 +1,19 @@
 #include "OpenGlVertexArray.h"
 
 #include <glad/glad.h>
-
 #include <kc/core/Log.h>
+
 #include "sl/gfx/ElementBuffer.h"
 #include "sl/gfx/VertexBuffer.h"
 
 namespace sl::platform::gl {
 
-OpenGlVertexArray::OpenGlVertexArray()
-    : m_bufferId(0u)
-    , m_verticesCount(0u)
-    , m_indicesCount(0u) {
+OpenGlVertexArray::OpenGlVertexArray() : m_bufferId(0u), m_verticesCount(0u), m_indicesCount(0u) {
     glGenVertexArrays(1, &m_bufferId);
 }
 
 OpenGlVertexArray::~OpenGlVertexArray() {
-    if (m_bufferId)
-        glDeleteBuffers(1, &m_bufferId);
+    if (m_bufferId) glDeleteBuffers(1, &m_bufferId);
 }
 
 void OpenGlVertexArray::addVertexBuffer(std::shared_ptr<sl::gfx::VertexBuffer> vertexBuffer) {
@@ -27,7 +23,8 @@ void OpenGlVertexArray::addVertexBuffer(std::shared_ptr<sl::gfx::VertexBuffer> v
     const auto& memoryScheme = vertexBuffer->getMemoryScheme();
 
     for (const auto& offset : memoryScheme) {
-        glVertexAttribPointer(offset.index, offset.elementsCount, offset.type, offset.normalized, memoryScheme.calculateStride(), offset.begin);
+        glVertexAttribPointer(offset.index, offset.elementsCount, offset.type, offset.normalized,
+                              memoryScheme.calculateStride(), offset.begin);
         glEnableVertexAttribArray(offset.index);
     }
 
@@ -54,15 +51,9 @@ void OpenGlVertexArray::bind() {
     // LOG(DEBUG) << "Binding: " << m_bufferId;
 }
 
-void OpenGlVertexArray::unbind() {
-    glBindVertexArray(0u);
-}
+void OpenGlVertexArray::unbind() { glBindVertexArray(0u); }
 
-unsigned int OpenGlVertexArray::getVerticesCount() {
-    return m_verticesCount;
-}
+unsigned int OpenGlVertexArray::getVerticesCount() { return m_verticesCount; }
 
-unsigned int OpenGlVertexArray::getIndicesCount() {
-    return m_indicesCount;
-}
-}
+unsigned int OpenGlVertexArray::getIndicesCount() { return m_indicesCount; }
+}  // namespace sl::platform::gl

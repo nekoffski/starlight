@@ -18,14 +18,10 @@ struct BufferMemoryOffset {
 };
 
 class BufferMemoryScheme {
-public:
-    const auto begin() const {
-        return m_offsets.cbegin();
-    }
+   public:
+    const auto begin() const { return m_offsets.cbegin(); }
 
-    const auto end() const {
-        return m_offsets.cend();
-    }
+    const auto end() const { return m_offsets.cend(); }
 
     void addScheme(uint32_t elementsCount, uint32_t type, uint32_t typeSize, bool normalized) {
         // clang-format off
@@ -49,8 +45,8 @@ public:
         return std::accumulate(m_offsets.cbegin(), m_offsets.cend(), 0u, lengthAdder);
     }
 
-private:
+   private:
     std::vector<BufferMemoryOffset> m_offsets;
     unsigned int m_stride;
 };
-}
+}  // namespace sl::gfx

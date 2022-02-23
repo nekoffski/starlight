@@ -9,8 +9,7 @@ namespace sl::rendering::utils {
 
 inline void renderMesh(gfx::Renderer& renderer, geom::Mesh& mesh) {
     int i = 0;
-    for (const auto& texture : mesh.textures)
-        texture->bind(i++);
+    for (const auto& texture : mesh.textures) texture->bind(i++);
 
     auto& vao = mesh.vertexArray;
 
@@ -18,8 +17,7 @@ inline void renderMesh(gfx::Renderer& renderer, geom::Mesh& mesh) {
     renderer.renderVertexArray(*vao);
     vao->unbind();
 
-    for (const auto& texture : mesh.textures)
-        texture->unbind();
+    for (const auto& texture : mesh.textures) texture->unbind();
 }
 
 inline void renderMeshWithoutTextures(gfx::Renderer& renderer, geom::Mesh& mesh) {
@@ -30,7 +28,8 @@ inline void renderMeshWithoutTextures(gfx::Renderer& renderer, geom::Mesh& mesh)
     vao->unbind();
 }
 
-inline void renderModel(gfx::Renderer& renderer, gfx::Shader& shader, scene::components::ModelComponent& model, const math::Mat4& transform) {
+inline void renderModel(gfx::Renderer& renderer, gfx::Shader& shader,
+                        scene::components::ModelComponent& model, const math::Mat4& transform) {
     for (auto& position : model.instances) {
         shader.setUniform("modelMatrix", transform * math::translate(position));
 
@@ -41,4 +40,4 @@ inline void renderModel(gfx::Renderer& renderer, gfx::Shader& shader, scene::com
     }
 }
 
-}
+}  // namespace sl::rendering::utils

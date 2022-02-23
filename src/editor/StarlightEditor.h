@@ -1,36 +1,37 @@
 #pragma once
 
 #include <kc/core/Log.h>
+
 #include <kc/core/Scope.hpp>
+#include <memory>
 
 #include "DebugConsole.hpp"
 #include "EngineMode.h"
 #include "EngineState.h"
 #include "Events.h"
 #include "gui/EditorGui.h"
+#include "sl/app/Application.h"
 #include "sl/app/Deserializer.h"
 #include "sl/app/Serializer.h"
 #include "sl/asset/AssetManager.h"
 #include "sl/cam/EulerCamera.h"
 #include "sl/cam/FPSCamera.h"
+#include "sl/cam/FirstPersonCamera.h"
 #include "sl/core/InputManager.h"
+#include "sl/core/WindowManager.h"
 #include "sl/ecs/Entity.h"
 #include "sl/event/Categories.h"
 #include "sl/event/Event.h"
+#include "sl/gfx/BufferManager.h"
+#include "sl/gfx/RenderBuffer.h"
+#include "sl/gfx/TextureManager.h"
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/glob/Globals.h"
+#include "sl/gui/Core.h"
 #include "sl/gui/ErrorDialog.h"
-
+#include "sl/gui/GuiHelper.h"
 #include "sl/gui/Utils.h"
 #include "sl/gui/fonts/FontAwesome.h"
-#include "sl/scene/Scene.h"
-#include "sl/scene/components/CameraComponent.h"
-#include "sl/scene/components/MaterialComponent.h"
-#include "sl/scene/components/ModelComponent.h"
-#include "sl/scene/components/RigidBodyComponent.h"
-#include "sl/scene/components/TransformComponent.h"
-
-#include "sl/core/WindowManager.h"
 #include "sl/rendering/CustomFrameBufferRenderPass.h"
 #include "sl/rendering/DefaultFrameBufferRenderPass.h"
 #include "sl/rendering/RenderPass.h"
@@ -44,61 +45,55 @@
 #include "sl/rendering/stages/RenderMeshesStage.h"
 #include "sl/rendering/stages/RenderSkyboxStage.h"
 #include "sl/rendering/stages/RenderVectorsStage.h"
-
-#include "sl/cam/FirstPersonCamera.h"
-
-#include "sl/app/Application.h"
-#include "sl/gfx/TextureManager.h"
-
-#include "sl/gfx/BufferManager.h"
-#include "sl/gfx/RenderBuffer.h"
-
-#include "sl/gui/Core.h"
-#include "sl/gui/GuiHelper.h"
-
-#include <memory>
+#include "sl/scene/Scene.h"
+#include "sl/scene/components/CameraComponent.h"
+#include "sl/scene/components/MaterialComponent.h"
+#include "sl/scene/components/ModelComponent.h"
+#include "sl/scene/components/RigidBodyComponent.h"
+#include "sl/scene/components/TransformComponent.h"
 
 using namespace sl;
 using namespace sl::scene;
 using namespace sl::core;
 
-const math::Vec3 sceneOrigin = { 0.0f, 0.0f, 0.0f };
+const math::Vec3 sceneOrigin = {0.0f, 0.0f, 0.0f};
 
 class StarlightEditor : public app::Application {
-public:
+   public:
     explicit StarlightEditor()
-        : m_engineState(editor::EngineState::stopped)
-        , m_depthFrameBuffer(gfx::BufferManager::get().createFrameBuffer())
-        , m_captureDepthMapsRenderPass(m_depthFrameBuffer.get())
-        , m_sceneQuadFrameBuffer(gfx::BufferManager::get().createFrameBuffer())
-        , m_captureSceneRenderPass(m_sceneQuadFrameBuffer.get()) {
-
+        : m_engineState(editor::EngineState::stopped),
+          m_depthFrameBuffer(gfx::BufferManager::get().createFrameBuffer()),
+          m_captureDepthMapsRenderPass(m_depthFrameBuffer.get()),
+          m_sceneQuadFrameBuffer(gfx::BufferManager::get().createFrameBuffer()),
+          m_captureSceneRenderPass(m_sceneQuadFrameBuffer.get()) {
         sl::gui::initGui(sl::core::WindowManager::get().getWindowHandle());
 
         constexpr int fontSize = 15;
         sl::gui::GuiHelper::get()
-            .addFont("font1", "/home/nek0/kapik/projects/starlight/res/fonts/Roboto-Regular.ttf", fontSize)
-            .mergeWith("/home/nek0/kapik/projects/starlight/res/fonts/fa-solid-900.ttf", ICON_MIN_FA, ICON_MAX_FA);
+            .addFont("font1", "/home/nek0/kapik/projects/starlight/res/fonts/Roboto-Regular.ttf",
+                     fontSize)
+            .mergeWith("/home/nek0/kapik/projects/starlight/res/fonts/fa-solid-900.ttf",
+                       ICON_MIN_FA, ICON_MAX_FA);
 
         onStart();
     }
 
-    ~StarlightEditor() {
-        sl::gui::shutdownGui();
-    }
+    ~StarlightEditor() { sl::gui::shutdownGui(); }
 
     void onStart() {
         auto [windowWidth, windowHeight] = WindowManager::get().getSize();
 
-        auto viewFrustum = gfx::ViewFrustum { windowWidth, windowHeight };
-        m_editorCamera = std::make_unique<cam::EulerCamera>(viewFrustum, math::Vec3(0.0f), 1.0f, 8.0f);
+        auto viewFrustum = gfx::ViewFrustum{windowWidth, windowHeight};
+        m_editorCamera =
+            std::make_unique<cam::EulerCamera>(viewFrustum, math::Vec3(0.0f), 1.0f, 8.0f);
         m_currentScene = &m_mainScene;
 
         m_fpsCamera = std::make_unique<cam::FirstPersonCamera>(viewFrustum);
 
         // // TODO: remove!
-        auto& viewport = m_editorCamera->viewFrustum.viewport;
-        auto guiSharedState = std::make_shared<editor::gui::SharedState>(m_assetManager, viewport.width, viewport.height);
+        auto &viewport = m_editorCamera->viewFrustum.viewport;
+        auto guiSharedState = std::make_shared<editor::gui::SharedState>(
+            m_assetManager, viewport.width, viewport.height);
         m_editorGui = std::make_shared<editor::gui::EditorGui>(guiSharedState);
 
         m_currentScene->camera = m_editorCamera.get();
@@ -111,12 +106,10 @@ public:
         // setup rendering pipeline
         m_renderColorBufferStage.setColorBuffer(m_colorBuffer.get());
 
-        m_captureDepthMapsRenderPass
-            .addRenderStage(&m_captureDirectionalDepthMapsStage)
+        m_captureDepthMapsRenderPass.addRenderStage(&m_captureDirectionalDepthMapsStage)
             .addRenderStage(&m_capturePointDepthMapsStage);
 
-        m_captureSceneRenderPass
-            .addRenderStage(&m_prepareLightsStage)
+        m_captureSceneRenderPass.addRenderStage(&m_prepareLightsStage)
             .addRenderStage(&m_renderMeshesStage)
             .addRenderStage(&m_renderBoundingBoxesStage)
             .addRenderStage(&m_renderVectorsStage)
@@ -126,8 +119,7 @@ public:
 
         m_finalRenderPass.addRenderStage(&m_renderColorBufferStage);
 
-        m_renderPipeline
-            .addRenderPass(&m_captureDepthMapsRenderPass)
+        m_renderPipeline.addRenderPass(&m_captureDepthMapsRenderPass)
             .addRenderPass(&m_captureSceneRenderPass)
             .addRenderPass(&m_bloomPass)
             .addRenderPass(&m_finalRenderPass);
@@ -155,17 +147,22 @@ public:
             core::WindowManager::get().enableCursor(
                 not core::InputManager::get().isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE));
 
-        // auto pfxs = m_currentScene->ecsRegistry.getComponentView<components::ParticleEffectComponent>();
+        // auto pfxs =
+        // m_currentScene->ecsRegistry.getComponentView<components::ParticleEffectComponent>();
         // sceneSystems.pfxEngine.update(pfxs, deltaTime, *m_currentScene->camera);
 
         if (m_engineState == editor::EngineState::started) {
             using namespace sl::scene::components;
 
-            auto [rigidBodies, transforms] = m_currentScene->ecsRegistry.getComponentsViews<RigidBodyComponent, TransformComponent>();
-            // sceneSystems.physxEngine.processRigidBodies(rigidBodies, transforms, deltaTime);
+            auto [rigidBodies, transforms] =
+                m_currentScene->ecsRegistry
+                    .getComponentsViews<RigidBodyComponent, TransformComponent>();
+            // sceneSystems.physxEngine.processRigidBodies(rigidBodies, transforms,
+            // deltaTime);
         }
 
-        if (m_engineMode == editor::EngineMode::inGame && core::InputManager::get().isKeyPressed(STARL_KEY_ESCAPE)) {
+        if (m_engineMode == editor::EngineMode::inGame &&
+            core::InputManager::get().isKeyPressed(STARL_KEY_ESCAPE)) {
             m_engineMode = editor::EngineMode::inEditor;
             m_currentScene->camera = m_editorCamera.get();
             core::WindowManager::get().enableCursor();
@@ -175,35 +172,33 @@ public:
         }
     }
 
-    void render(gfx::Renderer& renderer) override {
+    void render(gfx::Renderer &renderer) override {
         m_renderPipeline.run(renderer, *m_currentScene);
 
         renderGui();
     }
 
-    bool isRunning() const override {
-        return m_isRunning;
-    }
+    bool isRunning() const override { return m_isRunning; }
 
-    void forceStop() override {
-    }
+    void forceStop() override {}
 
     void closeProject() {
         m_currentScene->clear();
         m_assetManager.clear();
     }
 
-    void handleEvents(const kc::event::EventProvider& eventProvider) override {
+    void handleEvents(const kc::event::EventProvider &eventProvider) override {
         auto events = eventProvider.getByCategories<event::CoreCategory, event::EditorCategory>();
 
         using namespace sl::event;
 
-        for (auto& event : events) {
+        for (auto &event : events) {
             LOG_INFO("Processing event: {}", event->asString());
 
             if (event->is<SetSkyboxEvent>()) {
                 auto cubemap = event->asView<SetSkyboxEvent>()->cubemap;
-                m_currentScene->skybox = sl::scene::Skybox { glob::Globals::get().shaders->defaultCubemapShader, cubemap };
+                m_currentScene->skybox =
+                    sl::scene::Skybox{glob::Globals::get().shaders->defaultCubemapShader, cubemap};
 
             } else if (event->is<QuitEvent>()) {
                 m_isRunning = false;
@@ -217,12 +212,10 @@ public:
 
             } else if (event->is<ChangeSceneCenterEvent>()) {
                 if (m_engineMode == editor::EngineMode::inEditor)
-                    m_editorCamera->setCenter(
-                        event->asView<ChangeSceneCenterEvent>()->center);
+                    m_editorCamera->setCenter(event->asView<ChangeSceneCenterEvent>()->center);
 
             } else if (event->is<editor::EngineStateChanged>()) {
-                handleStateChange(
-                    event->asView<editor::EngineStateChanged>()->state);
+                handleStateChange(event->asView<editor::EngineStateChanged>()->state);
 
             } else if (event->is<editor::EnterGameMode>()) {
                 LOG_INFO("Entering game mode");
@@ -234,18 +227,18 @@ public:
                     using namespace sl::app;
 
                     if (event->is<SerializeSceneEvent>()) {
-                        auto& path = event->asView<SerializeSceneEvent>()->path;
+                        auto &path = event->asView<SerializeSceneEvent>()->path;
 
                         LOG_INFO("Serializing scene as: {}", path);
-                        Serializer { path }.serialize(m_assetManager, m_currentScene);
+                        Serializer{path}.serialize(m_assetManager, m_currentScene);
                     } else if (event->is<DeserializeSceneEvent>()) {
-                        auto& path = event->asView<DeserializeSceneEvent>()->path;
+                        auto &path = event->asView<DeserializeSceneEvent>()->path;
 
                         LOG_INFO("Deserializing scene from: {}", path);
-                        Deserializer { m_assetManager, m_currentScene }.deserialize(path);
+                        Deserializer{m_assetManager, m_currentScene}.deserialize(path);
                     }
 
-                } catch (kc::core::ErrorBase& err) {
+                } catch (kc::core::ErrorBase &err) {
                     m_errorDialog.setErrorMessage(err.asString());
                 }
             }
@@ -253,14 +246,17 @@ public:
     }
 
     void enterGameMode() {
-        auto camerasComponents = m_currentScene->ecsRegistry.getComponentView<scene::components::CameraComponent>();
+        auto camerasComponents =
+            m_currentScene->ecsRegistry.getComponentView<scene::components::CameraComponent>();
 
-        auto activeCameras = std::views::filter(camerasComponents, [](ecs::Component& component) -> bool {
-            return component.isActive;
-        });
+        auto activeCameras = std::views::filter(
+            camerasComponents,
+            [](ecs::Component &component) -> bool { return component.isActive; });
 
-        if (auto activeCamerasCount = std::ranges::distance(activeCameras); activeCamerasCount > 1) {
-            m_errorDialog.setErrorMessage("Only 1 camera can be active on scene when entering game mode");
+        if (auto activeCamerasCount = std::ranges::distance(activeCameras);
+            activeCamerasCount > 1) {
+            m_errorDialog.setErrorMessage(
+                "Only 1 camera can be active on scene when entering game mode");
             return;
 
         } else if (activeCamerasCount == 1) {
@@ -276,16 +272,17 @@ public:
     }
 
     void recalculateViewportSize(float width, float height) {
-        editor::gui::GuiProperties guiProperties {
-            static_cast<int>(width), static_cast<int>(height)
-        };
+        editor::gui::GuiProperties guiProperties{static_cast<int>(width), static_cast<int>(height)};
+
         m_editorGui->sharedState->guiProperties = guiProperties;
 
         gfx::ViewFrustum::Viewport newViewport;
 
         if (m_engineMode == editor::EngineMode::inEditor) {
-            newViewport.width = static_cast<int>(width - guiProperties.scenePanelProperties.size.x - guiProperties.rightPanelProperties.size.x);
-            newViewport.height = static_cast<int>(height - guiProperties.bottomPanelProperties.size.y);
+            newViewport.width = static_cast<int>(width - guiProperties.scenePanelProperties.size.x -
+                                                 guiProperties.rightPanelProperties.size.x);
+            newViewport.height =
+                static_cast<int>(height - guiProperties.bottomPanelProperties.size.y);
             newViewport.beginX = static_cast<int>(guiProperties.scenePanelProperties.size.x);
             newViewport.beginY = static_cast<int>(guiProperties.bottomPanelProperties.size.y);
         } else {
@@ -295,15 +292,12 @@ public:
             newViewport.beginY = 0;
         }
 
-        m_currentScene->camera->viewFrustum.viewport = newViewport;
-        m_currentScene->camera->calculateProjectionMatrix();
+        m_depthBuffer =
+            gfx::BufferManager::get().createRenderBuffer(STARL_DEPTH_COMPONENT, width, height);
 
-        m_depthBuffer = gfx::BufferManager::get().createRenderBuffer(STARL_DEPTH_COMPONENT, width, height);
+        auto &textureManager = gfx::TextureManager::get();
 
-        auto& textureManager = gfx::TextureManager::get();
-
-        m_colorBuffer = textureManager
-                            .createTexture()
+        m_colorBuffer = textureManager.createTexture()
                             .withWidth(width)
                             .withHeight(height)
                             .withColorComponents(STARL_RGBA16F)
@@ -323,10 +317,10 @@ public:
         m_renderColorBufferStage.setColorBuffer(m_colorBuffer.get());
         m_renderColorBufferStage.setBloomBuffer(m_blurColorBufferStage.getOutputColorBuffer());
 
-        event::EventManager::get().emit<event::ChangeViewportEvent>(newViewport).to("Engine");
+        event::EventManager::get().emit<event::ChangeViewportEvent>(newViewport).toAll();
     }
 
-private:
+   private:
     void handleStateChange(editor::EngineState state) {
         LOG_INFO("Engine state changed to: {}", toString(state));
 
@@ -335,31 +329,29 @@ private:
         using editor::EngineState;
         using namespace sl::scene::components;
 
-        auto [rigidBodies, transforms] = m_currentScene->ecsRegistry.getComponentsViews<RigidBodyComponent, TransformComponent>();
+        auto [rigidBodies, transforms] =
+            m_currentScene->ecsRegistry
+                .getComponentsViews<RigidBodyComponent, TransformComponent>();
 
         switch (state) {
-        case EngineState::started: {
-            for (auto& rigidBody : rigidBodies)
-                rigidBody.save();
+            case EngineState::started: {
+                for (auto &rigidBody : rigidBodies) rigidBody.save();
 
-            for (auto& transform : transforms)
-                transform.save();
+                for (auto &transform : transforms) transform.save();
 
-            break;
-        }
+                break;
+            }
 
-        case EngineState::stopped: {
-            for (auto& rigidBody : rigidBodies)
-                rigidBody.restore();
+            case EngineState::stopped: {
+                for (auto &rigidBody : rigidBodies) rigidBody.restore();
 
-            for (auto& transform : transforms)
-                transform.restore();
+                for (auto &transform : transforms) transform.restore();
 
-            break;
-        }
+                break;
+            }
 
-        default:
-            break;
+            default:
+                break;
         }
     }
 
@@ -368,9 +360,9 @@ private:
     sl::asset::AssetManager m_assetManager;
 
     scene::Scene m_mainScene;
-    scene::Scene* m_currentScene;
+    scene::Scene *m_currentScene;
 
-    std::unique_ptr<cam::EulerCamera> m_editorCamera; // go to stack
+    std::unique_ptr<cam::EulerCamera> m_editorCamera;  // go to stack
     std::unique_ptr<cam::FirstPersonCamera> m_fpsCamera;
 
     std::shared_ptr<editor::gui::EditorGui> m_editorGui;

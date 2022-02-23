@@ -7,9 +7,7 @@
 namespace sl::app {
 
 struct Application : kc::event::EventListener {
-    explicit Application()
-        : EventListener("Application") {
-    }
+    explicit Application() : EventListener("Application") {}
 
     virtual void update(float deltaTime, float now) = 0;
     virtual void render(gfx::Renderer& renderer) = 0;
@@ -19,4 +17,4 @@ struct Application : kc::event::EventListener {
     virtual void forceStop() = 0;
 };
 
-}
+}  // namespace sl::app

@@ -15,9 +15,7 @@ using Vec2 = glm::vec2;
 using Vec3 = glm::vec3;
 using Vec4 = glm::vec4;
 
-inline float length(const Vec3& v) {
-    return glm::length(v);
-}
+inline float length(const Vec3& v) { return glm::length(v); }
 
 template <glm::length_t L, class T, glm::qualifier Q>
 glm::vec<L, T, Q> normalize(glm::vec<L, T, Q> const& x) {
@@ -40,11 +38,11 @@ float distance(glm::vec<3, T, Q> const& x, glm::vec<3, T, Q> const& y) {
 }
 
 inline Vec4 asColor(const Vec3& vec) {
-    return Vec4 { vec.x / 255.0f, vec.y / 255.0f, vec.z / 255.0f, 1.0f };
+    return Vec4{vec.x / 255.0f, vec.y / 255.0f, vec.z / 255.0f, 1.0f};
 }
 
 inline Vec4 asColor(const Vec4& vec) {
-    return Vec4 { vec.x / 255.0f, vec.y / 255.0f, vec.z / 255.0f, vec.w / 255.0f };
+    return Vec4{vec.x / 255.0f, vec.y / 255.0f, vec.z / 255.0f, vec.w / 255.0f};
 }
 
 inline std::string toString(const Vec2& v) {
@@ -52,18 +50,18 @@ inline std::string toString(const Vec2& v) {
 }
 
 inline std::string toString(const Vec3& v) {
-    return "Vec3: [" + std::to_string(v.x) + ", " + std::to_string(v.y) +
-        ", " + std::to_string(v.z) + "]";
+    return "Vec3: [" + std::to_string(v.x) + ", " + std::to_string(v.y) + ", " +
+           std::to_string(v.z) + "]";
 }
 
 inline std::string toString(const Vec4& v) {
     return "Vec4: [" + std::to_string(v.x) + ", " + std::to_string(v.y) + ", " +
-        std::to_string(v.z) + ", " + std::to_string(v.w) + "]";
+           std::to_string(v.z) + ", " + std::to_string(v.w) + "]";
 }
 
-inline const math::Vec3 VEC_ONES = math::Vec3 { 1.0f, 1.0f, 1.0f };
-inline const math::Vec3 VEC_ZEROS = math::Vec3 { 0.0f, 0.0f, 0.0f };
-}
+inline const math::Vec3 VEC_ONES = math::Vec3{1.0f, 1.0f, 1.0f};
+inline const math::Vec3 VEC_ZEROS = math::Vec3{0.0f, 0.0f, 0.0f};
+}  // namespace sl::math
 
 inline std::ostream& operator<<(std::ostream& ss, const sl::math::Vec4& v) {
     ss << v.x << " " << v.y << " " << v.z << " " << v.w << '\n';

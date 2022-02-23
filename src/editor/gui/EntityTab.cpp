@@ -2,6 +2,7 @@
 
 #include "sl/event/Event.h"
 #include "sl/gui/Utils.h"
+#include "sl/physx/AxisAlignedBoundingBox.h"
 #include "sl/scene/components/CameraComponent.h"
 #include "sl/scene/components/DirectionalLightComponent.h"
 #include "sl/scene/components/MaterialComponent.h"
@@ -12,21 +13,16 @@
 #include "sl/scene/components/RigidBodyComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 
-#include "sl/physx/AxisAlignedBoundingBox.h"
-
 namespace editor::gui {
 
 using namespace sl;
 
 EntityTab::EntityTab(std::shared_ptr<SharedState> sharedState)
-    : Widget(sharedState)
-    , m_selectedComponent(0) {
-}
+    : Widget(sharedState), m_selectedComponent(0) {}
 
 void EntityTab::render() {
     auto& widgetProperties = m_sharedState->guiProperties.propertiesPanelProperties;
-    with_TabItem(ICON_FA_CUBE " Entity")
-        showEntityProperties();
+    with_TabItem(ICON_FA_CUBE " Entity") showEntityProperties();
 }
 
 // clang-format off
@@ -66,7 +62,8 @@ void EntityTab::showEntityProperties() {
             auto& ecs = m_sharedState->activeScene->ecsRegistry;
 
             if (ecs.hasEntityByName(namePlaceholder))
-                m_errorDialog.setErrorMessage(fmt::format("Entity with name {} already exists", namePlaceholder));
+                m_errorDialog.setErrorMessage(
+                    fmt::format("Entity with name {} already exists", namePlaceholder));
             else
                 selectedEntity.setName(namePlaceholder);
         }
@@ -82,8 +79,8 @@ void EntityTab::showEntityProperties() {
 
         with_Popup("AddComponentPopUp") {
             static std::vector<std::string> componentsNames = {
-                "Model", "Renderer", "Rigid body", "Particle effect", "Transform", "Point light", "Directional light", "Material", "Camera"
-            };
+                "Model",       "Renderer",          "Rigid body", "Particle effect", "Transform",
+                "Point light", "Directional light", "Material",   "Camera"};
 
             with_Group {
                 sl::gui::combo("##ComponentCombo", &m_selectedComponent, componentsNames);
@@ -115,4 +112,4 @@ void EntityTab::showEntityProperties() {
         m_entityGui.renderEntityGui(selectedEntity, m_sharedState->assetManager);
     }
 }
-}
+}  // namespace editor::gui

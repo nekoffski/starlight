@@ -1,8 +1,8 @@
 #pragma once
 
-#include "sl/gfx/Image.h"
-
 #include <gmock/gmock.h>
+
+#include "sl/gfx/Image.h"
 
 using namespace sl::gfx;
 

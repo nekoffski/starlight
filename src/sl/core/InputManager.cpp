@@ -12,12 +12,14 @@ static double mouseX = 0.0f;
 static double mouseY = 0.0f;
 static double mouseScrollOffset = 0.0f;
 
-static void onMousePositionChange([[maybe_unused]] void* window, double positionX, double positionY) {
+static void onMousePositionChange([[maybe_unused]] void* window, double positionX,
+                                  double positionY) {
     mouseX = positionX;
     mouseY = positionY;
 }
 
-static void onMouseScroll([[maybe_unused]] void* window, [[maybe_unused]] double offsetX, double offsetY) {
+static void onMouseScroll([[maybe_unused]] void* window, [[maybe_unused]] double offsetX,
+                          double offsetY) {
     const float speed = 0.1f;
     mouseScrollOffset -= offsetY * speed;
 }
@@ -29,9 +31,7 @@ void InputManager::setMouse(Mouse* mouse) {
     m_mouse->setOnMouseScroll(onMouseScroll);
 }
 
-void InputManager::setKeyboard(Keyboard* keyboard) {
-    m_keyboard = keyboard;
-}
+void InputManager::setKeyboard(Keyboard* keyboard) { m_keyboard = keyboard; }
 
 void InputManager::update() {
     static float previousPositionX = 0.0f;
@@ -52,15 +52,14 @@ void InputManager::update() {
 }
 
 bool InputManager::isMouseButtonPressed(int buttonCode) const {
-    return m_mouse->isMouseButtonPressed(buttonCode) && not glob::Globals::get().flags.disableMouseInput;
+    return m_mouse->isMouseButtonPressed(buttonCode) &&
+           not glob::Globals::get().flags.disableMouseInput;
 }
 
-math::Vec2 InputManager::getMousePosition() const {
-    return m_mouse->getMousePosition();
-}
+math::Vec2 InputManager::getMousePosition() const { return m_mouse->getMousePosition(); }
 
 math::Vec2 InputManager::getMousePositonDelta() const {
-    return { mousePositionDeltaX, mousePositionDeltaY };
+    return {mousePositionDeltaX, mousePositionDeltaY};
 }
 
 double InputManager::getScrollDelta() const {
@@ -71,4 +70,4 @@ bool InputManager::isKeyPressed(int keyCode) const {
     return m_keyboard->isKeyPressed(keyCode) && not glob::Globals::get().flags.disableKeyboardInput;
 }
 
-}
+}  // namespace sl::core

@@ -6,12 +6,12 @@ namespace sl::async {
 
 struct PeriodicTask {
     class Handle {
-    public:
+       public:
         Handle(PeriodicTask* task);
 
         void disable();
 
-    private:
+       private:
         PeriodicTask* m_task;
     };
 
@@ -27,4 +27,4 @@ struct PeriodicTask {
     std::string id;
 };
 
-}
+}  // namespace sl::async

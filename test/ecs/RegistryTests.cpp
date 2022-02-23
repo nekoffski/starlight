@@ -1,10 +1,9 @@
-#include "sl/ecs/Registry.hpp"
-
 #include <gtest/gtest.h>
 
 #include "mocks/TestComponent.h"
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
+#include "sl/ecs/Registry.hpp"
 
 using namespace testing;
 using namespace sl::ecs;
@@ -104,4 +103,4 @@ TEST_F(RegistryTests, givenRegistry_whenGettingEntitiesCount_shouldReturnCorrect
     EXPECT_EQ(reg.getEntitiesCount(), 1);
 }
 
-}
+}  // namespace

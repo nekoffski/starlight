@@ -2,12 +2,10 @@
 
 #include <string>
 
+#include "imgui/imgui.h"
 #include "sl/asset/AssetManager.h"
-
 #include "sl/gui/Utils.h"
 #include "sl/gui/fonts/FontAwesome.h"
-
-#include "imgui/imgui.h"
 
 namespace sl::ecs {
 
@@ -18,4 +16,4 @@ struct Component {
     std::string name;
 };
 
-}
+}  // namespace sl::ecs

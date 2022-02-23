@@ -1,8 +1,8 @@
 #pragma once
 
-#include "sl/gfx/ElementBuffer.h"
-
 #include <gmock/gmock.h>
+
+#include "sl/gfx/ElementBuffer.h"
 
 using namespace sl;
 using namespace sl::gfx;

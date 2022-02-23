@@ -12,7 +12,7 @@ namespace sl::ecs {
 class Entity : public core::GameObject {
     friend class Registry;
 
-public:
+   public:
     explicit Entity(const std::string& name, Registry& registry);
 
     std::string getName() const;
@@ -48,9 +48,9 @@ public:
 
     bool isActive;
 
-private:
+   private:
     std::string m_name;
     Registry& m_registry;
     std::vector<std::type_index> m_componentsIndexes;
 };
-}
+}  // namespace sl::ecs

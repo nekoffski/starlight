@@ -9,4 +9,4 @@ DECLARE_EVENT(MouseButtonActionEvent, InputCategory) {
     int button;
     int state;
 };
-}
+}  // namespace sl::event

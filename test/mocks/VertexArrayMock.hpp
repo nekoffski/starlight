@@ -1,8 +1,8 @@
 #pragma once
 
-#include "sl/gfx/VertexArray.h"
-
 #include <gmock/gmock.h>
+
+#include "sl/gfx/VertexArray.h"
 
 using namespace sl::gfx;
 

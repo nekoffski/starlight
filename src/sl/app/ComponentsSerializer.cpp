@@ -9,34 +9,36 @@
 #include "sl/scene/components/RigidBodyComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 
-#define BIND_SERIALIZER_CALLBACK(Component) \
-    { sl::core::typeIndex<sl::scene::components::Component>(), &sl::app::ComponentsSerializer::serialize##Component }
+#define BIND_SERIALIZER_CALLBACK(Component)                      \
+    {                                                            \
+        sl::core::typeIndex<sl::scene::components::Component>(), \
+            &sl::app::ComponentsSerializer::serialize##Component \
+    }
 
 namespace sl::app {
 
 ComponentsSerializer::ComponentsSerializer() {
-    m_serializers = {
-        BIND_SERIALIZER_CALLBACK(DirectionalLightComponent),
-        BIND_SERIALIZER_CALLBACK(MaterialComponent),
-        BIND_SERIALIZER_CALLBACK(MeshRendererComponent),
-        BIND_SERIALIZER_CALLBACK(ModelComponent),
-        BIND_SERIALIZER_CALLBACK(ParticleEffectComponent),
-        BIND_SERIALIZER_CALLBACK(PointLightComponent),
-        BIND_SERIALIZER_CALLBACK(TransformComponent),
-        BIND_SERIALIZER_CALLBACK(RigidBodyComponent)
-    };
+    m_serializers = {BIND_SERIALIZER_CALLBACK(DirectionalLightComponent),
+                     BIND_SERIALIZER_CALLBACK(MaterialComponent),
+                     BIND_SERIALIZER_CALLBACK(MeshRendererComponent),
+                     BIND_SERIALIZER_CALLBACK(ModelComponent),
+                     BIND_SERIALIZER_CALLBACK(ParticleEffectComponent),
+                     BIND_SERIALIZER_CALLBACK(PointLightComponent),
+                     BIND_SERIALIZER_CALLBACK(TransformComponent),
+                     BIND_SERIALIZER_CALLBACK(RigidBodyComponent)};
 }
 
-void ComponentsSerializer::serializeComponent(std::type_index index, kc::json::JsonBuilder& builder, ecs::Component& component) {
-    if (m_serializers.contains(index))
-        std::invoke(m_serializers.at(index), builder, component);
+void ComponentsSerializer::serializeComponent(std::type_index index, kc::json::JsonBuilder& builder,
+                                              ecs::Component& component) {
+    if (m_serializers.contains(index)) std::invoke(m_serializers.at(index), builder, component);
 }
 
-void ComponentsSerializer::serializeDirectionalLightComponent(kc::json::JsonBuilder& builder, ecs::Component& component) {
-    auto& directionalLightComponent = static_cast<scene::components::DirectionalLightComponent&>(component);
+void ComponentsSerializer::serializeDirectionalLightComponent(kc::json::JsonBuilder& builder,
+                                                              ecs::Component& component) {
+    auto& directionalLightComponent =
+        static_cast<scene::components::DirectionalLightComponent&>(component);
 
-    builder
-        .addField("name", "DirectionalLightComponent"s)
+    builder.addField("name", "DirectionalLightComponent"s)
         .addField("active", directionalLightComponent.isActive)
         .addField("render-direction", directionalLightComponent.renderDirection);
 
@@ -44,7 +46,8 @@ void ComponentsSerializer::serializeDirectionalLightComponent(kc::json::JsonBuil
     serializeVector(builder, "color", directionalLightComponent.color);
 }
 
-void ComponentsSerializer::serializeMaterialComponent(kc::json::JsonBuilder& builder, ecs::Component& component) {
+void ComponentsSerializer::serializeMaterialComponent(kc::json::JsonBuilder& builder,
+                                                      ecs::Component& component) {
     auto& materialComponent = static_cast<scene::components::MaterialComponent&>(component);
 
     builder.addField("name", "MaterialComponent"s).addField("active", materialComponent.isActive);
@@ -54,33 +57,35 @@ void ComponentsSerializer::serializeMaterialComponent(kc::json::JsonBuilder& bui
     builder.addField("shininess", materialComponent.shininess);
 }
 
-void ComponentsSerializer::serializeMeshRendererComponent(kc::json::JsonBuilder& builder, ecs::Component& component) {
+void ComponentsSerializer::serializeMeshRendererComponent(kc::json::JsonBuilder& builder,
+                                                          ecs::Component& component) {
     auto& meshRendererComponent = static_cast<scene::components::MeshRendererComponent&>(component);
 
-    builder
-        .addField("name", "MeshRendererComponent"s)
+    builder.addField("name", "MeshRendererComponent"s)
         .addField("shader-id", meshRendererComponent.shader->getId())
         .addField("active", meshRendererComponent.isActive);
 }
 
-void ComponentsSerializer::serializeModelComponent(kc::json::JsonBuilder& builder, ecs::Component& component) {
+void ComponentsSerializer::serializeModelComponent(kc::json::JsonBuilder& builder,
+                                                   ecs::Component& component) {
     auto& modelComponent = static_cast<scene::components::ModelComponent&>(component);
 
     std::vector<std::string> meshesIds;
     std::ranges::transform(modelComponent.meshes, std::back_inserter(meshesIds),
-        [](auto& mesh) -> std::string { return mesh->getId(); });
+                           [](auto& mesh) -> std::string { return mesh->getId(); });
 
     builder.addField("name", "ModelComponent"s)
         .addField("meshes-ids", meshesIds)
         .addField("active", modelComponent.isActive);
 }
 
-void ComponentsSerializer::serializeParticleEffectComponent(kc::json::JsonBuilder& builder, ecs::Component& component) {
-    auto& particleEffectComponent = static_cast<scene::components::ParticleEffectComponent&>(component);
+void ComponentsSerializer::serializeParticleEffectComponent(kc::json::JsonBuilder& builder,
+                                                            ecs::Component& component) {
+    auto& particleEffectComponent =
+        static_cast<scene::components::ParticleEffectComponent&>(component);
     auto& settings = particleEffectComponent.pfxGeneratorSettings;
 
-    builder
-        .addField("name", "ParticleEffectComponent"s)
+    builder.addField("name", "ParticleEffectComponent"s)
         .addField("is-active", component.isActive)
         .addField("max-particles", particleEffectComponent.maxParticles)
         .addField("min-scale", settings.minScale)
@@ -96,21 +101,23 @@ void ComponentsSerializer::serializeParticleEffectComponent(kc::json::JsonBuilde
     serializeVector(builder, "position", particleEffectComponent.position);
 }
 
-void ComponentsSerializer::serializePointLightComponent(kc::json::JsonBuilder& builder, ecs::Component& component) {
+void ComponentsSerializer::serializePointLightComponent(kc::json::JsonBuilder& builder,
+                                                        ecs::Component& component) {
     auto& pointLightComponent = static_cast<scene::components::PointLightComponent&>(component);
 
-    builder.addField("name", "PointLightComponent"s).addField("active", pointLightComponent.isActive);
+    builder.addField("name", "PointLightComponent"s)
+        .addField("active", pointLightComponent.isActive);
     serializeVector(builder, "position", pointLightComponent.position);
     serializeVector(builder, "color", pointLightComponent.color);
-    builder
-        .beginObject("attenuation")
+    builder.beginObject("attenuation")
         .addField("a", pointLightComponent.attenuationA)
         .addField("b", pointLightComponent.attenuationB)
         .addField("c", pointLightComponent.attenuationC)
         .endObject();
 }
 
-void ComponentsSerializer::serializeTransformComponent(kc::json::JsonBuilder& builder, ecs::Component& component) {
+void ComponentsSerializer::serializeTransformComponent(kc::json::JsonBuilder& builder,
+                                                       ecs::Component& component) {
     auto& transformComponent = static_cast<scene::components::TransformComponent&>(component);
 
     builder.addField("name", "TransformComponent"s).addField("active", transformComponent.isActive);
@@ -119,23 +126,26 @@ void ComponentsSerializer::serializeTransformComponent(kc::json::JsonBuilder& bu
     serializeVector(builder, "scale", transformComponent.scale);
 }
 
-void ComponentsSerializer::serializeRigidBodyComponent(kc::json::JsonBuilder& builder, ecs::Component& component) {
+void ComponentsSerializer::serializeRigidBodyComponent(kc::json::JsonBuilder& builder,
+                                                       ecs::Component& component) {
     auto& rigidBodyComponent = static_cast<scene::components::RigidBodyComponent&>(component);
 
-    builder
-        .addField("name", "RigidBodyComponent"s)
+    builder.addField("name", "RigidBodyComponent"s)
         .addField("use-gravity", rigidBodyComponent.useGravity)
         .addField("mass", rigidBodyComponent.mass)
         .addField("enable-collisions", rigidBodyComponent.enableCollisions)
         .addField("fixed", rigidBodyComponent.fixed)
         .addField("render-bounding-box", rigidBodyComponent.renderBoundingBox)
-        .addField("bounding-box", rigidBodyComponent.boundingBox != nullptr ? rigidBodyComponent.boundingBox->getName() : "None")
+        .addField("bounding-box", rigidBodyComponent.boundingBox != nullptr
+                                      ? rigidBodyComponent.boundingBox->getName()
+                                      : "None")
         .addField("active", rigidBodyComponent.isActive);
 
     serializeVector(builder, "velocity", rigidBodyComponent.velocity);
 }
 
-void ComponentsSerializer::serializeVector(kc::json::JsonBuilder& builder, const std::string& name, const math::Vec3& vector) {
-    builder.addField(name, std::vector<float> { vector.x, vector.y, vector.z });
+void ComponentsSerializer::serializeVector(kc::json::JsonBuilder& builder, const std::string& name,
+                                           const math::Vec3& vector) {
+    builder.addField(name, std::vector<float>{vector.x, vector.y, vector.z});
 }
-}
+}  // namespace sl::app

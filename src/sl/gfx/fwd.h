@@ -19,4 +19,4 @@ class ShaderManager;
 class TextureManager;
 class BufferManager;
 
-}
+}  // namespace sl::gfx

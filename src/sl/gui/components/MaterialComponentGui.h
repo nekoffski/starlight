@@ -6,9 +6,9 @@
 namespace sl::gui::components {
 
 class MaterialComponentGui : public ComponentGuiImpl<scene::components::MaterialComponent> {
-private:
+   private:
     void renderComponentGuiImpl(scene::components::MaterialComponent& component,
-        asset::AssetManager& assetManager, ecs::Entity& entity) override;
+                                asset::AssetManager& assetManager, ecs::Entity& entity) override;
 };
 
-}
+}  // namespace sl::gui::components

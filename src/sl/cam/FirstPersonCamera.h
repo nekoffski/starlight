@@ -9,10 +9,10 @@
 namespace sl::cam {
 
 class FirstPersonCamera : public Camera {
-public:
-    explicit FirstPersonCamera(const gfx::ViewFrustum& viewFrustum = gfx::ViewFrustum { 0, 0 }) // pass view frustum there somehow
+   public:
+    explicit FirstPersonCamera(const gfx::ViewFrustum& viewFrustum = gfx::ViewFrustum{0, 0})
         : Camera(viewFrustum) {
-        m_position = math::Vec3 { 0.0f, 0.0f, 0.0f };
+        m_position = math::Vec3{0.0f, 0.0f, 0.0f};
     }
 
     void update(float deltaTime) override {
@@ -24,20 +24,15 @@ public:
         m_x = pos.x;
         m_y = pos.y;
 
-        if (inputManager.isKeyPressed(STARL_KEY_W))
-            m_position += m_front * velocity;
+        if (inputManager.isKeyPressed(STARL_KEY_W)) m_position += m_front * velocity;
 
-        if (inputManager.isKeyPressed(STARL_KEY_S))
-            m_position -= m_front * velocity;
+        if (inputManager.isKeyPressed(STARL_KEY_S)) m_position -= m_front * velocity;
 
-        if (inputManager.isKeyPressed(STARL_KEY_A))
-            m_position -= m_right * velocity;
+        if (inputManager.isKeyPressed(STARL_KEY_A)) m_position -= m_right * velocity;
 
-        if (inputManager.isKeyPressed(STARL_KEY_D))
-            m_position += m_right * velocity;
+        if (inputManager.isKeyPressed(STARL_KEY_D)) m_position += m_right * velocity;
 
-        if (m_x == 0.0f && m_y == 0.0f)
-            return;
+        if (m_x == 0.0f && m_y == 0.0f) return;
 
         float xoffset = m_x - m_prevX;
         float yoffset = m_prevY - m_y;
@@ -53,10 +48,9 @@ public:
 
         // m_front = math::Vec3 { 0.0f, 0.0f, 1.0f };
 
-        m_front = math::normalize(-math::Vec3 {
-            std::cos(m_yaw) * std::cos(m_pitch),
-            std::sin(m_pitch),
-            std::sin(m_yaw) * std::cos(m_pitch) });
+        m_front =
+            math::normalize(-math::Vec3{std::cos(m_yaw) * std::cos(m_pitch), std::sin(m_pitch),
+                                        std::sin(m_yaw) * std::cos(m_pitch)});
 
         m_right = math::normalize(math::cross(m_front, math::worldUp));
         m_up = math::normalize(math::cross(m_right, m_front));
@@ -66,19 +60,18 @@ public:
         return math::lookAt(m_position, m_position + m_front, math::worldUp);
     }
 
-    void onGui() override {
-    }
+    void onGui() override {}
 
-private:
-    float m_x { 0.0f };
-    float m_y { 0.0f };
+   private:
+    float m_x{0.0f};
+    float m_y{0.0f};
 
-    float m_pitch { 0.0f };
-    float m_yaw { 0.0f };
+    float m_pitch{0.0f};
+    float m_yaw{0.0f};
 
     float m_prevX;
     float m_prevY;
 
     float m_speed = 5.0f;
 };
-}
+}  // namespace sl::cam

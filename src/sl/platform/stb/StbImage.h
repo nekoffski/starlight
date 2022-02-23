@@ -8,7 +8,7 @@
 namespace sl::platform::stb {
 
 class StbImage : public gfx::Image {
-public:
+   public:
     StbImage(const std::string& path, int desiredChannels = 0);
     ~StbImage() override;
 
@@ -16,7 +16,7 @@ public:
     math::Size2D getSize() const override;
     int getChannelsCount() const override;
 
-private:
+   private:
     unsigned char* m_buffer;
     int m_channels;
     math::Size2D m_imageSize;
@@ -25,4 +25,4 @@ private:
 struct StbImageFactory : gfx::Image::Factory {
     std::unique_ptr<gfx::Image> create(const std::string& path, int desiredChannels = 0);
 };
-}
+}  // namespace sl::platform::stb

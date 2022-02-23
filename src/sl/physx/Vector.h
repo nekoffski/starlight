@@ -15,4 +15,4 @@ struct ColoredVector {
     math::Vec3 color;
 };
 
-}
+}  // namespace sl::physx

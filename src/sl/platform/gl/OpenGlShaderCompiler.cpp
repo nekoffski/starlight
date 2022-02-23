@@ -1,16 +1,14 @@
 #include "OpenGlShaderCompiler.h"
 
+#include <glad/glad.h>
+#include <kc/core/Log.h>
+
 #include <cstring>
 #include <fstream>
 #include <sstream>
 
-#include <glad/glad.h>
-
-#include <kc/core/Log.h>
-
-#include "sl/core/Errors.hpp"
-
 #include "OpenGlShader.h"
+#include "sl/core/Errors.hpp"
 
 constexpr int InfoBufferSize = 1024;
 
@@ -23,7 +21,8 @@ void OpenGlShaderCompiler::compile(sl::gfx::Shader& shader) {
 }
 
 void OpenGlShaderCompiler::compile(OpenGlShader& shader) {
-    LOG_DEBUG("compiling shader: \n{},\n{},\n{}", shader.m_fragmentPath, shader.m_vertexPath, shader.m_geomPath);
+    LOG_DEBUG("compiling shader: \n{},\n{},\n{}", shader.m_fragmentPath, shader.m_vertexPath,
+              shader.m_geomPath);
 
     GLuint& shaderProgramId = shader.m_shaderProgram;
     shaderProgramId = glCreateProgram();
@@ -58,13 +57,12 @@ void OpenGlShaderCompiler::compile(OpenGlShader& shader) {
     glDeleteShader(vertexShaderId);
     glDeleteShader(fragmentShaderId);
 
-    if (geometryShaderId.has_value())
-        glDeleteShader(geometryShaderId.value());
+    if (geometryShaderId.has_value()) glDeleteShader(geometryShaderId.value());
 
     if (!linked) {
         glGetProgramInfoLog(shaderProgramId, infoBufferSize, nullptr, infoBuffer);
         LOG_ERROR("could not link: ", infoBuffer);
-        throw core::ShaderError {};
+        throw core::ShaderError{};
     }
 }
 
@@ -76,7 +74,7 @@ unsigned int OpenGlShaderCompiler::compileShader(const std::string& path, unsign
 
     if (!shaderSource.good()) {
         LOG_ERROR("could not find source: {}", path);
-        throw ShaderError {};
+        throw ShaderError{};
     }
 
     std::stringstream vertex_data;
@@ -100,9 +98,9 @@ unsigned int OpenGlShaderCompiler::compileShader(const std::string& path, unsign
     if (!compiled) {
         glGetShaderInfoLog(shader, infoBufferSize, nullptr, infoBuffer);
         LOG_ERROR("could not compile: {}", infoBuffer);
-        throw ShaderError {};
+        throw ShaderError{};
     }
 
     return shader;
 }
-}
+}  // namespace sl::platform::gl

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "sl/geom/ModelLoader.h"
-
 #include <gmock/gmock.h>
+
+#include "sl/geom/ModelLoader.h"
 
 using namespace sl::geom;
 

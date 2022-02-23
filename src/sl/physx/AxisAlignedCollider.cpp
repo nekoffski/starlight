@@ -5,7 +5,8 @@
 
 namespace sl::physx {
 
-bool AxisAlignedCollider::collideWith(AxisAlignedBoundingBox& boundingBox, const math::Mat4& modelMatrix) {
+bool AxisAlignedCollider::collideWith(AxisAlignedBoundingBox& boundingBox,
+                                      const math::Mat4& modelMatrix) {
     const auto min = modelMatrix * boundingBox.min;
     const auto max = modelMatrix * boundingBox.max;
 

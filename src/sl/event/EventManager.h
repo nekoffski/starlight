@@ -1,20 +1,17 @@
 #pragma once
 
-#include <kc/core/Singleton.hpp>
 #include <kc/event/EventEmitter.h>
 #include <kc/event/EventEngine.h>
+
+#include <kc/core/Singleton.hpp>
 
 namespace sl::event {
 
 class EventManager : public kc::core::Singleton<EventManager> {
-public:
-    explicit EventManager()
-        : m_eventEmitter(m_eventEngine.createEmitter()) {
-    }
+   public:
+    explicit EventManager() : m_eventEmitter(m_eventEngine.createEmitter()) {}
 
-    void update() {
-        m_eventEngine.spreadEvents();
-    }
+    void update() { m_eventEngine.spreadEvents(); }
 
     void registerListener(kc::event::EventListener* listener) {
         m_eventEngine.registerEventListener(listener);
@@ -31,9 +28,9 @@ public:
     }
     // clang-format on
 
-private:
+   private:
     kc::event::EventEngine m_eventEngine;
     std::shared_ptr<kc::event::EventEmitter> m_eventEmitter;
 };
 
-}
+}  // namespace sl::event

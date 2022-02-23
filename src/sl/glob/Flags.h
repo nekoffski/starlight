@@ -7,4 +7,4 @@ struct Flags {
     bool disableKeyboardInput = false;
 };
 
-}
+}  // namespace sl::glob

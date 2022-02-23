@@ -1,22 +1,23 @@
 #include "ParticleEffectRenderer.h"
 
+#include <kc/core/Profiler.h>
+
+#include "sl/cam/Camera.h"
 #include "sl/ecs/ComponentView.hpp"
 #include "sl/gfx/Renderer.h"
 #include "sl/gfx/Shader.h"
-#include "sl/cam/Camera.h"
 #include "sl/glob/Globals.h"
 #include "sl/scene/components/TransformComponent.h"
-#include <kc/core/Profiler.h>
 
 namespace sl::gfx::renderer {
 
 ParticleEffectRenderer::ParticleEffectRenderer(Renderer& renderer)
-    : m_renderer(renderer)
-    , m_vao(glob::Globals::get().geom->frontSquareVAO)
-    , m_shader(glob::Globals::get().shaders->pfxShader) {
-}
+    : m_renderer(renderer),
+      m_vao(glob::Globals::get().geom->frontSquareVAO),
+      m_shader(glob::Globals::get().shaders->pfxShader) {}
 
-void ParticleEffectRenderer::renderParticleEffects(ecs::ComponentView<scene::components::ParticleEffectComponent> pfxs,
+void ParticleEffectRenderer::renderParticleEffects(
+    ecs::ComponentView<scene::components::ParticleEffectComponent> pfxs,
     ecs::ComponentView<scene::components::TransformComponent> transforms, cam::Camera& camera) {
     PROFILE_FUNCTION();
 
@@ -36,8 +37,7 @@ void ParticleEffectRenderer::renderParticleEffects(ecs::ComponentView<scene::com
 
         bool hasTexture = pfx.texture != nullptr;
 
-        if (hasTexture)
-            pfx.texture->bind();
+        if (hasTexture) pfx.texture->bind();
 
         m_shader->setUniform("hasTexture", hasTexture);
 
@@ -49,8 +49,7 @@ void ParticleEffectRenderer::renderParticleEffects(ecs::ComponentView<scene::com
             renderParticle();
         }
 
-        if (hasTexture)
-            pfx.texture->unbind();
+        if (hasTexture) pfx.texture->unbind();
     }
 
     endParticleEffect();
@@ -62,11 +61,7 @@ void ParticleEffectRenderer::beginParticleEffect(cam::Camera& camera) {
     m_vao->bind();
 }
 
-void ParticleEffectRenderer::renderParticle() {
-    m_renderer.renderVertexArray(*m_vao);
-}
+void ParticleEffectRenderer::renderParticle() { m_renderer.renderVertexArray(*m_vao); }
 
-void ParticleEffectRenderer::endParticleEffect() {
-    m_vao->unbind();
-}
-}
+void ParticleEffectRenderer::endParticleEffect() { m_vao->unbind(); }
+}  // namespace sl::gfx::renderer

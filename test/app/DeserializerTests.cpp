@@ -1,16 +1,14 @@
 #include <gtest/gtest-param-test.h>
 #include <gtest/gtest.h>
+#include <kc/json/Json.h>
 
 #include <memory>
 
-#include <kc/json/Json.h>
-
+#include "mocks/FileSystemMock.hpp"
 #include "sl/app/Deserializer.h"
 #include "sl/asset/AssetManager.h"
 #include "sl/core/Errors.hpp"
 #include "sl/scene/Scene.h"
-
-#include "mocks/FileSystemMock.hpp"
 
 using namespace testing;
 
@@ -23,7 +21,7 @@ using namespace kc::json;
 namespace {
 
 class DeserializerTests : public Test {
-protected:
+   protected:
     std::shared_ptr<FileSystemMock> m_fsMock = std::make_shared<FileSystemMock>();
 
     const std::string m_filename = "exampleFilename.starlscene";
@@ -31,7 +29,7 @@ protected:
     Scene m_scene;
     AssetManager m_assetManager;
 
-    Deserializer deserializer = Deserializer { m_assetManager, &m_scene };
+    Deserializer deserializer = Deserializer{m_assetManager, &m_scene};
 };
 
 TEST_F(DeserializerTests, whenFileDoesNotExists_shouldThrow) {
@@ -40,7 +38,8 @@ TEST_F(DeserializerTests, whenFileDoesNotExists_shouldThrow) {
     EXPECT_THROW(deserializer.deserialize(m_filename, *m_fsMock), kc::core::ErrorBase);
 }
 
-class DeserializerTestsInvalidJson : public DeserializerTests, public WithParamInterface<std::string> { };
+class DeserializerTestsInvalidJson : public DeserializerTests,
+                                     public WithParamInterface<std::string> {};
 
 TEST_P(DeserializerTestsInvalidJson, givenInvalidJson_whenDeserializing_shouldThrow) {
     EXPECT_CALL(*m_fsMock, isFile(_)).Times(1).WillOnce(Return(true));
@@ -57,4 +56,4 @@ static const std::vector<std::string> invalidJsonTestData = {
 };
 
 INSTANTIATE_TEST_CASE_P(_, DeserializerTestsInvalidJson, ::testing::ValuesIn(invalidJsonTestData));
-}
+}  // namespace

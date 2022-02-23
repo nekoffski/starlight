@@ -11,14 +11,14 @@ namespace sl::gui {
 class ComponentsGui {
     using ComponentGuiPtr = std::shared_ptr<components::ComponentGui>;
 
-public:
+   public:
     explicit ComponentsGui();
 
     void renderComponentGui(std::type_index index, ecs::Component& component,
-        asset::AssetManager& assetManager, ecs::Entity& entity);
+                            asset::AssetManager& assetManager, ecs::Entity& entity);
 
-private:
+   private:
     std::unordered_map<std::type_index, ComponentGuiPtr> m_componentsGui;
 };
 
-}
+}  // namespace sl::gui

@@ -1,11 +1,11 @@
 #pragma once
 
-#include <memory>
-#include <optional>
-
 #include <kc/core/Log.h>
 #include <kc/event/EventListener.h>
 #include <kc/sig/SignalHandler.h>
+
+#include <memory>
+#include <optional>
 
 #include "sl/app/Application.h"
 #include "sl/async/AsyncManager.hpp"
@@ -17,35 +17,28 @@
 #include "sl/core/WindowManager.h"
 #include "sl/event/EventManager.h"
 #include "sl/geom/GeometryManager.h"
+#include "sl/gfx/BufferManager.h"
+#include "sl/gfx/ShaderManager.h"
+#include "sl/gfx/TextureManager.h"
 #include "sl/gfx/fwd.h"
 #include "sl/glob/Globals.h"
-
+#include "sl/gui/GuiHelper.h"
 #include "sl/gui/fonts/FontAwesome.h"
 #include "sl/platform/Platform.hpp"
 #include "sl/platform/glfw/GlfwInput.h"
 
-#include "sl/async/AsyncManager.hpp"
-#include "sl/core/ClockManager.h"
-#include "sl/core/InputManager.h"
-#include "sl/core/WindowManager.h"
-#include "sl/geom/GeometryManager.h"
-#include "sl/gfx/BufferManager.h"
-#include "sl/gfx/ShaderManager.h"
-#include "sl/gfx/TextureManager.h"
-#include "sl/gui/GuiHelper.h"
-
 namespace sl::app {
 
 class Engine : kc::event::EventListener {
-public:
+   public:
     class Builder {
-    public:
+       public:
         Builder&& setConfig(cfg::Config* config) &&;
         Builder&& setPlatform(platform::Platform* platform) &&;
 
         std::unique_ptr<Engine> build() &&;
 
-    private:
+       private:
         platform::Platform* m_platform = nullptr;
         cfg::Config* m_config = nullptr;
     };
@@ -59,7 +52,7 @@ public:
     void initGlobalState();
     void run();
 
-private:
+   private:
     void render();
     void update();
     void loopStep();
@@ -93,4 +86,4 @@ private:
     // clang-format on
 };
 
-}
+}  // namespace sl::app

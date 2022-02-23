@@ -1,34 +1,29 @@
 #include "Engine.h"
 
-#include <memory>
-#include <optional>
-
 #include <kc/core/Log.h>
 #include <kc/core/Profiler.h>
 #include <kc/sig/Signal.h>
 
-#include "sl/app/Application.h"
-#include "sl/cfg/Config.h"
-#include "sl/glob/Globals.h"
-#include "sl/gui/fonts/FontAwesome.h"
-#include "sl/platform/Platform.hpp"
+#include <memory>
+#include <optional>
 
+#include "sl/app/Application.h"
 #include "sl/async/AsyncManager.hpp"
+#include "sl/cfg/Config.h"
 #include "sl/core/ClockManager.h"
 #include "sl/core/Errors.hpp"
 #include "sl/core/Input.h"
 #include "sl/core/InputManager.h"
-
+#include "sl/core/WindowManager.h"
+#include "sl/event/EventManager.h"
 #include "sl/geom/GeometryManager.h"
 #include "sl/gfx/BufferManager.h"
 #include "sl/gfx/ShaderManager.h"
 #include "sl/gfx/TextureManager.h"
-
-#include "sl/core/InputManager.h"
-#include "sl/core/WindowManager.h"
-#include "sl/event/EventManager.h"
-
+#include "sl/glob/Globals.h"
 #include "sl/gui/Utils.h"
+#include "sl/gui/fonts/FontAwesome.h"
+#include "sl/platform/Platform.hpp"
 
 namespace sl::app {
 
@@ -51,15 +46,15 @@ std::unique_ptr<Engine> Engine::Builder::build() && {
 }
 
 Engine::Engine(cfg::Config* config, platform::Platform* platform)
-    : EventListener("Engine")
-    , m_config(config)
-    , m_platform(platform)
-    , m_application(nullptr)
-    // managers
-    , m_textureManager(
-          m_platform->gpu.textureFactory.get(), m_platform->gpu.cubemapFactory.get(), m_platform->imageFactory.get())
-    , m_shaderManager(m_platform->gpu.shaderCompiler.get(), m_platform->gpu.shaderFactory.get()) {
-
+    : EventListener("Engine"),
+      m_config(config),
+      m_platform(platform),
+      m_application(nullptr)
+      // managers
+      ,
+      m_textureManager(m_platform->gpu.textureFactory.get(), m_platform->gpu.cubemapFactory.get(),
+                       m_platform->imageFactory.get()),
+      m_shaderManager(m_platform->gpu.shaderCompiler.get(), m_platform->gpu.shaderFactory.get()) {
     initLowLevelComponents();
     initManagers();
 }
@@ -82,7 +77,7 @@ void Engine::initLowLevelComponents() {
     m_renderApi->init();
 
     auto windowSize = m_window->getSize();
-    auto viewport = gfx::ViewFrustum::Viewport { windowSize.width, windowSize.height };
+    auto viewport = gfx::ViewFrustum::Viewport{windowSize.width, windowSize.height};
 
     m_renderer = std::make_unique<gfx::Renderer>(m_renderApi, viewport);
 }
@@ -117,15 +112,7 @@ void Engine::setApplication(Application* application) {
     m_eventManager.registerListener(m_application);
 }
 
-void Engine::handleEvents(const kc::event::EventProvider& eventProvider) {
-    auto events = eventProvider.getByCategories<event::CoreCategory, event::EditorCategory>();
-
-    for (auto& event : events) {
-        if (event->is<event::ChangeViewportEvent>())
-            m_renderer->setViewport(
-                event->asView<event::ChangeViewportEvent>()->viewport);
-    }
-}
+void Engine::handleEvents(const kc::event::EventProvider& eventProvider) {}
 
 void Engine::run() {
     ASSERT(m_application != nullptr, "Cannot run engine without set application");
@@ -135,7 +122,7 @@ void Engine::run() {
     while (m_application->isRunning()) {
         loopStep();
 
-// clang-format off
+        // clang-format off
         #if 0
         LOG_TRACE("\n\n{}\n\n", profiler.formatTimers());
         #endif
@@ -172,4 +159,4 @@ void Engine::loopStep() {
     render();
 }
 
-}
+}  // namespace sl::app

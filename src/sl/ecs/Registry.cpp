@@ -1,7 +1,8 @@
 #include "Registry.hpp"
 
-#include "Entity.h"
 #include <kc/core/Log.h>
+
+#include "Entity.h"
 
 namespace sl::ecs {
 
@@ -51,13 +52,9 @@ Entity& Registry::getEntityByName(const std::string& name) {
     return getEntityById(m_entityNameToId[name]);
 }
 
-Entity& Registry::getEntityById(const std::string& id) {
-    return *m_entities[id];
-}
+Entity& Registry::getEntityById(const std::string& id) { return *m_entities[id]; }
 
-bool Registry::hasEntityById(const std::string& id) const {
-    return m_entities.contains(id);
-}
+bool Registry::hasEntityById(const std::string& id) const { return m_entities.contains(id); }
 
 bool Registry::hasEntityByName(const std::string& name) const {
     return m_entityNameToId.contains(name);
@@ -67,12 +64,10 @@ const std::unordered_map<std::string, std::string>& Registry::getEntityNameToId(
     return m_entityNameToId;
 }
 
-int Registry::getEntitiesCount() const {
-    return m_entities.size();
-}
+int Registry::getEntitiesCount() const { return m_entities.size(); }
 
 std::unordered_map<std::string, std::unique_ptr<Entity>>& Registry::getEntities() {
     return m_entities;
 }
 
-}
+}  // namespace sl::ecs

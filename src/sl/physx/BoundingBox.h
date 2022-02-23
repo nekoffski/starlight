@@ -18,4 +18,4 @@ struct BoundingBox {
     virtual Collider* getCollider() = 0;
 };
 
-}
+}  // namespace sl::physx

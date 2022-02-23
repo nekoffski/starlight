@@ -5,8 +5,8 @@ namespace sl::gui::components {
 using namespace scene::components;
 
 void MaterialComponentGui::renderComponentGuiImpl(MaterialComponent& component,
-    asset::AssetManager& assetManager, ecs::Entity& entity) {
-
+                                                  asset::AssetManager& assetManager,
+                                                  ecs::Entity& entity) {
     with_ID(component.ownerEntityId.c_str()) {
         if (beginComponentTreeNode(ICON_FA_MAP " Material", component)) {
             ImGui::Text("Ambient color");
@@ -22,4 +22,4 @@ void MaterialComponentGui::renderComponentGuiImpl(MaterialComponent& component,
         }
     }
 }
-}
+}  // namespace sl::gui::components

@@ -7,4 +7,4 @@ class BoundingBox;
 class AxisAlignedBoundingBox;
 class AxisAlignedCollider;
 
-};
+};  // namespace sl::physx

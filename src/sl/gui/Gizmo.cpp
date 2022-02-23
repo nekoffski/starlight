@@ -11,13 +11,10 @@ void setupGizmo(const sl::gfx::ViewFrustum::Viewport& viewport) {
     ImGuizmo::SetRect(viewport.beginX, 0, viewport.width, viewport.height);
 }
 
-bool isUsingGizmo() {
-    return ImGuizmo::IsUsing();
-}
+bool isUsingGizmo() { return ImGuizmo::IsUsing(); }
 
 void manipulateGizmo(math::Mat4& viewMatrix, math::Mat4& projectionMatrix,
-    math::Mat4& transformation, const GizmoOp op, const GizmoSpace space) {
-
+                     math::Mat4& transformation, const GizmoOp op, const GizmoSpace space) {
     using namespace ImGuizmo;
 
     // clang-format off
@@ -34,6 +31,7 @@ void manipulateGizmo(math::Mat4& viewMatrix, math::Mat4& projectionMatrix,
     // clang-format on
 
     ImGuizmo::Manipulate(math::valuePtr(viewMatrix), math::valuePtr(projectionMatrix),
-        operationLookupTable.at(op), spaceLookupTable.at(space), math::valuePtr(transformation));
+                         operationLookupTable.at(op), spaceLookupTable.at(space),
+                         math::valuePtr(transformation));
 }
-}
+}  // namespace sl::gui

@@ -1,11 +1,11 @@
 #pragma once
 
+#include <kc/core/Clock.h>
+
 #include <chrono>
+#include <kc/core/Singleton.hpp>
 #include <memory>
 #include <string>
-
-#include <kc/core/Clock.h>
-#include <kc/core/Singleton.hpp>
 
 using namespace std::literals::chrono_literals;
 
@@ -14,7 +14,7 @@ namespace sl::core {
 class ClockManager : public kc::core::Singleton<ClockManager> {
     using Clock = kc::core::Clock;
 
-public:
+   public:
     explicit ClockManager();
 
     float getFPS() const;
@@ -24,10 +24,10 @@ public:
 
     const Clock& getClock();
 
-private:
+   private:
     Clock m_clock;
     Clock::TimePoint m_previousNow;
 
     float m_deltaTime;
 };
-}
+}  // namespace sl::core

@@ -1,14 +1,14 @@
 #include "RenderVectorsStage.h"
 
-#include "sl/glob/Globals.h"
 #include <kc/core/Profiler.h>
+
+#include "sl/glob/Globals.h"
 
 namespace sl::rendering::stages {
 
 RenderVectorsStage::RenderVectorsStage()
-    : m_lineVertexArray(glob::Globals::get().geom->lineVAO)
-    , m_lineShader(glob::Globals::get().shaders->singleColorShader) {
-}
+    : m_lineVertexArray(glob::Globals::get().geom->lineVAO),
+      m_lineShader(glob::Globals::get().shaders->singleColorShader) {}
 
 void RenderVectorsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
     PROFILE_FUNCTION();
@@ -18,14 +18,14 @@ void RenderVectorsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, g
     m_lineVertexArray->bind();
     m_lineShader->enable();
 
-    for (const auto& coloredVector : scene.vectors)
-        renderVector(coloredVector, renderer);
+    for (const auto& coloredVector : scene.vectors) renderVector(coloredVector, renderer);
 
     m_lineVertexArray->unbind();
     m_lineShader->disable();
 }
 
-void RenderVectorsStage::renderVector(const physx::ColoredVector& coloredVector, gfx::Renderer& renderer) {
+void RenderVectorsStage::renderVector(const physx::ColoredVector& coloredVector,
+                                      gfx::Renderer& renderer) {
     setVectorUniforms(coloredVector);
     renderer.renderLine();
 }
@@ -63,4 +63,4 @@ void RenderVectorsStage::setCameraUniforms(cam::Camera& camera) {
     m_lineShader->setUniform("projectionMatrix", camera.getProjectionMatrix());
     m_lineShader->setUniform("viewMatrix", camera.getViewMatrix());
 }
-}
+}  // namespace sl::rendering::stages

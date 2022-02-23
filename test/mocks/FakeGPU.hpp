@@ -1,7 +1,5 @@
 #pragma once
 
-#include "sl/platform/GPU.h"
-
 #include "CubemapMock.hpp"
 #include "ElementBufferMock.hpp"
 #include "FrameBufferMock.hpp"
@@ -12,28 +10,28 @@
 #include "TextureMock.hpp"
 #include "VertexArrayMock.hpp"
 #include "VertexBufferMock.hpp"
+#include "sl/platform/GPU.h"
 
 using namespace sl;
 
 struct FakeGPU : platform::GPU {
     FakeGPU()
-        : GPU(
-              std::make_unique<VertexArrayMock::Factory>(),
+        : GPU(std::make_unique<VertexArrayMock::Factory>(),
               std::make_unique<VertexBufferMock::Factory>(),
               std::make_unique<ElementBufferMock::Factory>(),
               std::make_unique<FrameBufferMock::Factory>(),
               std::make_unique<RenderBufferMock::Factory>(),
-              std::make_unique<TextureMock::Factory>(),
-              std::make_unique<CubemapMock::Factory>(),
-              std::make_unique<ShaderMock::Factory>(),
-              std::make_unique<ShaderCompilerMock>(),
+              std::make_unique<TextureMock::Factory>(), std::make_unique<CubemapMock::Factory>(),
+              std::make_unique<ShaderMock::Factory>(), std::make_unique<ShaderCompilerMock>(),
               std::make_unique<RenderApiMock>()) {
-
         vertexArrayFactoryMock = static_cast<VertexArrayMock::Factory*>(vertexArrayFactory.get());
-        vertexBufferFactoryMock = static_cast<VertexBufferMock::Factory*>(vertexBufferFactory.get());
-        elementBufferFactoryMock = static_cast<ElementBufferMock::Factory*>(elementBufferFactory.get());
+        vertexBufferFactoryMock =
+            static_cast<VertexBufferMock::Factory*>(vertexBufferFactory.get());
+        elementBufferFactoryMock =
+            static_cast<ElementBufferMock::Factory*>(elementBufferFactory.get());
         frameBufferFactoryMock = static_cast<FrameBufferMock::Factory*>(frameBufferFactory.get());
-        renderBufferFactoryMock = static_cast<RenderBufferMock::Factory*>(renderBufferFactory.get());
+        renderBufferFactoryMock =
+            static_cast<RenderBufferMock::Factory*>(renderBufferFactory.get());
         textureFactoryMock = static_cast<TextureMock::Factory*>(textureFactory.get());
         cubemapFactoryMock = static_cast<CubemapMock::Factory*>(cubemapFactory.get());
         shaderFactoryMock = static_cast<ShaderMock::Factory*>(shaderFactory.get());

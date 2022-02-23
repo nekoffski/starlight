@@ -1,22 +1,16 @@
-#include "sl/async/AsyncManager.hpp"
-
 #include <gtest/gtest.h>
+
+#include "sl/async/AsyncManager.hpp"
 
 using namespace sl;
 using namespace testing;
 
 struct FakePeriodicTask : async::PeriodicTask {
-    void invoke() override {
-        ++s_invoked;
-    }
+    void invoke() override { ++s_invoked; }
 
-    bool shouldInvoke() override {
-        return s_shouldInvoke;
-    }
+    bool shouldInvoke() override { return s_shouldInvoke; }
 
-    std::string getName() const override {
-        return "__";
-    }
+    std::string getName() const override { return "__"; }
 
     static void reset() {
         s_shouldInvoke = false;
@@ -28,17 +22,11 @@ struct FakePeriodicTask : async::PeriodicTask {
 };
 
 struct FakeAsyncTask : async::AsyncTask {
-    void executeAsync() override {
-        s_asyncInvoked = true;
-    }
+    void executeAsync() override { s_asyncInvoked = true; }
 
-    void finalize() override {
-        s_finalized = true;
-    }
+    void finalize() override { s_finalized = true; }
 
-    std::string asString() const override {
-        return "__";
-    }
+    std::string asString() const override { return "__"; }
 
     static void reset() {
         s_finalized = false;
@@ -61,7 +49,8 @@ struct AsyncManagerTests : Test {
     static constexpr int microsecondsInSecond = 1000000;
 };
 
-TEST_F(AsyncManagerTests, givenAsyncManager_whenInsertingPeriodicTasks_shouldBeCalledBasedOnWhatShouldInvokeReturns) {
+TEST_F(AsyncManagerTests,
+       givenAsyncManager_whenInsertingPeriodicTasks_shouldBeCalledBasedOnWhatShouldInvokeReturns) {
     asyncManager.addPeriodicTask<FakePeriodicTask>();
 
     ASSERT_EQ(FakePeriodicTask::s_invoked, 0);
@@ -100,9 +89,7 @@ TEST_F(AsyncManagerTests, givenAsyncManager_whenCallingFunctionAsync_shouldBeCal
     static constexpr int result = 1337;
     static constexpr int delta = 1;
 
-    auto future = asyncManager.callAsync([&] {
-        return result + delta;
-    });
+    auto future = asyncManager.callAsync([&] { return result + delta; });
 
     EXPECT_EQ(future.getValue(), result + delta);
 }
@@ -115,9 +102,8 @@ TEST_F(AsyncManagerTests, givenAsyncManager_whenCallingAsyncTask_shouldInvokeAsy
 
     int iterations = 0;
     while (not FakeAsyncTask::s_asyncInvoked) {
-        if (iterations++ > 25)
-            FAIL() << "Async part of Task was not called";
-        usleep(microsecondsInSecond / 100); // ugly, I know :(
+        if (iterations++ > 25) FAIL() << "Async part of Task was not called";
+        usleep(microsecondsInSecond / 100);  // ugly, I know :(
     }
 
     ASSERT_TRUE(FakeAsyncTask::s_asyncInvoked);
@@ -142,5 +128,5 @@ TEST_F(AsyncManagerTests, givenTimer_whenTimeExceedSleepTime_shouldReturnFalse) 
     asyncManager.update(sleepTime);
 
     ASSERT_FALSE(timer->asyncSleep());
-    EXPECT_TRUE(timer->asyncSleep()); // previous asyncSleep should reset state
+    EXPECT_TRUE(timer->asyncSleep());  // previous asyncSleep should reset state
 }

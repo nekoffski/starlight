@@ -6,4 +6,4 @@ struct AssetGuiProvider {
     virtual void render() = 0;
 };
 
-}
+}  // namespace sl::gui::assets

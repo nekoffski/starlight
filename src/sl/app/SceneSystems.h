@@ -12,4 +12,4 @@ struct SceneSystems {
     physx::PhysicsEngine physxEngine;
 };
 
-}
+}  // namespace sl::app
