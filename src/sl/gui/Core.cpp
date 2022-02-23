@@ -1,9 +1,13 @@
 #include "Core.h"
 
-#include <ImGuizmo.h>
+// clang-format off
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
+
+#include <ImGuizmo.h>
+// clang-format on
+
 #include <kc/core/Log.h>
 
 namespace sl::gui {

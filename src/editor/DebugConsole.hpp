@@ -4,6 +4,7 @@
 
 #include <deque>
 #include <iostream>
+#include <numeric>
 #include <string>
 
 #include "sl/core/ClockManager.h"

@@ -1,7 +1,9 @@
 #pragma once
 
-#include <ImGuizmo.h>
+// clang-format off
 #include <imgui/imgui.h>
+#include <ImGuizmo.h>
+// clang-format on
 
 #include "sl/gfx/ViewFrustum.h"
 #include "sl/math/Matrix.hpp"
