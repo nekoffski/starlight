@@ -1,5 +1,7 @@
 #pragma once
 
+#include <kc/core/Log.h>
+
 #include "sl/cam/Camera.h"
 #include "sl/core/InputManager.h"
 #include "sl/gfx/ViewFrustum.h"
@@ -13,6 +15,8 @@ class FirstPersonCamera : public Camera {
     explicit FirstPersonCamera(const gfx::ViewFrustum& viewFrustum = gfx::ViewFrustum{0, 0})
         : Camera(viewFrustum) {
         m_position = math::Vec3{0.0f, 0.0f, 0.0f};
+
+        LOG_TRACE("Creating FirstPersonCamera");
     }
 
     void update(float deltaTime) override {

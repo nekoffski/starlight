@@ -29,7 +29,7 @@ class ComponentContainer : public IComponentContainer {
 
     template <typename... Args>
     T& add(const std::string& entityId, Args&&... args) {
-        m_components.emplace_back(T{std::forward<Args>(args)...});
+        m_components.emplace_back(std::forward<Args>(args)...);
         auto& component = m_components.back();
 
         component.ownerEntityId = entityId;

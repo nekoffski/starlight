@@ -336,7 +336,6 @@ class StarlightEditor : public app::Application {
         switch (state) {
             case EngineState::started: {
                 for (auto &rigidBody : rigidBodies) rigidBody.save();
-
                 for (auto &transform : transforms) transform.save();
 
                 break;
@@ -344,7 +343,6 @@ class StarlightEditor : public app::Application {
 
             case EngineState::stopped: {
                 for (auto &rigidBody : rigidBodies) rigidBody.restore();
-
                 for (auto &transform : transforms) transform.restore();
 
                 break;

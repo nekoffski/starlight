@@ -1,5 +1,7 @@
 #include "Camera.h"
 
+#include <kc/core/Log.h>
+
 #include "sl/event/Event.h"
 #include "sl/event/EventManager.h"
 
@@ -13,6 +15,7 @@ Camera::Camera(const gfx::ViewFrustum &viewFrustum, const math::Vec3 &position,
       m_up(std::move(up)),
       m_front(std::move(front)),
       m_right(std::move(right)) {
+    LOG_TRACE("Registering Camera as a event listener");
     sl::event::EventManager::get().registerListener(this);
 }
 

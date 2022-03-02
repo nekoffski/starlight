@@ -21,12 +21,9 @@ class EventManager : public kc::core::Singleton<EventManager> {
         m_eventEngine.unregisterEventListener(listener);
     }
 
-    // clang-format off
-    template <typename Ev, typename... Args> requires std::derived_from<Ev, kc::event::Event>
-    auto emit(Args&&... args) {
-        return m_eventEmitter->emit<Ev>(std::forward<Args>(args)...);
-    }
-    // clang-format on
+    template <typename Ev, typename... Args>
+    requires std::derived_from<Ev, kc::event::Event>
+    auto emit(Args&&... args) { return m_eventEmitter->emit<Ev>(std::forward<Args>(args)...); }
 
    private:
     kc::event::EventEngine m_eventEngine;
