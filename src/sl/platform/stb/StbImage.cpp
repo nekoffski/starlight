@@ -1,7 +1,7 @@
 #include "StbImage.h"
 
 #include <kc/core/Log.h>
-#include <stb/stb.h>
+#include <stb.h>
 
 #include "sl/core/Errors.hpp"
 

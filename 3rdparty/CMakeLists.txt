@@ -1,5 +1,4 @@
 add_subdirectory(glad)
-add_subdirectory(stb)
 add_subdirectory(libkc)
 
 file (GLOB SRC ${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.cpp)
