@@ -15,7 +15,6 @@
 #include "sl/app/Serializer.h"
 #include "sl/asset/AssetManager.h"
 #include "sl/cam/EulerCamera.h"
-#include "sl/cam/FPSCamera.h"
 #include "sl/cam/FirstPersonCamera.h"
 #include "sl/core/InputManager.h"
 #include "sl/core/WindowManager.h"
@@ -74,7 +73,6 @@ class StarlightEditor : public app::Application {
                      fontSize)
             .mergeWith("/home/nek0/kapik/projects/starlight/res/fonts/fa-solid-900.ttf",
                        ICON_MIN_FA, ICON_MAX_FA);
-
         onStart();
     }
 
@@ -292,6 +290,9 @@ class StarlightEditor : public app::Application {
             newViewport.beginY = 0;
         }
 
+        m_currentScene->camera->viewFrustum.viewport = newViewport;
+        m_currentScene->camera->calculateProjectionMatrix();
+
         m_depthBuffer =
             gfx::BufferManager::get().createRenderBuffer(STARL_DEPTH_COMPONENT, width, height);
 
@@ -317,7 +318,7 @@ class StarlightEditor : public app::Application {
         m_renderColorBufferStage.setColorBuffer(m_colorBuffer.get());
         m_renderColorBufferStage.setBloomBuffer(m_blurColorBufferStage.getOutputColorBuffer());
 
-        event::EventManager::get().emit<event::ChangeViewportEvent>(newViewport).toAll();
+        event::EventManager::get().emit<event::ChangeViewportEvent>(newViewport).to("Engine");
     }
 
    private:

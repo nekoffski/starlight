@@ -57,6 +57,7 @@ Engine::Engine(cfg::Config* config, platform::Platform* platform)
       m_shaderManager(m_platform->gpu.shaderCompiler.get(), m_platform->gpu.shaderFactory.get()) {
     initLowLevelComponents();
     initManagers();
+    sl::event::EventManager::get().registerListener(this);
 }
 
 Engine::~Engine() = default;
@@ -97,8 +98,6 @@ void Engine::initManagers() {
     m_geometryManager.setModelLoader(m_platform->modelLoader.get());
 
     m_windowManager.setActiveWindow(m_window);
-
-    m_eventManager.registerListener(this);
 }
 
 void Engine::initGlobalState() {
@@ -112,7 +111,15 @@ void Engine::setApplication(Application* application) {
     m_eventManager.registerListener(m_application);
 }
 
-void Engine::handleEvents(const kc::event::EventProvider& eventProvider) {}
+void Engine::handleEvents(const kc::event::EventProvider& eventProvider) {
+    auto events = eventProvider.getByCategories<sl::event::CoreCategory>();
+
+    for (auto& event : events) {
+        if (event->is<sl::event::ChangeViewportEvent>()) {
+            m_renderer->setViewport(event->as<sl::event::ChangeViewportEvent>()->viewport);
+        }
+    }
+}
 
 void Engine::run() {
     ASSERT(m_application != nullptr, "Cannot run engine without set application");
@@ -122,7 +129,7 @@ void Engine::run() {
     while (m_application->isRunning()) {
         loopStep();
 
-        // clang-format off
+// clang-format off
         #if 0
         LOG_TRACE("\n\n{}\n\n", profiler.formatTimers());
         #endif

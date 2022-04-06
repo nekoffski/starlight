@@ -1,5 +1,9 @@
 #pragma once
 
+#include <kc/core/Log.h>
+
+#include <string>
+
 namespace sl::gfx {
 
 struct ViewFrustum {
@@ -19,5 +23,10 @@ struct ViewFrustum {
     float nearZ;
     float farZ;
 };
+
+inline std::string toString(const ViewFrustum::Viewport& viewport) {
+    return fmt::format("x={} y={} w={} h={}", viewport.beginX, viewport.beginY, viewport.width,
+                       viewport.height);
+}
 
 }  // namespace sl::gfx

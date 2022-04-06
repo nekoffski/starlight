@@ -36,6 +36,7 @@ class Camera : kc::event::EventListener {
 
     void calculateProjectionMatrix() {
         float aspect = static_cast<float>(viewFrustum.viewport.width) / viewFrustum.viewport.height;
+
         m_projectionMatrix =
             glm::perspective(viewFrustum.fieldOfView, aspect, viewFrustum.nearZ, viewFrustum.farZ);
     }

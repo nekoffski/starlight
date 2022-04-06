@@ -92,6 +92,10 @@ DECLARE_EVENT(ChangeViewportEvent, CoreCategory) {
     ChangeViewportEvent(const gfx::ViewFrustum::Viewport& viewport) : viewport(viewport) {
     }
 
+    std::string asString() const override {
+        return "[ChangeViewportEvent]";
+    }
+
     gfx::ViewFrustum::Viewport viewport;
 };
 

@@ -48,6 +48,12 @@ class Renderer : public kc::event::EventListener {
         m_renderApi->setViewport(viewport);
     }
 
+    void setViewport(const ViewFrustum::Viewport& viewport) {
+        m_viewport = viewport;
+        LOG_TRACE("Setting renderer viewport: {}", toString(m_viewport));
+        m_renderApi->setViewport(m_viewport);
+    }
+
     void restoreViewport() { m_renderApi->setViewport(m_viewport); }
 
    private:
@@ -56,8 +62,9 @@ class Renderer : public kc::event::EventListener {
 
         for (auto& event : events) {
             if (event->is<sl::event::ChangeViewportEvent>()) {
-                m_viewport = event->asView<sl::event::ChangeViewportEvent>()->viewport;
-                m_renderApi->setViewport(m_viewport);
+                // m_viewport = event->asView<sl::event::ChangeViewportEvent>()->viewport;
+                LOG_TRACE("Setting renderer viewport: {}", toString(m_viewport));
+                // m_renderApi->setViewport(m_viewport);
             }
         }
     }

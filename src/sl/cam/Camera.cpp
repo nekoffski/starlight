@@ -27,6 +27,8 @@ void Camera::handleEvents(const kc::event::EventProvider &eventProvider) {
     for (auto &event : events) {
         if (event->is<sl::event::ChangeViewportEvent>()) {
             viewFrustum.viewport = event->asView<sl::event::ChangeViewportEvent>()->viewport;
+            LOG_TRACE("Setting camera viewport: {}", toString(viewFrustum.viewport));
+
             calculateProjectionMatrix();
         }
     }
