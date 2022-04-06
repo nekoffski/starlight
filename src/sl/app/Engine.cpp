@@ -111,15 +111,7 @@ void Engine::setApplication(Application* application) {
     m_eventManager.registerListener(m_application);
 }
 
-void Engine::handleEvents(const kc::event::EventProvider& eventProvider) {
-    auto events = eventProvider.getByCategories<sl::event::CoreCategory>();
-
-    for (auto& event : events) {
-        if (event->is<sl::event::ChangeViewportEvent>()) {
-            m_renderer->setViewport(event->as<sl::event::ChangeViewportEvent>()->viewport);
-        }
-    }
-}
+void Engine::handleEvents(const kc::event::EventProvider& eventProvider) {}
 
 void Engine::run() {
     ASSERT(m_application != nullptr, "Cannot run engine without set application");
@@ -129,7 +121,7 @@ void Engine::run() {
     while (m_application->isRunning()) {
         loopStep();
 
-// clang-format off
+        // clang-format off
         #if 0
         LOG_TRACE("\n\n{}\n\n", profiler.formatTimers());
         #endif

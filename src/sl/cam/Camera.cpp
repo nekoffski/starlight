@@ -48,4 +48,12 @@ const math::Mat4 &Camera::getProjectionMatrix() const { return m_projectionMatri
 
 const math::Mat4 Camera::getViewMatrix() const { return math::lookAt(m_position, m_front, m_up); }
 
+void Camera::calculateProjectionMatrix() {
+    const float aspect =
+        static_cast<float>(viewFrustum.viewport.width) / viewFrustum.viewport.height;
+
+    m_projectionMatrix =
+        glm::perspective(viewFrustum.fieldOfView, aspect, viewFrustum.nearZ, viewFrustum.farZ);
+}
+
 }  // namespace sl::cam

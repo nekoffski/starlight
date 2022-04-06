@@ -29,55 +29,21 @@ class Renderer : public kc::event::EventListener {
 
     void renderVertexArray(gfx::VertexArray&);
 
-    void renderLine() { m_renderApi->drawArrays(STARL_LINES, 0, 2); }
+    void renderLine();
+    void clearBuffers(unsigned buffers);
 
-    void clearBuffers(unsigned buffers) { m_renderApi->clearBuffers(buffers); }
+    void setSettings(const RendererSettings& settings);
+    void setTemporarySettings(const RendererSettings& settings);
+    void restoreSettings();
+    const RendererSettings& getSettings() const;
 
-    void setSettings(const RendererSettings& settings) {
-        m_settings = settings;
-        applySettings(settings);
-    }
-
-    void setTemporarySettings(const RendererSettings& settings) { applySettings(settings); }
-
-    void restoreSettings() { applySettings(m_settings); }
-
-    const RendererSettings& getSettings() { return m_settings; }
-
-    void setTemporaryViewport(const ViewFrustum::Viewport& viewport) {
-        m_renderApi->setViewport(viewport);
-    }
-
-    void setViewport(const ViewFrustum::Viewport& viewport) {
-        m_viewport = viewport;
-        LOG_TRACE("Setting renderer viewport: {}", toString(m_viewport));
-        m_renderApi->setViewport(m_viewport);
-    }
-
-    void restoreViewport() { m_renderApi->setViewport(m_viewport); }
+    void setTemporaryViewport(const ViewFrustum::Viewport& viewport);
+    void restoreViewport();
 
    private:
-    void handleEvents(const kc::event::EventProvider& eventProvider) override {
-        auto events = eventProvider.getByCategories<sl::event::CoreCategory>();
+    void handleEvents(const kc::event::EventProvider& eventProvider) override;
 
-        for (auto& event : events) {
-            if (event->is<sl::event::ChangeViewportEvent>()) {
-                // m_viewport = event->asView<sl::event::ChangeViewportEvent>()->viewport;
-                LOG_TRACE("Setting renderer viewport: {}", toString(m_viewport));
-                // m_renderApi->setViewport(m_viewport);
-            }
-        }
-    }
-
-    void applySettings(const RendererSettings& settings) {
-        m_renderApi->depthMask(settings.enableDepthMask);
-        m_renderApi->setPolygonMode(settings.polygonMode);
-
-        if (settings.enableBlending)
-            m_renderApi->enable(STARL_BLEND);
-        else
-            m_renderApi->disable(STARL_BLEND);
-    }
+    void applySettings(const RendererSettings& settings);
 
     gfx::RenderApi* m_renderApi;
 

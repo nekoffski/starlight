@@ -50,8 +50,6 @@ class FirstPersonCamera : public Camera {
         m_yaw += xoffset;
         m_pitch = math::circularRange(m_pitch + yoffset, -3.13f, 3.13f);
 
-        // m_front = math::Vec3 { 0.0f, 0.0f, 1.0f };
-
         m_front =
             math::normalize(-math::Vec3{std::cos(m_yaw) * std::cos(m_pitch), std::sin(m_pitch),
                                         std::sin(m_yaw) * std::cos(m_pitch)});

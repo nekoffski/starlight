@@ -31,15 +31,9 @@ class Camera : kc::event::EventListener {
     const math::Vec3 &getUp() const;
     const math::Vec3 &getFront() const;
     const math::Vec3 &getRight() const;
-
     const math::Mat4 &getProjectionMatrix() const;
 
-    void calculateProjectionMatrix() {
-        float aspect = static_cast<float>(viewFrustum.viewport.width) / viewFrustum.viewport.height;
-
-        m_projectionMatrix =
-            glm::perspective(viewFrustum.fieldOfView, aspect, viewFrustum.nearZ, viewFrustum.farZ);
-    }
+    void calculateProjectionMatrix();
 
     virtual const math::Mat4 getViewMatrix() const;
 
