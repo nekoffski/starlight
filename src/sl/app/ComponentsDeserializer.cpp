@@ -103,6 +103,8 @@ void ComponentsDeserializer::deserializeModelComponent(
         component.meshes.push_back(mesh);
     }
 
+    component.boundingBox->rebuild(component.meshes);
+
     component.isActive = componentDescription["active"].asBool();
 }
 

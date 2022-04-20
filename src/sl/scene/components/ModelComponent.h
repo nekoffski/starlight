@@ -5,6 +5,8 @@
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
 #include "sl/gfx/Shader.h"
+#include "sl/physx/AxisAlignedBoundingBox.h"
+#include "sl/physx/BoundingBox.h"
 
 namespace sl::scene::components {
 
@@ -14,10 +16,13 @@ struct ModelComponent : ecs::Component {
     explicit ModelComponent() {
         instances.push_back(math::Vec3{0.0f, 0.0f, 0.0f});
 
+        boundingBox = std::make_unique<physx::AxisAlignedBoundingBox>(meshes);
+
         name = "ModelComponent";
     }
 
     std::vector<std::shared_ptr<geom::Mesh>> meshes;
     std::vector<math::Vec3> instances;
+    std::unique_ptr<physx::BoundingBox> boundingBox;
 };
 }  // namespace sl::scene::components

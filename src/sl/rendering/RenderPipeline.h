@@ -12,10 +12,8 @@ class RenderPipeline {
    public:
     void run(sl::gfx::Renderer& renderer, scene::Scene& scene) {
         PROFILE_FUNCTION();
-
-        scene.vectors.clear();
-
         for (auto& renderPass : m_renderPasses) renderPass->execute(renderer, scene);
+        scene.vectors.clear();
     }
 
     RenderPipeline& addRenderPass(RenderPass* renderPass) {

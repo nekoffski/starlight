@@ -12,7 +12,7 @@ namespace sl::physx {
 
 class AxisAlignedBoundingBox : public BoundingBox {
    public:
-    explicit AxisAlignedBoundingBox(const std::vector<std::shared_ptr<geom::Mesh>> meshes);
+    explicit AxisAlignedBoundingBox(const std::vector<std::shared_ptr<geom::Mesh>>& meshes);
 
     gfx::VertexArray* getVertexArray() const override;
     std::vector<math::Vec3> getVertices() const override;
@@ -23,11 +23,13 @@ class AxisAlignedBoundingBox : public BoundingBox {
 
     const math::Vec3& getCenterOfMass() const override;
 
+    void rebuild(const std::vector<std::shared_ptr<geom::Mesh>>& meshes) override;
+
     math::Vec3 min;
     math::Vec3 max;
 
    private:
-    void build(const std::vector<std::shared_ptr<geom::Mesh>> meshes);
+    void build(const std::vector<std::shared_ptr<geom::Mesh>>& meshes);
 
     std::shared_ptr<gfx::VertexArray> m_vao;
     std::unique_ptr<AxisAlignedCollider> m_collider;

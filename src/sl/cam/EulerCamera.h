@@ -40,11 +40,6 @@ class EulerCamera : public Camera {
     float m_fi;
     float m_psi;
 
-    math::Vec3 m_position;
-    math::Vec3 m_up;
-    math::Vec3 m_front;
-    math::Vec3 m_right;
-
     bool m_isMouseMiddlePressed = false;
 
     static const float minPsi;

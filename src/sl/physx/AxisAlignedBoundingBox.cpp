@@ -8,8 +8,12 @@
 namespace sl::physx {
 
 AxisAlignedBoundingBox::AxisAlignedBoundingBox(
-    const std::vector<std::shared_ptr<geom::Mesh>> meshes)
+    const std::vector<std::shared_ptr<geom::Mesh>>& meshes)
     : m_vao(nullptr) {
+    build(meshes);
+}
+
+void AxisAlignedBoundingBox::rebuild(const std::vector<std::shared_ptr<geom::Mesh>>& meshes) {
     build(meshes);
 }
 
@@ -19,8 +23,9 @@ std::vector<math::Vec3> AxisAlignedBoundingBox::getVertices() const { return m_v
 
 std::string AxisAlignedBoundingBox::getName() const { return "AABB"; }
 
-void AxisAlignedBoundingBox::build(const std::vector<std::shared_ptr<geom::Mesh>> meshes) {
-    ASSERT(meshes.size() > 0, "Cannot build bounding box for empty meshes vector");
+void AxisAlignedBoundingBox::build(const std::vector<std::shared_ptr<geom::Mesh>>& meshes) {
+    if (meshes.size() <= 0) return;
+    // ASSERT(meshes.size() > 0, "Cannot build bounding box for empty meshes vector");
 
     min = meshes[0]->vertices[0].position;
     max = min;
@@ -78,7 +83,8 @@ void AxisAlignedBoundingBox::build(const std::vector<std::shared_ptr<geom::Mesh>
 
     m_collider = std::make_unique<AxisAlignedCollider>(min, max);
 
-    m_centerOfMass = {(min.x + max.x) / 2.0f, (min.y + max.z) / 2.0f, (min.z + max.z) / 2.0f};
+    m_centerOfMass =
+        math::Vec3{(min.x + max.x) / 2.0f, (min.y + max.z) / 2.0f, (min.z + max.z) / 2.0f};
 }
 
 bool AxisAlignedBoundingBox::collide(Collider* collider, const math::Mat4& modelMatrix) {
