@@ -6,7 +6,7 @@
 
 namespace sl::gui {
 
-void setupGizmo(const sl::gfx::ViewFrustum::Viewport& viewport) {
+void setupGizmo(const sl::gfx::Viewport& viewport) {
     ImGuizmo::SetOrthographic(false);
     ImGuizmo::SetRect(viewport.beginX, 0, viewport.width, viewport.height);
 }

@@ -15,7 +15,7 @@ enum class GizmoOp { translate, rotate, scale };
 
 enum class GizmoSpace { local, world };
 
-void setupGizmo(const gfx::ViewFrustum::Viewport& viewport);
+void setupGizmo(const gfx::Viewport& viewport);
 
 bool isUsingGizmo();
 

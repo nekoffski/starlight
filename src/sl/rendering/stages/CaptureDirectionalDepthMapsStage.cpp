@@ -81,7 +81,7 @@ void CaptureDirectionalDepthMapsStage::queueDirectionVectorForBeingRendered(
 
 void CaptureDirectionalDepthMapsStage::prepareRenderer(gfx::Renderer& renderer) {
     renderer.setTemporaryViewport(
-        gfx::ViewFrustum::Viewport{gfx::Texture::shadowMapSize, gfx::Texture::shadowMapSize});
+        gfx::Viewport{gfx::Texture::shadowMapSize, gfx::Texture::shadowMapSize});
 
     auto settings = renderer.getSettings();
     settings.cullFace = STARL_FRONT;

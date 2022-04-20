@@ -19,7 +19,7 @@ class RenderColorBufferStage : public Stage {
           m_colorBufferShader(gfx::ShaderManager::get().load(
               sl::glob::Globals::get().config.paths.shaders + "/ColorBuffer.vert",
               sl::glob::Globals::get().config.paths.shaders + "/ColorBuffer.frag")) {
-        // clang-format off
+// clang-format off
         #ifdef DEV_MODE
             async::AsyncManager::get().addPeriodicTask<gfx::Shader::RecompileOnUpdate>(m_colorBufferShader);
         #endif
@@ -28,7 +28,7 @@ class RenderColorBufferStage : public Stage {
 
     void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) override {
         auto [width, height] = core::WindowManager::get().getSize();
-        gfx::ViewFrustum::Viewport viewport{width, height};
+        gfx::Viewport viewport{width, height};
 
         auto settings = renderer.getSettings();
         settings.enableBlending = false;

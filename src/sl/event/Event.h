@@ -89,14 +89,14 @@ DECLARE_EVENT(WindowResizedEvent, CoreCategory) {
 };
 
 DECLARE_EVENT(ChangeViewportEvent, CoreCategory) {
-    ChangeViewportEvent(const gfx::ViewFrustum::Viewport& viewport) : viewport(viewport) {
+    ChangeViewportEvent(const gfx::Viewport& viewport) : viewport(viewport) {
     }
 
     std::string asString() const override {
         return "[ChangeViewportEvent]";
     }
 
-    gfx::ViewFrustum::Viewport viewport;
+    gfx::Viewport viewport;
 };
 
 DECLARE_EVENT(DisplayErrorEvent, EditorCategory) {

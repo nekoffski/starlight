@@ -14,7 +14,7 @@ class RenderApi {
     virtual ~RenderApi() = default;
 
     virtual void init() = 0;
-    virtual void setViewport(const ViewFrustum::Viewport&) = 0;
+    virtual void setViewport(const Viewport&) = 0;
     virtual void clearBuffers(unsigned int buffers) = 0;
 
     virtual void setCullFace(unsigned int) = 0;

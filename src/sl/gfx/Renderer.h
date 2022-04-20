@@ -25,7 +25,7 @@ struct RendererSettings {
 
 class Renderer : public kc::event::EventListener {
    public:
-    explicit Renderer(gfx::RenderApi* renderApi, const ViewFrustum::Viewport& viewport);
+    explicit Renderer(gfx::RenderApi* renderApi, const Viewport& viewport);
 
     void renderVertexArray(gfx::VertexArray&);
 
@@ -37,7 +37,7 @@ class Renderer : public kc::event::EventListener {
     void restoreSettings();
     const RendererSettings& getSettings() const;
 
-    void setTemporaryViewport(const ViewFrustum::Viewport& viewport);
+    void setTemporaryViewport(const Viewport& viewport);
     void restoreViewport();
 
    private:
@@ -47,7 +47,7 @@ class Renderer : public kc::event::EventListener {
 
     gfx::RenderApi* m_renderApi;
 
-    ViewFrustum::Viewport m_viewport;
+    Viewport m_viewport;
     RendererSettings m_settings;
 };
 }  // namespace sl::gfx

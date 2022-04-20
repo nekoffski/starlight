@@ -142,7 +142,7 @@ class StarlightEditor : public app::Application {
         glob::Globals::get().flags.disableKeyboardInput = ImGui::GetIO().WantCaptureKeyboard;
         glob::Globals::get().flags.disableMouseInput = ImGui::GetIO().WantCaptureMouse;
 
-        static auto timer = sl::async::AsyncManager::get().createTimer(0.1f);
+        static auto timer = sl::async::AsyncManager::get().createTimer(0.05f);
 
         auto &inputManager = core::InputManager::get();
         auto &camera = m_currentScene->camera;
@@ -340,7 +340,7 @@ class StarlightEditor : public app::Application {
 
         m_editorGui->sharedState->guiProperties = guiProperties;
 
-        gfx::ViewFrustum::Viewport newViewport;
+        gfx::Viewport newViewport;
 
         if (m_engineMode == editor::EngineMode::inEditor) {
             newViewport.width = static_cast<int>(width - guiProperties.scenePanelProperties.size.x -
@@ -386,7 +386,7 @@ class StarlightEditor : public app::Application {
         event::EventManager::get().emit<event::ChangeViewportEvent>(newViewport).toAll();
     }
 
-    gfx::ViewFrustum::Viewport t_viewport;
+    gfx::Viewport t_viewport;
 
    private:
     void handleStateChange(editor::EngineState state) {

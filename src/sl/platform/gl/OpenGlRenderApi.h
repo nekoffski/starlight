@@ -7,7 +7,7 @@ namespace sl::platform::gl {
 class OpenGlRenderApi : public sl::gfx::RenderApi {
    public:
     void init() override;
-    void setViewport(const gfx::ViewFrustum::Viewport&) override;
+    void setViewport(const gfx::Viewport&) override;
     void clearBuffers(unsigned int buffers) override;
 
     void setCullFace(unsigned int) override;

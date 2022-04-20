@@ -6,7 +6,7 @@
 
 namespace sl::gfx {
 
-Renderer::Renderer(gfx::RenderApi* renderApi, const ViewFrustum::Viewport& viewport)
+Renderer::Renderer(gfx::RenderApi* renderApi, const Viewport& viewport)
     : EventListener("Renderer"), m_renderApi(renderApi), m_viewport(viewport) {
     sl::event::EventManager::get().registerListener(this);
 
@@ -40,7 +40,7 @@ void Renderer::restoreSettings() { applySettings(m_settings); }
 
 const RendererSettings& Renderer::getSettings() const { return m_settings; }
 
-void Renderer::setTemporaryViewport(const ViewFrustum::Viewport& viewport) {
+void Renderer::setTemporaryViewport(const Viewport& viewport) {
     m_renderApi->setViewport(viewport);
 }
 
