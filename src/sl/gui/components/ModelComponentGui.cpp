@@ -38,7 +38,6 @@ void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
                             });
                     }
                 }
-
                 with_OpenedTreeNode("Available") {
                     constexpr float sectionHeightRatio = 0.07f;
 
@@ -52,7 +51,7 @@ void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
                     if (ImGui::Button("Add mesh to model"))
                         if (auto selectedMesh = params.selectedMesh.lock(); selectedMesh) {
                             component.meshes.push_back(selectedMesh);
-                            component.boundingBox->rebuild(component.meshes);
+                            component.rebuildBoundingBox();
                             params.selectedMesh.reset();
                         }
                 }

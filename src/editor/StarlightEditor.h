@@ -32,6 +32,7 @@
 #include "sl/gui/Utils.h"
 #include "sl/gui/fonts/FontAwesome.h"
 #include "sl/math/Transforms.h"
+#include "sl/physx/RayCaster.h"
 #include "sl/rendering/CustomFrameBufferRenderPass.h"
 #include "sl/rendering/DefaultFrameBufferRenderPass.h"
 #include "sl/rendering/RenderPass.h"
@@ -149,55 +150,29 @@ class StarlightEditor : public app::Application {
 
         using namespace sl::scene::components;
 
-        static std::vector<kc::math::Ray> rays;
-
         if (m_engineMode == editor::EngineMode::inEditor) {
             core::WindowManager::get().enableCursor(
                 not inputManager.isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE));
 
-            auto [width, height] = core::WindowManager::get().getSize();
-            //
             if (not timer->asyncSleep() &&
                 inputManager.isMouseButtonPressed(STARL_MOUSE_BUTTON_1)) {
                 auto mousePosition = inputManager.getMousePosition();
 
-                mousePosition.x -= t_viewport.beginX;
+                const auto viewport = core::WindowManager::get().getViewport();
 
-                LOG_INFO("Mouse1 {}/{}", mousePosition.x, mousePosition.y);
                 auto rayDirectionWorld = math::viewportToWorld(
                     mousePosition, camera->getViewMatrix(), camera->getProjectionMatrix(),
-                    {t_viewport.width, t_viewport.height});
-
-                LOG_INFO("Mouse {}/{}/{}", rayDirectionWorld.x, rayDirectionWorld.y,
-                         rayDirectionWorld.z);
+                    {viewport.width, viewport.height});
 
                 auto cameraPosition = camera->getPosition();
                 kc::math::Ray ray{cameraPosition, rayDirectionWorld};
-
-                rays.push_back(ray);
 
                 auto [models, transforms] =
                     m_currentScene->ecsRegistry
                         .getComponentsViews<ModelComponent, TransformComponent>();
 
-                std::optional<std::string> hitEntityId;
-                float closestHit = std::numeric_limits<float>::max();
-
-                for (auto &model : models) {
-                    const auto &modelMatrix =
-                        sl::rendering::utils::getModelMatrix(model.ownerEntityId, transforms);
-
-                    if (not model.boundingBox) [[unlikely]]
-                        continue;
-
-                    const auto intersectRecord =
-                        model.boundingBox->getCollider()->intersectsWith(ray, modelMatrix);
-
-                    if (intersectRecord.has_value() && intersectRecord->tNear < closestHit) {
-                        closestHit = intersectRecord->tNear;
-                        hitEntityId = model.ownerEntityId;
-                    }
-                }
+                const auto hitEntityId = physx::RayCaster::findIntersection(physx::RayCaster::Args{
+                    .transforms = transforms, .models = models, .primaryRay = ray});
 
                 if (hitEntityId.has_value()) {
                     auto &transform = transforms.getByEntityId(*hitEntityId);
@@ -208,12 +183,6 @@ class StarlightEditor : public app::Application {
                     m_editorGui->sharedState->selectedEntityId = *hitEntityId;
                 }
             }
-
-#if 0
-            for (auto &ray : rays)
-                m_currentScene->vectors.push_back({{ray.getOrigin(), ray.getDirection() * 99999.0f},
-                                                   glm::vec3{1.0f, 0.0f, 0.0f}});
-#endif
         }
 
         // auto pfxs =
@@ -356,8 +325,6 @@ class StarlightEditor : public app::Application {
             newViewport.beginY = 0;
         }
 
-        t_viewport = newViewport;
-
         m_depthBuffer =
             gfx::BufferManager::get().createRenderBuffer(STARL_DEPTH_COMPONENT, width, height);
 
@@ -385,8 +352,6 @@ class StarlightEditor : public app::Application {
 
         event::EventManager::get().emit<event::ChangeViewportEvent>(newViewport).toAll();
     }
-
-    gfx::Viewport t_viewport;
 
    private:
     void handleStateChange(editor::EngineState state) {

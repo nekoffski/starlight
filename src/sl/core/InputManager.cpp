@@ -1,5 +1,6 @@
 #include "InputManager.h"
 
+#include "WindowManager.h"
 #include "sl/glob/Globals.h"
 
 namespace sl::core {
@@ -37,7 +38,7 @@ void InputManager::update() {
     static float previousPositionX = 0.0f;
     static float previousPositionY = 0.0f;
 
-    auto mousePosition = getMousePosition();
+    auto mousePosition = m_mouse->getMousePosition();
 
     mousePositionDeltaX = mousePosition.x - previousPositionX;
     mousePositionDeltaY = mousePosition.y - previousPositionY;
@@ -56,7 +57,13 @@ bool InputManager::isMouseButtonPressed(int buttonCode) const {
            not glob::Globals::get().flags.disableMouseInput;
 }
 
-math::Vec2 InputManager::getMousePosition() const { return m_mouse->getMousePosition(); }
+math::Vec2 InputManager::getMousePosition() const {
+    const auto yOffset =
+        WindowManager::get().getSize().height - (m_viewport.height + m_viewport.beginY);
+    const auto windowMousePosition = m_mouse->getMousePosition();
+
+    return math::Vec2{windowMousePosition.x - m_viewport.beginX, windowMousePosition.y - yOffset};
+}
 
 math::Vec2 InputManager::getMousePositonDelta() const {
     return {mousePositionDeltaX, mousePositionDeltaY};

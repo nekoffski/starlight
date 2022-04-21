@@ -57,7 +57,11 @@ Engine::Engine(cfg::Config* config, platform::Platform* platform)
       m_shaderManager(m_platform->gpu.shaderCompiler.get(), m_platform->gpu.shaderFactory.get()) {
     initLowLevelComponents();
     initManagers();
-    sl::event::EventManager::get().registerListener(this);
+
+    auto& eventManager = sl::event::EventManager::get();
+    eventManager.registerListener(this);
+    eventManager.registerListener(&m_inputManager);
+    eventManager.registerListener(&m_windowManager);
 }
 
 Engine::~Engine() = default;
@@ -121,7 +125,7 @@ void Engine::run() {
     while (m_application->isRunning()) {
         loopStep();
 
-// clang-format off
+        // clang-format off
         #if 0
         LOG_TRACE("\n\n{}\n\n", profiler.formatTimers());
         #endif

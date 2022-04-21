@@ -21,6 +21,11 @@ struct ModelComponent : ecs::Component {
         name = "ModelComponent";
     }
 
+    void rebuildBoundingBox() {
+        if (boundingBox) [[likely]]
+            boundingBox->rebuild(meshes);
+    }
+
     std::vector<std::shared_ptr<geom::Mesh>> meshes;
     std::vector<math::Vec3> instances;
     std::unique_ptr<physx::BoundingBox> boundingBox;
