@@ -28,16 +28,13 @@ class ComponentGuiImpl : public ComponentGui {
     bool beginComponentTreeNode(const std::string& name, ecs::Component& component) const {
         ImGui::Separator();
 
-        ImGui::SetNextItemOpen(ImGuiCond_Once, true);
+        ImGui::SetNextItemOpen(true, ImGuiCond_Once);
         bool isOpened = ImGui::TreeNode(name.c_str());
 
         ImGui::SameLine();
         ImGui::SetWindowFontScale(0.6f);
-
         ImGui::Checkbox(("##" + name).c_str(), &component.isActive);
-
         ImGui::SetWindowFontScale(1.0f);
-
         ImGui::SameLine(ImGui::GetWindowWidth() - 35);
         ImGui::Text(ICON_FA_TIMES);
 

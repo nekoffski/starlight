@@ -1,4 +1,4 @@
-#include "RayCaster.h"
+#include "RayCast.h"
 
 #include <limits>
 
@@ -6,7 +6,7 @@
 
 namespace sl::physx {
 
-std::optional<std::string> RayCaster::findIntersection(RayCaster::Args&& args) {
+std::optional<std::string> findRayIntersection(const FindRayIntersectionArgs& args) {
     std::optional<std::string> hitEntity;
     float nearestHit = std::numeric_limits<float>::max();
 

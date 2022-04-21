@@ -32,7 +32,7 @@
 #include "sl/gui/Utils.h"
 #include "sl/gui/fonts/FontAwesome.h"
 #include "sl/math/Transforms.h"
-#include "sl/physx/RayCaster.h"
+#include "sl/physx/RayCast.h"
 #include "sl/rendering/CustomFrameBufferRenderPass.h"
 #include "sl/rendering/DefaultFrameBufferRenderPass.h"
 #include "sl/rendering/RenderPass.h"
@@ -161,8 +161,10 @@ class StarlightEditor : public app::Application {
                 const auto viewport = core::WindowManager::get().getViewport();
 
                 auto rayDirectionWorld = math::viewportToWorld(
-                    mousePosition, camera->getViewMatrix(), camera->getProjectionMatrix(),
-                    {viewport.width, viewport.height});
+                    math::ViewportToWorldArgs{.coordinates = mousePosition,
+                                              .viewMatrix = camera->getViewMatrix(),
+                                              .projectionMatrix = camera->getProjectionMatrix(),
+                                              .viewportSize = {viewport.width, viewport.height}});
 
                 auto cameraPosition = camera->getPosition();
                 kc::math::Ray ray{cameraPosition, rayDirectionWorld};
@@ -171,7 +173,7 @@ class StarlightEditor : public app::Application {
                     m_currentScene->ecsRegistry
                         .getComponentsViews<ModelComponent, TransformComponent>();
 
-                const auto hitEntityId = physx::RayCaster::findIntersection(physx::RayCaster::Args{
+                const auto hitEntityId = physx::findRayIntersection(physx::FindRayIntersectionArgs{
                     .transforms = transforms, .models = models, .primaryRay = ray});
 
                 if (hitEntityId.has_value()) {
