@@ -20,34 +20,39 @@ using namespace sl::scene::components;
 namespace sl::app {
 
 ComponentsDeserializer::ComponentsDeserializer(
-    const std::unordered_map<std::string, std::string>& assetsIdRedirections)
+    const std::unordered_map<std::string, std::string>& assetsIdRedirections
+)
     : m_assetsIdRedirections(assetsIdRedirections) {
-    m_deserializers = {BIND_DESERIALIZER_CALLBACK(DirectionalLightComponent),
-                       BIND_DESERIALIZER_CALLBACK(MaterialComponent),
-                       BIND_DESERIALIZER_CALLBACK(MeshRendererComponent),
-                       BIND_DESERIALIZER_CALLBACK(ModelComponent),
-                       BIND_DESERIALIZER_CALLBACK(ParticleEffectComponent),
-                       BIND_DESERIALIZER_CALLBACK(PointLightComponent),
-                       BIND_DESERIALIZER_CALLBACK(TransformComponent),
-                       BIND_DESERIALIZER_CALLBACK(RigidBodyComponent)};
+    m_deserializers = {
+        BIND_DESERIALIZER_CALLBACK(DirectionalLightComponent),
+        BIND_DESERIALIZER_CALLBACK(MaterialComponent),
+        BIND_DESERIALIZER_CALLBACK(MeshRendererComponent),
+        BIND_DESERIALIZER_CALLBACK(ModelComponent),
+        BIND_DESERIALIZER_CALLBACK(ParticleEffectComponent),
+        BIND_DESERIALIZER_CALLBACK(PointLightComponent),
+        BIND_DESERIALIZER_CALLBACK(TransformComponent),
+        BIND_DESERIALIZER_CALLBACK(RigidBodyComponent)};
 }
 
-void ComponentsDeserializer::deserializeComponent(const std::string& name,
-                                                  Json::Value& componentDescription,
-                                                  ecs::Entity& entity,
-                                                  asset::AssetManager& assetManager) {
+void ComponentsDeserializer::deserializeComponent(
+    const std::string& name, Json::Value& componentDescription, ecs::Entity& entity,
+    asset::AssetManager& assetManager
+) {
     if (not m_deserializers.contains(name)) return;
 
-    std::invoke(m_deserializers.at(name), componentDescription, entity, assetManager,
-                m_assetsIdRedirections);
+    std::invoke(
+        m_deserializers.at(name), componentDescription, entity, assetManager, m_assetsIdRedirections
+    );
 }
 
 void ComponentsDeserializer::deserializeDirectionalLightComponent(
     Json::Value& componentDescription, ecs::Entity& entity, asset::AssetManager& assetManager,
-    const std::unordered_map<std::string, std::string>& assetsIdRedirections) {
+    const std::unordered_map<std::string, std::string>& assetsIdRedirections
+) {
     auto& component = entity.addComponent<DirectionalLightComponent>(
         deserializeVector3(componentDescription["direction"]),
-        deserializeVector3(componentDescription["color"]));
+        deserializeVector3(componentDescription["color"])
+    );
 
     component.isActive = componentDescription["active"].asBool();
     component.renderDirection = componentDescription["render-direction"].asBool();
@@ -55,19 +60,22 @@ void ComponentsDeserializer::deserializeDirectionalLightComponent(
 
 void ComponentsDeserializer::deserializeMaterialComponent(
     Json::Value& componentDescription, ecs::Entity& entity, asset::AssetManager& assetManager,
-    const std::unordered_map<std::string, std::string>& assetsIdRedirections) {
+    const std::unordered_map<std::string, std::string>& assetsIdRedirections
+) {
     auto& component = entity.addComponent<MaterialComponent>(
         deserializeVector3(componentDescription["ambient-color"]),
         deserializeVector3(componentDescription["diffuse-color"]),
         deserializeVector3(componentDescription["specular-color"]),
-        componentDescription["shininess"].asFloat());
+        componentDescription["shininess"].asFloat()
+    );
 
     component.isActive = componentDescription["active"].asBool();
 }
 
 void ComponentsDeserializer::deserializeMeshRendererComponent(
     Json::Value& componentDescription, ecs::Entity& entity, asset::AssetManager& assetManager,
-    const std::unordered_map<std::string, std::string>& assetsIdRedirections) {
+    const std::unordered_map<std::string, std::string>& assetsIdRedirections
+) {
     auto& component = entity.addComponent<MeshRendererComponent>();
 
     auto& defaultShader = glob::Globals::get().shaders->defaultModelShader;
@@ -81,7 +89,8 @@ void ComponentsDeserializer::deserializeMeshRendererComponent(
 
 void ComponentsDeserializer::deserializeModelComponent(
     Json::Value& componentDescription, ecs::Entity& entity, asset::AssetManager& assetManager,
-    const std::unordered_map<std::string, std::string>& assetsIdRedirections) {
+    const std::unordered_map<std::string, std::string>& assetsIdRedirections
+) {
     auto& component = entity.addComponent<ModelComponent>();
     auto& meshes = assetManager.getMeshes();
 
@@ -102,13 +111,17 @@ void ComponentsDeserializer::deserializeModelComponent(
 
         component.meshes.push_back(mesh);
     }
-    component.rebuildBoundingBox();
+    auto boundingBoxName = componentDescription["bounding-box"].asString();
+
+    component.boundingBox = std::make_unique<physx::AxisAlignedBoundingBox>(component.meshes);
+    component.renderBoundingBox = componentDescription["render-bounding-box"].asBool();
     component.isActive = componentDescription["active"].asBool();
 }
 
 void ComponentsDeserializer::deserializeParticleEffectComponent(
     Json::Value& componentDescription, ecs::Entity& entity, asset::AssetManager& assetManager,
-    const std::unordered_map<std::string, std::string>& assetsIdRedirections) {
+    const std::unordered_map<std::string, std::string>& assetsIdRedirections
+) {
     auto& component = entity.addComponent<ParticleEffectComponent>();
 
     component.isActive = componentDescription["is-active"].asBool();
@@ -131,52 +144,42 @@ void ComponentsDeserializer::deserializeParticleEffectComponent(
 
 void ComponentsDeserializer::deserializePointLightComponent(
     Json::Value& componentDescription, ecs::Entity& entity, asset::AssetManager& assetManager,
-    const std::unordered_map<std::string, std::string>& assetsIdRedirections) {
+    const std::unordered_map<std::string, std::string>& assetsIdRedirections
+) {
     auto& attenuation = componentDescription["attenuation"];
     auto& component = entity.addComponent<PointLightComponent>(
         deserializeVector3(componentDescription["position"]),
         deserializeVector3(componentDescription["color"]), attenuation["a"].asFloat(),
-        attenuation["b"].asFloat(), attenuation["c"].asFloat());
+        attenuation["b"].asFloat(), attenuation["c"].asFloat()
+    );
 
     component.isActive = componentDescription["active"].asBool();
 }
 
 void ComponentsDeserializer::deserializeTransformComponent(
     Json::Value& componentDescription, ecs::Entity& entity, asset::AssetManager& assetManager,
-    const std::unordered_map<std::string, std::string>& assetsIdRedirections) {
+    const std::unordered_map<std::string, std::string>& assetsIdRedirections
+) {
     auto& component = entity.addComponent<TransformComponent>(
         deserializeVector3(componentDescription["position"]),
         deserializeVector3(componentDescription["rotation"]),
-        deserializeVector3(componentDescription["scale"]));
+        deserializeVector3(componentDescription["scale"])
+    );
 
     component.isActive = componentDescription["active"].asBool();
 }
 
 void ComponentsDeserializer::deserializeRigidBodyComponent(
     Json::Value& componentDescription, ecs::Entity& entity, asset::AssetManager& assetManager,
-    const std::unordered_map<std::string, std::string>& assetsIdRedirections) {
+    const std::unordered_map<std::string, std::string>& assetsIdRedirections
+) {
     auto& component = entity.addComponent<RigidBodyComponent>();
 
     component.useGravity = componentDescription["use-gravity"].asBool();
-    component.renderBoundingBox = componentDescription["render-bounding-box"].asBool();
     component.enableCollisions = componentDescription["enable-collisions"].asBool();
     component.fixed = componentDescription["fixed"].asBool();
     component.mass = componentDescription["mass"].asFloat();
     component.velocity = deserializeVector3(componentDescription["velocity"]);
-
-    auto boundingBoxName = componentDescription["bounding-box"].asString();
-
-    component.boundingBox = [&]() -> std::unique_ptr<physx::BoundingBox> {
-        if (not entity.hasComponent<ModelComponent>()) return nullptr;
-
-        auto meshes = entity.getComponent<ModelComponent>().meshes;
-
-        if (boundingBoxName == "AxisAlignedBoundingBox")
-            return std::make_unique<physx::AxisAlignedBoundingBox>(meshes);
-
-        return nullptr;
-    }();
-
     component.isActive = componentDescription["active"].asBool();
 }
 

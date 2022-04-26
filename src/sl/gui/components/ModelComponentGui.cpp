@@ -9,13 +9,17 @@ namespace sl::gui::components {
 
 using namespace scene::components;
 
-void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
-                                               asset::AssetManager& assetManager,
-                                               ecs::Entity& entity) {
+void ModelComponentGui::renderComponentGuiImpl(
+    ModelComponent& component, asset::AssetManager& assetManager, ecs::Entity& entity
+) {
     with_ID(component.ownerEntityId.c_str()) {
         auto& params = m_params[component.ownerEntityId];
 
         if (beginComponentTreeNode(ICON_FA_FIGHTER_JET "  Model", component)) {
+            with_OpenedTreeNode("Bounding box") {
+                ImGui::Checkbox("Render bounding box frame", &component.renderBoundingBox);
+            }
+
             with_OpenedTreeNode("Meshes") {
                 with_OpenedTreeNode("Added") {
                     with_ID("added") {
@@ -61,8 +65,9 @@ void ModelComponentGui::renderComponentGuiImpl(ModelComponent& component,
     }
 }
 
-void ModelComponentGui::showMeshesSection(const std::string& header, Params& params,
-                                          MeshesMap& meshes) {
+void ModelComponentGui::showMeshesSection(
+    const std::string& header, Params& params, MeshesMap& meshes
+) {
     with_OpenedTreeNode(header.c_str()) {
         for (auto& [name, mesh] : meshes) {
             bool isSelected = name == params.selectedMeshName;

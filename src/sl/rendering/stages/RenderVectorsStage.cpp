@@ -24,8 +24,9 @@ void RenderVectorsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, g
     m_lineShader->disable();
 }
 
-void RenderVectorsStage::renderVector(const physx::ColoredVector& coloredVector,
-                                      gfx::Renderer& renderer) {
+void RenderVectorsStage::renderVector(
+    const physx::ColoredVector& coloredVector, gfx::Renderer& renderer
+) {
     setVectorUniforms(coloredVector);
     renderer.renderLine();
 }

@@ -24,6 +24,7 @@
 #include "sl/glob/Globals.h"
 #include "sl/gui/GuiHelper.h"
 #include "sl/gui/fonts/FontAwesome.h"
+#include "sl/physx/PhysicsEngine.h"
 #include "sl/platform/Platform.hpp"
 #include "sl/platform/glfw/GlfwInput.h"
 
@@ -83,6 +84,7 @@ class Engine : kc::event::EventListener {
     geom::GeometryManager m_geometryManager;
     glob::Globals         m_globals;
     gui::GuiHelper        m_guiHelper;
+    physx::PhysicsEngine  m_physxEngine;
     // clang-format on
 };
 

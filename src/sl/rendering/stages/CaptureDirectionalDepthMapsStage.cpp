@@ -14,17 +14,19 @@ using namespace sl::scene::components;
 CaptureDirectionalDepthMapsStage::CaptureDirectionalDepthMapsStage()
     : m_depthShader(gfx::ShaderManager::get().load(
           sl::glob::Globals::get().config.paths.shaders + "/DirectionalDepthCapture.vert",
-          sl::glob::Globals::get().config.paths.shaders + "/DirectionalDepthCapture.frag")) {}
+          sl::glob::Globals::get().config.paths.shaders + "/DirectionalDepthCapture.frag"
+      )) {}
 
-void CaptureDirectionalDepthMapsStage::execute(gfx::Renderer& renderer, scene::Scene& scene,
-                                               gfx::FrameBuffer* frameBuffer) {
+void CaptureDirectionalDepthMapsStage::execute(
+    gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer
+) {
     PROFILE_FUNCTION();
 
     prepareRenderer(renderer);
 
     auto [meshRenderers, transforms, directionalLights, models] =
-        scene.ecsRegistry.getComponentsViews<MeshRendererComponent, TransformComponent,
-                                             DirectionalLightComponent, ModelComponent>();
+        scene.ecsRegistry.getComponentsViews<
+            MeshRendererComponent, TransformComponent, DirectionalLightComponent, ModelComponent>();
 
     m_depthShader->enable();
 
@@ -46,11 +48,10 @@ void CaptureDirectionalDepthMapsStage::execute(gfx::Renderer& renderer, scene::S
     renderer.restoreViewport();
 }
 
-void CaptureDirectionalDepthMapsStage::renderDepth(DirectionalLightComponent& light,
-                                                   MeshRendererComponent::View& meshRenderers,
-                                                   TransformComponent::View& transforms,
-                                                   ModelComponent::View& models,
-                                                   gfx::Renderer& renderer) {
+void CaptureDirectionalDepthMapsStage::renderDepth(
+    DirectionalLightComponent& light, MeshRendererComponent::View& meshRenderers,
+    TransformComponent::View& transforms, ModelComponent::View& models, gfx::Renderer& renderer
+) {
     m_depthShader->setUniform("lightSpaceMatrix", light.spaceMatrix);
 
     for (auto& meshRenderer : meshRenderers)
@@ -58,20 +59,23 @@ void CaptureDirectionalDepthMapsStage::renderDepth(DirectionalLightComponent& li
             tryToRenderModel(meshRenderer, transforms, models, renderer);
 }
 
-void CaptureDirectionalDepthMapsStage::tryToRenderModel(MeshRendererComponent& meshRenderer,
-                                                        TransformComponent::View& transforms,
-                                                        ModelComponent::View& models,
-                                                        gfx::Renderer& renderer) {
+void CaptureDirectionalDepthMapsStage::tryToRenderModel(
+    MeshRendererComponent& meshRenderer, TransformComponent::View& transforms,
+    ModelComponent::View& models, gfx::Renderer& renderer
+) {
     const auto& entityId = meshRenderer.ownerEntityId;
 
     if (not models.doesEntityOwnComponent(entityId)) return;
 
-    utils::renderModel(renderer, *m_depthShader, models.getByEntityId(entityId),
-                       utils::getModelMatrix(entityId, transforms));
+    utils::renderModel(
+        renderer, *m_depthShader, models.getByEntityId(entityId),
+        utils::getModelMatrix(entityId, transforms)
+    );
 }
 
 void CaptureDirectionalDepthMapsStage::queueDirectionVectorForBeingRendered(
-    const math::Vec3& direction, scene::Scene& scene) {
+    const math::Vec3& direction, scene::Scene& scene
+) {
     static const math::Vec3 sceneOrigin{0.0f, 0.0f, 0.0f};
     static constexpr float directionScale = 1000.0f;
 
@@ -80,8 +84,8 @@ void CaptureDirectionalDepthMapsStage::queueDirectionVectorForBeingRendered(
 }
 
 void CaptureDirectionalDepthMapsStage::prepareRenderer(gfx::Renderer& renderer) {
-    renderer.setTemporaryViewport(
-        gfx::Viewport{gfx::Texture::shadowMapSize, gfx::Texture::shadowMapSize});
+    renderer.setTemporaryViewport(gfx::Viewport{
+        gfx::Texture::shadowMapSize, gfx::Texture::shadowMapSize});
 
     auto settings = renderer.getSettings();
     settings.cullFace = STARL_FRONT;

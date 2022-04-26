@@ -74,9 +74,14 @@ void ComponentsSerializer::serializeModelComponent(kc::json::JsonBuilder& builde
     std::ranges::transform(modelComponent.meshes, std::back_inserter(meshesIds),
                            [](auto& mesh) -> std::string { return mesh->getId(); });
 
+    const auto boundingBox =
+        modelComponent.boundingBox ? modelComponent.boundingBox->getName() : "None";
+
     builder.addField("name", "ModelComponent"s)
         .addField("meshes-ids", meshesIds)
-        .addField("active", modelComponent.isActive);
+        .addField("active", modelComponent.isActive)
+        .addField("render-bounding-box", modelComponent.renderBoundingBox)
+        .addField("bounding-box", boundingBox);
 }
 
 void ComponentsSerializer::serializeParticleEffectComponent(kc::json::JsonBuilder& builder,
@@ -135,10 +140,6 @@ void ComponentsSerializer::serializeRigidBodyComponent(kc::json::JsonBuilder& bu
         .addField("mass", rigidBodyComponent.mass)
         .addField("enable-collisions", rigidBodyComponent.enableCollisions)
         .addField("fixed", rigidBodyComponent.fixed)
-        .addField("render-bounding-box", rigidBodyComponent.renderBoundingBox)
-        .addField("bounding-box", rigidBodyComponent.boundingBox != nullptr
-                                      ? rigidBodyComponent.boundingBox->getName()
-                                      : "None")
         .addField("active", rigidBodyComponent.isActive);
 
     serializeVector(builder, "velocity", rigidBodyComponent.velocity);

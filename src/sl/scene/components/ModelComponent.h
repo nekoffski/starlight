@@ -13,7 +13,7 @@ namespace sl::scene::components {
 struct ModelComponent : ecs::Component {
     using View = ecs::ComponentView<ModelComponent>;
 
-    explicit ModelComponent() {
+    explicit ModelComponent() : renderBoundingBox(false) {
         instances.push_back(math::Vec3{0.0f, 0.0f, 0.0f});
 
         boundingBox = std::make_unique<physx::AxisAlignedBoundingBox>(meshes);
@@ -29,5 +29,7 @@ struct ModelComponent : ecs::Component {
     std::vector<std::shared_ptr<geom::Mesh>> meshes;
     std::vector<math::Vec3> instances;
     std::unique_ptr<physx::BoundingBox> boundingBox;
+
+    bool renderBoundingBox;
 };
 }  // namespace sl::scene::components

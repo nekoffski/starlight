@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BoundingBox.h"
 #include "sl/scene/components/RigidBodyComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 
@@ -12,6 +13,7 @@ class CollisionProcessor {
     struct DynamicBody {
         RigidBodyComponent* rigidBody;
         TransformComponent* transform;
+        BoundingBox* boundingBox;
     };
 
     void processCollisions(const std::vector<DynamicBody> dynamicBodies);
@@ -22,8 +24,9 @@ class CollisionProcessor {
 
     std::unordered_map<std::string, std::unordered_map<std::string, bool>> m_collided;
 
-    void processCollisionWithFixedRigidBody(const DynamicBody& fixedBody,
-                                            [[maybe_unused]] const DynamicBody& dynamicBody);
+    void processCollisionWithFixedRigidBody(
+        const DynamicBody& fixedBody, const DynamicBody& dynamicBody
+    );
     void processElasticCollision(const DynamicBody& lhs, const DynamicBody& rhs);
 };
 

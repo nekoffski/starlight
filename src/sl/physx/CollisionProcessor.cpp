@@ -7,17 +7,17 @@ void CollisionProcessor::processCollisions(const std::vector<DynamicBody> dynami
     auto dynamicBodiesSize = dynamicBodies.size();
 
     for (int i = 0; i < dynamicBodiesSize; ++i) {
-        auto& [rigidBody, transform] = dynamicBodies[i];
+        auto& [rigidBody, transform, boundingBox] = dynamicBodies[i];
 
-        auto collider = rigidBody->boundingBox->getCollider();
+        auto collider = boundingBox->getCollider();
         collider->setModelMatrix(transform->transformation);
 
         for (int j = i + 1; j < dynamicBodiesSize; ++j) {
-            auto& [othRigidBody, othTransform] = dynamicBodies[j];
+            auto& [othRigidBody, othTransform, othBoundingBox] = dynamicBodies[j];
 
             if (rigidBody->fixed && othRigidBody->fixed) continue;
 
-            if (othRigidBody->boundingBox->collide(collider, othTransform->transformation)) {
+            if (othBoundingBox->collide(collider, othTransform->transformation)) {
                 // if (werePreviouslyCollided(rigidBody, othRigidBody))
                 // continue;
 
@@ -37,16 +37,17 @@ void CollisionProcessor::processCollisions(const std::vector<DynamicBody> dynami
 }
 
 void CollisionProcessor::processCollisionWithFixedRigidBody(
-    const DynamicBody& fixedBody, [[maybe_unused]] const DynamicBody& dynamicBody) {
-    [[maybe_unused]] auto& [rigidBody, transform] = dynamicBody;
+    const DynamicBody& fixedBody, [[maybe_unused]] const DynamicBody& dynamicBody
+) {
+    auto& rigidBody = dynamicBody.rigidBody;
 
     constexpr float decreaseFactor = 0.7f;
     rigidBody->velocity.y = -rigidBody->velocity.y * decreaseFactor;
 }
 
 void CollisionProcessor::processElasticCollision(const DynamicBody& lhs, const DynamicBody& rhs) {
-    [[maybe_unused]] auto& [lhsRigidBody, lhsTransform] = lhs;
-    [[maybe_unused]] auto& [rhsRigidBody, rhsTransform] = rhs;
+    auto& lhsRigidBody = lhs.rigidBody;
+    auto& rhsRigidBody = rhs.rigidBody;
 
     const auto& m1 = lhsRigidBody->mass;
     const auto& m2 = rhsRigidBody->mass;
@@ -67,8 +68,9 @@ bool CollisionProcessor::werePreviouslyCollided(RigidBodyComponent* lhs, RigidBo
     return m_collided[lhsId].contains(rhsId) || m_collided[rhsId].contains(lhsId);
 }
 
-void CollisionProcessor::setPreviouslyCollided(RigidBodyComponent* lhs, RigidBodyComponent* rhs,
-                                               bool value) {
+void CollisionProcessor::setPreviouslyCollided(
+    RigidBodyComponent* lhs, RigidBodyComponent* rhs, bool value
+) {
     auto& lhsId = lhs->ownerEntityId;
     auto& rhsId = rhs->ownerEntityId;
 

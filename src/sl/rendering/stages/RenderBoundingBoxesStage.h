@@ -19,12 +19,6 @@ class RenderBoundingBoxesStage : public Stage {
     void setShaderTransforms(cam::Camera& camera);
     void prepareRenderer(gfx::Renderer& renderer);
 
-    void processRigidBody(scene::components::RigidBodyComponent& rigidBody,
-                          scene::components::TransformComponent::View& transforms,
-                          gfx::Renderer& renderer, scene::Scene& scene);
-
-    void queueVelocityVectorForBeingRendered(physx::Vector&& velocityVector, scene::Scene& scene);
-
     std::shared_ptr<gfx::Shader> m_boundingBoxShader;
 };
 

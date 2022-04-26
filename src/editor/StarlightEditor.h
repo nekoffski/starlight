@@ -32,6 +32,7 @@
 #include "sl/gui/Utils.h"
 #include "sl/gui/fonts/FontAwesome.h"
 #include "sl/math/Transforms.h"
+#include "sl/physx/PhysicsEngine.h"
 #include "sl/physx/RayCast.h"
 #include "sl/rendering/CustomFrameBufferRenderPass.h"
 #include "sl/rendering/DefaultFrameBufferRenderPass.h"
@@ -150,6 +151,10 @@ class StarlightEditor : public app::Application {
 
         using namespace sl::scene::components;
 
+        auto [models, transforms, rigidBodies] =
+            m_currentScene->ecsRegistry
+                .getComponentsViews<ModelComponent, TransformComponent, RigidBodyComponent>();
+
         if (m_engineMode == editor::EngineMode::inEditor) {
             core::WindowManager::get().enableCursor(
                 not inputManager.isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE));
@@ -168,10 +173,6 @@ class StarlightEditor : public app::Application {
 
                 auto cameraPosition = camera->getPosition();
                 kc::math::Ray ray{cameraPosition, rayDirectionWorld};
-
-                auto [models, transforms] =
-                    m_currentScene->ecsRegistry
-                        .getComponentsViews<ModelComponent, TransformComponent>();
 
                 const auto hitEntityId = physx::findRayIntersection(physx::FindRayIntersectionArgs{
                     .transforms = transforms, .models = models, .primaryRay = ray});
@@ -192,8 +193,14 @@ class StarlightEditor : public app::Application {
         // sceneSystems.pfxEngine.update(pfxs, deltaTime, *m_currentScene->camera);
 
         if (m_engineState == editor::EngineState::started) {
-            // sceneSystems.physxEngine.processRigidBodies(rigidBodies, transforms,
-            // deltaTime);
+            physx::PhysicsEngine::BoundingBoxes boundingBoxes;
+            boundingBoxes.reserve(models.size());
+
+            for (auto &model : models)
+                boundingBoxes.insert({model.ownerEntityId, model.boundingBox.get()});
+
+            physx::PhysicsEngine::get().processRigidBodies(rigidBodies, transforms, boundingBoxes,
+                                                           deltaTime);
         }
 
         if (m_engineMode == editor::EngineMode::inGame &&
