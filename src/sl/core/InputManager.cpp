@@ -7,20 +7,22 @@ namespace sl::core {
 
 static double mousePositionDeltaX = 0.0f;
 static double mousePositionDeltaY = 0.0f;
-static double mouseScrollDelta = 0.0f;
+static double mouseScrollDelta    = 0.0f;
 
-static double mouseX = 0.0f;
-static double mouseY = 0.0f;
+static double mouseX            = 0.0f;
+static double mouseY            = 0.0f;
 static double mouseScrollOffset = 0.0f;
 
-static void onMousePositionChange([[maybe_unused]] void* window, double positionX,
-                                  double positionY) {
+static void onMousePositionChange(
+    [[maybe_unused]] void* window, double positionX, double positionY
+) {
     mouseX = positionX;
     mouseY = positionY;
 }
 
-static void onMouseScroll([[maybe_unused]] void* window, [[maybe_unused]] double offsetX,
-                          double offsetY) {
+static void onMouseScroll(
+    [[maybe_unused]] void* window, [[maybe_unused]] double offsetX, double offsetY
+) {
     const float speed = 0.1f;
     mouseScrollOffset -= offsetY * speed;
 }
@@ -49,7 +51,7 @@ void InputManager::update() {
     static float previousOffsetY = 0.0f;
 
     mouseScrollDelta = mouseScrollOffset - previousOffsetY;
-    previousOffsetY = mouseScrollOffset;
+    previousOffsetY  = mouseScrollOffset;
 }
 
 bool InputManager::isMouseButtonPressed(int buttonCode) const {

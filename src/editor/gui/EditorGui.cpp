@@ -8,12 +8,12 @@ using namespace sl::core;
 namespace editor::gui {
 
 EditorGui::EditorGui(std::shared_ptr<SharedState> sharedState)
-    : m_leftPanel(sharedState),
-      m_bottomPanel(sharedState),
-      m_rightPanel(sharedState),
-      m_toolBar(sharedState),
-      sharedState(sharedState),
-      m_fileBrowser("editorGuiFileBrowser") {}
+    : m_leftPanel(sharedState)
+    , m_bottomPanel(sharedState)
+    , m_rightPanel(sharedState)
+    , m_toolBar(sharedState)
+    , sharedState(sharedState)
+    , m_fileBrowser("editorGuiFileBrowser") {}
 
 void EditorGui::renderEditorGui() {
     using namespace event;

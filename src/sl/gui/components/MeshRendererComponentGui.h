@@ -13,8 +13,10 @@ class MeshRendererComponentGui : public ComponentGuiImpl<scene::components::Mesh
     };
 
    private:
-    void renderComponentGuiImpl(scene::components::MeshRendererComponent& component,
-                                asset::AssetManager& assetManager, ecs::Entity& entity) override;
+    void renderComponentGuiImpl(
+        scene::components::MeshRendererComponent& component, asset::AssetManager& assetManager,
+        ecs::Entity& entity
+    ) override;
 
     int getPolygonMode(int) const;
 

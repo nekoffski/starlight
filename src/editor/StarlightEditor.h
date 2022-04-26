@@ -63,19 +63,23 @@ const math::Vec3 sceneOrigin = {0.0f, 0.0f, 0.0f};
 class StarlightEditor : public app::Application {
    public:
     explicit StarlightEditor()
-        : m_engineState(editor::EngineState::stopped),
-          m_depthFrameBuffer(gfx::BufferManager::get().createFrameBuffer()),
-          m_captureDepthMapsRenderPass(m_depthFrameBuffer.get()),
-          m_sceneQuadFrameBuffer(gfx::BufferManager::get().createFrameBuffer()),
-          m_captureSceneRenderPass(m_sceneQuadFrameBuffer.get()) {
+        : m_engineState(editor::EngineState::stopped)
+        , m_depthFrameBuffer(gfx::BufferManager::get().createFrameBuffer())
+        , m_captureDepthMapsRenderPass(m_depthFrameBuffer.get())
+        , m_sceneQuadFrameBuffer(gfx::BufferManager::get().createFrameBuffer())
+        , m_captureSceneRenderPass(m_sceneQuadFrameBuffer.get()) {
         sl::gui::initGui(sl::core::WindowManager::get().getWindowHandle());
 
         constexpr int fontSize = 15;
         sl::gui::GuiHelper::get()
-            .addFont("font1", "/home/nek0/kapik/projects/starlight/res/fonts/Roboto-Regular.ttf",
-                     fontSize)
-            .mergeWith("/home/nek0/kapik/projects/starlight/res/fonts/fa-solid-900.ttf",
-                       ICON_MIN_FA, ICON_MAX_FA);
+            .addFont(
+                "font1", "/home/nek0/kapik/projects/starlight/res/fonts/Roboto-Regular.ttf",
+                fontSize
+            )
+            .mergeWith(
+                "/home/nek0/kapik/projects/starlight/res/fonts/fa-solid-900.ttf", ICON_MIN_FA,
+                ICON_MAX_FA
+            );
         onStart();
     }
 
@@ -92,12 +96,13 @@ class StarlightEditor : public app::Application {
         m_fpsCamera = std::make_unique<cam::FirstPersonCamera>(viewFrustum);
 
         // // TODO: remove!
-        auto &viewport = m_editorCamera->viewFrustum.viewport;
+        auto &viewport      = m_editorCamera->viewFrustum.viewport;
         auto guiSharedState = std::make_shared<editor::gui::SharedState>(
-            m_assetManager, viewport.width, viewport.height);
+            m_assetManager, viewport.width, viewport.height
+        );
         m_editorGui = std::make_shared<editor::gui::EditorGui>(guiSharedState);
 
-        m_currentScene->camera = m_editorCamera.get();
+        m_currentScene->camera                = m_editorCamera.get();
         m_editorGui->sharedState->activeScene = m_currentScene;
 
         m_engineMode = editor::EngineMode::inEditor;
@@ -142,12 +147,12 @@ class StarlightEditor : public app::Application {
         m_currentScene->camera->update(deltaTime);
 
         glob::Globals::get().flags.disableKeyboardInput = ImGui::GetIO().WantCaptureKeyboard;
-        glob::Globals::get().flags.disableMouseInput = ImGui::GetIO().WantCaptureMouse;
+        glob::Globals::get().flags.disableMouseInput    = ImGui::GetIO().WantCaptureMouse;
 
         static auto timer = sl::async::AsyncManager::get().createTimer(0.05f);
 
         auto &inputManager = core::InputManager::get();
-        auto &camera = m_currentScene->camera;
+        auto &camera       = m_currentScene->camera;
 
         using namespace sl::scene::components;
 
@@ -157,7 +162,8 @@ class StarlightEditor : public app::Application {
 
         if (m_engineMode == editor::EngineMode::inEditor) {
             core::WindowManager::get().enableCursor(
-                not inputManager.isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE));
+                not inputManager.isMouseButtonPressed(STARL_MOUSE_BUTTON_MIDDLE)
+            );
 
             if (not timer->asyncSleep() &&
                 inputManager.isMouseButtonPressed(STARL_MOUSE_BUTTON_1)) {
@@ -165,11 +171,12 @@ class StarlightEditor : public app::Application {
 
                 const auto viewport = core::WindowManager::get().getViewport();
 
-                auto rayDirectionWorld = math::viewportToWorld(
-                    math::ViewportToWorldArgs{.coordinates = mousePosition,
-                                              .viewMatrix = camera->getViewMatrix(),
-                                              .projectionMatrix = camera->getProjectionMatrix(),
-                                              .viewportSize = {viewport.width, viewport.height}});
+                auto rayDirectionWorld = math::viewportToWorld(math::ViewportToWorldArgs{
+                    .coordinates      = mousePosition,
+                    .viewMatrix       = camera->getViewMatrix(),
+                    .projectionMatrix = camera->getProjectionMatrix(),
+                    .viewportSize     = {viewport.width, viewport.height}
+                });
 
                 auto cameraPosition = camera->getPosition();
                 kc::math::Ray ray{cameraPosition, rayDirectionWorld};
@@ -199,14 +206,16 @@ class StarlightEditor : public app::Application {
             for (auto &model : models)
                 boundingBoxes.insert({model.ownerEntityId, model.boundingBox.get()});
 
-            physx::PhysicsEngine::get().processRigidBodies(rigidBodies, transforms, boundingBoxes,
-                                                           deltaTime);
+            physx::PhysicsEngine::get().processRigidBodies(
+                rigidBodies, transforms, boundingBoxes, deltaTime
+            );
         }
 
         if (m_engineMode == editor::EngineMode::inGame &&
             core::InputManager::get().isKeyPressed(STARL_KEY_ESCAPE)) {
-            m_engineMode = editor::EngineMode::inEditor;
+            m_engineMode           = editor::EngineMode::inEditor;
             m_currentScene->camera = m_editorCamera.get();
+
             core::WindowManager::get().enableCursor();
 
             auto [width, height] = WindowManager::get().getSize();
@@ -248,7 +257,7 @@ class StarlightEditor : public app::Application {
                 closeProject();
             } else if (event->is<WindowResizedEvent>()) {
                 auto windowResizedEvent = event->asView<WindowResizedEvent>();
-                auto [width, height] = windowResizedEvent->getSize();
+                auto [width, height]    = windowResizedEvent->getSize();
 
                 recalculateViewportSize(width, height);
 
@@ -292,13 +301,14 @@ class StarlightEditor : public app::Application {
             m_currentScene->ecsRegistry.getComponentView<scene::components::CameraComponent>();
 
         auto activeCameras = std::views::filter(
-            camerasComponents,
-            [](ecs::Component &component) -> bool { return component.isActive; });
+            camerasComponents, [](ecs::Component &component) -> bool { return component.isActive; }
+        );
 
         if (auto activeCamerasCount = std::ranges::distance(activeCameras);
             activeCamerasCount > 1) {
             m_errorDialog.setErrorMessage(
-                "Only 1 camera can be active on scene when entering game mode");
+                "Only 1 camera can be active on scene when entering game mode"
+            );
             return;
 
         } else if (activeCamerasCount == 1) {
@@ -321,14 +331,16 @@ class StarlightEditor : public app::Application {
         gfx::Viewport newViewport;
 
         if (m_engineMode == editor::EngineMode::inEditor) {
-            newViewport.width = static_cast<int>(width - guiProperties.scenePanelProperties.size.x -
-                                                 guiProperties.rightPanelProperties.size.x);
+            newViewport.width = static_cast<int>(
+                width - guiProperties.scenePanelProperties.size.x -
+                guiProperties.rightPanelProperties.size.x
+            );
             newViewport.height =
                 static_cast<int>(height - guiProperties.bottomPanelProperties.size.y);
             newViewport.beginX = static_cast<int>(guiProperties.scenePanelProperties.size.x);
             newViewport.beginY = static_cast<int>(guiProperties.bottomPanelProperties.size.y);
         } else {
-            newViewport.width = static_cast<int>(width);
+            newViewport.width  = static_cast<int>(width);
             newViewport.height = static_cast<int>(height);
             newViewport.beginX = 0;
             newViewport.beginY = 0;
@@ -372,8 +384,8 @@ class StarlightEditor : public app::Application {
         using namespace sl::scene::components;
 
         auto [rigidBodies, transforms] =
-            m_currentScene->ecsRegistry
-                .getComponentsViews<RigidBodyComponent, TransformComponent>();
+            m_currentScene->ecsRegistry.getComponentsViews<RigidBodyComponent, TransformComponent>(
+            );
 
         switch (state) {
             case EngineState::started: {

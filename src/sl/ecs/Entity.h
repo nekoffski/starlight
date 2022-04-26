@@ -22,29 +22,19 @@ class Entity : public core::GameObject {
 
     std::vector<std::type_index> getComponentsIndexes();
 
-    template <typename T, typename... Args>
-    T& addComponent(Args&&... args) {
+    template <typename T, typename... Args> T& addComponent(Args&&... args) {
         return m_registry.addComponent<T>(m_id, std::forward<Args>(args)...);
     }
 
-    template <typename T>
-    void removeComponent() {
-        removeComponent(core::typeIndex<T>());
-    }
+    template <typename T> void removeComponent() { removeComponent(core::typeIndex<T>()); }
 
     void removeComponent(std::type_index index);
 
-    template <typename T>
-    T& getComponent() {
-        return m_registry.getComponent<T>(m_id);
-    }
+    template <typename T> T& getComponent() { return m_registry.getComponent<T>(m_id); }
 
     Component& getComponent(std::type_index index);
 
-    template <typename T>
-    bool hasComponent() {
-        return m_registry.hasComponent<T>(m_id);
-    }
+    template <typename T> bool hasComponent() { return m_registry.hasComponent<T>(m_id); }
 
     bool isActive;
 

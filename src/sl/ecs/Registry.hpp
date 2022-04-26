@@ -37,8 +37,7 @@ class Registry {
     void clear();
     void removeComponent(const std::string& entityId, std::type_index componentIndex);
 
-    template <typename T>
-    T& getComponent(const std::string& entityId) {
+    template <typename T> T& getComponent(const std::string& entityId) {
         return m_componentMap.get<T>().getByEntityId(entityId);
     }
 
@@ -46,19 +45,16 @@ class Registry {
         return m_componentMap.getByIndex(index).getByEntityId(entityId);
     }
 
-    template <typename T>
-    bool hasComponent(const std::string& entityId) {
+    template <typename T> bool hasComponent(const std::string& entityId) {
         if (not m_componentMap.exists<T>()) return false;
         return m_componentMap.get<T>().doesEntityOwnComponent(entityId);
     }
 
-    template <typename T>
-    ComponentView<T> getComponentView() {
+    template <typename T> ComponentView<T> getComponentView() {
         return ComponentView<T>{m_componentMap.get<T>()};
     }
 
-    template <typename... T>
-    auto getComponentsViews() {
+    template <typename... T> auto getComponentsViews() {
         return std::make_tuple(getComponentView<T>()...);  // TODO: investigate performance
     }
 

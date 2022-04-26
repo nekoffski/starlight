@@ -36,7 +36,7 @@ void FileBrowser::show() {
         ImGui::Separator();
 
         constexpr float mainContentRatio = 0.6f;
-        const float mainContentHeight = 450.0f * mainContentRatio;
+        const float mainContentHeight    = 450.0f * mainContentRatio;
 
         with_Child("##fileBrowserChild", ImVec2(0.0f, mainContentHeight)) handleFileExplorer();
 
@@ -62,7 +62,7 @@ void FileBrowser::handleHistory() {
         ImGui::SameLine();
         if (auto name = extractNameFromPath(*entry); ImGui::Button(name.c_str())) {
             m_currentSelection = *entry;
-            m_history = std::vector(m_history.begin(), std::next(entry));
+            m_history          = std::vector(m_history.begin(), std::next(entry));
 
             return;
         }
@@ -74,7 +74,7 @@ void FileBrowser::handleFileExplorer() {
         m_fileSystem->isDirectory(m_currentSelection) ? m_currentSelection : m_history.back();
 
     for (auto& entry : m_fileSystem->listDirectory(root)) {
-        auto entryName = extractNameFromPath(entry);
+        auto entryName   = extractNameFromPath(entry);
         bool isDirectory = m_fileSystem->isDirectory(entry);
 
         auto entryRecord =

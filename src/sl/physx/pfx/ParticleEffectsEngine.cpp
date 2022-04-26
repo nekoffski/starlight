@@ -11,7 +11,7 @@
 namespace sl::physx::pfx {
 
 constexpr float particleCleanerSleepTime = 0.1f;
-constexpr int maxParticlesPerIteration = 1000;
+constexpr int maxParticlesPerIteration   = 1000;
 
 static void cleanRetiredParticles(std::vector<physx::pfx::Particle>& particles) {
     std::erase_if(particles, [](auto& particle) -> bool {
@@ -23,13 +23,16 @@ ParticleEffectsEngine::ParticleEffectsEngine() {
     m_pfxTimer = async::AsyncManager::get().createTimer(particleCleanerSleepTime);
 }
 
-void ParticleEffectsEngine::update(ecs::ComponentView<components::ParticleEffectComponent>& pfxs,
-                                   float deltaTime, cam::Camera& camera) {
+void ParticleEffectsEngine::update(
+    ecs::ComponentView<components::ParticleEffectComponent>& pfxs, float deltaTime,
+    cam::Camera& camera
+) {
     for (auto& pfx : pfxs) updateParticleEffect(pfx, deltaTime, camera);
 }
 
-void ParticleEffectsEngine::updateParticleEffect(components::ParticleEffectComponent& pfx,
-                                                 float deltaTime, cam::Camera& camera) {
+void ParticleEffectsEngine::updateParticleEffect(
+    components::ParticleEffectComponent& pfx, float deltaTime, cam::Camera& camera
+) {
     auto& particles = pfx.particles;
 
     pfx.maxX = pfx.maxY = std::numeric_limits<int>::min();
@@ -56,7 +59,7 @@ void ParticleEffectsEngine::updateParticleEffect(components::ParticleEffectCompo
 
     int maxParticlesPerIteration = std::max(1, pfx.maxParticles / 100);
     if (int delta = pfx.maxParticles - particles.size(); delta > 0) {
-        auto n = std::min(delta, maxParticlesPerIteration);
+        auto n                  = std::min(delta, maxParticlesPerIteration);
         auto generatedParticles = m_particleGenerator.generate(pfx.pfxGeneratorSettings, n);
 
         particles.reserve(n);

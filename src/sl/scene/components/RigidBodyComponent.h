@@ -17,12 +17,12 @@ class RigidBodyComponent : public ecs::Component {
     using View = ecs::ComponentView<RigidBodyComponent>;
 
     explicit RigidBodyComponent()
-        : useGravity(false),
-          enableCollisions(false),
-          renderVelocity(false),
-          fixed(false),
-          mass(1.0f),
-          velocity({0.0f, 0.0f, 0.0f}) {
+        : useGravity(false)
+        , enableCollisions(false)
+        , renderVelocity(false)
+        , fixed(false)
+        , mass(1.0f)
+        , velocity({0.0f, 0.0f, 0.0f}) {
         name = "RigidBodyComponent";
     }
 

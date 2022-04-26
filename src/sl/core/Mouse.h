@@ -14,7 +14,7 @@ struct Mouse {
     virtual math::Vec2 getMousePosition() const = 0;
 
     virtual void setOnMousePositionChange(Callback) = 0;
-    virtual void setOnMouseScroll(Callback) = 0;
+    virtual void setOnMouseScroll(Callback)         = 0;
 };
 
 }  // namespace sl::core

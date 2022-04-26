@@ -15,7 +15,7 @@ class AssetContainer2 {
    public:
     void insert(std::unique_ptr<T> asset, const std::string& name) {
         m_idToName[asset->getId()] = name;
-        m_nameToAsset[name] = std::move(asset);
+        m_nameToAsset[name]        = std::move(asset);
     }
 
     std::unordered_map<std::string, std::unique_ptr<T>>& getAll() { return m_nameToAsset; }

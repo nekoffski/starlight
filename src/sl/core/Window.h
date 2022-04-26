@@ -18,18 +18,18 @@ class Window {
 
     virtual void setResizeCallback(ResizeCallback) = 0;
 
-    virtual void init() = 0;
+    virtual void init()        = 0;
     virtual void update(float) = 0;
 
     virtual bool getShouldClose() const = 0;
-    virtual void setShouldClose(bool) = 0;
+    virtual void setShouldClose(bool)   = 0;
 
     virtual void changeCursorState(bool) = 0;
-    virtual void enableCursor() = 0;
-    virtual void disableCursor() = 0;
+    virtual void enableCursor()          = 0;
+    virtual void disableCursor()         = 0;
 
     virtual void makeContextCurrent() = 0;
-    virtual void swapBuffers() = 0;
+    virtual void swapBuffers()        = 0;
 
     virtual void* getHandle() const = 0;
 

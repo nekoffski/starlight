@@ -20,19 +20,22 @@
 namespace sl::gui {
 
 ComponentsGui::ComponentsGui() {
-    m_componentsGui = {BIND_COMPONENT_GUI(DirectionalLightComponent),
-                       BIND_COMPONENT_GUI(MaterialComponent),
-                       BIND_COMPONENT_GUI(MeshRendererComponent),
-                       BIND_COMPONENT_GUI(ModelComponent),
-                       BIND_COMPONENT_GUI(ParticleEffectComponent),
-                       BIND_COMPONENT_GUI(PointLightComponent),
-                       BIND_COMPONENT_GUI(TransformComponent),
-                       BIND_COMPONENT_GUI(RigidBodyComponent),
-                       BIND_COMPONENT_GUI(CameraComponent)};
+    m_componentsGui = {
+        BIND_COMPONENT_GUI(DirectionalLightComponent),
+        BIND_COMPONENT_GUI(MaterialComponent),
+        BIND_COMPONENT_GUI(MeshRendererComponent),
+        BIND_COMPONENT_GUI(ModelComponent),
+        BIND_COMPONENT_GUI(ParticleEffectComponent),
+        BIND_COMPONENT_GUI(PointLightComponent),
+        BIND_COMPONENT_GUI(TransformComponent),
+        BIND_COMPONENT_GUI(RigidBodyComponent),
+        BIND_COMPONENT_GUI(CameraComponent)};
 }
 
-void ComponentsGui::renderComponentGui(std::type_index index, ecs::Component& component,
-                                       asset::AssetManager& assetManager, ecs::Entity& entity) {
+void ComponentsGui::renderComponentGui(
+    std::type_index index, ecs::Component& component, asset::AssetManager& assetManager,
+    ecs::Entity& entity
+) {
     if (m_componentsGui.contains(index))
         m_componentsGui.at(index)->renderComponentGui(component, assetManager, entity);
 }

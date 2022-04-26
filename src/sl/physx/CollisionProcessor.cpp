@@ -42,7 +42,7 @@ void CollisionProcessor::processCollisionWithFixedRigidBody(
     auto& rigidBody = dynamicBody.rigidBody;
 
     constexpr float decreaseFactor = 0.7f;
-    rigidBody->velocity.y = -rigidBody->velocity.y * decreaseFactor;
+    rigidBody->velocity.y          = -rigidBody->velocity.y * decreaseFactor;
 }
 
 void CollisionProcessor::processElasticCollision(const DynamicBody& lhs, const DynamicBody& rhs) {

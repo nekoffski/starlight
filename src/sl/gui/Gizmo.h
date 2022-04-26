@@ -19,7 +19,9 @@ void setupGizmo(const gfx::Viewport& viewport);
 
 bool isUsingGizmo();
 
-void manipulateGizmo(math::Mat4& viewMatrix, math::Mat4& projectionMatrix,
-                     math::Mat4& transformation, const GizmoOp op, const GizmoSpace system);
+void manipulateGizmo(
+    math::Mat4& viewMatrix, math::Mat4& projectionMatrix, math::Mat4& transformation,
+    const GizmoOp op, const GizmoSpace system
+);
 
 }  // namespace sl::gui

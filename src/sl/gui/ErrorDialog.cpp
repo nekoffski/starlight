@@ -8,7 +8,7 @@ namespace sl::gui {
 
 static std::string generateId() {
     static const std::string idBase = "ErrorPopUp";
-    static int intGenerator = 0;
+    static int intGenerator         = 0;
 
     return idBase + std::to_string(intGenerator++);
 }
@@ -32,7 +32,7 @@ void ErrorDialog::show() {
 
             if (ImGui::Button("OK")) {
                 m_errorMessage = std::nullopt;
-                m_showed = false;
+                m_showed       = false;
 
                 LOG_DEBUG("Closing error dialog");
                 ImGui::CloseCurrentPopup();

@@ -14,7 +14,7 @@ float ClockManager::getDeltaTime() const { return m_deltaTime; }
 void ClockManager::update() {
     auto now = m_clock.now();
     kc::core::toSeconds(now - m_previousNow);
-    m_deltaTime = kc::core::toSeconds(now - m_previousNow);
+    m_deltaTime   = kc::core::toSeconds(now - m_previousNow);
     m_previousNow = now;
 }
 

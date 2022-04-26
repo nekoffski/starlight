@@ -46,15 +46,16 @@ std::unique_ptr<Engine> Engine::Builder::build() && {
 }
 
 Engine::Engine(cfg::Config* config, platform::Platform* platform)
-    : EventListener("Engine"),
-      m_config(config),
-      m_platform(platform),
-      m_application(nullptr)
-      // managers
-      ,
-      m_textureManager(m_platform->gpu.textureFactory.get(), m_platform->gpu.cubemapFactory.get(),
-                       m_platform->imageFactory.get()),
-      m_shaderManager(m_platform->gpu.shaderCompiler.get(), m_platform->gpu.shaderFactory.get()) {
+    : EventListener("Engine")
+    , m_config(config)
+    , m_platform(platform)
+    , m_application(nullptr)
+    // managers
+    , m_textureManager(
+          m_platform->gpu.textureFactory.get(), m_platform->gpu.cubemapFactory.get(),
+          m_platform->imageFactory.get()
+      )
+    , m_shaderManager(m_platform->gpu.shaderCompiler.get(), m_platform->gpu.shaderFactory.get()) {
     initLowLevelComponents();
     initManagers();
 
@@ -82,7 +83,7 @@ void Engine::initLowLevelComponents() {
     m_renderApi->init();
 
     auto windowSize = m_window->getSize();
-    auto viewport = gfx::Viewport{windowSize.width, windowSize.height};
+    auto viewport   = gfx::Viewport{windowSize.width, windowSize.height};
 
     m_renderer = std::make_unique<gfx::Renderer>(m_renderApi, viewport);
 }
@@ -105,7 +106,7 @@ void Engine::initManagers() {
 }
 
 void Engine::initGlobalState() {
-    m_globals.config = *m_config;
+    m_globals.config       = *m_config;
     m_globals.rendererInfo = m_renderApi->getRendererInfo();
     m_globals.init();
 }
@@ -125,7 +126,7 @@ void Engine::run() {
     while (m_application->isRunning()) {
         loopStep();
 
-        // clang-format off
+// clang-format off
         #if 0
         LOG_TRACE("\n\n{}\n\n", profiler.formatTimers());
         #endif

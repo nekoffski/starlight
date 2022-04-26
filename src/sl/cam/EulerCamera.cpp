@@ -16,17 +16,18 @@ namespace sl::cam {
 
 const float EulerCamera::minPsi = -std::numbers::pi / 2.0f;
 const float EulerCamera::maxPsi = std::numbers::pi / 2.0f;
-const float EulerCamera::minFi = 0.0f;
-const float EulerCamera::maxFi = 2.0f * std::numbers::pi;
+const float EulerCamera::minFi  = 0.0f;
+const float EulerCamera::maxFi  = 2.0f * std::numbers::pi;
 
-EulerCamera::EulerCamera(const gfx::ViewFrustum& viewFrustum, math::Vec3 center, float speed,
-                         float radius)
-    : Camera(viewFrustum),
-      m_center(center),
-      m_speed(speed),
-      m_radius(radius),
-      m_fi(0.0f),
-      m_psi(0.0f) {
+EulerCamera::EulerCamera(
+    const gfx::ViewFrustum& viewFrustum, math::Vec3 center, float speed, float radius
+)
+    : Camera(viewFrustum)
+    , m_center(center)
+    , m_speed(speed)
+    , m_radius(radius)
+    , m_fi(0.0f)
+    , m_psi(0.0f) {
     calculateVectors();
     calculateProjectionMatrix();
 }
@@ -36,7 +37,7 @@ void EulerCamera::update(float deltaTime) {
         m_alpha += deltaTime * 2.0f;
 
         if (m_alpha >= 1.0f) {
-            m_alpha = 0.0f;
+            m_alpha         = 0.0f;
             m_isInAnimation = false;
         }
 
@@ -68,7 +69,7 @@ void EulerCamera::update(float deltaTime) {
             m_fi += mouseDelta.x * mouseSpeed;
         }
 
-        auto scrollDelta = core::InputManager::get().getScrollDelta();
+        auto scrollDelta             = core::InputManager::get().getScrollDelta();
         const float scrollDeltaSpeed = 5.0f;
         m_radius += scrollDelta * scrollDeltaSpeed;
     }
@@ -79,14 +80,15 @@ void EulerCamera::update(float deltaTime) {
 void EulerCamera::calculateVectors() {
     if (m_isInAnimation) m_center = math::lerp(m_previousCenter, m_targetCenter, m_alpha);
 
-    m_position = {m_radius * std::cos(m_psi) * std::cos(m_fi), m_radius * std::sin(m_psi),
-                  m_radius * std::cos(m_psi) * std::sin(m_fi)};
+    m_position = {
+        m_radius * std::cos(m_psi) * std::cos(m_fi), m_radius * std::sin(m_psi),
+        m_radius * std::cos(m_psi) * std::sin(m_fi)};
 
     m_position += m_center;
 
     m_front = math::normalize(-m_position + m_center);
     m_right = math::normalize(math::cross(m_front, math::worldUp));
-    m_up = math::normalize(math::cross(m_right, m_front));
+    m_up    = math::normalize(math::cross(m_right, m_front));
 }
 
 void EulerCamera::onGui() {

@@ -80,7 +80,7 @@ void ModelComponentGui::showMeshesSection(
 
             if (ImGui::IsItemClicked()) {
                 params.selectedMeshName = name;
-                params.selectedMesh = mesh;
+                params.selectedMesh     = mesh;
             }
         }
     }

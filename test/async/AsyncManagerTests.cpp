@@ -14,11 +14,11 @@ struct FakePeriodicTask : async::PeriodicTask {
 
     static void reset() {
         s_shouldInvoke = false;
-        s_invoked = 0;
+        s_invoked      = 0;
     }
 
     inline static bool s_shouldInvoke = false;
-    inline static int s_invoked = 0;
+    inline static int s_invoked       = 0;
 };
 
 struct FakeAsyncTask : async::AsyncTask {
@@ -29,11 +29,11 @@ struct FakeAsyncTask : async::AsyncTask {
     std::string asString() const override { return "__"; }
 
     static void reset() {
-        s_finalized = false;
+        s_finalized    = false;
         s_asyncInvoked = false;
     }
 
-    inline static bool s_finalized = false;
+    inline static bool s_finalized    = false;
     inline static bool s_asyncInvoked = false;
 };
 
@@ -45,12 +45,14 @@ struct AsyncManagerTests : Test {
 
     async::AsyncManager asyncManager;
 
-    static constexpr float dt = 0.1f;
+    static constexpr float dt                 = 0.1f;
     static constexpr int microsecondsInSecond = 1000000;
 };
 
-TEST_F(AsyncManagerTests,
-       givenAsyncManager_whenInsertingPeriodicTasks_shouldBeCalledBasedOnWhatShouldInvokeReturns) {
+TEST_F(
+    AsyncManagerTests,
+    givenAsyncManager_whenInsertingPeriodicTasks_shouldBeCalledBasedOnWhatShouldInvokeReturns
+) {
     asyncManager.addPeriodicTask<FakePeriodicTask>();
 
     ASSERT_EQ(FakePeriodicTask::s_invoked, 0);
@@ -87,7 +89,7 @@ TEST_F(AsyncManagerTests, givenAsyncManager_whenDisablingPeriodicTask_shouldBeCa
 
 TEST_F(AsyncManagerTests, givenAsyncManager_whenCallingFunctionAsync_shouldBeCalled) {
     static constexpr int result = 1337;
-    static constexpr int delta = 1;
+    static constexpr int delta  = 1;
 
     auto future = asyncManager.callAsync([&] { return result + delta; });
 
@@ -116,7 +118,7 @@ TEST_F(AsyncManagerTests, givenAsyncManager_whenCallingAsyncTask_shouldInvokeAsy
 
 TEST_F(AsyncManagerTests, givenTimer_whenTimeExceedSleepTime_shouldReturnFalse) {
     static constexpr float sleepTime = 10.0f;
-    auto timer = asyncManager.createTimer(sleepTime);
+    auto timer                       = asyncManager.createTimer(sleepTime);
 
     ASSERT_TRUE(timer->asyncSleep());
 

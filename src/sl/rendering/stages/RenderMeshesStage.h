@@ -19,18 +19,25 @@ class RenderMeshesStage : public Stage {
         scene::components::TransformComponent::View& transforms,
         scene::components::ModelComponent::View& models,
         scene::components::MaterialComponent::View& materials, gfx::Renderer& renderer,
-        scene::Scene& scene);
+        scene::Scene& scene
+    );
 
-    void prepareRenderer(const scene::components::MeshRendererComponent& meshRendererComponent,
-                         gfx::Renderer& renderer);
+    void prepareRenderer(
+        const scene::components::MeshRendererComponent& meshRendererComponent,
+        gfx::Renderer& renderer
+    );
 
     const scene::components::MaterialComponent& getMaterial(
-        const std::string& entityId, scene::components::MaterialComponent::View& materials);
+        const std::string& entityId, scene::components::MaterialComponent::View& materials
+    );
 
-    void setUniforms(gfx::Shader& shader, cam::Camera& camera,
-                     const scene::components::MaterialComponent& material);
-    void setMaterialUniforms(const scene::components::MaterialComponent& material,
-                             gfx::Shader& shader);
+    void setUniforms(
+        gfx::Shader& shader, cam::Camera& camera,
+        const scene::components::MaterialComponent& material
+    );
+    void setMaterialUniforms(
+        const scene::components::MaterialComponent& material, gfx::Shader& shader
+    );
 };
 
 }  // namespace sl::rendering::stages

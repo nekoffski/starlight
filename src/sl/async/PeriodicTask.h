@@ -18,7 +18,7 @@ struct PeriodicTask {
     explicit PeriodicTask();
 
     virtual bool shouldInvoke() = 0;
-    virtual void invoke() = 0;
+    virtual void invoke()       = 0;
 
     virtual std::string getName() const = 0;
 

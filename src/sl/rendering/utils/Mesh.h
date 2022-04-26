@@ -28,8 +28,10 @@ inline void renderMeshWithoutTextures(gfx::Renderer& renderer, geom::Mesh& mesh)
     vao->unbind();
 }
 
-inline void renderModel(gfx::Renderer& renderer, gfx::Shader& shader,
-                        scene::components::ModelComponent& model, const math::Mat4& transform) {
+inline void renderModel(
+    gfx::Renderer& renderer, gfx::Shader& shader, scene::components::ModelComponent& model,
+    const math::Mat4& transform
+) {
     for (auto& position : model.instances) {
         shader.setUniform("modelMatrix", transform * math::translate(position));
 

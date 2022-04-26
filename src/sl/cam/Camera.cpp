@@ -7,14 +7,16 @@
 
 namespace sl::cam {
 
-Camera::Camera(const gfx::ViewFrustum &viewFrustum, const math::Vec3 &position,
-               const math::Vec3 &up, const math::Vec3 &front, const math::Vec3 &right)
-    : EventListener("Camera"),
-      viewFrustum(viewFrustum),
-      m_position(std::move(position)),
-      m_up(std::move(up)),
-      m_front(std::move(front)),
-      m_right(std::move(right)) {
+Camera::Camera(
+    const gfx::ViewFrustum &viewFrustum, const math::Vec3 &position, const math::Vec3 &up,
+    const math::Vec3 &front, const math::Vec3 &right
+)
+    : EventListener("Camera")
+    , viewFrustum(viewFrustum)
+    , m_position(std::move(position))
+    , m_up(std::move(up))
+    , m_front(std::move(front))
+    , m_right(std::move(right)) {
     LOG_TRACE("Registering Camera as a event listener");
     sl::event::EventManager::get().registerListener(this);
 }

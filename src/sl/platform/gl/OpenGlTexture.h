@@ -31,8 +31,9 @@ struct OpenGlTextureFactory : sl::gfx::Texture::Factory {
         return std::make_unique<OpenGlTexture>(image);
     }
 
-    std::unique_ptr<sl::gfx::Texture> create(unsigned int w, unsigned int h, int internalFormat,
-                                             int format) override {
+    std::unique_ptr<sl::gfx::Texture> create(
+        unsigned int w, unsigned int h, int internalFormat, int format
+    ) override {
         return std::make_unique<OpenGlTexture>(w, h, internalFormat, format);
     }
 };

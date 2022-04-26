@@ -28,13 +28,15 @@ ComponentsSerializer::ComponentsSerializer() {
                      BIND_SERIALIZER_CALLBACK(RigidBodyComponent)};
 }
 
-void ComponentsSerializer::serializeComponent(std::type_index index, kc::json::JsonBuilder& builder,
-                                              ecs::Component& component) {
+void ComponentsSerializer::serializeComponent(
+    std::type_index index, kc::json::JsonBuilder& builder, ecs::Component& component
+) {
     if (m_serializers.contains(index)) std::invoke(m_serializers.at(index), builder, component);
 }
 
-void ComponentsSerializer::serializeDirectionalLightComponent(kc::json::JsonBuilder& builder,
-                                                              ecs::Component& component) {
+void ComponentsSerializer::serializeDirectionalLightComponent(
+    kc::json::JsonBuilder& builder, ecs::Component& component
+) {
     auto& directionalLightComponent =
         static_cast<scene::components::DirectionalLightComponent&>(component);
 
@@ -46,8 +48,9 @@ void ComponentsSerializer::serializeDirectionalLightComponent(kc::json::JsonBuil
     serializeVector(builder, "color", directionalLightComponent.color);
 }
 
-void ComponentsSerializer::serializeMaterialComponent(kc::json::JsonBuilder& builder,
-                                                      ecs::Component& component) {
+void ComponentsSerializer::serializeMaterialComponent(
+    kc::json::JsonBuilder& builder, ecs::Component& component
+) {
     auto& materialComponent = static_cast<scene::components::MaterialComponent&>(component);
 
     builder.addField("name", "MaterialComponent"s).addField("active", materialComponent.isActive);
@@ -57,8 +60,9 @@ void ComponentsSerializer::serializeMaterialComponent(kc::json::JsonBuilder& bui
     builder.addField("shininess", materialComponent.shininess);
 }
 
-void ComponentsSerializer::serializeMeshRendererComponent(kc::json::JsonBuilder& builder,
-                                                          ecs::Component& component) {
+void ComponentsSerializer::serializeMeshRendererComponent(
+    kc::json::JsonBuilder& builder, ecs::Component& component
+) {
     auto& meshRendererComponent = static_cast<scene::components::MeshRendererComponent&>(component);
 
     builder.addField("name", "MeshRendererComponent"s)
@@ -66,13 +70,16 @@ void ComponentsSerializer::serializeMeshRendererComponent(kc::json::JsonBuilder&
         .addField("active", meshRendererComponent.isActive);
 }
 
-void ComponentsSerializer::serializeModelComponent(kc::json::JsonBuilder& builder,
-                                                   ecs::Component& component) {
+void ComponentsSerializer::serializeModelComponent(
+    kc::json::JsonBuilder& builder, ecs::Component& component
+) {
     auto& modelComponent = static_cast<scene::components::ModelComponent&>(component);
 
     std::vector<std::string> meshesIds;
-    std::ranges::transform(modelComponent.meshes, std::back_inserter(meshesIds),
-                           [](auto& mesh) -> std::string { return mesh->getId(); });
+    std::ranges::transform(
+        modelComponent.meshes, std::back_inserter(meshesIds),
+        [](auto& mesh) -> std::string { return mesh->getId(); }
+    );
 
     const auto boundingBox =
         modelComponent.boundingBox ? modelComponent.boundingBox->getName() : "None";
@@ -84,8 +91,9 @@ void ComponentsSerializer::serializeModelComponent(kc::json::JsonBuilder& builde
         .addField("bounding-box", boundingBox);
 }
 
-void ComponentsSerializer::serializeParticleEffectComponent(kc::json::JsonBuilder& builder,
-                                                            ecs::Component& component) {
+void ComponentsSerializer::serializeParticleEffectComponent(
+    kc::json::JsonBuilder& builder, ecs::Component& component
+) {
     auto& particleEffectComponent =
         static_cast<scene::components::ParticleEffectComponent&>(component);
     auto& settings = particleEffectComponent.pfxGeneratorSettings;
@@ -106,8 +114,9 @@ void ComponentsSerializer::serializeParticleEffectComponent(kc::json::JsonBuilde
     serializeVector(builder, "position", particleEffectComponent.position);
 }
 
-void ComponentsSerializer::serializePointLightComponent(kc::json::JsonBuilder& builder,
-                                                        ecs::Component& component) {
+void ComponentsSerializer::serializePointLightComponent(
+    kc::json::JsonBuilder& builder, ecs::Component& component
+) {
     auto& pointLightComponent = static_cast<scene::components::PointLightComponent&>(component);
 
     builder.addField("name", "PointLightComponent"s)
@@ -121,8 +130,9 @@ void ComponentsSerializer::serializePointLightComponent(kc::json::JsonBuilder& b
         .endObject();
 }
 
-void ComponentsSerializer::serializeTransformComponent(kc::json::JsonBuilder& builder,
-                                                       ecs::Component& component) {
+void ComponentsSerializer::serializeTransformComponent(
+    kc::json::JsonBuilder& builder, ecs::Component& component
+) {
     auto& transformComponent = static_cast<scene::components::TransformComponent&>(component);
 
     builder.addField("name", "TransformComponent"s).addField("active", transformComponent.isActive);
@@ -131,8 +141,9 @@ void ComponentsSerializer::serializeTransformComponent(kc::json::JsonBuilder& bu
     serializeVector(builder, "scale", transformComponent.scale);
 }
 
-void ComponentsSerializer::serializeRigidBodyComponent(kc::json::JsonBuilder& builder,
-                                                       ecs::Component& component) {
+void ComponentsSerializer::serializeRigidBodyComponent(
+    kc::json::JsonBuilder& builder, ecs::Component& component
+) {
     auto& rigidBodyComponent = static_cast<scene::components::RigidBodyComponent&>(component);
 
     builder.addField("name", "RigidBodyComponent"s)
@@ -145,8 +156,9 @@ void ComponentsSerializer::serializeRigidBodyComponent(kc::json::JsonBuilder& bu
     serializeVector(builder, "velocity", rigidBodyComponent.velocity);
 }
 
-void ComponentsSerializer::serializeVector(kc::json::JsonBuilder& builder, const std::string& name,
-                                           const math::Vec3& vector) {
+void ComponentsSerializer::serializeVector(
+    kc::json::JsonBuilder& builder, const std::string& name, const math::Vec3& vector
+) {
     builder.addField(name, std::vector<float>{vector.x, vector.y, vector.z});
 }
 }  // namespace sl::app

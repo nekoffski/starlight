@@ -40,8 +40,9 @@ class OpenGlShader : public sl::gfx::Shader {
 };
 
 struct OpenGlShaderFactory : sl::gfx::Shader::Factory {
-    std::shared_ptr<sl::gfx::Shader> create(const std::string& vertex, const std::string& fragment,
-                                            const std::string& geom) {
+    std::shared_ptr<sl::gfx::Shader> create(
+        const std::string& vertex, const std::string& fragment, const std::string& geom
+    ) {
         return std::make_shared<OpenGlShader>(vertex, fragment, geom);
     }
 };

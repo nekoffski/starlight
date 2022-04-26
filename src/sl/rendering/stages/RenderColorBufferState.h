@@ -15,10 +15,11 @@ namespace sl::rendering::stages {
 class RenderColorBufferStage : public Stage {
    public:
     explicit RenderColorBufferStage()
-        : m_quadVao(sl::glob::Globals::get().geom->frontSquareVAO.get()),
-          m_colorBufferShader(gfx::ShaderManager::get().load(
+        : m_quadVao(sl::glob::Globals::get().geom->frontSquareVAO.get())
+        , m_colorBufferShader(gfx::ShaderManager::get().load(
               sl::glob::Globals::get().config.paths.shaders + "/ColorBuffer.vert",
-              sl::glob::Globals::get().config.paths.shaders + "/ColorBuffer.frag")) {
+              sl::glob::Globals::get().config.paths.shaders + "/ColorBuffer.frag"
+          )) {
 // clang-format off
         #ifdef DEV_MODE
             async::AsyncManager::get().addPeriodicTask<gfx::Shader::RecompileOnUpdate>(m_colorBufferShader);
@@ -30,7 +31,7 @@ class RenderColorBufferStage : public Stage {
         auto [width, height] = core::WindowManager::get().getSize();
         gfx::Viewport viewport{width, height};
 
-        auto settings = renderer.getSettings();
+        auto settings           = renderer.getSettings();
         settings.enableBlending = false;
 
         renderer.setTemporarySettings(settings);

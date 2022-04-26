@@ -13,13 +13,13 @@ namespace sl::platform::assimp {
 
 using geom::Vertex;
 
-std::shared_ptr<geom::Mesh> AssimpMeshProcessor::processMesh(aiMesh* assimpMesh,
-                                                             const aiScene* scene,
-                                                             const std::string& directory) {
+std::shared_ptr<geom::Mesh> AssimpMeshProcessor::processMesh(
+    aiMesh* assimpMesh, const aiScene* scene, const std::string& directory
+) {
     auto mesh = std::make_shared<geom::Mesh>();
 
     mesh->vertices = loadVertices(assimpMesh);
-    mesh->indices = loadIndices(assimpMesh);
+    mesh->indices  = loadIndices(assimpMesh);
     mesh->textures = loadTextures(scene->mMaterials[assimpMesh->mMaterialIndex], directory);
     initVertexArray(mesh);
 
@@ -31,7 +31,8 @@ void AssimpMeshProcessor::initVertexArray(std::shared_ptr<geom::Mesh>& mesh) {
 }
 
 std::vector<std::shared_ptr<sl::gfx::Texture>> AssimpMeshProcessor::loadTextures(
-    aiMaterial* material, const std::string& directory) {
+    aiMaterial* material, const std::string& directory
+) {
     std::vector<std::shared_ptr<sl::gfx::Texture>> textures;
 
     auto diffuseMaps =
@@ -67,11 +68,11 @@ std::vector<geom::Vertex> AssimpMeshProcessor::loadVertices(aiMesh* assimpMesh) 
     for (unsigned i = 0; i < assimpMesh->mNumVertices; ++i) {
         Vertex vertex;
 
-        vertex.position = {assimpMesh->mVertices[i].x, assimpMesh->mVertices[i].y,
-                           assimpMesh->mVertices[i].z};
+        vertex.position = {
+            assimpMesh->mVertices[i].x, assimpMesh->mVertices[i].y, assimpMesh->mVertices[i].z};
 
-        vertex.normal = {assimpMesh->mNormals[i].x, assimpMesh->mNormals[i].y,
-                         assimpMesh->mNormals[i].z};
+        vertex.normal = {
+            assimpMesh->mNormals[i].x, assimpMesh->mNormals[i].y, assimpMesh->mNormals[i].z};
 
         if (auto texCoords = assimpMesh->mTextureCoords[0]; texCoords) {
             vertex.textureCoordinates = {texCoords[i].x, texCoords[i].y};
@@ -79,11 +80,12 @@ std::vector<geom::Vertex> AssimpMeshProcessor::loadVertices(aiMesh* assimpMesh) 
             vertex.textureCoordinates = {0.0f, 0.0f};
         }
 
-        vertex.tangent = {assimpMesh->mTangents[i].x, assimpMesh->mTangents[i].y,
-                          assimpMesh->mTangents[i].z};
+        vertex.tangent = {
+            assimpMesh->mTangents[i].x, assimpMesh->mTangents[i].y, assimpMesh->mTangents[i].z};
 
-        vertex.bitangent = {assimpMesh->mBitangents[i].x, assimpMesh->mBitangents[i].y,
-                            assimpMesh->mBitangents[i].z};
+        vertex.bitangent = {
+            assimpMesh->mBitangents[i].x, assimpMesh->mBitangents[i].y,
+            assimpMesh->mBitangents[i].z};
 
         vertices.push_back(std::move(vertex));
     }
@@ -92,7 +94,8 @@ std::vector<geom::Vertex> AssimpMeshProcessor::loadVertices(aiMesh* assimpMesh) 
 
 std::vector<std::shared_ptr<sl::gfx::Texture>> AssimpMeshProcessor::loadMaterialTextures(
     aiMaterial* material, aiTextureType textureType, const std::string& typeName,
-    const std::string& directory) {
+    const std::string& directory
+) {
     std::vector<std::shared_ptr<sl::gfx::Texture>> textures;
     for (unsigned i = 0; i < material->GetTextureCount(textureType); ++i) {
         aiString str;
@@ -101,7 +104,8 @@ std::vector<std::shared_ptr<sl::gfx::Texture>> AssimpMeshProcessor::loadMaterial
         // TODO: OPTIMIZE, store texture in models as most of mesh reuse them!
         auto& textureManager = gfx::TextureManager::get();
         textures.push_back(
-            textureManager.createTexture().fromPath(directory + "/" + str.C_Str()).get());
+            textureManager.createTexture().fromPath(directory + "/" + str.C_Str()).get()
+        );
     }
     return textures;
 }

@@ -17,8 +17,9 @@ void OpenGlFrameBuffer::bind() { glBindFramebuffer(GL_FRAMEBUFFER, m_bufferId); 
 void OpenGlFrameBuffer::unbind() { glBindFramebuffer(GL_FRAMEBUFFER, 0u); }
 
 void OpenGlFrameBuffer::bindRenderBuffer(sl::gfx::RenderBuffer& buffer) {
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,
-                              buffer.getBufferId());
+    glFramebufferRenderbuffer(
+        GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, buffer.getBufferId()
+    );
 }
 
 void OpenGlFrameBuffer::bindTexture(sl::gfx::Texture& texture, unsigned int attachment) {
@@ -29,8 +30,9 @@ void OpenGlFrameBuffer::bindTexture(sl::gfx::Texture& texture) {
     // TODO: make it configurable
     //    texture->bind();
     // bind();
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texture.getBuffer(),
-                           0);
+    glFramebufferTexture2D(
+        GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texture.getBuffer(), 0
+    );
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
     // unbind();

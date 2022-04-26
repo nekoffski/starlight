@@ -87,7 +87,7 @@ void CaptureDirectionalDepthMapsStage::prepareRenderer(gfx::Renderer& renderer) 
     renderer.setTemporaryViewport(gfx::Viewport{
         gfx::Texture::shadowMapSize, gfx::Texture::shadowMapSize});
 
-    auto settings = renderer.getSettings();
+    auto settings     = renderer.getSettings();
     settings.cullFace = STARL_FRONT;
     renderer.setTemporarySettings(settings);
 }

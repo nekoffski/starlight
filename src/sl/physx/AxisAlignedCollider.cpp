@@ -7,8 +7,9 @@
 
 namespace sl::physx {
 
-bool AxisAlignedCollider::collideWith(AxisAlignedBoundingBox& boundingBox,
-                                      const math::Mat4& modelMatrix) {
+bool AxisAlignedCollider::collideWith(
+    AxisAlignedBoundingBox& boundingBox, const math::Mat4& modelMatrix
+) {
     const auto min = modelMatrix * boundingBox.min;
     const auto max = modelMatrix * boundingBox.max;
 
@@ -22,13 +23,14 @@ bool AxisAlignedCollider::collideWith(AxisAlignedBoundingBox& boundingBox,
 }
 
 std::optional<Collider::IntersectRecord> AxisAlignedCollider::intersectsWith(
-    const kc::math::Ray& ray, const math::Mat4& modelMatrix) {
+    const kc::math::Ray& ray, const math::Mat4& modelMatrix
+) {
     const auto min = modelMatrix * m_min;
     const auto max = modelMatrix * m_max;
 
     using std::swap;
 
-    const auto origin = ray.getOrigin();
+    const auto origin    = ray.getOrigin();
     const auto direction = ray.getDirection();
 
     float tmin = (min.x - origin.x) / direction.x;

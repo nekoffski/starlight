@@ -23,8 +23,10 @@ bool labeledTextInput(const std::string& label, std::string& text, const int pad
 }
 
 void showImage(gfx::Texture& texture, math::Vec2 size, math::Vec2 uv0, math::Vec2 uv1) {
-    ImGui::Image((void*)(intptr_t)texture.getBuffer(), ImVec2(size.x, size.y), ImVec2(uv0.x, uv0.y),
-                 ImVec2(uv1.x, uv1.y));
+    ImGui::Image(
+        (void*)(intptr_t)texture.getBuffer(), ImVec2(size.x, size.y), ImVec2(uv0.x, uv0.y),
+        ImVec2(uv1.x, uv1.y)
+    );
 }
 
 bool combo(const std::string& label, int* currentItem, const std::vector<std::string>& items) {

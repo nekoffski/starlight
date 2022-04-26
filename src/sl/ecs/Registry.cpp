@@ -8,9 +8,9 @@ namespace sl::ecs {
 
 Entity& Registry::createEntity(const std::string& name) {
     auto entity = std::make_unique<Entity>(name, *this);
-    auto id = entity->getId();
+    auto id     = entity->getId();
 
-    m_entities[id] = std::move(entity);
+    m_entities[id]         = std::move(entity);
     m_entityNameToId[name] = id;
 
     auto& entityRef = *m_entities[id];

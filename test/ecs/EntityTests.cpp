@@ -13,7 +13,7 @@ namespace {
 struct EntityTests : Test {
     Registry reg;
     const std::string name = "name";
-    Entity& entity = reg.createEntity(name);
+    Entity& entity         = reg.createEntity(name);
 };
 
 TEST_F(EntityTests, givenEntity_shouldBeActiveAsDefault) { EXPECT_TRUE(entity.isActive); }
@@ -33,7 +33,7 @@ TEST_F(EntityTests, givenEntity_whenSettingName_shouldSetName) {
 TEST_F(EntityTests, givenEntity_whenAddingEntity_shouldAddEntity) {
     ASSERT_FALSE(entity.hasComponent<TestComponent>());
 
-    constexpr int x = 1;
+    constexpr int x   = 1;
     constexpr float y = 1.0f;
 
     auto& component = entity.addComponent<TestComponent>(x, y);

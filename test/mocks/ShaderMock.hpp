@@ -9,8 +9,10 @@ using namespace sl;
 
 struct ShaderMock : public Shader {
     struct Factory : public Shader::Factory {
-        MOCK_METHOD(std::shared_ptr<Shader>, create,
-                    (const std::string&, const std::string&, const std::string&), (override));
+        MOCK_METHOD(
+            std::shared_ptr<Shader>, create,
+            (const std::string&, const std::string&, const std::string&), (override)
+        );
     };
 
     MOCK_METHOD(void, enable, (), (override));

@@ -21,11 +21,13 @@ void OpenGlShaderCompiler::compile(sl::gfx::Shader& shader) {
 }
 
 void OpenGlShaderCompiler::compile(OpenGlShader& shader) {
-    LOG_DEBUG("compiling shader: \n{},\n{},\n{}", shader.m_fragmentPath, shader.m_vertexPath,
-              shader.m_geomPath);
+    LOG_DEBUG(
+        "compiling shader: \n{},\n{},\n{}", shader.m_fragmentPath, shader.m_vertexPath,
+        shader.m_geomPath
+    );
 
     GLuint& shaderProgramId = shader.m_shaderProgram;
-    shaderProgramId = glCreateProgram();
+    shaderProgramId         = glCreateProgram();
 
     LOG_DEBUG("compiling vertex shader");
     auto vertexShaderId = compileShader(shader.m_vertexPath, GL_VERTEX_SHADER);

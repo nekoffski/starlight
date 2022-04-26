@@ -14,8 +14,9 @@ class RightPanel : public Widget {
 
     void render() override {
         auto& widgetProperties = m_sharedState->guiProperties.rightPanelProperties;
-        sl::gui::beginPanel(" " ICON_FA_WRENCH " Inspector", widgetProperties.origin,
-                            widgetProperties.size);
+        sl::gui::beginPanel(
+            " " ICON_FA_WRENCH " Inspector", widgetProperties.origin, widgetProperties.size
+        );
 
         with_TabBar("lowerLeftTabBar") m_entityTab.render();
 

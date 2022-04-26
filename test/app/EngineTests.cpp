@@ -30,5 +30,6 @@ TEST_F(EngineTests, givenEngineBuilderWithFieldsSet_whenCreating_shouldNotThrowA
     EXPECT_CALL(*FakeGPU::renderApiMock, init()).Times(1);
 
     EXPECT_NO_THROW(EXPECT_NE(
-        Engine::Builder{}.setConfig(&config).setPlatform(fakePlatform.get()).build(), nullptr));
+        Engine::Builder{}.setConfig(&config).setPlatform(fakePlatform.get()).build(), nullptr
+    ));
 }

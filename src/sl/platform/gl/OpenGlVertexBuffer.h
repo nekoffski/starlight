@@ -20,8 +20,8 @@ class OpenGlVertexBuffer : public sl::gfx::VertexBuffer {
 };
 
 struct OpenGlVertexBufferFactory : sl::gfx::VertexBuffer::Factory {
-    std::shared_ptr<sl::gfx::VertexBuffer> create(void* data, int size,
-                                                  int verticesCount) override {
+    std::shared_ptr<sl::gfx::VertexBuffer> create(void* data, int size, int verticesCount)
+        override {
         return std::make_shared<OpenGlVertexBuffer>(data, size, verticesCount);
     }
 };

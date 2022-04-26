@@ -14,8 +14,9 @@ class ShaderManager : public kc::core::Singleton<ShaderManager> {
    public:
     explicit ShaderManager(ShaderCompiler* shaderCompiler, Shader::Factory* shaderFactory);
 
-    std::shared_ptr<Shader> load(const std::string& vertex, const std::string& fragment,
-                                 const std::string& geometry = "");
+    std::shared_ptr<Shader> load(
+        const std::string& vertex, const std::string& fragment, const std::string& geometry = ""
+    );
 
     void recompileShader(Shader& shader);
 

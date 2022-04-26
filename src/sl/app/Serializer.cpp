@@ -11,8 +11,9 @@ namespace sl::app {
 
 Serializer::Serializer(const std::string& path) : m_path(path) {}
 
-void Serializer::serialize(asset::AssetManager& assetManager, scene::Scene* scene,
-                           const kc::core::FileSystem& fileSystem) {
+void Serializer::serialize(
+    asset::AssetManager& assetManager, scene::Scene* scene, const kc::core::FileSystem& fileSystem
+) {
     auto filePath = m_path;
 
     if (not filePath.ends_with(extension)) filePath += extension;
@@ -102,8 +103,9 @@ void Serializer::serializeScene(scene::Scene* scene) {
 
         for (auto& componentIndex : entity->getComponentsIndexes()) {
             m_jsonBuilder.beginObject();
-            m_componentsSerializer.serializeComponent(componentIndex, m_jsonBuilder,
-                                                      entity->getComponent(componentIndex));
+            m_componentsSerializer.serializeComponent(
+                componentIndex, m_jsonBuilder, entity->getComponent(componentIndex)
+            );
             m_jsonBuilder.endObject();
         }
 

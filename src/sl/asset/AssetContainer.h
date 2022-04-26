@@ -14,7 +14,7 @@ requires std::derived_from<T, core::GameObject>
 class AssetContainer {
    public:
     void insert(std::shared_ptr<T> asset, const std::string& name) {
-        m_nameToAsset[name] = asset;
+        m_nameToAsset[name]        = asset;
         m_idToName[asset->getId()] = name;
     }
 

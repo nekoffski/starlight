@@ -8,13 +8,13 @@
 
 namespace sl::rendering::stages {
 
-const float shadowWidth = gfx::Texture::shadowMapSize;
+const float shadowWidth  = gfx::Texture::shadowMapSize;
 const float shadowHeight = shadowWidth;
 
 const float aspect = shadowWidth / shadowHeight;
 
 const float near = 1.0f;
-const float far = 25.0f;
+const float far  = 25.0f;
 
 using namespace sl::scene::components;
 
@@ -22,12 +22,14 @@ CapturePointDepthMapsStage::CapturePointDepthMapsStage()
     : m_depthShader(gfx::ShaderManager::get().load(
           sl::glob::Globals::get().config.paths.shaders + "/PointDepthCapture.vert",
           sl::glob::Globals::get().config.paths.shaders + "/PointDepthCapture.frag",
-          sl::glob::Globals::get().config.paths.shaders + "/PointDepthCapture.geom")) {
+          sl::glob::Globals::get().config.paths.shaders + "/PointDepthCapture.geom"
+      )) {
     m_shadowProjection = math::perspective(math::toRadians(90.0f), aspect, near, far);
 }
 
-void CapturePointDepthMapsStage::execute(gfx::Renderer& renderer, scene::Scene& scene,
-                                         gfx::FrameBuffer* frameBuffer) {
+void CapturePointDepthMapsStage::execute(
+    gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer
+) {
     PROFILE_FUNCTION();
 
     prepareRenderer(renderer);
@@ -35,9 +37,8 @@ void CapturePointDepthMapsStage::execute(gfx::Renderer& renderer, scene::Scene& 
     m_depthShader->enable();
     m_depthShader->setUniform("farPlane", far);
 
-    auto [meshRenderers, transforms, pointLights, models] =
-        scene.ecsRegistry.getComponentsViews<MeshRendererComponent, TransformComponent,
-                                             PointLightComponent, ModelComponent>();
+    auto [meshRenderers, transforms, pointLights, models] = scene.ecsRegistry.getComponentsViews<
+        MeshRendererComponent, TransformComponent, PointLightComponent, ModelComponent>();
 
     for (auto& light : pointLights) {
         if (not light.isActive) continue;
@@ -51,11 +52,11 @@ void CapturePointDepthMapsStage::execute(gfx::Renderer& renderer, scene::Scene& 
     renderer.restoreViewport();
 }
 
-void CapturePointDepthMapsStage::processLight(PointLightComponent& light,
-                                              MeshRendererComponent::View& meshRenderers,
-                                              TransformComponent::View& transforms,
-                                              ModelComponent::View& models, gfx::Renderer& renderer,
-                                              gfx::FrameBuffer* frameBuffer) {
+void CapturePointDepthMapsStage::processLight(
+    PointLightComponent& light, MeshRendererComponent::View& meshRenderers,
+    TransformComponent::View& transforms, ModelComponent::View& models, gfx::Renderer& renderer,
+    gfx::FrameBuffer* frameBuffer
+) {
     const auto& transform = utils::getModelMatrix(light.ownerEntityId, transforms);
     setLightUniforms(transform * light.position);
 
@@ -77,54 +78,69 @@ void CapturePointDepthMapsStage::setLightUniforms(const math::Vec3& lightPositio
     m_depthShader->setUniform("lightPosition", lightPosition);
 }
 
-void CapturePointDepthMapsStage::tryToRender(MeshRendererComponent& meshRenderer,
-                                             TransformComponent::View& transforms,
-                                             ModelComponent::View& models,
-                                             gfx::Renderer& renderer) {
+void CapturePointDepthMapsStage::tryToRender(
+    MeshRendererComponent& meshRenderer, TransformComponent::View& transforms,
+    ModelComponent::View& models, gfx::Renderer& renderer
+) {
     const auto& entityId = meshRenderer.ownerEntityId;
 
     if (not models.doesEntityOwnComponent(entityId)) return;
 
-    utils::renderModel(renderer, *m_depthShader, models.getByEntityId(entityId),
-                       utils::getModelMatrix(entityId, transforms));
+    utils::renderModel(
+        renderer, *m_depthShader, models.getByEntityId(entityId),
+        utils::getModelMatrix(entityId, transforms)
+    );
 }
 
 std::array<math::Mat4, 6> CapturePointDepthMapsStage::calculateShadowTransforms(
-    const math::Vec3& lightPosition) {
+    const math::Vec3& lightPosition
+) {
     std::array<math::Mat4, 6> shadowTransforms;
 
     shadowTransforms[0] =
-        m_shadowProjection * math::lookAt(lightPosition, lightPosition + math::Vec3(1.0, 0.0, 0.0),
-                                          math::Vec3(0.0, -1.0, 0.0));
+        m_shadowProjection *
+        math::lookAt(
+            lightPosition, lightPosition + math::Vec3(1.0, 0.0, 0.0), math::Vec3(0.0, -1.0, 0.0)
+        );
 
     shadowTransforms[1] =
-        m_shadowProjection * math::lookAt(lightPosition, lightPosition + math::Vec3(-1.0, 0.0, 0.0),
-                                          math::Vec3(0.0, -1.0, 0.0));
+        m_shadowProjection *
+        math::lookAt(
+            lightPosition, lightPosition + math::Vec3(-1.0, 0.0, 0.0), math::Vec3(0.0, -1.0, 0.0)
+        );
 
     shadowTransforms[2] =
-        m_shadowProjection * math::lookAt(lightPosition, lightPosition + math::Vec3(0.0, 1.0, 0.0),
-                                          math::Vec3(0.0, 0.0, 1.0));
+        m_shadowProjection *
+        math::lookAt(
+            lightPosition, lightPosition + math::Vec3(0.0, 1.0, 0.0), math::Vec3(0.0, 0.0, 1.0)
+        );
 
     shadowTransforms[3] =
-        m_shadowProjection * math::lookAt(lightPosition, lightPosition + math::Vec3(0.0, -1.0, 0.0),
-                                          math::Vec3(0.0, 0.0, -1.0));
+        m_shadowProjection *
+        math::lookAt(
+            lightPosition, lightPosition + math::Vec3(0.0, -1.0, 0.0), math::Vec3(0.0, 0.0, -1.0)
+        );
 
     shadowTransforms[4] =
-        m_shadowProjection * math::lookAt(lightPosition, lightPosition + math::Vec3(0.0, 0.0, 1.0),
-                                          math::Vec3(0.0, -1.0, 0.0));
+        m_shadowProjection *
+        math::lookAt(
+            lightPosition, lightPosition + math::Vec3(0.0, 0.0, 1.0), math::Vec3(0.0, -1.0, 0.0)
+        );
 
     shadowTransforms[5] =
-        m_shadowProjection * math::lookAt(lightPosition, lightPosition + math::Vec3(0.0, 0.0, -1.0),
-                                          math::Vec3(0.0, -1.0, 0.0));
+        m_shadowProjection *
+        math::lookAt(
+            lightPosition, lightPosition + math::Vec3(0.0, 0.0, -1.0), math::Vec3(0.0, -1.0, 0.0)
+        );
 
     return shadowTransforms;
 }
 
 void CapturePointDepthMapsStage::prepareRenderer(gfx::Renderer& renderer) {
-    renderer.setTemporaryViewport(
-        gfx::Viewport{gfx::Texture::shadowMapSize, gfx::Texture::shadowMapSize});
+    renderer.setTemporaryViewport(gfx::Viewport{
+        gfx::Texture::shadowMapSize, gfx::Texture::shadowMapSize});
 
-    auto settings = renderer.getSettings();
+    auto settings     = renderer.getSettings();
     settings.cullFace = STARL_FRONT;
     renderer.setTemporarySettings(settings);
 }

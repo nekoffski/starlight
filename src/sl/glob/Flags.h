@@ -3,7 +3,7 @@
 namespace sl::glob {
 
 struct Flags {
-    bool disableMouseInput = false;
+    bool disableMouseInput    = false;
     bool disableKeyboardInput = false;
 };
 

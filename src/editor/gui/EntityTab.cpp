@@ -63,7 +63,8 @@ void EntityTab::showEntityProperties() {
 
             if (ecs.hasEntityByName(namePlaceholder))
                 m_errorDialog.setErrorMessage(
-                    fmt::format("Entity with name {} already exists", namePlaceholder));
+                    fmt::format("Entity with name {} already exists", namePlaceholder)
+                );
             else
                 selectedEntity.setName(namePlaceholder);
         }

@@ -5,8 +5,7 @@
 
 namespace sl::core {
 
-template <typename T>
-inline constexpr std::type_index typeIndex() {
+template <typename T> inline constexpr std::type_index typeIndex() {
     return std::type_index{typeid(T)};
 }
 }  // namespace sl::core

@@ -19,7 +19,7 @@ class EulerCamera : public Camera {
 
     void setCenter(const math::Vec3& center) {
         m_previousCenter = m_center;
-        m_targetCenter = center;
+        m_targetCenter   = center;
 
         m_isInAnimation = true;
     }
@@ -28,7 +28,7 @@ class EulerCamera : public Camera {
 
    private:
     bool m_isInAnimation = false;
-    float m_alpha = 0.0f;
+    float m_alpha        = 0.0f;
 
     math::Vec3 m_center;
     math::Vec3 m_previousCenter;

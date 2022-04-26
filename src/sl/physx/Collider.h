@@ -16,8 +16,9 @@ struct Collider {
     };
 
     virtual bool collideWith(AxisAlignedBoundingBox&, const math::Mat4&) = 0;
-    virtual std::optional<IntersectRecord> intersectsWith(const kc::math::Ray& ray,
-                                                          const math::Mat4& modelMatrix) = 0;
+    virtual std::optional<IntersectRecord> intersectsWith(
+        const kc::math::Ray& ray, const math::Mat4& modelMatrix
+    )                                              = 0;
     virtual void setModelMatrix(const math::Mat4&) = 0;
 };
 

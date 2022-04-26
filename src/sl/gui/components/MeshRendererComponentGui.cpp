@@ -6,9 +6,9 @@ namespace sl::gui::components {
 
 using namespace scene::components;
 
-void MeshRendererComponentGui::renderComponentGuiImpl(MeshRendererComponent& component,
-                                                      asset::AssetManager& assetManager,
-                                                      ecs::Entity& entity) {
+void MeshRendererComponentGui::renderComponentGuiImpl(
+    MeshRendererComponent& component, asset::AssetManager& assetManager, ecs::Entity& entity
+) {
     auto& params = m_params[component.ownerEntityId];
 
     with_ID(component.ownerEntityId.c_str()) {

@@ -7,8 +7,8 @@
 namespace sl::rendering::stages {
 
 RenderVectorsStage::RenderVectorsStage()
-    : m_lineVertexArray(glob::Globals::get().geom->lineVAO),
-      m_lineShader(glob::Globals::get().shaders->singleColorShader) {}
+    : m_lineVertexArray(glob::Globals::get().geom->lineVAO)
+    , m_lineShader(glob::Globals::get().shaders->singleColorShader) {}
 
 void RenderVectorsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
     PROFILE_FUNCTION();
@@ -34,7 +34,7 @@ void RenderVectorsStage::renderVector(
 math::Mat4 RenderVectorsStage::calculateModelMatrix(const physx::Vector& vector) {
     static constexpr float scaleFactor = 0.75f;
 
-    const auto scale = math::length(vector.direction) * scaleFactor;
+    const auto scale               = math::length(vector.direction) * scaleFactor;
     const auto normalizedDirection = math::normalize(vector.direction);
 
     const auto& x = normalizedDirection.x;

@@ -15,9 +15,10 @@ class ParticleEffectRenderer {
    public:
     explicit ParticleEffectRenderer(Renderer& renderer);
 
-    void renderParticleEffects(ecs::ComponentView<scene::components::ParticleEffectComponent> pfxs,
-                               ecs::ComponentView<scene::components::TransformComponent> transforms,
-                               cam::Camera& camera);
+    void renderParticleEffects(
+        ecs::ComponentView<scene::components::ParticleEffectComponent> pfxs,
+        ecs::ComponentView<scene::components::TransformComponent> transforms, cam::Camera& camera
+    );
 
    private:
     void beginParticleEffect(cam::Camera&);

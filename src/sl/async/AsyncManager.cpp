@@ -24,7 +24,7 @@ std::shared_ptr<Timer> AsyncManager::createTimer(float sleepTime) {
 PeriodicTask::Handle AsyncManager::addPeriodicTaskImpl(std::unique_ptr<PeriodicTask> periodicTask) {
     LOG_DEBUG("Adding periodic task to TaskManager: {}", periodicTask->getName());
 
-    const auto& id = periodicTask->id;
+    const auto& id      = periodicTask->id;
     m_periodicTasks[id] = std::move(periodicTask);
 
     return PeriodicTask::Handle{m_periodicTasks.at(id).get()};

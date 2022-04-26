@@ -13,13 +13,12 @@ namespace sl::ecs {
 
 class IComponentContainer {
    public:
-    virtual ~IComponentContainer() = default;
-    virtual void remove(const std::string& entityId) = 0;
+    virtual ~IComponentContainer()                                = default;
+    virtual void remove(const std::string& entityId)              = 0;
     virtual Component& getByEntityId(const std::string& entityId) = 0;
 };
 
-template <typename T>
-class ComponentContainer : public IComponentContainer {
+template <typename T> class ComponentContainer : public IComponentContainer {
    public:
     inline static constexpr int defaultCapacity = 1000;
 
@@ -27,12 +26,11 @@ class ComponentContainer : public IComponentContainer {
         m_components.reserve(capacity);
     }
 
-    template <typename... Args>
-    T& add(const std::string& entityId, Args&&... args) {
+    template <typename... Args> T& add(const std::string& entityId, Args&&... args) {
         m_components.emplace_back(std::forward<Args>(args)...);
         auto& component = m_components.back();
 
-        component.ownerEntityId = entityId;
+        component.ownerEntityId         = entityId;
         m_entityIdToComponent[entityId] = &component;
 
         return component;

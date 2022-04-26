@@ -25,8 +25,8 @@ class FirstPersonCamera : public Camera {
         auto& inputManager = core::InputManager::get();
 
         auto pos = inputManager.getMousePosition();
-        m_x = pos.x;
-        m_y = pos.y;
+        m_x      = pos.x;
+        m_y      = pos.y;
 
         if (inputManager.isKeyPressed(STARL_KEY_W)) m_position += m_front * velocity;
 
@@ -50,12 +50,12 @@ class FirstPersonCamera : public Camera {
         m_yaw += xoffset;
         m_pitch = math::circularRange(m_pitch + yoffset, -3.13f, 3.13f);
 
-        m_front =
-            math::normalize(-math::Vec3{std::cos(m_yaw) * std::cos(m_pitch), std::sin(m_pitch),
-                                        std::sin(m_yaw) * std::cos(m_pitch)});
+        m_front = math::normalize(-math::Vec3{
+            std::cos(m_yaw) * std::cos(m_pitch), std::sin(m_pitch),
+            std::sin(m_yaw) * std::cos(m_pitch)});
 
         m_right = math::normalize(math::cross(m_front, math::worldUp));
-        m_up = math::normalize(math::cross(m_right, m_front));
+        m_up    = math::normalize(math::cross(m_right, m_front));
     }
 
     virtual const math::Mat4 getViewMatrix() const override {

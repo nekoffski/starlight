@@ -12,12 +12,14 @@ TEST(PlatformTest, givenPlatformBuilder_whenCreatingWithoutAllRequiredComponents
     EXPECT_THROW(Platform::Builder{}.build(), std::runtime_error);
     EXPECT_THROW(Platform::Builder{}.setIO<FakeIO>().build(), std::runtime_error);
     EXPECT_THROW(Platform::Builder{}.setIO<FakeIO>().setGPU<FakeGPU>().build(), std::runtime_error);
-    EXPECT_THROW(Platform::Builder{}
-                     .setIO<FakeIO>()
-                     .setGPU<FakeGPU>()
-                     .setImageFactory<ImageMock::Factory>()
-                     .build(),
-                 std::runtime_error);
+    EXPECT_THROW(
+        Platform::Builder{}
+            .setIO<FakeIO>()
+            .setGPU<FakeGPU>()
+            .setImageFactory<ImageMock::Factory>()
+            .build(),
+        std::runtime_error
+    );
 }
 
 TEST(PlatformTest, givenPlatformBuilder_whenCreatingWithAllRequiredComponents_shouldCreate) {

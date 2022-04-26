@@ -32,8 +32,10 @@ TEST_F(ComponentViewTests, givenEmptyView_whenCheckingIfEntityOwnComponent_shoul
     EXPECT_FALSE(view.doesEntityOwnComponent(id));
 }
 
-TEST_F(ComponentViewTests,
-       givenViewWithFilledContainer_whenCheckingIfEntityOwnComponent_shouldReturnTrue) {
+TEST_F(
+    ComponentViewTests,
+    givenViewWithFilledContainer_whenCheckingIfEntityOwnComponent_shouldReturnTrue
+) {
     container.add(id, 1, 1.0f);
     auto view = ComponentView<TestComponent>{container};
 

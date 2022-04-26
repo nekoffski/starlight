@@ -23,8 +23,7 @@ class AssimpMeshProcessor {
     std::vector<std::shared_ptr<sl::gfx::Texture>> loadTextures(aiMaterial*, const std::string&);
     std::vector<geom::Vertex> loadVertices(aiMesh*);
     std::vector<unsigned> loadIndices(aiMesh*);
-    std::vector<std::shared_ptr<sl::gfx::Texture>> loadMaterialTextures(aiMaterial*, aiTextureType,
-                                                                        const std::string&,
-                                                                        const std::string&);
+    std::vector<std::shared_ptr<sl::gfx::Texture>>
+        loadMaterialTextures(aiMaterial*, aiTextureType, const std::string&, const std::string&);
 };
 }  // namespace sl::platform::assimp

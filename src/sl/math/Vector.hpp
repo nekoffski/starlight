@@ -59,7 +59,7 @@ inline std::string toString(const Vec4& v) {
            std::to_string(v.z) + ", " + std::to_string(v.w) + "]";
 }
 
-inline const math::Vec3 VEC_ONES = math::Vec3{1.0f, 1.0f, 1.0f};
+inline const math::Vec3 VEC_ONES  = math::Vec3{1.0f, 1.0f, 1.0f};
 inline const math::Vec3 VEC_ZEROS = math::Vec3{0.0f, 0.0f, 0.0f};
 }  // namespace sl::math
 

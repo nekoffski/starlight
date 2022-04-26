@@ -19,8 +19,7 @@
 namespace sl::math {
 
 // TODO: this one seems broken
-template <typename T>
-inline const T circularRange(const T& value, const T min, const T max) {
+template <typename T> inline const T circularRange(const T& value, const T min, const T max) {
     if (value < min)
         return max;
     else if (value > max)
@@ -33,23 +32,19 @@ inline glm::mat<4, 4, T, Q> quaternionToMat4(glm::tquat<T, Q> const& x) {
     return mat4_cast(x);
 }
 
-template <class T, glm::qualifier Q>
-inline T const* valuePtr(glm::mat<3, 3, T, Q> const& m) {
+template <class T, glm::qualifier Q> inline T const* valuePtr(glm::mat<3, 3, T, Q> const& m) {
     return &(m[0].x);
 }
 
-template <class T, glm::qualifier Q>
-inline T* valuePtr(glm::mat<3, 3, T, Q>& m) {
+template <class T, glm::qualifier Q> inline T* valuePtr(glm::mat<3, 3, T, Q>& m) {
     return &(m[0].x);
 }
 
-template <class T, glm::qualifier Q>
-inline T const* valuePtr(glm::mat<4, 4, T, Q> const& m) {
+template <class T, glm::qualifier Q> inline T const* valuePtr(glm::mat<4, 4, T, Q> const& m) {
     return &(m[0].x);
 }
 
-template <class T, glm::qualifier Q>
-inline T* valuePtr(glm::mat<4, 4, T, Q>& m) {
+template <class T, glm::qualifier Q> inline T* valuePtr(glm::mat<4, 4, T, Q>& m) {
     return &(m[0].x);
 }
 
@@ -92,8 +87,7 @@ inline float distance(const math::Vec3& lhs, const math::Vec3& rhs) {
     return glm::distance(lhs, rhs);
 }
 
-template <typename T>
-inline float lerp(const T& a, const T& b, float alfa) {
+template <typename T> inline float lerp(const T& a, const T& b, float alfa) {
     return std::lerp(a, b, alfa);
 }
 
@@ -101,10 +95,7 @@ inline math::Vec3 lerp(const math::Vec3& a, const math::Vec3& b, float alfa) {
     return (1.0f - alfa) * a + alfa * b;
 }
 
-template <typename T>
-inline T ReLU(const T& lhs) {
-    return std::max(0, lhs);
-}
+template <typename T> inline T ReLU(const T& lhs) { return std::max(0, lhs); }
 
 inline void decomposeMatrix(const Mat4& transform, Vec3& translation, Vec3& rotation, Vec3& scale) {
     glm::vec3 skew;
@@ -117,5 +108,7 @@ inline void decomposeMatrix(const Mat4& transform, Vec3& translation, Vec3& rota
 }  // namespace sl::math
 
 inline sl::math::Vec3 operator*(const sl::math::Mat4& lhs, const sl::math::Vec3& rhs) {
-    return sl::math::Vec3{lhs * sl::math::Vec4{rhs, 1.0f}};
+    return sl::math::Vec3{
+        lhs * sl::math::Vec4{rhs, 1.0f}
+    };
 }

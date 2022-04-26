@@ -20,8 +20,10 @@ OpenGlTexture::OpenGlTexture(sl::gfx::Image& image) : m_textureId(0u) {
 
     if (format == channelsToFormat.end()) throw core::TextureError{};
 
-    glTexImage2D(GL_TEXTURE_2D, 0, format->second, s.width, s.height, 0, format->second,
-                 GL_UNSIGNED_BYTE, image.getBuffer());
+    glTexImage2D(
+        GL_TEXTURE_2D, 0, format->second, s.width, s.height, 0, format->second, GL_UNSIGNED_BYTE,
+        image.getBuffer()
+    );
     glGenerateMipmap(GL_TEXTURE_2D);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -36,7 +38,7 @@ OpenGlTexture::OpenGlTexture(unsigned int w, unsigned int h, int internalFormat,
     // TODO: virtual getters in Texture instead
 
     this->internalFormat = internalFormat;
-    this->format = format;
+    this->format         = format;
 
     glGenTextures(1, &m_textureId);
     glBindTexture(GL_TEXTURE_2D, m_textureId);

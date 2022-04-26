@@ -4,8 +4,7 @@
 
 namespace sl::ecs {
 
-template <typename T>
-class ComponentView {
+template <typename T> class ComponentView {
    public:
     explicit ComponentView(ComponentContainer<T>& componentContainer)
         : m_componentContainer(componentContainer), m_components(componentContainer.getAll()) {}

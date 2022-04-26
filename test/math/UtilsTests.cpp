@@ -7,7 +7,7 @@ using namespace testing;
 
 namespace {
 
-const int low = 1;
+const int low  = 1;
 const int high = 15;
 
 TEST(UtilsTests, givenValueInRange_whenCalculatingCircularRange_shouldReturnSameValue) {

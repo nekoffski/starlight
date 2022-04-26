@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
         kc::core::initLogging("Starlight");
 
         static const std::string configPath = "./starlight.json";
-        auto config = ConfigLoader{}.fromFile(configPath).load();
+        auto config                         = ConfigLoader{}.fromFile(configPath).load();
 
         LOG_DEBUG("Assembling platform module");
         auto platform = Platform::Builder{}

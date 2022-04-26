@@ -11,7 +11,7 @@ namespace sl::ecs {
 
 struct Component {
     std::string ownerEntityId;
-    bool isActive = true;
+    bool isActive        = true;
     bool shouldBeRemoved = false;
     std::string name;
 };

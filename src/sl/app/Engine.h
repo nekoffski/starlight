@@ -41,7 +41,7 @@ class Engine : kc::event::EventListener {
 
        private:
         platform::Platform* m_platform = nullptr;
-        cfg::Config* m_config = nullptr;
+        cfg::Config* m_config          = nullptr;
     };
 
     explicit Engine(cfg::Config* config, platform::Platform* platform);

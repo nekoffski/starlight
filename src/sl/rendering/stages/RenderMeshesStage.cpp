@@ -58,7 +58,7 @@ void RenderMeshesStage::processMeshRendererComponent(
 void RenderMeshesStage::prepareRenderer(
     const MeshRendererComponent& meshRendererComponent, gfx::Renderer& renderer
 ) {
-    auto settings = renderer.getSettings();
+    auto settings        = renderer.getSettings();
     settings.polygonMode = meshRendererComponent.polygonMode;
     renderer.setTemporarySettings(settings);
 }

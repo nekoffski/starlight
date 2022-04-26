@@ -39,7 +39,7 @@ void PropertiesPanel::showSceneProperties() {
         auto cubemapsNames = m_sharedState->assetManager.getCubemaps().getNames();
         cubemapsNames.insert(cubemapsNames.begin(), "None");
 
-        static int selectedValue = 0;
+        static int selectedValue         = 0;
         static int previousSelectedValue = -1;
 
         ImGui::Text("Cubemap");
@@ -56,7 +56,7 @@ void PropertiesPanel::showSceneProperties() {
 
         if (selectedValue != 0 && selectedValue != previousSelectedValue) {
             auto& cubemapName = cubemapsNames[selectedValue];
-            auto cubemap = m_sharedState->assetManager.getCubemaps().getByName(cubemapName);
+            auto cubemap      = m_sharedState->assetManager.getCubemaps().getByName(cubemapName);
 
             m_selectedCubemap = cubemap;
             event::EventManager::get().emit<event::SetSkyboxEvent>(cubemap).toAll();
@@ -73,16 +73,18 @@ void PropertiesPanel::showSceneProperties() {
 
     with_OpenedTreeNode(ICON_FA_COGS "  Properties") {
         ImGui::Text("Gravity acceleration");
-        ImGui::SliderFloat2("##Gravity acceleration", &glob::Globals::get().world.gravity.y, 0.0f,
-                            25.0f);
+        ImGui::SliderFloat2(
+            "##Gravity acceleration", &glob::Globals::get().world.gravity.y, 0.0f, 25.0f
+        );
     }
 
     ImGui::Text("\n");
 
     with_OpenedTreeNode(ICON_FA_EYE "  Visual") {
         ImGui::Text("Gamma corection");
-        ImGui::SliderFloat("##Gamma correction", &glob::Globals::get().visual.gammaCorrection, 0.0f,
-                           5.0f);
+        ImGui::SliderFloat(
+            "##Gamma correction", &glob::Globals::get().visual.gammaCorrection, 0.0f, 5.0f
+        );
         ImGui::Text("Exposure");
         ImGui::SliderFloat("##Exposure", &glob::Globals::get().visual.exposure, 0.0f, 5.0f);
         ImGui::Checkbox("Enable bloom", &glob::Globals::get().visual.enableBloom);

@@ -34,9 +34,9 @@ struct FakeGPU : platform::GPU {
             static_cast<RenderBufferMock::Factory*>(renderBufferFactory.get());
         textureFactoryMock = static_cast<TextureMock::Factory*>(textureFactory.get());
         cubemapFactoryMock = static_cast<CubemapMock::Factory*>(cubemapFactory.get());
-        shaderFactoryMock = static_cast<ShaderMock::Factory*>(shaderFactory.get());
+        shaderFactoryMock  = static_cast<ShaderMock::Factory*>(shaderFactory.get());
         shaderCompilerMock = static_cast<ShaderCompilerMock*>(shaderCompiler.get());
-        renderApiMock = static_cast<RenderApiMock*>(renderApi.get());
+        renderApiMock      = static_cast<RenderApiMock*>(renderApi.get());
     }
 
     // clang-format off

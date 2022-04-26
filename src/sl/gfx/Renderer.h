@@ -17,10 +17,10 @@
 namespace sl::gfx {
 
 struct RendererSettings {
-    bool enableDepthMask = true;
-    bool enableBlending = false;
+    bool enableDepthMask     = true;
+    bool enableBlending      = false;
     unsigned int polygonMode = STARL_FILL;
-    unsigned int cullFace = STARL_BACK;
+    unsigned int cullFace    = STARL_BACK;
 };
 
 class Renderer : public kc::event::EventListener {

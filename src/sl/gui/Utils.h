@@ -25,8 +25,10 @@ namespace sl::gui {
 bool textInput(const std::string& label, std::string& text);
 bool labeledTextInput(const std::string& label, std::string& value, const int padding);
 
-void showImage(gfx::Texture& texture, math::Vec2 size, math::Vec2 uv0 = {0.0f, 0.0f},
-               math::Vec2 uv1 = {1.0f, 1.0f});
+void showImage(
+    gfx::Texture& texture, math::Vec2 size, math::Vec2 uv0 = {0.0f, 0.0f},
+    math::Vec2 uv1 = {1.0f, 1.0f}
+);
 
 bool combo(const std::string& label, int* currentItem, const std::vector<std::string>& items);
 

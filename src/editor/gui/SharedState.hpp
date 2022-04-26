@@ -13,12 +13,12 @@ namespace editor::gui {
 
 struct SharedState {
     explicit SharedState(sl::asset::AssetManager& assetManager, int windowWidth, int windowHeight)
-        : assetManager(assetManager),
-          activeScene(nullptr),
-          guiProperties(windowWidth, windowHeight),
-          activeAssetGuiProvider(nullptr),
-          gizmoOperation(sl::gui::GizmoOp::translate),
-          gizmoSpace(sl::gui::GizmoSpace::world) {}
+        : assetManager(assetManager)
+        , activeScene(nullptr)
+        , guiProperties(windowWidth, windowHeight)
+        , activeAssetGuiProvider(nullptr)
+        , gizmoOperation(sl::gui::GizmoOp::translate)
+        , gizmoSpace(sl::gui::GizmoSpace::world) {}
 
     bool hasSelectedEntity() const {
         return activeScene != nullptr && selectedEntityId.has_value() &&

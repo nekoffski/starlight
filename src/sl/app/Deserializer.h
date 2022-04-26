@@ -16,8 +16,9 @@ class Deserializer {
    public:
     explicit Deserializer(asset::AssetManager& assetManager, scene::Scene* scene);
 
-    void deserialize(const std::string& path,
-                     const kc::core::FileSystem& fileSystem = kc::core::FileSystem{});
+    void deserialize(
+        const std::string& path, const kc::core::FileSystem& fileSystem = kc::core::FileSystem{}
+    );
 
    private:
     void deserializeAssets(kc::json::Node&);

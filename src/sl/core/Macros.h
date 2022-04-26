@@ -11,18 +11,18 @@
 
 #define LOG_STATIC_CLASS(T)          \
    public:                           \
-    T() = delete;                    \
-    T(const T&) = delete;            \
-    T(const T&&) = delete;           \
+    T()                    = delete; \
+    T(const T&)            = delete; \
+    T(const T&&)           = delete; \
     T& operator=(const T&) = delete; \
-    T& operator=(T&&) = delete;
+    T& operator=(T&&)      = delete;
 
 #define LOG_SINGLETON(T)             \
    public:                           \
-    T(const T&) = delete;            \
-    T(const T&&) = delete;           \
+    T(const T&)            = delete; \
+    T(const T&&)           = delete; \
     T& operator=(const T&) = delete; \
-    T& operator=(T&&) = delete;      \
+    T& operator=(T&&)      = delete; \
                                      \
     static T& instance() {           \
         static T s_instance;         \

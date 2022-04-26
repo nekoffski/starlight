@@ -12,8 +12,9 @@ class AxisAlignedCollider : public Collider {
         : m_min(min), m_max(max), m_modelMatrix(math::identityMatrix) {}
 
     bool collideWith(AxisAlignedBoundingBox&, const math::Mat4&) override;
-    std::optional<Collider::IntersectRecord> intersectsWith(const kc::math::Ray& ray,
-                                                            const math::Mat4& modelMatrix) override;
+    std::optional<Collider::IntersectRecord> intersectsWith(
+        const kc::math::Ray& ray, const math::Mat4& modelMatrix
+    ) override;
 
     void setModelMatrix(const math::Mat4& modelMatrix) override { m_modelMatrix = modelMatrix; }
 

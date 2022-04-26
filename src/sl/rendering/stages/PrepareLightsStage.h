@@ -13,19 +13,23 @@ class PrepareLightsStage : public Stage {
     void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) override;
 
    private:
-    void prepareDirectionalLights(scene::components::DirectionalLightComponent::View& lights,
-                                  gfx::Shader& shader);
+    void prepareDirectionalLights(
+        scene::components::DirectionalLightComponent::View& lights, gfx::Shader& shader
+    );
 
-    void preparePointLights(scene::components::PointLightComponent::View& lights,
-                            scene::components::TransformComponent::View& transforms,
-                            gfx::Shader& shader);
+    void preparePointLights(
+        scene::components::PointLightComponent::View& lights,
+        scene::components::TransformComponent::View& transforms, gfx::Shader& shader
+    );
 
-    void setDirectionalLightProperties(gfx::Shader& shader,
-                                       const scene::components::DirectionalLightComponent& light,
-                                       unsigned int index);
+    void setDirectionalLightProperties(
+        gfx::Shader& shader, const scene::components::DirectionalLightComponent& light,
+        unsigned int index
+    );
 
-    void setPointLightProperties(gfx::Shader& shader,
-                                 const scene::components::PointLightComponent& light,
-                                 const math::Mat4& transform, unsigned int index);
+    void setPointLightProperties(
+        gfx::Shader& shader, const scene::components::PointLightComponent& light,
+        const math::Mat4& transform, unsigned int index
+    );
 };
 }  // namespace sl::rendering::stages

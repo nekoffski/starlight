@@ -18,15 +18,16 @@ class BlurColorBufferStage : public Stage {
     enum class Direction { horizontal = 0, vertical };
 
     explicit BlurColorBufferStage()
-        : m_quadVao(glob::Globals::get().geom->frontSquareVAO.get()),
-          m_gaussianBlurShader(gfx::ShaderManager::get().load(
+        : m_quadVao(glob::Globals::get().geom->frontSquareVAO.get())
+        , m_gaussianBlurShader(gfx::ShaderManager::get().load(
               glob::Globals::get().config.paths.shaders + "/GaussianBlur.vert",
-              glob::Globals::get().config.paths.shaders + "/GaussianBlur.frag")),
-          m_horizontalFrameBuffer(gfx::BufferManager::get().createFrameBuffer()),
-          m_verticalFrameBuffer(gfx::BufferManager::get().createFrameBuffer()) {}
+              glob::Globals::get().config.paths.shaders + "/GaussianBlur.frag"
+          ))
+        , m_horizontalFrameBuffer(gfx::BufferManager::get().createFrameBuffer())
+        , m_verticalFrameBuffer(gfx::BufferManager::get().createFrameBuffer()) {}
 
-    void execute(gfx::Renderer& renderer, scene::Scene& scene,
-                 gfx::FrameBuffer* frameBuffer) override {
+    void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer)
+        override {
         auto [width, height] = core::WindowManager::get().getSize();
         gfx::Viewport viewport{width, height};
 
@@ -37,8 +38,9 @@ class BlurColorBufferStage : public Stage {
         bool horizontal = true;
 
         std::unordered_map<bool, std::pair<gfx::FrameBuffer*, gfx::Texture*>> buffers = {
-            {true, {m_horizontalFrameBuffer.get(), m_verticalBuffer.get()}},
-            {false, {m_verticalFrameBuffer.get(), m_horizontalBuffer.get()}}};
+            {true,  {m_horizontalFrameBuffer.get(), m_verticalBuffer.get()}},
+            {false, {m_verticalFrameBuffer.get(), m_horizontalBuffer.get()}}
+        };
 
         for (int i = 0; i < passes; ++i) {
             auto [frameBuffer, colorBuffer] = buffers[horizontal];
@@ -77,7 +79,7 @@ class BlurColorBufferStage : public Stage {
         m_colorBuffer = colorBuffer;
 
         m_horizontalBuffer = colorBuffer->clone();
-        m_verticalBuffer = colorBuffer->clone();
+        m_verticalBuffer   = colorBuffer->clone();
 
         m_verticalFrameBuffer->bind();
         m_verticalFrameBuffer->bindTexture(*m_verticalBuffer, STARL_COLOR_ATTACHMENT0);

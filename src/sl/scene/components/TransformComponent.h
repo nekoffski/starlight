@@ -23,9 +23,10 @@ class TransformComponent : public ecs::Component {
    public:
     using View = ecs::ComponentView<TransformComponent>;
 
-    explicit TransformComponent(math::Vec3 position = math::Vec3{0.0f},
-                                math::Vec3 rotation = math::Vec3{0.0f},
-                                math::Vec3 scale = math::Vec3{1.0f})
+    explicit TransformComponent(
+        math::Vec3 position = math::Vec3{0.0f}, math::Vec3 rotation = math::Vec3{0.0f},
+        math::Vec3 scale = math::Vec3{1.0f}
+    )
         : position(position), rotation(rotation), scale(scale) {
         recalculateTransformation();
 
@@ -45,7 +46,7 @@ class TransformComponent : public ecs::Component {
             LOG_INFO("Restoring transform component");
             position = m_memento->position;
             rotation = m_memento->rotation;
-            scale = m_memento->scale;
+            scale    = m_memento->scale;
 
             recalculateTransformation();
 

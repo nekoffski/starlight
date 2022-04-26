@@ -16,7 +16,7 @@ auto createFakePlatform() {
                         .setModelLoader<ModelLoaderMock>()
                         .build();
 
-    ModelLoaderMock::instance = static_cast<ModelLoaderMock*>(platform->modelLoader.get());
+    ModelLoaderMock::instance  = static_cast<ModelLoaderMock*>(platform->modelLoader.get());
     ImageMock::factoryInstance = static_cast<ImageMock::Factory*>(platform->imageFactory.get());
 
     return platform;

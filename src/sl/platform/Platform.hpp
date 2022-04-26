@@ -11,8 +11,10 @@
 namespace sl::platform {
 
 struct Platform {
-    explicit Platform(IO&& io, GPU&& gpu, std::unique_ptr<gfx::Image::Factory> imageFactory,
-                      std::unique_ptr<geom::ModelLoader> modelLoader);
+    explicit Platform(
+        IO&& io, GPU&& gpu, std::unique_ptr<gfx::Image::Factory> imageFactory,
+        std::unique_ptr<geom::ModelLoader> modelLoader
+    );
 
     class Builder {
        public:
@@ -48,7 +50,7 @@ struct Platform {
         std::optional<IO> m_io;
         std::optional<GPU> m_gpu;
         std::unique_ptr<gfx::Image::Factory> m_imageFactory = nullptr;
-        std::unique_ptr<geom::ModelLoader> m_modelLoader = nullptr;
+        std::unique_ptr<geom::ModelLoader> m_modelLoader    = nullptr;
     };
 
     IO io;

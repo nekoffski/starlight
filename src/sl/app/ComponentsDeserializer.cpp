@@ -54,7 +54,7 @@ void ComponentsDeserializer::deserializeDirectionalLightComponent(
         deserializeVector3(componentDescription["color"])
     );
 
-    component.isActive = componentDescription["active"].asBool();
+    component.isActive        = componentDescription["active"].asBool();
     component.renderDirection = componentDescription["render-direction"].asBool();
 }
 
@@ -92,7 +92,7 @@ void ComponentsDeserializer::deserializeModelComponent(
     const std::unordered_map<std::string, std::string>& assetsIdRedirections
 ) {
     auto& component = entity.addComponent<ModelComponent>();
-    auto& meshes = assetManager.getMeshes();
+    auto& meshes    = assetManager.getMeshes();
 
     for (auto& meshId : componentDescription["meshes-ids"]) {
         auto id = meshId.asString();
@@ -113,9 +113,9 @@ void ComponentsDeserializer::deserializeModelComponent(
     }
     auto boundingBoxName = componentDescription["bounding-box"].asString();
 
-    component.boundingBox = std::make_unique<physx::AxisAlignedBoundingBox>(component.meshes);
+    component.boundingBox       = std::make_unique<physx::AxisAlignedBoundingBox>(component.meshes);
     component.renderBoundingBox = componentDescription["render-bounding-box"].asBool();
-    component.isActive = componentDescription["active"].asBool();
+    component.isActive          = componentDescription["active"].asBool();
 }
 
 void ComponentsDeserializer::deserializeParticleEffectComponent(
@@ -124,9 +124,9 @@ void ComponentsDeserializer::deserializeParticleEffectComponent(
 ) {
     auto& component = entity.addComponent<ParticleEffectComponent>();
 
-    component.isActive = componentDescription["is-active"].asBool();
+    component.isActive                        = componentDescription["is-active"].asBool();
     component.pfxGeneratorSettings.deltaScale = componentDescription["delta-scale"].asFloat();
-    component.pfxGeneratorSettings.radius = componentDescription["radius"].asFloat();
+    component.pfxGeneratorSettings.radius     = componentDescription["radius"].asFloat();
     component.pfxGeneratorSettings.directionFactor =
         componentDescription["direction-factor"].asFloat();
 
@@ -134,7 +134,7 @@ void ComponentsDeserializer::deserializeParticleEffectComponent(
     component.pfxGeneratorSettings.minScale = componentDescription["min-scale"].asFloat();
     component.pfxGeneratorSettings.maxSpeed = componentDescription["max-speed"].asFloat();
     component.pfxGeneratorSettings.minSpeed = componentDescription["min-speed"].asFloat();
-    component.maxParticles = componentDescription["max-particles"].asInt();
+    component.maxParticles                  = componentDescription["max-particles"].asInt();
 
     component.position = deserializeVector3(componentDescription["position"]);
 
@@ -147,7 +147,7 @@ void ComponentsDeserializer::deserializePointLightComponent(
     const std::unordered_map<std::string, std::string>& assetsIdRedirections
 ) {
     auto& attenuation = componentDescription["attenuation"];
-    auto& component = entity.addComponent<PointLightComponent>(
+    auto& component   = entity.addComponent<PointLightComponent>(
         deserializeVector3(componentDescription["position"]),
         deserializeVector3(componentDescription["color"]), attenuation["a"].asFloat(),
         attenuation["b"].asFloat(), attenuation["c"].asFloat()
@@ -175,12 +175,12 @@ void ComponentsDeserializer::deserializeRigidBodyComponent(
 ) {
     auto& component = entity.addComponent<RigidBodyComponent>();
 
-    component.useGravity = componentDescription["use-gravity"].asBool();
+    component.useGravity       = componentDescription["use-gravity"].asBool();
     component.enableCollisions = componentDescription["enable-collisions"].asBool();
-    component.fixed = componentDescription["fixed"].asBool();
-    component.mass = componentDescription["mass"].asFloat();
-    component.velocity = deserializeVector3(componentDescription["velocity"]);
-    component.isActive = componentDescription["active"].asBool();
+    component.fixed            = componentDescription["fixed"].asBool();
+    component.mass             = componentDescription["mass"].asFloat();
+    component.velocity         = deserializeVector3(componentDescription["velocity"]);
+    component.isActive         = componentDescription["active"].asBool();
 }
 
 math::Vec3 ComponentsDeserializer::deserializeVector3(Json::Value& value) {

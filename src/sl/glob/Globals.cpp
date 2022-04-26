@@ -7,7 +7,7 @@ namespace sl::glob {
 
 void Globals::init() {
     shaders = std::make_unique<Shaders>();
-    geom = std::make_unique<Geometry>();
+    geom    = std::make_unique<Geometry>();
 }
 
 }  // namespace sl::glob

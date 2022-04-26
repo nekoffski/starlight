@@ -11,8 +11,10 @@ class FileBrowser {
    public:
     using Callback = std::function<void(const std::string&)>;
 
-    explicit FileBrowser(const std::string& id, std::unique_ptr<kc::core::FileSystem> fileSystem =
-                                                    std::make_unique<kc::core::FileSystem>());
+    explicit FileBrowser(
+        const std::string& id,
+        std::unique_ptr<kc::core::FileSystem> fileSystem = std::make_unique<kc::core::FileSystem>()
+    );
 
     void open(Callback&&);
     void show();

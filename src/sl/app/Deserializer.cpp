@@ -15,9 +15,9 @@ using namespace sl::core;
 namespace sl::app {
 
 Deserializer::Deserializer(asset::AssetManager& assetManager, scene::Scene* scene)
-    : m_assetManager(assetManager),
-      m_scene(scene),
-      m_componentsDeserializer(m_assetsIdRedirections) {}
+    : m_assetManager(assetManager)
+    , m_scene(scene)
+    , m_componentsDeserializer(m_assetsIdRedirections) {}
 
 void Deserializer::deserialize(const std::string& path, const kc::core::FileSystem& fileSystem) {
     if (not fileSystem.isFile(path)) throw DeserializationError{"Could not find file: " + path};
@@ -90,7 +90,7 @@ void Deserializer::deserializeAssets(kc::json::Node& assetsJson) {
 
     LOG_TRACE("Updating meshes parents");
     for (auto& meshDescription : models["meshes"]) {
-        auto name = meshDescription["name"].asString();
+        auto name  = meshDescription["name"].asString();
         auto oldId = meshDescription["id"].asString();
 
         LOG_TRACE("Quering for a mesh with name: {}", name);
@@ -112,8 +112,8 @@ void Deserializer::deserializeDefaultAssets(kc::json::Node& defaultAssets) {
         auto name = shaderDescription["name"].asString();
 
         if (globalShaders.contains(name)) {
-            auto oldId = shaderDescription["id"].asString();
-            auto newId = globalShaders.at(name)->getId();
+            auto oldId                    = shaderDescription["id"].asString();
+            auto newId                    = globalShaders.at(name)->getId();
             m_assetsIdRedirections[oldId] = newId;
 
             LOG_INFO("Found redirection for default shader: {} - {} -> {}", name, oldId, newId);
@@ -126,8 +126,8 @@ void Deserializer::deserializeDefaultAssets(kc::json::Node& defaultAssets) {
         auto name = meshDescription["name"].asString();
 
         if (globalMeshes.contains(name)) {
-            auto oldId = meshDescription["id"].asString();
-            auto newId = globalMeshes.at(name)->getId();
+            auto oldId                    = meshDescription["id"].asString();
+            auto newId                    = globalMeshes.at(name)->getId();
             m_assetsIdRedirections[oldId] = newId;
 
             LOG_INFO("Found redirection for default mesh: {} - {} -> {}", name, oldId, newId);
@@ -151,7 +151,7 @@ void Deserializer::deserializeScene(kc::json::Node& sceneJson) {
 
     LOG_INFO("Deserializing entities");
     for (auto& entityDescription : sceneJson["entities"]) {
-        auto name = entityDescription["name"].asString();
+        auto name    = entityDescription["name"].asString();
         auto& entity = m_scene->addEntity(name);
 
         LOG_INFO("Deserializing entity: {}", name);
@@ -161,8 +161,9 @@ void Deserializer::deserializeScene(kc::json::Node& sceneJson) {
             auto componentName = componentDescription["name"].asString();
             LOG_INFO("Deserializing {}", componentName);
 
-            m_componentsDeserializer.deserializeComponent(componentName, componentDescription,
-                                                          entity, m_assetManager);
+            m_componentsDeserializer.deserializeComponent(
+                componentName, componentDescription, entity, m_assetManager
+            );
         }
     }
 }

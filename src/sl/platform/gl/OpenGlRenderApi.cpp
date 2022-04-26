@@ -7,11 +7,14 @@
 #include "OpenGlRenderApi.h"
 #include "sl/core/Errors.hpp"
 
-static void GLAPIENTRY messageCallback(GLenum source, GLenum type, GLuint id, GLenum severity,
-                                       GLsizei length, const GLchar* message,
-                                       const void* userParam) {
-    LOG_DEBUG("GL CALLBACK: {} type = {}, severity = {}, message = {}\n",
-              (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, severity, message);
+static void GLAPIENTRY messageCallback(
+    GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message,
+    const void* userParam
+) {
+    LOG_DEBUG(
+        "GL CALLBACK: {} type = {}, severity = {}, message = {}\n",
+        (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, severity, message
+    );
 }
 
 namespace sl::platform::gl {
@@ -24,9 +27,9 @@ void OpenGlRenderApi::init() {
     // TODO: make it configurable
     // glEnable(GL_DEBUG_OUTPUT);
 
-    m_rendererInfo.gpuApiVendor = fmt::format("{}", glGetString(GL_VENDOR));
+    m_rendererInfo.gpuApiVendor  = fmt::format("{}", glGetString(GL_VENDOR));
     m_rendererInfo.gpuApiRelease = fmt::format("{}", glGetString(GL_VERSION));
-    m_rendererInfo.rendererName = fmt::format("{}", glGetString(GL_RENDERER));
+    m_rendererInfo.rendererName  = fmt::format("{}", glGetString(GL_RENDERER));
     m_rendererInfo.shadingLanguageVersion =
         fmt::format("{}", glGetString(GL_SHADING_LANGUAGE_VERSION));
 

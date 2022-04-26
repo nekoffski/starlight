@@ -11,7 +11,7 @@ namespace sl::gui::assets {
 
 class ShaderGui {
     struct Params {
-        bool recompileOnSave = false;
+        bool recompileOnSave                                  = false;
         std::optional<async::PeriodicTask::Handle> taskHandle = {};
     };
 

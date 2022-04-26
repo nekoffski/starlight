@@ -28,7 +28,7 @@ void RenderBoundingBoxesStage::
     for (auto& model : models) {
         if (auto& boundingBox = model.boundingBox; boundingBox && model.renderBoundingBox) {
             const auto& ownerEntityId = model.ownerEntityId;
-            const auto& modelMatrix = utils::getModelMatrix(ownerEntityId, transforms);
+            const auto& modelMatrix   = utils::getModelMatrix(ownerEntityId, transforms);
 
             m_boundingBoxShader->setUniform("modelMatrix", modelMatrix);
             m_boundingBoxShader->setUniform("color", core::color::red);
@@ -48,7 +48,7 @@ void RenderBoundingBoxesStage::setShaderTransforms(cam::Camera& camera) {
 }
 
 void RenderBoundingBoxesStage::prepareRenderer(gfx::Renderer& renderer) {
-    auto settings = renderer.getSettings();
+    auto settings        = renderer.getSettings();
     settings.polygonMode = STARL_LINE;
     renderer.setTemporarySettings(settings);
 }

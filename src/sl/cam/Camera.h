@@ -14,11 +14,11 @@ namespace sl::cam {
 
 class Camera : kc::event::EventListener {
    public:
-    explicit Camera(const gfx::ViewFrustum &viewFrustum,
-                    const math::Vec3 &position = math::zerosVector,
-                    const math::Vec3 &up = math::worldUp,
-                    const math::Vec3 &front = math::worldFront,
-                    const math::Vec3 &right = math::worldRight);
+    explicit Camera(
+        const gfx::ViewFrustum &viewFrustum, const math::Vec3 &position = math::zerosVector,
+        const math::Vec3 &up = math::worldUp, const math::Vec3 &front = math::worldFront,
+        const math::Vec3 &right = math::worldRight
+    );
 
     virtual ~Camera();
 

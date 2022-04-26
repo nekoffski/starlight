@@ -14,14 +14,19 @@ struct ComponentContainerTests : public Test {
     const std::string id = "abcdefgh";
 };
 
-TEST_F(ComponentContainerTests,
-       givenContainerWithDefaultCtor_whenAccessingCapacity_shouldReturnDefault) {
-    EXPECT_EQ(ComponentContainer<TestComponent>{}.capacity(),
-              ComponentContainer<TestComponent>::defaultCapacity);
+TEST_F(
+    ComponentContainerTests, givenContainerWithDefaultCtor_whenAccessingCapacity_shouldReturnDefault
+) {
+    EXPECT_EQ(
+        ComponentContainer<TestComponent>{}.capacity(),
+        ComponentContainer<TestComponent>::defaultCapacity
+    );
 }
 
-TEST_F(ComponentContainerTests,
-       givenContainerWithGivenCapacity_whenAccessingCapacity_shouldReturnCorrectValue) {
+TEST_F(
+    ComponentContainerTests,
+    givenContainerWithGivenCapacity_whenAccessingCapacity_shouldReturnCorrectValue
+) {
     constexpr int capacity = 123556;
     EXPECT_EQ(ComponentContainer<TestComponent>{capacity}.capacity(), capacity);
 }
@@ -30,16 +35,19 @@ TEST_F(ComponentContainerTests, givenEmptyContainer_whenAccessingSize_shouldRetu
     EXPECT_EQ(componentContainer.size(), 0);
 }
 
-TEST_F(ComponentContainerTests,
-       givenContainerWithAddedComponent_whenAccessingSize_shouldReturnOne) {
+TEST_F(
+    ComponentContainerTests, givenContainerWithAddedComponent_whenAccessingSize_shouldReturnOne
+) {
     componentContainer.add(id, 1, 5.0f);
 
     EXPECT_EQ(componentContainer.size(), 1);
 }
 
-TEST_F(ComponentContainerTests,
-       givenContainerWithAddedComponent_whenAccessingAllComponents_shouldReturnCorrectComponent) {
-    constexpr int x = 1;
+TEST_F(
+    ComponentContainerTests,
+    givenContainerWithAddedComponent_whenAccessingAllComponents_shouldReturnCorrectComponent
+) {
+    constexpr int x   = 1;
     constexpr float y = 5.0f;
 
     componentContainer.add(id, x, y);
@@ -53,9 +61,11 @@ TEST_F(ComponentContainerTests,
     EXPECT_EQ(y, component.y);
 }
 
-TEST_F(ComponentContainerTests,
-       givenContainerWithAddedComponent_whenAccessingById_shouldReturnCorrectComponent) {
-    constexpr int x = 1;
+TEST_F(
+    ComponentContainerTests,
+    givenContainerWithAddedComponent_whenAccessingById_shouldReturnCorrectComponent
+) {
+    constexpr int x   = 1;
     constexpr float y = 5.0f;
 
     componentContainer.add(id, x, y);
@@ -69,7 +79,7 @@ TEST_F(ComponentContainerTests,
 }
 
 TEST_F(ComponentContainerTests, givenContainer_whenAddingComponent_shouldReturnCorrectComponent) {
-    constexpr int x = 1;
+    constexpr int x   = 1;
     constexpr float y = 5.0f;
 
     auto& component = componentContainer.add(id, x, y);
@@ -78,8 +88,10 @@ TEST_F(ComponentContainerTests, givenContainer_whenAddingComponent_shouldReturnC
     EXPECT_EQ(y, component.y);
 }
 
-TEST_F(ComponentContainerTests,
-       givenContainer_whenRemovingComponet_shouldRemoveComponentAndDoNotAffectOthers) {
+TEST_F(
+    ComponentContainerTests,
+    givenContainer_whenRemovingComponet_shouldRemoveComponentAndDoNotAffectOthers
+) {
     auto id2 = id + "2";
 
     componentContainer.add(id, 1, 1.0f);

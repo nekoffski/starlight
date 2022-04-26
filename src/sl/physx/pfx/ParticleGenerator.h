@@ -28,21 +28,21 @@ class ParticleGenerator {
 
         while (n-- > 0) {
             auto fi = fiDist(rand);
-            auto r = radiusDist(rand);
+            auto r  = radiusDist(rand);
 
             auto pos = math::Vec3{r * cos(fi), 0.0f, r * sin(fi)};
 
-            auto c = math::Vec3{rDist(rand), gDist(rand), bDist(rand)};
+            auto c         = math::Vec3{rDist(rand), gDist(rand), bDist(rand)};
             auto direction = math::Vec3{-pos.x * dir(rand), 1.0f, -pos.z * dir(rand)};
 
             Particle p;
-            p.position = pos;
-            p.speed = speedDist(rand);
-            p.scale = scaleDist(rand);
-            p.deltaScale = settings.deltaScale;
-            p.color = c;
-            p.direction = direction;
-            p.deltaDirection = math::Vec3{direction.x, 0.0f, direction.z};
+            p.position        = pos;
+            p.speed           = speedDist(rand);
+            p.scale           = scaleDist(rand);
+            p.deltaScale      = settings.deltaScale;
+            p.color           = c;
+            p.direction       = direction;
+            p.deltaDirection  = math::Vec3{direction.x, 0.0f, direction.z};
             p.directionFactor = settings.directionFactor;
 
             particles.emplace_back(std::move(p));

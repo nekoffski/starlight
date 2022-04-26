@@ -22,7 +22,7 @@ std::optional<std::string> findRayIntersection(const FindRayIntersectionArgs& ar
 
         if (intersectRecord.has_value() && intersectRecord->tNear < nearestHit) {
             nearestHit = intersectRecord->tNear;
-            hitEntity = model.ownerEntityId;
+            hitEntity  = model.ownerEntityId;
         }
     }
 

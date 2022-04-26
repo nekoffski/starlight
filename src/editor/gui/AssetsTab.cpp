@@ -69,7 +69,7 @@ void AssetsTab::render() {
         displayAssetSection("Meshes", meshes);
         ImGui::SameLine();
 
-        auto shaders = m_sharedState->assetManager.getShaders().getAll();
+        auto shaders        = m_sharedState->assetManager.getShaders().getAll();
         auto& globalShaders = sl::glob::Globals::get().shaders->shadersByName;
 
         for (auto& [name, shader] : globalShaders) shaders[name] = shader;
@@ -84,11 +84,11 @@ void AssetsTab::render() {
 }
 
 void AssetsTab::resetArgs() {
-    m_assetsArgs.assetName = "";
+    m_assetsArgs.assetName  = "";
     m_assetsArgs.activeItem = 0;
-    m_assetsArgs.modelName = "/tow/tower.obj";
-    m_assetsArgs.faces = {"/skybox/right.jpg",  "/skybox/left.jpg",  "/skybox/top.jpg",
-                          "/skybox/bottom.jpg", "/skybox/front.jpg", "/skybox/back.jpg"};
+    m_assetsArgs.modelName  = "/tow/tower.obj";
+    m_assetsArgs.faces      = {"/skybox/right.jpg",  "/skybox/left.jpg",  "/skybox/top.jpg",
+                               "/skybox/bottom.jpg", "/skybox/front.jpg", "/skybox/back.jpg"};
 }
 
 void AssetsTab::showLoaderPopUp() {
@@ -165,7 +165,8 @@ void AssetsTab::handleShaderLoader() {
         validateAssetName(m_assetsArgs.assetName);
 
         auto shader = sl::gfx::ShaderManager::get().load(
-            m_assetsArgs.faces[0], m_assetsArgs.faces[1], m_assetsArgs.faces[2]);
+            m_assetsArgs.faces[0], m_assetsArgs.faces[1], m_assetsArgs.faces[2]
+        );
         // auto shaderAsset = std::make_shared<sl::asset::ShaderAsset>(shader,
         // m_assetsArgs.assetName); m_sharedState->assetManager.addAsset(shaderAsset);
     }
@@ -201,13 +202,13 @@ void AssetsTab::handleCubemapLoader() {
     if (m_loadClicked) {
         validateAssetName(m_assetsArgs.assetName);
 
-        auto facesPaths = m_assetsArgs.faces;
+        auto facesPaths          = m_assetsArgs.faces;
         const auto& cubemapsPath = sl::glob::Globals::get().config.paths.cubemaps;
 
-        std::ranges::transform(facesPaths, facesPaths.begin(),
-                               [&cubemapsPath](const auto& facePath) -> std::string {
-                                   return cubemapsPath + facePath;
-                               });
+        std::ranges::transform(
+            facesPaths, facesPaths.begin(),
+            [&cubemapsPath](const auto& facePath) -> std::string { return cubemapsPath + facePath; }
+        );
 
         using namespace sl::gfx;
 

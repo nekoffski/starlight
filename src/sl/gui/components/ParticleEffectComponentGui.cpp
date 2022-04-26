@@ -8,9 +8,9 @@ namespace sl::gui::components {
 
 using namespace scene::components;
 
-void ParticleEffectComponentGui::renderComponentGuiImpl(ParticleEffectComponent& component,
-                                                        asset::AssetManager& assetManager,
-                                                        ecs::Entity& entity) {
+void ParticleEffectComponentGui::renderComponentGuiImpl(
+    ParticleEffectComponent& component, asset::AssetManager& assetManager, ecs::Entity& entity
+) {
     // auto& params = m_params[component.ownerEntityId];
 
     // gui.pushId(component.ownerEntityId);

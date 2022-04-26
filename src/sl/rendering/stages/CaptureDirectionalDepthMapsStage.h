@@ -18,18 +18,22 @@ class CaptureDirectionalDepthMapsStage : public Stage {
    public:
     explicit CaptureDirectionalDepthMapsStage();
 
-    void execute(gfx::Renderer& renderer, scene::Scene& scene,
-                 gfx::FrameBuffer* frameBuffer) override;
+    void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer)
+        override;
 
    private:
-    void renderDepth(scene::components::DirectionalLightComponent& light,
-                     scene::components::MeshRendererComponent::View& meshRenderers,
-                     scene::components::TransformComponent::View& transforms,
-                     scene::components::ModelComponent::View& models, gfx::Renderer& renderer);
+    void renderDepth(
+        scene::components::DirectionalLightComponent& light,
+        scene::components::MeshRendererComponent::View& meshRenderers,
+        scene::components::TransformComponent::View& transforms,
+        scene::components::ModelComponent::View& models, gfx::Renderer& renderer
+    );
 
-    void tryToRenderModel(scene::components::MeshRendererComponent& meshRenderer,
-                          scene::components::TransformComponent::View& transforms,
-                          scene::components::ModelComponent::View& models, gfx::Renderer& renderer);
+    void tryToRenderModel(
+        scene::components::MeshRendererComponent& meshRenderer,
+        scene::components::TransformComponent::View& transforms,
+        scene::components::ModelComponent::View& models, gfx::Renderer& renderer
+    );
 
     void queueDirectionVectorForBeingRendered(const math::Vec3& direction, scene::Scene& scene);
 

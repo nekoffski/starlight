@@ -9,7 +9,8 @@ namespace sl::rendering::stages {
 
 RenderSkyboxStage::RenderSkyboxStage() {
     auto vertexBuffer = gfx::BufferManager::get().createVertexBuffer(
-        geom::cubemapVertices, sizeof(geom::cubemapVertices), 36);
+        geom::cubemapVertices, sizeof(geom::cubemapVertices), 36
+    );
 
     vertexBuffer->addMemoryOffsetScheme(3, STARL_FLOAT, sizeof(float));
 
@@ -32,7 +33,7 @@ void RenderSkyboxStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gf
 
     m_cubemapVertexArray->bind();
 
-    auto settings = renderer.getSettings();
+    auto settings            = renderer.getSettings();
     settings.enableDepthMask = false;
 
     renderer.setTemporarySettings(settings);

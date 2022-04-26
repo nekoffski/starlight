@@ -20,8 +20,8 @@ class OpenGlElementBuffer : public gfx::ElementBuffer {
 };
 
 struct OpenGlElementBufferFactory : sl::gfx::ElementBuffer::Factory {
-    std::shared_ptr<sl::gfx::ElementBuffer> create(void* data, int size,
-                                                   unsigned int indicesCount) override {
+    std::shared_ptr<sl::gfx::ElementBuffer> create(void* data, int size, unsigned int indicesCount)
+        override {
         return std::make_shared<OpenGlElementBuffer>(data, size, indicesCount);
     }
 };

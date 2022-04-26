@@ -13,8 +13,10 @@ class Serializer {
    public:
     explicit Serializer(const std::string& path);
 
-    void serialize(asset::AssetManager& assetManager, scene::Scene* scene,
-                   const kc::core::FileSystem& fileSystem = kc::core::FileSystem{});
+    void serialize(
+        asset::AssetManager& assetManager, scene::Scene* scene,
+        const kc::core::FileSystem& fileSystem = kc::core::FileSystem{}
+    );
 
     inline static const std::string extension = ".starscene";
 

@@ -20,8 +20,9 @@ class OpenGlRenderBuffer : public sl::gfx::RenderBuffer {
 };
 
 struct OpenGlRenderBufferFactory : public sl::gfx::RenderBuffer::Factory {
-    std::unique_ptr<sl::gfx::RenderBuffer> create(int format, unsigned int width,
-                                                  unsigned int height) override {
+    std::unique_ptr<sl::gfx::RenderBuffer> create(
+        int format, unsigned int width, unsigned int height
+    ) override {
         return std::make_unique<OpenGlRenderBuffer>(format, width, height);
     }
 };

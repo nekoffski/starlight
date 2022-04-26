@@ -23,8 +23,10 @@ void OpenGlVertexArray::addVertexBuffer(std::shared_ptr<sl::gfx::VertexBuffer> v
     const auto& memoryScheme = vertexBuffer->getMemoryScheme();
 
     for (const auto& offset : memoryScheme) {
-        glVertexAttribPointer(offset.index, offset.elementsCount, offset.type, offset.normalized,
-                              memoryScheme.calculateStride(), offset.begin);
+        glVertexAttribPointer(
+            offset.index, offset.elementsCount, offset.type, offset.normalized,
+            memoryScheme.calculateStride(), offset.begin
+        );
         glEnableVertexAttribArray(offset.index);
     }
 
@@ -39,7 +41,7 @@ void OpenGlVertexArray::addElementBuffer(std::shared_ptr<sl::gfx::ElementBuffer>
     this->bind();
     elementBuffer->bind();
 
-    m_indicesCount = elementBuffer->getIndicesCount();
+    m_indicesCount  = elementBuffer->getIndicesCount();
     m_elementBuffer = elementBuffer;
 
     this->unbind();

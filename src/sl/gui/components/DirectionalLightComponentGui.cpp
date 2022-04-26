@@ -6,9 +6,9 @@ namespace sl::gui::components {
 
 using namespace scene::components;
 
-void DirectionalLightComponentGui::renderComponentGuiImpl(DirectionalLightComponent& component,
-                                                          asset::AssetManager& assetManager,
-                                                          ecs::Entity& entity) {
+void DirectionalLightComponentGui::renderComponentGuiImpl(
+    DirectionalLightComponent& component, asset::AssetManager& assetManager, ecs::Entity& entity
+) {
     with_ID(component.ownerEntityId.c_str()) {
         if (beginComponentTreeNode(ICON_FA_SUN "  Directional light", component)) {
             ImGui::Checkbox("Render direction vector", &component.renderDirection);

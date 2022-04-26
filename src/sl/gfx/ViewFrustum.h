@@ -7,8 +7,9 @@
 namespace sl::gfx {
 
 struct ViewFrustum {
-    explicit ViewFrustum(int width, int height, float fieldOfView = 45.0f, float nearZ = 0.1f,
-                         float farZ = 100.0f)
+    explicit ViewFrustum(
+        int width, int height, float fieldOfView = 45.0f, float nearZ = 0.1f, float farZ = 100.0f
+    )
         : viewport{width, height}, fieldOfView(fieldOfView), nearZ(nearZ), farZ(farZ) {}
 
     Viewport viewport;

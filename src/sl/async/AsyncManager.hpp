@@ -26,16 +26,18 @@ class AsyncManager : public kc::core::Singleton<AsyncManager> {
     ~AsyncManager();
 
     template <typename T, typename... Args>
-    requires std::derived_from<T, PeriodicTask> PeriodicTask::Handle addPeriodicTask(
-        Args&&... args) {
+    requires std::derived_from<T, PeriodicTask> PeriodicTask::Handle addPeriodicTask(Args&&... args
+    ) {
         return addPeriodicTaskImpl(std::make_unique<T>(std::forward<Args>(args)...));
     }
 
     template <typename F, typename... Args>
-    kc::async::Future<typename std::result_of<F(Args...)>::type> callAsync(F&& func,
-                                                                           Args&&... args) {
-        return m_threadPool->callAsync<F, Args...>(std::forward<F>(func),
-                                                   std::forward<Args>(args)...);
+    kc::async::Future<typename std::result_of<F(Args...)>::type> callAsync(
+        F&& func, Args&&... args
+    ) {
+        return m_threadPool->callAsync<F, Args...>(
+            std::forward<F>(func), std::forward<Args>(args)...
+        );
     }
 
     template <typename T, typename... Args>

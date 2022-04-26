@@ -11,7 +11,7 @@ namespace sl::gfx {
 
 constexpr unsigned int facesCount = 6;
 
-using CubemapArgs = std::array<std::string, facesCount>;
+using CubemapArgs  = std::array<std::string, facesCount>;
 using CubemapFaces = std::array<gfx::Image*, facesCount>;
 
 class TextureManager;
@@ -21,7 +21,7 @@ class Cubemap : public core::GameObject {
 
    public:
     struct Factory {
-        virtual std::unique_ptr<Cubemap> create(const CubemapFaces&) = 0;
+        virtual std::unique_ptr<Cubemap> create(const CubemapFaces&)        = 0;
         virtual std::unique_ptr<Cubemap> create(unsigned int, unsigned int) = 0;
     };
 
@@ -30,7 +30,7 @@ class Cubemap : public core::GameObject {
     virtual unsigned int getBufferId() const = 0;
 
     virtual void bind(unsigned int index = s_currentTextureId) = 0;
-    virtual void unbind() = 0;
+    virtual void unbind()                                      = 0;
 
     std::unique_ptr<Cubemap> clone();
 

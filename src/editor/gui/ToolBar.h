@@ -9,9 +9,9 @@ namespace editor::gui {
 class ToolBar : public Widget {
    public:
     explicit ToolBar(std::shared_ptr<SharedState> sharedState)
-        : Widget(sharedState),
-          m_gizmoOperation(sl::gui::GizmoOp::translate),
-          m_engineState(EngineState::stopped) {}
+        : Widget(sharedState)
+        , m_gizmoOperation(sl::gui::GizmoOp::translate)
+        , m_engineState(EngineState::stopped) {}
 
     void render() {
         auto& properties = m_sharedState->guiProperties.toolBarProperties;
@@ -58,7 +58,7 @@ class ToolBar : public Widget {
                 if (isSelected) sl::gui::pushTextColor(sl::gui::selectedEntryColor);
 
                 if (ImGui::Button(label.c_str())) {
-                    m_gizmoOperation = operation;
+                    m_gizmoOperation              = operation;
                     m_sharedState->gizmoOperation = operation;
                 }
 

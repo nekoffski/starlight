@@ -69,7 +69,8 @@ class ScenePanel : public Widget {
 
                             ImGui::SetNextItemOpen(false, ImGuiCond_Once);
                             bool isEntityOpened = ImGui::TreeNode(
-                                (gap + ICON_FA_CUBE + gap + entity->getName()).c_str());
+                                (gap + ICON_FA_CUBE + gap + entity->getName()).c_str()
+                            );
                             bool isClicked = ImGui::IsItemClicked();
 
                             sl::gui::popTextColor();
@@ -119,19 +120,21 @@ class ScenePanel : public Widget {
 
                     sl::gui::setupGizmo(scene->camera->viewFrustum.viewport);
 
-                    auto viewMatrix = scene->camera->getViewMatrix();
+                    auto viewMatrix       = scene->camera->getViewMatrix();
                     auto projectionMatrix = scene->camera->getProjectionMatrix();
 
                     auto transformationMatrix = transform.transformation;
 
-                    sl::gui::manipulateGizmo(viewMatrix, projectionMatrix, transformationMatrix,
-                                             m_sharedState->gizmoOperation,
-                                             m_sharedState->gizmoSpace);
+                    sl::gui::manipulateGizmo(
+                        viewMatrix, projectionMatrix, transformationMatrix,
+                        m_sharedState->gizmoOperation, m_sharedState->gizmoSpace
+                    );
 
                     if (sl::gui::isUsingGizmo()) {
                         math::Vec3 rotation;
-                        math::decomposeMatrix(transformationMatrix, transform.position, rotation,
-                                              transform.scale);
+                        math::decomposeMatrix(
+                            transformationMatrix, transform.position, rotation, transform.scale
+                        );
 
                         transform.rotation = sl::math::toDegrees(rotation);
                         transform.recalculateTransformation();

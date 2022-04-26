@@ -14,8 +14,8 @@ struct Config {
 
     struct Window {
         std::string name = "Starlight editor";
-        int width = 1600;
-        int height = 900;
+        int width        = 1600;
+        int height       = 900;
     };
 
     Paths paths;

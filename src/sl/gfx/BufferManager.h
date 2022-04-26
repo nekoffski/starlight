@@ -14,8 +14,9 @@ class BufferManager : public kc::core::Singleton<BufferManager> {
    public:
     std::shared_ptr<FrameBuffer> createFrameBuffer() { return m_frameBufferFactory->create(); }
 
-    std::unique_ptr<RenderBuffer> createRenderBuffer(int format, unsigned int width,
-                                                     unsigned int height) {
+    std::unique_ptr<RenderBuffer> createRenderBuffer(
+        int format, unsigned int width, unsigned int height
+    ) {
         return m_renderBufferFactory->create(format, width, height);
     }
 
@@ -25,8 +26,9 @@ class BufferManager : public kc::core::Singleton<BufferManager> {
         return m_vertexBufferFactory->create(data, size, verticesCount);
     }
 
-    std::shared_ptr<ElementBuffer> createElementBuffer(void* data, int size,
-                                                       unsigned int indicesCount) {
+    std::shared_ptr<ElementBuffer> createElementBuffer(
+        void* data, int size, unsigned int indicesCount
+    ) {
         return m_elementBufferFactory->create(data, size, indicesCount);
     }
 

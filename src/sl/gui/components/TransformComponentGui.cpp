@@ -4,9 +4,9 @@ namespace sl::gui::components {
 
 using namespace scene::components;
 
-void TransformComponentGui::renderComponentGuiImpl(TransformComponent& component,
-                                                   asset::AssetManager& assetManager,
-                                                   ecs::Entity& entity) {
+void TransformComponentGui::renderComponentGuiImpl(
+    TransformComponent& component, asset::AssetManager& assetManager, ecs::Entity& entity
+) {
     with_ID(component.ownerEntityId.c_str()) {
         if (beginComponentTreeNode(ICON_FA_STREET_VIEW "  Transform", component)) {
             m_trigerred = 0;

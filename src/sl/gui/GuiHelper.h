@@ -20,8 +20,9 @@ class GuiHelper : public kc::core::Singleton<GuiHelper> {
        public:
         explicit FontWrapper(const int size, MergedFontsRanges& parentMergedFontsRanges);
 
-        FontWrapper&& mergeWith(const std::string& path, const unsigned short minCode,
-                                const unsigned short maxCode) &&;
+        FontWrapper&& mergeWith(
+            const std::string& path, const unsigned short minCode, const unsigned short maxCode
+        ) &&;
 
        private:
         const int m_size;

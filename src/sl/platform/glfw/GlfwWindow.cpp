@@ -38,8 +38,9 @@ void GlfwWindow::init() {
     });
 
     LOG_TRACE("Creating GLFW window instance");
-    m_windowHandle = glfwCreateWindow(m_defaultWindowSize.width, m_defaultWindowSize.height,
-                                      m_title.c_str(), nullptr, nullptr);
+    m_windowHandle = glfwCreateWindow(
+        m_defaultWindowSize.width, m_defaultWindowSize.height, m_title.c_str(), nullptr, nullptr
+    );
 
     if (m_windowHandle == nullptr) {
         LOG_FATAL("Could not create GLFW window instance");
@@ -69,8 +70,10 @@ void GlfwWindow::disableCursor() {
 }
 
 void GlfwWindow::changeCursorState(bool enabled) {
-    glfwSetInputMode(m_windowHandle, GLFW_CURSOR,
-                     GLFW_CURSOR_DISABLED - (GLFW_CURSOR_DISABLED - GLFW_CURSOR_NORMAL) * enabled);
+    glfwSetInputMode(
+        m_windowHandle, GLFW_CURSOR,
+        GLFW_CURSOR_DISABLED - (GLFW_CURSOR_DISABLED - GLFW_CURSOR_NORMAL) * enabled
+    );
 }
 
 void GlfwWindow::update(float dtime) { glfwPollEvents(); }
