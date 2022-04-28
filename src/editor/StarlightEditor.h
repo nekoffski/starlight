@@ -199,17 +199,8 @@ class StarlightEditor : public app::Application {
         // m_currentScene->ecsRegistry.getComponentView<components::ParticleEffectComponent>();
         // sceneSystems.pfxEngine.update(pfxs, deltaTime, *m_currentScene->camera);
 
-        if (m_engineState == editor::EngineState::started) {
-            physx::PhysicsEngine::BoundingBoxes boundingBoxes;
-            boundingBoxes.reserve(models.size());
-
-            for (auto &model : models)
-                boundingBoxes.insert({model.ownerEntityId, model.boundingBox.get()});
-
-            physx::PhysicsEngine::get().processRigidBodies(
-                rigidBodies, transforms, boundingBoxes, deltaTime
-            );
-        }
+        if (m_engineState == editor::EngineState::started)
+            physx::PhysicsEngine::get().processRigidBodies(*m_currentScene, deltaTime);
 
         if (m_engineMode == editor::EngineMode::inGame &&
             core::InputManager::get().isKeyPressed(STARL_KEY_ESCAPE)) {
@@ -220,6 +211,24 @@ class StarlightEditor : public app::Application {
 
             auto [width, height] = WindowManager::get().getSize();
             recalculateViewportSize(width, height);
+        }
+
+        static const glm::vec3 velocityColor = core::color::green;
+
+        auto &scene = *m_currentScene;
+
+        for (auto &rigidBody : rigidBodies) {
+            if (rigidBody.renderVelocity &&
+                models.doesEntityOwnComponent(rigidBody.ownerEntityId)) {
+                auto boundingBox = models.getByEntityId(rigidBody.ownerEntityId).boundingBox.get();
+                auto modelMatrix =
+                    sl::rendering::utils::getModelMatrix(rigidBody.ownerEntityId, transforms);
+
+                scene.vectors.push_back({
+                    physx::Vector{modelMatrix * boundingBox->getCenterOfMass(), rigidBody.velocity},
+                    velocityColor
+                });
+            }
         }
     }
 

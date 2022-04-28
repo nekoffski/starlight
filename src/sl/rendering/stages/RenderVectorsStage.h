@@ -13,11 +13,11 @@ class RenderVectorsStage : public Stage {
     void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) override;
 
    private:
-    void renderVector(const physx::ColoredVector& coloredVector, gfx::Renderer& renderer);
+    void renderVector(const physx::Vector& vector, const glm::vec3& color, gfx::Renderer& renderer);
 
     math::Mat4 calculateModelMatrix(const physx::Vector& vector);
 
-    void setVectorUniforms(const physx::ColoredVector& coloredVector);
+    void setVectorUniforms(const physx::Vector& vector, const glm::vec3& color);
     void setCameraUniforms(cam::Camera& camera);
 
     std::shared_ptr<gfx::VertexArray> m_lineVertexArray;

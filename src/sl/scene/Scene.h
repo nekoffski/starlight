@@ -26,6 +26,6 @@ class Scene {
 
     std::optional<Skybox> skybox;
 
-    std::vector<physx::ColoredVector> vectors;
+    std::vector<std::pair<physx::Vector, math::Vec3>> vectors;
 };
 }  // namespace sl::scene

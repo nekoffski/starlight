@@ -10,6 +10,8 @@
 #include "sl/gfx/TextureManager.h"
 #include "sl/glob/Globals.h"
 
+#include <kc/math/Format.h>
+
 using namespace sl::core;
 
 namespace sl::app {

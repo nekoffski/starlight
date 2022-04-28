@@ -79,8 +79,10 @@ void CaptureDirectionalDepthMapsStage::queueDirectionVectorForBeingRendered(
     static const math::Vec3 sceneOrigin{0.0f, 0.0f, 0.0f};
     static constexpr float directionScale = 1000.0f;
 
-    physx::Vector vector{sceneOrigin, direction * directionScale};
-    scene.vectors.emplace_back(physx::ColoredVector{std::move(vector), core::color::blue});
+    scene.vectors.push_back({
+        physx::Vector{sceneOrigin, direction * directionScale},
+        core::color::blue
+    });
 }
 
 void CaptureDirectionalDepthMapsStage::prepareRenderer(gfx::Renderer& renderer) {

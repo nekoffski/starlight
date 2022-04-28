@@ -1,6 +1,7 @@
 #include "RenderVectorsStage.h"
 
 #include <kc/core/Profiler.h>
+#include <kc/math/Format.h>
 
 #include "sl/glob/Globals.h"
 
@@ -18,16 +19,19 @@ void RenderVectorsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, g
     m_lineVertexArray->bind();
     m_lineShader->enable();
 
-    for (const auto& coloredVector : scene.vectors) renderVector(coloredVector, renderer);
+    for (const auto& [vector, color] : scene.vectors) renderVector(vector, color, renderer);
 
     m_lineVertexArray->unbind();
     m_lineShader->disable();
+
+    scene.vectors.clear();
 }
 
 void RenderVectorsStage::renderVector(
-    const physx::ColoredVector& coloredVector, gfx::Renderer& renderer
+    const physx::Vector& vector, const glm::vec3& color, gfx::Renderer& renderer
 ) {
-    setVectorUniforms(coloredVector);
+    LOG_TRACE("Rendering: {}/{}", vector, color);
+    setVectorUniforms(vector, color);
     renderer.renderLine();
 }
 
@@ -53,9 +57,7 @@ math::Mat4 RenderVectorsStage::calculateModelMatrix(const physx::Vector& vector)
     return math::translate(vector.origin) * math::scale(scale) * orientationMatrix;
 }
 
-void RenderVectorsStage::setVectorUniforms(const physx::ColoredVector& coloredVector) {
-    const auto& [vector, color] = coloredVector;
-
+void RenderVectorsStage::setVectorUniforms(const physx::Vector& vector, const glm::vec3& color) {
     m_lineShader->setUniform("color", color);
     m_lineShader->setUniform("modelMatrix", calculateModelMatrix(vector));
 }
