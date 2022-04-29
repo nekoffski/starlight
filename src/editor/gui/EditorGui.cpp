@@ -16,7 +16,7 @@ EditorGui::EditorGui(std::shared_ptr<SharedState> sharedState)
     , m_fileBrowser("editorGuiFileBrowser") {}
 
 void EditorGui::renderEditorGui() {
-    using namespace event;
+    using namespace sl::event;
 
     sl::gui::pushTextColor(sl::gui::guiDefaultTextColor);
 
