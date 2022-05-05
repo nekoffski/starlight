@@ -17,10 +17,10 @@
 #include "sl/core/WindowManager.h"
 #include "sl/event/EventManager.h"
 #include "sl/geom/GeometryManager.h"
-#include "sl/gfx/BufferManager.h"
-#include "sl/gfx/ShaderManager.h"
-#include "sl/gfx/TextureManager.h"
-#include "sl/gfx/fwd.h"
+#include "sl/gpu/BufferManager.h"
+#include "sl/gpu/ShaderManager.h"
+#include "sl/gpu/TextureManager.h"
+#include "sl/gpu/fwd.h"
 #include "sl/glob/Globals.h"
 #include "sl/gui/GuiHelper.h"
 #include "sl/gui/fonts/FontAwesome.h"
@@ -65,11 +65,11 @@ class Engine : kc::event::EventListener {
 
     core::Window* m_window;
     core::Input* m_input;
-    gfx::RenderApi* m_renderApi;
+    gpu::RenderApi* m_renderApi;
 
     cfg::Config* m_config;
 
-    std::unique_ptr<gfx::Renderer> m_renderer;
+    std::unique_ptr<gpu::Renderer> m_renderer;
     Application* m_application;
 
     // clang-format off
@@ -77,9 +77,9 @@ class Engine : kc::event::EventListener {
     core::WindowManager   m_windowManager;
     async::AsyncManager   m_asyncManager;
     core::ClockManager    m_clockManager;
-    gfx::ShaderManager    m_shaderManager;
-    gfx::BufferManager    m_bufferManager;
-    gfx::TextureManager   m_textureManager;
+    gpu::ShaderManager    m_shaderManager;
+    gpu::BufferManager    m_bufferManager;
+    gpu::TextureManager   m_textureManager;
     event::EventManager   m_eventManager;
     geom::GeometryManager m_geometryManager;
     glob::Globals         m_globals;

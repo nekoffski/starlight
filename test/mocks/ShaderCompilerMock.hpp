@@ -2,9 +2,9 @@
 
 #include <gmock/gmock.h>
 
-#include "sl/gfx/ShaderCompiler.h"
+#include "sl/gpu/ShaderCompiler.h"
 
-using namespace sl::gfx;
+using namespace sl::gpu;
 
 struct ShaderCompilerMock : public ShaderCompiler {
     MOCK_METHOD(void, compile, (Shader&), (override));

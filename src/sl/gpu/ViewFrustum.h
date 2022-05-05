@@ -4,7 +4,7 @@
 
 #include "Viewport.h"
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 struct ViewFrustum {
     explicit ViewFrustum(
@@ -18,4 +18,4 @@ struct ViewFrustum {
     float farZ;
 };
 
-}  // namespace sl::gfx
+}  // namespace sl::gpu

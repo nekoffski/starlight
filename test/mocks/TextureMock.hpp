@@ -2,13 +2,13 @@
 
 #include <gmock/gmock.h>
 
-#include "sl/gfx/Texture.h"
+#include "sl/gpu/Texture.h"
 
-using namespace sl::gfx;
+using namespace sl::gpu;
 
 struct TextureMock : Texture {
     struct Factory : Texture::Factory {
-        MOCK_METHOD(std::unique_ptr<Texture>, create, (sl::gfx::Image&));
+        MOCK_METHOD(std::unique_ptr<Texture>, create, (sl::gpu::Image&));
         MOCK_METHOD(std::unique_ptr<Texture>, create, (unsigned int, unsigned int, int, int));
     };
 

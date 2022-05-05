@@ -9,7 +9,7 @@ using namespace sl::scene::components;
 
 namespace sl::rendering::stages {
 
-void PrepareLightsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
+void PrepareLightsStage::execute(gpu::Renderer& renderer, scene::Scene& scene, gpu::FrameBuffer*) {
     PROFILE_FUNCTION();
 
     auto [rendererComponents, transforms, directionalLights, pointLights] =
@@ -24,7 +24,7 @@ void PrepareLightsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, g
 }
 
 void PrepareLightsStage::prepareDirectionalLights(
-    DirectionalLightComponent::View& lights, gfx::Shader& shader
+    DirectionalLightComponent::View& lights, gpu::Shader& shader
 ) {
     unsigned int lightIndex = 0u;
     for (const auto& directionalLight : lights)
@@ -35,7 +35,7 @@ void PrepareLightsStage::prepareDirectionalLights(
 }
 
 void PrepareLightsStage::preparePointLights(
-    PointLightComponent::View& lights, TransformComponent::View& transforms, gfx::Shader& shader
+    PointLightComponent::View& lights, TransformComponent::View& transforms, gpu::Shader& shader
 ) {
     unsigned int lightIndex = 0u;
     for (const auto& pointLight : lights)
@@ -48,7 +48,7 @@ void PrepareLightsStage::preparePointLights(
 }
 
 void PrepareLightsStage::setDirectionalLightProperties(
-    gfx::Shader& shader, const DirectionalLightComponent& light, unsigned int index
+    gpu::Shader& shader, const DirectionalLightComponent& light, unsigned int index
 ) {
     std::string strIndex = std::to_string(index);
     light.shadowMap->bind(index + 1);
@@ -59,7 +59,7 @@ void PrepareLightsStage::setDirectionalLightProperties(
 }
 
 void PrepareLightsStage::setPointLightProperties(
-    gfx::Shader& shader, const PointLightComponent& light, const math::Mat4& transform,
+    gpu::Shader& shader, const PointLightComponent& light, const math::Mat4& transform,
     unsigned int index
 ) {
     std::string strIndex = std::to_string(index);

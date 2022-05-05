@@ -1,6 +1,6 @@
 #include "TextureManager.h"
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 TextureManager::TextureManager(
     Texture::Factory* textureFactory, Cubemap::Factory* cubemapFactory, Image::Factory* imageFactory
@@ -81,8 +81,8 @@ TextureManager::CubemapFaces TextureManager::loadCubemapFaces(const CubemapArgs&
     CubemapFaces faces;
     std::ranges::transform(
         facesPaths, faces.begin(),
-        [](const auto& facePath) -> std::unique_ptr<gfx::Image> {
-            return gfx::TextureManager::get().loadImage(facePath);
+        [](const auto& facePath) -> std::unique_ptr<gpu::Image> {
+            return gpu::TextureManager::get().loadImage(facePath);
         }
     );
 
@@ -93,7 +93,7 @@ TextureManager::CubemapFacesView TextureManager::createCubemapFacesView(
     const CubemapFaces& cubemapFaces
 ) {
     CubemapFacesView facesView;
-    std::ranges::transform(cubemapFaces, facesView.begin(), [](const auto& face) -> gfx::Image* {
+    std::ranges::transform(cubemapFaces, facesView.begin(), [](const auto& face) -> gpu::Image* {
         return face.get();
     });
 
@@ -172,8 +172,8 @@ std::unique_ptr<Texture> TextureManager::TextureBuilder::buildFromDimension() {
 }
 
 std::unique_ptr<Cubemap> TextureManager::loadCubemap(const CubemapFaces& faces) {
-    std::array<gfx::Image*, facesCount> facesView;
-    std::ranges::transform(faces, facesView.begin(), [](const auto& face) -> gfx::Image* {
+    std::array<gpu::Image*, facesCount> facesView;
+    std::ranges::transform(faces, facesView.begin(), [](const auto& face) -> gpu::Image* {
         return face.get();
     });
 
@@ -208,4 +208,4 @@ std::unique_ptr<Texture> TextureManager::createShadowMap() {
         .get();
 }
 
-}  // namespace sl::gfx
+}  // namespace sl::gpu

@@ -4,7 +4,7 @@
 
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
-#include "sl/gfx/Shader.h"
+#include "sl/gpu/Shader.h"
 #include "sl/physx/AxisAlignedBoundingBox.h"
 #include "sl/physx/BoundingBox.h"
 

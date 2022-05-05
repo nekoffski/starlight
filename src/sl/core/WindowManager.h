@@ -7,7 +7,7 @@
 
 #include "Window.h"
 #include "sl/event/Event.h"
-#include "sl/gfx/Viewport.h"
+#include "sl/gpu/Viewport.h"
 
 namespace sl::core {
 
@@ -35,10 +35,10 @@ class WindowManager : public kc::core::Singleton<WindowManager>, public kc::even
 
     void* getWindowHandle() const { return m_window->getHandle(); }
 
-    const gfx::Viewport& getViewport() const { return m_viewport; }
+    const gpu::Viewport& getViewport() const { return m_viewport; }
 
    private:
-    gfx::Viewport m_viewport;
+    gpu::Viewport m_viewport;
     Window* m_window;
 };
 

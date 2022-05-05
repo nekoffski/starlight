@@ -8,8 +8,8 @@
 #include "sl/core/Errors.hpp"
 #include "sl/core/InputManager.h"
 #include "sl/geom/GeometryManager.h"
-#include "sl/gfx/ShaderManager.h"
-#include "sl/gfx/TextureManager.h"
+#include "sl/gpu/ShaderManager.h"
+#include "sl/gpu/TextureManager.h"
 #include "sl/glob/Globals.h"
 #include "sl/gui/Utils.h"
 
@@ -164,7 +164,7 @@ void AssetsTab::handleShaderLoader() {
     if (m_loadClicked) {
         validateAssetName(m_assetsArgs.assetName);
 
-        auto shader = sl::gfx::ShaderManager::get().load(
+        auto shader = sl::gpu::ShaderManager::get().load(
             m_assetsArgs.faces[0], m_assetsArgs.faces[1], m_assetsArgs.faces[2]
         );
         // auto shaderAsset = std::make_shared<sl::asset::ShaderAsset>(shader,
@@ -210,7 +210,7 @@ void AssetsTab::handleCubemapLoader() {
             [&cubemapsPath](const auto& facePath) -> std::string { return cubemapsPath + facePath; }
         );
 
-        using namespace sl::gfx;
+        using namespace sl::gpu;
 
         TextureManager::get()
             .createCubemap()
@@ -247,12 +247,12 @@ void AssetsTab::handleTextureLoader() {
         validateAssetName(m_assetsArgs.assetName);
 
         // auto output = std::make_unique<sl::asset::AssetManager::Output<
-        // sl::gfx::Texture>>(m_sharedState->assetManager);
+        // sl::gpu::Texture>>(m_sharedState->assetManager);
 
-        // sl::gfx::Texture::loadAsync(m_assetsArgs.modelName, m_assetsArgs.assetName,
+        // sl::gpu::Texture::loadAsync(m_assetsArgs.modelName, m_assetsArgs.assetName,
         // std::move(output));
 
-        // sl::gfx::Texture::loadAsync(m_assetsArgs.modelName, m_assetsArgs.assetName, [&](auto&&
+        // sl::gpu::Texture::loadAsync(m_assetsArgs.modelName, m_assetsArgs.assetName, [&](auto&&
         // texture) {
         //     m_sharedState->assetManager.add(std::move(texture));
         // });

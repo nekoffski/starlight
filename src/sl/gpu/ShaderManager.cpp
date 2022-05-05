@@ -1,6 +1,6 @@
 #include "ShaderManager.h"
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 ShaderManager::ShaderManager(ShaderCompiler* shaderCompiler, Shader::Factory* shaderFactory)
     : m_shaderCompiler(shaderCompiler), m_shaderFactory(shaderFactory) {}
@@ -20,4 +20,4 @@ std::shared_ptr<Shader> ShaderManager::load(
 
 void ShaderManager::recompileShader(Shader& shader) { m_shaderCompiler->compile(shader); }
 
-}  // namespace sl::gfx
+}  // namespace sl::gpu

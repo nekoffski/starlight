@@ -2,7 +2,7 @@
 
 #include <kc/core/Profiler.h>
 
-#include "sl/gfx/Renderer.h"
+#include "sl/gpu/Renderer.h"
 #include "sl/glob/Globals.h"
 #include "sl/rendering/utils/Mesh.h"
 #include "sl/rendering/utils/Misc.h"
@@ -12,7 +12,7 @@ namespace sl::rendering::stages {
 using namespace sl::scene::components;
 
 void RenderMeshesStage::execute(
-    gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer
+    gpu::Renderer& renderer, scene::Scene& scene, gpu::FrameBuffer* frameBuffer
 ) {
     PROFILE_FUNCTION();
 
@@ -32,7 +32,7 @@ void RenderMeshesStage::execute(
 
 void RenderMeshesStage::processMeshRendererComponent(
     MeshRendererComponent& meshRendererComponent, TransformComponent::View& transforms,
-    ModelComponent::View& models, MaterialComponent::View& materials, gfx::Renderer& renderer,
+    ModelComponent::View& models, MaterialComponent::View& materials, gpu::Renderer& renderer,
     scene::Scene& scene
 ) {
     const auto& entityId = meshRendererComponent.ownerEntityId;
@@ -56,7 +56,7 @@ void RenderMeshesStage::processMeshRendererComponent(
 }
 
 void RenderMeshesStage::prepareRenderer(
-    const MeshRendererComponent& meshRendererComponent, gfx::Renderer& renderer
+    const MeshRendererComponent& meshRendererComponent, gpu::Renderer& renderer
 ) {
     auto settings        = renderer.getSettings();
     settings.polygonMode = meshRendererComponent.polygonMode;
@@ -72,7 +72,7 @@ const MaterialComponent& RenderMeshesStage::getMaterial(
 }
 
 void RenderMeshesStage::setUniforms(
-    gfx::Shader& shader, cam::Camera& camera, const MaterialComponent& material
+    gpu::Shader& shader, cam::Camera& camera, const MaterialComponent& material
 ) {
     shader.setUniform("viewMatrix", camera.getViewMatrix());
     shader.setUniform("projectionMatrix", camera.getProjectionMatrix());
@@ -82,7 +82,7 @@ void RenderMeshesStage::setUniforms(
 }
 
 void RenderMeshesStage::setMaterialUniforms(
-    const MaterialComponent& material, gfx::Shader& shader
+    const MaterialComponent& material, gpu::Shader& shader
 ) {
     shader.setUniform("material.ambientColor", material.ambientColor);
     shader.setUniform("material.diffuseColor", material.diffuseColor);

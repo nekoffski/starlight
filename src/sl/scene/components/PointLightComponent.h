@@ -3,8 +3,8 @@
 #include "sl/core/Colors.h"
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
-#include "sl/gfx/Cubemap.h"
-#include "sl/gfx/TextureManager.h"
+#include "sl/gpu/Cubemap.h"
+#include "sl/gpu/TextureManager.h"
 #include "sl/math/Vector.hpp"
 
 namespace sl::scene::components {
@@ -21,7 +21,7 @@ struct PointLightComponent : ecs::Component {
         , attenuationA(attenuationA)
         , attenuationB(attenuationB)
         , attenuationC(attenuationC)
-        , omnidirectionalShadowMap(gfx::TextureManager::get().createOmniShadowMap()) {
+        , omnidirectionalShadowMap(gpu::TextureManager::get().createOmniShadowMap()) {
         name = "PointLightComponent";
     }
 
@@ -31,6 +31,6 @@ struct PointLightComponent : ecs::Component {
     float attenuationB;
     float attenuationC;
 
-    std::unique_ptr<gfx::Cubemap> omnidirectionalShadowMap;
+    std::unique_ptr<gpu::Cubemap> omnidirectionalShadowMap;
 };
 }  // namespace sl::scene::components

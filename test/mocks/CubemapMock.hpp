@@ -2,9 +2,9 @@
 
 #include <gmock/gmock.h>
 
-#include "sl/gfx/Cubemap.h"
+#include "sl/gpu/Cubemap.h"
 
-using namespace sl::gfx;
+using namespace sl::gpu;
 
 struct CubemapMock : Cubemap {
     struct Factory : Cubemap::Factory {

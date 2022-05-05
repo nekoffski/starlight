@@ -7,7 +7,7 @@
 #include "Widget.h"
 #include "sl/asset/AssetManager.h"
 #include "sl/ecs/Entity.h"
-#include "sl/gfx/Cubemap.h"
+#include "sl/gpu/Cubemap.h"
 
 namespace editor::gui {
 
@@ -19,7 +19,7 @@ class PropertiesPanel : public Widget {
    private:
     void showSceneProperties();
 
-    sl::gfx::Cubemap* m_selectedCubemap = nullptr;
+    sl::gpu::Cubemap* m_selectedCubemap = nullptr;
 
     AssetTab m_assetTab;
     SystemTab m_systemTab;

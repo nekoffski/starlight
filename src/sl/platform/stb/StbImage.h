@@ -2,12 +2,12 @@
 
 #include <string>
 
-#include "sl/gfx/Image.h"
+#include "sl/gpu/Image.h"
 #include "sl/math/Size2D.h"
 
 namespace sl::platform::stb {
 
-class StbImage : public gfx::Image {
+class StbImage : public gpu::Image {
    public:
     StbImage(const std::string& path, int desiredChannels = 0);
     ~StbImage() override;
@@ -22,7 +22,7 @@ class StbImage : public gfx::Image {
     math::Size2D m_imageSize;
 };
 
-struct StbImageFactory : gfx::Image::Factory {
-    std::unique_ptr<gfx::Image> create(const std::string& path, int desiredChannels = 0);
+struct StbImageFactory : gpu::Image::Factory {
+    std::unique_ptr<gpu::Image> create(const std::string& path, int desiredChannels = 0);
 };
 }  // namespace sl::platform::stb

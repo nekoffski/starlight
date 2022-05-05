@@ -1,6 +1,6 @@
 #pragma once
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 class Renderer;
 class Shader;
@@ -19,4 +19,4 @@ class ShaderManager;
 class TextureManager;
 class BufferManager;
 
-}  // namespace sl::gfx
+}  // namespace sl::gpu

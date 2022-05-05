@@ -8,7 +8,7 @@
 namespace sl::cam {
 
 Camera::Camera(
-    const gfx::ViewFrustum &viewFrustum, const math::Vec3 &position, const math::Vec3 &up,
+    const gpu::ViewFrustum &viewFrustum, const math::Vec3 &position, const math::Vec3 &up,
     const math::Vec3 &front, const math::Vec3 &right
 )
     : EventListener("Camera")

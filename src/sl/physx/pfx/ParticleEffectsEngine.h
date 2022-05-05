@@ -5,7 +5,7 @@
 #include "sl/async/AsyncManager.hpp"
 #include "sl/cam/Camera.h"
 #include "sl/ecs/ComponentView.hpp"
-#include "sl/gfx/fwd.h"
+#include "sl/gpu/fwd.h"
 #include "sl/physx/pfx/ParticleGenerator.h"
 #include "sl/scene/components/ParticleEffectComponent.h"
 #include "sl/scene/components/TransformComponent.h"

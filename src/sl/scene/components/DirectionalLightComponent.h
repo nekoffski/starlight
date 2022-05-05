@@ -3,8 +3,8 @@
 #include "sl/core/Colors.h"
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
-#include "sl/gfx/Texture.h"
-#include "sl/gfx/TextureManager.h"
+#include "sl/gpu/Texture.h"
+#include "sl/gpu/TextureManager.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
 
@@ -20,7 +20,7 @@ struct DirectionalLightComponent : ecs::Component {
     )
         : direction(direction)
         , color(color)
-        , shadowMap(gfx::TextureManager::get().createShadowMap())
+        , shadowMap(gpu::TextureManager::get().createShadowMap())
         , renderDirection(false) {
         recalculateMatrices();
         name = "DirectionalLightComponent";
@@ -36,7 +36,7 @@ struct DirectionalLightComponent : ecs::Component {
     math::Mat4 viewMatrix;
     math::Mat4 spaceMatrix;
 
-    std::unique_ptr<sl::gfx::Texture> shadowMap;
+    std::unique_ptr<sl::gpu::Texture> shadowMap;
 
     bool renderDirection;
 };

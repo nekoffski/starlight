@@ -27,6 +27,6 @@ struct ParticleEffectComponent : ecs::Component {
     float minY = 0.0f;
     float maxY = 0.0f;
 
-    gfx::Texture* texture = nullptr;
+    gpu::Texture* texture = nullptr;
 };
 }  // namespace sl::scene::components

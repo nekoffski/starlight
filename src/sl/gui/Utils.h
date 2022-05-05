@@ -10,8 +10,8 @@
 #include <string>
 #include <string_view>
 
-#include "sl/gfx/Texture.h"
-#include "sl/gfx/ViewFrustum.h"
+#include "sl/gpu/Texture.h"
+#include "sl/gpu/ViewFrustum.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Utils.hpp"
 #include "sl/math/Vector.hpp"
@@ -26,7 +26,7 @@ bool textInput(const std::string& label, std::string& text);
 bool labeledTextInput(const std::string& label, std::string& value, const int padding);
 
 void showImage(
-    gfx::Texture& texture, math::Vec2 size, math::Vec2 uv0 = {0.0f, 0.0f},
+    gpu::Texture& texture, math::Vec2 size, math::Vec2 uv0 = {0.0f, 0.0f},
     math::Vec2 uv1 = {1.0f, 1.0f}
 );
 

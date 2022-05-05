@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 struct RenderBuffer {
     struct Factory {
@@ -21,4 +21,4 @@ struct RenderBuffer {
     inline static std::unique_ptr<Factory> factory = nullptr;
 };
 
-}  // namespace sl::gfx
+}  // namespace sl::gpu

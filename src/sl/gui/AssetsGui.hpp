@@ -5,7 +5,7 @@
 #include "assets/AssetGuiProvider.h"
 #include "assets/ShaderGui.h"
 #include "assets/TextureGui.h"
-#include "sl/gfx/Shader.h"
+#include "sl/gpu/Shader.h"
 
 namespace sl::gui {
 
@@ -23,7 +23,7 @@ class AssetsGui {
         return nullptr;
     }
 
-    std::unique_ptr<assets::AssetGuiProvider> createGuiProvider(std::shared_ptr<gfx::Shader> shader
+    std::unique_ptr<assets::AssetGuiProvider> createGuiProvider(std::shared_ptr<gpu::Shader> shader
     ) {
         LOG_INFO("Creating shader gui asset provider");
         return m_shaderGui.createGuiProvider(shader);
@@ -31,7 +31,7 @@ class AssetsGui {
 
     // TODO: replace with raw_ptr
     std::unique_ptr<assets::AssetGuiProvider> createGuiProvider(
-        std::unique_ptr<gfx::Texture>& texture
+        std::unique_ptr<gpu::Texture>& texture
     ) {
         LOG_INFO("Creating texture gui asset provider");
         return m_textureGui.createGuiProvider(texture.get());

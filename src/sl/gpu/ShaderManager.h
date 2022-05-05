@@ -8,7 +8,7 @@
 #include "Shader.h"
 #include "ShaderCompiler.h"
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 class ShaderManager : public kc::core::Singleton<ShaderManager> {
    public:
@@ -25,4 +25,4 @@ class ShaderManager : public kc::core::Singleton<ShaderManager> {
     Shader::Factory* m_shaderFactory;
 };
 
-}  // namespace sl::gfx
+}  // namespace sl::gpu

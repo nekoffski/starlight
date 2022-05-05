@@ -7,7 +7,7 @@
 
 namespace sl::platform::gl {
 
-OpenGlTexture::OpenGlTexture(sl::gfx::Image& image) : m_textureId(0u) {
+OpenGlTexture::OpenGlTexture(sl::gpu::Image& image) : m_textureId(0u) {
     glGenTextures(1, &m_textureId);
     glBindTexture(GL_TEXTURE_2D, m_textureId);
 

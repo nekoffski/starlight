@@ -2,7 +2,7 @@
 
 #include "fwd.h"
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 class ShaderCompiler {
    public:
@@ -10,4 +10,4 @@ class ShaderCompiler {
 
     virtual void compile(Shader&) = 0;
 };
-}  // namespace sl::gfx
+}  // namespace sl::gpu

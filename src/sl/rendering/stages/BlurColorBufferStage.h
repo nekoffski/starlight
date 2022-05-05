@@ -3,11 +3,11 @@
 #include <kc/core/Log.h>
 
 #include "sl/core/WindowManager.h"
-#include "sl/gfx/BufferManager.h"
-#include "sl/gfx/Shader.h"
-#include "sl/gfx/ShaderManager.h"
-#include "sl/gfx/Texture.h"
-#include "sl/gfx/VertexArray.h"
+#include "sl/gpu/BufferManager.h"
+#include "sl/gpu/Shader.h"
+#include "sl/gpu/ShaderManager.h"
+#include "sl/gpu/Texture.h"
+#include "sl/gpu/VertexArray.h"
 #include "sl/glob/Globals.h"
 #include "sl/rendering/Stage.h"
 
@@ -19,17 +19,17 @@ class BlurColorBufferStage : public Stage {
 
     explicit BlurColorBufferStage()
         : m_quadVao(glob::Globals::get().geom->frontSquareVAO.get())
-        , m_gaussianBlurShader(gfx::ShaderManager::get().load(
+        , m_gaussianBlurShader(gpu::ShaderManager::get().load(
               glob::Globals::get().config.paths.shaders + "/GaussianBlur.vert",
               glob::Globals::get().config.paths.shaders + "/GaussianBlur.frag"
           ))
-        , m_horizontalFrameBuffer(gfx::BufferManager::get().createFrameBuffer())
-        , m_verticalFrameBuffer(gfx::BufferManager::get().createFrameBuffer()) {}
+        , m_horizontalFrameBuffer(gpu::BufferManager::get().createFrameBuffer())
+        , m_verticalFrameBuffer(gpu::BufferManager::get().createFrameBuffer()) {}
 
-    void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer)
+    void execute(gpu::Renderer& renderer, scene::Scene& scene, gpu::FrameBuffer* frameBuffer)
         override {
         auto [width, height] = core::WindowManager::get().getSize();
-        gfx::Viewport viewport{width, height};
+        gpu::Viewport viewport{width, height};
 
         renderer.setTemporaryViewport(viewport);
 
@@ -37,7 +37,7 @@ class BlurColorBufferStage : public Stage {
 
         bool horizontal = true;
 
-        std::unordered_map<bool, std::pair<gfx::FrameBuffer*, gfx::Texture*>> buffers = {
+        std::unordered_map<bool, std::pair<gpu::FrameBuffer*, gpu::Texture*>> buffers = {
             {true,  {m_horizontalFrameBuffer.get(), m_verticalBuffer.get()}},
             {false, {m_verticalFrameBuffer.get(), m_horizontalBuffer.get()}}
         };
@@ -73,9 +73,9 @@ class BlurColorBufferStage : public Stage {
         renderer.restoreViewport();
     }
 
-    gfx::Texture* getOutputColorBuffer() const { return m_verticalBuffer.get(); }
+    gpu::Texture* getOutputColorBuffer() const { return m_verticalBuffer.get(); }
 
-    void setColorBuffer(gfx::Texture* colorBuffer) {
+    void setColorBuffer(gpu::Texture* colorBuffer) {
         m_colorBuffer = colorBuffer;
 
         m_horizontalBuffer = colorBuffer->clone();
@@ -90,17 +90,17 @@ class BlurColorBufferStage : public Stage {
     }
 
    private:
-    gfx::VertexArray* m_quadVao;
+    gpu::VertexArray* m_quadVao;
 
-    gfx::Texture* m_colorBuffer;
+    gpu::Texture* m_colorBuffer;
 
-    std::unique_ptr<gfx::Texture> m_horizontalBuffer;
-    std::unique_ptr<gfx::Texture> m_verticalBuffer;
+    std::unique_ptr<gpu::Texture> m_horizontalBuffer;
+    std::unique_ptr<gpu::Texture> m_verticalBuffer;
 
-    std::shared_ptr<gfx::FrameBuffer> m_horizontalFrameBuffer;
-    std::shared_ptr<gfx::FrameBuffer> m_verticalFrameBuffer;
+    std::shared_ptr<gpu::FrameBuffer> m_horizontalFrameBuffer;
+    std::shared_ptr<gpu::FrameBuffer> m_verticalFrameBuffer;
 
-    std::shared_ptr<gfx::Shader> m_gaussianBlurShader;
+    std::shared_ptr<gpu::Shader> m_gaussianBlurShader;
 
     Direction m_direction;
 };

@@ -4,7 +4,7 @@
 
 #include "sl/math/Size2D.h"
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 class TextureManager;
 
@@ -27,4 +27,4 @@ class Image {
    private:
     std::string m_path;
 };
-}  // namespace sl::gfx
+}  // namespace sl::gpu

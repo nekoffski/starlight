@@ -6,7 +6,7 @@
 #include <imgui_sugar.hpp>
 
 #include "sl/core/InputManager.h"
-#include "sl/gfx/ViewFrustum.h"
+#include "sl/gpu/ViewFrustum.h"
 #include "sl/glob/Globals.h"
 #include "sl/gui/Utils.h"
 #include "sl/math/Matrix.hpp"
@@ -20,7 +20,7 @@ const float EulerCamera::minFi  = 0.0f;
 const float EulerCamera::maxFi  = 2.0f * std::numbers::pi;
 
 EulerCamera::EulerCamera(
-    const gfx::ViewFrustum& viewFrustum, math::Vec3 center, float speed, float radius
+    const gpu::ViewFrustum& viewFrustum, math::Vec3 center, float speed, float radius
 )
     : Camera(viewFrustum)
     , m_center(center)

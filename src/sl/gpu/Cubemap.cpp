@@ -4,12 +4,12 @@
 
 #include "TextureManager.h"
 #include "sl/async/AsyncManager.hpp"
-#include "sl/gfx/Texture.h"
+#include "sl/gpu/Texture.h"
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 std::unique_ptr<Cubemap> Cubemap::clone() {
     return TextureManager::get().createCubemap().withWidth(width).withHeight(height).get();
 }
 
-}  // namespace sl::gfx
+}  // namespace sl::gpu

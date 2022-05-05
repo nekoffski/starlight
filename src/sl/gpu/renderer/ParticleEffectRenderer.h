@@ -4,12 +4,12 @@
 
 #include "sl/cam/Camera.h"
 #include "sl/ecs/ComponentView.hpp"
-#include "sl/gfx/Renderer.h"
-#include "sl/gfx/VertexArray.h"
+#include "sl/gpu/Renderer.h"
+#include "sl/gpu/VertexArray.h"
 #include "sl/scene/components/ParticleEffectComponent.h"
 #include "sl/scene/components/TransformComponent.h"
 
-namespace sl::gfx::renderer {
+namespace sl::gpu::renderer {
 
 class ParticleEffectRenderer {
    public:
@@ -25,9 +25,9 @@ class ParticleEffectRenderer {
     void renderParticle();
     void endParticleEffect();
 
-    std::shared_ptr<gfx::VertexArray> m_vao;
+    std::shared_ptr<gpu::VertexArray> m_vao;
 
-    std::shared_ptr<gfx::Shader> m_shader;
+    std::shared_ptr<gpu::Shader> m_shader;
     Renderer& m_renderer;
 };
-}  // namespace sl::gfx::renderer
+}  // namespace sl::gpu::renderer

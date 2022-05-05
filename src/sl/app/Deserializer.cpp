@@ -5,9 +5,9 @@
 
 #include "sl/core/Errors.hpp"
 #include "sl/geom/GeometryManager.h"
-#include "sl/gfx/Cubemap.h"
-#include "sl/gfx/Shader.h"
-#include "sl/gfx/TextureManager.h"
+#include "sl/gpu/Cubemap.h"
+#include "sl/gpu/Shader.h"
+#include "sl/gpu/TextureManager.h"
 #include "sl/glob/Globals.h"
 
 #include <kc/math/Format.h>
@@ -49,11 +49,11 @@ void Deserializer::deserializeAssets(kc::json::Node& assetsJson) {
 
     for (auto& cubemapDescription : assetsJson["cubemaps"]) {
         auto& paths = cubemapDescription["paths"];
-        gfx::CubemapArgs faces;
+        gpu::CubemapArgs faces;
 
         for (int i = 0; i < faces.size(); ++i) faces[i] = paths[i].asString();
 
-        auto cubemap = gfx::TextureManager::get()
+        auto cubemap = gpu::TextureManager::get()
                            .createCubemap()
                            .fromPaths(faces)
                            .withName(cubemapDescription["name"].asString())
@@ -69,7 +69,7 @@ void Deserializer::deserializeAssets(kc::json::Node& assetsJson) {
     }
 
     for (auto& textureDescription : assetsJson["textures"]) {
-        auto texture = gfx::TextureManager::get()
+        auto texture = gpu::TextureManager::get()
                            .createTexture()
                            .fromPath(textureDescription["path"].asString())
                            .withName(textureDescription["name"].asString())

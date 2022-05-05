@@ -2,9 +2,9 @@
 
 #include <gmock/gmock.h>
 
-#include "sl/gfx/VertexArray.h"
+#include "sl/gpu/VertexArray.h"
 
-using namespace sl::gfx;
+using namespace sl::gpu;
 
 struct VertexArrayMock : public VertexArray {
     struct Factory : VertexArray::Factory {

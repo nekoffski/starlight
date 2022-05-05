@@ -5,7 +5,7 @@
 
 #include "Widget.h"
 #include "sl/ecs/Entity.h"
-#include "sl/gfx/Cubemap.h"
+#include "sl/gpu/Cubemap.h"
 
 namespace editor::gui {
 

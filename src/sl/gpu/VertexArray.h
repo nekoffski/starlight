@@ -6,7 +6,7 @@
 #include "ElementBuffer.h"
 #include "VertexBuffer.h"
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 class VertexArray {
    public:
@@ -25,4 +25,4 @@ class VertexArray {
     virtual void bind()   = 0;
     virtual void unbind() = 0;
 };
-}  // namespace sl::gfx
+}  // namespace sl::gpu

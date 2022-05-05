@@ -1,14 +1,14 @@
 #pragma once
 
 #include "Camera.h"
-#include "sl/gfx/ViewFrustum.h"
+#include "sl/gpu/ViewFrustum.h"
 #include "sl/math/Utils.hpp"
 
 namespace sl::cam {
 
 class EulerCamera : public Camera {
    public:
-    explicit EulerCamera(const gfx::ViewFrustum& viewFrustum, math::Vec3, float, float);
+    explicit EulerCamera(const gpu::ViewFrustum& viewFrustum, math::Vec3, float, float);
 
     void update(float) override;
     void onGui() override;

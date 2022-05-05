@@ -6,13 +6,13 @@
 #include "GPU.h"
 #include "IO.h"
 #include "sl/geom/ModelLoader.h"
-#include "sl/gfx/Image.h"
+#include "sl/gpu/Image.h"
 
 namespace sl::platform {
 
 struct Platform {
     explicit Platform(
-        IO&& io, GPU&& gpu, std::unique_ptr<gfx::Image::Factory> imageFactory,
+        IO&& io, GPU&& gpu, std::unique_ptr<gpu::Image::Factory> imageFactory,
         std::unique_ptr<geom::ModelLoader> modelLoader
     );
 
@@ -33,7 +33,7 @@ struct Platform {
             return std::move(*this);
         }
 
-        template <typename T> requires std::derived_from<T, gfx::Image::Factory>
+        template <typename T> requires std::derived_from<T, gpu::Image::Factory>
         Builder&& setImageFactory() && {
             m_imageFactory = std::make_unique<T>();
             return std::move(*this);
@@ -49,14 +49,14 @@ struct Platform {
        private:
         std::optional<IO> m_io;
         std::optional<GPU> m_gpu;
-        std::unique_ptr<gfx::Image::Factory> m_imageFactory = nullptr;
+        std::unique_ptr<gpu::Image::Factory> m_imageFactory = nullptr;
         std::unique_ptr<geom::ModelLoader> m_modelLoader    = nullptr;
     };
 
     IO io;
     GPU gpu;
 
-    std::unique_ptr<gfx::Image::Factory> imageFactory;
+    std::unique_ptr<gpu::Image::Factory> imageFactory;
     std::unique_ptr<geom::ModelLoader> modelLoader;
 };
 

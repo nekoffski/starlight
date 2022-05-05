@@ -46,7 +46,7 @@ class InputManager : public kc::core::Singleton<InputManager>, public kc::event:
    private:
     Keyboard* m_keyboard;
     Mouse* m_mouse;
-    gfx::Viewport m_viewport;
+    gpu::Viewport m_viewport;
 };
 
 }  // namespace sl::core

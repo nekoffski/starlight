@@ -14,7 +14,7 @@ RenderBoundingBoxesStage::RenderBoundingBoxesStage()
     : m_boundingBoxShader(sl::glob::Globals::get().shaders->singleColorShader) {}
 
 void RenderBoundingBoxesStage::
-    execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
+    execute(gpu::Renderer& renderer, scene::Scene& scene, gpu::FrameBuffer*) {
     PROFILE_FUNCTION();
 
     setShaderTransforms(*scene.camera);
@@ -47,14 +47,14 @@ void RenderBoundingBoxesStage::setShaderTransforms(cam::Camera& camera) {
     m_boundingBoxShader->setUniform("viewMatrix", camera.getViewMatrix());
 }
 
-void RenderBoundingBoxesStage::prepareRenderer(gfx::Renderer& renderer) {
+void RenderBoundingBoxesStage::prepareRenderer(gpu::Renderer& renderer) {
     auto settings        = renderer.getSettings();
     settings.polygonMode = STARL_LINE;
     renderer.setTemporarySettings(settings);
 }
 
 void RenderBoundingBoxesStage::renderBoundingBox(
-    gfx::Renderer& renderer, physx::BoundingBox& boundingBox
+    gpu::Renderer& renderer, physx::BoundingBox& boundingBox
 ) {
     auto vao = boundingBox.getVertexArray();
 

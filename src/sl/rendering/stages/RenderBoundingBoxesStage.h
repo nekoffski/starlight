@@ -11,15 +11,15 @@ class RenderBoundingBoxesStage : public Stage {
    public:
     explicit RenderBoundingBoxesStage();
 
-    void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) override;
+    void execute(gpu::Renderer& renderer, scene::Scene& scene, gpu::FrameBuffer*) override;
 
    private:
-    void renderBoundingBox(gfx::Renderer& renderer, physx::BoundingBox& boundingBox);
+    void renderBoundingBox(gpu::Renderer& renderer, physx::BoundingBox& boundingBox);
 
     void setShaderTransforms(cam::Camera& camera);
-    void prepareRenderer(gfx::Renderer& renderer);
+    void prepareRenderer(gpu::Renderer& renderer);
 
-    std::shared_ptr<gfx::Shader> m_boundingBoxShader;
+    std::shared_ptr<gpu::Shader> m_boundingBoxShader;
 };
 
 }  // namespace sl::rendering::stages

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "sl/gfx/Shader.h"
+#include "sl/gpu/Shader.h"
 
 namespace sl::platform::gl {
 
 class OpenGlShaderCompiler;
 
-class OpenGlShader : public sl::gfx::Shader {
+class OpenGlShader : public sl::gpu::Shader {
     friend class OpenGlShaderCompiler;
 
    public:
@@ -39,8 +39,8 @@ class OpenGlShader : public sl::gfx::Shader {
     std::string m_geomPath;
 };
 
-struct OpenGlShaderFactory : sl::gfx::Shader::Factory {
-    std::shared_ptr<sl::gfx::Shader> create(
+struct OpenGlShaderFactory : sl::gpu::Shader::Factory {
+    std::shared_ptr<sl::gpu::Shader> create(
         const std::string& vertex, const std::string& fragment, const std::string& geom
     ) {
         return std::make_shared<OpenGlShader>(vertex, fragment, geom);

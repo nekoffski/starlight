@@ -2,10 +2,10 @@
 
 #include <gmock/gmock.h>
 
-#include "sl/gfx/ElementBuffer.h"
+#include "sl/gpu/ElementBuffer.h"
 
 using namespace sl;
-using namespace sl::gfx;
+using namespace sl::gpu;
 
 struct ElementBufferMock : public ElementBuffer {
     struct Factory : public ElementBuffer::Factory {

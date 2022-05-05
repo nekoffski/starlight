@@ -2,7 +2,7 @@
 
 #include <kc/core/Profiler.h>
 
-#include "sl/gfx/ShaderManager.h"
+#include "sl/gpu/ShaderManager.h"
 #include "sl/glob/Globals.h"
 #include "sl/rendering/utils/Mesh.h"
 #include "sl/rendering/utils/Misc.h"
@@ -12,13 +12,13 @@ namespace sl::rendering::stages {
 using namespace sl::scene::components;
 
 CaptureDirectionalDepthMapsStage::CaptureDirectionalDepthMapsStage()
-    : m_depthShader(gfx::ShaderManager::get().load(
+    : m_depthShader(gpu::ShaderManager::get().load(
           sl::glob::Globals::get().config.paths.shaders + "/DirectionalDepthCapture.vert",
           sl::glob::Globals::get().config.paths.shaders + "/DirectionalDepthCapture.frag"
       )) {}
 
 void CaptureDirectionalDepthMapsStage::execute(
-    gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer
+    gpu::Renderer& renderer, scene::Scene& scene, gpu::FrameBuffer* frameBuffer
 ) {
     PROFILE_FUNCTION();
 
@@ -50,7 +50,7 @@ void CaptureDirectionalDepthMapsStage::execute(
 
 void CaptureDirectionalDepthMapsStage::renderDepth(
     DirectionalLightComponent& light, MeshRendererComponent::View& meshRenderers,
-    TransformComponent::View& transforms, ModelComponent::View& models, gfx::Renderer& renderer
+    TransformComponent::View& transforms, ModelComponent::View& models, gpu::Renderer& renderer
 ) {
     m_depthShader->setUniform("lightSpaceMatrix", light.spaceMatrix);
 
@@ -61,7 +61,7 @@ void CaptureDirectionalDepthMapsStage::renderDepth(
 
 void CaptureDirectionalDepthMapsStage::tryToRenderModel(
     MeshRendererComponent& meshRenderer, TransformComponent::View& transforms,
-    ModelComponent::View& models, gfx::Renderer& renderer
+    ModelComponent::View& models, gpu::Renderer& renderer
 ) {
     const auto& entityId = meshRenderer.ownerEntityId;
 
@@ -85,9 +85,9 @@ void CaptureDirectionalDepthMapsStage::queueDirectionVectorForBeingRendered(
     });
 }
 
-void CaptureDirectionalDepthMapsStage::prepareRenderer(gfx::Renderer& renderer) {
-    renderer.setTemporaryViewport(gfx::Viewport{
-        gfx::Texture::shadowMapSize, gfx::Texture::shadowMapSize});
+void CaptureDirectionalDepthMapsStage::prepareRenderer(gpu::Renderer& renderer) {
+    renderer.setTemporaryViewport(gpu::Viewport{
+        gpu::Texture::shadowMapSize, gpu::Texture::shadowMapSize});
 
     auto settings     = renderer.getSettings();
     settings.cullFace = STARL_FRONT;

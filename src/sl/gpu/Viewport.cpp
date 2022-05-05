@@ -4,7 +4,7 @@
 
 #include <ostream>
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 std::string toString(const Viewport& viewport) {
     return fmt::format(
@@ -18,4 +18,4 @@ std::ostream& operator<<(const Viewport& viewport, std::ostream& stream) {
     return stream;
 }
 
-}  // namespace sl::gfx
+}  // namespace sl::gpu

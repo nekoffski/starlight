@@ -2,14 +2,14 @@
 
 #include "RenderPass.h"
 #include "Stage.h"
-#include "sl/gfx/FrameBuffer.h"
-#include "sl/gfx/Renderer.h"
+#include "sl/gpu/FrameBuffer.h"
+#include "sl/gpu/Renderer.h"
 
 namespace sl::rendering {
 
 class CustomFrameBufferRenderPass : public RenderPass {
    public:
-    explicit CustomFrameBufferRenderPass(gfx::FrameBuffer* frameBuffer)
+    explicit CustomFrameBufferRenderPass(gpu::FrameBuffer* frameBuffer)
         : m_frameBuffer(frameBuffer) {}
 
     CustomFrameBufferRenderPass& addRenderStage(Stage* renderStage) {
@@ -18,7 +18,7 @@ class CustomFrameBufferRenderPass : public RenderPass {
         return *this;
     }
 
-    void execute(gfx::Renderer& renderer, scene::Scene& scene) {
+    void execute(gpu::Renderer& renderer, scene::Scene& scene) {
         m_frameBuffer->bind();
 
         renderer.clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
@@ -30,7 +30,7 @@ class CustomFrameBufferRenderPass : public RenderPass {
     }
 
    private:
-    gfx::FrameBuffer* m_frameBuffer;
+    gpu::FrameBuffer* m_frameBuffer;
     std::vector<Stage*> m_renderStages;
 };
 

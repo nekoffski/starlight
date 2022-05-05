@@ -3,11 +3,11 @@
 #include <kc/core/Log.h>
 
 #include "sl/geom/Mesh.h"
-#include "sl/gfx/ElementBuffer.h"
-#include "sl/gfx/Texture.h"
-#include "sl/gfx/TextureManager.h"
-#include "sl/gfx/VertexArray.h"
-#include "sl/gfx/VertexBuffer.h"
+#include "sl/gpu/ElementBuffer.h"
+#include "sl/gpu/Texture.h"
+#include "sl/gpu/TextureManager.h"
+#include "sl/gpu/VertexArray.h"
+#include "sl/gpu/VertexBuffer.h"
 
 namespace sl::platform::assimp {
 
@@ -30,10 +30,10 @@ void AssimpMeshProcessor::initVertexArray(std::shared_ptr<geom::Mesh>& mesh) {
     mesh->buildVertexArray();
 }
 
-std::vector<std::shared_ptr<sl::gfx::Texture>> AssimpMeshProcessor::loadTextures(
+std::vector<std::shared_ptr<sl::gpu::Texture>> AssimpMeshProcessor::loadTextures(
     aiMaterial* material, const std::string& directory
 ) {
-    std::vector<std::shared_ptr<sl::gfx::Texture>> textures;
+    std::vector<std::shared_ptr<sl::gpu::Texture>> textures;
 
     auto diffuseMaps =
         loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse", directory);
@@ -92,17 +92,17 @@ std::vector<geom::Vertex> AssimpMeshProcessor::loadVertices(aiMesh* assimpMesh) 
     return vertices;
 }
 
-std::vector<std::shared_ptr<sl::gfx::Texture>> AssimpMeshProcessor::loadMaterialTextures(
+std::vector<std::shared_ptr<sl::gpu::Texture>> AssimpMeshProcessor::loadMaterialTextures(
     aiMaterial* material, aiTextureType textureType, const std::string& typeName,
     const std::string& directory
 ) {
-    std::vector<std::shared_ptr<sl::gfx::Texture>> textures;
+    std::vector<std::shared_ptr<sl::gpu::Texture>> textures;
     for (unsigned i = 0; i < material->GetTextureCount(textureType); ++i) {
         aiString str;
         material->GetTexture(textureType, i, &str);
 
         // TODO: OPTIMIZE, store texture in models as most of mesh reuse them!
-        auto& textureManager = gfx::TextureManager::get();
+        auto& textureManager = gpu::TextureManager::get();
         textures.push_back(
             textureManager.createTexture().fromPath(directory + "/" + str.C_Str()).get()
         );

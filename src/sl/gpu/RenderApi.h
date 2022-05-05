@@ -7,7 +7,7 @@
 #include "sl/glob/RendererInfo.h"
 #include "sl/platform/gl/OpenGlDefines.h"
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 class RenderApi {
    public:
@@ -34,4 +34,4 @@ class RenderApi {
 
     virtual glob::RendererInfo getRendererInfo() const = 0;
 };
-}  // namespace sl::gfx
+}  // namespace sl::gpu

@@ -3,14 +3,14 @@
 #include <kc/core/Profiler.h>
 
 #include "RenderPass.h"
-#include "sl/gfx/Renderer.h"
+#include "sl/gpu/Renderer.h"
 #include "sl/scene/Scene.h"
 
 namespace sl::rendering {
 
 class RenderPipeline {
    public:
-    void run(sl::gfx::Renderer& renderer, scene::Scene& scene) {
+    void run(sl::gpu::Renderer& renderer, scene::Scene& scene) {
         PROFILE_FUNCTION();
         for (auto& renderPass : m_renderPasses) renderPass->execute(renderer, scene);
     }

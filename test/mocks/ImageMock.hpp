@@ -2,9 +2,9 @@
 
 #include <gmock/gmock.h>
 
-#include "sl/gfx/Image.h"
+#include "sl/gpu/Image.h"
 
-using namespace sl::gfx;
+using namespace sl::gpu;
 
 struct ImageMock : Image {
     struct Factory : Image::Factory {

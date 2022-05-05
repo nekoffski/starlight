@@ -10,8 +10,8 @@
 #include "AssetContainer2.h"
 #include "sl/geom/Mesh.h"
 #include "sl/geom/Model.h"
-#include "sl/gfx/Cubemap.h"
-#include "sl/gfx/Shader.h"
+#include "sl/gpu/Cubemap.h"
+#include "sl/gpu/Shader.h"
 
 namespace sl::asset {
 
@@ -24,14 +24,14 @@ class AssetManager {
         m_shaders.clear();
     }
 
-    void add(std::unique_ptr<gfx::Cubemap> cubemap) {
+    void add(std::unique_ptr<gpu::Cubemap> cubemap) {
         auto name = cubemap->name;
         m_cubemaps.insert(std::move(cubemap), name);
     }
 
     void add(std::shared_ptr<geom::Mesh> mesh) { m_meshes.insert(mesh, mesh->name); }
 
-    void add(std::unique_ptr<gfx::Texture> texture) {
+    void add(std::unique_ptr<gpu::Texture> texture) {
         auto name = texture->name;
         m_textures.insert(std::move(texture), name);
     }
@@ -40,19 +40,19 @@ class AssetManager {
         for (auto& mesh : meshes) add(mesh);
     }
 
-    AssetContainer<gfx::Shader>& getShaders() { return m_shaders; }
+    AssetContainer<gpu::Shader>& getShaders() { return m_shaders; }
 
-    AssetContainer2<gfx::Cubemap>& getCubemaps() { return m_cubemaps; }
+    AssetContainer2<gpu::Cubemap>& getCubemaps() { return m_cubemaps; }
 
     AssetContainer<geom::Mesh>& getMeshes() { return m_meshes; }
 
-    AssetContainer2<gfx::Texture>& getTextures() { return m_textures; }
+    AssetContainer2<gpu::Texture>& getTextures() { return m_textures; }
 
    private:
-    AssetContainer2<gfx::Texture> m_textures;
-    AssetContainer2<gfx::Cubemap> m_cubemaps;
+    AssetContainer2<gpu::Texture> m_textures;
+    AssetContainer2<gpu::Cubemap> m_cubemaps;
     AssetContainer<geom::Mesh> m_meshes;
-    AssetContainer<gfx::Shader> m_shaders;
+    AssetContainer<gpu::Shader> m_shaders;
 };
 
 }  // namespace sl::asset

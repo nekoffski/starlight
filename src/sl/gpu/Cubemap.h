@@ -5,14 +5,14 @@
 #include <vector>
 
 #include "sl/core/GameObject.h"
-#include "sl/gfx/Image.h"
+#include "sl/gpu/Image.h"
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 constexpr unsigned int facesCount = 6;
 
 using CubemapArgs  = std::array<std::string, facesCount>;
-using CubemapFaces = std::array<gfx::Image*, facesCount>;
+using CubemapFaces = std::array<gpu::Image*, facesCount>;
 
 class TextureManager;
 
@@ -47,4 +47,4 @@ class Cubemap : public core::GameObject {
    private:
     CubemapArgs m_facesPaths;
 };
-}  // namespace sl::gfx
+}  // namespace sl::gpu

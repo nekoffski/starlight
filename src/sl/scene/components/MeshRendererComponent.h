@@ -2,7 +2,7 @@
 
 #include "sl/ecs/Component.h"
 #include "sl/ecs/Entity.h"
-#include "sl/gfx/Shader.h"
+#include "sl/gpu/Shader.h"
 #include "sl/glob/Globals.h"
 
 namespace sl::scene::components {
@@ -15,7 +15,7 @@ struct MeshRendererComponent : ecs::Component {
         name = "MeshRendererComponent";
     }
 
-    std::shared_ptr<gfx::Shader> shader;
+    std::shared_ptr<gpu::Shader> shader;
     unsigned int polygonMode;
 
     bool isTransparentForLight = false;

@@ -5,13 +5,13 @@
 #include <imgui_sugar.hpp>
 
 #include "sl/async/AsyncManager.hpp"
-#include "sl/gfx/Shader.h"
-#include "sl/gfx/ShaderManager.h"
+#include "sl/gpu/Shader.h"
+#include "sl/gpu/ShaderManager.h"
 #include "sl/gui/Utils.h"
 
 namespace sl::gui::assets {
 
-ShaderGui::Provider::Provider(std::shared_ptr<gfx::Shader> shader, ShaderGui::Params& params)
+ShaderGui::Provider::Provider(std::shared_ptr<gpu::Shader> shader, ShaderGui::Params& params)
     : m_shader(shader), m_params(params) {}
 
 void ShaderGui::Provider::render() {
@@ -32,7 +32,7 @@ void ShaderGui::Provider::render() {
                 shader->disable();
 
                 try {
-                    gfx::ShaderManager::get().recompileShader(*shader);
+                    gpu::ShaderManager::get().recompileShader(*shader);
                 } catch (core::ShaderError& err) {
                     LOG_WARN("Could not recompile shader due to {}", err.getDetails());
 
@@ -49,12 +49,12 @@ void ShaderGui::Provider::render() {
     }
 }
 
-void ShaderGui::Provider::processRecompileOnSaveRequest(std::shared_ptr<gfx::Shader>& shader) {
+void ShaderGui::Provider::processRecompileOnSaveRequest(std::shared_ptr<gpu::Shader>& shader) {
     auto& taskHandle = m_params.taskHandle;
 
     if (m_params.recompileOnSave) {
         taskHandle =
-            async::AsyncManager::get().addPeriodicTask<gfx::Shader::RecompileOnUpdate>(shader);
+            async::AsyncManager::get().addPeriodicTask<gpu::Shader::RecompileOnUpdate>(shader);
     } else {
         if (taskHandle.has_value()) {
             taskHandle.value().disable();
@@ -63,7 +63,7 @@ void ShaderGui::Provider::processRecompileOnSaveRequest(std::shared_ptr<gfx::Sha
     }
 }
 
-std::unique_ptr<AssetGuiProvider> ShaderGui::createGuiProvider(std::shared_ptr<gfx::Shader> shader
+std::unique_ptr<AssetGuiProvider> ShaderGui::createGuiProvider(std::shared_ptr<gpu::Shader> shader
 ) {
     return std::make_unique<Provider>(shader, m_params[shader->getId()]);
 }

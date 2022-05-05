@@ -1,12 +1,12 @@
 #pragma once
 
-#include "sl/gfx/Texture.h"
+#include "sl/gpu/Texture.h"
 
 namespace sl::platform::gl {
 
-class OpenGlTexture : public sl::gfx::Texture {
+class OpenGlTexture : public sl::gpu::Texture {
    public:
-    explicit OpenGlTexture(sl::gfx::Image&);
+    explicit OpenGlTexture(sl::gpu::Image&);
     explicit OpenGlTexture(unsigned int, unsigned int, int, int);
 
     ~OpenGlTexture() override;
@@ -26,12 +26,12 @@ class OpenGlTexture : public sl::gfx::Texture {
     unsigned int m_lastBoundIndex = 0u;
 };
 
-struct OpenGlTextureFactory : sl::gfx::Texture::Factory {
-    std::unique_ptr<sl::gfx::Texture> create(sl::gfx::Image& image) override {
+struct OpenGlTextureFactory : sl::gpu::Texture::Factory {
+    std::unique_ptr<sl::gpu::Texture> create(sl::gpu::Image& image) override {
         return std::make_unique<OpenGlTexture>(image);
     }
 
-    std::unique_ptr<sl::gfx::Texture> create(
+    std::unique_ptr<sl::gpu::Texture> create(
         unsigned int w, unsigned int h, int internalFormat, int format
     ) override {
         return std::make_unique<OpenGlTexture>(w, h, internalFormat, format);

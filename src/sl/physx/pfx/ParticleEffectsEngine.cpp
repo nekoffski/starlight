@@ -4,7 +4,7 @@
 
 #include "sl/cam/Camera.h"
 #include "sl/ecs/ComponentView.hpp"
-#include "sl/gfx/Shader.h"
+#include "sl/gpu/Shader.h"
 #include "sl/glob/Globals.h"
 #include "sl/scene/components/TransformComponent.h"
 

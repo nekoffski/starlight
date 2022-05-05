@@ -1,9 +1,9 @@
 #include "Geometry.h"
 
 #include "sl/geom/Mesh.h"
-#include "sl/gfx/BufferManager.h"
-#include "sl/gfx/ElementBuffer.h"
-#include "sl/gfx/VertexBuffer.h"
+#include "sl/gpu/BufferManager.h"
+#include "sl/gpu/ElementBuffer.h"
+#include "sl/gpu/VertexBuffer.h"
 
 namespace sl::glob {
 
@@ -22,8 +22,8 @@ Geometry::Geometry() {
 void Geometry::initLine() {
     static std::vector<float> vertices = {0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f};
 
-    lineVAO  = gfx::BufferManager::get().createVertexArray();
-    auto vbo = gfx::BufferManager::get().createVertexBuffer(
+    lineVAO  = gpu::BufferManager::get().createVertexArray();
+    auto vbo = gpu::BufferManager::get().createVertexBuffer(
         &vertices[0], vertices.size() * sizeof(float), vertices.size()
     );
 
@@ -67,11 +67,11 @@ void Geometry::initCube() {
     mesh->vertices = std::move(vertices);
 
     // TODO: move this logic to mesh contstructor
-    cubeVAO  = gfx::BufferManager::get().createVertexArray();
-    auto vbo = gfx::BufferManager::get().createVertexBuffer(
+    cubeVAO  = gpu::BufferManager::get().createVertexArray();
+    auto vbo = gpu::BufferManager::get().createVertexBuffer(
         &mesh->vertices[0], mesh->vertices.size() * sizeof(geom::Vertex), mesh->vertices.size()
     );
-    auto ebo = gfx::BufferManager::get().createElementBuffer(
+    auto ebo = gpu::BufferManager::get().createElementBuffer(
         &mesh->indices[0], mesh->indices.size() * sizeof(unsigned), mesh->indices.size()
     );
 
@@ -106,11 +106,11 @@ Geometry::MeshVaoPair Geometry::initSquare(
     mesh->vertices = std::move(vertices);
 
     // // TODO: move this logic to mesh contstructor
-    auto vao = gfx::BufferManager::get().createVertexArray();
-    auto vbo = gfx::BufferManager::get().createVertexBuffer(
+    auto vao = gpu::BufferManager::get().createVertexArray();
+    auto vbo = gpu::BufferManager::get().createVertexBuffer(
         &mesh->vertices[0], mesh->vertices.size() * sizeof(geom::Vertex), mesh->vertices.size()
     );
-    auto ebo = gfx::BufferManager::get().createElementBuffer(
+    auto ebo = gpu::BufferManager::get().createElementBuffer(
         &mesh->indices[0], mesh->indices.size() * sizeof(unsigned), mesh->indices.size()
     );
 

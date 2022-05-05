@@ -38,7 +38,7 @@ void OpenGlRenderApi::init() {
 
 glob::RendererInfo OpenGlRenderApi::getRendererInfo() const { return m_rendererInfo; }
 
-void OpenGlRenderApi::setViewport(const gfx::Viewport& viewport) {
+void OpenGlRenderApi::setViewport(const gpu::Viewport& viewport) {
     glViewport(viewport.beginX, viewport.beginY, viewport.width, viewport.height);
 }
 

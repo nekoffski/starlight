@@ -11,7 +11,7 @@ RenderVectorsStage::RenderVectorsStage()
     : m_lineVertexArray(glob::Globals::get().geom->lineVAO)
     , m_lineShader(glob::Globals::get().shaders->singleColorShader) {}
 
-void RenderVectorsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) {
+void RenderVectorsStage::execute(gpu::Renderer& renderer, scene::Scene& scene, gpu::FrameBuffer*) {
     PROFILE_FUNCTION();
 
     setCameraUniforms(*scene.camera);
@@ -28,7 +28,7 @@ void RenderVectorsStage::execute(gfx::Renderer& renderer, scene::Scene& scene, g
 }
 
 void RenderVectorsStage::renderVector(
-    const physx::Vector& vector, const glm::vec3& color, gfx::Renderer& renderer
+    const physx::Vector& vector, const glm::vec3& color, gpu::Renderer& renderer
 ) {
     LOG_TRACE("Rendering: {}/{}", vector, color);
     setVectorUniforms(vector, color);

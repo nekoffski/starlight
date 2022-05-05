@@ -4,9 +4,9 @@
 
 #include "sl/event/EventManager.h"
 
-namespace sl::gfx {
+namespace sl::gpu {
 
-Renderer::Renderer(gfx::RenderApi* renderApi, const Viewport& viewport)
+Renderer::Renderer(gpu::RenderApi* renderApi, const Viewport& viewport)
     : EventListener("Renderer"), m_renderApi(renderApi), m_viewport(viewport) {
     sl::event::EventManager::get().registerListener(this);
 
@@ -17,7 +17,7 @@ Renderer::Renderer(gfx::RenderApi* renderApi, const Viewport& viewport)
     m_renderApi->setBlendFunc(STARL_SRC_ALPHA, STARL_ONE_MINUS_SRC_ALPHA);
 }
 
-void Renderer::renderVertexArray(gfx::VertexArray& vertexArray) {
+void Renderer::renderVertexArray(gpu::VertexArray& vertexArray) {
     // to optimize! -> BRANCHING!!!
     if (auto indices = vertexArray.getIndicesCount(); indices != 0u)
         m_renderApi->drawElements(STARL_TRIANGLES, indices, STARL_UNSIGNED_INT);
@@ -68,4 +68,4 @@ void Renderer::applySettings(const RendererSettings& settings) {
         m_renderApi->disable(STARL_BLEND);
 }
 
-}  // namespace sl::gfx
+}  // namespace sl::gpu

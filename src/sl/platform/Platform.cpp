@@ -3,7 +3,7 @@
 namespace sl::platform {
 
 Platform::Platform(
-    IO&& io, GPU&& gpu, std::unique_ptr<gfx::Image::Factory> imageFactory,
+    IO&& io, GPU&& gpu, std::unique_ptr<gpu::Image::Factory> imageFactory,
     std::unique_ptr<geom::ModelLoader> modelLoader
 )
     : io(std::move(io))

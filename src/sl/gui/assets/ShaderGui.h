@@ -4,7 +4,7 @@
 
 #include "AssetGuiProvider.h"
 #include "sl/async/PeriodicTask.h"
-#include "sl/gfx/Shader.h"
+#include "sl/gpu/Shader.h"
 #include "sl/glob/Globals.h"
 
 namespace sl::gui::assets {
@@ -17,19 +17,19 @@ class ShaderGui {
 
     class Provider : public AssetGuiProvider {
        public:
-        explicit Provider(std::shared_ptr<gfx::Shader> shader, Params& params);
+        explicit Provider(std::shared_ptr<gpu::Shader> shader, Params& params);
 
         void render();
 
        private:
-        void processRecompileOnSaveRequest(std::shared_ptr<gfx::Shader>& shader);
+        void processRecompileOnSaveRequest(std::shared_ptr<gpu::Shader>& shader);
 
-        std::weak_ptr<gfx::Shader> m_shader;
+        std::weak_ptr<gpu::Shader> m_shader;
         Params& m_params;
     };
 
    public:
-    std::unique_ptr<AssetGuiProvider> createGuiProvider(std::shared_ptr<gfx::Shader> shader);
+    std::unique_ptr<AssetGuiProvider> createGuiProvider(std::shared_ptr<gpu::Shader> shader);
 
    private:
     std::unordered_map<std::string, Params> m_params;

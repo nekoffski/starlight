@@ -2,7 +2,7 @@
 
 #include <glad/glad.h>
 
-#include "sl/gfx/Texture.h"
+#include "sl/gpu/Texture.h"
 
 namespace sl::platform::gl {
 
@@ -16,17 +16,17 @@ void OpenGlFrameBuffer::bind() { glBindFramebuffer(GL_FRAMEBUFFER, m_bufferId); 
 
 void OpenGlFrameBuffer::unbind() { glBindFramebuffer(GL_FRAMEBUFFER, 0u); }
 
-void OpenGlFrameBuffer::bindRenderBuffer(sl::gfx::RenderBuffer& buffer) {
+void OpenGlFrameBuffer::bindRenderBuffer(sl::gpu::RenderBuffer& buffer) {
     glFramebufferRenderbuffer(
         GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, buffer.getBufferId()
     );
 }
 
-void OpenGlFrameBuffer::bindTexture(sl::gfx::Texture& texture, unsigned int attachment) {
+void OpenGlFrameBuffer::bindTexture(sl::gpu::Texture& texture, unsigned int attachment) {
     glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture.getBuffer(), 0);
 }
 
-void OpenGlFrameBuffer::bindTexture(sl::gfx::Texture& texture) {
+void OpenGlFrameBuffer::bindTexture(sl::gpu::Texture& texture) {
     // TODO: make it configurable
     //    texture->bind();
     // bind();
@@ -39,7 +39,7 @@ void OpenGlFrameBuffer::bindTexture(sl::gfx::Texture& texture) {
     // texture->unbind();
 }
 
-void OpenGlFrameBuffer::bindCubemap(sl::gfx::Cubemap& cubemap) {
+void OpenGlFrameBuffer::bindCubemap(sl::gpu::Cubemap& cubemap) {
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, cubemap.getBufferId(), 0);
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);

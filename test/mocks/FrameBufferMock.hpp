@@ -2,9 +2,9 @@
 
 #include <gmock/gmock.h>
 
-#include "sl/gfx/FrameBuffer.h"
+#include "sl/gpu/FrameBuffer.h"
 
-using namespace sl::gfx;
+using namespace sl::gpu;
 
 struct FrameBufferMock : public FrameBuffer {
     struct Factory : public FrameBuffer::Factory {

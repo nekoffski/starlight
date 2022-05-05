@@ -2,9 +2,9 @@
 
 #include <gmock/gmock.h>
 
-#include "sl/gfx/RenderApi.h"
+#include "sl/gpu/RenderApi.h"
 
-using namespace sl::gfx;
+using namespace sl::gpu;
 
 struct RenderApiMock : RenderApi {
     MOCK_METHOD(void, init, ());

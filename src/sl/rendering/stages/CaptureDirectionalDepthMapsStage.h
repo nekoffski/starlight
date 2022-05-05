@@ -1,8 +1,8 @@
 #pragma once
 
-#include "sl/gfx/Shader.h"
-#include "sl/gfx/Texture.h"
-#include "sl/gfx/VertexArray.h"
+#include "sl/gpu/Shader.h"
+#include "sl/gpu/Texture.h"
+#include "sl/gpu/VertexArray.h"
 #include "sl/rendering/CustomFrameBufferRenderPass.h"
 #include "sl/rendering/utils/Mesh.h"
 #include "sl/rendering/utils/Misc.h"
@@ -18,7 +18,7 @@ class CaptureDirectionalDepthMapsStage : public Stage {
    public:
     explicit CaptureDirectionalDepthMapsStage();
 
-    void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer)
+    void execute(gpu::Renderer& renderer, scene::Scene& scene, gpu::FrameBuffer* frameBuffer)
         override;
 
    private:
@@ -26,20 +26,20 @@ class CaptureDirectionalDepthMapsStage : public Stage {
         scene::components::DirectionalLightComponent& light,
         scene::components::MeshRendererComponent::View& meshRenderers,
         scene::components::TransformComponent::View& transforms,
-        scene::components::ModelComponent::View& models, gfx::Renderer& renderer
+        scene::components::ModelComponent::View& models, gpu::Renderer& renderer
     );
 
     void tryToRenderModel(
         scene::components::MeshRendererComponent& meshRenderer,
         scene::components::TransformComponent::View& transforms,
-        scene::components::ModelComponent::View& models, gfx::Renderer& renderer
+        scene::components::ModelComponent::View& models, gpu::Renderer& renderer
     );
 
     void queueDirectionVectorForBeingRendered(const math::Vec3& direction, scene::Scene& scene);
 
-    void prepareRenderer(gfx::Renderer& renderer);
+    void prepareRenderer(gpu::Renderer& renderer);
 
-    std::shared_ptr<gfx::Shader> m_depthShader;
+    std::shared_ptr<gpu::Shader> m_depthShader;
 };
 
 }  // namespace sl::rendering::stages

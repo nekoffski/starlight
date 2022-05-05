@@ -2,11 +2,11 @@
 
 #include <memory>
 
-#include "sl/gfx/Cubemap.h"
-#include "sl/gfx/RenderBuffer.h"
-#include "sl/gfx/Texture.h"
+#include "sl/gpu/Cubemap.h"
+#include "sl/gpu/RenderBuffer.h"
+#include "sl/gpu/Texture.h"
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 class FrameBuffer {
    public:
@@ -27,4 +27,4 @@ class FrameBuffer {
     virtual void bind()   = 0;
     virtual void unbind() = 0;
 };
-}  // namespace sl::gfx
+}  // namespace sl::gpu

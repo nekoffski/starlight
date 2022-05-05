@@ -5,7 +5,7 @@
 
 #include "Widget.h"
 #include "sl/ecs/Entity.h"
-#include "sl/gfx/Cubemap.h"
+#include "sl/gpu/Cubemap.h"
 #include "sl/gui/EntityGui.h"
 #include "sl/gui/ErrorDialog.h"
 
@@ -21,7 +21,7 @@ class EntityTab : public Widget {
 
     sl::gui::EntityGui m_entityGui;
     int m_selectedComponent;
-    std::weak_ptr<sl::gfx::Cubemap> m_selectedCubemap;
+    std::weak_ptr<sl::gpu::Cubemap> m_selectedCubemap;
 
     sl::gui::ErrorDialog m_errorDialog;
 

@@ -7,7 +7,7 @@
 // TODO: IFDEF
 #include "sl/platform/gl/OpenGlDefines.h"
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 class VertexBuffer {
    public:
@@ -34,4 +34,4 @@ class VertexBuffer {
    protected:
     BufferMemoryScheme m_bufferMemoryScheme;
 };
-}  // namespace sl::gfx
+}  // namespace sl::gpu

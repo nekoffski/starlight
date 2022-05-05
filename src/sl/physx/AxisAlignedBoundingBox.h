@@ -14,7 +14,7 @@ class AxisAlignedBoundingBox : public BoundingBox {
    public:
     explicit AxisAlignedBoundingBox(const std::vector<std::shared_ptr<geom::Mesh>>& meshes);
 
-    gfx::VertexArray* getVertexArray() const override;
+    gpu::VertexArray* getVertexArray() const override;
     std::vector<math::Vec3> getVertices() const override;
     std::string getName() const override;
 
@@ -31,7 +31,7 @@ class AxisAlignedBoundingBox : public BoundingBox {
    private:
     void build(const std::vector<std::shared_ptr<geom::Mesh>>& meshes);
 
-    std::shared_ptr<gfx::VertexArray> m_vao;
+    std::shared_ptr<gpu::VertexArray> m_vao;
     std::unique_ptr<AxisAlignedCollider> m_collider;
 
     std::vector<math::Vec3> m_vertices;

@@ -6,8 +6,8 @@
 
 #include "Categories.h"
 #include "Util.h"
-#include "sl/gfx/Cubemap.h"
-#include "sl/gfx/ViewFrustum.h"
+#include "sl/gpu/Cubemap.h"
+#include "sl/gpu/ViewFrustum.h"
 #include "sl/math/Vector.hpp"
 
 namespace sl::event {
@@ -26,7 +26,7 @@ DECLARE_EVENT(AddEntityEvent, EditorCategory) {
 };
 
 DECLARE_EVENT(SetSkyboxEvent, EditorCategory) {
-    SetSkyboxEvent(sl::gfx::Cubemap* cubemap)
+    SetSkyboxEvent(sl::gpu::Cubemap* cubemap)
         : cubemap(cubemap) {
     }
 
@@ -34,7 +34,7 @@ DECLARE_EVENT(SetSkyboxEvent, EditorCategory) {
         return "[SetSkyboxEvent]";
     }
 
-    sl::gfx::Cubemap* cubemap;
+    sl::gpu::Cubemap* cubemap;
 };
 
 DECLARE_EVENT(SerializeSceneEvent, EditorCategory) {
@@ -89,14 +89,14 @@ DECLARE_EVENT(WindowResizedEvent, CoreCategory) {
 };
 
 DECLARE_EVENT(ChangeViewportEvent, CoreCategory) {
-    ChangeViewportEvent(const gfx::Viewport& viewport) : viewport(viewport) {
+    ChangeViewportEvent(const gpu::Viewport& viewport) : viewport(viewport) {
     }
 
     std::string asString() const override {
         return "[ChangeViewportEvent]";
     }
 
-    gfx::Viewport viewport;
+    gpu::Viewport viewport;
 };
 
 DECLARE_EVENT(DisplayErrorEvent, EditorCategory) {

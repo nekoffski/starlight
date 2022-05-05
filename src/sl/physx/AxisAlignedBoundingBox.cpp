@@ -3,7 +3,7 @@
 #include <kc/core/Log.h>
 
 #include "AxisAlignedCollider.h"
-#include "sl/gfx/BufferManager.h"
+#include "sl/gpu/BufferManager.h"
 
 namespace sl::physx {
 
@@ -18,7 +18,7 @@ void AxisAlignedBoundingBox::rebuild(const std::vector<std::shared_ptr<geom::Mes
     build(meshes);
 }
 
-gfx::VertexArray* AxisAlignedBoundingBox::getVertexArray() const { return m_vao.get(); }
+gpu::VertexArray* AxisAlignedBoundingBox::getVertexArray() const { return m_vao.get(); }
 
 std::vector<math::Vec3> AxisAlignedBoundingBox::getVertices() const { return m_vertices; }
 
@@ -71,11 +71,11 @@ void AxisAlignedBoundingBox::build(const std::vector<std::shared_ptr<geom::Mesh>
                  // top
                  3, 2, 6, 6, 7, 3};
 
-    m_vao    = gfx::BufferManager::get().createVertexArray();
-    auto vbo = gfx::BufferManager::get().createVertexBuffer(
+    m_vao    = gpu::BufferManager::get().createVertexArray();
+    auto vbo = gpu::BufferManager::get().createVertexBuffer(
         &m_vertices[0], m_vertices.size() * sizeof(math::Vec3), m_vertices.size()
     );
-    auto ebo = gfx::BufferManager::get().createElementBuffer(
+    auto ebo = gpu::BufferManager::get().createElementBuffer(
         &m_indices[0], m_indices.size() * sizeof(unsigned), m_indices.size()
     );
 

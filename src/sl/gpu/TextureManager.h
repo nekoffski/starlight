@@ -9,13 +9,13 @@
 #include "Image.h"
 #include "Texture.h"
 #include "sl/async/AsyncManager.hpp"
-#include "sl/gfx/Texture.h"
+#include "sl/gpu/Texture.h"
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 class TextureManager : public kc::core::Singleton<TextureManager> {
-    using CubemapFaces     = std::array<std::unique_ptr<gfx::Image>, facesCount>;
-    using CubemapFacesView = std::array<gfx::Image*, facesCount>;
+    using CubemapFaces     = std::array<std::unique_ptr<gpu::Image>, facesCount>;
+    using CubemapFacesView = std::array<gpu::Image*, facesCount>;
 
     friend class CubemapBuilder;
     friend class TextureBuilder;
@@ -56,7 +56,7 @@ class TextureManager : public kc::core::Singleton<TextureManager> {
 
         Callback m_callback;
 
-        std::array<std::unique_ptr<gfx::Image>, facesCount> m_faces;
+        std::array<std::unique_ptr<gpu::Image>, facesCount> m_faces;
 
         TextureManager* m_textureManager;
     };
@@ -169,7 +169,7 @@ class TextureManager : public kc::core::Singleton<TextureManager> {
 
         TextureManager* m_textureManager;
 
-        std::unique_ptr<gfx::Image> m_image;
+        std::unique_ptr<gpu::Image> m_image;
         Image* m_imageView = nullptr;
 
         std::string m_path;
@@ -208,4 +208,4 @@ class TextureManager : public kc::core::Singleton<TextureManager> {
     Image::Factory* m_imageFactory;
 };
 
-}  // namespace sl::gfx
+}  // namespace sl::gpu

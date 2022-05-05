@@ -3,7 +3,7 @@
 #include "TextureManager.h"
 #include "sl/async/AsyncManager.hpp"
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 std::unique_ptr<Texture> Texture::clone() {
     return TextureManager::get()
@@ -17,4 +17,4 @@ std::unique_ptr<Texture> Texture::clone() {
 
 std::pair<unsigned int, unsigned int> Texture::getSize() const { return {getWidth(), getHeight()}; }
 
-}  // namespace sl::gfx
+}  // namespace sl::gpu

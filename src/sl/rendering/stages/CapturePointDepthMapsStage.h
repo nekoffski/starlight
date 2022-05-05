@@ -1,7 +1,7 @@
 #pragma once
 
-#include "sl/gfx/Shader.h"
-#include "sl/gfx/Texture.h"
+#include "sl/gpu/Shader.h"
+#include "sl/gpu/Texture.h"
 #include "sl/rendering/CustomFrameBufferRenderPass.h"
 #include "sl/scene/components/MeshRendererComponent.h"
 #include "sl/scene/components/ModelComponent.h"
@@ -16,7 +16,7 @@ class CapturePointDepthMapsStage : public Stage {
    public:
     explicit CapturePointDepthMapsStage();
 
-    void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer)
+    void execute(gpu::Renderer& renderer, scene::Scene& scene, gpu::FrameBuffer* frameBuffer)
         override;
 
    private:
@@ -24,8 +24,8 @@ class CapturePointDepthMapsStage : public Stage {
         scene::components::PointLightComponent& light,
         scene::components::MeshRendererComponent::View& meshRenderers,
         scene::components::TransformComponent::View& transforms,
-        scene::components::ModelComponent::View& models, gfx::Renderer& renderer,
-        gfx::FrameBuffer* frameBuffer
+        scene::components::ModelComponent::View& models, gpu::Renderer& renderer,
+        gpu::FrameBuffer* frameBuffer
     );
 
     void setLightUniforms(const math::Vec3& lightPosition);
@@ -33,14 +33,14 @@ class CapturePointDepthMapsStage : public Stage {
     void tryToRender(
         scene::components::MeshRendererComponent& meshRenderer,
         scene::components::TransformComponent::View& transforms,
-        scene::components::ModelComponent::View& models, gfx::Renderer& renderer
+        scene::components::ModelComponent::View& models, gpu::Renderer& renderer
     );
 
     std::array<math::Mat4, facesCount> calculateShadowTransforms(const math::Vec3& lightPosition);
 
-    void prepareRenderer(gfx::Renderer& renderer);
+    void prepareRenderer(gpu::Renderer& renderer);
 
-    std::shared_ptr<gfx::Shader> m_depthShader;
+    std::shared_ptr<gpu::Shader> m_depthShader;
     math::Mat4 m_shadowProjection;
 };
 }  // namespace sl::rendering::stages

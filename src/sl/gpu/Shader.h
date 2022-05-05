@@ -12,7 +12,7 @@
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 class Shader : public core::GameObject {
     friend class ShaderCompiler;
@@ -21,7 +21,7 @@ class Shader : public core::GameObject {
     class RecompileOnUpdate : public async::PeriodicTask {
        public:
         explicit RecompileOnUpdate(
-            std::shared_ptr<gfx::Shader> shader,
+            std::shared_ptr<gpu::Shader> shader,
             const kc::core::FileSystem& fileSystem = kc::core::FileSystem{}
         );
 
@@ -31,7 +31,7 @@ class Shader : public core::GameObject {
         std::string getName() const;
 
        private:
-        std::weak_ptr<gfx::Shader> m_shader;
+        std::weak_ptr<gpu::Shader> m_shader;
 
         kc::core::FileSystem m_fileSystem;
 
@@ -71,4 +71,4 @@ class Shader : public core::GameObject {
     virtual std::string getGeometryShaderPath() = 0;
 };
 
-}  // namespace sl::gfx
+}  // namespace sl::gpu

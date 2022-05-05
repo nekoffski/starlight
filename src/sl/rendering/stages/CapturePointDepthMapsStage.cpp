@@ -2,13 +2,13 @@
 
 #include <kc/core/Profiler.h>
 
-#include "sl/gfx/ShaderManager.h"
+#include "sl/gpu/ShaderManager.h"
 #include "sl/rendering/utils/Mesh.h"
 #include "sl/rendering/utils/Misc.h"
 
 namespace sl::rendering::stages {
 
-const float shadowWidth  = gfx::Texture::shadowMapSize;
+const float shadowWidth  = gpu::Texture::shadowMapSize;
 const float shadowHeight = shadowWidth;
 
 const float aspect = shadowWidth / shadowHeight;
@@ -19,7 +19,7 @@ const float far  = 25.0f;
 using namespace sl::scene::components;
 
 CapturePointDepthMapsStage::CapturePointDepthMapsStage()
-    : m_depthShader(gfx::ShaderManager::get().load(
+    : m_depthShader(gpu::ShaderManager::get().load(
           sl::glob::Globals::get().config.paths.shaders + "/PointDepthCapture.vert",
           sl::glob::Globals::get().config.paths.shaders + "/PointDepthCapture.frag",
           sl::glob::Globals::get().config.paths.shaders + "/PointDepthCapture.geom"
@@ -28,7 +28,7 @@ CapturePointDepthMapsStage::CapturePointDepthMapsStage()
 }
 
 void CapturePointDepthMapsStage::execute(
-    gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer* frameBuffer
+    gpu::Renderer& renderer, scene::Scene& scene, gpu::FrameBuffer* frameBuffer
 ) {
     PROFILE_FUNCTION();
 
@@ -54,8 +54,8 @@ void CapturePointDepthMapsStage::execute(
 
 void CapturePointDepthMapsStage::processLight(
     PointLightComponent& light, MeshRendererComponent::View& meshRenderers,
-    TransformComponent::View& transforms, ModelComponent::View& models, gfx::Renderer& renderer,
-    gfx::FrameBuffer* frameBuffer
+    TransformComponent::View& transforms, ModelComponent::View& models, gpu::Renderer& renderer,
+    gpu::FrameBuffer* frameBuffer
 ) {
     const auto& transform = utils::getModelMatrix(light.ownerEntityId, transforms);
     setLightUniforms(transform * light.position);
@@ -80,7 +80,7 @@ void CapturePointDepthMapsStage::setLightUniforms(const math::Vec3& lightPositio
 
 void CapturePointDepthMapsStage::tryToRender(
     MeshRendererComponent& meshRenderer, TransformComponent::View& transforms,
-    ModelComponent::View& models, gfx::Renderer& renderer
+    ModelComponent::View& models, gpu::Renderer& renderer
 ) {
     const auto& entityId = meshRenderer.ownerEntityId;
 
@@ -136,9 +136,9 @@ std::array<math::Mat4, 6> CapturePointDepthMapsStage::calculateShadowTransforms(
     return shadowTransforms;
 }
 
-void CapturePointDepthMapsStage::prepareRenderer(gfx::Renderer& renderer) {
-    renderer.setTemporaryViewport(gfx::Viewport{
-        gfx::Texture::shadowMapSize, gfx::Texture::shadowMapSize});
+void CapturePointDepthMapsStage::prepareRenderer(gpu::Renderer& renderer) {
+    renderer.setTemporaryViewport(gpu::Viewport{
+        gpu::Texture::shadowMapSize, gpu::Texture::shadowMapSize});
 
     auto settings     = renderer.getSettings();
     settings.cullFace = STARL_FRONT;

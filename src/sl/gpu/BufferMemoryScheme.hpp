@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 struct BufferMemoryOffset {
     uint32_t index;
@@ -49,4 +49,4 @@ class BufferMemoryScheme {
     std::vector<BufferMemoryOffset> m_offsets;
     unsigned int m_stride;
 };
-}  // namespace sl::gfx
+}  // namespace sl::gpu

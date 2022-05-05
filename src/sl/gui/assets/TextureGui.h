@@ -6,7 +6,7 @@
 
 #include "AssetGuiProvider.h"
 #include "sl/core/GameObject.h"
-#include "sl/gfx/Texture.h"
+#include "sl/gpu/Texture.h"
 #include "sl/gui/Utils.h"
 
 namespace sl::gui::assets {
@@ -14,7 +14,7 @@ namespace sl::gui::assets {
 class TextureGui {
     class Provider : public AssetGuiProvider {
        public:
-        explicit Provider(gfx::Texture* texture) : m_texture(texture) {}
+        explicit Provider(gpu::Texture* texture) : m_texture(texture) {}
 
         void render() {
             if (m_texture != nullptr) {
@@ -33,11 +33,11 @@ class TextureGui {
         }
 
        private:
-        gfx::Texture* m_texture;
+        gpu::Texture* m_texture;
     };
 
    public:
-    std::unique_ptr<AssetGuiProvider> createGuiProvider(gfx::Texture* texture) {
+    std::unique_ptr<AssetGuiProvider> createGuiProvider(gpu::Texture* texture) {
         return std::make_unique<Provider>(texture);
     }
 };

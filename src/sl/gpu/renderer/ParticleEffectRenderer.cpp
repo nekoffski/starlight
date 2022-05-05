@@ -4,12 +4,12 @@
 
 #include "sl/cam/Camera.h"
 #include "sl/ecs/ComponentView.hpp"
-#include "sl/gfx/Renderer.h"
-#include "sl/gfx/Shader.h"
+#include "sl/gpu/Renderer.h"
+#include "sl/gpu/Shader.h"
 #include "sl/glob/Globals.h"
 #include "sl/scene/components/TransformComponent.h"
 
-namespace sl::gfx::renderer {
+namespace sl::gpu::renderer {
 
 ParticleEffectRenderer::ParticleEffectRenderer(Renderer& renderer)
     : m_renderer(renderer)
@@ -65,4 +65,4 @@ void ParticleEffectRenderer::beginParticleEffect(cam::Camera& camera) {
 void ParticleEffectRenderer::renderParticle() { m_renderer.renderVertexArray(*m_vao); }
 
 void ParticleEffectRenderer::endParticleEffect() { m_vao->unbind(); }
-}  // namespace sl::gfx::renderer
+}  // namespace sl::gpu::renderer

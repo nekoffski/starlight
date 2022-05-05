@@ -8,7 +8,7 @@
 
 #include "sl/geom/Mesh.h"
 
-namespace sl::gfx {
+namespace sl::gpu {
 class Texture;
 }
 
@@ -20,10 +20,10 @@ class AssimpMeshProcessor {
 
    private:
     void initVertexArray(std::shared_ptr<geom::Mesh>&);
-    std::vector<std::shared_ptr<sl::gfx::Texture>> loadTextures(aiMaterial*, const std::string&);
+    std::vector<std::shared_ptr<sl::gpu::Texture>> loadTextures(aiMaterial*, const std::string&);
     std::vector<geom::Vertex> loadVertices(aiMesh*);
     std::vector<unsigned> loadIndices(aiMesh*);
-    std::vector<std::shared_ptr<sl::gfx::Texture>>
+    std::vector<std::shared_ptr<sl::gpu::Texture>>
         loadMaterialTextures(aiMaterial*, aiTextureType, const std::string&, const std::string&);
 };
 }  // namespace sl::platform::assimp

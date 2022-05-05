@@ -2,9 +2,9 @@
 
 #include <gmock/gmock.h>
 
-#include "sl/gfx/RenderBuffer.h"
+#include "sl/gpu/RenderBuffer.h"
 
-using namespace sl::gfx;
+using namespace sl::gpu;
 
 struct RenderBufferMock : RenderBuffer {
     struct Factory : RenderBuffer::Factory {

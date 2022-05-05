@@ -4,10 +4,10 @@
 
 #include <memory>
 
-#include "sl/gfx/VertexBuffer.h"
-#include "sl/gfx/fwd.h"
+#include "sl/gpu/VertexBuffer.h"
+#include "sl/gpu/fwd.h"
 
-using namespace sl::gfx;
+using namespace sl::gpu;
 
 struct VertexBufferMock : public VertexBuffer {
    public:

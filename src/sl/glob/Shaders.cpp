@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "Globals.h"
-#include "sl/gfx/ShaderManager.h"
+#include "sl/gpu/ShaderManager.h"
 
 namespace sl::glob {
 
@@ -13,20 +13,20 @@ namespace sl::glob {
 Shaders::Shaders() {
     const std::string shadersPath = glob::Globals::get().config.paths.shaders;
 
-    defaultCubemapShader = gfx::ShaderManager::get().load(
+    defaultCubemapShader = gpu::ShaderManager::get().load(
         shadersPath + "/Cubemap.vert", shadersPath + "/Cubemap.frag"
     );
 
-    singleColorShader = gfx::ShaderManager::get().load(
+    singleColorShader = gpu::ShaderManager::get().load(
         shadersPath + "/SingleColor.vert", shadersPath + "/SingleColor.frag"
     );
 
-    defaultModelShader = gfx::ShaderManager::get().load(
+    defaultModelShader = gpu::ShaderManager::get().load(
         shadersPath + "/DefaultModelShader.vert", shadersPath + "/DefaultModelShader.frag"
     );
     defaultModelShader->name = "default-model-shader";
 
-    pfxShader = gfx::ShaderManager::get().load(
+    pfxShader = gpu::ShaderManager::get().load(
         shadersPath + "/particle.vert", shadersPath + "/particle.frag"
     );
     pfxShader->name = "pfx-shader";

@@ -3,19 +3,19 @@
 #include <memory>
 
 #include "sl/core/GameObject.h"
-#include "sl/gfx/Image.h"
+#include "sl/gpu/Image.h"
 
 // todo: abstraction
 #include "sl/platform/gl/OpenGlDefines.h"
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 class Texture : public core::GameObject {
    public:
     inline static constexpr unsigned int shadowMapSize = 1024u * 4;
 
     struct Factory {
-        virtual std::unique_ptr<Texture> create(sl::gfx::Image&) = 0;
+        virtual std::unique_ptr<Texture> create(sl::gpu::Image&) = 0;
         virtual std::unique_ptr<Texture> create(
             unsigned int, unsigned int, int = STARL_DEPTH_COMPONENT, int = STARL_DEPTH_COMPONENT
         ) = 0;
@@ -41,4 +41,4 @@ class Texture : public core::GameObject {
     int format;
 };
 
-}  // namespace sl::gfx
+}  // namespace sl::gpu

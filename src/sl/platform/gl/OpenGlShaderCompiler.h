@@ -1,15 +1,15 @@
 #pragma once
 
-#include "sl/gfx/Shader.h"
-#include "sl/gfx/ShaderCompiler.h"
+#include "sl/gpu/Shader.h"
+#include "sl/gpu/ShaderCompiler.h"
 
 namespace sl::platform::gl {
 
 class OpenGlShader;
 
-class OpenGlShaderCompiler : public gfx::ShaderCompiler {
+class OpenGlShaderCompiler : public gpu::ShaderCompiler {
    public:
-    void compile(sl::gfx::Shader& shader) override;
+    void compile(sl::gpu::Shader& shader) override;
 
    private:
     void compile(OpenGlShader&);

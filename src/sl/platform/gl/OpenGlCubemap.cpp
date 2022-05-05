@@ -5,7 +5,7 @@
 
 #include "Utils.hpp"
 #include "sl/core/Errors.hpp"
-#include "sl/gfx/Image.h"
+#include "sl/gpu/Image.h"
 
 namespace sl::platform::gl {
 
@@ -31,7 +31,7 @@ OpenGlCubemap::OpenGlCubemap(unsigned int width, unsigned int height) : m_cubema
     this->height = height;
 }
 
-OpenGlCubemap::OpenGlCubemap(const sl::gfx::CubemapFaces& faces) : m_cubemapId(0u) {
+OpenGlCubemap::OpenGlCubemap(const sl::gpu::CubemapFaces& faces) : m_cubemapId(0u) {
     glGenTextures(1, &m_cubemapId);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubemapId);
 

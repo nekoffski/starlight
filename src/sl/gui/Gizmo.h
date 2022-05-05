@@ -5,7 +5,7 @@
 #include <ImGuizmo.h>
 // clang-format on
 
-#include "sl/gfx/ViewFrustum.h"
+#include "sl/gpu/ViewFrustum.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
 
@@ -15,7 +15,7 @@ enum class GizmoOp { translate, rotate, scale };
 
 enum class GizmoSpace { local, world };
 
-void setupGizmo(const gfx::Viewport& viewport);
+void setupGizmo(const gpu::Viewport& viewport);
 
 bool isUsingGizmo();
 

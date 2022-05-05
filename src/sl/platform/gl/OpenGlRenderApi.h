@@ -1,13 +1,13 @@
 #pragma once
 
-#include "sl/gfx/RenderApi.h"
+#include "sl/gpu/RenderApi.h"
 
 namespace sl::platform::gl {
 
-class OpenGlRenderApi : public sl::gfx::RenderApi {
+class OpenGlRenderApi : public sl::gpu::RenderApi {
    public:
     void init() override;
-    void setViewport(const gfx::Viewport&) override;
+    void setViewport(const gpu::Viewport&) override;
     void clearBuffers(unsigned int buffers) override;
 
     void setCullFace(unsigned int) override;

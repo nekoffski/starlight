@@ -1,10 +1,10 @@
 #pragma once
 
-#include "sl/gfx/ElementBuffer.h"
+#include "sl/gpu/ElementBuffer.h"
 
 namespace sl::platform::gl {
 
-class OpenGlElementBuffer : public gfx::ElementBuffer {
+class OpenGlElementBuffer : public gpu::ElementBuffer {
    public:
     OpenGlElementBuffer(void*, int, unsigned int);
     ~OpenGlElementBuffer() override;
@@ -19,8 +19,8 @@ class OpenGlElementBuffer : public gfx::ElementBuffer {
     unsigned int m_bufferId;
 };
 
-struct OpenGlElementBufferFactory : sl::gfx::ElementBuffer::Factory {
-    std::shared_ptr<sl::gfx::ElementBuffer> create(void* data, int size, unsigned int indicesCount)
+struct OpenGlElementBufferFactory : sl::gpu::ElementBuffer::Factory {
+    std::shared_ptr<sl::gpu::ElementBuffer> create(void* data, int size, unsigned int indicesCount)
         override {
         return std::make_shared<OpenGlElementBuffer>(data, size, indicesCount);
     }

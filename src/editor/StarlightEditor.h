@@ -21,10 +21,10 @@
 #include "sl/ecs/Entity.h"
 #include "sl/event/Categories.h"
 #include "sl/event/Event.h"
-#include "sl/gfx/BufferManager.h"
-#include "sl/gfx/RenderBuffer.h"
-#include "sl/gfx/TextureManager.h"
-#include "sl/gfx/ViewFrustum.h"
+#include "sl/gpu/BufferManager.h"
+#include "sl/gpu/RenderBuffer.h"
+#include "sl/gpu/TextureManager.h"
+#include "sl/gpu/ViewFrustum.h"
 #include "sl/glob/Globals.h"
 #include "sl/gui/Core.h"
 #include "sl/gui/ErrorDialog.h"
@@ -64,9 +64,9 @@ class StarlightEditor : public app::Application {
    public:
     explicit StarlightEditor()
         : m_engineState(editor::EngineState::stopped)
-        , m_depthFrameBuffer(gfx::BufferManager::get().createFrameBuffer())
+        , m_depthFrameBuffer(gpu::BufferManager::get().createFrameBuffer())
         , m_captureDepthMapsRenderPass(m_depthFrameBuffer.get())
-        , m_sceneQuadFrameBuffer(gfx::BufferManager::get().createFrameBuffer())
+        , m_sceneQuadFrameBuffer(gpu::BufferManager::get().createFrameBuffer())
         , m_captureSceneRenderPass(m_sceneQuadFrameBuffer.get()) {
         sl::gui::initGui(sl::core::WindowManager::get().getWindowHandle());
 
@@ -88,7 +88,7 @@ class StarlightEditor : public app::Application {
     void onStart() {
         auto [windowWidth, windowHeight] = WindowManager::get().getSize();
 
-        auto viewFrustum = gfx::ViewFrustum{windowWidth, windowHeight};
+        auto viewFrustum = gpu::ViewFrustum{windowWidth, windowHeight};
         m_editorCamera =
             std::make_unique<cam::EulerCamera>(viewFrustum, math::Vec3(0.0f), 1.0f, 8.0f);
         m_currentScene = &m_mainScene;
@@ -232,8 +232,8 @@ class StarlightEditor : public app::Application {
         }
     }
 
-    void render(gfx::Renderer &renderer) override {
-        m_renderPipeline.run(renderer, *m_currentScene);
+    void render(gpu::Renderer &renderer) override {
+        // m_renderPipeline.run(renderer, *m_currentScene);
 
         renderGui();
     }
@@ -337,7 +337,7 @@ class StarlightEditor : public app::Application {
 
         m_editorGui->sharedState->guiProperties = guiProperties;
 
-        gfx::Viewport newViewport;
+        gpu::Viewport newViewport;
 
         if (m_engineMode == editor::EngineMode::inEditor) {
             newViewport.width = static_cast<int>(
@@ -356,9 +356,9 @@ class StarlightEditor : public app::Application {
         }
 
         m_depthBuffer =
-            gfx::BufferManager::get().createRenderBuffer(STARL_DEPTH_COMPONENT, width, height);
+            gpu::BufferManager::get().createRenderBuffer(STARL_DEPTH_COMPONENT, width, height);
 
-        auto &textureManager = gfx::TextureManager::get();
+        auto &textureManager = gpu::TextureManager::get();
 
         m_colorBuffer = textureManager.createTexture()
                             .withWidth(width)
@@ -431,13 +431,13 @@ class StarlightEditor : public app::Application {
     editor::EngineState m_engineState;
     editor::EngineMode m_engineMode;
 
-    std::shared_ptr<gfx::FrameBuffer> m_depthFrameBuffer;
+    std::shared_ptr<gpu::FrameBuffer> m_depthFrameBuffer;
 
-    std::shared_ptr<gfx::FrameBuffer> m_sceneQuadFrameBuffer;
-    std::unique_ptr<gfx::RenderBuffer> m_depthBuffer;
+    std::shared_ptr<gpu::FrameBuffer> m_sceneQuadFrameBuffer;
+    std::unique_ptr<gpu::RenderBuffer> m_depthBuffer;
 
-    std::unique_ptr<gfx::Texture> m_colorBuffer;
-    std::unique_ptr<gfx::Texture> m_bloomBuffer;
+    std::unique_ptr<gpu::Texture> m_colorBuffer;
+    std::unique_ptr<gpu::Texture> m_bloomBuffer;
 
     rendering::RenderPipeline m_renderPipeline;
 

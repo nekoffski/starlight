@@ -3,10 +3,10 @@
 #include <kc/core/Log.h>
 
 #include "sl/core/WindowManager.h"
-#include "sl/gfx/Shader.h"
-#include "sl/gfx/ShaderManager.h"
-#include "sl/gfx/Texture.h"
-#include "sl/gfx/VertexArray.h"
+#include "sl/gpu/Shader.h"
+#include "sl/gpu/ShaderManager.h"
+#include "sl/gpu/Texture.h"
+#include "sl/gpu/VertexArray.h"
 #include "sl/glob/Globals.h"
 #include "sl/rendering/Stage.h"
 
@@ -16,20 +16,20 @@ class RenderColorBufferStage : public Stage {
    public:
     explicit RenderColorBufferStage()
         : m_quadVao(sl::glob::Globals::get().geom->frontSquareVAO.get())
-        , m_colorBufferShader(gfx::ShaderManager::get().load(
+        , m_colorBufferShader(gpu::ShaderManager::get().load(
               sl::glob::Globals::get().config.paths.shaders + "/ColorBuffer.vert",
               sl::glob::Globals::get().config.paths.shaders + "/ColorBuffer.frag"
           )) {
 // clang-format off
         #ifdef DEV_MODE
-            async::AsyncManager::get().addPeriodicTask<gfx::Shader::RecompileOnUpdate>(m_colorBufferShader);
+            async::AsyncManager::get().addPeriodicTask<gpu::Shader::RecompileOnUpdate>(m_colorBufferShader);
         #endif
         // clang-format on
     }
 
-    void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) override {
+    void execute(gpu::Renderer& renderer, scene::Scene& scene, gpu::FrameBuffer*) override {
         auto [width, height] = core::WindowManager::get().getSize();
-        gfx::Viewport viewport{width, height};
+        gpu::Viewport viewport{width, height};
 
         auto settings           = renderer.getSettings();
         settings.enableBlending = false;
@@ -60,16 +60,16 @@ class RenderColorBufferStage : public Stage {
         renderer.restoreSettings();
     }
 
-    void setColorBuffer(gfx::Texture* colorBuffer) { m_colorBuffer = colorBuffer; }
+    void setColorBuffer(gpu::Texture* colorBuffer) { m_colorBuffer = colorBuffer; }
 
-    void setBloomBuffer(gfx::Texture* bloomBuffer) { m_bloomBuffer = bloomBuffer; }
+    void setBloomBuffer(gpu::Texture* bloomBuffer) { m_bloomBuffer = bloomBuffer; }
 
    private:
-    gfx::VertexArray* m_quadVao;
-    gfx::Texture* m_colorBuffer;
-    gfx::Texture* m_bloomBuffer;
+    gpu::VertexArray* m_quadVao;
+    gpu::Texture* m_colorBuffer;
+    gpu::Texture* m_bloomBuffer;
 
-    std::shared_ptr<gfx::Shader> m_colorBufferShader;
+    std::shared_ptr<gpu::Shader> m_colorBufferShader;
 };
 
 }  // namespace sl::rendering::stages

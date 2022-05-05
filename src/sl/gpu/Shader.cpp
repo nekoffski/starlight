@@ -2,10 +2,10 @@
 
 #include "ShaderManager.h"
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 Shader::RecompileOnUpdate::RecompileOnUpdate(
-    std::shared_ptr<gfx::Shader> shader, const kc::core::FileSystem& fileSystem
+    std::shared_ptr<gpu::Shader> shader, const kc::core::FileSystem& fileSystem
 )
     : m_shader(shader)
     , m_fileSystem(fileSystem)
@@ -50,4 +50,4 @@ void Shader::RecompileOnUpdate::invoke() {
 
 std::string Shader::RecompileOnUpdate::getName() const { return "RecompileShaderOnUpdate"; }
 
-}  // namespace sl::gfx
+}  // namespace sl::gpu

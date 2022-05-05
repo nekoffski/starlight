@@ -27,7 +27,7 @@ math::Size2D StbImage::getSize() const { return m_imageSize; }
 
 int StbImage::getChannelsCount() const { return m_channels; }
 
-std::unique_ptr<gfx::Image> StbImageFactory::create(const std::string& path, int desiredChannels) {
+std::unique_ptr<gpu::Image> StbImageFactory::create(const std::string& path, int desiredChannels) {
     return std::make_unique<StbImage>(path, desiredChannels);
 }
 }  // namespace sl::platform::stb

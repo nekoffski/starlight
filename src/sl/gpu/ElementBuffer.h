@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 class ElementBuffer {
    public:
@@ -18,4 +18,4 @@ class ElementBuffer {
 
     virtual unsigned int getIndicesCount() = 0;
 };
-}  // namespace sl::gfx
+}  // namespace sl::gpu

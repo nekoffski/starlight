@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 struct Viewport {
     int width;
@@ -13,4 +13,4 @@ struct Viewport {
 
 std::string toString(const Viewport& viewport);
 
-}  // namespace sl::gfx
+}  // namespace sl::gpu

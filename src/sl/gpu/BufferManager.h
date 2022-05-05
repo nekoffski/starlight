@@ -8,7 +8,7 @@
 #include "VertexArray.h"
 #include "VertexBuffer.h"
 
-namespace sl::gfx {
+namespace sl::gpu {
 
 class BufferManager : public kc::core::Singleton<BufferManager> {
    public:
@@ -59,4 +59,4 @@ class BufferManager : public kc::core::Singleton<BufferManager> {
     VertexArray::Factory* m_vertexArrayFactory;
 };
 
-}  // namespace sl::gfx
+}  // namespace sl::gpu

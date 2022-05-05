@@ -4,7 +4,7 @@
 
 #include "sl/cam/Camera.h"
 #include "sl/core/InputManager.h"
-#include "sl/gfx/ViewFrustum.h"
+#include "sl/gpu/ViewFrustum.h"
 #include "sl/math/Utils.hpp"
 #include "sl/math/Vector.hpp"
 
@@ -12,7 +12,7 @@ namespace sl::cam {
 
 class FirstPersonCamera : public Camera {
    public:
-    explicit FirstPersonCamera(const gfx::ViewFrustum& viewFrustum = gfx::ViewFrustum{0, 0})
+    explicit FirstPersonCamera(const gpu::ViewFrustum& viewFrustum = gpu::ViewFrustum{0, 0})
         : Camera(viewFrustum) {
         m_position = math::Vec3{0.0f, 0.0f, 0.0f};
 

@@ -2,7 +2,7 @@
 
 #include "RenderPass.h"
 #include "Stage.h"
-#include "sl/gfx/Renderer.h"
+#include "sl/gpu/Renderer.h"
 
 namespace sl::rendering {
 
@@ -13,7 +13,7 @@ class DefaultFrameBufferRenderPass : public RenderPass {
         return *this;
     }
 
-    void execute(gfx::Renderer& renderer, scene::Scene& scene) {
+    void execute(gpu::Renderer& renderer, scene::Scene& scene) {
         renderer.clearBuffers(STARL_DEPTH_BUFFER_BIT | STARL_COLOR_BUFFER_BIT);
 
         bool hasSkybox = scene.skybox.has_value();

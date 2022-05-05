@@ -5,7 +5,7 @@
 
 #include <cstdint>
 
-#include "sl/gfx/ViewFrustum.h"
+#include "sl/gpu/ViewFrustum.h"
 #include "sl/math/Common.h"
 #include "sl/math/Matrix.hpp"
 #include "sl/math/Vector.hpp"
@@ -15,7 +15,7 @@ namespace sl::cam {
 class Camera : kc::event::EventListener {
    public:
     explicit Camera(
-        const gfx::ViewFrustum &viewFrustum, const math::Vec3 &position = math::zerosVector,
+        const gpu::ViewFrustum &viewFrustum, const math::Vec3 &position = math::zerosVector,
         const math::Vec3 &up = math::worldUp, const math::Vec3 &front = math::worldFront,
         const math::Vec3 &right = math::worldRight
     );
@@ -37,7 +37,7 @@ class Camera : kc::event::EventListener {
 
     virtual const math::Mat4 getViewMatrix() const;
 
-    gfx::ViewFrustum viewFrustum;
+    gpu::ViewFrustum viewFrustum;
 
    protected:
     math::Vec3 m_position;

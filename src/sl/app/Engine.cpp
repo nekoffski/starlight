@@ -17,9 +17,9 @@
 #include "sl/core/WindowManager.h"
 #include "sl/event/EventManager.h"
 #include "sl/geom/GeometryManager.h"
-#include "sl/gfx/BufferManager.h"
-#include "sl/gfx/ShaderManager.h"
-#include "sl/gfx/TextureManager.h"
+#include "sl/gpu/BufferManager.h"
+#include "sl/gpu/ShaderManager.h"
+#include "sl/gpu/TextureManager.h"
 #include "sl/glob/Globals.h"
 #include "sl/gui/Utils.h"
 #include "sl/gui/fonts/FontAwesome.h"
@@ -83,9 +83,9 @@ void Engine::initLowLevelComponents() {
     m_renderApi->init();
 
     auto windowSize = m_window->getSize();
-    auto viewport   = gfx::Viewport{windowSize.width, windowSize.height};
+    auto viewport   = gpu::Viewport{windowSize.width, windowSize.height};
 
-    m_renderer = std::make_unique<gfx::Renderer>(m_renderApi, viewport);
+    m_renderer = std::make_unique<gpu::Renderer>(m_renderApi, viewport);
 }
 
 void Engine::initManagers() {

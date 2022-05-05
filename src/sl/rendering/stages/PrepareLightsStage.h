@@ -10,25 +10,25 @@ namespace sl::rendering::stages {
 
 class PrepareLightsStage : public Stage {
    public:
-    void execute(gfx::Renderer& renderer, scene::Scene& scene, gfx::FrameBuffer*) override;
+    void execute(gpu::Renderer& renderer, scene::Scene& scene, gpu::FrameBuffer*) override;
 
    private:
     void prepareDirectionalLights(
-        scene::components::DirectionalLightComponent::View& lights, gfx::Shader& shader
+        scene::components::DirectionalLightComponent::View& lights, gpu::Shader& shader
     );
 
     void preparePointLights(
         scene::components::PointLightComponent::View& lights,
-        scene::components::TransformComponent::View& transforms, gfx::Shader& shader
+        scene::components::TransformComponent::View& transforms, gpu::Shader& shader
     );
 
     void setDirectionalLightProperties(
-        gfx::Shader& shader, const scene::components::DirectionalLightComponent& light,
+        gpu::Shader& shader, const scene::components::DirectionalLightComponent& light,
         unsigned int index
     );
 
     void setPointLightProperties(
-        gfx::Shader& shader, const scene::components::PointLightComponent& light,
+        gpu::Shader& shader, const scene::components::PointLightComponent& light,
         const math::Mat4& transform, unsigned int index
     );
 };

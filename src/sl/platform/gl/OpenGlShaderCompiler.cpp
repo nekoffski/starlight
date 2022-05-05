@@ -16,7 +16,7 @@ using namespace sl::core;
 
 namespace sl::platform::gl {
 
-void OpenGlShaderCompiler::compile(sl::gfx::Shader& shader) {
+void OpenGlShaderCompiler::compile(sl::gpu::Shader& shader) {
     compile(dynamic_cast<OpenGlShader&>(shader));
 }
 

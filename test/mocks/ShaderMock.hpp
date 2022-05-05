@@ -2,9 +2,9 @@
 
 #include <gmock/gmock.h>
 
-#include "sl/gfx/Shader.h"
+#include "sl/gpu/Shader.h"
 
-using namespace sl::gfx;
+using namespace sl::gpu;
 using namespace sl;
 
 struct ShaderMock : public Shader {
