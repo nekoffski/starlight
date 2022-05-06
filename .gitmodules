@@ -1,0 +1,4 @@
+[submodule "3rdparty/libkc"]
+	path = 3rdparty/libkc
+	url = https://github.com/nekoffski/libkc.git
+	branch = dev
