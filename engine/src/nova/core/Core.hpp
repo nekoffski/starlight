@@ -2,7 +2,9 @@
 
 #include <memory>
 
-namespace nova {
+#include <kc/core/ErrorBase.hpp>
+
+namespace nova::core {
 
 template <typename T> using RefPtr = std::shared_ptr<T>;
 
@@ -16,4 +18,6 @@ template <typename T, typename... Args> constexpr UniqPtr<T> createUniqPtr(Args&
     return std::make_unique<T>(std::forward<Args>(args)...);
 }
 
-}  // namespace nova
+DEFINE_ERROR(NovaError);
+
+}  // namespace nova::core

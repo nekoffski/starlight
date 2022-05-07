@@ -1,7 +1,7 @@
 #pragma once
 
-namespace nova {
+namespace nova::core {
 
 class Application {};
 
-}  // namespace nova
+}  // namespace nova::core

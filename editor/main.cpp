@@ -5,8 +5,10 @@
 #include "nova/core/Entrypoint.hpp"
 #include "nova/core/Core.hpp"
 
-class Editor : public nova::Application {};
+class Editor : public nova::core::Application {};
 
-nova::UniqPtr<nova::Application> createApplication() { return nova::createUniqPtr<Editor>(); }
+nova::core::UniqPtr<nova::core::Application> createApplication() {
+    return nova::core::createUniqPtr<Editor>();
+}
 
 NOVA_ENTRYPOINT;
