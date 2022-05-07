@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core.h"
+#include "Core.hpp"
 #include "fwd.h"
 
 namespace nova::core {
