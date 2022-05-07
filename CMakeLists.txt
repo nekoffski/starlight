@@ -6,6 +6,9 @@ set(NOVA_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/engine/src)
 add_definitions(-DDEV_MODE=1)
 add_definitions(-DSPDLOG_COMPILED_LIB=1)
 
+set(GCC_COVERAGE_COMPILE_FLAGS "--coverage -O0 -fprofile-arcs -ftest-coverage -fno-elide-constructors -fno-inline")
+set(GCC_COVERAGE_LINK_FLAGS "-lgcov")
+
 option(ENABLE_TESTS "Build unit tests" OFF)
 option(ENABLE_COVERAGE "Enable code coverage" OFF)
 
