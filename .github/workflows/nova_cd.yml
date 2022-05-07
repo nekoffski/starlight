@@ -16,7 +16,7 @@ jobs:
         run: chmod +x ./bin/*
       - name: Install dependencies
         run: |
-          ./bin/install_deps.sh
+          ./bin/deps.sh
       - name: Build
         run: |
           rm -f build && mkdir build && pushd build && cmake .. -DENABLE_TESTS=ON && make -j`nproc` && popd
