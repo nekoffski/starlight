@@ -4,6 +4,7 @@
 
 #include "fwd.h"
 #include "Core.hpp"
+#include "Memory.hpp"
 
 namespace nova::core::detail {
 
