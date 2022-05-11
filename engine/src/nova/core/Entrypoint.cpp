@@ -5,6 +5,8 @@
 #include "Application.h"
 #include "Engine.h"
 
+#include "nova/platform/Platform.h"
+
 namespace nova::core::detail {
 
 int mainImpl(int argc, char** argv) {
@@ -12,8 +14,11 @@ int mainImpl(int argc, char** argv) {
     LOG_TRACE("Logger intialized, starting engine");
 
     try {
-        LOG_TRACE("Creating engine instance");
-        Engine engine{};
+        LOG_TRACE("Creating Platform instance");
+        platform::PlatformProvider platformProvider{};
+
+        LOG_TRACE("Creating Engine instance");
+        Engine engine{platformProvider.getPlatform()};
 
         LOG_TRACE("Creating application instance");
         auto application = createApplication();

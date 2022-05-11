@@ -4,11 +4,13 @@
 
 #include "fwd.h"
 
+#include "nova/platform/Platform.h"
+
 namespace nova::core {
 
 class Engine : public kc::sig::SignalHandler {
    public:
-    explicit Engine();
+    explicit Engine(const platform::Platform& platform);
 
     void run(Application& application);
 
@@ -17,6 +19,8 @@ class Engine : public kc::sig::SignalHandler {
     void onSignal(int signal) override;
 
     bool m_shouldStop;
+
+    platform::Platform m_platform;
 };
 
 }  // namespace nova::core

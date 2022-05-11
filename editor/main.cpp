@@ -7,7 +7,7 @@
 
 class Editor : public nova::core::Application {
    public:
-    bool isRunning() const { return false; }
+    bool isRunning() const { return true; }
 
     void update(float deltaTime) {}
 };

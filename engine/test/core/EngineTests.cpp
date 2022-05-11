@@ -3,12 +3,15 @@
 #include <gtest/gtest.h>
 
 #include "mock/core/ApplicationMock.hpp"
+#include "mock/core/WindowMock.hpp"
 
 using namespace testing;
 
 struct EngineTests : Test {
-    nova::core::Engine engine;
-    testing::NiceMock<ApplicationMock> application;
+    NiceMock<ApplicationMock> application;
+    NiceMock<WindowMock> window;
+
+    nova::core::Engine engine{nova::platform::Platform{&window}};
 
     void setupSingleEngineIteration() {
         EXPECT_CALL(application, isRunning).Times(2).WillOnce(Return(true)).WillOnce(Return(false));

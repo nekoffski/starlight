@@ -10,7 +10,7 @@
 
 namespace nova::core {
 
-Engine::Engine() : m_shouldStop(false) {
+Engine::Engine(const platform::Platform& platform) : m_shouldStop(false), m_platform(platform) {
     LOG_TRACE("Setting up signals");
     kc::sig::setupSignalHandler(this);
 }
@@ -27,6 +27,9 @@ void Engine::run(Application& application) {
 
 void Engine::loopStep(Application& application) {
     const float deltaTime = 0.01f;  // mock
+
+    m_platform.window->update();
+    m_platform.window->swapBuffers();
 
     application.update(deltaTime);
 }
