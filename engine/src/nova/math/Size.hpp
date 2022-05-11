@@ -1,10 +1,15 @@
 #pragma once
 
+#include <type_traits>
+
 #include <glm/glm.hpp>
 
 namespace nova::math {
 
-template <typename T> struct Size2 {
+template <typename T>
+concept SizeType = std::is_arithmetic_v<T>;
+
+template <SizeType T> struct Size2 {
     T width;
     T height;
 
