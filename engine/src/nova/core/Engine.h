@@ -5,22 +5,29 @@
 #include "fwd.h"
 
 #include "nova/platform/Platform.h"
+#include "nova/event/Event.h"
 
 namespace nova::core {
 
-class Engine : public kc::sig::SignalHandler {
+class Engine : public kc::sig::SignalHandler, public event::EventObserver {
    public:
     explicit Engine(const platform::Platform& platform);
 
     void run(Application& application);
 
    private:
-    void loopStep(Application& application);
     void onSignal(int signal) override;
+
+    void update(Application& application, float deltaTime);
+    void render(Application& application);
+
+    void onEvent(event::EventWrapper& event) override;
 
     bool m_shouldStop;
 
     platform::Platform m_platform;
+
+    event::EventManager m_eventManager;
 };
 
 }  // namespace nova::core
