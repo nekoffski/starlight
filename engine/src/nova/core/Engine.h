@@ -6,12 +6,14 @@
 
 #include "nova/platform/Platform.h"
 #include "nova/event/Event.h"
+#include "WindowManager.h"
 
 namespace nova::core {
 
 class Engine : public kc::sig::SignalHandler, public event::EventObserver {
    public:
     explicit Engine(const platform::Platform& platform);
+    ~Engine();
 
     void run(Application& application);
 
@@ -28,6 +30,7 @@ class Engine : public kc::sig::SignalHandler, public event::EventObserver {
     platform::Platform m_platform;
 
     event::EventManager m_eventManager;
+    WindowManager m_windowManager;
 };
 
 }  // namespace nova::core

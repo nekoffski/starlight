@@ -12,13 +12,16 @@
 
 namespace nova::core {
 
-Engine::Engine(const platform::Platform& platform) : m_shouldStop(false), m_platform(platform) {
+Engine::Engine(const platform::Platform& platform)
+    : m_shouldStop(false), m_platform(platform), m_windowManager(m_platform.window) {
     LOG_TRACE("Setting up signals");
     kc::sig::setupSignalHandler(this);
 
     LOG_TRACE("Registering Engine as an event observer");
     m_eventManager.registerObserver(this);
 }
+
+Engine::~Engine() { kc::sig::resetSignalHandler(); }
 
 void Engine::run(Application& application) {
     LOG_TRACE("Starting main engine loop");
