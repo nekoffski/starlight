@@ -9,4 +9,7 @@ struct WindowMock : nova::core::Window {
     MOCK_METHOD(void, update, (), (override));
     MOCK_METHOD(void, swapBuffers, (), (override));
     MOCK_METHOD(nova::math::Size2i, getSize, (), (const, override));
+    MOCK_METHOD(void, onKeyCallback, (OnKeyCallback), (override));
+    MOCK_METHOD(void, onMouseCallback, (OnMouseCallback), (override));
+    MOCK_METHOD(void, onWindowCloseCallback, (OnWindowCloseCallback), (override));
 };

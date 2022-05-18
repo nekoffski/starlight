@@ -8,9 +8,11 @@ namespace nova::core {
 
 class WindowManager : public kc::core::Singleton<WindowManager> {
    public:
-    explicit WindowManager(Window* window) : m_window(window) {}
+    explicit WindowManager(Window* window);
 
    private:
+    void setCallbacks();
+
     Window* m_window;
 };
 

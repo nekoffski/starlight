@@ -1,13 +1,13 @@
-#include "nova/event/Key.h"
+#include "nova/core/Input.hpp"
 
 #include <vector>
 
 #include <gtest/gtest.h>
 
-using namespace nova::event;
+using namespace nova::core;
 using namespace testing;
 
-using KeyActionTestsParam = std::pair<KeyEvent::Action, std::string>;
+using KeyActionTestsParam = std::pair<KeyAction, std::string>;
 
 struct KeyActionTests : TestWithParam<KeyActionTestsParam> {};
 
@@ -18,10 +18,10 @@ TEST_P(KeyActionTests, givenKeyActionEnum_whenParsingToString_shouldReturnCorrec
 }
 
 static std::vector<KeyActionTestsParam> keyActionsTestsInput = {
-    {KeyEvent::Action::press,   "KeyPress"        },
-    {KeyEvent::Action::release, "KeyRelease"      },
-    {KeyEvent::Action::repeat,  "KeyRepeat"       },
-    {KeyEvent::Action::unknown, "KeyUnknownAction"}
+    {KeyAction::press,   "KeyPress"        },
+    {KeyAction::release, "KeyRelease"      },
+    {KeyAction::repeat,  "KeyRepeat"       },
+    {KeyAction::unknown, "KeyUnknownAction"}
 };
 
 INSTANTIATE_TEST_SUITE_P(KeyTests, KeyActionTests, ValuesIn(keyActionsTestsInput));

@@ -5,27 +5,40 @@
 
 #include "nova/event/Event.h"
 #include "nova/event/Quit.h"
-#include "nova/event/Key.h"
+#include "nova/core/Core.hpp"
 
 namespace nova::platform::glfw {
 
 #define TO_GLFW_PTR(ptr) static_cast<GLFWwindow*>(ptr)
+#define GET_USER_CALLBACKS(window) static_cast<Callbacks*>(glfwGetWindowUserPointer(window))
 
 using namespace event;
 
-static KeyEvent::Action glfwToNovaAction(int action) {
+static core::KeyAction glfwToNovaKeyAction(int action) {
     switch (action) {
         case GLFW_PRESS:
-            return KeyEvent::Action::press;
+            return core::KeyAction::press;
 
         case GLFW_REPEAT:
-            return KeyEvent::Action::repeat;
+            return core::KeyAction::repeat;
 
         case GLFW_RELEASE:
-            return KeyEvent::Action::release;
+            return core::KeyAction::release;
     }
 
-    return KeyEvent::Action::unknown;
+    return core::KeyAction::unknown;
+}
+
+static core::MouseAction glfwToNovaMouseAction(int action) {
+    switch (action) {
+        case GLFW_PRESS:
+            return core::MouseAction::press;
+
+        case GLFW_RELEASE:
+            return core::MouseAction::release;
+    }
+
+    return core::MouseAction::unknown;
 }
 
 GlfwWindow::GlfwWindow() {
@@ -38,23 +51,39 @@ GlfwWindow::GlfwWindow() {
     m_windowHandle = glfwCreateWindow(1600, 900, "nova-engine", nullptr, nullptr);
 
     glfwMakeContextCurrent(TO_GLFW_PTR(m_windowHandle));
+    glfwSetWindowUserPointer(TO_GLFW_PTR(m_windowHandle), &m_callbacks);
+}
 
-    static auto onWindowClose = []([[maybe_unused]] GLFWwindow*) -> void {
-        LOG_INFO("Window received close request");
-        EventManager::get().emitEvent<QuitEvent>("Quit button pressed");
+void GlfwWindow::onKeyCallback(OnKeyCallback callback) {
+    m_callbacks.onKey = callback;
+
+    static auto onKeyCallback =
+        [](GLFWwindow* window, int key, [[maybe_unused]] int, int action, [[maybe_unused]] int) {
+        GET_USER_CALLBACKS(window)->onKey(glfwToNovaKeyAction(action), key);
     };
 
-    glfwSetWindowCloseCallback(TO_GLFW_PTR(m_windowHandle), onWindowClose);
+    glfwSetKeyCallback(TO_GLFW_PTR(m_windowHandle), onKeyCallback);
+}
 
-    static auto onKeyEvent = []([[maybe_unused]] GLFWwindow*, int key,
-                                [[maybe_unused]] int scancode, int action,
-                                [[maybe_unused]] int mods) -> void {
-        KeyEvent event{.action = glfwToNovaAction(action), .key = key};
-        LOG_TRACE("Emitting event: {}", event);
-        EventManager::get().emitEvent<KeyEvent>(event);
+void GlfwWindow::onMouseCallback(OnMouseCallback callback) {
+    m_callbacks.onMouse = callback;
+
+    static auto onMouseButtonCallback =
+        [](GLFWwindow* window, int button, int action, [[maybe_unused]] int) {
+        GET_USER_CALLBACKS(window)->onMouse(glfwToNovaMouseAction(action), button);
     };
 
-    glfwSetKeyCallback(TO_GLFW_PTR(m_windowHandle), onKeyEvent);
+    glfwSetMouseButtonCallback(TO_GLFW_PTR(m_windowHandle), onMouseButtonCallback);
+}
+
+void GlfwWindow::onWindowCloseCallback(OnWindowCloseCallback callback) {
+    m_callbacks.onWindowClose = callback;
+
+    static auto onWindowCloseCallback = [](GLFWwindow* window) {
+        GET_USER_CALLBACKS(window)->onWindowClose();
+    };
+
+    glfwSetWindowCloseCallback(TO_GLFW_PTR(m_windowHandle), onWindowCloseCallback);
 }
 
 void GlfwWindow::update() { glfwPollEvents(); }
