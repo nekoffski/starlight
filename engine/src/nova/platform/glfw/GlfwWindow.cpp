@@ -44,9 +44,7 @@ static core::MouseAction glfwToNovaMouseAction(int action) {
 GlfwWindow::GlfwWindow() {
     glfwInit();
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
     m_windowHandle = glfwCreateWindow(1600, 900, "nova-engine", nullptr, nullptr);
 
@@ -97,6 +95,15 @@ math::Size2i GlfwWindow::getSize() const {
     glfwGetWindowSize(TO_GLFW_PTR(m_windowHandle), &size.width, &size.height);
 
     return size;
+}
+
+math::Vec2f GlfwWindow::getMousePosition() const {
+    double x;
+    double y;
+
+    glfwGetCursorPos(TO_GLFW_PTR(m_windowHandle), &x, &y);
+
+    return math::Vec2f{x, y};
 }
 
 }  // namespace nova::platform::glfw

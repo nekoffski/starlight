@@ -16,6 +16,7 @@ class GlfwWindow : public core::Window {
 
     std::string_view getVendor() const override;
     math::Size2i getSize() const override;
+    math::Vec2f getMousePosition() const override;
 
     void update() override;
     void swapBuffers() override;

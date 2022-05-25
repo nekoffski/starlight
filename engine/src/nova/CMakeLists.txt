@@ -1,4 +1,4 @@
-set (NOVA_LIBS spdlog stb assimp dl kc fmt glfw)
+set (NOVA_LIBS spdlog stb assimp dl kc fmt glfw vulkan)
 set (NOVA_TARGET nova)
 file (GLOB_RECURSE NOVA_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 

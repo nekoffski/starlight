@@ -8,7 +8,10 @@
 
 namespace nova::core {
 
-WindowManager::WindowManager(Window* window) : m_window(window) { setCallbacks(); }
+WindowManager::WindowManager(Window* window)
+    : m_window(window), m_previousMousePosition(m_window->getMousePosition()) {
+    setCallbacks();
+}
 
 void WindowManager::setCallbacks() {
     using namespace event;
@@ -29,6 +32,22 @@ void WindowManager::setCallbacks() {
         LOG_TRACE("Detected mouse action, emitting event: {}", event);
         EventManager::get().emitEvent<MouseEvent>(event);
     });
+}
+
+math::Size2i WindowManager::getSize() const { return m_window->getSize(); }
+
+math::Vec2f WindowManager::getMousePosition() const { return m_window->getMousePosition(); }
+
+math::Vec2f WindowManager::getMousePositionDelta() const { return m_mousePositionDelta; }
+
+void WindowManager::update() { calculateMousePositionDelta(); }
+
+void WindowManager::calculateMousePositionDelta() {
+    m_window->update();
+
+    auto mousePosition      = m_window->getMousePosition();
+    m_mousePositionDelta    = mousePosition - m_previousMousePosition;
+    m_previousMousePosition = mousePosition;
 }
 
 }  // namespace nova::core

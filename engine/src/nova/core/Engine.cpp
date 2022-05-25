@@ -13,7 +13,10 @@
 namespace nova::core {
 
 Engine::Engine(const platform::Platform& platform)
-    : m_shouldStop(false), m_platform(platform), m_windowManager(m_platform.window) {
+    : m_shouldStop(false)
+    , m_platform(platform)
+    , m_windowManager(m_platform.window)
+    , m_rendererFrontend(m_platform.rendererBackend) {
     LOG_TRACE("Setting up signals");
     kc::sig::setupSignalHandler(this);
 
@@ -30,18 +33,24 @@ void Engine::run(Application& application) {
 
     while (not m_shouldStop && application.isRunning()) {
         update(application, deltaTime);
-        render(application);
+        render(application, deltaTime);
     }
 
     LOG_TRACE("Main engine loop ended");
 }
 
 void Engine::update(Application& application, float deltaTime) {
-    m_platform.window->update();
+    m_windowManager.update();
+
     application.update(deltaTime);
 }
 
-void Engine::render(Application& application) { m_platform.window->swapBuffers(); }
+void Engine::render(Application& application, float deltaTime) {
+    gfx::RenderPacket packet{deltaTime};
+
+    m_rendererFrontend.drawFrame(packet);
+    m_platform.window->swapBuffers();
+}
 
 void Engine::onSignal(int signal) {
     LOG_WARN("Received signal {}, stopping engine", signal);
