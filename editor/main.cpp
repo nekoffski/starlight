@@ -11,7 +11,7 @@
 
 class Editor : public nova::core::Application, public nova::event::EventObserver {
    public:
-    explicit Editor() {}
+    explicit Editor() { nova::event::EventManager::get().registerObserver(this); }
 
     bool isRunning() const { return m_running; }
 

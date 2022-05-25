@@ -4,6 +4,7 @@
 
 #include "mock/core/ApplicationMock.hpp"
 #include "mock/core/WindowMock.hpp"
+#include "mock/gfx/RendererBackedMock.hpp"
 
 #include "nova/event/Event.h"
 #include "nova/event/Quit.h"
@@ -13,8 +14,11 @@ using namespace testing;
 struct EngineTests : Test {
     NiceMock<ApplicationMock> application;
     NiceMock<WindowMock> window;
+    NiceMock<RendererBackedMock> rendererBacked;
 
-    nova::core::Engine engine{nova::platform::Platform{&window}};
+    nova::core::Engine engine{
+        nova::platform::Platform{&window, &rendererBacked}
+    };
 
     void setupSingleEngineIteration() {
         EXPECT_CALL(application, isRunning).Times(2).WillOnce(Return(true)).WillOnce(Return(false));

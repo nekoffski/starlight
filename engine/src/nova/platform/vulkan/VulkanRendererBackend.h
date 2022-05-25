@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vulkan/vulkan.hpp>
-
 #include "nova/gfx/RendererBacked.h"
 
 #include "VulkanContext.h"

@@ -1,4 +1,6 @@
-set (NOVA_LIBS spdlog stb assimp dl kc fmt glfw vulkan)
+find_package(Vulkan REQUIRED)
+
+set (NOVA_LIBS spdlog stb assimp dl kc fmt glfw ${Vulkan_LIBRARIES})
 set (NOVA_TARGET nova)
 file (GLOB_RECURSE NOVA_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
