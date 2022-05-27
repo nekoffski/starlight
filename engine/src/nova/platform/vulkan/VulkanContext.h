@@ -2,15 +2,10 @@
 
 #include <vector>
 
-#define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1
+#include "Vulkan.h"
+#include "VulkanDevice.h"
 
-#include <vulkan/vulkan.hpp>
-#include <vulkan/vulkan.h>
-
-#include <kc/core/Log.h>
-#include <kc/core/Utils.hpp>
-
-#include "Utils.h"
+#include "nova/core/fwd.h"
 
 #ifndef DEBUG
 #define DEBUG
@@ -18,21 +13,34 @@
 
 namespace nova::platform::vulkan {
 
-struct VulkanContext {
-    explicit VulkanContext();
+namespace details {
 
+class VulkanDispatcherLoader {
+   public:
+    explicit VulkanDispatcherLoader();
+
+   private:
+    vk::DynamicLoader m_dl;
+    PFN_vkGetInstanceProcAddr m_vkGetInstanceProcAddr;
+};
+
+}  // namespace details
+
+class VulkanContext {
+   public:
+    explicit VulkanContext(core::Window& window);
     ~VulkanContext();
 
-    vk::Instance instance;
-    vk::AllocationCallbacks* allocator = nullptr;
+   private:
+    details::VulkanDispatcherLoader m_vulkanDispatcherLoader;
 
-#ifdef DEBUG
-    vk::DebugUtilsMessengerEXT debugMessenger;
+    vk::AllocationCallbacks* m_allocator;
+    vk::Instance m_instance;
+    vk::DebugUtilsMessengerEXT m_debugMessenger;
 
-#endif
+    vk::SurfaceKHR m_surface;
 
-    vk::DynamicLoader dl;
-    PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr;
+    VulkanDevice m_device;
 };
 
 }  // namespace nova::platform::vulkan

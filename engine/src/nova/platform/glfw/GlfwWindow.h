@@ -25,6 +25,8 @@ class GlfwWindow : public core::Window {
     void onMouseCallback(OnMouseCallback) override;
     void onWindowCloseCallback(OnWindowCloseCallback) override;
 
+    void* getHandle() override;
+
    private:
     void* m_windowHandle;
     Callbacks m_callbacks;

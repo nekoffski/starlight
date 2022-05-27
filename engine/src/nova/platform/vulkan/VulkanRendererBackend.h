@@ -1,6 +1,8 @@
 #pragma once
 
 #include "nova/gfx/RendererBacked.h"
+#include "nova/core/fwd.h"
+#include "nova/core/Window.h"
 
 #include "VulkanContext.h"
 
@@ -8,7 +10,7 @@ namespace nova::platform::vulkan {
 
 class VulkanRendererBackend : public gfx::RendererBackend {
    public:
-    explicit VulkanRendererBackend() : m_frameCount(0) {}
+    explicit VulkanRendererBackend(core::Window& window) : m_frameCount(0), m_context(window) {}
 
     ~VulkanRendererBackend() {}
 

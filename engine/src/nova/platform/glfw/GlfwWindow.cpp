@@ -106,4 +106,6 @@ math::Vec2f GlfwWindow::getMousePosition() const {
     return math::Vec2f{x, y};
 }
 
+void* GlfwWindow::getHandle() { return m_windowHandle; }
+
 }  // namespace nova::platform::glfw

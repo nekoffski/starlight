@@ -23,6 +23,8 @@ struct Window {
     virtual void onKeyCallback(OnKeyCallback)                 = 0;
     virtual void onMouseCallback(OnMouseCallback)             = 0;
     virtual void onWindowCloseCallback(OnWindowCloseCallback) = 0;
+
+    virtual void* getHandle() { return nullptr; }
 };
 
 }  // namespace nova::core
