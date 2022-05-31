@@ -4,8 +4,8 @@
 
 namespace nova::platform::glfw {
 
-vk::SurfaceKHR createVulkanSurface(
-    vk::Instance& instance, void* windowHandle, vk::AllocationCallbacks* allocator
+vk::raii::SurfaceKHR createVulkanSurface(
+    vk::raii::Instance& instance, void* windowHandle, vk::AllocationCallbacks* allocator
 );
 
 std::vector<const char*> getRequiredExtensions();

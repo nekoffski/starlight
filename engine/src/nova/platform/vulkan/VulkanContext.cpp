@@ -25,26 +25,24 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugMessengerCallback(
     VkDebugUtilsMessengerCallbackDataEXT const* pCallbackData, void* pUserData
 );
 
-static vk::Instance createVulkanInstance(vk::AllocationCallbacks* allocator);
+static vk::raii::Instance createVulkanInstance(
+    vk::AllocationCallbacks* allocator, vk::raii::Context& context
+);
 
-static vk::DebugUtilsMessengerEXT createDebugMessenger(vk::Instance& instance);
+static vk::raii::DebugUtilsMessengerEXT createDebugMessenger(vk::raii::Instance& instance);
 
 VulkanContext::VulkanContext(core::Window& window)
     : m_allocator(nullptr)
-    , m_instance(createVulkanInstance(m_allocator))
+    , m_instance(createVulkanInstance(m_allocator, m_context))
 #ifdef DEBUG
     , m_debugMessenger(createDebugMessenger(m_instance))
 #endif
     , m_surface(glfw::createVulkanSurface(m_instance, window.getHandle(), m_allocator))
-    , m_device(m_instance) {
+    , m_device(m_instance, m_surface) {
     LOG_TRACE("Vulkan context initialized");
 }
 
-VulkanContext::~VulkanContext() {
-    if (m_debugMessenger) m_instance.destroyDebugUtilsMessengerEXT(m_debugMessenger);
-    if (m_surface) m_instance.destroySurfaceKHR(m_surface);
-    m_instance.destroy();
-}
+VulkanContext::~VulkanContext() { LOG_TRACE("Destroying vulkan context"); }
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugMessengerCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -65,7 +63,9 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugMessengerCallback(
     return false;
 }
 
-static vk::Instance createVulkanInstance(vk::AllocationCallbacks* allocator) {
+static vk::raii::Instance createVulkanInstance(
+    vk::AllocationCallbacks* allocator, vk::raii::Context& context
+) {
     // set app info
     vk::ApplicationInfo applicationInfo{};
     applicationInfo.pApplicationName   = "Vulkan";
@@ -130,26 +130,32 @@ static vk::Instance createVulkanInstance(vk::AllocationCallbacks* allocator) {
     createInfo.ppEnabledLayerNames = requiredValidationLayersNames.data();
 #endif
 
-    auto instance = vk::createInstance(createInfo, allocator);
-    VULKAN_HPP_DEFAULT_DISPATCHER.init(instance);
+    vk::raii::Instance instance(context, createInfo);
+    VULKAN_HPP_DEFAULT_DISPATCHER.init(*instance);
 
     return instance;
 }
 
-static vk::DebugUtilsMessengerEXT createDebugMessenger(vk::Instance& instance) {
+static vk::raii::DebugUtilsMessengerEXT createDebugMessenger(vk::raii::Instance& instance) {
     LOG_TRACE("Creating Vulkan debugger");
 
-    const auto messageSeverity = vk::DebugUtilsMessageSeverityFlagBitsEXT::eError |
-                                 vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
-                                 vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo;
+    vk::DebugUtilsMessageSeverityFlagsEXT messageSeverity(
+        vk::DebugUtilsMessageSeverityFlagBitsEXT::eError |
+        vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
+        vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo
+    );
 
-    const auto messageType = vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
-                             vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance |
-                             vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation;
+    vk::DebugUtilsMessageTypeFlagsEXT messageType(
+        vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
+        vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance |
+        vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation
+    );
 
-    return instance.createDebugUtilsMessengerEXT(vk::DebugUtilsMessengerCreateInfoEXT(
-        {}, messageSeverity, messageType, debugMessengerCallback
-    ));
+    vk::DebugUtilsMessengerCreateInfoEXT createInfo(
+        {}, messageSeverity, messageType, &debugMessengerCallback
+    );
+
+    return vk::raii::DebugUtilsMessengerEXT{instance, createInfo};
 }
 
 }  // namespace nova::platform::vulkan

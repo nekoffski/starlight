@@ -3,9 +3,12 @@
 #include <vector>
 
 #include "Vulkan.h"
-#include "VulkanDevice.h"
 
 #include "nova/core/fwd.h"
+#include "nova/math/Size.hpp"
+
+#include "VulkanDevice.h"
+#include "VulkanSwapchain.h"
 
 #ifndef DEBUG
 #define DEBUG
@@ -31,16 +34,22 @@ class VulkanContext {
     explicit VulkanContext(core::Window& window);
     ~VulkanContext();
 
+    const math::Size2u32& getFramebufferSize() const { return m_framebufferSize; }
+
    private:
+    math::Size2u32 m_framebufferSize;
+
     details::VulkanDispatcherLoader m_vulkanDispatcherLoader;
-
     vk::AllocationCallbacks* m_allocator;
-    vk::Instance m_instance;
-    vk::DebugUtilsMessengerEXT m_debugMessenger;
 
-    vk::SurfaceKHR m_surface;
+    vk::raii::Context m_context;
+    vk::raii::Instance m_instance;
+
+    vk::raii::DebugUtilsMessengerEXT m_debugMessenger;
+    vk::raii::SurfaceKHR m_surface;
 
     VulkanDevice m_device;
+    // VulkanSwapchain m_swapchain;
 };
 
 }  // namespace nova::platform::vulkan

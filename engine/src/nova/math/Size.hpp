@@ -16,7 +16,8 @@ template <SizeType T> struct Size2 {
     operator glm::vec2() { return glm::vec2{width, height}; };
 };
 
-using Size2f = Size2<float>;
-using Size2i = Size2<int>;
+using Size2f   = Size2<float>;
+using Size2i   = Size2<int>;
+using Size2u32 = Size2<uint32_t>;
 
 }  // namespace nova::math
