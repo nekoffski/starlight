@@ -38,7 +38,8 @@ VulkanContext::VulkanContext(core::Window& window)
     , m_debugMessenger(createDebugMessenger(m_instance))
 #endif
     , m_surface(glfw::createVulkanSurface(m_instance, window.getHandle(), m_allocator))
-    , m_device(m_instance, m_surface) {
+    , m_device(m_instance, m_surface)
+    , m_swapchain(m_device, m_surface, window.getSize()) {
     LOG_TRACE("Vulkan context initialized");
 }
 

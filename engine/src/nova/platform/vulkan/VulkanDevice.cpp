@@ -11,12 +11,6 @@
 
 namespace nova::platform::vulkan {
 
-struct SwapChainSupportDetails {
-    vk::SurfaceCapabilitiesKHR capabilities;
-    std::vector<vk::SurfaceFormatKHR> formats;
-    std::vector<vk::PresentModeKHR> presentModes;
-};
-
 static const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
 static vk::raii::PhysicalDevice&& pickPhysicalDevice(
@@ -32,14 +26,45 @@ static vk::raii::Device createLogicalDevice(
     const QueueFamilyIndices& indices
 );
 
+static SwapChainSupportDetails querySwapChainSupport(
+    vk::raii::PhysicalDevice& device, vk::raii::SurfaceKHR& surface
+);
+
+static vk::Format detectDepthFormat(vk::raii::PhysicalDevice& device) {
+    std::vector<vk::Format> candidates = {
+        vk::Format::eD32Sfloat, vk::Format::eD32SfloatS8Uint, vk::Format::eD24UnormS8Uint};
+
+    std::optional<vk::Format> format;
+
+    auto flags = vk::FormatFeatureFlagBits::eDepthStencilAttachment;
+
+    for (auto& candidate : candidates) {
+        auto properties = device.getFormatProperties(candidate);
+
+        if ((properties.linearTilingFeatures & flags) == flags ||
+            (properties.optimalTilingFeatures & flags) == flags) {
+            format = candidate;
+            break;
+        }
+    }
+
+    ASSERT(format.has_value(), "Could not find format for depth buffer");
+    return format.value();
+}
+
 VulkanDevice::VulkanDevice(vk::raii::Instance& instance, vk::raii::SurfaceKHR& surface)
     : m_physicalDevices(instance)
     , m_physicalDevice(pickPhysicalDevice(m_physicalDevices, instance, surface))
     , m_queueFamilyIndices(findQueueFamilies(m_physicalDevice, surface))
     , m_logicalDevice(createLogicalDevice(m_physicalDevice, surface, m_queueFamilyIndices))
     , m_graphicsQueue(m_logicalDevice.getQueue(*m_queueFamilyIndices.graphicsFamily, 0))
-    , m_presentQueue(m_logicalDevice.getQueue(*m_queueFamilyIndices.presentFamily, 0)) {
+    , m_presentQueue(m_logicalDevice.getQueue(*m_queueFamilyIndices.presentFamily, 0))
+    , m_depthFormat(detectDepthFormat(m_physicalDevice)) {
     LOG_TRACE("Vulkan device created");
+}
+
+SwapChainSupportDetails VulkanDevice::getSwapChainSupport(vk::raii::SurfaceKHR& surface) {
+    return querySwapChainSupport(m_physicalDevice, surface);
 }
 
 // utility functions

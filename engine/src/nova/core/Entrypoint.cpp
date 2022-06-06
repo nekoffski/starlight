@@ -17,8 +17,10 @@ int mainImpl(int argc, char** argv) {
         LOG_TRACE("Creating Platform instance");
         platform::PlatformProvider platformProvider{};
 
+        auto platform = platformProvider.getPlatform();
+
         LOG_TRACE("Creating Engine instance");
-        Engine engine{platformProvider.getPlatform()};
+        Engine engine{platform};
 
         LOG_TRACE("Creating application instance");
         auto application = createApplication();

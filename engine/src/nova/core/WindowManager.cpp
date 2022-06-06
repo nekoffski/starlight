@@ -9,7 +9,9 @@
 namespace nova::core {
 
 WindowManager::WindowManager(Window* window)
-    : m_window(window), m_previousMousePosition(m_window->getMousePosition()) {
+    : m_window(window)
+// , m_previousMousePosition(m_window->getMousePosition())
+{
     setCallbacks();
 }
 
@@ -40,7 +42,9 @@ math::Vec2f WindowManager::getMousePosition() const { return m_window->getMouseP
 
 math::Vec2f WindowManager::getMousePositionDelta() const { return m_mousePositionDelta; }
 
-void WindowManager::update() { calculateMousePositionDelta(); }
+void WindowManager::update() {
+    // calculateMousePositionDelta();
+}
 
 void WindowManager::calculateMousePositionDelta() {
     m_window->update();

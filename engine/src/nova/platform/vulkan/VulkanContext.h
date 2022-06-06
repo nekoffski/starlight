@@ -49,7 +49,12 @@ class VulkanContext {
     vk::raii::SurfaceKHR m_surface;
 
     VulkanDevice m_device;
-    // VulkanSwapchain m_swapchain;
+    VulkanSwapchain m_swapchain;
+
+    uint32_t m_imageIndex;
+    uint32_t m_currentFrame = 0;
+
+    bool m_recreatingSwapchain;
 };
 
 }  // namespace nova::platform::vulkan
