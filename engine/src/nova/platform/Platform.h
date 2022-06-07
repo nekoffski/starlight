@@ -24,8 +24,8 @@
 #endif
 
 #ifdef USE_VULKAN
-#include "vulkan/VulkanRendererBackend.h"
-#define RENDERER_BACKEND vulkan::VulkanRendererBackend
+#include "vulkan/RendererBackend.h"
+#define RENDERER_BACKEND vulkan::RendererBackend
 #endif
 
 namespace nova::platform {

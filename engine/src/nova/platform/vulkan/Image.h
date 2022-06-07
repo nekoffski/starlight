@@ -4,13 +4,13 @@
 
 #include "Vulkan.h"
 
-#include "VulkanDevice.h"
+#include "Device.h"
 
 namespace nova::platform::vulkan {
 
 static vk::raii::Image createImage(
     uint32_t w, uint32_t h, vk::ImageType type, vk::Format format, vk::ImageTiling tiling,
-    vk::ImageUsageFlags usage, VulkanDevice& device
+    vk::ImageUsageFlags usage, Device& device
 ) {
     vk::ImageCreateInfo createInfo{};
     createInfo.imageType     = vk::ImageType::e2D;
@@ -30,7 +30,7 @@ static vk::raii::Image createImage(
 }
 
 static vk::raii::DeviceMemory allocateDeviceMemory(
-    VulkanDevice& device, vk::raii::Image& image, vk::MemoryPropertyFlags memoryFlags
+    Device& device, vk::raii::Image& image, vk::MemoryPropertyFlags memoryFlags
 ) {
     auto requirements = image.getMemoryRequirements();
 
@@ -46,8 +46,7 @@ static vk::raii::DeviceMemory allocateDeviceMemory(
 }
 
 static vk::raii::ImageView createImageView(
-    VulkanDevice& device, vk::Format format, vk::raii::Image& image,
-    vk::ImageAspectFlags aspectFlags
+    Device& device, vk::Format format, vk::raii::Image& image, vk::ImageAspectFlags aspectFlags
 ) {
     vk::ImageViewCreateInfo createInfo{};
 
@@ -63,11 +62,11 @@ static vk::raii::ImageView createImageView(
     return vk::raii::ImageView{*device.getLogicalDevice(), createInfo, nullptr};
 }
 
-struct VulkanImage {
-    explicit VulkanImage(
+struct Image {
+    explicit Image(
         uint32_t w, uint32_t h, vk::ImageType type, vk::Format format, vk::ImageTiling tiling,
         vk::ImageUsageFlags usage, vk::MemoryPropertyFlags memoryFlags,
-        vk::ImageAspectFlags aspectFlags, VulkanDevice& device
+        vk::ImageAspectFlags aspectFlags, Device& device
     )
         : width(w)
         , height(h)

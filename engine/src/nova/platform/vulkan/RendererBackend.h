@@ -4,15 +4,15 @@
 #include "nova/core/fwd.h"
 #include "nova/core/Window.h"
 
-#include "VulkanContext.h"
+#include "Context.h"
 
 namespace nova::platform::vulkan {
 
-class VulkanRendererBackend : public gfx::RendererBackend {
+class RendererBackend : public gfx::RendererBackend {
    public:
-    explicit VulkanRendererBackend(core::Window& window) : m_frameCount(0), m_context(window) {}
+    explicit RendererBackend(core::Window& window) : m_frameCount(0), m_context(window) {}
 
-    ~VulkanRendererBackend() {}
+    ~RendererBackend() {}
 
     bool beginFrame() override { return true; }
 
@@ -24,7 +24,7 @@ class VulkanRendererBackend : public gfx::RendererBackend {
    private:
     int m_frameCount;
 
-    VulkanContext m_context;
+    Context m_context;
 };
 
 }  // namespace nova::platform::vulkan

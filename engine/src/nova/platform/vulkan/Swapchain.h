@@ -8,8 +8,8 @@
 #include "nova/math/Size.hpp"
 
 #include "Vulkan.h"
-#include "VulkanDevice.h"
-#include "VulkanImage.h"
+#include "Device.h"
+#include "Image.h"
 
 namespace nova::platform::vulkan {
 
@@ -36,7 +36,7 @@ static vk::PresentModeKHR chooseSwapPresentMode(
 }
 
 static vk::raii::SwapchainKHR createSwapChain(
-    VulkanDevice& device, const SwapChainSupportDetails& swapChainSupport,
+    Device& device, const SwapChainSupportDetails& swapChainSupport,
     vk::SurfaceFormatKHR imageFormat, vk::raii::SurfaceKHR& surface, const math::Size2i& screenSize
 ) {
     vk::Extent2D swapchainExtent;
@@ -95,9 +95,9 @@ static vk::raii::SwapchainKHR createSwapChain(
     return vk::raii::SwapchainKHR{*device.getLogicalDevice(), swapChainCreateInfo};
 }
 
-struct VulkanSwapchain {
-    explicit VulkanSwapchain(
-        VulkanDevice& device, vk::raii::SurfaceKHR& surface, const math::Size2i& screenSize
+struct Swapchain {
+    explicit Swapchain(
+        Device& device, vk::raii::SurfaceKHR& surface, const math::Size2i& screenSize
     )
         : m_swapChainSupportDetails(device.getSwapChainSupport(surface))
         , m_imageFormat(chooseSwapSurfaceFormat(m_swapChainSupportDetails.formats))
@@ -115,7 +115,7 @@ struct VulkanSwapchain {
     }
 
     std::optional<uint32_t> acquireNextImageIndex(
-        VulkanDevice& device, uint64_t nsTimeout, vk::raii::Semaphore& imageAvailableSempaphore,
+        Device& device, uint64_t nsTimeout, vk::raii::Semaphore& imageAvailableSempaphore,
         vk::raii::Fence& fence
     ) {
         vk::AcquireNextImageInfoKHR acquireInfo(
@@ -131,7 +131,7 @@ struct VulkanSwapchain {
         return result;
     }
 
-    void createImages(VulkanDevice& device) {
+    void createImages(Device& device) {
         auto images = m_handle.getImages();
 
         m_images.reserve(images.size());
@@ -162,7 +162,7 @@ struct VulkanSwapchain {
     std::vector<vk::Image> m_images;
     std::vector<vk::raii::ImageView> m_views;
 
-    VulkanImage m_depthAttachment;
+    Image m_depthAttachment;
 };
 
 }  // namespace nova::platform::vulkan

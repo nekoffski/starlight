@@ -7,8 +7,9 @@
 #include "nova/core/fwd.h"
 #include "nova/math/Size.hpp"
 
-#include "VulkanDevice.h"
-#include "VulkanSwapchain.h"
+#include "Device.h"
+#include "Swapchain.h"
+#include "RenderPass.h"
 
 #ifndef DEBUG
 #define DEBUG
@@ -18,9 +19,9 @@ namespace nova::platform::vulkan {
 
 namespace details {
 
-class VulkanDispatcherLoader {
+class DispatcherLoader {
    public:
-    explicit VulkanDispatcherLoader();
+    explicit DispatcherLoader();
 
    private:
     vk::DynamicLoader m_dl;
@@ -29,17 +30,17 @@ class VulkanDispatcherLoader {
 
 }  // namespace details
 
-class VulkanContext {
+class Context {
    public:
-    explicit VulkanContext(core::Window& window);
-    ~VulkanContext();
+    explicit Context(core::Window& window);
+    ~Context();
 
     const math::Size2u32& getFramebufferSize() const { return m_framebufferSize; }
 
    private:
     math::Size2u32 m_framebufferSize;
 
-    details::VulkanDispatcherLoader m_vulkanDispatcherLoader;
+    details::DispatcherLoader m_vulkanDispatcherLoader;
     vk::AllocationCallbacks* m_allocator;
 
     vk::raii::Context m_context;
@@ -48,8 +49,9 @@ class VulkanContext {
     vk::raii::DebugUtilsMessengerEXT m_debugMessenger;
     vk::raii::SurfaceKHR m_surface;
 
-    VulkanDevice m_device;
-    VulkanSwapchain m_swapchain;
+    Device m_device;
+    Swapchain m_swapchain;
+    RenderPass m_mainRenderPass;
 
     uint32_t m_imageIndex;
     uint32_t m_currentFrame = 0;

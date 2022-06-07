@@ -1,4 +1,4 @@
-#include "VulkanContext.h"
+#include "Context.h"
 
 #include <kc/core/Utils.hpp>
 
@@ -11,7 +11,7 @@ namespace nova::platform::vulkan {
 
 namespace details {
 
-VulkanDispatcherLoader::VulkanDispatcherLoader()
+DispatcherLoader::DispatcherLoader()
     : m_vkGetInstanceProcAddr(m_dl.getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr"
       )) {
     VULKAN_HPP_DEFAULT_DISPATCHER.init(m_vkGetInstanceProcAddr);
@@ -25,25 +25,30 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugMessengerCallback(
     VkDebugUtilsMessengerCallbackDataEXT const* pCallbackData, void* pUserData
 );
 
-static vk::raii::Instance createVulkanInstance(
+static vk::raii::Instance createInstance(
     vk::AllocationCallbacks* allocator, vk::raii::Context& context
 );
 
 static vk::raii::DebugUtilsMessengerEXT createDebugMessenger(vk::raii::Instance& instance);
 
-VulkanContext::VulkanContext(core::Window& window)
+Context::Context(core::Window& window)
     : m_allocator(nullptr)
-    , m_instance(createVulkanInstance(m_allocator, m_context))
+    , m_instance(createInstance(m_allocator, m_context))
 #ifdef DEBUG
     , m_debugMessenger(createDebugMessenger(m_instance))
 #endif
     , m_surface(glfw::createVulkanSurface(m_instance, window.getHandle(), m_allocator))
     , m_device(m_instance, m_surface)
-    , m_swapchain(m_device, m_surface, window.getSize()) {
+    , m_swapchain(m_device, m_surface, window.getSize())
+    , m_mainRenderPass(
+          m_device, m_swapchain,
+          math::Vec4f{0.0f, 0.0f, m_framebufferSize.width, m_framebufferSize.height},
+          math::Vec4f{0.0f, 0.0f, 0.2, 1.0f}, 1.0f, 0
+      ) {
     LOG_TRACE("Vulkan context initialized");
 }
 
-VulkanContext::~VulkanContext() { LOG_TRACE("Destroying vulkan context"); }
+Context::~Context() { LOG_TRACE("Destroying vulkan context"); }
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugMessengerCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
@@ -64,7 +69,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugMessengerCallback(
     return false;
 }
 
-static vk::raii::Instance createVulkanInstance(
+static vk::raii::Instance createInstance(
     vk::AllocationCallbacks* allocator, vk::raii::Context& context
 ) {
     // set app info

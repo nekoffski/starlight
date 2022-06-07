@@ -1,4 +1,4 @@
-#include "VulkanDevice.h"
+#include "Device.h"
 
 #include <set>
 #include <string>
@@ -52,7 +52,7 @@ static vk::Format detectDepthFormat(vk::raii::PhysicalDevice& device) {
     return format.value();
 }
 
-VulkanDevice::VulkanDevice(vk::raii::Instance& instance, vk::raii::SurfaceKHR& surface)
+Device::Device(vk::raii::Instance& instance, vk::raii::SurfaceKHR& surface)
     : m_physicalDevices(instance)
     , m_physicalDevice(pickPhysicalDevice(m_physicalDevices, instance, surface))
     , m_queueFamilyIndices(findQueueFamilies(m_physicalDevice, surface))
@@ -63,7 +63,7 @@ VulkanDevice::VulkanDevice(vk::raii::Instance& instance, vk::raii::SurfaceKHR& s
     LOG_TRACE("Vulkan device created");
 }
 
-SwapChainSupportDetails VulkanDevice::getSwapChainSupport(vk::raii::SurfaceKHR& surface) {
+SwapChainSupportDetails Device::getSwapChainSupport(vk::raii::SurfaceKHR& surface) {
     return querySwapChainSupport(m_physicalDevice, surface);
 }
 

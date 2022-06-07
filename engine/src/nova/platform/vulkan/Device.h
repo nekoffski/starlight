@@ -19,9 +19,9 @@ struct SwapChainSupportDetails {
     std::vector<vk::PresentModeKHR> presentModes;
 };
 
-class VulkanDevice {
+class Device {
    public:
-    explicit VulkanDevice(vk::raii::Instance& instance, vk::raii::SurfaceKHR& surface);
+    explicit Device(vk::raii::Instance& instance, vk::raii::SurfaceKHR& surface);
 
     vk::raii::Device* getLogicalDevice() { return &m_logicalDevice; }
 
