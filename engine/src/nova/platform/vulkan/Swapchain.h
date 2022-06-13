@@ -10,6 +10,7 @@
 #include "Vulkan.h"
 #include "Device.h"
 #include "Image.h"
+#include "Framebuffer.h"
 
 namespace nova::platform::vulkan {
 
@@ -151,7 +152,42 @@ struct Swapchain {
         }
     }
 
-    void present() {}
+    void present(
+        vk::Queue graphicsQueue, vk::Queue presentQueue, vk::Semaphore renderCompleteSemaphore,
+        uint32_t presentImageIndex
+    ) {
+        vk::PresentInfoKHR info{};
+        info.waitSemaphoreCount = 1;
+        info.pWaitSemaphores    = &renderCompleteSemaphore;
+        info.swapchainCount     = 1;
+        info.pSwapchains        = &(*m_handle);
+        info.pImageIndices      = &presentImageIndex;
+        info.pResults           = 0;
+
+        auto result = presentQueue.presentKHR(info);
+
+        if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR) {
+            // recreate swapchain
+        }
+
+        ASSERT(result == vk::Result::eSuccess, "Failed to present swap chain image!");
+        m_currentFrame = (m_currentFrame + 1) & m_maxFramesInFlight;
+    }
+
+    void regenerateFramebuffers(
+        Device& device, RenderPass& renderPass, uint32_t width, uint32_t height
+    ) {
+        // try to reuse memory
+        framebuffers.clear();
+        framebuffers.reserve(m_images.size());
+
+        for (int i = 0; i < m_images.size(); ++i) {
+            uint32_t attachmentCount               = 2;
+            std::vector<vk::ImageView> attachments = {*m_views[i], *m_depthAttachment.view};
+
+            framebuffers.emplace_back(device, renderPass, width, height, attachments);
+        }
+    }
 
     SwapChainSupportDetails m_swapChainSupportDetails;
 
@@ -163,6 +199,10 @@ struct Swapchain {
     std::vector<vk::raii::ImageView> m_views;
 
     Image m_depthAttachment;
+
+    std::vector<Framebuffer> framebuffers;
+
+    uint32_t m_currentFrame = 0;
 };
 
 }  // namespace nova::platform::vulkan

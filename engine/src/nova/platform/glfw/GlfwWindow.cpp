@@ -1,5 +1,6 @@
 #include "GlfwWindow.h"
 
+#include "nova/platform/vulkan/Vulkan.h"
 #include <GLFW/glfw3.h>
 #include <kc/core/Log.h>
 
@@ -43,7 +44,6 @@ static core::MouseAction glfwToNovaMouseAction(int action) {
 
 GlfwWindow::GlfwWindow() {
     glfwInit();
-
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
     m_windowHandle = glfwCreateWindow(1600, 900, "nova-engine", nullptr, nullptr);

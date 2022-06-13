@@ -4,14 +4,13 @@
 
 #include "nova/math/Glm.h"
 #include "CommandBuffer.h"
-#include "Swapchain.h"
 #include "Device.h"
 
 namespace nova::platform::vulkan {
 
 namespace {
 
-vk::raii::RenderPass createRenderPass(Device& device, Swapchain& swapchain) {
+vk::raii::RenderPass createRenderPass(Device& device, const vk::SurfaceFormatKHR& swapchainFormat) {
     vk::SubpassDescription subpass{};
     subpass.pipelineBindPoint = vk::PipelineBindPoint::eGraphics;
 
@@ -20,7 +19,7 @@ vk::raii::RenderPass createRenderPass(Device& device, Swapchain& swapchain) {
 
     // color
     vk::AttachmentDescription colorAttachment;
-    colorAttachment.format         = swapchain.m_imageFormat.format;
+    colorAttachment.format         = swapchainFormat.format;
     colorAttachment.samples        = vk::SampleCountFlagBits::e1;
     colorAttachment.loadOp         = vk::AttachmentLoadOp::eClear;
     colorAttachment.storeOp        = vk::AttachmentStoreOp::eStore;
@@ -94,18 +93,17 @@ struct RenderPass {
         recordingEnded,
         submitted,
         notAllocated
-
     };
 
     explicit RenderPass(
-        Device& device, Swapchain& swapchain, const math::Vec4f& area,
+        Device& device, const vk::SurfaceFormatKHR& swapchainFormat, const math::Vec4f& area,
         const math::Vec4f& backgroundColor, float depth, uint32_t stencil
     )
         : area(area)
         , backgroundColor(backgroundColor)
         , depth(depth)
         , stencil(stencil)
-        , handle(createRenderPass(device, swapchain)) {}
+        , handle(createRenderPass(device, swapchainFormat)) {}
 
     void begin(CommandBuffer& commandBuffer, vk::raii::Framebuffer& framebuffer) {
         vk::RenderPassBeginInfo beginInfo{};

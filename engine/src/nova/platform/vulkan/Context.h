@@ -10,6 +10,8 @@
 #include "Device.h"
 #include "Swapchain.h"
 #include "RenderPass.h"
+#include "CommandBuffer.h"
+#include "Fence.h"
 
 #ifndef DEBUG
 #define DEBUG
@@ -53,10 +55,19 @@ class Context {
     Swapchain m_swapchain;
     RenderPass m_mainRenderPass;
 
+    std::vector<CommandBuffer> m_graphicsCommandBuffers;
+
     uint32_t m_imageIndex;
     uint32_t m_currentFrame = 0;
 
     bool m_recreatingSwapchain;
+
+   public:
+    std::vector<vk::raii::Semaphore> imageAvailableSemaphores;
+    std::vector<vk::raii::Semaphore> queueCompleteSemaphores;
+
+    std::vector<Fence> inFlightFences;
+    std::vector<Fence*> imagesInFlight;
 };
 
 }  // namespace nova::platform::vulkan

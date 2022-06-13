@@ -19,6 +19,19 @@ struct SwapChainSupportDetails {
     std::vector<vk::PresentModeKHR> presentModes;
 };
 
+namespace {
+
+vk::raii::CommandPool createCommandPool(vk::raii::Device& device, uint32_t graphicsQueueIndex) {
+    vk::CommandPoolCreateInfo info{};
+
+    info.flags            = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
+    info.queueFamilyIndex = graphicsQueueIndex;
+
+    return vk::raii::CommandPool{device, info};
+}
+
+}  // namespace
+
 class Device {
    public:
     explicit Device(vk::raii::Instance& instance, vk::raii::SurfaceKHR& surface);
@@ -61,6 +74,9 @@ class Device {
     vk::raii::Queue m_presentQueue;
 
     vk::Format m_depthFormat;
+
+   public:
+    vk::raii::CommandPool graphicsCommandPool;
 };
 
 }  // namespace nova::platform::vulkan

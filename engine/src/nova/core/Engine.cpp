@@ -49,7 +49,6 @@ void Engine::render(Application& application, float deltaTime) {
     gfx::RenderPacket packet{deltaTime};
 
     m_rendererFrontend.drawFrame(packet);
-    m_platform.window->swapBuffers();
 }
 
 void Engine::onSignal(int signal) {

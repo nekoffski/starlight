@@ -15,6 +15,7 @@ DispatcherLoader::DispatcherLoader()
     : m_vkGetInstanceProcAddr(m_dl.getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr"
       )) {
     VULKAN_HPP_DEFAULT_DISPATCHER.init(m_vkGetInstanceProcAddr);
+    LOG_INFO("Dispatcher header version={}", VULKAN_HPP_DEFAULT_DISPATCHER.getVkHeaderVersion());
 }
 
 }  // namespace details
@@ -40,11 +41,41 @@ Context::Context(core::Window& window)
     , m_surface(glfw::createVulkanSurface(m_instance, window.getHandle(), m_allocator))
     , m_device(m_instance, m_surface)
     , m_swapchain(m_device, m_surface, window.getSize())
+    , m_framebufferSize(1600u, 900u)
     , m_mainRenderPass(
-          m_device, m_swapchain,
+          m_device, m_swapchain.m_imageFormat,
           math::Vec4f{0.0f, 0.0f, m_framebufferSize.width, m_framebufferSize.height},
           math::Vec4f{0.0f, 0.0f, 0.2, 1.0f}, 1.0f, 0
       ) {
+
+    m_graphicsCommandBuffers.reserve(m_swapchain.m_images.size());
+
+    for (auto& image : m_swapchain.m_images) {
+        m_graphicsCommandBuffers.emplace_back(
+            m_device, m_device.graphicsCommandPool, vk::CommandBufferLevel::ePrimary
+        );
+    }
+
+    m_swapchain.regenerateFramebuffers(
+        m_device, m_mainRenderPass, m_framebufferSize.width, m_framebufferSize.height
+    );
+
+    imageAvailableSemaphores.reserve(m_swapchain.m_maxFramesInFlight);
+    queueCompleteSemaphores.reserve(m_swapchain.m_maxFramesInFlight);
+    inFlightFences.reserve(m_swapchain.m_maxFramesInFlight);
+
+    for (int i = 0; i < m_swapchain.m_maxFramesInFlight; ++i) {
+        imageAvailableSemaphores.emplace_back(
+            *m_device.getLogicalDevice(), vk::SemaphoreCreateInfo{}
+        );
+
+        queueCompleteSemaphores.emplace_back(
+            *m_device.getLogicalDevice(), vk::SemaphoreCreateInfo{}
+        );
+
+        inFlightFences.emplace_back(*m_device.getLogicalDevice(), true);
+    }
+
     LOG_TRACE("Vulkan context initialized");
 }
 
@@ -72,13 +103,15 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugMessengerCallback(
 static vk::raii::Instance createInstance(
     vk::AllocationCallbacks* allocator, vk::raii::Context& context
 ) {
+    LOG_WARN("{}", VK_HEADER_VERSION);
+
     // set app info
     vk::ApplicationInfo applicationInfo{};
     applicationInfo.pApplicationName   = "Vulkan";
     applicationInfo.applicationVersion = 1;
     applicationInfo.pApplicationName   = "Nova";
     applicationInfo.engineVersion      = 1;
-    applicationInfo.apiVersion         = VK_API_VERSION_1_2;
+    applicationInfo.apiVersion         = VK_API_VERSION_1_3;
 
     vk::InstanceCreateInfo createInfo{};
     createInfo.pApplicationInfo = &applicationInfo;

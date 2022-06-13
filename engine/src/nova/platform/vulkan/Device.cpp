@@ -59,7 +59,9 @@ Device::Device(vk::raii::Instance& instance, vk::raii::SurfaceKHR& surface)
     , m_logicalDevice(createLogicalDevice(m_physicalDevice, surface, m_queueFamilyIndices))
     , m_graphicsQueue(m_logicalDevice.getQueue(*m_queueFamilyIndices.graphicsFamily, 0))
     , m_presentQueue(m_logicalDevice.getQueue(*m_queueFamilyIndices.presentFamily, 0))
-    , m_depthFormat(detectDepthFormat(m_physicalDevice)) {
+    , m_depthFormat(detectDepthFormat(m_physicalDevice))
+    , graphicsCommandPool(createCommandPool(m_logicalDevice, *m_queueFamilyIndices.graphicsFamily)
+      ) {
     LOG_TRACE("Vulkan device created");
 }
 
