@@ -4,79 +4,87 @@
 
 #include <kc/core/Log.h>
 
+#include "Context.h"
+
 namespace nova::platform::vulkan {
-
-struct QueueFamilyIndices {
-    std::optional<uint32_t> graphicsFamily;
-    std::optional<uint32_t> presentFamily;
-
-    bool isComplete() { return graphicsFamily.has_value() && presentFamily.has_value(); }
-};
-
-struct SwapChainSupportDetails {
-    vk::SurfaceCapabilitiesKHR capabilities;
-    std::vector<vk::SurfaceFormatKHR> formats;
-    std::vector<vk::PresentModeKHR> presentModes;
-};
-
-namespace {
-
-vk::raii::CommandPool createCommandPool(vk::raii::Device& device, uint32_t graphicsQueueIndex) {
-    vk::CommandPoolCreateInfo info{};
-
-    info.flags            = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
-    info.queueFamilyIndex = graphicsQueueIndex;
-
-    return vk::raii::CommandPool{device, info};
-}
-
-}  // namespace
 
 class Device {
    public:
-    explicit Device(vk::raii::Instance& instance, vk::raii::SurfaceKHR& surface);
+    struct SwapchainSupportInfo {
+        VkSurfaceCapabilitiesKHR capabilities;
+        std::vector<VkSurfaceFormatKHR> formats;
+        std::vector<VkPresentModeKHR> presentModes;
+    };
 
-    vk::raii::Device* getLogicalDevice() { return &m_logicalDevice; }
+    explicit Device(Context* context);
+    ~Device();
 
-    vk::raii::PhysicalDevice* getPhysicalDevice() { return &m_physicalDevice; }
+    // void querySwapchainSupport(VkSurfaceKHR surface);
 
-    int32_t findMemoryIndex(uint32_t typeFilter, vk::MemoryPropertyFlags propertyFlags) {
-        std::optional<int32_t> index;
+    std::optional<int32_t> findMemoryIndex(uint32_t typeFilter, uint32_t propertyFlags) const {
+        VkPhysicalDeviceMemoryProperties memoryProperties;
+        vkGetPhysicalDeviceMemoryProperties(m_physicalDevice, &memoryProperties);
 
-        auto properties = m_physicalDevice.getMemoryProperties();
-        for (uint32_t i = 0; i < properties.memoryTypeCount; ++i) {
-            if (typeFilter & (1 << i) &&
-                (properties.memoryTypes[i].propertyFlags & propertyFlags) == propertyFlags) {
-                index = i;
-                break;
+        for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; ++i) {
+            bool isSuitable =
+                (typeFilter & (1 << i)) &&
+                (memoryProperties.memoryTypes[i].propertyFlags & propertyFlags) == propertyFlags;
+
+            if (isSuitable) return i;
+        }
+
+        LOG_WARN("Unable to find suitable memory type!");
+        return {};
+    }
+
+    bool detectDepthFormat() {
+        std::vector<VkFormat> candidates{
+            VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT};
+        uint32_t flags = VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+
+        for (const auto& format : candidates) {
+            VkFormatProperties properties;
+            vkGetPhysicalDeviceFormatProperties(m_physicalDevice, format, &properties);
+
+            if (((properties.linearTilingFeatures & flags) == flags) ||
+                ((properties.optimalTilingFeatures & flags) == flags)) {
+                m_depthFormat = format;
+                return true;
             }
         }
 
-        ASSERT(index.has_value(), "Could not find correct memory index");
-        return index.value();
+        return false;
     }
 
-    QueueFamilyIndices getQueueFamilies() const { return m_queueFamilyIndices; }
-
-    SwapChainSupportDetails getSwapChainSupport(vk::raii::SurfaceKHR& surface);
-
-    vk::Format getDepthFormat() { return m_depthFormat; }
-
    private:
-    vk::raii::PhysicalDevices m_physicalDevices;
-    vk::raii::PhysicalDevice m_physicalDevice;
+    void createCommandPool();
+    bool pickPhysicalDevice();
+    void createLogicalDevice();
+    void getQueues();
 
-    QueueFamilyIndices m_queueFamilyIndices;
+    std::vector<uint32_t> prepareQueuesIndices();
 
-    vk::raii::Device m_logicalDevice;
+    Context* m_context;
 
-    vk::raii::Queue m_graphicsQueue;
-    vk::raii::Queue m_presentQueue;
+    VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
+    VkDevice m_logicalDevice          = VK_NULL_HANDLE;
 
-    vk::Format m_depthFormat;
+    SwapchainSupportInfo m_swapchainSupport;
+    int32_t m_graphicsQueueIndex;
+    int32_t m_presentQueueIndex;
+    int32_t m_transferQueueIndex;
 
-   public:
-    vk::raii::CommandPool graphicsCommandPool;
+    VkQueue m_graphicsQueue = VK_NULL_HANDLE;
+    VkQueue m_presentQueue  = VK_NULL_HANDLE;
+    VkQueue m_transferQueue = VK_NULL_HANDLE;
+
+    VkCommandPool m_graphicsCommandPool = VK_NULL_HANDLE;
+
+    VkPhysicalDeviceProperties m_properties;
+    VkPhysicalDeviceFeatures m_features;
+    VkPhysicalDeviceMemoryProperties m_memory;
+
+    VkFormat m_depthFormat;
 };
 
 }  // namespace nova::platform::vulkan

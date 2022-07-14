@@ -1,45 +1,28 @@
-#pragma once
+// #pragma once
 
-#include <vector>
+// #include <vector>
 
-#include "Vulkan.h"
-#include "Device.h"
-#include "RenderPass.h"
+// #include "nova/math/Size.hpp"
 
-namespace nova::platform::vulkan {
+// #include "Vulkan.h"
+// #include "fwd.h"
 
-namespace {
+// namespace nova::platform::vulkan {
 
-vk::raii::Framebuffer createFramebuffer(
-    Device& device, RenderPass& renderPass, uint32_t width, uint32_t height,
-    std::vector<vk::ImageView>& attachments
-) {
-    vk::FramebufferCreateInfo info{};
+// struct Framebuffer {
+//     explicit Framebuffer(
+//         const Context& context, const Device& device, RenderPass* renderPass,
+//         const math::Size2u32& size, const std::vector<VkImageView>& attachments
+//     );
 
-    info.renderPass      = *renderPass.handle;
-    info.attachmentCount = attachments.size();
-    info.pAttachments    = attachments.data();
-    info.width           = width;
-    info.height          = height;
-    info.layers          = 1;
+//     ~Framebuffer();
 
-    return vk::raii::Framebuffer{*device.getLogicalDevice(), info};
-}
+//     const Context& context;
+//     const Device& device;
 
-}  // namespace
+//     RenderPass* renderPass;
+//     std::vector<VkImageView> attachments;
+//     VkFramebuffer handle;
+// };
 
-struct Framebuffer {
-    explicit Framebuffer(
-        Device& device, RenderPass& renderPass, uint32_t width, uint32_t height,
-        const std::vector<vk::ImageView>& attachments
-    )
-        : renderPass(renderPass)
-        , attachments(attachments)
-        , handle(createFramebuffer(device, renderPass, width, height, this->attachments)) {}
-
-    RenderPass& renderPass;
-    std::vector<vk::ImageView> attachments;
-    vk::raii::Framebuffer handle;
-};
-
-}  // namespace nova::platform::vulkan
+// }  // namespace nova::platform::vulkan

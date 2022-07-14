@@ -8,24 +8,15 @@
 
 namespace nova::platform::glfw {
 
-vk::raii::SurfaceKHR createVulkanSurface(
-    vk::raii::Instance& instance, void* windowHandle, vk::AllocationCallbacks* allocator
+void createVulkanSurface(
+    VkInstance instance, void* windowHandle, VkAllocationCallbacks* allocator, VkSurfaceKHR* surface
 ) {
     LOG_TRACE("Creating Vulkan surface");
     ASSERT(windowHandle != nullptr, "windowHandle==nullptr");
 
-    VkSurfaceKHR surface;
-    auto nativeAllocator =
-        allocator != nullptr ? reinterpret_cast<VkAllocationCallbacks*>(allocator) : nullptr;
-
-    const auto result = glfwCreateWindowSurface(
-        *instance, static_cast<GLFWwindow*>(windowHandle), nullptr, &surface
-    );
-
-    ASSERT(result == VK_SUCCESS, "Could not create vulkan surface: {}", result);
-
-    LOG_DEBUG("Created Vulkan surface");
-    return vk::raii::SurfaceKHR{instance, surface};
+    VK_ASSERT(glfwCreateWindowSurface(
+        instance, static_cast<GLFWwindow*>(windowHandle), allocator, surface
+    ));
 }
 
 std::vector<const char*> getRequiredExtensions() {

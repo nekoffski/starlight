@@ -10,19 +10,23 @@
 namespace nova::core {
 
 struct Window {
-    using OnKeyCallback         = void (*)(KeyAction, int);
-    using OnMouseCallback       = void (*)(MouseAction, int);
-    using OnWindowCloseCallback = void (*)();
+    using OnKeyCallback          = void (*)(KeyAction, int);
+    using OnMouseCallback        = void (*)(MouseAction, int);
+    using OnWindowCloseCallback  = void (*)();
+    using OnWindowResizeCallback = void (*)(uint32_t, uint32_t);
 
-    virtual std::string_view getVendor() const   = 0;
-    virtual void update()                        = 0;
-    virtual void swapBuffers()                   = 0;
-    virtual math::Size2i getSize() const         = 0;
+    virtual std::string_view getVendor() const = 0;
+
+    virtual void update()      = 0;
+    virtual void swapBuffers() = 0;
+
+    virtual math::Size2u32 getSize() const       = 0;
     virtual math::Vec2f getMousePosition() const = 0;
 
-    virtual void onKeyCallback(OnKeyCallback)                 = 0;
-    virtual void onMouseCallback(OnMouseCallback)             = 0;
-    virtual void onWindowCloseCallback(OnWindowCloseCallback) = 0;
+    virtual void onKeyCallback(OnKeyCallback)                   = 0;
+    virtual void onMouseCallback(OnMouseCallback)               = 0;
+    virtual void onWindowCloseCallback(OnWindowCloseCallback)   = 0;
+    virtual void onWindowResizeCallback(OnWindowResizeCallback) = 0;
 
     virtual void* getHandle() { return nullptr; }
 };

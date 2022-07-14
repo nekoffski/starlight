@@ -1,129 +1,144 @@
-#include "Context.h"
 
+#include "Context.h"
 #include <kc/core/Utils.hpp>
 
-// TODO: make it more generic
+// // TODO: make it more generic
 #include "nova/platform/glfw/Vulkan.h"
 
 #include "nova/core/Window.h"
 
 namespace nova::platform::vulkan {
 
-namespace details {
+namespace {
 
-DispatcherLoader::DispatcherLoader()
-    : m_vkGetInstanceProcAddr(m_dl.getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr"
-      )) {
-    VULKAN_HPP_DEFAULT_DISPATCHER.init(m_vkGetInstanceProcAddr);
-    LOG_INFO("Dispatcher header version={}", VULKAN_HPP_DEFAULT_DISPATCHER.getVkHeaderVersion());
-}
-
-}  // namespace details
-
-static VKAPI_ATTR VkBool32 VKAPI_CALL debugMessengerCallback(
+VKAPI_ATTR VkBool32 VKAPI_CALL debugMessengerCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-    VkDebugUtilsMessageTypeFlagsEXT messageTypes,
-    VkDebugUtilsMessengerCallbackDataEXT const* pCallbackData, void* pUserData
+    [[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT messageTypes,
+    VkDebugUtilsMessengerCallbackDataEXT const* pCallbackData, [[maybe_unused]] void* pUserData
 );
 
-static vk::raii::Instance createInstance(
-    vk::AllocationCallbacks* allocator, vk::raii::Context& context
+VkApplicationInfo getApplicationInfo(const core::Config& config);
+
+std::vector<const char*> getRequiredExtensions();
+std::vector<const char*> getLayers();
+
+VkDebugUtilsMessengerCreateInfoEXT getDebugMessengerCreateInfo();
+
+VkInstanceCreateInfo getInstanceCreateInfo(
+    const VkApplicationInfo& applicationInfo, std::vector<const char*>& extensions,
+    std::vector<const char*>& layers
 );
 
-static vk::raii::DebugUtilsMessengerEXT createDebugMessenger(vk::raii::Instance& instance);
+}  // namespace
 
-Context::Context(core::Window& window)
+Context::Context(core::Window& window, const core::Config& config)
     : m_allocator(nullptr)
-    , m_instance(createInstance(m_allocator, m_context))
-#ifdef DEBUG
-    , m_debugMessenger(createDebugMessenger(m_instance))
+    , m_instance(nullptr)
+#ifdef NV_VK_DEBUG
+    , m_debugMessenger(nullptr)
 #endif
-    , m_surface(glfw::createVulkanSurface(m_instance, window.getHandle(), m_allocator))
-    , m_device(m_instance, m_surface)
-    , m_swapchain(m_device, m_surface, window.getSize())
-    , m_framebufferSize(1600u, 900u)
-    , m_mainRenderPass(
-          m_device, m_swapchain.m_imageFormat,
-          math::Vec4f{0.0f, 0.0f, m_framebufferSize.width, m_framebufferSize.height},
-          math::Vec4f{0.0f, 0.0f, 0.2, 1.0f}, 1.0f, 0
-      ) {
+    , m_surface(nullptr) {
 
-    m_graphicsCommandBuffers.reserve(m_swapchain.m_images.size());
+    auto applicationInfo    = getApplicationInfo(config);
+    auto requiredExtensions = getRequiredExtensions();
 
-    for (auto& image : m_swapchain.m_images) {
-        m_graphicsCommandBuffers.emplace_back(
-            m_device, m_device.graphicsCommandPool, vk::CommandBufferLevel::ePrimary
-        );
+    LOG_INFO("Vulkan extensions to enable:");
+    for (const auto& extension : requiredExtensions) LOG_INFO("\t{}", extension);
+
+    auto layers = getLayers();
+
+    if (layers.size() > 0) {
+        LOG_INFO("Vulkan layers to enable:");
+        for (const auto& layer : layers) LOG_INFO("\t{}", layer);
     }
 
-    m_swapchain.regenerateFramebuffers(
-        m_device, m_mainRenderPass, m_framebufferSize.width, m_framebufferSize.height
+    auto instanceCreateInfo = getInstanceCreateInfo(applicationInfo, requiredExtensions, layers);
+
+    VK_ASSERT(vkCreateInstance(&instanceCreateInfo, m_allocator, &m_instance));
+    LOG_INFO("Vulkan Instance initialized");
+
+#ifdef NV_VK_DEBUG
+    static const auto debugFactoryFunctionName = "vkCreateDebugUtilsMessengerEXT";
+
+    auto debugCreateInfo = getDebugMessengerCreateInfo();
+    auto factory         = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
+        vkGetInstanceProcAddr(m_instance, debugFactoryFunctionName)
     );
 
-    imageAvailableSemaphores.reserve(m_swapchain.m_maxFramesInFlight);
-    queueCompleteSemaphores.reserve(m_swapchain.m_maxFramesInFlight);
-    inFlightFences.reserve(m_swapchain.m_maxFramesInFlight);
+    ASSERT(factory, "Failed to create debug messenger factory");
+    VK_ASSERT(factory(m_instance, &debugCreateInfo, m_allocator, &m_debugMessenger));
 
-    for (int i = 0; i < m_swapchain.m_maxFramesInFlight; ++i) {
-        imageAvailableSemaphores.emplace_back(
-            *m_device.getLogicalDevice(), vk::SemaphoreCreateInfo{}
-        );
+    LOG_INFO("Created Vulkan Debug Messenger");
+#endif
 
-        queueCompleteSemaphores.emplace_back(
-            *m_device.getLogicalDevice(), vk::SemaphoreCreateInfo{}
-        );
-
-        inFlightFences.emplace_back(*m_device.getLogicalDevice(), true);
-    }
-
-    LOG_TRACE("Vulkan context initialized");
+    glfw::createVulkanSurface(m_instance, window.getHandle(), m_allocator, &m_surface);
+    LOG_INFO("Vulkan Surface created");
+    LOG_INFO("Vulkan Context created");
 }
 
-Context::~Context() { LOG_TRACE("Destroying vulkan context"); }
+Context::~Context() {
+    if (m_surface) vkDestroySurfaceKHR(m_instance, m_surface, m_allocator);
 
-static VKAPI_ATTR VkBool32 VKAPI_CALL debugMessengerCallback(
+#ifdef NV_VK_DEBUG
+    if (m_debugMessenger) {
+        static const auto debugDestructorFunctionName = "vkDestroyDebugUtilsMessengerEXT";
+
+        auto destructor = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
+            vkGetInstanceProcAddr(m_instance, debugDestructorFunctionName)
+        );
+        destructor(m_instance, m_debugMessenger, m_allocator);
+    }
+#endif
+
+    if (m_instance) vkDestroyInstance(m_instance, m_allocator);
+}
+
+VkAllocationCallbacks* Context::getAllocator() const { return m_allocator; }
+
+VkInstance Context::getInstance() const { return m_instance; }
+
+VkSurfaceKHR Context::getSurface() const { return m_surface; }
+
+namespace {
+
+VKAPI_ATTR VkBool32 VKAPI_CALL debugMessengerCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
     [[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT messageTypes,
     VkDebugUtilsMessengerCallbackDataEXT const* pCallbackData, [[maybe_unused]] void* pUserData
 ) {
     switch (messageSeverity) {
         case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-            LOG_WARN("{}", pCallbackData->pMessage);
+            LOG_WARN("VK_DEBUG_LAYER - {}", pCallbackData->pMessage);
 
         case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-            LOG_ERROR("{}", pCallbackData->pMessage);
+            LOG_ERROR("VK_DEBUG_LAYER - {}", pCallbackData->pMessage);
 
         default:
-            LOG_INFO("{}", pCallbackData->pMessage);
+            LOG_INFO("VK_DEBUG_LAYER - {}", pCallbackData->pMessage);
     }
 
     return false;
 }
 
-static vk::raii::Instance createInstance(
-    vk::AllocationCallbacks* allocator, vk::raii::Context& context
-) {
-    LOG_WARN("{}", VK_HEADER_VERSION);
+VkApplicationInfo getApplicationInfo(const core::Config& config) {
+    VkApplicationInfo applicationInfo{VK_STRUCTURE_TYPE_APPLICATION_INFO};
 
-    // set app info
-    vk::ApplicationInfo applicationInfo{};
-    applicationInfo.pApplicationName   = "Vulkan";
-    applicationInfo.applicationVersion = 1;
-    applicationInfo.pApplicationName   = "Nova";
-    applicationInfo.engineVersion      = 1;
-    applicationInfo.apiVersion         = VK_API_VERSION_1_3;
+    applicationInfo.apiVersion       = VK_API_VERSION_1_3;
+    applicationInfo.pApplicationName = config.window.name.c_str();
+    applicationInfo.pEngineName      = "Nova Engine";
+    applicationInfo.engineVersion =
+        VK_MAKE_VERSION(config.version.major, config.version.minor, config.version.build);
 
-    vk::InstanceCreateInfo createInfo{};
-    createInfo.pApplicationInfo = &applicationInfo;
+    return applicationInfo;
+}
 
-    // get extensions info
+std::vector<const char*> getRequiredExtensions() {
     const auto platformRequiredExtensions = glfw::getRequiredExtensions();
 
     std::vector<const char*> requiredExtensions = {
-#ifdef DEBUG
+#ifdef NV_VK_DEBUG
         VK_EXT_DEBUG_UTILS_EXTENSION_NAME
 #endif
-
     };
 
     requiredExtensions.insert(
@@ -131,19 +146,19 @@ static vk::raii::Instance createInstance(
         platformRequiredExtensions.end()
     );
 
-    LOG_INFO("Vulkan extensions to enable:");
-    for (const auto& extension : requiredExtensions) LOG_INFO("\t{}", extension);
+    return requiredExtensions;
+}
 
-    createInfo.enabledExtensionCount   = requiredExtensions.size();
-    createInfo.ppEnabledExtensionNames = requiredExtensions.data();
-    createInfo.enabledLayerCount       = 0;
-    createInfo.ppEnabledLayerNames     = 0;
+std::vector<const char*> getLayers() {
+    std::vector<const char*> layers;
 
-// validation layers
-#ifdef DEBUG
+    // validation layers
+#ifdef NV_VK_DEBUG
     // get the list of available validation layers
     auto layersAvailable = vk::enumerateInstanceLayerProperties();
+
     std::vector<const char*> layerNames{layersAvailable.size(), nullptr};
+
     std::ranges::transform(layersAvailable, std::begin(layerNames), [](auto& layer) -> const char* {
         return layer.layerName;
     });
@@ -165,36 +180,51 @@ static vk::raii::Instance createInstance(
 
     LOG_DEBUG("All required validation layers found");
 
-    createInfo.enabledLayerCount   = requiredValidationLayersNames.size();
-    createInfo.ppEnabledLayerNames = requiredValidationLayersNames.data();
+    std::move(
+        requiredValidationLayersNames.begin(), requiredValidationLayersNames.end(),
+        std::back_inserter(layers)
+    );
 #endif
 
-    vk::raii::Instance instance(context, createInfo);
-    VULKAN_HPP_DEFAULT_DISPATCHER.init(*instance);
-
-    return instance;
+    return layers;
 }
 
-static vk::raii::DebugUtilsMessengerEXT createDebugMessenger(vk::raii::Instance& instance) {
-    LOG_TRACE("Creating Vulkan debugger");
+VkDebugUtilsMessengerCreateInfoEXT getDebugMessengerCreateInfo() {
+    uint32_t logSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
+                           VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+                           VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
 
-    vk::DebugUtilsMessageSeverityFlagsEXT messageSeverity(
-        vk::DebugUtilsMessageSeverityFlagBitsEXT::eError |
-        vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
-        vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo
-    );
+    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{
+        VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT};
 
-    vk::DebugUtilsMessageTypeFlagsEXT messageType(
-        vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
-        vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance |
-        vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation
-    );
+    debugCreateInfo.messageSeverity = logSeverity;
+    debugCreateInfo.messageType     = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+                                  VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT |
+                                  VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
 
-    vk::DebugUtilsMessengerCreateInfoEXT createInfo(
-        {}, messageSeverity, messageType, &debugMessengerCallback
-    );
+    debugCreateInfo.pfnUserCallback = debugMessengerCallback;
 
-    return vk::raii::DebugUtilsMessengerEXT{instance, createInfo};
+    return debugCreateInfo;
 }
+
+VkInstanceCreateInfo getInstanceCreateInfo(
+    const VkApplicationInfo& applicationInfo, std::vector<const char*>& extensions,
+    std::vector<const char*>& layers
+) {
+    VkInstanceCreateInfo instanceCreateInfo{VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO};
+
+    instanceCreateInfo.pApplicationInfo        = &applicationInfo;
+    instanceCreateInfo.enabledExtensionCount   = extensions.size();
+    instanceCreateInfo.ppEnabledExtensionNames = extensions.data();
+
+    const auto layersSize = layers.size();
+
+    instanceCreateInfo.enabledLayerCount   = layers.size();
+    instanceCreateInfo.ppEnabledLayerNames = layersSize > 0 ? layers.data() : nullptr;
+
+    return instanceCreateInfo;
+}
+
+}  // namespace
 
 }  // namespace nova::platform::vulkan

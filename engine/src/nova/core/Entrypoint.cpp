@@ -4,6 +4,7 @@
 
 #include "Application.h"
 #include "Engine.h"
+#include "Config.h"
 
 #include "nova/platform/Platform.h"
 
@@ -15,7 +16,7 @@ int mainImpl(int argc, char** argv) {
 
     try {
         LOG_TRACE("Creating Platform instance");
-        platform::PlatformProvider platformProvider{};
+        platform::PlatformProvider platformProvider{defaultConfig};
 
         auto platform = platformProvider.getPlatform();
 

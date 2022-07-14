@@ -1,11 +1,13 @@
 #pragma once
 
+#include <vector>
+
 #include "nova/platform/vulkan/Vulkan.h"
 
 namespace nova::platform::glfw {
 
-vk::raii::SurfaceKHR createVulkanSurface(
-    vk::raii::Instance& instance, void* windowHandle, vk::AllocationCallbacks* allocator
+void createVulkanSurface(
+    VkInstance instance, void* windowHandle, VkAllocationCallbacks* allocator, VkSurfaceKHR* surface
 );
 
 std::vector<const char*> getRequiredExtensions();

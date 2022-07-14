@@ -46,9 +46,9 @@ void Engine::update(Application& application, float deltaTime) {
 }
 
 void Engine::render(Application& application, float deltaTime) {
-    gfx::RenderPacket packet{deltaTime};
+    gfx::RenderPacket packet{};
 
-    m_rendererFrontend.drawFrame(packet);
+    m_rendererFrontend.drawFrame(packet, deltaTime);
 }
 
 void Engine::onSignal(int signal) {

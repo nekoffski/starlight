@@ -5,6 +5,7 @@
 #include "nova/event/Event.h"
 #include "nova/event/Quit.h"
 #include "nova/event/Input.h"
+#include "nova/event/WindowResized.h"
 
 namespace nova::core {
 
@@ -32,9 +33,15 @@ void WindowManager::setCallbacks() {
         LOG_TRACE("Detected mouse action, emitting event: {}", event);
         EventManager::get().emitEvent<MouseEvent>(event);
     });
+
+    m_window->onWindowResizeCallback([](uint32_t width, uint32_t height) {
+        WindowResized event{width, height};
+        LOG_TRACE("Window resized, emitting event: {}", event);
+        EventManager::get().emitEvent<WindowResized>(event);
+    });
 }
 
-math::Size2i WindowManager::getSize() const { return m_window->getSize(); }
+math::Size2u32 WindowManager::getSize() const { return m_window->getSize(); }
 
 math::Vec2f WindowManager::getMousePosition() const { return m_window->getMousePosition(); }
 

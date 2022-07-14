@@ -84,17 +84,29 @@ void GlfwWindow::onWindowCloseCallback(OnWindowCloseCallback callback) {
     glfwSetWindowCloseCallback(TO_GLFW_PTR(m_windowHandle), onWindowCloseCallback);
 }
 
+void GlfwWindow::onWindowResizeCallback(OnWindowResizeCallback callback) {
+    m_callbacks.onWindowResize = callback;
+
+    static auto onWindowResizeCallback = [](GLFWwindow* window, int width, int height) {
+        GET_USER_CALLBACKS(window)->onWindowResize(
+            static_cast<uint32_t>(width), static_cast<uint32_t>(height)
+        );
+    };
+
+    glfwSetWindowSizeCallback(TO_GLFW_PTR(m_windowHandle), onWindowResizeCallback);
+}
+
 void GlfwWindow::update() { glfwPollEvents(); }
 
 void GlfwWindow::swapBuffers() { glfwSwapBuffers(TO_GLFW_PTR(m_windowHandle)); }
 
 std::string_view GlfwWindow::getVendor() const { return "GLFW3"; }
 
-math::Size2i GlfwWindow::getSize() const {
-    math::Size2i size;
-    glfwGetWindowSize(TO_GLFW_PTR(m_windowHandle), &size.width, &size.height);
+math::Size2u32 GlfwWindow::getSize() const {
+    int width, height;
+    glfwGetWindowSize(TO_GLFW_PTR(m_windowHandle), &width, &height);
 
-    return size;
+    return math::Size2u32{static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
 }
 
 math::Vec2f GlfwWindow::getMousePosition() const {

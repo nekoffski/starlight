@@ -9,13 +9,14 @@ class GlfwWindow : public core::Window {
         OnWindowCloseCallback onWindowClose;
         OnKeyCallback onKey;
         OnMouseCallback onMouse;
+        OnWindowResizeCallback onWindowResize;
     };
 
    public:
     explicit GlfwWindow();
 
     std::string_view getVendor() const override;
-    math::Size2i getSize() const override;
+    math::Size2u32 getSize() const override;
     math::Vec2f getMousePosition() const override;
 
     void update() override;
@@ -24,6 +25,7 @@ class GlfwWindow : public core::Window {
     void onKeyCallback(OnKeyCallback) override;
     void onMouseCallback(OnMouseCallback) override;
     void onWindowCloseCallback(OnWindowCloseCallback) override;
+    void onWindowResizeCallback(OnWindowResizeCallback) override;
 
     void* getHandle() override;
 

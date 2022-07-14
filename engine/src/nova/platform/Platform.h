@@ -44,7 +44,7 @@ struct Platform {
 template <Window Window = WINDOW, RendererBackend RendererBackend = RENDERER_BACKEND>
 class PlatformProvider {
    public:
-    explicit PlatformProvider() : m_rendererBackend(m_window) {
+    explicit PlatformProvider(const core::Config& config) : m_rendererBackend(m_window, config) {
         LOG_INFO("Window API vendor: {}", m_window.getVendor());
     }
 

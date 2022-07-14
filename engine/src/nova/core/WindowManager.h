@@ -10,7 +10,7 @@ class WindowManager : public kc::core::Singleton<WindowManager> {
    public:
     explicit WindowManager(Window* window);
 
-    math::Size2i getSize() const;
+    math::Size2u32 getSize() const;
     math::Vec2f getMousePosition() const;
     math::Vec2f getMousePositionDelta() const;
 

@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "math/Size.hpp"
+#include "nova/math/Size.hpp"
 
 namespace nova::core {
 
@@ -13,6 +13,12 @@ struct Config {
         math::Size2i size;
         std::string name;
     } window;
+
+    struct Version {
+        int major;
+        int minor;
+        int build;
+    } version;
 };
 
 // clang-format off
@@ -20,7 +26,13 @@ const Config defaultConfig = Config{
     .window = {
         .size = { 1600, 900 },
         .name = "Nova Engine"s
+    },
+    .version = {
+        .major = 1,
+        .minor = 0,
+        .build = 0
     }
+    
 };
 // clang-format on
 
