@@ -16,6 +16,35 @@ class Device {
         std::vector<VkPresentModeKHR> presentModes;
     };
 
+    // TODO: try to merge those structs somehow or give them more self-descriptive names at least
+    struct DeviceProperties {
+        VkPhysicalDeviceProperties device;
+        VkPhysicalDeviceFeatures features;
+        VkPhysicalDeviceMemoryProperties memory;
+    };
+
+    struct PhysicalDeviceRequirements {
+        bool graphics;
+        bool present;
+        bool compute;
+        bool transfer;
+        std::vector<const char*> deviceExtensionsNames;
+        bool samplerAnisotropy;
+        bool discreteGpu;
+    };
+
+    struct PhysicalDeviceQueueFamilyInfo {
+        uint32_t graphics = -1;
+        uint32_t present  = -1;
+        uint32_t compute  = -1;
+        uint32_t transfer = -1;
+    };
+
+    struct DeviceInfo {
+        PhysicalDeviceQueueFamilyInfo queue;
+        SwapchainSupportInfo swapchainSupport;
+    };
+
     explicit Device(Context* context);
     ~Device();
 
@@ -58,9 +87,13 @@ class Device {
 
    private:
     void createCommandPool();
-    bool pickPhysicalDevice();
+    void pickPhysicalDevice();
     void createLogicalDevice();
     void getQueues();
+
+    void storeDevice(
+        VkPhysicalDevice device, const DeviceProperties& properties, const DeviceInfo& info
+    );
 
     std::vector<uint32_t> prepareQueuesIndices();
 
