@@ -45,51 +45,33 @@ class Device {
         SwapchainSupportInfo swapchainSupport;
     };
 
+    struct QueueIndices {
+        int32_t graphics;
+        int32_t present;
+        int32_t transfer;
+    };
+
     explicit Device(Context* context);
     ~Device();
 
+    VkDevice getLogicalDevice() const;
+    VkFormat getDepthFormat() const;
+
+    const SwapchainSupportInfo* getSwapchainSupport() const;
+
+    const QueueIndices* getQueueIndices() const;
+
     // void querySwapchainSupport(VkSurfaceKHR surface);
 
-    std::optional<int32_t> findMemoryIndex(uint32_t typeFilter, uint32_t propertyFlags) const {
-        VkPhysicalDeviceMemoryProperties memoryProperties;
-        vkGetPhysicalDeviceMemoryProperties(m_physicalDevice, &memoryProperties);
+    std::optional<int32_t> findMemoryIndex(uint32_t typeFilter, uint32_t propertyFlags) const;
 
-        for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; ++i) {
-            bool isSuitable =
-                (typeFilter & (1 << i)) &&
-                (memoryProperties.memoryTypes[i].propertyFlags & propertyFlags) == propertyFlags;
-
-            if (isSuitable) return i;
-        }
-
-        LOG_WARN("Unable to find suitable memory type!");
-        return {};
-    }
-
-    bool detectDepthFormat() {
-        std::vector<VkFormat> candidates{
-            VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT};
-        uint32_t flags = VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
-
-        for (const auto& format : candidates) {
-            VkFormatProperties properties;
-            vkGetPhysicalDeviceFormatProperties(m_physicalDevice, format, &properties);
-
-            if (((properties.linearTilingFeatures & flags) == flags) ||
-                ((properties.optimalTilingFeatures & flags) == flags)) {
-                m_depthFormat = format;
-                return true;
-            }
-        }
-
-        return false;
-    }
+    void detectDepthFormat();
 
    private:
     void createCommandPool();
     void pickPhysicalDevice();
     void createLogicalDevice();
-    void getQueues();
+    void assignQueues();
 
     void storeDevice(
         VkPhysicalDevice device, const DeviceProperties& properties, const DeviceInfo& info
@@ -103,9 +85,7 @@ class Device {
     VkDevice m_logicalDevice          = VK_NULL_HANDLE;
 
     SwapchainSupportInfo m_swapchainSupport;
-    int32_t m_graphicsQueueIndex;
-    int32_t m_presentQueueIndex;
-    int32_t m_transferQueueIndex;
+    QueueIndices m_queueIndices;
 
     VkQueue m_graphicsQueue = VK_NULL_HANDLE;
     VkQueue m_presentQueue  = VK_NULL_HANDLE;

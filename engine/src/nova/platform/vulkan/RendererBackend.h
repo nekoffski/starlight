@@ -25,7 +25,7 @@ class RendererBackend : public gfx::RendererBackend {
         : m_frameCount(0)
         , m_context(window, config)
         , m_device(&m_context)
-    // , m_swapchain(m_device, m_context, window.getSize())
+        , m_swapchain(&m_device, &m_context, window.getSize())
     // , m_renderPass(
     //       m_context, m_device, m_swapchain, glm::vec4{0.0f, 0.0f, 1600.0f, 900.0f},
     //       glm::vec4{0.3, 0.5f, 0.7f, 1.0f}
@@ -267,7 +267,7 @@ class RendererBackend : public gfx::RendererBackend {
 
     Context m_context;
     Device m_device;
-    // Swapchain m_swapchain;
+    Swapchain m_swapchain;
     // RenderPass m_renderPass;
 
     // std::vector<CommandBuffer> m_commandBuffers;

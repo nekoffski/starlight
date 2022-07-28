@@ -1,32 +1,36 @@
-// #include "Framebuffer.h"
+#include "Framebuffer.h"
 
-// #include "Context.h"
-// #include "Device.h"
-// #include "RenderPass.h"
+#include "Context.h"
+#include "Device.h"
 
-// namespace nova::platform::vulkan {
+namespace nova::platform::vulkan {
 
-// Framebuffer::Framebuffer(
-//     const Context& context, const Device& device, RenderPass* renderPass,
-//     const math::Size2u32& size, const std::vector<VkImageView>& attachments
-// )
-//     : context(context), device(device), renderPass(renderPass), attachments(attachments) {
-//     // Creation info
-//     VkFramebufferCreateInfo framebuffer_create_info =
-//     {VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO}; framebuffer_create_info.renderPass =
-//     renderPass->handle; framebuffer_create_info.attachmentCount         = attachments.size();
-//     framebuffer_create_info.pAttachments            = this->attachments.data();
-//     framebuffer_create_info.width                   = size.width;
-//     framebuffer_create_info.height                  = size.height;
-//     framebuffer_create_info.layers                  = 1;
+VkFramebufferCreateInfo createFramebufferCreateInfo(
+    std::vector<VkImageView>& attachments, VkRenderPass renderPass, const math::Size2u32& size
+) {
+    VkFramebufferCreateInfo createInfo = {VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO};
+    createInfo.renderPass              = renderPass;
+    createInfo.attachmentCount         = attachments.size();
+    createInfo.pAttachments            = attachments.data();
+    createInfo.width                   = size.width;
+    createInfo.height                  = size.height;
+    createInfo.layers                  = 1;
 
-//     VK_CHECK(vkCreateFramebuffer(
-//         device.logicalDevice, &framebuffer_create_info, context.allocator, &handle
-//     ));
-// }
+    return createInfo;
+}
 
-// Framebuffer::~Framebuffer() {
-//     if (handle) vkDestroyFramebuffer(device.logicalDevice, handle, context.allocator);
-// }
+Framebuffer::Framebuffer(const Args& args)
+    : m_context(args.context), m_device(args.device), m_attachments(args.attachments) {
+    const auto createInfo = createFramebufferCreateInfo(m_attachments, args.renderPass, args.size);
 
-// }  // namespace nova::platform::vulkan
+    VK_ASSERT(vkCreateFramebuffer(
+        m_device->getLogicalDevice(), &createInfo, m_context->getAllocator(), &m_handle
+    ));
+}
+
+Framebuffer::~Framebuffer() {
+    if (m_handle)
+        vkDestroyFramebuffer(m_device->getLogicalDevice(), m_handle, m_context->getAllocator());
+}
+
+}  // namespace nova::platform::vulkan

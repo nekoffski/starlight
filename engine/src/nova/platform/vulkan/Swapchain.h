@@ -1,49 +1,58 @@
-// #pragma once
+#pragma once
 
-// #include <vector>
-// #include <optional>
-// #include <memory>
+#include <vector>
+#include <optional>
+#include <memory>
 
-// #include "nova/math/Size.hpp"
+#include "nova/math/Size.hpp"
 
-// #include "Vulkan.h"
-// #include "fwd.h"
+#include "Vulkan.h"
+#include "fwd.h"
 
-// namespace nova::platform::vulkan {
+namespace nova::platform::vulkan {
 
-// struct Swapchain {
-//     explicit Swapchain(Device& device, Context& context, const math::Size2u32& size);
-//     ~Swapchain();
+class Swapchain {
+   public:
+    explicit Swapchain(Device* device, Context* context, const math::Size2u32& size);
+    ~Swapchain();
 
-//     void create(const math::Size2u32& size);
-//     void destroy();
+    void changeSize(const math::Size2u32& size);
 
-//     std::optional<uint32_t> acquireNextImageIndex(
-//         const Device& device, uint64_t timeoutNs, VkSemaphore imageSemaphore, VkFence fence,
-//         const math::Size2u32& size
-//     );
+    std::optional<uint32_t> acquireNextImageIndex(
+        NanoSeconds timeout, VkSemaphore imageSemaphore, VkFence fence
+    );
 
-//     void present(
-//         const Device& device, VkQueue graphics_queue, VkQueue present_queue,
-//         VkSemaphore render_complete_semaphore, uint32_t present_image_index,
-//         const math::Size2u32& size
-//     );
+    void present(
+        VkQueue graphicsQueue, VkQueue presentQueue, VkSemaphore renderSemaphore,
+        uint32_t presentImageIndex
+    );
 
-//     void recreate(const math::Size2u32& size);
+    void recreate();
 
-//     Device& device;
-//     Context& context;
+    VkSurfaceFormatKHR getSurfaceFormat() const;
 
-//     VkSurfaceFormatKHR imageFormat;
-//     // uint8_t maxFramesInFlight;
-//     VkSwapchainKHR handle;
+   private:
+    void create();
+    void destroy();
 
-//     std::vector<VkImage> images;
-//     std::vector<VkImageView> views;
+    void createSwapchain();
+    void createImages();
 
-//     std::unique_ptr<Image> depthBuffer;
+    Device* m_device;
+    Context* m_context;
 
-//     std::vector<Framebuffer> framebuffers;
-// };
+    math::Size2u32 m_viewportSize;
 
-// }  // namespace nova::platform::vulkan
+    VkSurfaceFormatKHR m_imageFormat;
+    VkSwapchainKHR m_handle;
+    VkExtent2D m_swapchainExtent;
+
+    std::vector<VkImage> m_images;
+    std::vector<VkImageView> m_views;
+
+    std::unique_ptr<Image> m_depthBuffer;
+
+    std::vector<Framebuffer> m_framebuffers;
+};
+
+}  // namespace nova::platform::vulkan

@@ -1,42 +1,56 @@
-// #pragma once
+#pragma once
 
-// #include "nova/math/Glm.h"
+#include "nova/math/Glm.h"
 
-// #include "Vulkan.h"
-// #include "fwd.h"
+#include "Vulkan.h"
+#include "fwd.h"
 
-// namespace nova::platform::vulkan {
+namespace nova::platform::vulkan {
 
-// struct RenderPass {
-//     enum class State : unsigned char {
-//         ready = 0,
-//         recording,
-//         inRenderPass,
-//         recordingEnded,
-//         submitted,
-//         notAllocated
-//     };
+class RenderPass {
+   public:
+    enum class State : unsigned char {
+        ready = 0,
+        recording,
+        inRenderPass,
+        recordingEnded,
+        submitted,
+        notAllocated
+    };
 
-//     explicit RenderPass(
-//         const Context& context, const Device& device, const Swapchain& swapchain,
-//         const glm::vec4& area, const glm::vec4& color
-//     );
-//     ~RenderPass();
+    struct Args {
+        const Context* context;
+        const Device* device;
+        const Swapchain& swapchain;
+        const glm::vec4& area;
+        const glm::vec4& color;
+    };
 
-//     void begin(CommandBuffer& commandBuffer, const VkFramebuffer& framebuffer);
-//     void end(CommandBuffer& commandBuffer);
+    explicit RenderPass(const Args& args);
 
-//     const Context& context;
-//     const Device& device;
+    ~RenderPass();
 
-//     VkRenderPass handle;
-//     glm::vec4 area;
-//     glm::vec4 color;
+    void begin(CommandBuffer& commandBuffer, VkFramebuffer framebuffer);
+    void end(CommandBuffer& commandBuffer);
 
-//     float depth      = 1.0f;
-//     uint32_t stencil = 0;
+   private:
+    std::vector<VkClearValue> createClearValues() const;
 
-//     State state;
-// };
+    VkRenderPassBeginInfo createRenderPassBeginInfo(
+        const std::vector<VkClearValue>& clearValues, VkFramebuffer framebuffer
+    ) const;
 
-// }  // namespace nova::platform::vulkan
+    const Context* m_context;
+    const Device* m_device;
+
+    VkRenderPass m_handle;
+    glm::vec4 m_area;
+    glm::vec4 m_color;
+
+    float m_depth      = 1.0f;
+    uint32_t m_stencil = 0;
+
+    State m_state;
+};
+
+}  // namespace nova::platform::vulkan

@@ -1,29 +1,43 @@
-// #pragma once
+#pragma once
 
-// #include <optional>
+#include <optional>
 
-// #include "nova/math/Size.hpp"
+#include "nova/math/Size.hpp"
 
-// #include "Vulkan.h"
-// #include "fwd.h"
+#include "Vulkan.h"
+#include "fwd.h"
 
-// namespace nova::platform::vulkan {
+namespace nova::platform::vulkan {
 
-// struct Image {
-//     explicit Image(
-//         const Device& device, const Context& context, VkImageType type, const math::Size2u32&
-//         size, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage,
-//         VkMemoryPropertyFlags memoryFlags, bool createView, VkImageAspectFlags viewAspectFlags
-//     );
-//     ~Image();
+class Image {
+   public:
+    struct Args {
+        const Device* device;
+        const Context* context;
+        VkImageType type;
+        math::Size2u32 size;
+        VkImageTiling tiling;
+        VkImageUsageFlags usage;
+        VkMemoryPropertyFlags memoryFlags;
+        bool createView;
+        VkImageAspectFlags viewAspectFlags;
+    };
 
-//     VkImage handle;
-//     VkDeviceMemory memory;
-//     VkImageView view;
-//     math::Size2u32 size;
+    explicit Image(const Args& args);
+    ~Image();
 
-//     const Device& device;
-//     const Context& context;
-// };
+   private:
+    void createImage(const Args& args, VkDevice logicalDevice, VkAllocator allocator);
+    void allocateAndBindMemory(const Args& args, const Device* device, VkAllocator allocator);
+    void createView(const Args& args, VkDevice logicalDevice, VkAllocator allocator);
 
-// }  // namespace nova::platform::vulkan
+    VkImage m_handle;
+    VkDeviceMemory m_memory;
+    VkImageView m_view;
+    math::Size2u32 m_size;
+
+    const Device* m_device;
+    const Context* m_context;
+};
+
+}  // namespace nova::platform::vulkan

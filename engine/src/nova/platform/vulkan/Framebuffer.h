@@ -1,28 +1,34 @@
-// #pragma once
+#pragma once
 
-// #include <vector>
+#include <vector>
 
-// #include "nova/math/Size.hpp"
+#include "nova/math/Size.hpp"
 
-// #include "Vulkan.h"
-// #include "fwd.h"
+#include "Vulkan.h"
+#include "fwd.h"
 
-// namespace nova::platform::vulkan {
+namespace nova::platform::vulkan {
 
-// struct Framebuffer {
-//     explicit Framebuffer(
-//         const Context& context, const Device& device, RenderPass* renderPass,
-//         const math::Size2u32& size, const std::vector<VkImageView>& attachments
-//     );
+class Framebuffer {
+   public:
+    struct Args {
+        const Context* context;
+        const Device* device;
+        VkRenderPass renderPass;
+        const math::Size2u32& size;
+        const std::vector<VkImageView>& attachments;
+    };
 
-//     ~Framebuffer();
+    explicit Framebuffer(const Args& args);
 
-//     const Context& context;
-//     const Device& device;
+    ~Framebuffer();
 
-//     RenderPass* renderPass;
-//     std::vector<VkImageView> attachments;
-//     VkFramebuffer handle;
-// };
+   private:
+    const Context* m_context;
+    const Device* m_device;
 
-// }  // namespace nova::platform::vulkan
+    std::vector<VkImageView> m_attachments;
+    VkFramebuffer m_handle;
+};
+
+}  // namespace nova::platform::vulkan
