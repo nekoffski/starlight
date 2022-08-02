@@ -26,11 +26,10 @@ class RendererBackend : public gfx::RendererBackend {
         , m_context(window, config)
         , m_device(&m_context)
         , m_swapchain(&m_device, &m_context, window.getSize())
-    // , m_renderPass(
-    //       m_context, m_device, m_swapchain, glm::vec4{0.0f, 0.0f, 1600.0f, 900.0f},
-    //       glm::vec4{0.3, 0.5f, 0.7f, 1.0f}
-    //   )
-    {
+        , m_renderPass(RenderPass::Args(
+              &m_context, &m_device, m_swapchain, glm::vec4{0.0f, 0.0f, 1600.0f, 900.0f},
+              glm::vec4{0.3, 0.5f, 0.7f, 1.0f}
+          )) {
         // regenerateFramebuffers();
         // createCommandBuffers();
 
@@ -268,14 +267,14 @@ class RendererBackend : public gfx::RendererBackend {
     Context m_context;
     Device m_device;
     Swapchain m_swapchain;
-    // RenderPass m_renderPass;
+    RenderPass m_renderPass;
 
-    // std::vector<CommandBuffer> m_commandBuffers;
+    std::vector<CommandBuffer> m_commandBuffers;
 
-    // std::vector<VkSemaphore> m_imageAvailableSemaphores;
-    // std::vector<VkSemaphore> m_queueCompleteSemaphores;
-    // std::vector<Fence> m_inFlightFences;
-    // std::vector<Fence*> m_imagesInFlight;
+    std::vector<VkSemaphore> m_imageAvailableSemaphores;
+    std::vector<VkSemaphore> m_queueCompleteSemaphores;
+    std::vector<Fence> m_inFlightFences;
+    std::vector<Fence*> m_imagesInFlight;
 };
 
 }  // namespace nova::platform::vulkan

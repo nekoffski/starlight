@@ -7,6 +7,7 @@
 
 namespace nova::platform::vulkan {
 
+// TODO: refactor
 struct RenderPassCreateInfo {
     explicit RenderPassCreateInfo(const RenderPass::Args& args) {
         createSubpass();
@@ -26,12 +27,13 @@ struct RenderPassCreateInfo {
         // Attachments not used in this subpass, but must be preserved for the next.
         subpass.preserveAttachmentCount = 0;
         subpass.pPreserveAttachments    = 0;
+        subpass.flags                   = 0;
 
         createRenderPassDependencies();
+        createRenderPassCreateInfo();
     }
 
     //  TODO: ASSIGN STRUCTURE TYPES IF MISSING!
-
     void createSubpass() { subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS; }
 
     void createColorAttachment(const RenderPass::Args& args) {
@@ -48,7 +50,6 @@ struct RenderPassCreateInfo {
 
         attachmentDescriptions.push_back(colorAttachment);
 
-        VkAttachmentReference colorAttachmentReference;
         colorAttachmentReference.attachment = 0;  // Attachment description array index
         colorAttachmentReference.layout     = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
@@ -57,12 +58,15 @@ struct RenderPassCreateInfo {
     }
 
     void createDepthAttachment(const RenderPass::Args& args) {
-        depthAttachment.format        = args.device->getDepthFormat();
-        depthAttachment.samples       = VK_SAMPLE_COUNT_1_BIT;
-        depthAttachment.loadOp        = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        depthAttachment.storeOp       = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        depthAttachment.finalLayout   = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        depthAttachment.format         = args.device->getDepthFormat();
+        depthAttachment.samples        = VK_SAMPLE_COUNT_1_BIT;
+        depthAttachment.loadOp         = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        depthAttachment.storeOp        = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        depthAttachment.initialLayout  = VK_IMAGE_LAYOUT_UNDEFINED;
+        depthAttachment.finalLayout    = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        depthAttachment.stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        depthAttachment.flags          = 0;
 
         attachmentDescriptions.push_back(depthAttachment);
 
@@ -83,7 +87,7 @@ struct RenderPassCreateInfo {
     }
 
     void createRenderPassCreateInfo() {
-        handle                 = {VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO};
+        handle.sType           = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
         handle.attachmentCount = attachmentDescriptions.size();
         handle.pAttachments    = attachmentDescriptions.data();
         handle.subpassCount    = 1;
@@ -101,9 +105,10 @@ struct RenderPassCreateInfo {
 
     VkAttachmentDescription colorAttachment;
     VkAttachmentReference colorAttachmentReference;
-    VkAttachmentDescription depthAttachment;
 
+    VkAttachmentDescription depthAttachment;
     VkAttachmentReference depthAttachmentReference;
+
     VkSubpassDependency dependency;
 };
 

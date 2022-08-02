@@ -67,7 +67,7 @@ VkMemoryRequirements getMemoryRequirements(VkDevice device, VkImage handle) {
 VkMemoryAllocateInfo createMemoryAllocateInfo(
     const VkMemoryRequirements& requirements, uint32_t memoryTypeIndex
 ) {
-    VkMemoryAllocateInfo memoryAllocateInfo = {VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO};
+    VkMemoryAllocateInfo memoryAllocateInfo = {VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO};
     memoryAllocateInfo.allocationSize       = requirements.size;
     memoryAllocateInfo.memoryTypeIndex      = memoryTypeIndex;
 
