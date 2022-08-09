@@ -30,225 +30,237 @@ class RendererBackend : public gfx::RendererBackend {
               &m_context, &m_device, m_swapchain, glm::vec4{0.0f, 0.0f, 1600.0f, 900.0f},
               glm::vec4{0.3, 0.5f, 0.7f, 1.0f}
           )) {
-        // regenerateFramebuffers();
-        // createCommandBuffers();
+        regenerateFramebuffers();
+        createCommandBuffers();
 
-        // m_imageAvailableSemaphores.resize(m_maxFramesInFlight, VK_NULL_HANDLE);
-        // m_queueCompleteSemaphores.resize(m_maxFramesInFlight, VK_NULL_HANDLE);
-        // m_inFlightFences.reserve(m_maxFramesInFlight);
-        // m_imagesInFlight.reserve(m_maxFramesInFlight);
+        const auto logicalDevice = m_device.getLogicalDevice();
+        const auto allocator     = m_context.getAllocator();
 
-        // for (int i = 0; i < m_maxFramesInFlight; ++i) {
-        //     VkSemaphoreCreateInfo semaphore_create_info =
-        //     {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
+        m_imageAvailableSemaphores.resize(m_maxFramesInFlight, VK_NULL_HANDLE);
+        m_queueCompleteSemaphores.resize(m_maxFramesInFlight, VK_NULL_HANDLE);
+        m_inFlightFences.reserve(m_maxFramesInFlight);
+        m_imagesInFlight.reserve(m_maxFramesInFlight);
 
-        //     // TODO: create wrapper
-        //     vkCreateSemaphore(
-        //         m_device.logicalDevice, &semaphore_create_info, m_context.allocator,
-        //         &m_imageAvailableSemaphores[i]
-        //     );
+        for (int i = 0; i < m_maxFramesInFlight; ++i) {
+            VkSemaphoreCreateInfo semaphore_create_info = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
 
-        //     vkCreateSemaphore(
-        //         m_device.logicalDevice, &semaphore_create_info, m_context.allocator,
-        //         &m_queueCompleteSemaphores[i]
-        //     );
+            // TODO: create wrapper
+            vkCreateSemaphore(
+                logicalDevice, &semaphore_create_info, allocator, &m_imageAvailableSemaphores[i]
+            );
 
-        //     m_inFlightFences.emplace_back(m_context, m_device, true);
-        // }
+            vkCreateSemaphore(
+                logicalDevice, &semaphore_create_info, allocator, &m_queueCompleteSemaphores[i]
+            );
+
+            m_inFlightFences.emplace_back(&m_context, &m_device, Fence::State::signaled);
+        }
     }
 
     ~RendererBackend() {}
 
     bool beginFrame(float deltaTime) override {
-        // auto& device = m_device.logicalDevice;
+        const auto logicalDevice = m_device.getLogicalDevice();
 
-        // if (m_recreatingSwapchain) {
-        //     if (auto result = vkDeviceWaitIdle(device); not isGood(result)) {
-        //         LOG_ERROR("vkDeviceWaitDile failed: %s", getResultString(result, true));
-        //         return false;
-        //     }
+        if (m_recreatingSwapchain) {
+            if (auto result = vkDeviceWaitIdle(logicalDevice); not isGood(result)) {
+                LOG_ERROR("vkDeviceWaitDile failed: %s", getResultString(result, true));
+                return false;
+            }
 
-        //     LOG_INFO("Recreating swapchain, booting");
-        //     return false;
-        // }
+            LOG_INFO("Recreating swapchain, booting");
+            return false;
+        }
 
-        // // Check if the framebuffer has been resized. If so, a new swapchain must be created.
-        // if (m_framebufferSizeGeneration != m_lastFramebufferSizeGeneration) {
-        //     if (auto result = vkDeviceWaitIdle(device); not isGood(result)) {
-        //         LOG_ERROR("vkDeviceWaitIdle (2) failed: {}", getResultString(result, true));
-        //         return false;
-        //     }
+        // Check if the framebuffer has been resized. If so, a new swapchain must be created.
+        if (m_framebufferSizeGeneration != m_lastFramebufferSizeGeneration) {
+            if (auto result = vkDeviceWaitIdle(logicalDevice); not isGood(result)) {
+                LOG_ERROR("vkDeviceWaitIdle (2) failed: {}", getResultString(result, true));
+                return false;
+            }
 
-        //     // If the swapchain recreation failed (because, for example, the window was
-        //     minimized),
-        //     // boot out before unsetting the flag.
-        //     // TODO
-        //     // if (not m_swapchain.recreate()) return false;
+            // If the swapchain recreation failed (because, for example, the window was minimized),
+            // boot out before unsetting the flag.
+            // TODO
+            // if (not m_swapchain.recreate()) return false;
 
-        //     LOG_INFO("Resized, booting.");
-        //     return false;
-        // }
+            LOG_INFO("Resized, booting.");
+            return false;
+        }
 
-        // // Wait for the execution of the current frame to complete. The fence being free will
-        // allow
+        // Wait for the execution of the current frame to complete. The fence being free will allow
 
-        //     // this one to move on.
-        //     if (!m_inFlightFences[m_currentFrame].wait(UINT64_MAX)) {
-        //     LOG_WARN("In-flight fence wait failure!");
-        //     return false;
-        // }
+        // this one to move on.
+        if (!m_inFlightFences[m_currentFrame].wait(UINT64_MAX)) {
+            LOG_WARN("In-flight fence wait failure!");
+            return false;
+        }
 
-        // // Acquire the next image from the swap chain. Pass along the semaphore that should
-        // signaled
-        //     // when this completes. This same semaphore will later be waited on by the queue
-        //     submission
-        //     // to ensure this image is available.
+        // Acquire the next image from the swap chain. Pass along the semaphore that should signaled
+        // when this completes. This same semaphore will later be waited on by the queuesubmission
+        // to ensure this image is available.
 
-        //     auto nextImageIndex = m_swapchain.acquireNextImageIndex(
-        //         m_device, UINT64_MAX, m_imageAvailableSemaphores[m_currentFrame], nullptr,
-        //         m_framebufferSize
-        //     );
+        auto nextImageIndex = m_swapchain.acquireNextImageIndex(
+            UINT64_MAX, m_imageAvailableSemaphores[m_currentFrame], nullptr
+        );
 
-        // if (not nextImageIndex) return false;
+        if (not nextImageIndex) return false;
 
-        // m_imageIndex = *nextImageIndex;
+        m_imageIndex = *nextImageIndex;
 
-        // // Begin recording commands.
-        // auto& commandBuffer = m_commandBuffers[m_imageIndex];
+        // Begin recording commands.
+        auto& commandBuffer = m_commandBuffers[m_imageIndex];
 
-        // commandBuffer.reset();
-        // commandBuffer.begin(false, false, false);
+        commandBuffer.reset();
+        commandBuffer.begin(CommandBuffer::BeginArgs{
+            .isSingleUse          = false,
+            .isRenderpassContinue = false,
+            .isSimultaneousUse    = false,
+        });
 
-        // // Dynamic state
-        // VkViewport viewport;
-        // viewport.x        = 0.0f;
-        // viewport.y        = (float)m_framebufferSize.height;
-        // viewport.width    = (float)m_framebufferSize.width;
-        // viewport.height   = -(float)m_framebufferSize.height;
-        // viewport.minDepth = 0.0f;
-        // viewport.maxDepth = 1.0f;
+        // Dynamic state
+        VkViewport viewport;
+        viewport.x        = 0.0f;
+        viewport.y        = (float)m_framebufferSize.height;
+        viewport.width    = (float)m_framebufferSize.width;
+        viewport.height   = -(float)m_framebufferSize.height;
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
 
-        // // Scissor
-        // VkRect2D scissor;
-        // scissor.offset.x = scissor.offset.y = 0;
-        // scissor.extent.width                = m_framebufferSize.width;
-        // scissor.extent.height               = m_framebufferSize.height;
+        // Scissor
+        VkRect2D scissor;
+        scissor.offset.x = scissor.offset.y = 0;
+        scissor.extent.width                = m_framebufferSize.width;
+        scissor.extent.height               = m_framebufferSize.height;
 
-        // vkCmdSetViewport(commandBuffer.handle, 0, 1, &viewport);
-        // vkCmdSetScissor(commandBuffer.handle, 0, 1, &scissor);
+        vkCmdSetViewport(commandBuffer.getHandle(), 0, 1, &viewport);
+        vkCmdSetScissor(commandBuffer.getHandle(), 0, 1, &scissor);
 
-        // m_renderPass.area.z = m_framebufferSize.width;
-        // m_renderPass.area.w = m_framebufferSize.height;
+        m_renderPass.getArea()->z = m_framebufferSize.width;
+        m_renderPass.getArea()->w = m_framebufferSize.height;
 
-        // m_renderPass.begin(commandBuffer, m_swapchain.framebuffers[m_imageIndex].handle);
+        auto& framebuffer = m_swapchain.getFramebuffers()->at(m_imageIndex);
+        m_renderPass.begin(commandBuffer, framebuffer.getHandle());
 
         return true;
     }
 
     bool endFrame(float deltaTime) override {
-        // auto& device        = m_device.logicalDevice;
-        // auto& commandBuffer = m_commandBuffers[m_imageIndex];
+        const auto logicalDevice = m_device.getLogicalDevice();
+        auto& commandBuffer      = m_commandBuffers[m_imageIndex];
 
-        // m_renderPass.end(commandBuffer);
-        // commandBuffer.end();
+        m_renderPass.end(commandBuffer);
+        commandBuffer.end();
 
-        // if (m_imagesInFlight[m_imageIndex] != VK_NULL_HANDLE)
-        //     m_imagesInFlight[m_imageIndex]->wait(UINT64_MAX);
+        if (m_imagesInFlight[m_imageIndex] != VK_NULL_HANDLE)
+            m_imagesInFlight[m_imageIndex]->wait(UINT64_MAX);
 
-        // // vulkan_command_buffer_end(command_buffer);
+        // vulkan_command_buffer_end(command_buffer);
 
-        // // Make sure the previous frame is not using this image (i.e. its fence is being waited
-        // on)
-        // // if (context.images_in_flight[context.image_index] != VK_NULL_HANDLE) {  // was frame
-        // // vulkan_fence_wait(&context, context.images_in_flight[context.image_index],
-        // UINT64_MAX);
-        // // }
-
-        // // Mark the image fence as in-use by this frame.
-        // m_imagesInFlight[m_imageIndex] = &m_inFlightFences[m_currentFrame];
-
-        // // Reset the fence for use on the next frame
-        // m_inFlightFences[m_currentFrame].reset();
-
-        // // Submit the queue and wait for the operation to complete.
-        // // Begin queue submission
-        // VkSubmitInfo submit_info = {VK_STRUCTURE_TYPE_SUBMIT_INFO};
-
-        // // Command buffer(s) to be executed.
-        // submit_info.commandBufferCount = 1;
-        // submit_info.pCommandBuffers    = &commandBuffer.handle;
-
-        // // The semaphore(s) to be signaled when the queue is complete.
-        // submit_info.signalSemaphoreCount = 1;
-        // submit_info.pSignalSemaphores    = &m_queueCompleteSemaphores[m_currentFrame];
-
-        // // Wait semaphore ensures that the operation cannot begin until the image is available.
-        // submit_info.waitSemaphoreCount = 1;
-        // submit_info.pWaitSemaphores    = &m_imageAvailableSemaphores[m_currentFrame];
-
-        // // Each semaphore waits on the corresponding pipeline stage to complete. 1:1 ratio.
-        // // VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT prevents subsequent colour attachment
-        // // writes from executing until the semaphore signals (i.e. one frame is presented at a
-        // time) VkPipelineStageFlags flags[1] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-        // submit_info.pWaitDstStageMask       = flags;
-
-        // VkResult result = vkQueueSubmit(
-        //     m_device.graphicsQueue, 1, &submit_info, m_inFlightFences[m_currentFrame].handle
-        // );
-
-        // if (result != VK_SUCCESS) {
-        //     LOG_ERROR("vkQueueSubmit failed with result: {}", getResultString(result, true));
-        //     return false;
+        // Make sure the previous frame is not using this image (i.e. its fence is being waited on)
+        // if (context.images_in_flight[context.image_index] != VK_NULL_HANDLE) {  // was frame
+        // vulkan_fence_wait(&context, context.images_in_flight[context.image_index], UINT64_MAX);
         // }
 
-        // commandBuffer.update_submitted();
-        // m_swapchain.present(
-        //     m_device, m_device.graphicsQueue, m_device.presentQueue,
-        //     m_queueCompleteSemaphores[m_currentFrame], m_imageIndex, m_framebufferSize
-        // );
+        // Mark the image fence as in-use by this frame.
+        m_imagesInFlight[m_imageIndex] = &m_inFlightFences[m_currentFrame];
 
-        // m_currentFrame = (m_currentFrame + 1) % m_maxFramesInFlight;
+        // Reset the fence for use on the next frame
+        m_inFlightFences[m_currentFrame].reset();
+
+        // Submit the queue and wait for the operation to complete.
+        // Begin queue submission
+        VkSubmitInfo submit_info = {VK_STRUCTURE_TYPE_SUBMIT_INFO};
+
+        auto commandBufferHandle = commandBuffer.getHandle();
+
+        // Command buffer(s) to be executed.
+        submit_info.commandBufferCount = 1;
+        submit_info.pCommandBuffers    = &commandBufferHandle;
+
+        // The semaphore(s) to be signaled when the queue is complete.
+        submit_info.signalSemaphoreCount = 1;
+        submit_info.pSignalSemaphores    = &m_queueCompleteSemaphores[m_currentFrame];
+
+        // Wait semaphore ensures that the operation cannot begin until the image is available.
+        submit_info.waitSemaphoreCount = 1;
+        submit_info.pWaitSemaphores    = &m_imageAvailableSemaphores[m_currentFrame];
+
+        // Each semaphore waits on the corresponding pipeline stage to complete. 1:1 ratio.
+        // VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT prevents subsequent colour attachment
+        // writes from executing until the semaphore signals (i.e. one frame is presented at atime)
+        VkPipelineStageFlags flags[1] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+        submit_info.pWaitDstStageMask = flags;
+
+        auto deviceQueues = m_device.getQueues();
+
+        VkResult result = vkQueueSubmit(
+            deviceQueues->graphics, 1, &submit_info, m_inFlightFences[m_currentFrame].getHandle()
+        );
+
+        if (result != VK_SUCCESS) {
+            LOG_ERROR("vkQueueSubmit failed with result: {}", getResultString(result, true));
+            return false;
+        }
+
+        commandBuffer.updateSubmitted();
+
+        m_swapchain.present(
+            deviceQueues->graphics, deviceQueues->present,
+            m_queueCompleteSemaphores[m_currentFrame], m_imageIndex
+        );
+
+        m_currentFrame = (m_currentFrame + 1) % m_maxFramesInFlight;
 
         return true;
     }
 
     void onViewportResize(uint32_t width, uint32_t height) override {
-        // m_framebufferSize.width = width;
-        // m_framebufferSize.width = height;
+        m_framebufferSize.width = width;
+        m_framebufferSize.width = height;
 
-        // m_lastFramebufferSizeGeneration = m_framebufferSizeGeneration;
-        // m_framebufferSizeGeneration++;
+        m_lastFramebufferSizeGeneration = m_framebufferSizeGeneration;
+        m_framebufferSizeGeneration++;
 
-        // LOG_TRACE(
-        //     "Vulkan renderer backend onViewportResize {}/{}/{}", width, height,
-        //     m_framebufferSizeGeneration
-        // );
+        LOG_TRACE(
+            "Vulkan renderer backend onViewportResize {}/{}/{}", width, height,
+            m_framebufferSizeGeneration
+        );
     }
 
     void createCommandBuffers() {
-        // const auto swapchainImagesCount = m_swapchain.images.size();
-        // LOG_TRACE("Creating {} command buffers", swapchainImagesCount);
+        const auto swapchainImagesCount = m_swapchain.getImagesSize();
+        LOG_TRACE("Creating {} command buffers", swapchainImagesCount);
 
-        // m_commandBuffers.reserve(swapchainImagesCount);
+        m_commandBuffers.reserve(swapchainImagesCount);
 
-        // for (int i = 0; i < swapchainImagesCount; ++i)
-        //     m_commandBuffers.emplace_back(m_device, m_device.graphicsCommandPool, true);
+        for (int i = 0; i < swapchainImagesCount; ++i) {
+            m_commandBuffers.emplace_back(
+                &m_device, m_device.getGraphicsCommandPool(), CommandBuffer::Severity::primary
+            );
+        }
     }
 
     void regenerateFramebuffers() {
-        // const auto swapchainImagesCount = m_swapchain.images.size();
+        const auto swapchainImagesCount = m_swapchain.getImagesSize();
+        auto framebuffers               = m_swapchain.getFramebuffers();
+        auto depthBuffer                = m_swapchain.getDepthBuffer();
 
-        // m_swapchain.framebuffers.clear();
-        // m_swapchain.framebuffers.reserve(swapchainImagesCount);
+        framebuffers->clear();
+        framebuffers->reserve(swapchainImagesCount);
 
-        // for (auto& view : m_swapchain.views) {
-        //     uint32_t attachment_count            = 2;
-        //     std::vector<VkImageView> attachments = {view, m_swapchain.depthBuffer->view};
+        for (auto& view : *m_swapchain.getImageViews()) {
+            uint32_t attachment_count            = 2;
+            std::vector<VkImageView> attachments = {view, depthBuffer->getView()};
 
-        //     m_swapchain.framebuffers.emplace_back(
-        //         m_context, m_device, &m_renderPass, m_framebufferSize, attachments
-        //     );
-        // }
+            framebuffers->emplace_back(Framebuffer::Args{
+                &m_context,
+                &m_device,
+                m_renderPass.getHandle(),
+                m_framebufferSize,
+                attachments,
+            });
+        }
     }
 
    private:

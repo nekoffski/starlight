@@ -19,6 +19,8 @@ VkFramebufferCreateInfo createFramebufferCreateInfo(
     return createInfo;
 }
 
+VkFramebuffer Framebuffer::getHandle() { return m_handle; }
+
 Framebuffer::Framebuffer(const Args& args)
     : m_context(args.context), m_device(args.device), m_attachments(args.attachments) {
     const auto createInfo = createFramebufferCreateInfo(m_attachments, args.renderPass, args.size);

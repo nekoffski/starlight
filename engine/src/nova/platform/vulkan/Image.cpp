@@ -74,6 +74,8 @@ VkMemoryAllocateInfo createMemoryAllocateInfo(
     return memoryAllocateInfo;
 }
 
+VkImageView Image::getView() { return m_view; }
+
 void Image::createImage(const Args& args, VkDevice logicalDevice, VkAllocator allocator) {
     auto imageCreateInfo = createImageCreateInfo(args);
     VK_ASSERT(vkCreateImage(logicalDevice, &imageCreateInfo, allocator, &m_handle));

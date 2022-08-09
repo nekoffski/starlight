@@ -33,6 +33,10 @@ class RenderPass {
     void begin(CommandBuffer& commandBuffer, VkFramebuffer framebuffer);
     void end(CommandBuffer& commandBuffer);
 
+    VkRenderPass getHandle();
+
+    glm::vec4* getArea() { return &m_area; }
+
    private:
     std::vector<VkClearValue> createClearValues() const;
 

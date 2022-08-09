@@ -43,14 +43,22 @@ VkExtent2D createSwapchainExtent(
     if (swapchainSupport->capabilities.currentExtent.width != UINT32_MAX)
         swapchainExtent = swapchainSupport->capabilities.currentExtent;
 
-    // Clamp to the value allowed by the GPU.
-    VkExtent2D min         = swapchainSupport->capabilities.minImageExtent;
-    VkExtent2D max         = swapchainSupport->capabilities.maxImageExtent;
-    swapchainExtent.width  = std::clamp(swapchainExtent.width, min.width, max.width);
+    // Clamp to the value allowed by the GPU.bonestent.width, min.width, max.width);
+    auto& min = swapchainSupport->capabilities.minImageExtent;
+    auto& max = swapchainSupport->capabilities.minImageExtent;
+
     swapchainExtent.height = std::clamp(swapchainExtent.height, min.height, max.height);
 
     return swapchainExtent;
 }
+
+uint64_t Swapchain::getImagesSize() const { return m_images.size(); }
+
+std::vector<Framebuffer>* Swapchain::getFramebuffers() { return &m_framebuffers; }
+
+Image* Swapchain::getDepthBuffer() { return m_depthBuffer.get(); }
+
+std::vector<VkImageView>* Swapchain::getImageViews() { return &m_views; }
 
 uint32_t getDeviceImageCount(const Device::SwapchainSupportInfo* swapchainSupport) {
     uint32_t imageCount = swapchainSupport->capabilities.minImageCount + 1;

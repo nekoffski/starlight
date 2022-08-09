@@ -26,6 +26,8 @@ class Image {
     explicit Image(const Args& args);
     ~Image();
 
+    VkImageView getView();
+
    private:
     void createImage(const Args& args, VkDevice logicalDevice, VkAllocator allocator);
     void allocateAndBindMemory(const Args& args, const Device* device, VkAllocator allocator);

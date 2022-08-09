@@ -126,6 +126,8 @@ RenderPass::~RenderPass() {
         vkDestroyRenderPass(m_device->getLogicalDevice(), m_handle, m_context->getAllocator());
 }
 
+VkRenderPass RenderPass::getHandle() { return m_handle; }
+
 std::vector<VkClearValue> RenderPass::createClearValues() const {
     std::vector<VkClearValue> clearValues(2);
 

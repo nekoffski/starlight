@@ -29,6 +29,14 @@ class Swapchain {
 
     void recreate();
 
+    uint64_t getImagesSize() const;
+
+    std::vector<Framebuffer>* getFramebuffers();
+
+    Image* getDepthBuffer();
+
+    std::vector<VkImageView>* getImageViews();
+
     VkSurfaceFormatKHR getSurfaceFormat() const;
 
    private:

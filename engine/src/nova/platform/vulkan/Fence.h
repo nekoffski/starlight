@@ -15,6 +15,8 @@ class Fence {
     bool wait(uint64_t timeout);
     void reset();
 
+    VkFence getHandle();
+
    private:
     VkFence m_handle;
 

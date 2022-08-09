@@ -51,6 +51,12 @@ class Device {
         int32_t transfer;
     };
 
+    struct Queues {
+        VkQueue graphics;
+        VkQueue present;
+        VkQueue transfer;
+    };
+
     explicit Device(Context* context);
     ~Device();
 
@@ -60,12 +66,15 @@ class Device {
     const SwapchainSupportInfo* getSwapchainSupport() const;
 
     const QueueIndices* getQueueIndices() const;
+    Queues* getQueues();
 
     // void querySwapchainSupport(VkSurfaceKHR surface);
 
     std::optional<int32_t> findMemoryIndex(uint32_t typeFilter, uint32_t propertyFlags) const;
 
     void detectDepthFormat();
+
+    VkCommandPool getGraphicsCommandPool();
 
    private:
     void createCommandPool();
@@ -86,10 +95,7 @@ class Device {
 
     SwapchainSupportInfo m_swapchainSupport;
     QueueIndices m_queueIndices;
-
-    VkQueue m_graphicsQueue = VK_NULL_HANDLE;
-    VkQueue m_presentQueue  = VK_NULL_HANDLE;
-    VkQueue m_transferQueue = VK_NULL_HANDLE;
+    Queues m_queues;
 
     VkCommandPool m_graphicsCommandPool = VK_NULL_HANDLE;
 

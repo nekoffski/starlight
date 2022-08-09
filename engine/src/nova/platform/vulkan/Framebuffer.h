@@ -21,6 +21,8 @@ class Framebuffer {
 
     explicit Framebuffer(const Args& args);
 
+    VkFramebuffer getHandle();
+
     ~Framebuffer();
 
    private:

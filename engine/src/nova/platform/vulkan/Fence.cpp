@@ -25,13 +25,10 @@ Fence::~Fence() {
     if (m_handle) vkDestroyFence(m_device->getLogicalDevice(), m_handle, m_context->getAllocator());
 }
 
-bool Fence::wait(uint64_t timeout) {
-    if (m_state == State::signaled) return true;
+VkFence Fence::getHandle() { return m_handle; }
 
-    switch (vkWaitForFences(m_device->getLogicalDevice(), 1, &m_handle, true, timeout)) {
-        case VK_SUCCESS:
-            m_state = State::signaled;
-            return true;
+void logError(VkResult result) {
+    switch (result) {
         case VK_TIMEOUT:
             LOG_WARN("vk_fence_wait - Timed out");
             break;
@@ -48,7 +45,19 @@ bool Fence::wait(uint64_t timeout) {
             LOG_ERROR("vk_fence_wait - An unknown error has occurred.");
             break;
     }
+}
 
+bool Fence::wait(uint64_t timeout) {
+    if (m_state == State::signaled) return true;
+
+    const auto result = vkWaitForFences(m_device->getLogicalDevice(), 1, &m_handle, true, timeout);
+
+    if (result == VK_SUCCESS) {
+        m_state = State::signaled;
+        return true;
+    }
+
+    logError(result);
     return false;
 }
 

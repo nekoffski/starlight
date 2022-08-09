@@ -431,9 +431,9 @@ void Device::createLogicalDevice() {
 }
 
 void Device::assignQueues() {
-    vkGetDeviceQueue(m_logicalDevice, m_queueIndices.graphics, 0, &m_graphicsQueue);
-    vkGetDeviceQueue(m_logicalDevice, m_queueIndices.present, 0, &m_presentQueue);
-    vkGetDeviceQueue(m_logicalDevice, m_queueIndices.transfer, 0, &m_transferQueue);
+    vkGetDeviceQueue(m_logicalDevice, m_queueIndices.graphics, 0, &m_queues.graphics);
+    vkGetDeviceQueue(m_logicalDevice, m_queueIndices.present, 0, &m_queues.present);
+    vkGetDeviceQueue(m_logicalDevice, m_queueIndices.transfer, 0, &m_queues.transfer);
 
     LOG_INFO("Queues obtained.");
 }
@@ -447,6 +447,10 @@ void Device::createCommandPool() {
         m_logicalDevice, &poolCreateInfo, m_context->getAllocator(), &m_graphicsCommandPool
     ));
 }
+
+VkCommandPool Device::getGraphicsCommandPool() { return m_graphicsCommandPool; }
+
+Device::Queues* Device::getQueues() { return &m_queues; }
 
 std::optional<int32_t> Device::findMemoryIndex(uint32_t typeFilter, uint32_t propertyFlags) const {
     VkPhysicalDeviceMemoryProperties memoryProperties;
