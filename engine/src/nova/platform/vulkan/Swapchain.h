@@ -19,7 +19,7 @@ class Swapchain {
     void changeSize(const math::Size2u32& size);
 
     std::optional<uint32_t> acquireNextImageIndex(
-        NanoSeconds timeout, VkSemaphore imageSemaphore, VkFence fence
+        Nanoseconds timeout, VkSemaphore imageSemaphore, VkFence fence
     );
 
     void present(

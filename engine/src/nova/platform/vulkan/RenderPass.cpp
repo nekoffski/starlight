@@ -9,10 +9,10 @@ namespace nova::platform::vulkan {
 
 // TODO: refactor
 struct RenderPassCreateInfo {
-    explicit RenderPassCreateInfo(const RenderPass::Args& args) {
+    explicit RenderPassCreateInfo(VkFormat depthFormat, VkSurfaceFormatKHR surfaceFormat) {
         createSubpass();
-        createColorAttachment(args);
-        createDepthAttachment(args);
+        createColorAttachment(surfaceFormat);
+        createDepthAttachment(depthFormat);
 
         // Depth stencil data.
         subpass.pDepthStencilAttachment = &depthAttachmentReference;
@@ -36,11 +36,11 @@ struct RenderPassCreateInfo {
     //  TODO: ASSIGN STRUCTURE TYPES IF MISSING!
     void createSubpass() { subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS; }
 
-    void createColorAttachment(const RenderPass::Args& args) {
-        colorAttachment.format  = args.swapchain.getSurfaceFormat().format;  // TODO: configurable
-        colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-        colorAttachment.loadOp  = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    void createColorAttachment(VkSurfaceFormatKHR surfaceFormat) {
+        colorAttachment.format         = surfaceFormat.format;  // TODO: configurable
+        colorAttachment.samples        = VK_SAMPLE_COUNT_1_BIT;
+        colorAttachment.loadOp         = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        colorAttachment.storeOp        = VK_ATTACHMENT_STORE_OP_STORE;
         colorAttachment.stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         // Do not expect any particular layout before render pass starts.
@@ -57,8 +57,8 @@ struct RenderPassCreateInfo {
         subpass.pColorAttachments    = &colorAttachmentReference;
     }
 
-    void createDepthAttachment(const RenderPass::Args& args) {
-        depthAttachment.format         = args.device->getDepthFormat();
+    void createDepthAttachment(VkFormat depthFormat) {
+        depthAttachment.format         = depthFormat;
         depthAttachment.samples        = VK_SAMPLE_COUNT_1_BIT;
         depthAttachment.loadOp         = VK_ATTACHMENT_LOAD_OP_CLEAR;
         depthAttachment.storeOp        = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -112,9 +112,12 @@ struct RenderPassCreateInfo {
     VkSubpassDependency dependency;
 };
 
-RenderPass::RenderPass(const Args& args)
-    : m_context(args.context), m_device(args.device), m_area(args.area), m_color(args.color) {
-    RenderPassCreateInfo createInfo{args};
+RenderPass::RenderPass(
+    const Context* context, const Device* device, const Swapchain& swapchain,
+    const Properties& properties
+)
+    : m_context(context), m_device(device), m_area(properties.area), m_color(properties.color) {
+    RenderPassCreateInfo createInfo{m_device->getDepthFormat(), swapchain.getSurfaceFormat()};
 
     VK_ASSERT(vkCreateRenderPass(
         m_device->getLogicalDevice(), &createInfo.handle, m_context->getAllocator(), &m_handle

@@ -12,7 +12,7 @@ class Fence {
     explicit Fence(const Context* context, const Device* device, State state);
     ~Fence();
 
-    bool wait(uint64_t timeout);
+    bool wait(Nanoseconds timeout);
     void reset();
 
     VkFence getHandle();

@@ -4,14 +4,15 @@
 
 namespace nova::platform::vulkan {
 
-Image::Image(const Args& args) : m_size(args.size), m_device(args.device), m_context(args.context) {
+Image::Image(const Device* device, const Context* context, const Image::Properties& properties)
+    : m_size(properties.size), m_device(device), m_context(context) {
     auto logicalDevice = m_device->getLogicalDevice();
     auto allocator     = m_context->getAllocator();
 
-    createImage(args, logicalDevice, allocator);
-    allocateAndBindMemory(args, m_device, allocator);
+    createImage(properties, logicalDevice, allocator);
+    allocateAndBindMemory(properties, allocator);
 
-    if (args.createView) createView(args, logicalDevice, allocator);
+    if (properties.createView) createView(properties, logicalDevice, allocator);
 }
 
 Image::~Image() {
@@ -23,31 +24,33 @@ Image::~Image() {
     if (m_handle) vkDestroyImage(logicalDevice, m_handle, allocator);
 }
 
-VkImageCreateInfo createImageCreateInfo(const Image::Args& args) {
+VkImageCreateInfo createImageCreateInfo(const Image::Properties& properties, VkFormat depthFormat) {
     VkImageCreateInfo imageCreateInfo = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
     imageCreateInfo.imageType         = VK_IMAGE_TYPE_2D;
-    imageCreateInfo.extent.width      = args.size.width;
-    imageCreateInfo.extent.height     = args.size.height;
+    imageCreateInfo.extent.width      = properties.size.width;
+    imageCreateInfo.extent.height     = properties.size.height;
     imageCreateInfo.extent.depth      = 1;  // TODO: Support configurable depth.
     imageCreateInfo.mipLevels         = 4;  // TODO: Support mip mapping
     imageCreateInfo.arrayLayers       = 1;  // TODO: Support number of layers in the image.
-    imageCreateInfo.format            = args.device->getDepthFormat();
-    imageCreateInfo.tiling            = args.tiling;
+    imageCreateInfo.format            = depthFormat;
+    imageCreateInfo.tiling            = properties.tiling;
     imageCreateInfo.initialLayout     = VK_IMAGE_LAYOUT_UNDEFINED;
-    imageCreateInfo.usage             = args.usage;
+    imageCreateInfo.usage             = properties.usage;
     imageCreateInfo.samples           = VK_SAMPLE_COUNT_1_BIT;  // TODO: Configurable sample count.
     imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;    // TODO: Configurable sharing mode.
 
     return imageCreateInfo;
 }
 
-VkImageViewCreateInfo createViewCreateInfo(const Image::Args& args, VkImage imageHandle) {
+VkImageViewCreateInfo createViewCreateInfo(
+    const Image::Properties& properties, VkImage imageHandle, VkFormat depthFormat
+) {
     VkImageViewCreateInfo viewCreateInfo = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
 
     viewCreateInfo.image                       = imageHandle;
     viewCreateInfo.viewType                    = VK_IMAGE_VIEW_TYPE_2D;
-    viewCreateInfo.format                      = args.device->getDepthFormat();
-    viewCreateInfo.subresourceRange.aspectMask = args.viewAspectFlags;
+    viewCreateInfo.format                      = depthFormat;
+    viewCreateInfo.subresourceRange.aspectMask = properties.viewAspectFlags;
 
     viewCreateInfo.subresourceRange.baseMipLevel   = 0;
     viewCreateInfo.subresourceRange.levelCount     = 1;
@@ -76,16 +79,19 @@ VkMemoryAllocateInfo createMemoryAllocateInfo(
 
 VkImageView Image::getView() { return m_view; }
 
-void Image::createImage(const Args& args, VkDevice logicalDevice, VkAllocator allocator) {
-    auto imageCreateInfo = createImageCreateInfo(args);
+void Image::createImage(
+    const Properties& properties, VkDevice logicalDevice, VkAllocator allocator
+) {
+    auto imageCreateInfo = createImageCreateInfo(properties, m_device->getDepthFormat());
     VK_ASSERT(vkCreateImage(logicalDevice, &imageCreateInfo, allocator, &m_handle));
 }
 
-void Image::allocateAndBindMemory(const Args& args, const Device* device, VkAllocator allocator) {
-    auto logicalDevice = device->getLogicalDevice();
+void Image::allocateAndBindMemory(const Properties& properties, VkAllocator allocator) {
+    auto logicalDevice = m_device->getLogicalDevice();
 
     auto memoryRequirements = getMemoryRequirements(logicalDevice, m_handle);
-    auto memoryType = device->findMemoryIndex(memoryRequirements.memoryTypeBits, args.memoryFlags);
+    auto memoryType =
+        m_device->findMemoryIndex(memoryRequirements.memoryTypeBits, properties.memoryFlags);
 
     if (not memoryType) LOG_ERROR("Required memory type not found. Image not valid.");
 
@@ -95,8 +101,10 @@ void Image::allocateAndBindMemory(const Args& args, const Device* device, VkAllo
     VK_ASSERT(vkBindImageMemory(logicalDevice, m_handle, m_memory, 0));
 }
 
-void Image::createView(const Args& args, VkDevice logicalDevice, VkAllocator allocator) {
-    auto viewCreateInfo = createViewCreateInfo(args, m_handle);
+void Image::createView(
+    const Properties& properties, VkDevice logicalDevice, VkAllocator allocator
+) {
+    auto viewCreateInfo = createViewCreateInfo(properties, m_handle, m_device->getDepthFormat());
     VK_ASSERT(vkCreateImageView(logicalDevice, &viewCreateInfo, allocator, &m_view));
 }
 

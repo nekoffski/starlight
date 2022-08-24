@@ -26,15 +26,14 @@ void RendererBackend::createCoreComponents(core::Window& window, const core::Con
 
     const auto& [width, height] = window.getSize();
 
-    RenderPass::Args renderPassArgs{
-        .context   = m_context.get(),
-        .device    = m_device.get(),
-        .swapchain = *m_swapchain,
-        .area      = glm::vec4{0.0f, 0.0f, width, height},
-        .color     = glm::vec4{0.3,  0.5f, 0.7f,  1.0f  },
+    RenderPass::Properties renderPassProperties{
+        .area  = glm::vec4{0.0f, 0.0f, width, height},
+        .color = glm::vec4{0.3,  0.5f, 0.7f,  1.0f  },
     };
 
-    m_renderPass = core::createUniqPtr<RenderPass>(renderPassArgs);
+    m_renderPass = core::createUniqPtr<RenderPass>(
+        m_context.get(), m_device.get(), *m_swapchain, renderPassProperties
+    );
 }
 
 void RendererBackend::createSemaphoresAndFences() {
@@ -103,13 +102,10 @@ void RendererBackend::regenerateFramebuffers() {
         uint32_t attachment_count            = 2;
         std::vector<VkImageView> attachments = {view, depthBuffer->getView()};
 
-        framebuffers->emplace_back(Framebuffer::Args{
-            m_context.get(),
-            m_device.get(),
-            m_renderPass->getHandle(),
-            m_framebufferSize,
-            attachments,
-        });
+        framebuffers->emplace_back(
+            m_context.get(), m_device.get(), m_renderPass->getHandle(), m_framebufferSize,
+            attachments
+        );
     }
 }
 
@@ -128,7 +124,7 @@ void RendererBackend::recreateSwapchain() {
 
 void RendererBackend::recordCommands(CommandBuffer& commandBuffer) {
     commandBuffer.reset();
-    commandBuffer.begin(CommandBuffer::BeginArgs{
+    commandBuffer.begin(CommandBuffer::BeginFlags{
         .isSingleUse          = false,
         .isRenderpassContinue = false,
         .isSimultaneousUse    = false,

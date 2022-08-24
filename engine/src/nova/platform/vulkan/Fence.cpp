@@ -47,7 +47,7 @@ void logError(VkResult result) {
     }
 }
 
-bool Fence::wait(uint64_t timeout) {
+bool Fence::wait(Nanoseconds timeout) {
     if (m_state == State::signaled) return true;
 
     const auto result = vkWaitForFences(m_device->getLogicalDevice(), 1, &m_handle, true, timeout);

@@ -18,15 +18,15 @@ class RenderPass {
         notAllocated
     };
 
-    struct Args {
-        const Context* context;
-        const Device* device;
-        const Swapchain& swapchain;
+    struct Properties {
         const glm::vec4& area;
         const glm::vec4& color;
     };
 
-    explicit RenderPass(const Args& args);
+    explicit RenderPass(
+        const Context* context, const Device* device, const Swapchain& swapchain,
+        const Properties& properties
+    );
 
     ~RenderPass();
 

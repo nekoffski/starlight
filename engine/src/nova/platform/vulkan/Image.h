@@ -11,9 +11,7 @@ namespace nova::platform::vulkan {
 
 class Image {
    public:
-    struct Args {
-        const Device* device;
-        const Context* context;
+    struct Properties {
         VkImageType type;
         math::Size2u32 size;
         VkImageTiling tiling;
@@ -23,15 +21,15 @@ class Image {
         VkImageAspectFlags viewAspectFlags;
     };
 
-    explicit Image(const Args& args);
+    explicit Image(const Device* device, const Context* context, const Properties& properties);
     ~Image();
 
     VkImageView getView();
 
    private:
-    void createImage(const Args& args, VkDevice logicalDevice, VkAllocator allocator);
-    void allocateAndBindMemory(const Args& args, const Device* device, VkAllocator allocator);
-    void createView(const Args& args, VkDevice logicalDevice, VkAllocator allocator);
+    void createImage(const Properties& properties, VkDevice logicalDevice, VkAllocator allocator);
+    void allocateAndBindMemory(const Properties& properties, VkAllocator allocator);
+    void createView(const Properties& properties, VkDevice logicalDevice, VkAllocator allocator);
 
     VkImage m_handle;
     VkDeviceMemory m_memory;

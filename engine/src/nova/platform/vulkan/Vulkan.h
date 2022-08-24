@@ -15,6 +15,6 @@ std::string getResultString(VkResult result, bool extended);
 bool isGood(VkResult);
 
 using VkAllocator = VkAllocationCallbacks*;
-using NanoSeconds = uint64_t;
+using Nanoseconds = uint64_t;
 
 }  // namespace nova::platform::vulkan

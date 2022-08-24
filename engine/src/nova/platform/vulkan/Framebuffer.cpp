@@ -21,9 +21,12 @@ VkFramebufferCreateInfo createFramebufferCreateInfo(
 
 VkFramebuffer Framebuffer::getHandle() { return m_handle; }
 
-Framebuffer::Framebuffer(const Args& args)
-    : m_context(args.context), m_device(args.device), m_attachments(args.attachments) {
-    const auto createInfo = createFramebufferCreateInfo(m_attachments, args.renderPass, args.size);
+Framebuffer::Framebuffer(
+    const Context* context, const Device* device, VkRenderPass renderPass,
+    const math::Size2u32& size, const std::vector<VkImageView>& attachments
+)
+    : m_context(context), m_device(device), m_attachments(attachments) {
+    const auto createInfo = createFramebufferCreateInfo(m_attachments, renderPass, size);
 
     VK_ASSERT(vkCreateFramebuffer(
         m_device->getLogicalDevice(), &createInfo, m_context->getAllocator(), &m_handle

@@ -182,9 +182,7 @@ void Swapchain::createImages() {
     }
 
     // Create depth image and its view.
-    Image::Args imageArgs{
-        m_device,
-        m_context,
+    Image::Properties imageProperties{
         VK_IMAGE_TYPE_2D,
         math::Size2u32(m_swapchainExtent.width, m_swapchainExtent.height),
         VK_IMAGE_TILING_OPTIMAL,
@@ -194,7 +192,7 @@ void Swapchain::createImages() {
         VK_IMAGE_ASPECT_DEPTH_BIT,
     };
 
-    m_depthBuffer = std::make_unique<Image>(imageArgs);
+    m_depthBuffer = std::make_unique<Image>(m_device, m_context, imageProperties);
 }
 
 void Swapchain::create() {
@@ -221,7 +219,7 @@ void Swapchain::destroy() {
 }
 
 std::optional<uint32_t> Swapchain::acquireNextImageIndex(
-    NanoSeconds timeout, VkSemaphore imageSemaphore, VkFence fence
+    Nanoseconds timeout, VkSemaphore imageSemaphore, VkFence fence
 ) {
     uint32_t index;
 

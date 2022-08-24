@@ -11,15 +11,10 @@ namespace nova::platform::vulkan {
 
 class Framebuffer {
    public:
-    struct Args {
-        const Context* context;
-        const Device* device;
-        VkRenderPass renderPass;
-        const math::Size2u32& size;
-        const std::vector<VkImageView>& attachments;
-    };
-
-    explicit Framebuffer(const Args& args);
+    explicit Framebuffer(
+        const Context* context, const Device* device, VkRenderPass renderPass,
+        const math::Size2u32& size, const std::vector<VkImageView>& attachments
+    );
 
     VkFramebuffer getHandle();
 

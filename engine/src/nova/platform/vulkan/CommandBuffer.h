@@ -17,7 +17,7 @@ class CommandBuffer {
         notAllocated
     };
 
-    struct BeginArgs {
+    struct BeginFlags {
         bool isSingleUse;
         bool isRenderpassContinue;
         bool isSimultaneousUse;
@@ -32,7 +32,7 @@ class CommandBuffer {
 
     void create(Severity severity);
     void destroy();
-    void begin(const BeginArgs& args);
+    void begin(const BeginFlags& args);
     void end();
     void updateSubmitted();
     void reset();
@@ -46,7 +46,7 @@ class CommandBuffer {
 
    private:
     VkSubmitInfo createSubmitQueueInfo() const;
-    VkCommandBufferBeginInfo createCommandBufferBeginInfo(const BeginArgs& args) const;
+    VkCommandBufferBeginInfo createCommandBufferBeginInfo(const BeginFlags& args) const;
 
     const Device* m_device;
 

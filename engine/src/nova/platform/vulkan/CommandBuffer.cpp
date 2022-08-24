@@ -40,8 +40,8 @@ void CommandBuffer::destroy() {
     m_state = State::notAllocated;
 }
 
-void CommandBuffer::begin(const BeginArgs& args) {
-    auto beginInfo = createCommandBufferBeginInfo(args);
+void CommandBuffer::begin(const BeginFlags& flags) {
+    auto beginInfo = createCommandBufferBeginInfo(flags);
     VK_ASSERT(vkBeginCommandBuffer(m_handle, &beginInfo));
     m_state = State::recording;
 }
@@ -58,7 +58,7 @@ void CommandBuffer::reset() { m_state = State::ready; }
 void CommandBuffer::createAndBeginSingleUse(const Device& device, const VkCommandPool& pool) {
     create(Severity::primary);
 
-    begin(BeginArgs{
+    begin(BeginFlags{
         .isSingleUse          = true,
         .isRenderpassContinue = false,
         .isSimultaneousUse    = false,
@@ -92,17 +92,18 @@ void CommandBuffer::endSingleUse(const Device& device, const VkCommandPool& pool
     destroy();
 }
 
-VkCommandBufferBeginInfo CommandBuffer::createCommandBufferBeginInfo(const BeginArgs& args) const {
+VkCommandBufferBeginInfo CommandBuffer::createCommandBufferBeginInfo(const BeginFlags& flags
+) const {
     VkCommandBufferBeginInfo beginInfo = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
 
     beginInfo.flags = 0;
 
-    if (args.isSingleUse) beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+    if (flags.isSingleUse) beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-    if (args.isRenderpassContinue)
+    if (flags.isRenderpassContinue)
         beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT;
 
-    if (args.isSimultaneousUse) beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+    if (flags.isSimultaneousUse) beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
 
     return beginInfo;
 }
