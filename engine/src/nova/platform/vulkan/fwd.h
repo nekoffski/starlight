@@ -10,5 +10,8 @@ class Image;
 class Framebuffer;
 class RenderPass;
 class Swapchain;
+class ShaderStage;
+class ShaderObject;
+class Pipeline;
 
 }  // namespace nova::platform::vulkan
