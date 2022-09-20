@@ -4,6 +4,7 @@
 #include <vulkan/vulkan.hpp>
 
 #include <kc/core/Log.h>
+#include <kc/core/ErrorBase.hpp>
 
 #define VK_ASSERT(expr) \
     { ASSERT(expr == VK_SUCCESS, "Vulkan Fatal Error: {}", expr); }
@@ -18,3 +19,5 @@ using VkAllocator = VkAllocationCallbacks*;
 using Nanoseconds = uint64_t;
 
 }  // namespace nova::platform::vulkan
+
+DEFINE_ERROR(VulkanError);

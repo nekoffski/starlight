@@ -55,7 +55,8 @@ void CommandBuffer::updateSubmitted() { m_state = State::submitted; }
 
 void CommandBuffer::reset() { m_state = State::ready; }
 
-void CommandBuffer::createAndBeginSingleUse(const Device& device, const VkCommandPool& pool) {
+// TODO: doesn't make sense, redesign to a static factor method
+void CommandBuffer::createAndBeginSingleUse() {
     create(Severity::primary);
 
     begin(BeginFlags{
@@ -77,7 +78,7 @@ void CommandBuffer::setState(State state) { m_state = state; }
 
 VkCommandBuffer CommandBuffer::getHandle() const { return m_handle; }
 
-void CommandBuffer::endSingleUse(const Device& device, const VkCommandPool& pool, VkQueue queue) {
+void CommandBuffer::endSingleUse(VkQueue queue) {
     // End the command buffer.
     end();
 

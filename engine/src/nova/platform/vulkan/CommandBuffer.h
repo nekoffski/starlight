@@ -41,8 +41,8 @@ class CommandBuffer {
 
     VkCommandBuffer getHandle() const;
 
-    void createAndBeginSingleUse(const Device& device, const VkCommandPool& pool);
-    void endSingleUse(const Device& device, const VkCommandPool& pool, VkQueue queue);
+    void createAndBeginSingleUse();
+    void endSingleUse(VkQueue queue);
 
    private:
     VkSubmitInfo createSubmitQueueInfo() const;

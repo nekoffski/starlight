@@ -18,7 +18,7 @@ class ShaderObject {
 
    private:
     std::vector<ShaderStage> m_stages;
-    Pipeline m_pipeline;
+    // Pipeline m_pipeline;
 };
 
 }  // namespace nova::platform::vulkan
