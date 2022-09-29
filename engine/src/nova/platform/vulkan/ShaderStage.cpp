@@ -7,6 +7,10 @@
 
 namespace nova::platform::vulkan {
 
+#ifndef NOVA_ASSETS_SHADERS_PATH
+#define NOVA_ASSETS_SHADERS_PATH ""
+#endif
+
 std::string toString(ShaderStage::Type type) {
     switch (type) {
         case ShaderStage::Type::vertex:
@@ -19,7 +23,7 @@ std::string toString(ShaderStage::Type type) {
 }
 
 static std::string assembleShaderPath(const std::string& name, ShaderStage::Type type) {
-    static std::string_view shadersPath      = "assets/shaders";  // TODO: read from cfg
+    static std::string_view shadersPath      = NOVA_ASSETS_SHADERS_PATH;  // TODO: read from cfg
     static std::string_view shadersExtension = "spv";
 
     return fmt::format("{}/{}.{}.{}", shadersPath, name, toString(type), shadersExtension);
