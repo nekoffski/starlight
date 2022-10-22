@@ -22,10 +22,14 @@ Fence::Fence(const Context* context, const Device* device, State state)
 }
 
 Fence::~Fence() {
+    vkWaitForFences(m_device->getLogicalDevice(), 1, &m_handle, true, UINT64_MAX);
+
     if (m_handle) vkDestroyFence(m_device->getLogicalDevice(), m_handle, m_context->getAllocator());
 }
 
 VkFence Fence::getHandle() { return m_handle; }
+
+namespace {
 
 void logError(VkResult result) {
     switch (result) {
@@ -46,6 +50,8 @@ void logError(VkResult result) {
             break;
     }
 }
+
+}  // namespace
 
 bool Fence::wait(Nanoseconds timeout) {
     if (m_state == State::signaled) return true;

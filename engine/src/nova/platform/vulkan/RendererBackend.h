@@ -12,6 +12,10 @@
 #include "Vulkan.h"
 #include "fwd.h"
 
+#include "ShaderObject.h"
+#include "Pipeline.h"
+#include "Semaphore.h"
+
 namespace nova::platform::vulkan {
 
 class RendererBackend : public gfx::RendererBackend {
@@ -41,6 +45,8 @@ class RendererBackend : public gfx::RendererBackend {
     void recreateSwapchain();
     void recordCommands(CommandBuffer& commandBuffer);
 
+    void createPipeline();
+
     FrameInfo m_frameInfo;
 
     math::Size2u32 m_framebufferSize;
@@ -55,10 +61,13 @@ class RendererBackend : public gfx::RendererBackend {
     // TODO: consider creating as ptrs to allow mocking
     std::vector<CommandBuffer> m_commandBuffers;
 
-    std::vector<VkSemaphore> m_imageAvailableSemaphores;
-    std::vector<VkSemaphore> m_queueCompleteSemaphores;
+    std::vector<Semaphore> m_imageAvailableSemaphores;
+    std::vector<Semaphore> m_queueCompleteSemaphores;
     std::vector<Fence> m_inFlightFences;
     std::vector<Fence*> m_imagesInFlight;
+
+    core::UniqPtr<ShaderObject> m_simpleShader;
+    core::UniqPtr<Pipeline> m_pipeline;
 
     static constexpr uint8_t s_maxFramesInFlight = 2;
 };

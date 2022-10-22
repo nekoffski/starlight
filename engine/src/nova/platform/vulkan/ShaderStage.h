@@ -9,18 +9,19 @@ namespace nova::platform::vulkan {
 
 class ShaderStage {
    public:
-    enum class Type { vertex, pixel };
+    enum class Type { vertex, fragment };
 
     struct Properties {
         const std::string& name;
         Type type;
-        VkShaderStageFlagBits stageFlag;
     };
 
     explicit ShaderStage(
         const Device* device, const Context* context, core::FileSystem* fs,
         const Properties& properties
     );
+
+    VkPipelineShaderStageCreateInfo getStageCreateInfo() const { return m_stageCreateInfo; }
 
     ~ShaderStage();
 

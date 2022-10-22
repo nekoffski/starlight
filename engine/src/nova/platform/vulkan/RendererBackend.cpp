@@ -17,6 +17,72 @@ RendererBackend::RendererBackend(core::Window& window, const core::Config& confi
     regenerateFramebuffers();
     createCommandBuffers();
     createSemaphoresAndFences();
+
+    // m_simpleShader = core::createUniqPtr<ShaderObject>(m_context.get(), m_device.get());
+    // LOG_DEBUG("Basic shader created");
+
+    // createPipeline();
+}
+
+void RendererBackend::createPipeline() {
+    // Pipeline creation
+    const auto& [w, h] = m_framebufferSize;
+
+    VkViewport viewport;
+    viewport.x        = 0.0f;
+    viewport.y        = (float)w;
+    viewport.width    = (float)w;
+    viewport.height   = -(float)h;
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+
+    // Scissor
+    VkRect2D scissor;
+    scissor.offset.x = scissor.offset.y = 0;
+    scissor.extent.width                = w;
+    scissor.extent.height               = h;
+
+    // Attributes
+    uint32_t offset               = 0;
+    const int32_t attribute_count = 1;
+    std::vector<VkVertexInputAttributeDescription> attribute_descriptions(attribute_count);
+    // Position
+
+    VkFormat formats[attribute_count] = {VK_FORMAT_R32G32B32_SFLOAT};
+    uint64_t sizes[attribute_count]   = {sizeof(math::Vertex3)};
+
+    for (uint32_t i = 0; i < attribute_count; ++i) {
+        attribute_descriptions[i].binding  = 0;  // binding index - should match binding desc
+        attribute_descriptions[i].location = i;  // attrib location
+        attribute_descriptions[i].format   = formats[i];
+        attribute_descriptions[i].offset   = offset;
+        offset += sizes[i];
+    }
+
+    // TODO: Desciptor set layouts.
+
+    // Stages
+    // NOTE: Should match the number of shader->stages.
+    std::vector<VkPipelineShaderStageCreateInfo> stage_create_infos(2);
+    const auto& shaderStages = m_simpleShader->getStages();
+
+    for (uint32_t i = 0; i < 2; ++i) {
+        auto stageCreateInfo = shaderStages[i].getStageCreateInfo();
+
+        stage_create_infos[i].sType = stageCreateInfo.sType;
+        stage_create_infos[i]       = stageCreateInfo;
+    }
+
+    Pipeline::Properties props;
+
+    props.vertexAttributes = attribute_descriptions;
+    props.stages           = stage_create_infos;
+    props.scissor          = scissor;
+    props.viewport         = viewport;
+    props.polygonMode      = VK_POLYGON_MODE_FILL;
+
+    m_pipeline =
+        core::createUniqPtr<Pipeline>(m_context.get(), m_device.get(), *m_renderPass, props);
 }
 
 void RendererBackend::createCoreComponents(core::Window& window, const core::Config& config) {
@@ -26,9 +92,11 @@ void RendererBackend::createCoreComponents(core::Window& window, const core::Con
 
     const auto& [width, height] = window.getSize();
 
+    auto backgroundColor = (1.0f / 255.0f) * glm::vec4{117, 210, 98, 255};
+
     RenderPass::Properties renderPassProperties{
         .area  = glm::vec4{0.0f, 0.0f, width, height},
-        .color = glm::vec4{0.3,  0.5f, 0.7f,  1.0f  },
+        .color = backgroundColor,
     };
 
     m_renderPass = core::createUniqPtr<RenderPass>(
@@ -37,31 +105,20 @@ void RendererBackend::createCoreComponents(core::Window& window, const core::Con
 }
 
 void RendererBackend::createSemaphoresAndFences() {
-    const auto logicalDevice = m_device->getLogicalDevice();
-    const auto allocator     = m_context->getAllocator();
+    m_imageAvailableSemaphores.reserve(s_maxFramesInFlight);
+    m_queueCompleteSemaphores.reserve(s_maxFramesInFlight);
 
-    m_imageAvailableSemaphores.resize(s_maxFramesInFlight, VK_NULL_HANDLE);
-    m_queueCompleteSemaphores.resize(s_maxFramesInFlight, VK_NULL_HANDLE);
     m_imagesInFlight.resize(s_maxFramesInFlight);
-
     m_inFlightFences.reserve(s_maxFramesInFlight);
 
-    const auto createSemaphore = [&](int index) -> void {
-        VkSemaphoreCreateInfo semaphoreCreateInfo = {VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
+    const auto contextPointer = m_context.get();
+    const auto devicePointer  = m_device.get();
 
-        // TODO: create wrapper
-        vkCreateSemaphore(
-            logicalDevice, &semaphoreCreateInfo, allocator, &m_imageAvailableSemaphores[index]
-        );
-
-        vkCreateSemaphore(
-            logicalDevice, &semaphoreCreateInfo, allocator, &m_queueCompleteSemaphores[index]
-        );
-
+    REPEAT(s_maxFramesInFlight) {
+        m_imageAvailableSemaphores.emplace_back(contextPointer, devicePointer);
+        m_queueCompleteSemaphores.emplace_back(contextPointer, devicePointer);
         m_inFlightFences.emplace_back(m_context.get(), m_device.get(), Fence::State::signaled);
-    };
-
-    for (int i = 0; i < s_maxFramesInFlight; ++i) createSemaphore(i);
+    }
 }
 
 void RendererBackend::onViewportResize(uint32_t width, uint32_t height) {
@@ -168,8 +225,8 @@ bool RendererBackend::beginFrame(float deltaTime) {
         return false;
     }
 
-    // Wait for the execution of the current frame to complete. The fence being free will allow this
-    // one to move on.
+    // Wait for the execution of the current frame to complete. The fence being free will allow
+    // this one to move on.
     if (not m_inFlightFences[m_frameInfo.currentFrame].wait(UINT64_MAX)) {
         LOG_WARN("In-flight fence wait failure!");
         return false;
@@ -179,7 +236,7 @@ bool RendererBackend::beginFrame(float deltaTime) {
     // when this completes. This same semaphore will later be waited on by the queue submission
     // to ensure this image is available.
     auto nextImageIndex = m_swapchain->acquireNextImageIndex(
-        UINT64_MAX, m_imageAvailableSemaphores[m_frameInfo.currentFrame], nullptr
+        UINT64_MAX, m_imageAvailableSemaphores[m_frameInfo.currentFrame].getHandle(), nullptr
     );
 
     if (not nextImageIndex) return false;
@@ -232,11 +289,13 @@ bool RendererBackend::endFrame(float deltaTime) {
 
     // The semaphore(s) to be signaled when the queue is complete.
     submit_info.signalSemaphoreCount = 1;
-    submit_info.pSignalSemaphores    = &m_queueCompleteSemaphores[m_frameInfo.currentFrame];
+    submit_info.pSignalSemaphores =
+        m_queueCompleteSemaphores[m_frameInfo.currentFrame].getHandlePointer();
 
     // Wait semaphore ensures that the operation cannot begin until the image is available.
     submit_info.waitSemaphoreCount = 1;
-    submit_info.pWaitSemaphores    = &m_imageAvailableSemaphores[m_frameInfo.currentFrame];
+    submit_info.pWaitSemaphores =
+        m_imageAvailableSemaphores[m_frameInfo.currentFrame].getHandlePointer();
 
     // Each semaphore waits on the corresponding pipeline stage to complete. 1:1 ratio.
     // VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT prevents subsequent colour attachment
@@ -260,7 +319,7 @@ bool RendererBackend::endFrame(float deltaTime) {
 
     m_swapchain->present(
         deviceQueues->graphics, deviceQueues->present,
-        m_queueCompleteSemaphores[m_frameInfo.currentFrame], m_frameInfo.imageIndex
+        m_queueCompleteSemaphores[m_frameInfo.currentFrame].getHandle(), m_frameInfo.imageIndex
     );
 
     m_frameInfo.currentFrame = (m_frameInfo.currentFrame + 1) % s_maxFramesInFlight;

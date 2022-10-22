@@ -11,53 +11,7 @@
 #include "CommandBuffer.h"
 #include "RenderPass.h"
 
-#include "math/Vertex3.h"
-
-/* PARAMS */
-// // Pipeline creation
-//     VkViewport viewport;
-//     viewport.x = 0.0f;
-//     viewport.y = (f32)context->framebuffer_height;
-//     viewport.width = (f32)context->framebuffer_width;
-//     viewport.height = -(f32)context->framebuffer_height;
-//     viewport.minDepth = 0.0f;
-//     viewport.maxDepth = 1.0f;
-
-//     // Scissor
-//     VkRect2D scissor;
-//     scissor.offset.x = scissor.offset.y = 0;
-//     scissor.extent.width = context->framebuffer_width;
-//     scissor.extent.height = context->framebuffer_height;
-
-//     // Attributes
-//     u32 offset = 0;
-//     const i32 attribute_count = 1;
-//     VkVertexInputAttributeDescription attribute_descriptions[attribute_count];
-//     // Position
-//     VkFormat formats[attribute_count] = {
-//         VK_FORMAT_R32G32B32_SFLOAT
-//     };
-//     u64 sizes[attribute_count] = {
-//         sizeof(vec3)
-//     };
-//     for (u32 i = 0; i < attribute_count; ++i) {
-//         attribute_descriptions[i].binding = 0;   // binding index - should match binding desc
-//         attribute_descriptions[i].location = i;  // attrib location
-//         attribute_descriptions[i].format = formats[i];
-//         attribute_descriptions[i].offset = offset;
-//         offset += sizes[i];
-//     }
-
-//     // TODO: Desciptor set layouts.
-
-//     // Stages
-//     // NOTE: Should match the number of shader->stages.
-//     VkPipelineShaderStageCreateInfo stage_create_infos[OBJECT_SHADER_STAGE_COUNT];
-//     kzero_memory(stage_create_infos, sizeof(stage_create_infos));
-//     for (u32 i = 0; i < OBJECT_SHADER_STAGE_COUNT; ++i) {
-//         stage_create_infos[i].sType = out_shader->stages[i].shader_stage_create_info.sType;
-//         stage_create_infos[i] = out_shader->stages[i].shader_stage_create_info;
-//     }
+#include "nova/math/Vertex3.h"
 
 namespace nova::platform::vulkan {
 
@@ -73,8 +27,7 @@ class Pipeline {
     };
 
     explicit Pipeline(
-        const Context* context, const Device* device, RenderPass& renderPass,
-        const Properties& props
+        const Context* context, const Device* device, RenderPass& renderPass, Properties props
     )
         : m_context(context), m_device(device) {
         VkPipelineViewportStateCreateInfo viewportState = {
@@ -190,8 +143,8 @@ class Pipeline {
         // Pipeline create
         VkGraphicsPipelineCreateInfo pipeline_create_info = {
             VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO};
-        pipeline_create_info.stageCount          = props.stages.size();
-        pipeline_create_info.pStages             = props.stages.data();
+        pipeline_create_info.stageCount          = 0;
+        pipeline_create_info.pStages             = nullptr;
         pipeline_create_info.pVertexInputState   = &vertex_input_info;
         pipeline_create_info.pInputAssemblyState = &input_assembly;
 
@@ -210,9 +163,9 @@ class Pipeline {
         pipeline_create_info.basePipelineHandle = VK_NULL_HANDLE;
         pipeline_create_info.basePipelineIndex  = -1;
 
-        VK_ASSERT(vkCreateGraphicsPipelines(
-            logicalDevice, VK_NULL_HANDLE, 1, &pipeline_create_info, allocator, &m_handle
-        ));
+        // VK_ASSERT(vkCreateGraphicsPipelines(
+        //     logicalDevice, VK_NULL_HANDLE, 1, &pipeline_create_info, allocator, &m_handle
+        // ));
     }
 
     ~Pipeline() {
@@ -232,7 +185,7 @@ class Pipeline {
     const Context* m_context;
     const Device* m_device;
 
-    VkPipeline m_handle;
+    VkPipeline m_handle = VK_NULL_HANDLE;
     VkPipelineLayout m_layout;
 };
 
