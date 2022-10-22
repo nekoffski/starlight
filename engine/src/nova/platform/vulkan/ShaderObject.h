@@ -18,14 +18,15 @@ class ShaderObject {
 
         core::FileSystem fs;
 
-        m_stages = {
-            ShaderStage(
-                device, context, &fs, ShaderStage::Properties{"Simple", ShaderStage::Type::vertex}
-            ),
-            ShaderStage(
-                device, context, &fs, ShaderStage::Properties{"Simple", ShaderStage::Type::fragment}
-            ),
-        };
+        m_stages.reserve(s_stagesCount);
+
+        m_stages.emplace_back(
+            device, context, &fs, ShaderStage::Properties{"Simple", ShaderStage::Type::vertex}
+        );
+
+        m_stages.emplace_back(
+            device, context, &fs, ShaderStage::Properties{"Simple", ShaderStage::Type::fragment}
+        );
     }
 
     const std::vector<ShaderStage>& getStages() const { return m_stages; }

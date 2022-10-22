@@ -18,10 +18,10 @@ RendererBackend::RendererBackend(core::Window& window, const core::Config& confi
     createCommandBuffers();
     createSemaphoresAndFences();
 
-    // m_simpleShader = core::createUniqPtr<ShaderObject>(m_context.get(), m_device.get());
-    // LOG_DEBUG("Basic shader created");
+    m_simpleShader = core::createUniqPtr<ShaderObject>(m_context.get(), m_device.get());
+    LOG_DEBUG("Basic shader created");
 
-    // createPipeline();
+    createPipeline();
 }
 
 void RendererBackend::createPipeline() {

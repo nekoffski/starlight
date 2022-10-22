@@ -143,8 +143,8 @@ class Pipeline {
         // Pipeline create
         VkGraphicsPipelineCreateInfo pipeline_create_info = {
             VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO};
-        pipeline_create_info.stageCount          = 0;
-        pipeline_create_info.pStages             = nullptr;
+        pipeline_create_info.stageCount          = props.stages.size();
+        pipeline_create_info.pStages             = props.stages.data();
         pipeline_create_info.pVertexInputState   = &vertex_input_info;
         pipeline_create_info.pInputAssemblyState = &input_assembly;
 
@@ -163,9 +163,9 @@ class Pipeline {
         pipeline_create_info.basePipelineHandle = VK_NULL_HANDLE;
         pipeline_create_info.basePipelineIndex  = -1;
 
-        // VK_ASSERT(vkCreateGraphicsPipelines(
-        //     logicalDevice, VK_NULL_HANDLE, 1, &pipeline_create_info, allocator, &m_handle
-        // ));
+        VK_ASSERT(vkCreateGraphicsPipelines(
+            logicalDevice, VK_NULL_HANDLE, 1, &pipeline_create_info, allocator, &m_handle
+        ));
     }
 
     ~Pipeline() {
