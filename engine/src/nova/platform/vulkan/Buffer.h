@@ -11,9 +11,8 @@ class Buffer {
    public:
     struct Properties {
         uint64_t size;
-        uint32_t memoryPropertyFlags;
-
-        VkBufferUsageFlagBits usageFlags;
+        VkMemoryPropertyFlags memoryPropertyFlags;
+        VkBufferUsageFlags usageFlags;
 
         bool bindOnCreate;
     };
@@ -21,17 +20,21 @@ class Buffer {
     explicit Buffer(const Context* context, const Device* device, const Properties& props);
     ~Buffer();
 
+    VkBuffer getHandle() const { return m_handle; }
+
+    VkBuffer* getHandlePointer() { return &m_handle; }
+
     void destroy();
 
     void bind(uint64_t offset);
 
     bool resize(uint64_t size, VkQueue queue, VkCommandPool pool);
 
-    void* lockMemory(uint64_t offset, uint64_t size, uint32_t flags);
+    void* lockMemory(uint64_t offset, uint64_t size, VkMemoryPropertyFlags flags);
 
     void unlockMemory();
 
-    void loadData(uint64_t offset, uint64_t size, uint32_t flags, const void* data);
+    void loadData(uint64_t offset, uint64_t size, VkMemoryPropertyFlags flags, const void* data);
 
     void copyTo(
         VkCommandPool pool, VkFence fence, VkQueue queue, VkBuffer destination,
@@ -51,7 +54,7 @@ class Buffer {
     uint64_t m_totalSize;
 
     VkBuffer m_handle;
-    VkBufferUsageFlagBits m_usageFlags;
+    VkBufferUsageFlags m_usageFlags;
 
     bool m_isLocked;
 

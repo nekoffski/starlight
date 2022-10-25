@@ -22,6 +22,79 @@ RendererBackend::RendererBackend(core::Window& window, const core::Config& confi
     LOG_DEBUG("Basic shader created");
 
     createPipeline();
+    createBuffers();
+
+    const uint32_t vert_count = 4;
+    math::Vertex3 verts[vert_count];
+
+    verts[0].position.x = 0.0;
+    verts[0].position.y = -0.5;
+
+    verts[1].position.x = 0.5;
+    verts[1].position.y = 0.5;
+
+    verts[2].position.x = 0;
+    verts[2].position.y = 0.5;
+
+    verts[3].position.x = 0.5;
+    verts[3].position.y = -0.5;
+
+    const uint32_t index_count    = 6;
+    uint32_t indices[index_count] = {0, 1, 2, 0, 3, 1};
+
+    LOG_TRACE("Initializing test vertex and index buffers");
+
+    uploadDataRange(
+        m_device->getGraphicsCommandPool(), 0, m_device->getQueues()->graphics,
+        *m_objectVertexBuffer, 0, sizeof(math::Vertex3) * vert_count, verts
+    );
+
+    uploadDataRange(
+        m_device->getGraphicsCommandPool(), 0, m_device->getQueues()->graphics,
+        *m_objectIndexBuffer, 0, sizeof(uint32_t) * index_count, indices
+    );
+}
+
+void RendererBackend::uploadDataRange(
+    VkCommandPool pool, VkFence fence, VkQueue queue, Buffer& outBuffer, uint64_t offset,
+    uint64_t size, void* data
+) {
+    VkMemoryPropertyFlags flags =
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+
+    Buffer staging(
+        m_context.get(), m_device.get(),
+        Buffer::Properties{size, flags, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, true}
+    );
+
+    staging.loadData(0, size, 0, data);
+
+    staging.copyTo(
+        pool, fence, queue, outBuffer.getHandle(),
+        VkBufferCopy{.srcOffset = 0, .dstOffset = offset, .size = size}
+    );
+}
+
+void RendererBackend::createBuffers() {
+    LOG_DEBUG("Creating buffers");
+
+    m_objectVertexBuffer = core::createUniqPtr<Buffer>(
+        m_context.get(), m_device.get(),
+        Buffer::Properties{
+            sizeof(math::Vertex3) * 1024 * 1024, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            true}
+    );
+
+    m_objectIndexBuffer = core::createUniqPtr<Buffer>(
+        m_context.get(), m_device.get(),
+        Buffer::Properties{
+            sizeof(uint32_t) * 1024 * 1024, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            true}
+    );
 }
 
 void RendererBackend::createPipeline() {
@@ -166,7 +239,7 @@ void RendererBackend::regenerateFramebuffers() {
     }
 }
 
-RendererBackend::~RendererBackend() {}
+RendererBackend::~RendererBackend() { vkDeviceWaitIdle(m_device->getLogicalDevice()); }
 
 void RendererBackend::recreateSwapchain() {
     if (auto result = vkDeviceWaitIdle(m_device->getLogicalDevice()); not isGood(result)) {
@@ -252,6 +325,27 @@ bool RendererBackend::beginFrame(float deltaTime) {
 
     auto& framebuffer = m_swapchain->getFramebuffers()->at(m_frameInfo.imageIndex);
     m_renderPass->begin(commandBuffer, framebuffer.getHandle());
+
+    // temp test code
+
+    m_pipeline->bind(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS);
+
+    // Bind vertex buffer at offset.
+    VkDeviceSize offsets[1] = {0};
+
+    vkCmdBindVertexBuffers(
+        commandBuffer.getHandle(), 0, 1, m_objectVertexBuffer->getHandlePointer(),
+        (VkDeviceSize*)offsets
+    );
+
+    // Bind index buffer at offset.
+    vkCmdBindIndexBuffer(
+        commandBuffer.getHandle(), m_objectIndexBuffer->getHandle(), 0, VK_INDEX_TYPE_UINT32
+    );
+
+    // Issue the draw.
+    vkCmdDrawIndexed(commandBuffer.getHandle(), 6, 1, 0, 0, 0);
+    // TODO: end temporary test code
 
     return true;
 }

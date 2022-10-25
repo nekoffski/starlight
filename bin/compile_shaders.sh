@@ -23,7 +23,7 @@ if [ `ls $DIR | wc -l` -le 0 ]; then
     exit 0
 fi
 
-echo "$ - Compiler verson"
+echo "$ - Compiler version"
 echo ""
 $COMPILER --version
 echo ""
@@ -45,3 +45,4 @@ done
 
 
 echo "$ - All files compiled"
+echo "$"

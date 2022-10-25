@@ -36,7 +36,12 @@ void CommandBuffer::create(Severity severity) {
 }
 
 void CommandBuffer::destroy() {
-    vkFreeCommandBuffers(m_device->getLogicalDevice(), m_commandPool, 1, &m_handle);
+    LOG_TRACE("Destroying command buffer");
+
+    if (m_handle) {
+        vkFreeCommandBuffers(m_device->getLogicalDevice(), m_commandPool, 1, &m_handle);
+        m_handle = VK_NULL_HANDLE;
+    }
     m_state = State::notAllocated;
 }
 

@@ -16,6 +16,8 @@
 #include "Pipeline.h"
 #include "Semaphore.h"
 
+#include "Buffer.h"
+
 namespace nova::platform::vulkan {
 
 class RendererBackend : public gfx::RendererBackend {
@@ -41,6 +43,13 @@ class RendererBackend : public gfx::RendererBackend {
     void createCommandBuffers();
     void regenerateFramebuffers();
     void createSemaphoresAndFences();
+
+    void uploadDataRange(
+        VkCommandPool pool, VkFence fence, VkQueue queue, Buffer& outBuffer, uint64_t offset,
+        uint64_t size, void* data
+    );
+
+    void createBuffers();
 
     void recreateSwapchain();
     void recordCommands(CommandBuffer& commandBuffer);
@@ -68,6 +77,9 @@ class RendererBackend : public gfx::RendererBackend {
 
     core::UniqPtr<ShaderObject> m_simpleShader;
     core::UniqPtr<Pipeline> m_pipeline;
+
+    core::UniqPtr<Buffer> m_objectVertexBuffer;
+    core::UniqPtr<Buffer> m_objectIndexBuffer;
 
     static constexpr uint8_t s_maxFramesInFlight = 2;
 };

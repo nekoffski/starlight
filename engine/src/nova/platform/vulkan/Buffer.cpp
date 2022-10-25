@@ -106,7 +106,6 @@ bool Buffer::resize(uint64_t size, VkQueue queue, VkCommandPool pool) {
     vkDeviceWaitIdle(logicalDevice);
 
     destroy();
-
     m_totalSize = size;
     m_memory    = memory;
     m_handle    = buffer;
@@ -114,7 +113,7 @@ bool Buffer::resize(uint64_t size, VkQueue queue, VkCommandPool pool) {
     return true;
 }
 
-void* Buffer::lockMemory(uint64_t offset, uint64_t size, uint32_t flags) {
+void* Buffer::lockMemory(uint64_t offset, uint64_t size, VkMemoryPropertyFlags flags) {
     void* data;
     VK_ASSERT(vkMapMemory(m_device->getLogicalDevice(), m_memory, offset, size, flags, &data));
 
@@ -123,7 +122,9 @@ void* Buffer::lockMemory(uint64_t offset, uint64_t size, uint32_t flags) {
 
 void Buffer::unlockMemory() { vkUnmapMemory(m_device->getLogicalDevice(), m_memory); }
 
-void Buffer::loadData(uint64_t offset, uint64_t size, uint32_t flags, const void* data) {
+void Buffer::loadData(
+    uint64_t offset, uint64_t size, VkMemoryPropertyFlags flags, const void* data
+) {
     void* buffer;
 
     VK_ASSERT(vkMapMemory(m_device->getLogicalDevice(), m_memory, offset, size, flags, &buffer));
