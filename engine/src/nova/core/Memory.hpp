@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include "LocalPtr.hpp"
+
 namespace nova::core {
 
 template <typename T> using RefPtr = std::shared_ptr<T>;
