@@ -9,3 +9,6 @@ if [ -d ./3rdparty/libkc ]; then
     chmod +x ./3rdparty/libkc/bin/deps.sh
     ./3rdparty/libkc/bin/deps.sh
 fi;
+
+# show vulkan version
+apt list --installed | grep vulkan
