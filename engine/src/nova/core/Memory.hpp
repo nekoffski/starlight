@@ -2,9 +2,11 @@
 
 #include <memory>
 
-#include "LocalPtr.hpp"
+#include <kc/mem/LocalPtr.hpp>
 
 namespace nova::core {
+
+using kc::mem::LocalPtr;
 
 template <typename T> using RefPtr = std::shared_ptr<T>;
 
