@@ -1,5 +1,7 @@
 #include "ShaderObject.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include "ShaderStage.h"
 #include "Pipeline.h"
 #include "Buffer.h"
@@ -73,7 +75,7 @@ void ShaderObject::updateObject(
 ) {
     vkCmdPushConstants(
         commandBuffer, pipeline.getLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(modelMatrix),
-        &modelMatrix[0]
+        glm::value_ptr(modelMatrix)
     );
 }
 

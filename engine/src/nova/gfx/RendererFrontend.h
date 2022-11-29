@@ -1,5 +1,7 @@
 #pragma once
 
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+
 #include <glm/geometric.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -30,20 +32,24 @@ class RendererFrontend : public event::EventObserver {
             static float angle         = 0.0f;
             constexpr float deltaAngle = 1.0f;
 
-            auto projection = glm::mat4{1.0f};
-            // glm::perspective(glm::radians(45.0f), 1600.0f / 900.0f, 0.1f, 1000.0f);
+            auto projection =
+                glm::perspective(glm::radians(45.0f), 1600.0f / 900.0f, 0.1f, 1000.0f);
 
             angle += deltaAngle;
 
             if (angle >= 360.0f) angle = 0.0f;
 
             auto modelMatrix = glm::mat4{1.0f};
-            modelMatrix =
-                glm::rotate(modelMatrix, glm::radians(angle), glm::vec3{0.0f, 0.0f, 1.0f});
 
-            auto view =
-                glm::mat4{1.0f};  // glm::translate(glm::mat4{1.0f}, glm::vec3{0.0f, 0.0f, 0.01f});
-            view = glm::inverse(view);
+            modelMatrix = glm::translate(
+                glm::rotate(modelMatrix, glm::radians(angle), glm::vec3{0.0f, 0.0f, 1.0f}),
+                glm::vec3{0.0f, 0.0f, -2.75f}
+            );
+
+            auto view = glm::translate(glm::mat4{1.0f}, glm::vec3{0.0f, 0.0f, 1.0f});
+
+            // why?
+            // view = glm::inverse(view);
 
             globalState.projectionMatrix = projection;
             globalState.viewMatrix       = view;
