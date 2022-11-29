@@ -37,6 +37,8 @@ class RenderPass {
 
     glm::vec4* getArea() { return &m_area; }
 
+    void setAmbient(const glm::vec4& ambient) { m_color = ambient; }
+
    private:
     std::vector<VkClearValue> createClearValues() const;
 

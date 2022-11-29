@@ -1,5 +1,6 @@
 #pragma once
 
+#include <span>
 #include <vector>
 
 #include <kc/core/Log.h>
@@ -18,9 +19,9 @@ namespace nova::platform::vulkan {
 class Pipeline {
    public:
     struct Properties {
-        std::vector<VkVertexInputAttributeDescription> vertexAttributes;
-        std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
-        std::vector<VkPipelineShaderStageCreateInfo> stages;
+        std::span<VkVertexInputAttributeDescription> vertexAttributes;
+        std::span<VkDescriptorSetLayout> descriptorSetLayouts;
+        std::span<VkPipelineShaderStageCreateInfo> stages;
         VkViewport viewport;
         VkRect2D scissor;
         VkPolygonMode polygonMode;
@@ -128,6 +129,17 @@ class Pipeline {
         VkPipelineLayoutCreateInfo pipeline_layout_create_info = {
             VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO};
 
+        // Push constants
+        VkPushConstantRange push_constant;
+        push_constant.stageFlags                           = VK_SHADER_STAGE_VERTEX_BIT;
+        push_constant.offset                               = sizeof(glm::mat4) * 0;
+        push_constant.size                                 = sizeof(glm::mat4) * 2;
+        pipeline_layout_create_info.pushConstantRangeCount = 1;
+        pipeline_layout_create_info.pPushConstantRanges    = &push_constant;
+
+        pipeline_layout_create_info.pPushConstantRanges    = &push_constant;
+        pipeline_layout_create_info.pushConstantRangeCount = 1;
+
         // Descriptor set layouts
         pipeline_layout_create_info.setLayoutCount = props.descriptorSetLayouts.size();
         pipeline_layout_create_info.pSetLayouts    = props.descriptorSetLayouts.data();
@@ -180,6 +192,8 @@ class Pipeline {
     void bind(CommandBuffer& commandBuffer, VkPipelineBindPoint bindPoint) {
         vkCmdBindPipeline(commandBuffer.getHandle(), bindPoint, m_handle);
     }
+
+    VkPipelineLayout getLayout() const { return m_layout; }
 
    private:
     const Context* m_context;

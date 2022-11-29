@@ -13,5 +13,6 @@ class Swapchain;
 class ShaderStage;
 class ShaderObject;
 class Pipeline;
+class Buffer;
 
 }  // namespace nova::platform::vulkan

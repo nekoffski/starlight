@@ -8,6 +8,9 @@
 #include "Fence.h"
 #include "Image.h"
 #include "Framebuffer.h"
+#include "Buffer.h"
+#include "ShaderStage.h"
+#include "ShaderObject.h"
 
 namespace nova::platform::vulkan {
 
@@ -27,16 +30,18 @@ RendererBackend::RendererBackend(core::Window& window, const core::Config& confi
     createPipeline();
     createBuffers();
 
+    m_simpleShader->createUniformBuffer();
+
     const uint32_t vert_count = 4;
     math::Vertex3 verts[vert_count];
 
-    verts[0].position.x = 0.0;
+    verts[0].position.x = -0.5;
     verts[0].position.y = -0.5;
 
     verts[1].position.x = 0.5;
     verts[1].position.y = 0.5;
 
-    verts[2].position.x = 0;
+    verts[2].position.x = -0.5;
     verts[2].position.y = 0.5;
 
     verts[3].position.x = 0.5;
@@ -75,6 +80,47 @@ void RendererBackend::uploadDataRange(
     staging.copyTo(
         pool, fence, queue, outBuffer.getHandle(),
         VkBufferCopy{.srcOffset = 0, .dstOffset = offset, .size = size}
+    );
+}
+
+void RendererBackend::updateObject(const glm::mat4& model) {
+    auto& commandBuffer = m_commandBuffers[m_frameInfo.imageIndex];
+
+    m_simpleShader->updateObject(*m_pipeline, commandBuffer.getHandle(), model);
+
+    m_pipeline->bind(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS);
+
+    // Bind vertex buffer at offset.
+    VkDeviceSize offsets[1] = {0};
+
+    vkCmdBindVertexBuffers(
+        commandBuffer.getHandle(), 0, 1, m_objectVertexBuffer->getHandlePointer(),
+        (VkDeviceSize*)offsets
+    );
+
+    // Bind index buffer at offset.
+    vkCmdBindIndexBuffer(
+        commandBuffer.getHandle(), m_objectIndexBuffer->getHandle(), 0, VK_INDEX_TYPE_UINT32
+    );
+
+    // Issue the draw.
+    vkCmdDrawIndexed(commandBuffer.getHandle(), 6, 1, 0, 0, 0);
+    // TODO: end temporary test code
+}
+
+void RendererBackend::updateGlobalState(const gfx::GlobalState& globalState) {
+    auto& commandBuffer = m_commandBuffers[m_frameInfo.imageIndex];
+
+    m_renderPass->setAmbient(globalState.ambientColor);
+
+    // temp test code
+    m_pipeline->bind(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS);
+
+    m_simpleShader->getGlobalUBO().projection = globalState.projectionMatrix;
+    m_simpleShader->getGlobalUBO().view       = globalState.viewMatrix;
+
+    m_simpleShader->updateGlobalState(
+        globalState, commandBuffer.getHandle(), m_frameInfo.imageIndex, *m_pipeline
     );
 }
 
@@ -151,11 +197,16 @@ void RendererBackend::createPipeline() {
 
     Pipeline::Properties props;
 
-    props.vertexAttributes = attribute_descriptions;
-    props.stages           = stage_create_infos;
-    props.scissor          = scissor;
-    props.viewport         = viewport;
-    props.polygonMode      = VK_POLYGON_MODE_FILL;
+    std::vector<VkDescriptorSetLayout> descriptorSetLayout = {
+        m_simpleShader->getGlobalDescriptorSetLayout()};
+
+    // TODO: seems like a lot of copying, consider passing a vector view?
+    props.vertexAttributes     = attribute_descriptions;
+    props.stages               = stage_create_infos;
+    props.scissor              = scissor;
+    props.viewport             = viewport;
+    props.polygonMode          = VK_POLYGON_MODE_FILL;
+    props.descriptorSetLayouts = descriptorSetLayout;
 
     m_pipeline =
         core::createUniqPtr<Pipeline>(m_context.get(), m_device.get(), *m_renderPass, props);
@@ -328,27 +379,6 @@ bool RendererBackend::beginFrame(float deltaTime) {
 
     auto& framebuffer = m_swapchain->getFramebuffers()->at(m_frameInfo.imageIndex);
     m_renderPass->begin(commandBuffer, framebuffer.getHandle());
-
-    // temp test code
-
-    m_pipeline->bind(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS);
-
-    // Bind vertex buffer at offset.
-    VkDeviceSize offsets[1] = {0};
-
-    vkCmdBindVertexBuffers(
-        commandBuffer.getHandle(), 0, 1, m_objectVertexBuffer->getHandlePointer(),
-        (VkDeviceSize*)offsets
-    );
-
-    // Bind index buffer at offset.
-    vkCmdBindIndexBuffer(
-        commandBuffer.getHandle(), m_objectIndexBuffer->getHandle(), 0, VK_INDEX_TYPE_UINT32
-    );
-
-    // Issue the draw.
-    vkCmdDrawIndexed(commandBuffer.getHandle(), 6, 1, 0, 0, 0);
-    // TODO: end temporary test code
 
     return true;
 }

@@ -36,6 +36,9 @@ class RendererBackend : public gfx::RendererBackend {
     bool beginFrame(float deltaTime) override;
     bool endFrame(float deltaTime) override;
 
+    void updateGlobalState(const gfx::GlobalState& globalState) override;
+    void updateObject(const glm::mat4& model) override;
+
     void onViewportResize(uint32_t width, uint32_t height) override;
 
    private:
