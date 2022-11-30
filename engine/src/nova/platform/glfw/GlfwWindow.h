@@ -19,6 +19,8 @@ class GlfwWindow : public core::Window {
     math::Size2u32 getSize() const override;
     math::Vec2f getMousePosition() const override;
 
+    bool isKeyPressed(core::Window::Key keyCode) const override;
+
     void update() override;
     void swapBuffers() override;
 

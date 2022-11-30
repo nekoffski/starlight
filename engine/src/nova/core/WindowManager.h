@@ -16,6 +16,8 @@ class WindowManager : public kc::core::Singleton<WindowManager> {
 
     void update();
 
+    bool isKeyPressed(Window::Key keyCode) const;
+
    private:
     void calculateMousePositionDelta();
 

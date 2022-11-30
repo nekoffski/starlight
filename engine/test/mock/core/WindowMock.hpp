@@ -14,4 +14,5 @@ struct WindowMock : nova::core::Window {
     MOCK_METHOD(void, onWindowCloseCallback, (OnWindowCloseCallback), (override));
     MOCK_METHOD(void, onWindowResizeCallback, (OnWindowResizeCallback), (override));
     MOCK_METHOD(nova::math::Vec2f, getMousePosition, (), (const, override));
+    MOCK_METHOD(bool, isKeyPressed, (nova::core::Window::Key keyCode), (const, override));
 };

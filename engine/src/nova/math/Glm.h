@@ -18,4 +18,6 @@ using Mat2f = mat2;
 using Mat3f = mat3;
 using Mat4f = mat4;
 
+const Mat4f identityMatrix = Mat4f{1.0f};
+
 }  // namespace nova::math

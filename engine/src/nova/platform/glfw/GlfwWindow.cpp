@@ -10,7 +10,7 @@
 
 namespace nova::platform::glfw {
 
-#define TO_GLFW_PTR(ptr) static_cast<GLFWwindow*>(ptr)
+#define GLFW_WINDOW_PTR(ptr) static_cast<GLFWwindow*>(ptr)
 #define GET_USER_CALLBACKS(window) static_cast<Callbacks*>(glfwGetWindowUserPointer(window))
 
 using namespace event;
@@ -48,8 +48,12 @@ GlfwWindow::GlfwWindow() {
 
     m_windowHandle = glfwCreateWindow(1600, 900, "nova-engine", nullptr, nullptr);
 
-    glfwMakeContextCurrent(TO_GLFW_PTR(m_windowHandle));
-    glfwSetWindowUserPointer(TO_GLFW_PTR(m_windowHandle), &m_callbacks);
+    glfwMakeContextCurrent(GLFW_WINDOW_PTR(m_windowHandle));
+    glfwSetWindowUserPointer(GLFW_WINDOW_PTR(m_windowHandle), &m_callbacks);
+}
+
+bool GlfwWindow::isKeyPressed(core::Window::Key keyCode) const {
+    return glfwGetKey(GLFW_WINDOW_PTR(m_windowHandle), keyCode) == GLFW_PRESS;
 }
 
 void GlfwWindow::onKeyCallback(OnKeyCallback callback) {
@@ -60,7 +64,7 @@ void GlfwWindow::onKeyCallback(OnKeyCallback callback) {
         GET_USER_CALLBACKS(window)->onKey(glfwToNovaKeyAction(action), key);
     };
 
-    glfwSetKeyCallback(TO_GLFW_PTR(m_windowHandle), onKeyCallback);
+    glfwSetKeyCallback(GLFW_WINDOW_PTR(m_windowHandle), onKeyCallback);
 }
 
 void GlfwWindow::onMouseCallback(OnMouseCallback callback) {
@@ -71,7 +75,7 @@ void GlfwWindow::onMouseCallback(OnMouseCallback callback) {
         GET_USER_CALLBACKS(window)->onMouse(glfwToNovaMouseAction(action), button);
     };
 
-    glfwSetMouseButtonCallback(TO_GLFW_PTR(m_windowHandle), onMouseButtonCallback);
+    glfwSetMouseButtonCallback(GLFW_WINDOW_PTR(m_windowHandle), onMouseButtonCallback);
 }
 
 void GlfwWindow::onWindowCloseCallback(OnWindowCloseCallback callback) {
@@ -81,7 +85,7 @@ void GlfwWindow::onWindowCloseCallback(OnWindowCloseCallback callback) {
         GET_USER_CALLBACKS(window)->onWindowClose();
     };
 
-    glfwSetWindowCloseCallback(TO_GLFW_PTR(m_windowHandle), onWindowCloseCallback);
+    glfwSetWindowCloseCallback(GLFW_WINDOW_PTR(m_windowHandle), onWindowCloseCallback);
 }
 
 void GlfwWindow::onWindowResizeCallback(OnWindowResizeCallback callback) {
@@ -93,18 +97,18 @@ void GlfwWindow::onWindowResizeCallback(OnWindowResizeCallback callback) {
         );
     };
 
-    glfwSetWindowSizeCallback(TO_GLFW_PTR(m_windowHandle), onWindowResizeCallback);
+    glfwSetWindowSizeCallback(GLFW_WINDOW_PTR(m_windowHandle), onWindowResizeCallback);
 }
 
 void GlfwWindow::update() { glfwPollEvents(); }
 
-void GlfwWindow::swapBuffers() { glfwSwapBuffers(TO_GLFW_PTR(m_windowHandle)); }
+void GlfwWindow::swapBuffers() { glfwSwapBuffers(GLFW_WINDOW_PTR(m_windowHandle)); }
 
 std::string_view GlfwWindow::getVendor() const { return "GLFW3"; }
 
 math::Size2u32 GlfwWindow::getSize() const {
     int width, height;
-    glfwGetWindowSize(TO_GLFW_PTR(m_windowHandle), &width, &height);
+    glfwGetWindowSize(GLFW_WINDOW_PTR(m_windowHandle), &width, &height);
 
     return math::Size2u32{static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
 }
@@ -113,7 +117,7 @@ math::Vec2f GlfwWindow::getMousePosition() const {
     double x;
     double y;
 
-    glfwGetCursorPos(TO_GLFW_PTR(m_windowHandle), &x, &y);
+    glfwGetCursorPos(GLFW_WINDOW_PTR(m_windowHandle), &x, &y);
 
     return math::Vec2f{x, y};
 }

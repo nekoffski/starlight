@@ -10,6 +10,7 @@
 #include "nova/event/WindowResized.h"
 
 #include "RendererBacked.h"
+#include "EulerCamera.h"
 
 namespace nova::gfx {
 
@@ -23,7 +24,7 @@ class RendererFrontend : public event::EventObserver {
 
     virtual ~RendererFrontend() { event::EventManager::get().unregisterObserver(this); }
 
-    bool drawFrame(const RenderPacket& renderPacket, float deltaTime) {
+    bool drawFrame(const RenderPacket& renderPacket, const Camera& camera, float deltaTime) {
         if (m_backend->beginFrame(deltaTime)) {
             gfx::GlobalState globalState;
 
@@ -31,9 +32,6 @@ class RendererFrontend : public event::EventObserver {
 
             static float angle         = 0.0f;
             constexpr float deltaAngle = 1.0f;
-
-            auto projection =
-                glm::perspective(glm::radians(45.0f), 1600.0f / 900.0f, 0.1f, 1000.0f);
 
             angle += deltaAngle;
 
@@ -46,14 +44,12 @@ class RendererFrontend : public event::EventObserver {
                 glm::vec3{0.0f, 0.0f, -2.75f}
             );
 
-            auto view = glm::translate(glm::mat4{1.0f}, glm::vec3{0.0f, 0.0f, 1.0f});
-
             // why?
             // view = glm::inverse(view);
 
-            globalState.projectionMatrix = projection;
-            globalState.viewMatrix       = view;
-            globalState.viewPosition     = glm::vec3{0.0f};
+            globalState.projectionMatrix = camera.getProjectionMatrix();
+            globalState.viewMatrix       = camera.getViewMatrix();
+            globalState.viewPosition     = camera.getPosition();
             globalState.ambientColor     = glm::vec4{1.0f};
             globalState.mode             = 0;
 
@@ -77,6 +73,7 @@ class RendererFrontend : public event::EventObserver {
     }
 
    private:
+    EulerCamera m_camera;
     RendererBackend* m_backend;
 };
 

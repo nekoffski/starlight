@@ -10,12 +10,17 @@
 namespace nova::core {
 
 struct Window {
-    using OnKeyCallback          = void (*)(KeyAction, int);
-    using OnMouseCallback        = void (*)(MouseAction, int);
+    using Key    = int;
+    using Button = int;
+
+    using OnKeyCallback          = void (*)(KeyAction, Key);
+    using OnMouseCallback        = void (*)(MouseAction, Button);
     using OnWindowCloseCallback  = void (*)();
     using OnWindowResizeCallback = void (*)(uint32_t, uint32_t);
 
     virtual std::string_view getVendor() const = 0;
+
+    virtual bool isKeyPressed(Key keyCode) const = 0;
 
     virtual void update()      = 0;
     virtual void swapBuffers() = 0;

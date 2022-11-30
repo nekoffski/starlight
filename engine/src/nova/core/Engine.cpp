@@ -42,13 +42,15 @@ void Engine::run(Application& application) {
 void Engine::update(Application& application, float deltaTime) {
     m_windowManager.update();
 
+    m_eulerCamera.update(deltaTime);
+
     application.update(deltaTime);
 }
 
 void Engine::render(Application& application, float deltaTime) {
     gfx::RenderPacket packet{};
 
-    m_rendererFrontend.drawFrame(packet, deltaTime);
+    m_rendererFrontend.drawFrame(packet, m_eulerCamera, deltaTime);
 }
 
 void Engine::onSignal(int signal) {

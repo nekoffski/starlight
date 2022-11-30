@@ -14,6 +14,10 @@ WindowManager::WindowManager(Window* window)
     setCallbacks();
 }
 
+bool WindowManager::isKeyPressed(Window::Key keyCode) const {
+    return m_window->isKeyPressed(keyCode);
+}
+
 void WindowManager::setCallbacks() {
     using namespace event;
 
