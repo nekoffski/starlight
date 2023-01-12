@@ -17,8 +17,7 @@ class ShaderStage {
     };
 
     explicit ShaderStage(
-        const Device* device, const Context* context, core::FileSystem* fs,
-        const Properties& properties
+        Device* device, const Context* context, core::FileSystem* fs, const Properties& properties
     );
 
     VkPipelineShaderStageCreateInfo getStageCreateInfo() const { return m_stageCreateInfo; }
@@ -26,7 +25,7 @@ class ShaderStage {
     ~ShaderStage();
 
    private:
-    const Device* m_device;
+    Device* m_device;
     const Context* m_context;
 
     VkShaderModuleCreateInfo m_moduleCreateInfo;

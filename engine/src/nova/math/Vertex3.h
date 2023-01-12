@@ -1,11 +1,12 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include "Glm.h"
 
 namespace nova::math {
 
 struct Vertex3 {
-    glm::vec3 position;
+    Vec3f position;
+    Vec2f textureCoordinates;
 };
 
 }  // namespace nova::math

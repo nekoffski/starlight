@@ -5,10 +5,11 @@
 #include "ShaderStage.h"
 #include "Pipeline.h"
 #include "Buffer.h"
+#include "Texture.h"
 
 namespace nova::platform::vulkan {
 
-ShaderObject::ShaderObject(const Context* context, const Device* device, int swapchainImageCount)
+ShaderObject::ShaderObject(const Context* context, Device* device, int swapchainImageCount)
     : m_context(context), m_device(device) {
     static std::string defaultVertexShader = "Simple.vert";
     static std::string defaultPixelShader  = "Simple.frag";
@@ -57,6 +58,50 @@ ShaderObject::ShaderObject(const Context* context, const Device* device, int swa
     VK_ASSERT(
         vkCreateDescriptorPool(logicalDevice, &global_pool_info, allocator, &m_globalDescriptorPool)
     );
+
+    // Local/Object Descriptors
+    const uint32_t local_sampler_count                                       = 1;
+    VkDescriptorType descriptor_types[VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT] = {
+        VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,          // Binding 0 - uniform buffer
+        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,  // Binding 1 - Diffuse sampler layout.
+    };
+    VkDescriptorSetLayoutBinding bindings[VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT];
+    zeroMemory(bindings);
+
+    for (uint32_t i = 0; i < VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT; ++i) {
+        bindings[i].binding         = i;
+        bindings[i].descriptorCount = 1;
+        bindings[i].descriptorType  = descriptor_types[i];
+        bindings[i].stageFlags      = VK_SHADER_STAGE_FRAGMENT_BIT;
+    }
+
+    VkDescriptorSetLayoutCreateInfo layout_info = {
+        VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO};
+    layout_info.bindingCount = VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT;
+    layout_info.pBindings    = bindings;
+
+    VK_ASSERT(
+        vkCreateDescriptorSetLayout(logicalDevice, &layout_info, 0, &m_objectDescriptorSetLayout)
+    );
+
+    // Local/Object descriptor pool: Used for object-specific items like diffuse colour
+    VkDescriptorPoolSize object_pool_sizes[2];
+    // The first section will be used for uniform buffers
+    object_pool_sizes[0].type            = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    object_pool_sizes[0].descriptorCount = VULKAN_OBJECT_MAX_OBJECT_COUNT;
+    // The second section will be used for image samplers.
+    object_pool_sizes[1].type            = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    object_pool_sizes[1].descriptorCount = local_sampler_count * VULKAN_OBJECT_MAX_OBJECT_COUNT;
+
+    VkDescriptorPoolCreateInfo object_pool_info = {VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO};
+    object_pool_info.poolSizeCount              = 2;
+    object_pool_info.pPoolSizes                 = object_pool_sizes;
+    object_pool_info.maxSets                    = VULKAN_OBJECT_MAX_OBJECT_COUNT;
+
+    // Create object descriptor pool.
+    VK_ASSERT(
+        vkCreateDescriptorPool(logicalDevice, &object_pool_info, allocator, &m_objectDescriptorPool)
+    );
 }
 
 ShaderObject::~ShaderObject() {
@@ -68,14 +113,122 @@ ShaderObject::~ShaderObject() {
 
     if (m_globalDescriptorSetLayout)
         vkDestroyDescriptorSetLayout(logicalDevice, m_globalDescriptorSetLayout, allocator);
+
+    if (m_objectDescriptorPool)
+        vkDestroyDescriptorPool(logicalDevice, m_objectDescriptorPool, allocator);
+
+    if (m_objectDescriptorSetLayout)
+        vkDestroyDescriptorSetLayout(logicalDevice, m_objectDescriptorSetLayout, allocator);
 }
 
 void ShaderObject::updateObject(
-    Pipeline& pipeline, VkCommandBuffer commandBuffer, const glm::mat4& modelMatrix
+    Pipeline& pipeline, VkCommandBuffer commandBuffer, const gfx::GeometryRenderData& renderData,
+    uint32_t imageIndex
 ) {
     vkCmdPushConstants(
-        commandBuffer, pipeline.getLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(modelMatrix),
-        glm::value_ptr(modelMatrix)
+        commandBuffer, pipeline.getLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0,
+        sizeof(renderData.model), glm::value_ptr(renderData.model)
+    );
+
+    // Obtain material data.
+
+    auto& objectState         = m_objectStates[renderData.objectId];
+    auto& objectDescriptorSet = objectState.descriptorSets[imageIndex];
+
+    // TODO: if needs update
+    VkWriteDescriptorSet descriptor_writes[VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT];
+    std::memset(
+        &descriptor_writes, 0, sizeof(VkWriteDescriptorSet) * VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT
+    );
+
+    uint32_t descriptor_count = 0;
+    uint32_t descriptor_index = 0;
+
+    // Descriptor 0 - Uniform buffer
+    uint32_t range = sizeof(gfx::ObjectUniformObject);
+    uint64_t offset =
+        sizeof(gfx::ObjectUniformObject) * renderData.objectId;  // also the index into the
+    gfx::ObjectUniformObject obo;
+
+    // TODO: get diffuse colour from a material.
+    static float accumulator = 0.0f;
+    accumulator += renderData.deltaTime;
+    float s          = (std::sin(accumulator) + 1.0f) / 2.0f;  // scale from -1, 1 to 0, 1
+    obo.diffuseColor = math::Vec4f(s, s, s, 1.0f);
+
+    // Load the data into the buffer.
+    m_objectUniformBuffer->loadData(offset, range, 0, &obo);
+
+    // Only do this if the descriptor has not yet been updated.
+    VkDescriptorBufferInfo buffer_info;
+
+    if (objectState.descriptorStates[descriptor_index].generations[imageIndex] == core::invalidId) {
+        buffer_info.buffer = m_objectUniformBuffer->getHandle();
+        buffer_info.offset = offset;
+        buffer_info.range  = range;
+
+        VkWriteDescriptorSet descriptor = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET};
+        descriptor.dstSet               = objectDescriptorSet;
+        descriptor.dstBinding           = descriptor_index;
+        descriptor.descriptorType       = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptor.descriptorCount      = 1;
+        descriptor.pBufferInfo          = &buffer_info;
+
+        descriptor_writes[descriptor_count] = descriptor;
+        descriptor_count++;
+
+        // Update the frame generation. In this case it is only needed once since this is a
+
+        objectState.descriptorStates[descriptor_index].generations[imageIndex] = 1;
+    }
+    descriptor_index++;
+
+    // TODO: samplers.
+    const uint32_t sampler_count = 1;
+    VkDescriptorImageInfo image_infos[1];
+
+    for (uint32_t sampler_index = 0; sampler_index < sampler_count; ++sampler_index) {
+        Texture* t = static_cast<Texture*>(renderData.textures[sampler_index]);
+        uint32_t* descriptor_generation =
+            &objectState.descriptorStates[descriptor_index].generations[imageIndex];
+
+        // Check if the descriptor needs updating first.
+        if (t && (*descriptor_generation != t->generation ||
+                  *descriptor_generation == core::invalidId)) {
+            // vulkan_texture_data* internal_data = (vulkan_texture_data*)t->internal_data;
+
+            // Assign view and sampler.
+            image_infos[sampler_index].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            image_infos[sampler_index].imageView   = t->getImage()->getView();
+            image_infos[sampler_index].sampler     = t->getSampler();
+
+            VkWriteDescriptorSet descriptor = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET};
+            descriptor.dstSet               = objectDescriptorSet;
+            descriptor.dstBinding           = descriptor_index;
+            descriptor.descriptorType       = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            descriptor.descriptorCount      = 1;
+            descriptor.pImageInfo           = &image_infos[sampler_index];
+
+            descriptor_writes[descriptor_count] = descriptor;
+            descriptor_count++;
+
+            // Sync frame generation if not using a default texture.
+            if (t->generation != core::invalidId) {
+                *descriptor_generation = t->generation;
+            }
+            descriptor_index++;
+        }
+    }
+    if (descriptor_count > 0) {
+        vkUpdateDescriptorSets(
+            m_device->getLogicalDevice(), descriptor_count, descriptor_writes, 0, 0
+        );
+    }
+
+    // Bind the descriptor set to be updated, or in case the shader changed.
+    vkCmdBindDescriptorSets(
+        commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getLayout(), 1, 1,
+        &objectDescriptorSet, 0, 0
     );
 }
 
@@ -123,6 +276,10 @@ void ShaderObject::createUniformBuffer() {
     props.bindOnCreate = true;
 
     m_globalUniformBuffer = core::createUniqPtr<Buffer>(m_context, m_device, props);
+
+    props.size = sizeof(gfx::ObjectUniformObject);
+
+    m_objectUniformBuffer = core::createUniqPtr<Buffer>(m_context, m_device, props);
 
     std::array<VkDescriptorSetLayout, 3> globalLayouts = {
         m_globalDescriptorSetLayout, m_globalDescriptorSetLayout, m_globalDescriptorSetLayout};

@@ -24,7 +24,7 @@ Image::~Image() {
     if (m_handle) vkDestroyImage(logicalDevice, m_handle, allocator);
 }
 
-VkImageCreateInfo createImageCreateInfo(const Image::Properties& properties, VkFormat depthFormat) {
+VkImageCreateInfo createImageCreateInfo(const Image::Properties& properties) {
     VkImageCreateInfo imageCreateInfo = {VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
     imageCreateInfo.imageType         = VK_IMAGE_TYPE_2D;
     imageCreateInfo.extent.width      = properties.size.width;
@@ -32,7 +32,7 @@ VkImageCreateInfo createImageCreateInfo(const Image::Properties& properties, VkF
     imageCreateInfo.extent.depth      = 1;  // TODO: Support configurable depth.
     imageCreateInfo.mipLevels         = 4;  // TODO: Support mip mapping
     imageCreateInfo.arrayLayers       = 1;  // TODO: Support number of layers in the image.
-    imageCreateInfo.format            = depthFormat;
+    imageCreateInfo.format            = properties.format;
     imageCreateInfo.tiling            = properties.tiling;
     imageCreateInfo.initialLayout     = VK_IMAGE_LAYOUT_UNDEFINED;
     imageCreateInfo.usage             = properties.usage;
@@ -43,13 +43,13 @@ VkImageCreateInfo createImageCreateInfo(const Image::Properties& properties, VkF
 }
 
 VkImageViewCreateInfo createViewCreateInfo(
-    const Image::Properties& properties, VkImage imageHandle, VkFormat depthFormat
+    const Image::Properties& properties, VkImage imageHandle
 ) {
     VkImageViewCreateInfo viewCreateInfo = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
 
     viewCreateInfo.image                       = imageHandle;
     viewCreateInfo.viewType                    = VK_IMAGE_VIEW_TYPE_2D;
-    viewCreateInfo.format                      = depthFormat;
+    viewCreateInfo.format                      = properties.format;
     viewCreateInfo.subresourceRange.aspectMask = properties.viewAspectFlags;
 
     viewCreateInfo.subresourceRange.baseMipLevel   = 0;
@@ -82,8 +82,9 @@ VkImageView Image::getView() { return m_view; }
 void Image::createImage(
     const Properties& properties, VkDevice logicalDevice, VkAllocator allocator
 ) {
-    auto imageCreateInfo = createImageCreateInfo(properties, m_device->getDepthFormat());
+    auto imageCreateInfo = createImageCreateInfo(properties);
     VK_ASSERT(vkCreateImage(logicalDevice, &imageCreateInfo, allocator, &m_handle));
+    LOG_INFO("Image created");
 }
 
 void Image::allocateAndBindMemory(const Properties& properties, VkAllocator allocator) {
@@ -104,7 +105,7 @@ void Image::allocateAndBindMemory(const Properties& properties, VkAllocator allo
 void Image::createView(
     const Properties& properties, VkDevice logicalDevice, VkAllocator allocator
 ) {
-    auto viewCreateInfo = createViewCreateInfo(properties, m_handle, m_device->getDepthFormat());
+    auto viewCreateInfo = createViewCreateInfo(properties, m_handle);
     VK_ASSERT(vkCreateImageView(logicalDevice, &viewCreateInfo, allocator, &m_view));
 }
 

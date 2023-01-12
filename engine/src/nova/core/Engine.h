@@ -8,6 +8,7 @@
 #include "nova/event/Event.h"
 #include "nova/gfx/RendererFrontend.h"
 #include "nova/gfx/EulerCamera.h"
+#include "nova/gfx/FirstPersonCamera.h"
 #include "WindowManager.h"
 
 namespace nova::core {
@@ -36,6 +37,9 @@ class Engine : public kc::sig::SignalHandler, public event::EventObserver {
 
     gfx::RendererFrontend m_rendererFrontend;
     gfx::EulerCamera m_eulerCamera;
+    gfx::FirstPersonCamera m_firstPersonCamera;
+
+    gfx::Camera* m_currentCamera;
 };
 
 }  // namespace nova::core

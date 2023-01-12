@@ -15,6 +15,7 @@
 #include "ShaderObject.h"
 #include "Pipeline.h"
 #include "Semaphore.h"
+#include "Texture.h"
 
 #include "Buffer.h"
 
@@ -37,7 +38,7 @@ class RendererBackend : public gfx::RendererBackend {
     bool endFrame(float deltaTime) override;
 
     void updateGlobalState(const gfx::GlobalState& globalState) override;
-    void updateObject(const glm::mat4& model) override;
+    void updateObject(const gfx::GeometryRenderData& model) override;
 
     void onViewportResize(uint32_t width, uint32_t height) override;
 
@@ -85,6 +86,8 @@ class RendererBackend : public gfx::RendererBackend {
     core::UniqPtr<Buffer> m_objectIndexBuffer;
 
     static constexpr uint8_t s_maxFramesInFlight = 2;
+
+    core::LocalPtr<platform::vulkan::Texture> m_testTexture;
 };
 
 }  // namespace nova::platform::vulkan

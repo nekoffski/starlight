@@ -22,10 +22,10 @@ Device::~Device() {
 
 VkDevice Device::getLogicalDevice() const { return m_logicalDevice; }
 
-const Device::QueueIndices* Device::getQueueIndices() const { return &m_queueIndices; }
+const Device::QueueIndices& Device::getQueueIndices() const { return m_queueIndices; }
 
-const Device::SwapchainSupportInfo* Device::getSwapchainSupport() const {
-    return &m_swapchainSupport;
+const Device::SwapchainSupportInfo& Device::getSwapchainSupport() const {
+    return m_swapchainSupport;
 }
 
 VkFormat Device::getDepthFormat() const { return m_depthFormat; }
@@ -448,9 +448,9 @@ void Device::createCommandPool() {
     ));
 }
 
-VkCommandPool Device::getGraphicsCommandPool() { return m_graphicsCommandPool; }
+VkCommandPool Device::getGraphicsCommandPool() const { return m_graphicsCommandPool; }
 
-Device::Queues* Device::getQueues() { return &m_queues; }
+const Device::Queues& Device::getQueues() { return m_queues; }
 
 std::optional<int32_t> Device::findMemoryIndex(uint32_t typeFilter, uint32_t propertyFlags) const {
     VkPhysicalDeviceMemoryProperties memoryProperties;

@@ -14,38 +14,38 @@ Swapchain::Swapchain(Device* device, Context* context, const math::Size2u32& siz
     create();
 }
 
-VkSurfaceFormatKHR pickSurfaceFormat(const Device::SwapchainSupportInfo* swapchainSupport) {
+VkSurfaceFormatKHR pickSurfaceFormat(const Device::SwapchainSupportInfo& swapchainSupport) {
     const auto demandedFormat     = VK_FORMAT_B8G8R8A8_UNORM;
     const auto demandedColorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
 
-    for (const auto& format : swapchainSupport->formats)
+    for (const auto& format : swapchainSupport.formats)
         if (format.format == demandedFormat && format.colorSpace == demandedColorSpace)
             return format;
 
-    return swapchainSupport->formats[0];
+    return swapchainSupport.formats[0];
 }
 
-VkPresentModeKHR pickPresentMode(const Device::SwapchainSupportInfo* swapchainSupport) {
+VkPresentModeKHR pickPresentMode(const Device::SwapchainSupportInfo& swapchainSupport) {
     const auto defaultPresentMode  = VK_PRESENT_MODE_FIFO_KHR;
     const auto demandedPresentMode = VK_PRESENT_MODE_MAILBOX_KHR;
 
-    if (kc::core::contains(swapchainSupport->presentModes, demandedPresentMode))
+    if (kc::core::contains(swapchainSupport.presentModes, demandedPresentMode))
         return demandedPresentMode;
 
     return defaultPresentMode;
 }
 
 VkExtent2D createSwapchainExtent(
-    const math::Size2u32& viewportSize, const Device::SwapchainSupportInfo* swapchainSupport
+    const math::Size2u32& viewportSize, const Device::SwapchainSupportInfo& swapchainSupport
 ) {
     VkExtent2D swapchainExtent = {viewportSize.width, viewportSize.height};
 
-    if (swapchainSupport->capabilities.currentExtent.width != UINT32_MAX)
-        swapchainExtent = swapchainSupport->capabilities.currentExtent;
+    if (swapchainSupport.capabilities.currentExtent.width != UINT32_MAX)
+        swapchainExtent = swapchainSupport.capabilities.currentExtent;
 
     // Clamp to the value allowed by the GPU.bonestent.width, min.width, max.width);
-    auto& min = swapchainSupport->capabilities.minImageExtent;
-    auto& max = swapchainSupport->capabilities.minImageExtent;
+    auto& min = swapchainSupport.capabilities.minImageExtent;
+    auto& max = swapchainSupport.capabilities.minImageExtent;
 
     swapchainExtent.height = std::clamp(swapchainExtent.height, min.height, max.height);
 
@@ -60,12 +60,12 @@ Image* Swapchain::getDepthBuffer() { return m_depthBuffer.get(); }
 
 std::vector<VkImageView>* Swapchain::getImageViews() { return &m_views; }
 
-uint32_t getDeviceImageCount(const Device::SwapchainSupportInfo* swapchainSupport) {
-    uint32_t imageCount = swapchainSupport->capabilities.minImageCount + 1;
+uint32_t getDeviceImageCount(const Device::SwapchainSupportInfo& swapchainSupport) {
+    uint32_t imageCount = swapchainSupport.capabilities.minImageCount + 1;
 
-    if (swapchainSupport->capabilities.maxImageCount > 0 &&
-        imageCount > swapchainSupport->capabilities.maxImageCount) {
-        imageCount = swapchainSupport->capabilities.maxImageCount;
+    if (swapchainSupport.capabilities.maxImageCount > 0 &&
+        imageCount > swapchainSupport.capabilities.maxImageCount) {
+        imageCount = swapchainSupport.capabilities.maxImageCount;
     }
 
     return imageCount;
@@ -94,15 +94,15 @@ SwapchainCreateInfo createSwapchainCreateInfo(
     handle.imageArrayLayers = 1;
     handle.imageUsage       = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-    auto queueIndices = device->getQueueIndices();
+    const auto& queueIndices = device->getQueueIndices();
 
     createInfo.queueFamilyIndices = {
-        static_cast<uint32_t>(queueIndices->graphics),
-        static_cast<uint32_t>(queueIndices->present),
+        static_cast<uint32_t>(queueIndices.graphics),
+        static_cast<uint32_t>(queueIndices.present),
     };
 
     // Setup the queue family indices
-    if (queueIndices->graphics != queueIndices->present) {
+    if (queueIndices.graphics != queueIndices.present) {
         handle.imageSharingMode      = VK_SHARING_MODE_CONCURRENT;
         handle.queueFamilyIndexCount = 2;
         handle.pQueueFamilyIndices   = createInfo.queueFamilyIndices.data();
@@ -112,7 +112,7 @@ SwapchainCreateInfo createSwapchainCreateInfo(
         handle.pQueueFamilyIndices   = 0;
     }
 
-    handle.preTransform   = device->getSwapchainSupport()->capabilities.currentTransform;
+    handle.preTransform   = device->getSwapchainSupport().capabilities.currentTransform;
     handle.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
     handle.presentMode    = presentMode;
     handle.clipped        = VK_TRUE;
@@ -136,7 +136,7 @@ VkImageViewCreateInfo createImageViewCreateInfo(VkImage image, VkFormat format) 
 }
 
 void Swapchain::createSwapchain() {
-    auto swapchainSupport = m_device->getSwapchainSupport();
+    const auto& swapchainSupport = m_device->getSwapchainSupport();
 
     m_imageFormat    = pickSurfaceFormat(swapchainSupport);
     auto presentMode = pickPresentMode(swapchainSupport);
@@ -185,6 +185,7 @@ void Swapchain::createImages() {
     Image::Properties imageProperties{
         VK_IMAGE_TYPE_2D,
         math::Size2u32(m_swapchainExtent.width, m_swapchainExtent.height),
+        m_device->getDepthFormat(),
         VK_IMAGE_TILING_OPTIMAL,
         VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,

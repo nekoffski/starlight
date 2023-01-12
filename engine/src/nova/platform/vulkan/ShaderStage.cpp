@@ -41,7 +41,7 @@ static std::string assembleShaderPath(const std::string& name, ShaderStage::Type
 }
 
 ShaderStage::ShaderStage(
-    const Device* device, const Context* context, core::FileSystem* fs, const Properties& props
+    Device* device, const Context* context, core::FileSystem* fs, const Properties& props
 )
     : m_device(device), m_context(context), m_handle(VK_NULL_HANDLE) {
     const auto path = assembleShaderPath(props.name, props.type);

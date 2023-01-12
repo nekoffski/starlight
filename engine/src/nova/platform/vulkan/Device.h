@@ -63,10 +63,9 @@ class Device {
     VkDevice getLogicalDevice() const;
     VkFormat getDepthFormat() const;
 
-    const SwapchainSupportInfo* getSwapchainSupport() const;
-
-    const QueueIndices* getQueueIndices() const;
-    Queues* getQueues();
+    const SwapchainSupportInfo& getSwapchainSupport() const;
+    const QueueIndices& getQueueIndices() const;
+    const Queues& getQueues();
 
     // void querySwapchainSupport(VkSurfaceKHR surface);
 
@@ -74,7 +73,7 @@ class Device {
 
     void detectDepthFormat();
 
-    VkCommandPool getGraphicsCommandPool();
+    VkCommandPool getGraphicsCommandPool() const;
 
    private:
     void createCommandPool();

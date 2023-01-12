@@ -30,36 +30,79 @@ RendererBackend::RendererBackend(core::Window& window, const core::Config& confi
     createPipeline();
     createBuffers();
 
+    // temporary texture
+
+    // ---
+
     m_simpleShader->createUniformBuffer();
 
     const uint32_t vert_count = 4;
     math::Vertex3 verts[vert_count];
 
-    verts[0].position.x = -0.5;
-    verts[0].position.y = -0.5;
+    verts[0].position.x         = -0.5;
+    verts[0].position.y         = -0.5;
+    verts[0].textureCoordinates = {0.0f, 0.0f};
 
-    verts[1].position.x = 0.5;
-    verts[1].position.y = 0.5;
+    verts[1].position.x         = 0.5;
+    verts[1].position.y         = 0.5;
+    verts[1].textureCoordinates = {1.0f, 1.0f};
 
-    verts[2].position.x = -0.5;
-    verts[2].position.y = 0.5;
+    verts[2].position.x         = -0.5;
+    verts[2].position.y         = 0.5;
+    verts[2].textureCoordinates = {0.0f, 1.0f};
 
-    verts[3].position.x = 0.5;
-    verts[3].position.y = -0.5;
+    verts[3].position.x         = 0.5;
+    verts[3].position.y         = -0.5;
+    verts[3].textureCoordinates = {1.0f, 0.0f};
 
     const uint32_t index_count    = 6;
     uint32_t indices[index_count] = {0, 1, 2, 0, 3, 1};
 
     LOG_TRACE("Initializing test vertex and index buffers");
 
+    const auto& graphicsQueue = m_device->getQueues().graphics;
+
     uploadDataRange(
-        m_device->getGraphicsCommandPool(), 0, m_device->getQueues()->graphics,
-        *m_objectVertexBuffer, 0, sizeof(math::Vertex3) * vert_count, verts
+        m_device->getGraphicsCommandPool(), 0, graphicsQueue, *m_objectVertexBuffer, 0,
+        sizeof(math::Vertex3) * vert_count, verts
     );
 
     uploadDataRange(
-        m_device->getGraphicsCommandPool(), 0, m_device->getQueues()->graphics,
-        *m_objectIndexBuffer, 0, sizeof(uint32_t) * index_count, indices
+        m_device->getGraphicsCommandPool(), 0, graphicsQueue, *m_objectIndexBuffer, 0,
+        sizeof(uint32_t) * index_count, indices
+    );
+
+    core::Id objectId = m_simpleShader->acquireResources();
+    ASSERT(objectId != core::invalidId, "Could not acquire shader resources");
+
+    // create temp texture
+    static uint32_t dim      = 256;
+    static uint32_t channels = 4;
+
+    static std::vector<uint8_t> pixels(dim * dim * channels, 255);
+
+    // Each pixel.
+    for (uint64_t row = 0; row < dim; ++row) {
+        for (uint64_t col = 0; col < dim; ++col) {
+            uint64_t index     = (row * dim) + col;
+            uint64_t index_bpp = index * channels;
+            if (row % 2) {
+                if (col % 2) {
+                    pixels[index_bpp + 0] = 0;
+                    pixels[index_bpp + 1] = 0;
+                }
+            } else {
+                if (!(col % 2)) {
+                    pixels[index_bpp + 0] = 0;
+                    pixels[index_bpp + 1] = 0;
+                }
+            }
+        }
+    }
+
+    m_testTexture.emplace(
+        m_context.get(), m_device.get(), "test-texture", false, dim, dim, channels, pixels.data(),
+        false
     );
 }
 
@@ -83,10 +126,16 @@ void RendererBackend::uploadDataRange(
     );
 }
 
-void RendererBackend::updateObject(const glm::mat4& model) {
+// TODO: pass as const ref
+void RendererBackend::updateObject(const gfx::GeometryRenderData& geometryRenderData) {
     auto& commandBuffer = m_commandBuffers[m_frameInfo.imageIndex];
 
-    m_simpleShader->updateObject(*m_pipeline, commandBuffer.getHandle(), model);
+    // TODO: ITS REALLY TEMPORARY
+    const_cast<gfx::GeometryRenderData&>(geometryRenderData).textures[0] = m_testTexture.get();
+
+    m_simpleShader->updateObject(
+        *m_pipeline, commandBuffer.getHandle(), geometryRenderData, m_frameInfo.imageIndex
+    );
 
     m_pipeline->bind(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS);
 
@@ -166,12 +215,12 @@ void RendererBackend::createPipeline() {
 
     // Attributes
     uint32_t offset               = 0;
-    const int32_t attribute_count = 1;
+    const int32_t attribute_count = 2;
     std::vector<VkVertexInputAttributeDescription> attribute_descriptions(attribute_count);
     // Position
 
-    VkFormat formats[attribute_count] = {VK_FORMAT_R32G32B32_SFLOAT};
-    uint64_t sizes[attribute_count]   = {sizeof(math::Vertex3)};
+    VkFormat formats[attribute_count] = {VK_FORMAT_R32G32B32_SFLOAT, VK_FORMAT_R32G32_SFLOAT};
+    uint64_t sizes[attribute_count]   = {sizeof(math::Vec3f), sizeof(math::Vec2f)};
 
     for (uint32_t i = 0; i < attribute_count; ++i) {
         attribute_descriptions[i].binding  = 0;  // binding index - should match binding desc
@@ -198,7 +247,8 @@ void RendererBackend::createPipeline() {
     Pipeline::Properties props;
 
     std::vector<VkDescriptorSetLayout> descriptorSetLayout = {
-        m_simpleShader->getGlobalDescriptorSetLayout()};
+        m_simpleShader->getGlobalDescriptorSetLayout(),
+        m_simpleShader->getObjectDescriptorSetLayout()};
 
     // TODO: seems like a lot of copying, consider passing a vector view?
     props.vertexAttributes     = attribute_descriptions;
@@ -210,6 +260,8 @@ void RendererBackend::createPipeline() {
 
     m_pipeline =
         core::createUniqPtr<Pipeline>(m_context.get(), m_device.get(), *m_renderPass, props);
+
+    LOG_DEBUG("Pipeline created");
 }
 
 void RendererBackend::createCoreComponents(core::Window& window, const core::Config& config) {
@@ -430,10 +482,10 @@ bool RendererBackend::endFrame(float deltaTime) {
     VkPipelineStageFlags flags[1] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
     submit_info.pWaitDstStageMask = flags;
 
-    auto deviceQueues = m_device->getQueues();
+    const auto& deviceQueues = m_device->getQueues();
 
     VkResult result = vkQueueSubmit(
-        deviceQueues->graphics, 1, &submit_info,
+        deviceQueues.graphics, 1, &submit_info,
         m_inFlightFences[m_frameInfo.currentFrame].getHandle()
     );
 
@@ -445,7 +497,7 @@ bool RendererBackend::endFrame(float deltaTime) {
     commandBuffer.updateSubmitted();
 
     m_swapchain->present(
-        deviceQueues->graphics, deviceQueues->present,
+        deviceQueues.graphics, deviceQueues.present,
         m_queueCompleteSemaphores[m_frameInfo.currentFrame].getHandle(), m_frameInfo.imageIndex
     );
 

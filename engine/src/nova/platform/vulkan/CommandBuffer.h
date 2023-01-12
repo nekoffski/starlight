@@ -25,7 +25,10 @@ class CommandBuffer {
 
     enum class Severity : unsigned char { primary, nonPrimary };
 
-    explicit CommandBuffer(const Device* device, VkCommandPool commandPool, Severity severity);
+    explicit CommandBuffer(
+        const Device* device, VkCommandPool commandPool, Severity severity = Severity::primary
+    );
+
     ~CommandBuffer();
 
     VkCommandBufferAllocateInfo createAllocateInfo(Severity severity);
