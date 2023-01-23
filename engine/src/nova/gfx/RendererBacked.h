@@ -50,6 +50,8 @@ struct RendererBackend {
     virtual void updateObject(const GeometryRenderData& modelMatrix) = 0;
 
     virtual void onViewportResize(uint32_t width, uint32_t height) = 0;
+
+    virtual TextureLoader* getTextureLoader() const = 0;
 };
 
 }  // namespace nova::gfx

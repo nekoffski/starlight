@@ -45,19 +45,45 @@ class RendererFrontend : public event::EventObserver {
             modelMatrix =
                 glm::rotate(modelMatrix, glm::radians(angle), glm::vec3{0.0f, 0.0f, 1.0f});
 
-            // why?
-            // view = glm::inverse(view);
-
             globalState.projectionMatrix = camera.getProjectionMatrix();
             globalState.viewMatrix       = camera.getViewMatrix();
             globalState.viewPosition     = camera.getPosition();
             globalState.ambientColor     = glm::vec4{1.0f};
             globalState.mode             = 0;
 
+            // create temp texture
+            static uint32_t dim      = 256;
+            static uint32_t channels = 4;
+
+            static std::vector<uint8_t> pixels(dim * dim * channels, 255);
+
+            // Each pixel.
+            for (uint64_t row = 0; row < dim; ++row) {
+                for (uint64_t col = 0; col < dim; ++col) {
+                    uint64_t index     = (row * dim) + col;
+                    uint64_t index_bpp = index * channels;
+                    if (row % 2) {
+                        if (col % 2) {
+                            pixels[index_bpp + 0] = 0;
+                            pixels[index_bpp + 1] = 0;
+                        }
+                    } else {
+                        if (!(col % 2)) {
+                            pixels[index_bpp + 0] = 0;
+                            pixels[index_bpp + 1] = 0;
+                        }
+                    }
+                }
+            }
+
+            Texture::Properties props(dim, dim, channels, false, "test_texture");
+            static Texture* testTexture = m_backend->getTextureLoader()->load(props, pixels.data());
+
             GeometryRenderData renderData;
-            renderData.model     = modelMatrix;
-            renderData.deltaTime = deltaTime;
-            renderData.objectId  = 0;
+            renderData.model       = modelMatrix;
+            renderData.deltaTime   = deltaTime;
+            renderData.objectId    = 0;
+            renderData.textures[0] = testTexture;
 
             // TODO: consider pasing delta timer directly
             m_backend->updateGlobalState(globalState);

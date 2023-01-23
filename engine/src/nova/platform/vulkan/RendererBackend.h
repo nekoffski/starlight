@@ -42,6 +42,8 @@ class RendererBackend : public gfx::RendererBackend {
 
     void onViewportResize(uint32_t width, uint32_t height) override;
 
+    TextureLoader* getTextureLoader() const override { return m_textureLoader.get(); }
+
    private:
     void createCoreComponents(core::Window& window, const core::Config& config);
     void createCommandBuffers();
@@ -70,6 +72,7 @@ class RendererBackend : public gfx::RendererBackend {
     core::UniqPtr<Device> m_device;
     core::UniqPtr<Swapchain> m_swapchain;
     core::UniqPtr<RenderPass> m_renderPass;
+    core::UniqPtr<TextureLoader> m_textureLoader;
 
     // TODO: consider creating as ptrs to allow mocking
     std::vector<CommandBuffer> m_commandBuffers;
@@ -86,8 +89,6 @@ class RendererBackend : public gfx::RendererBackend {
     core::UniqPtr<Buffer> m_objectIndexBuffer;
 
     static constexpr uint8_t s_maxFramesInFlight = 2;
-
-    core::LocalPtr<platform::vulkan::Texture> m_testTexture;
 };
 
 }  // namespace nova::platform::vulkan

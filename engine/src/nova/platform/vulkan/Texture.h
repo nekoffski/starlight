@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include <kc/core/Log.h>
 
@@ -20,13 +21,13 @@ namespace nova::platform::vulkan {
 class Texture : public gfx::Texture {
    public:
     explicit Texture(
-        const Context* context, Device* device, const std::string& name, bool autoRelease,
-        uint32_t width, uint32_t height, uint8_t channels, const void* pixels, bool transparent
+        const Context* context, Device* device, const std::string& name, uint32_t width,
+        uint32_t height, uint8_t channels, const void* pixels, bool transparent
     )
         : m_context(context), m_device(device) {
-        this->width      = width;
-        this->height     = height;
-        this->channels   = channels;
+        props.width      = width;
+        props.height     = height;
+        props.channels   = channels;
         this->generation = core::invalidId;
 
         VkDeviceSize imageSize   = width * height * channels;
@@ -105,9 +106,8 @@ class Texture : public gfx::Texture {
             m_device->getLogicalDevice(), &sampler_info, m_context->getAllocator(), &m_sampler
         ));
 
-        isTransparent = transparent;
+        props.isTransparent = transparent;
         generation++;
-        LOG_INFO("here3");
     }
 
     ~Texture() {
@@ -127,6 +127,28 @@ class Texture : public gfx::Texture {
 
     core::LocalPtr<Image> m_image;
     VkSampler m_sampler;
+};
+
+class TextureLoader : public gfx::TextureLoader {
+   public:
+    explicit TextureLoader(const Context* context, Device* device)
+        : m_context(context), m_device(device) {}
+
+    Texture* load(const gfx::Texture::Properties& props, const void* pixels) const override {
+        m_textures.emplace_back(core::createUniqPtr<Texture>(
+            m_context, m_device, props.name, props.width, props.height, props.channels, pixels,
+            props.isTransparent
+        ));
+
+        return m_textures.back().get();
+    }
+
+   private:
+    // TODO: use other data structure to avoid invalidating pointers and get rid of uniq_ptr
+    mutable std::vector<core::UniqPtr<Texture>> m_textures;
+
+    const Context* m_context;
+    Device* m_device;
 };
 
 }  // namespace nova::platform::vulkan

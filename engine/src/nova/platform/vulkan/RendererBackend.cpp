@@ -30,6 +30,8 @@ RendererBackend::RendererBackend(core::Window& window, const core::Config& confi
     createPipeline();
     createBuffers();
 
+    m_textureLoader = core::createUniqPtr<TextureLoader>(m_context.get(), m_device.get());
+
     // temporary texture
 
     // ---
@@ -74,36 +76,6 @@ RendererBackend::RendererBackend(core::Window& window, const core::Config& confi
 
     core::Id objectId = m_simpleShader->acquireResources();
     ASSERT(objectId != core::invalidId, "Could not acquire shader resources");
-
-    // create temp texture
-    static uint32_t dim      = 256;
-    static uint32_t channels = 4;
-
-    static std::vector<uint8_t> pixels(dim * dim * channels, 255);
-
-    // Each pixel.
-    for (uint64_t row = 0; row < dim; ++row) {
-        for (uint64_t col = 0; col < dim; ++col) {
-            uint64_t index     = (row * dim) + col;
-            uint64_t index_bpp = index * channels;
-            if (row % 2) {
-                if (col % 2) {
-                    pixels[index_bpp + 0] = 0;
-                    pixels[index_bpp + 1] = 0;
-                }
-            } else {
-                if (!(col % 2)) {
-                    pixels[index_bpp + 0] = 0;
-                    pixels[index_bpp + 1] = 0;
-                }
-            }
-        }
-    }
-
-    m_testTexture.emplace(
-        m_context.get(), m_device.get(), "test-texture", false, dim, dim, channels, pixels.data(),
-        false
-    );
 }
 
 void RendererBackend::uploadDataRange(
@@ -129,9 +101,6 @@ void RendererBackend::uploadDataRange(
 // TODO: pass as const ref
 void RendererBackend::updateObject(const gfx::GeometryRenderData& geometryRenderData) {
     auto& commandBuffer = m_commandBuffers[m_frameInfo.imageIndex];
-
-    // TODO: ITS REALLY TEMPORARY
-    const_cast<gfx::GeometryRenderData&>(geometryRenderData).textures[0] = m_testTexture.get();
 
     m_simpleShader->updateObject(
         *m_pipeline, commandBuffer.getHandle(), geometryRenderData, m_frameInfo.imageIndex
