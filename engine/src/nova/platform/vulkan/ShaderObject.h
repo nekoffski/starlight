@@ -120,6 +120,8 @@ class ShaderObject {
     uint32_t m_objectUniformBufferIndex;
 
     ObjectSharedObjectState m_objectStates[VULKAN_OBJECT_MAX_OBJECT_COUNT];
+
+    std::array<bool, 3> m_descriptorUpdated = {false};
 };
 
 }  // namespace nova::platform::vulkan

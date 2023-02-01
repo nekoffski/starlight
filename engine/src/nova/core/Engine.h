@@ -9,6 +9,7 @@
 #include "nova/gfx/RendererFrontend.h"
 #include "nova/gfx/EulerCamera.h"
 #include "nova/gfx/FirstPersonCamera.h"
+#include "nova/gfx/TextureManager.h"
 #include "WindowManager.h"
 
 namespace nova::core {
@@ -40,6 +41,8 @@ class Engine : public kc::sig::SignalHandler, public event::EventObserver {
     gfx::FirstPersonCamera m_firstPersonCamera;
 
     gfx::Camera* m_currentCamera;
+
+    gfx::TextureManager m_textureManager;
 };
 
 }  // namespace nova::core

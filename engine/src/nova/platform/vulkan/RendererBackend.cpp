@@ -32,10 +32,6 @@ RendererBackend::RendererBackend(core::Window& window, const core::Config& confi
 
     m_textureLoader = core::createUniqPtr<TextureLoader>(m_context.get(), m_device.get());
 
-    // temporary texture
-
-    // ---
-
     m_simpleShader->createUniformBuffer();
 
     const uint32_t vert_count = 4;

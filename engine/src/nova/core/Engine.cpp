@@ -17,7 +17,8 @@ Engine::Engine(const platform::Platform& platform)
     , m_platform(platform)
     , m_windowManager(m_platform.window)
     , m_rendererFrontend(m_platform.rendererBackend)
-    , m_eulerCamera(gfx::EulerCamera::Properties{.target = math::Vec3f{0.0f}, .radius = 5.0f}) {
+    , m_eulerCamera(gfx::EulerCamera::Properties{.target = math::Vec3f{0.0f}, .radius = 5.0f})
+    , m_textureManager(m_platform.rendererBackend->getTextureLoader()) {
     LOG_TRACE("Setting up signals");
     kc::sig::setupSignalHandler(this);
 

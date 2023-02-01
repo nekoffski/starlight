@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include <stb.h>
+
 #include <kc/core/Log.h>
 
 #include "nova/core/Memory.hpp"
@@ -25,19 +27,42 @@ class Texture : public gfx::Texture {
         uint32_t height, uint8_t channels, const void* pixels, bool transparent
     )
         : m_context(context), m_device(device) {
+        create(name, width, height, channels, pixels, transparent);
+    }
+
+    ~Texture() {
+        const auto logicalDevice = m_device->getLogicalDevice();
+
+        vkDeviceWaitIdle(logicalDevice);
+        vkDestroySampler(logicalDevice, m_sampler, m_context->getAllocator());
+    }
+
+    Image* getImage() { return m_image.get(); }
+
+    VkSampler getSampler() { return m_sampler; }
+
+   protected:
+    explicit Texture(const Context* context, Device* device)
+        : m_context(context), m_device(device) {}
+
+    void create(
+        const std::string& name, uint32_t width, uint32_t height, uint8_t channels,
+        const void* pixels, bool transparent
+    ) {
         props.width      = width;
         props.height     = height;
         props.channels   = channels;
         this->generation = core::invalidId;
 
-        VkDeviceSize imageSize   = width * height * channels;
-        VkFormat format          = VK_FORMAT_R8G8B8A8_UNORM;
+        VkDeviceSize imageSize = width * height * channels;
+        VkFormat format        = VK_FORMAT_R8G8B8A8_UNORM;
+
         VkBufferUsageFlags usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
         VkMemoryPropertyFlags memoryProps =
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
         Buffer staging(
-            context, device,
+            m_context, m_device,
             Buffer::Properties{
                 .size                = imageSize,
                 .memoryPropertyFlags = memoryProps,
@@ -62,24 +87,32 @@ class Texture : public gfx::Texture {
         }
         );
 
-        static CommandBuffer tempCommandBuffer{m_device, m_device->getGraphicsCommandPool()};
+        LOG_INFO("Here imageSize = {}, channels={}", imageSize, channels);
+
+        CommandBuffer tempCommandBuffer{m_device, m_device->getGraphicsCommandPool()};
         VkQueue graphicsQueue = m_device->getQueues().graphics;
 
         tempCommandBuffer.createAndBeginSingleUse();
 
-        LOG_INFO("here2");
+        LOG_INFO("Here 1");
+
         m_image->transitionLayout(
             tempCommandBuffer, format, VK_IMAGE_LAYOUT_UNDEFINED,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
         );
-        LOG_INFO("here");
+
+        LOG_INFO("Here 2");
 
         m_image->copyFromBuffer(staging, tempCommandBuffer);
+
+        LOG_INFO("Here 3");
 
         m_image->transitionLayout(
             tempCommandBuffer, format, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
         );
+
+        LOG_INFO("Here 4");
 
         tempCommandBuffer.endSingleUse(graphicsQueue);
 
@@ -110,17 +143,6 @@ class Texture : public gfx::Texture {
         generation++;
     }
 
-    ~Texture() {
-        const auto logicalDevice = m_device->getLogicalDevice();
-
-        vkDeviceWaitIdle(logicalDevice);
-        vkDestroySampler(logicalDevice, m_sampler, m_context->getAllocator());
-    }
-
-    Image* getImage() { return m_image.get(); }
-
-    VkSampler getSampler() { return m_sampler; }
-
    private:
     const Context* m_context;
     Device* m_device;
@@ -129,16 +151,43 @@ class Texture : public gfx::Texture {
     VkSampler m_sampler;
 };
 
+class ImageTexture : public Texture {
+   public:
+    explicit ImageTexture(
+        const Context* context, Device* device, const std::string& name, const std::string& path
+    )
+        : Texture(context, device) {
+        int width;
+        int height;
+        int channels;
+
+        constexpr int requiredChannels = 4;
+
+        stbi_uc* pixels = stbi_load(path.c_str(), &width, &height, &channels, requiredChannels);
+        ASSERT(pixels, "Could not load image {}", path);
+
+        create(name, width, height, requiredChannels, pixels, true);
+        stbi_image_free(pixels);
+    }
+};
+
 class TextureLoader : public gfx::TextureLoader {
    public:
     explicit TextureLoader(const Context* context, Device* device)
         : m_context(context), m_device(device) {}
 
-    Texture* load(const gfx::Texture::Properties& props, const void* pixels) const override {
+    Texture* load(const std::string& name, const Texture::Properties& props, const void* pixels)
+        const override {
         m_textures.emplace_back(core::createUniqPtr<Texture>(
-            m_context, m_device, props.name, props.width, props.height, props.channels, pixels,
+            m_context, m_device, name, props.width, props.height, props.channels, pixels,
             props.isTransparent
         ));
+
+        return m_textures.back().get();
+    }
+
+    Texture* load(const std::string& name, const std::string& path) const override {
+        m_textures.emplace_back(core::createUniqPtr<ImageTexture>(m_context, m_device, name, path));
 
         return m_textures.back().get();
     }

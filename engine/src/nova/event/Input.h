@@ -6,6 +6,7 @@
 #include <kc/core/Macros.h>
 
 #include "nova/core/Input.hpp"
+#include "nova/platform/Keys.h"
 
 namespace nova::event {
 
