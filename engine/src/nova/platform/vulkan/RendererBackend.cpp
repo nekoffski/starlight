@@ -11,6 +11,7 @@
 #include "Buffer.h"
 #include "ShaderStage.h"
 #include "ShaderObject.h"
+#include "TextureLoader.h"
 
 namespace nova::platform::vulkan {
 
@@ -93,6 +94,8 @@ void RendererBackend::uploadDataRange(
         VkBufferCopy{.srcOffset = 0, .dstOffset = offset, .size = size}
     );
 }
+
+TextureLoader* RendererBackend::getTextureLoader() const { return m_textureLoader.get(); }
 
 // TODO: pass as const ref
 void RendererBackend::updateObject(const gfx::GeometryRenderData& geometryRenderData) {

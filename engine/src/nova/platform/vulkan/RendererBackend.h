@@ -16,6 +16,7 @@
 #include "Pipeline.h"
 #include "Semaphore.h"
 #include "Texture.h"
+#include "TextureLoader.h"
 
 #include "Buffer.h"
 
@@ -42,7 +43,7 @@ class RendererBackend : public gfx::RendererBackend {
 
     void onViewportResize(uint32_t width, uint32_t height) override;
 
-    TextureLoader* getTextureLoader() const override { return m_textureLoader.get(); }
+    TextureLoader* getTextureLoader() const override;
 
    private:
     void createCoreComponents(core::Window& window, const core::Config& config);

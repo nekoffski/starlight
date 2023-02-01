@@ -1,5 +1,7 @@
 #pragma once
 
+#include "nova/core/Memory.hpp"
+
 namespace nova::gfx {
 
 struct Texture {
@@ -14,14 +16,6 @@ struct Texture {
 
     std::string name;
     uint32_t generation;
-};
-
-struct TextureLoader {
-    virtual Texture* load(
-        const std::string& name, const Texture::Properties& props, const void* pixels
-    ) const = 0;
-
-    virtual Texture* load(const std::string& name, const std::string& path) const = 0;
 };
 
 }  // namespace nova::gfx

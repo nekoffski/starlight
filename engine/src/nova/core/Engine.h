@@ -35,14 +35,13 @@ class Engine : public kc::sig::SignalHandler, public event::EventObserver {
 
     event::EventManager m_eventManager;
     WindowManager m_windowManager;
+    gfx::TextureManager m_textureManager;
 
     gfx::RendererFrontend m_rendererFrontend;
     gfx::EulerCamera m_eulerCamera;
     gfx::FirstPersonCamera m_firstPersonCamera;
 
     gfx::Camera* m_currentCamera;
-
-    gfx::TextureManager m_textureManager;
 };
 
 }  // namespace nova::core

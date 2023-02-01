@@ -171,33 +171,4 @@ class ImageTexture : public Texture {
     }
 };
 
-class TextureLoader : public gfx::TextureLoader {
-   public:
-    explicit TextureLoader(const Context* context, Device* device)
-        : m_context(context), m_device(device) {}
-
-    Texture* load(const std::string& name, const Texture::Properties& props, const void* pixels)
-        const override {
-        m_textures.emplace_back(core::createUniqPtr<Texture>(
-            m_context, m_device, name, props.width, props.height, props.channels, pixels,
-            props.isTransparent
-        ));
-
-        return m_textures.back().get();
-    }
-
-    Texture* load(const std::string& name, const std::string& path) const override {
-        m_textures.emplace_back(core::createUniqPtr<ImageTexture>(m_context, m_device, name, path));
-
-        return m_textures.back().get();
-    }
-
-   private:
-    // TODO: use other data structure to avoid invalidating pointers and get rid of uniq_ptr
-    mutable std::vector<core::UniqPtr<Texture>> m_textures;
-
-    const Context* m_context;
-    Device* m_device;
-};
-
 }  // namespace nova::platform::vulkan

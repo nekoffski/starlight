@@ -6,6 +6,8 @@
 #include "nova/math/Glm.h"
 #include "Texture.h"
 
+#include "fwd.h"
+
 namespace nova::gfx {
 
 struct GlobalUniformObject {

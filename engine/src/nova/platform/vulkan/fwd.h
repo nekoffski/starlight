@@ -14,5 +14,7 @@ class ShaderStage;
 class ShaderObject;
 class Pipeline;
 class Buffer;
+class Texture;
+class TextureLoader;
 
 }  // namespace nova::platform::vulkan

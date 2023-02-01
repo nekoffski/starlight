@@ -8,18 +8,15 @@
 
 #include "EulerCamera.h"
 
+#include "nova/gfx/TextureManager.h"
+
 namespace nova::gfx {
 
 RendererFrontend::RendererFrontend(RendererBackend* backend) : m_backend(backend) {
     event::EventManager::get().registerObserver(this);
 
-    // TODO: move this
-    static const std::string texturesPath = "/home/nek0/kapik/projects/nova/assets/textures";
-
-    const auto textureLoader = m_backend->getTextureLoader();
-
-    m_texture1 = textureLoader->load("texture1", fmt::format("{}/cobblestone.png", texturesPath));
-    m_texture2 = textureLoader->load("texture1", fmt::format("{}/paving.png", texturesPath));
+    m_texture1 = gfx::TextureManager::get().load("texture1", "cobblestone.png");
+    m_texture2 = gfx::TextureManager::get().load("texture2", "paving.png");
 
     m_activeTexture = m_texture1;
 }

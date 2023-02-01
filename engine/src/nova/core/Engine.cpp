@@ -10,15 +10,17 @@
 
 #include "nova/event/Quit.h"
 
+std::string_view texturesPath = NOVA_ASSETS_TEXTURES_PATH;
+
 namespace nova::core {
 
 Engine::Engine(const platform::Platform& platform)
     : m_shouldStop(false)
     , m_platform(platform)
     , m_windowManager(m_platform.window)
+    , m_textureManager(m_platform.rendererBackend->getTextureLoader(), texturesPath)
     , m_rendererFrontend(m_platform.rendererBackend)
-    , m_eulerCamera(gfx::EulerCamera::Properties{.target = math::Vec3f{0.0f}, .radius = 5.0f})
-    , m_textureManager(m_platform.rendererBackend->getTextureLoader()) {
+    , m_eulerCamera(gfx::EulerCamera::Properties{.target = math::Vec3f{0.0f}, .radius = 5.0f}) {
     LOG_TRACE("Setting up signals");
     kc::sig::setupSignalHandler(this);
 
@@ -34,7 +36,7 @@ Engine::~Engine() { kc::sig::resetSignalHandler(); }
 void Engine::run(Application& application) {
     LOG_TRACE("Starting main engine loop");
 
-    const float deltaTime = 0.01f;  // mock
+    const float deltaTime = 0.1f;  // mock
 
     ASSERT(m_currentCamera != nullptr, "Camera is not set");
 
