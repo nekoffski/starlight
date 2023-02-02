@@ -3,6 +3,8 @@
 #include <kc/core/Log.h>
 #include <kc/sig/Signal.h>
 
+#include <kc/core/Clock.h>
+
 #include <unistd.h>
 
 #include "Application.h"
@@ -21,10 +23,10 @@ Engine::Engine(const platform::Platform& platform)
     , m_textureManager(m_platform.rendererBackend->getTextureLoader(), texturesPath)
     , m_rendererFrontend(m_platform.rendererBackend)
     , m_eulerCamera(gfx::EulerCamera::Properties{.target = math::Vec3f{0.0f}, .radius = 5.0f}) {
-    LOG_TRACE("Setting up signals");
+    LOG_DEBUG("Setting up signals");
     kc::sig::setupSignalHandler(this);
 
-    LOG_TRACE("Registering Engine as an event observer");
+    LOG_DEBUG("Registering Engine as an event observer");
     m_eventManager.registerObserver(this);
 
     // m_currentCamera = &m_firstPersonCamera;
@@ -34,18 +36,20 @@ Engine::Engine(const platform::Platform& platform)
 Engine::~Engine() { kc::sig::resetSignalHandler(); }
 
 void Engine::run(Application& application) {
-    LOG_TRACE("Starting main engine loop");
-
-    const float deltaTime = 0.1f;  // mock
+    LOG_DEBUG("Starting main engine loop");
 
     ASSERT(m_currentCamera != nullptr, "Camera is not set");
 
     while (not m_shouldStop && application.isRunning()) {
+        const float deltaTime = m_timeManager.getDeltaTime();
+
         update(application, deltaTime);
         render(application, deltaTime);
+
+        m_timeManager.update();
     }
 
-    LOG_TRACE("Main engine loop ended");
+    LOG_DEBUG("Main engine loop ended");
 }
 
 void Engine::update(Application& application, float deltaTime) {

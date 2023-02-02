@@ -12,10 +12,7 @@ TextureLoader::TextureLoader(const Context* context, Device* device)
 core::UniqPtr<gfx::Texture> TextureLoader::load(
     const std::string& name, const Texture::Properties& props, const void* pixels
 ) const {
-    return core::createUniqPtr<Texture>(
-        m_context, m_device, name, props.width, props.height, props.channels, pixels,
-        props.isTransparent
-    );
+    return core::createUniqPtr<Texture>(m_context, m_device, name, props, pixels);
 }
 
 core::UniqPtr<gfx::Texture> TextureLoader::load(const std::string& name, const std::string& path)

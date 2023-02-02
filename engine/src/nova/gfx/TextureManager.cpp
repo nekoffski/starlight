@@ -32,4 +32,6 @@ void TextureManager::destroy(const std::string& name) {
     m_textures.erase(name);
 }
 
+void TextureManager::destroyAll() { m_textures.clear(); }
+
 }  // namespace nova::gfx

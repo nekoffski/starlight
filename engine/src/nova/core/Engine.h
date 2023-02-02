@@ -10,6 +10,7 @@
 #include "nova/gfx/EulerCamera.h"
 #include "nova/gfx/FirstPersonCamera.h"
 #include "nova/gfx/TextureManager.h"
+#include "TimeManager.h"
 #include "WindowManager.h"
 
 namespace nova::core {
@@ -33,6 +34,7 @@ class Engine : public kc::sig::SignalHandler, public event::EventObserver {
 
     platform::Platform m_platform;
 
+    TimeManager m_timeManager;
     event::EventManager m_eventManager;
     WindowManager m_windowManager;
     gfx::TextureManager m_textureManager;

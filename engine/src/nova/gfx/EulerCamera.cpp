@@ -57,8 +57,6 @@ void EulerCamera::recalculateVectors() {
     const auto pitchRadians = glm::radians(m_pitch);
     const auto yawRadians   = glm::radians(m_yaw);
 
-    LOG_INFO("Pitch {}, yaw {}", pitchRadians, yawRadians);
-
     // clang-format off
     m_position = m_radius * math::Vec3f {
         std::sin(pitchRadians) * std::cos(yawRadians),

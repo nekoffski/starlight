@@ -18,6 +18,7 @@ class TextureManager : public kc::core::Singleton<TextureManager> {
     Texture* acquire(const std::string& name);
 
     void destroy(const std::string& name);
+    void destroyAll();
 
    private:
     TextureLoader* m_textureLoader;

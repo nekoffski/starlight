@@ -11,7 +11,7 @@ class Framebuffer;
 class RenderPass;
 class Swapchain;
 class ShaderStage;
-class ShaderObject;
+class MaterialShader;
 class Pipeline;
 class Buffer;
 class Texture;

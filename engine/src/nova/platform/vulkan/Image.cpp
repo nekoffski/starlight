@@ -19,9 +19,86 @@ Image::~Image() {
     auto logicalDevice = m_device->getLogicalDevice();
     auto allocator     = m_context->getAllocator();
 
-    if (m_view) vkDestroyImageView(logicalDevice, m_view, allocator);
-    if (m_memory) vkFreeMemory(logicalDevice, m_memory, allocator);
-    if (m_handle) vkDestroyImage(logicalDevice, m_handle, allocator);
+    vkDestroyImageView(logicalDevice, m_view, allocator);
+    vkFreeMemory(logicalDevice, m_memory, allocator);
+    vkDestroyImage(logicalDevice, m_handle, allocator);
+
+    LOG_TRACE("Image destroyed");
+}
+
+void Image::copyFromBuffer(Buffer& buffer, CommandBuffer& commandBuffer) {
+    VkBufferImageCopy region;
+    zeroMemory(region);
+
+    region.bufferOffset      = 0;
+    region.bufferRowLength   = 0;
+    region.bufferImageHeight = 0;
+
+    region.imageSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+    region.imageSubresource.mipLevel       = 0;
+    region.imageSubresource.baseArrayLayer = 0;
+    region.imageSubresource.layerCount     = 1;
+
+    region.imageExtent.width  = m_size.width;
+    region.imageExtent.height = m_size.height;
+    region.imageExtent.depth  = 1;
+
+    vkCmdCopyBufferToImage(
+        commandBuffer.getHandle(), buffer.getHandle(), m_handle,
+        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region
+    );
+}
+
+void Image::transitionLayout(
+    CommandBuffer& commandBuffer, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout
+) {
+    auto queueFamilyIndex = m_device->getQueueIndices().graphics;
+
+    VkImageMemoryBarrier barrier            = {VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
+    barrier.oldLayout                       = oldLayout;
+    barrier.newLayout                       = newLayout;
+    barrier.srcQueueFamilyIndex             = queueFamilyIndex;
+    barrier.dstQueueFamilyIndex             = queueFamilyIndex;
+    barrier.image                           = m_handle;
+    barrier.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+    barrier.subresourceRange.baseMipLevel   = 0;
+    barrier.subresourceRange.levelCount     = 1;
+    barrier.subresourceRange.baseArrayLayer = 0;
+    barrier.subresourceRange.layerCount     = 1;
+
+    VkPipelineStageFlags source;
+    VkPipelineStageFlags destination;
+
+    // Don't care about the old layout - transition to optimal layout (for the underlying
+    // implementation).
+    if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED &&
+        newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+        barrier.srcAccessMask = 0;
+        barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+        // Don't care what stage the pipeline is in at the start.
+        source = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+
+        // Used for copying
+        destination = VK_PIPELINE_STAGE_TRANSFER_BIT;
+    } else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+        // Transitioning from a transfer destination layout to a shader-readonly layout.
+        barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+        // From a copying stage to...
+        source = VK_PIPELINE_STAGE_TRANSFER_BIT;
+
+        // The fragment stage.
+        destination = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+    } else {
+        LOG_FATAL("Unsupported layout transition");
+        return;
+    }
+
+    vkCmdPipelineBarrier(
+        commandBuffer.getHandle(), source, destination, 0, 0, 0, 0, 0, 1, &barrier
+    );
 }
 
 VkImageCreateInfo createImageCreateInfo(const Image::Properties& properties) {
@@ -84,7 +161,7 @@ void Image::createImage(
 ) {
     auto imageCreateInfo = createImageCreateInfo(properties);
     VK_ASSERT(vkCreateImage(logicalDevice, &imageCreateInfo, allocator, &m_handle));
-    LOG_INFO("Image created");
+    LOG_TRACE("Image created");
 }
 
 void Image::allocateAndBindMemory(const Properties& properties, VkAllocator allocator) {

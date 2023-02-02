@@ -12,7 +12,7 @@
 #include "Vulkan.h"
 #include "fwd.h"
 
-#include "ShaderObject.h"
+#include "MaterialShader.h"
 #include "Pipeline.h"
 #include "Semaphore.h"
 #include "Texture.h"
@@ -83,7 +83,7 @@ class RendererBackend : public gfx::RendererBackend {
     std::vector<Fence> m_inFlightFences;
     std::vector<Fence*> m_imagesInFlight;
 
-    core::UniqPtr<ShaderObject> m_simpleShader;
+    core::UniqPtr<MaterialShader> m_simpleShader;
     core::UniqPtr<Pipeline> m_pipeline;
 
     core::UniqPtr<Buffer> m_objectVertexBuffer;

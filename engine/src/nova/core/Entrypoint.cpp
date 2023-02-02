@@ -12,21 +12,21 @@ namespace nova::core::detail {
 
 int mainImpl(int argc, char** argv) {
     kc::core::initLogging("nova-engine");
-    LOG_TRACE("Logger intialized, starting engine");
+    LOG_DEBUG("Logger intialized, starting engine");
 
     try {
-        LOG_TRACE("Creating Platform instance");
+        LOG_DEBUG("Creating Platform instance");
         platform::PlatformProvider platformProvider{defaultConfig};
 
         auto platform = platformProvider.getPlatform();
 
-        LOG_TRACE("Creating Engine instance");
+        LOG_DEBUG("Creating Engine instance");
         Engine engine{platform};
 
-        LOG_TRACE("Creating application instance");
+        LOG_DEBUG("Creating application instance");
         auto application = createApplication();
 
-        LOG_TRACE("Starting engine");
+        LOG_DEBUG("Starting engine");
         engine.run(*application);
 
     } catch (NovaError& error) {
@@ -34,7 +34,7 @@ int mainImpl(int argc, char** argv) {
         return -1;
     }
 
-    LOG_TRACE("Exiting gracefully, see ya");
+    LOG_DEBUG("Exiting gracefully, see ya");
     return 0;
 }
 

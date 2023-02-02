@@ -4,8 +4,11 @@
 
 namespace nova::gfx {
 
+// TODO: implement some kind of CRTP for ids
 struct Texture {
-    uint32_t id;
+    virtual ~Texture() {}
+
+    uint32_t id = idGenerator++;
 
     struct Properties {
         uint32_t width;
@@ -16,6 +19,8 @@ struct Texture {
 
     std::string name;
     uint32_t generation;
+
+    inline static uint32_t idGenerator = 0;
 };
 
 }  // namespace nova::gfx
