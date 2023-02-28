@@ -7,61 +7,72 @@
 #include "Buffer.h"
 #include "Texture.h"
 
+constexpr uint32_t localSamplerCount = 1;
+
 namespace nova::platform::vulkan {
 
-MaterialShader::MaterialShader(const Context* context, Device* device, int swapchainImageCount)
-    : m_context(context), m_device(device) {
-    static std::string defaultVertexShader = "Simple.vert";
-    static std::string defaultPixelShader  = "Simple.frag";
+void MaterialShader::createGlobalDescriptorSetLayout() {
+    VkDescriptorSetLayoutBinding uboLayoutBinding;
+    uboLayoutBinding.binding            = 0;
+    uboLayoutBinding.descriptorCount    = 1;
+    uboLayoutBinding.descriptorType     = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboLayoutBinding.pImmutableSamplers = 0;
+    uboLayoutBinding.stageFlags         = VK_SHADER_STAGE_VERTEX_BIT;
 
-    core::FileSystem fs;
-
-    m_stages.reserve(s_stagesCount);
-
-    m_stages.emplace_back(
-        device, context, &fs, ShaderStage::Properties{"Simple", ShaderStage::Type::vertex}
-    );
-
-    m_stages.emplace_back(
-        device, context, &fs, ShaderStage::Properties{"Simple", ShaderStage::Type::fragment}
-    );
-
-    auto logicalDevice = device->getLogicalDevice();
-    auto allocator     = context->getAllocator();
-
-    VkDescriptorSetLayoutBinding global_ubo_layout_binding;
-    global_ubo_layout_binding.binding            = 0;
-    global_ubo_layout_binding.descriptorCount    = 1;
-    global_ubo_layout_binding.descriptorType     = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    global_ubo_layout_binding.pImmutableSamplers = 0;
-    global_ubo_layout_binding.stageFlags         = VK_SHADER_STAGE_VERTEX_BIT;
-
-    VkDescriptorSetLayoutCreateInfo global_layout_info = {
+    VkDescriptorSetLayoutCreateInfo globalLayoutInfo = {
         VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO};
-    global_layout_info.bindingCount = 1;
-    global_layout_info.pBindings    = &global_ubo_layout_binding;
+    globalLayoutInfo.bindingCount = 1;
+    globalLayoutInfo.pBindings    = &uboLayoutBinding;
 
     VK_ASSERT(vkCreateDescriptorSetLayout(
-        logicalDevice, &global_layout_info, allocator, &m_globalDescriptorSetLayout
+        m_device->getLogicalDevice(), &globalLayoutInfo, m_context->getAllocator(),
+        &m_globalDescriptorSetLayout
     ));
+}
 
+void MaterialShader::createGlobalDescriptorPool(int swapchainImageCount) {
     // Global descriptor pool: Used for global items such as view/projection matrix.
-    VkDescriptorPoolSize global_pool_size;
-    global_pool_size.type            = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    global_pool_size.descriptorCount = swapchainImageCount;
+    VkDescriptorPoolSize globalPoolSize;
+    globalPoolSize.type            = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    globalPoolSize.descriptorCount = swapchainImageCount;
 
-    VkDescriptorPoolCreateInfo global_pool_info = {VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO};
-    global_pool_info.poolSizeCount              = 1;
-    global_pool_info.pPoolSizes                 = &global_pool_size;
-    global_pool_info.maxSets                    = swapchainImageCount;
+    VkDescriptorPoolCreateInfo globalPoolInfo = {VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO};
+    globalPoolInfo.poolSizeCount              = 1;
+    globalPoolInfo.pPoolSizes                 = &globalPoolSize;
+    globalPoolInfo.maxSets                    = swapchainImageCount;
 
-    VK_ASSERT(
-        vkCreateDescriptorPool(logicalDevice, &global_pool_info, allocator, &m_globalDescriptorPool)
-    );
+    VK_ASSERT(vkCreateDescriptorPool(
+        m_device->getLogicalDevice(), &globalPoolInfo, m_context->getAllocator(),
+        &m_globalDescriptorPool
+    ));
+}
 
+void MaterialShader::createLocalDescriptorPool() {
+    // Local/Object descriptor pool: Used for object-specific items like diffuse colour
+    VkDescriptorPoolSize objectPoolSizes[2];
+    // The first section will be used for uniform buffers
+    objectPoolSizes[0].type            = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    objectPoolSizes[0].descriptorCount = VULKAN_OBJECT_MAX_OBJECT_COUNT;
+    // The second section will be used for image samplers.
+    objectPoolSizes[1].type            = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    objectPoolSizes[1].descriptorCount = localSamplerCount * VULKAN_OBJECT_MAX_OBJECT_COUNT;
+
+    VkDescriptorPoolCreateInfo objectPoolInfo = {VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO};
+    objectPoolInfo.poolSizeCount              = 2;
+    objectPoolInfo.pPoolSizes                 = objectPoolSizes;
+    objectPoolInfo.maxSets                    = VULKAN_OBJECT_MAX_OBJECT_COUNT;
+
+    // Create object descriptor pool.
+    VK_ASSERT(vkCreateDescriptorPool(
+        m_device->getLogicalDevice(), &objectPoolInfo, m_context->getAllocator(),
+        &m_objectDescriptorPool
+    ));
+}
+
+void MaterialShader::createLocalDescriptorSetLayout() {
     // Local/Object Descriptors
-    const uint32_t local_sampler_count                                       = 1;
-    VkDescriptorType descriptor_types[VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT] = {
+
+    VkDescriptorType descriptorTypes[VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT] = {
         VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,          // Binding 0 - uniform buffer
         VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,  // Binding 1 - Diffuse sampler layout.
     };
@@ -71,37 +82,40 @@ MaterialShader::MaterialShader(const Context* context, Device* device, int swapc
     for (uint32_t i = 0; i < VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT; ++i) {
         bindings[i].binding         = i;
         bindings[i].descriptorCount = 1;
-        bindings[i].descriptorType  = descriptor_types[i];
+        bindings[i].descriptorType  = descriptorTypes[i];
         bindings[i].stageFlags      = VK_SHADER_STAGE_FRAGMENT_BIT;
     }
 
-    VkDescriptorSetLayoutCreateInfo layout_info = {
+    VkDescriptorSetLayoutCreateInfo layoutInfo = {
         VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO};
-    layout_info.bindingCount = VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT;
-    layout_info.pBindings    = bindings;
+    layoutInfo.bindingCount = VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT;
+    layoutInfo.pBindings    = bindings;
 
-    VK_ASSERT(
-        vkCreateDescriptorSetLayout(logicalDevice, &layout_info, 0, &m_objectDescriptorSetLayout)
+    VK_ASSERT(vkCreateDescriptorSetLayout(
+        m_device->getLogicalDevice(), &layoutInfo, nullptr, &m_objectDescriptorSetLayout
+    ));
+}
+
+void MaterialShader::createShaderStages() {
+    core::FileSystem fs;
+    m_stages.reserve(s_stagesCount);
+
+    m_stages.emplace_back(
+        m_device, m_context, &fs, ShaderStage::Properties{"Simple", ShaderStage::Type::vertex}
     );
 
-    // Local/Object descriptor pool: Used for object-specific items like diffuse colour
-    VkDescriptorPoolSize object_pool_sizes[2];
-    // The first section will be used for uniform buffers
-    object_pool_sizes[0].type            = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    object_pool_sizes[0].descriptorCount = VULKAN_OBJECT_MAX_OBJECT_COUNT;
-    // The second section will be used for image samplers.
-    object_pool_sizes[1].type            = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    object_pool_sizes[1].descriptorCount = local_sampler_count * VULKAN_OBJECT_MAX_OBJECT_COUNT;
-
-    VkDescriptorPoolCreateInfo object_pool_info = {VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO};
-    object_pool_info.poolSizeCount              = 2;
-    object_pool_info.pPoolSizes                 = object_pool_sizes;
-    object_pool_info.maxSets                    = VULKAN_OBJECT_MAX_OBJECT_COUNT;
-
-    // Create object descriptor pool.
-    VK_ASSERT(
-        vkCreateDescriptorPool(logicalDevice, &object_pool_info, allocator, &m_objectDescriptorPool)
+    m_stages.emplace_back(
+        m_device, m_context, &fs, ShaderStage::Properties{"Simple", ShaderStage::Type::fragment}
     );
+}
+
+MaterialShader::MaterialShader(const Context* context, Device* device, int swapchainImageCount)
+    : m_context(context), m_device(device) {
+    createShaderStages();
+    createGlobalDescriptorSetLayout();
+    createGlobalDescriptorPool(swapchainImageCount);
+    createLocalDescriptorSetLayout();
+    createLocalDescriptorPool();
 }
 
 MaterialShader::~MaterialShader() {

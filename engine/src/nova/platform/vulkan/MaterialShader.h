@@ -54,6 +54,12 @@ class MaterialShader {
     gfx::GlobalUniformObject& getGlobalUBO();
 
    private:
+    void createShaderStages();
+    void createGlobalDescriptorSetLayout();
+    void createLocalDescriptorSetLayout();
+    void createGlobalDescriptorPool(int swapchainImageCount);
+    void createLocalDescriptorPool();
+
     const Context* m_context;
     Device* m_device;
 
