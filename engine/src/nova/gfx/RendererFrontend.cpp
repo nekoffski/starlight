@@ -15,8 +15,8 @@ namespace nova::gfx {
 RendererFrontend::RendererFrontend(RendererBackend* backend) : m_backend(backend) {
     event::EventManager::get().registerObserver(this);
 
-    m_texture1 = gfx::TextureManager::get().load("texture1", "cobblestone.png");
-    m_texture2 = gfx::TextureManager::get().load("texture2", "paving.png");
+    m_texture1 = gfx::TextureManager::get().load("cobblestone");
+    m_texture2 = gfx::TextureManager::get().load("paving");
 
     m_activeTexture = m_texture1;
 }

@@ -2,6 +2,8 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+#include <kc/core/Log.h>
+
 #include "ShaderStage.h"
 #include "Pipeline.h"
 #include "Buffer.h"
@@ -72,14 +74,14 @@ void MaterialShader::createLocalDescriptorPool() {
 void MaterialShader::createLocalDescriptorSetLayout() {
     // Local/Object Descriptors
 
-    VkDescriptorType descriptorTypes[VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT] = {
+    VkDescriptorType descriptorTypes[VULKAN_MATERIAL_SHADER_DESCRIPTOR_COUNT] = {
         VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,          // Binding 0 - uniform buffer
         VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,  // Binding 1 - Diffuse sampler layout.
     };
-    VkDescriptorSetLayoutBinding bindings[VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT];
+    VkDescriptorSetLayoutBinding bindings[VULKAN_MATERIAL_SHADER_DESCRIPTOR_COUNT];
     zeroMemory(bindings);
 
-    for (uint32_t i = 0; i < VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT; ++i) {
+    for (uint32_t i = 0; i < VULKAN_MATERIAL_SHADER_DESCRIPTOR_COUNT; ++i) {
         bindings[i].binding         = i;
         bindings[i].descriptorCount = 1;
         bindings[i].descriptorType  = descriptorTypes[i];
@@ -88,7 +90,7 @@ void MaterialShader::createLocalDescriptorSetLayout() {
 
     VkDescriptorSetLayoutCreateInfo layoutInfo = {
         VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO};
-    layoutInfo.bindingCount = VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT;
+    layoutInfo.bindingCount = VULKAN_MATERIAL_SHADER_DESCRIPTOR_COUNT;
     layoutInfo.pBindings    = bindings;
 
     VK_ASSERT(vkCreateDescriptorSetLayout(
@@ -111,6 +113,8 @@ void MaterialShader::createShaderStages() {
 
 MaterialShader::MaterialShader(const Context* context, Device* device, int swapchainImageCount)
     : m_context(context), m_device(device) {
+    LOG_TRACE("Creating MaterialShader instance");
+
     createShaderStages();
     createGlobalDescriptorSetLayout();
     createGlobalDescriptorPool(swapchainImageCount);
@@ -121,6 +125,8 @@ MaterialShader::MaterialShader(const Context* context, Device* device, int swapc
 MaterialShader::~MaterialShader() {
     const auto logicalDevice = m_device->getLogicalDevice();
     const auto allocator     = m_context->getAllocator();
+
+    LOG_TRACE("Destroying MaterialShader instance");
 
     if (m_globalDescriptorPool)
         vkDestroyDescriptorPool(logicalDevice, m_globalDescriptorPool, allocator);
@@ -151,13 +157,14 @@ void MaterialShader::updateObject(
 
     // Obtain material data.
 
-    auto& objectState         = m_objectStates[renderData.objectId];
+    auto& objectState         = m_instanceStates[renderData.objectId];
     auto& objectDescriptorSet = objectState.descriptorSets[imageIndex];
 
     // TODO: if needs update
-    VkWriteDescriptorSet descriptor_writes[VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT];
+    VkWriteDescriptorSet descriptor_writes[VULKAN_MATERIAL_SHADER_DESCRIPTOR_COUNT];
     std::memset(
-        &descriptor_writes, 0, sizeof(VkWriteDescriptorSet) * VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT
+        &descriptor_writes, 0,
+        sizeof(VkWriteDescriptorSet) * VULKAN_MATERIAL_SHADER_DESCRIPTOR_COUNT
     );
 
     uint32_t descriptor_count = 0;
@@ -197,7 +204,6 @@ void MaterialShader::updateObject(
         descriptor_count++;
 
         // Update the frame generation. In this case it is only needed once since this is a
-
         objectState.descriptorStates[descriptor_index].generations[imageIndex] = 1;
     }
     descriptor_index++;
@@ -324,9 +330,9 @@ uint32_t MaterialShader::acquireResources() {  // TODO: free list
     core::Id objectId = m_objectUniformBufferIndex;
     m_objectUniformBufferIndex++;
 
-    auto& objectState = m_objectStates[objectId];
+    auto& objectState = m_instanceStates[objectId];
 
-    for (uint32_t i = 0; i < VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT; ++i) {
+    for (uint32_t i = 0; i < VULKAN_MATERIAL_SHADER_DESCRIPTOR_COUNT; ++i) {
         for (uint32_t j = 0; j < 3; ++j) {
             objectState.descriptorStates[i].generations[j] = core::invalidId;
             objectState.descriptorStates[i].ids[j]         = core::invalidId;
@@ -350,7 +356,7 @@ uint32_t MaterialShader::acquireResources() {  // TODO: free list
 }
 
 void MaterialShader::releaseResources(uint32_t objectId) {
-    auto& objectState = m_objectStates[objectId];
+    auto& objectState = m_instanceStates[objectId];
 
     const uint32_t descriptor_set_count = 3;
     // Release object descriptor sets.
@@ -359,11 +365,9 @@ void MaterialShader::releaseResources(uint32_t objectId) {
         objectState.descriptorSets
     );
 
-    if (result != VK_SUCCESS) {
-        // KERROR("Error freeing object shader descriptor sets!");
-    }
+    if (result != VK_SUCCESS) LOG_ERROR("Error freeing object shader descriptor sets!");
 
-    for (uint32_t i = 0; i < VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT; ++i) {
+    for (uint32_t i = 0; i < VULKAN_MATERIAL_SHADER_DESCRIPTOR_COUNT; ++i) {
         for (uint32_t j = 0; j < 3; ++j) {
             objectState.descriptorStates[i].generations[j] = core::invalidId;
             objectState.descriptorStates[i].ids[j]         = core::invalidId;

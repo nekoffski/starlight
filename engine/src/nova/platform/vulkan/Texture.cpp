@@ -140,6 +140,7 @@ ImageTexture::ImageTexture(
 
     constexpr int requiredChannels = 4;
 
+    // TODO: consider not quiting in case of error, handle it in another way
     stbi_uc* pixels = stbi_load(path.c_str(), &width, &height, &channels, requiredChannels);
     ASSERT(pixels, "Could not load image {}", path);
 

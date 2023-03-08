@@ -8,5 +8,7 @@ class RendererBackend;
 class RendererFrontend;
 class Texture;
 class TextureLoader;
+class TextureManager;
+class MaterialManager;
 
 }  // namespace nova::gfx

@@ -14,7 +14,7 @@ class TextureManager : public kc::core::Singleton<TextureManager> {
    public:
     explicit TextureManager(TextureLoader* textureLoader, std::string_view texturesPath);
 
-    Texture* load(const std::string& name, const std::string& path);
+    Texture* load(const std::string& name);
     Texture* acquire(const std::string& name);
 
     void destroy(const std::string& name);

@@ -6,6 +6,8 @@ namespace nova::gfx {
 
 // TODO: implement some kind of CRTP for ids
 struct Texture {
+    enum class Use { unknown, diffuseMap };
+
     virtual ~Texture() {}
 
     uint32_t id = idGenerator++;

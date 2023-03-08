@@ -6,6 +6,7 @@
 #include "fwd.h"
 
 #include "nova/core/Memory.hpp"
+#include "nova/gfx/Texture.h"
 #include "nova/gfx/RendererBacked.h"
 
 #include "Device.h"
@@ -18,11 +19,12 @@ struct DescriptorState {
     uint32_t ids[3];          // generation per frame
 };
 
-#define VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT 2
+#define VULKAN_MATERIAL_SHADER_DESCRIPTOR_COUNT 2
+#define VULKAN_MATERIAL_SHADER_SAMPLER_COUNT 1
 
-struct ObjectSharedObjectState {
+struct MaterialShaderObjectState {
     VkDescriptorSet descriptorSets[3];
-    DescriptorState descriptorStates[VULKAN_OBJECT_SHADER_DESCRIPTOR_COUNT];
+    DescriptorState descriptorStates[VULKAN_MATERIAL_SHADER_DESCRIPTOR_COUNT];
 };
 
 #define VULKAN_OBJECT_MAX_OBJECT_COUNT 1024
@@ -79,7 +81,9 @@ class MaterialShader {
     core::UniqPtr<Buffer> m_objectUniformBuffer;
     uint32_t m_objectUniformBufferIndex;
 
-    ObjectSharedObjectState m_objectStates[VULKAN_OBJECT_MAX_OBJECT_COUNT];
+    std::array<gfx::Texture::Use, VULKAN_MATERIAL_SHADER_SAMPLER_COUNT> m_samplerUses;
+
+    MaterialShaderObjectState m_instanceStates[VULKAN_OBJECT_MAX_OBJECT_COUNT];
 };
 
 }  // namespace nova::platform::vulkan

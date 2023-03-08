@@ -4,9 +4,8 @@
 
 namespace nova::core {
 
-// TODO: there should be a single filesystem in the system, this class should be renamed to
-// something like FileSystemProxy
-
 using FileSystem = kc::core::FileSystem;
+
+extern FileSystem fileSystem;
 
 }  // namespace nova::core
