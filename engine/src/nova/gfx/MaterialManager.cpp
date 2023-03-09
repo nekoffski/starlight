@@ -52,7 +52,6 @@ Material* MaterialManager::load(const std::string& name) {
     );
 
     Material material;
-    material.diffuseColor = materialConfig->diffuseColor;
     material.internalId   = 0;
     material.name         = name;
     material.diffuseColor = materialConfig->diffuseColor;

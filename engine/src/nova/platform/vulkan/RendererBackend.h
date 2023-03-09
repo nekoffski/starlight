@@ -3,7 +3,7 @@
 #include <vector>
 #include <cstdint>
 
-#include "nova/gfx/RendererBacked.h"
+#include "nova/gfx/RendererBackend.h"
 #include "nova/core/fwd.h"
 #include "nova/core/Window.h"
 #include "nova/core/Config.h"

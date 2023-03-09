@@ -7,7 +7,7 @@
 
 #include "nova/core/Memory.hpp"
 #include "nova/gfx/Texture.h"
-#include "nova/gfx/RendererBacked.h"
+#include "nova/gfx/RendererBackend.h"
 
 #include "Device.h"
 #include "Vulkan.h"

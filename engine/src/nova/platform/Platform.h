@@ -5,7 +5,7 @@
 #include <kc/core/Log.h>
 
 #include "nova/core/Window.h"
-#include "nova/gfx/RendererBacked.h"
+#include "nova/gfx/RendererBackend.h"
 
 // TODO: pass by CMake
 #ifndef USE_GLFW
