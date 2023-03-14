@@ -8,17 +8,20 @@
 
 namespace nova::gfx {
 
-TextureManager::TextureManager(TextureLoader* textureLoader, std::string_view texturesPath)
+TextureManager::TextureManager(TextureLoader& textureLoader, std::string_view texturesPath)
     : m_textureLoader(textureLoader), m_texturesPath(texturesPath) {}
 
 Texture* TextureManager::load(const std::string& name) {
     LOG_TRACE("Loading texture '{}'", name);
     static const std::string_view extension = "png";
 
-    ASSERT(not m_textures.contains(name), "Texture {} already stored", name);
+    if (auto texture = m_textures.find(name); texture != m_textures.end()) {
+        LOG_WARN("Texture {} already loaded, returning pointer to the existing one", name);
+        return texture->second.get();
+    }
 
     const auto fullPath = fmt::format("{}/{}.{}", m_texturesPath, name, extension);
-    m_textures[name]    = m_textureLoader->load(name, fullPath);
+    m_textures[name]    = m_textureLoader.load(name, fullPath);
     return m_textures[name].get();
 }
 

@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-#include "mock/core/WindowMock.hpp"
+#include "mock/WindowMock.hpp"
 #include "mock/EventObserverMock.hpp"
 
 #include "nova/event/Event.h"

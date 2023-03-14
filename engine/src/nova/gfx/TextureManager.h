@@ -12,7 +12,7 @@ namespace nova::gfx {
 
 class TextureManager : public kc::core::Singleton<TextureManager> {
    public:
-    explicit TextureManager(TextureLoader* textureLoader, std::string_view texturesPath);
+    explicit TextureManager(TextureLoader& textureLoader, std::string_view texturesPath);
 
     Texture* load(const std::string& name);
     Texture* acquire(const std::string& name);
@@ -21,7 +21,7 @@ class TextureManager : public kc::core::Singleton<TextureManager> {
     void destroyAll();
 
    private:
-    TextureLoader* m_textureLoader;
+    TextureLoader& m_textureLoader;
     std::string_view m_texturesPath;
 
     std::unordered_map<std::string, core::UniqPtr<Texture>> m_textures;

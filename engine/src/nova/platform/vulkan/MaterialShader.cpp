@@ -9,8 +9,6 @@
 #include "Buffer.h"
 #include "Texture.h"
 
-constexpr uint32_t localSamplerCount = 1;
-
 namespace nova::platform::vulkan {
 
 void MaterialShader::createGlobalDescriptorSetLayout() {
@@ -54,15 +52,17 @@ void MaterialShader::createLocalDescriptorPool() {
     VkDescriptorPoolSize objectPoolSizes[2];
     // The first section will be used for uniform buffers
     objectPoolSizes[0].type            = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    objectPoolSizes[0].descriptorCount = VULKAN_OBJECT_MAX_OBJECT_COUNT;
+    objectPoolSizes[0].descriptorCount = VULKAN_MAX_MATERIAL_COUNT;
     // The second section will be used for image samplers.
-    objectPoolSizes[1].type            = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    objectPoolSizes[1].descriptorCount = localSamplerCount * VULKAN_OBJECT_MAX_OBJECT_COUNT;
+    objectPoolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    objectPoolSizes[1].descriptorCount =
+        VULKAN_MATERIAL_SHADER_SAMPLER_COUNT * VULKAN_MAX_MATERIAL_COUNT;
 
     VkDescriptorPoolCreateInfo objectPoolInfo = {VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO};
     objectPoolInfo.poolSizeCount              = 2;
     objectPoolInfo.pPoolSizes                 = objectPoolSizes;
-    objectPoolInfo.maxSets                    = VULKAN_OBJECT_MAX_OBJECT_COUNT;
+    objectPoolInfo.maxSets                    = VULKAN_MAX_MATERIAL_COUNT;
+    objectPoolInfo.flags                      = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
     // Create object descriptor pool.
     VK_ASSERT(vkCreateDescriptorPool(
@@ -118,6 +118,9 @@ MaterialShader::MaterialShader(const Context* context, Device* device, int swapc
     createShaderStages();
     createGlobalDescriptorSetLayout();
     createGlobalDescriptorPool(swapchainImageCount);
+
+    m_samplerUses[0] = gfx::Texture::Use::diffuseMap;
+
     createLocalDescriptorSetLayout();
     createLocalDescriptorPool();
 }
@@ -156,9 +159,10 @@ void MaterialShader::updateObject(
     );
 
     // Obtain material data.
+    auto& material = renderData.material;
 
-    auto& objectState         = m_instanceStates[renderData.objectId];
-    auto& objectDescriptorSet = objectState.descriptorSets[imageIndex];
+    auto& instanceState       = m_instanceStates[material->internalId];
+    auto& objectDescriptorSet = instanceState.descriptorSets[imageIndex];
 
     // TODO: if needs update
     VkWriteDescriptorSet descriptor_writes[VULKAN_MATERIAL_SHADER_DESCRIPTOR_COUNT];
@@ -168,53 +172,60 @@ void MaterialShader::updateObject(
     );
 
     uint32_t descriptor_count = 0;
-    uint32_t descriptor_index = 0;
+    uint32_t descriptorIndex  = 0;
 
     // Descriptor 0 - Uniform buffer
-    uint32_t range = sizeof(gfx::ObjectUniformObject);
+    uint32_t range = sizeof(gfx::MaterialUniformObject);
     uint64_t offset =
-        sizeof(gfx::ObjectUniformObject) * renderData.objectId;  // also the index into the
-    gfx::ObjectUniformObject obo;
+        sizeof(gfx::MaterialUniformObject) * material->internalId;  // also the index into the
+    gfx::MaterialUniformObject obo;
 
-    // TODO: get diffuse colour from a material.
-    static float accumulator = 0.0f;
-    // accumulator += renderData.deltaTime;
-    // float s          = (std::sin(accumulator) + 1.0f) / 2.0f;  // scale from -1, 1 to 0, 1
-    obo.diffuseColor = math::Vec4f(1.0f, 1.0f, 1.0f, 1.0f);
+    obo.diffuseColor = material->diffuseColor;
 
     // Load the data into the buffer.
     m_objectUniformBuffer->loadData(offset, range, 0, &obo);
 
     // Only do this if the descriptor has not yet been updated.
-    VkDescriptorBufferInfo buffer_info;
+    VkDescriptorBufferInfo bufferInfo;
+    auto uboGeneration = instanceState.descriptorStates[descriptorIndex].generations[imageIndex];
 
-    if (objectState.descriptorStates[descriptor_index].generations[imageIndex] == core::invalidId) {
-        buffer_info.buffer = m_objectUniformBuffer->getHandle();
-        buffer_info.offset = offset;
-        buffer_info.range  = range;
+    if (uboGeneration == core::invalidId || uboGeneration != material->generation) {
+        bufferInfo.buffer = m_objectUniformBuffer->getHandle();
+        bufferInfo.offset = offset;
+        bufferInfo.range  = range;
 
         VkWriteDescriptorSet descriptor = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET};
         descriptor.dstSet               = objectDescriptorSet;
-        descriptor.dstBinding           = descriptor_index;
+        descriptor.dstBinding           = descriptorIndex;
         descriptor.descriptorType       = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         descriptor.descriptorCount      = 1;
-        descriptor.pBufferInfo          = &buffer_info;
+        descriptor.pBufferInfo          = &bufferInfo;
 
         descriptor_writes[descriptor_count] = descriptor;
         descriptor_count++;
 
         // Update the frame generation. In this case it is only needed once since this is a
-        objectState.descriptorStates[descriptor_index].generations[imageIndex] = 1;
+        uboGeneration = material->generation;
     }
-    descriptor_index++;
+    descriptorIndex++;
 
-    // TODO: samplers.
-    const uint32_t sampler_count = 1;
-    VkDescriptorImageInfo image_infos[1];
+    const uint32_t samplerCount = 1;
+    VkDescriptorImageInfo imageInfos[1];
 
-    for (uint32_t sampler_index = 0; sampler_index < sampler_count; ++sampler_index) {
-        Texture* t            = static_cast<Texture*>(renderData.textures[sampler_index]);
-        auto& descriptorState = objectState.descriptorStates[descriptor_index];
+    for (uint32_t samplerIndex = 0; samplerIndex < samplerCount; ++samplerIndex) {
+        auto use   = m_samplerUses[samplerIndex];
+        Texture* t = nullptr;
+
+        switch (use) {
+            case gfx::Texture::Use::diffuseMap:
+                t = static_cast<Texture*>(material->diffuseMap.texture);
+                break;
+            case gfx::Texture::Use::unknown:
+                LOG_FATAL("Unable to bind sampler to unknown use");
+                return;
+        }
+
+        auto& descriptorState = instanceState.descriptorStates[descriptorIndex];
 
         uint32_t* generation = &descriptorState.generations[imageIndex];
         uint32_t* id         = &descriptorState.ids[imageIndex];
@@ -222,16 +233,16 @@ void MaterialShader::updateObject(
         // Check if the descriptor needs updating first.
         if (t && (*id != t->id || *generation != t->generation || *generation == core::invalidId)) {
             // Assign view and sampler.
-            image_infos[sampler_index].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            image_infos[sampler_index].imageView   = t->getImage()->getView();
-            image_infos[sampler_index].sampler     = t->getSampler();
+            imageInfos[samplerIndex].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            imageInfos[samplerIndex].imageView   = t->getImage()->getView();
+            imageInfos[samplerIndex].sampler     = t->getSampler();
 
             VkWriteDescriptorSet descriptor = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET};
             descriptor.dstSet               = objectDescriptorSet;
-            descriptor.dstBinding           = descriptor_index;
+            descriptor.dstBinding           = descriptorIndex;
             descriptor.descriptorType       = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             descriptor.descriptorCount      = 1;
-            descriptor.pImageInfo           = &image_infos[sampler_index];
+            descriptor.pImageInfo           = &imageInfos[samplerIndex];
 
             descriptor_writes[descriptor_count] = descriptor;
             descriptor_count++;
@@ -241,7 +252,7 @@ void MaterialShader::updateObject(
                 *generation = t->generation;
                 *id         = t->id;
             }
-            descriptor_index++;
+            descriptorIndex++;
         }
     }
     if (descriptor_count > 0) {
@@ -292,7 +303,7 @@ void MaterialShader::updateGlobalState(
 void MaterialShader::createUniformBuffer() {
     Buffer::Properties props;
 
-    props.size       = sizeof(gfx::GlobalUniformObject) * 3;
+    props.size       = sizeof(gfx::GlobalUniformObject);
     props.usageFlags = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
     props.memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT |
                                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
@@ -301,7 +312,7 @@ void MaterialShader::createUniformBuffer() {
 
     m_globalUniformBuffer = core::createUniqPtr<Buffer>(m_context, m_device, props);
 
-    props.size = sizeof(gfx::ObjectUniformObject);
+    props.size = sizeof(gfx::MaterialUniformObject) * VULKAN_MAX_MATERIAL_COUNT;
 
     m_objectUniformBuffer = core::createUniqPtr<Buffer>(m_context, m_device, props);
 
@@ -326,16 +337,16 @@ const std::vector<ShaderStage>& MaterialShader::getStages() const { return m_sta
 
 gfx::GlobalUniformObject& MaterialShader::getGlobalUBO() { return m_globalUBO; }
 
-uint32_t MaterialShader::acquireResources() {  // TODO: free list
-    core::Id objectId = m_objectUniformBufferIndex;
+void MaterialShader::acquireResources(gfx::Material& material) {  // TODO: free list
+    material.internalId = m_objectUniformBufferIndex;
     m_objectUniformBufferIndex++;
 
-    auto& objectState = m_instanceStates[objectId];
+    auto& instanceState = m_instanceStates[material.internalId];
 
     for (uint32_t i = 0; i < VULKAN_MATERIAL_SHADER_DESCRIPTOR_COUNT; ++i) {
         for (uint32_t j = 0; j < 3; ++j) {
-            objectState.descriptorStates[i].generations[j] = core::invalidId;
-            objectState.descriptorStates[i].ids[j]         = core::invalidId;
+            instanceState.descriptorStates[i].generations[j] = core::invalidId;
+            instanceState.descriptorStates[i].ids[j]         = core::invalidId;
         }
     }
 
@@ -349,30 +360,30 @@ uint32_t MaterialShader::acquireResources() {  // TODO: free list
     alloc_info.pSetLayouts                 = layouts;
 
     VK_ASSERT(vkAllocateDescriptorSets(
-        m_device->getLogicalDevice(), &alloc_info, objectState.descriptorSets
+        m_device->getLogicalDevice(), &alloc_info, instanceState.descriptorSets
     ));
-
-    return objectId;
 }
 
-void MaterialShader::releaseResources(uint32_t objectId) {
-    auto& objectState = m_instanceStates[objectId];
+void MaterialShader::releaseResources(gfx::Material& material) {
+    auto& instanceState = m_instanceStates[material.internalId];
 
     const uint32_t descriptor_set_count = 3;
     // Release object descriptor sets.
     VkResult result = vkFreeDescriptorSets(
         m_device->getLogicalDevice(), m_objectDescriptorPool, descriptor_set_count,
-        objectState.descriptorSets
+        instanceState.descriptorSets
     );
 
     if (result != VK_SUCCESS) LOG_ERROR("Error freeing object shader descriptor sets!");
 
     for (uint32_t i = 0; i < VULKAN_MATERIAL_SHADER_DESCRIPTOR_COUNT; ++i) {
         for (uint32_t j = 0; j < 3; ++j) {
-            objectState.descriptorStates[i].generations[j] = core::invalidId;
-            objectState.descriptorStates[i].ids[j]         = core::invalidId;
+            instanceState.descriptorStates[i].generations[j] = core::invalidId;
+            instanceState.descriptorStates[i].ids[j]         = core::invalidId;
         }
     }
+
+    material.internalId = core::invalidId;
 }
 
 }  // namespace nova::platform::vulkan

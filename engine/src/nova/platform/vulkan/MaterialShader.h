@@ -8,6 +8,7 @@
 #include "nova/core/Memory.hpp"
 #include "nova/gfx/Texture.h"
 #include "nova/gfx/RendererBackend.h"
+#include "nova/gfx/Material.h"
 
 #include "Device.h"
 #include "Vulkan.h"
@@ -27,7 +28,7 @@ struct MaterialShaderObjectState {
     DescriptorState descriptorStates[VULKAN_MATERIAL_SHADER_DESCRIPTOR_COUNT];
 };
 
-#define VULKAN_OBJECT_MAX_OBJECT_COUNT 1024
+#define VULKAN_MAX_MATERIAL_COUNT 1024
 
 class MaterialShader {
     static constexpr uint8_t s_stagesCount = 2;  // vertex + fragment
@@ -43,8 +44,8 @@ class MaterialShader {
 
     void updateGlobalState(VkCommandBuffer commandBuffer, uint32_t imageIndex, Pipeline& pipeline);
 
-    uint32_t acquireResources();
-    void releaseResources(uint32_t objectId);
+    void acquireResources(gfx::Material& material);
+    void releaseResources(gfx::Material& material);
 
     void createUniformBuffer();
 
@@ -83,7 +84,7 @@ class MaterialShader {
 
     std::array<gfx::Texture::Use, VULKAN_MATERIAL_SHADER_SAMPLER_COUNT> m_samplerUses;
 
-    MaterialShaderObjectState m_instanceStates[VULKAN_OBJECT_MAX_OBJECT_COUNT];
+    MaterialShaderObjectState m_instanceStates[VULKAN_MAX_MATERIAL_COUNT];
 };
 
 }  // namespace nova::platform::vulkan

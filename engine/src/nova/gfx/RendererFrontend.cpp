@@ -8,6 +8,7 @@
 
 #include "EulerCamera.h"
 
+#include "nova/gfx/MaterialManager.h"
 #include "nova/gfx/TextureManager.h"
 
 namespace nova::gfx {
@@ -19,6 +20,8 @@ RendererFrontend::RendererFrontend(RendererBackend* backend) : m_backend(backend
     m_texture2 = gfx::TextureManager::get().load("paving");
 
     m_activeTexture = m_texture1;
+
+    m_material = gfx::MaterialManager::get().load("test");
 }
 
 RendererFrontend::~RendererFrontend() { event::EventManager::get().unregisterObserver(this); }
@@ -40,10 +43,9 @@ bool RendererFrontend::drawFrame(
         globalState.mode             = 0;
 
         GeometryRenderData renderData;
-        renderData.model       = modelMatrix;
-        renderData.deltaTime   = deltaTime;
-        renderData.objectId    = 0;
-        renderData.textures[0] = m_activeTexture;
+        renderData.model     = modelMatrix;
+        renderData.deltaTime = deltaTime;
+        renderData.material  = m_material;
 
         // TODO: consider pasing delta timer directly
         m_backend->updateGlobalState(globalState);

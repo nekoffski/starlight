@@ -23,6 +23,7 @@ class RendererFrontend : public event::EventObserver {
     Texture* m_activeTexture;
     Texture* m_texture1;
     Texture* m_texture2;
+    Material* m_material;
 };
 
 }  // namespace nova::gfx

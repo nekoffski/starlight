@@ -70,9 +70,14 @@ RendererBackend::RendererBackend(core::Window& window, const core::Config& confi
         m_device->getGraphicsCommandPool(), 0, graphicsQueue, *m_objectIndexBuffer, 0,
         sizeof(uint32_t) * index_count, indices
     );
+}
 
-    core::Id objectId = m_simpleShader->acquireResources();
-    ASSERT(objectId != core::invalidId, "Could not acquire shader resources");
+void RendererBackend::acquireMaterialResources(gfx::Material& material) {
+    m_simpleShader->acquireResources(material);
+}
+
+void RendererBackend::releaseMaterialResources(gfx::Material& material) {
+    m_simpleShader->releaseResources(material);
 }
 
 void RendererBackend::uploadDataRange(

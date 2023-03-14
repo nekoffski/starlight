@@ -7,6 +7,8 @@
 #include "Texture.h"
 #include "TextureMap.h"
 
+#include "nova/core/Id.h"
+
 namespace nova::gfx {
 
 struct Material {
@@ -16,9 +18,9 @@ struct Material {
     math::Vec4f diffuseColor;
     TextureMap diffuseMap;
 
-    uint32_t id = idGenerator++;
+    core::Id id = idGenerator++;
 
-    inline static uint32_t idGenerator = 0;
+    inline static core::Id idGenerator = 0;
 };
 
 }  // namespace nova::gfx

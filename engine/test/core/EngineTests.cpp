@@ -4,10 +4,10 @@
 
 #include <gtest/gtest.h>
 
-#include "mock/core/ApplicationMock.hpp"
-#include "mock/core/WindowMock.hpp"
-#include "mock/gfx/RendererBackendMock.hpp"
-#include "mock/gfx/TextureLoaderMock.hpp"
+#include "mock/ApplicationMock.hpp"
+#include "mock/WindowMock.hpp"
+#include "mock/RendererBackendMock.hpp"
+#include "mock/TextureLoaderMock.hpp"
 
 #include "nova/event/Event.h"
 #include "nova/event/Quit.h"

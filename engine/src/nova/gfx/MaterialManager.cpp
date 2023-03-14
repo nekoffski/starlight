@@ -16,26 +16,41 @@ struct MaterialConfig {
 };
 
 MaterialManager::MaterialManager(
-    TextureManager* textureManager, std::string_view materialsPath, core::FileSystem* fileSystem
+    TextureManager& textureManager, const ResourceProxy& resourceProxy,
+    std::string_view materialsPath, core::FileSystem& fileSystem
 )
     : m_textureManager(textureManager)
-    , m_materialsPath(m_materialsPath)
+    , m_resourceProxy(resourceProxy)
+    , m_materialsPath(materialsPath)
     , m_fileSystem(fileSystem) {}
 
 Material* MaterialManager::load(const std::string& name) {
     LOG_TRACE("Loading material '{}'", name);
     static const std::string_view extension = "nvmat";
 
-    ASSERT(not m_materials.contains(name), "Material '{}' already stored", name);
+    if (auto material = m_materials.find(name); material != m_materials.end()) {
+        LOG_WARN("Material '{}' already stored, returning pointer to the existing one", name);
+        return &material->second;
+    }
+
     const auto fullPath = fmt::format("{}/{}.{}", m_materialsPath, name, extension);
 
-    ASSERT(m_fileSystem->isFile(fullPath), "Could not find material file '{}'", fullPath);
+    if (not m_fileSystem.isFile(fullPath)) {
+        LOG_WARN("Could not find material file '{}'", fullPath);
+        return nullptr;
+    }
 
-    auto materialConfig = MaterialConfig::load(m_fileSystem->readFile(fullPath), name);
-    ASSERT(materialConfig.has_value(), "Could not process material file '{}'", fullPath);
+    LOG_TRACE("Found material file, will try to process");
+
+    auto materialConfig = MaterialConfig::load(m_fileSystem.readFile(fullPath), name);
+
+    if (not materialConfig.has_value()) {
+        LOG_WARN("Could not process material file '{}'", fullPath);
+        return nullptr;
+    }
 
     const auto getDiffuseMapTexture = [&](const std::string& diffuseMapName) -> gfx::Texture* {
-        if (auto texture = m_textureManager->acquire(diffuseMapName); texture) {
+        if (auto texture = m_textureManager.acquire(diffuseMapName); texture) {
             LOG_DEBUG("Found diffuse map '{}' required by material '{}'", texture->name, name);
             return texture;
         } else {
@@ -43,7 +58,7 @@ Material* MaterialManager::load(const std::string& name) {
                 "Diffuse map '{}' required by material '{}' not found, will try to load",
                 diffuseMapName, name
             );
-            return m_textureManager->load(diffuseMapName);
+            return m_textureManager.load(diffuseMapName);
         }
     };
 
@@ -52,17 +67,19 @@ Material* MaterialManager::load(const std::string& name) {
     );
 
     Material material;
-    material.internalId   = 0;
-    material.name         = name;
-    material.diffuseColor = materialConfig->diffuseColor;
-    material.diffuseMap   = diffuseMap;
+    material.generation = material.internalId = 0;
+    material.name                             = name;
+    material.diffuseColor                     = materialConfig->diffuseColor;
+    material.diffuseMap                       = diffuseMap;
+    material.id                               = core::invalidId;
+
+    m_resourceProxy.acquireMaterialResources(material);
 
     m_materials[name] = std::move(material);
 
     return &m_materials[name];
 }
 
-// TODO: it should return nullptr or throw an error in case of not existing material
 Material* MaterialManager::acquire(const std::string& name) {
     LOG_TRACE("Acquiring material '{}'", name);
     if (auto material = m_materials.find(name); material != m_materials.end()) {
@@ -76,10 +93,12 @@ Material* MaterialManager::acquire(const std::string& name) {
 void MaterialManager::destroy(const std::string& name) {
     LOG_TRACE("Destroying material '{}'", name);
     // TODO: should we also destroy texture?
-    if (auto material = m_materials.find(name); material != m_materials.end()) [[likely]]
+    if (auto material = m_materials.find(name); material != m_materials.end()) [[likely]] {
+        m_resourceProxy.releaseMaterialResources(material->second);
         m_materials.erase(material);
-    else
+    } else {
         LOG_WARN("Attempt to destroy not existing material - {}, will ignore", name);
+    }
 }
 
 void MaterialManager::destroyAll() { m_materials.clear(); }

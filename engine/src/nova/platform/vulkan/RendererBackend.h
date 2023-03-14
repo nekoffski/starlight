@@ -45,6 +45,9 @@ class RendererBackend : public gfx::RendererBackend {
 
     TextureLoader* getTextureLoader() const override;
 
+    void acquireMaterialResources(gfx::Material& material) override;
+    void releaseMaterialResources(gfx::Material& material) override;
+
    private:
     void createCoreComponents(core::Window& window, const core::Config& config);
     void createCommandBuffers();

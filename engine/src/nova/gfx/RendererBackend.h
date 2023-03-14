@@ -5,6 +5,7 @@
 #include "nova/core/Id.h"
 #include "nova/math/Glm.h"
 #include "Texture.h"
+#include "Material.h"
 
 #include "fwd.h"
 
@@ -27,15 +28,12 @@ struct GlobalState {
 };
 
 struct GeometryRenderData {
-    core::Id objectId;
     math::mat4 model;
-
-    std::array<Texture*, 16> textures;
-
+    gfx::Material* material;
     float deltaTime;
 };
 
-struct ObjectUniformObject {
+struct MaterialUniformObject {
     math::Vec4f diffuseColor;  // 16 bytes
     math::Vec4f reserved0;     // 16 bytes, reserved for future use
     math::Vec4f reserved1;     // 16 bytes, reserved for future use
@@ -54,6 +52,9 @@ struct RendererBackend {
     virtual void onViewportResize(uint32_t width, uint32_t height) = 0;
 
     virtual TextureLoader* getTextureLoader() const = 0;
+
+    virtual void acquireMaterialResources(gfx::Material& material) = 0;
+    virtual void releaseMaterialResources(gfx::Material& material) = 0;
 };
 
 }  // namespace nova::gfx

@@ -10,10 +10,12 @@
 #include "Application.h"
 #include "Core.hpp"
 
+#include "nova/gfx/ResourceProxy.h"
+
 #include "nova/event/Quit.h"
 
 std::string_view texturesPath  = NOVA_ASSETS_TEXTURES_PATH;
-std::string_view materialsPath = NOVA_ASSETS_TEXTURES_PATH;
+std::string_view materialsPath = NOVA_ASSETS_MATERIALS_PATH;
 
 namespace nova::core {
 
@@ -21,8 +23,10 @@ Engine::Engine(const platform::Platform& platform)
     : m_shouldStop(false)
     , m_platform(platform)
     , m_windowManager(m_platform.window)
-    , m_textureManager(m_platform.rendererBackend->getTextureLoader(), texturesPath)
-    , m_materialManager(&m_textureManager, materialsPath)
+    , m_textureManager(*m_platform.rendererBackend->getTextureLoader(), texturesPath)
+    , m_materialManager(
+          m_textureManager, gfx::ResourceProxy(*m_platform.rendererBackend), materialsPath
+      )
     , m_rendererFrontend(m_platform.rendererBackend)
     , m_eulerCamera(gfx::EulerCamera::Properties{.target = math::Vec3f{0.0f}, .radius = 5.0f}) {
     LOG_DEBUG("Setting up signals");
