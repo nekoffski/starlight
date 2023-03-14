@@ -70,12 +70,10 @@ void RendererFrontend::onEvent(event::EventWrapper& eventWrapper) {
         if (event.action == core::KeyAction::press) {
             if (event.key == NOVA_KEY_4) {
                 LOG_TRACE("Changing current texture to 1");
-                m_activeTexture = m_texture1;
-                m_activeTexture->generation++;
+                m_material->diffuseMap.texture = m_texture1;
             } else if (event.key == NOVA_KEY_5) {
                 LOG_TRACE("Changing current texture to 2");
-                m_activeTexture = m_texture2;
-                m_activeTexture->generation++;
+                m_material->diffuseMap.texture = m_texture2;
             }
         }
     }
