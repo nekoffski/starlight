@@ -37,7 +37,7 @@ class MaterialShader {
 
     ~MaterialShader();
 
-    void updateObject(
+    void drawGeometry(
         Pipeline& pipeline, VkCommandBuffer commandBuffer, const gfx::GeometryRenderData&,
         uint32_t imageIndex
     );

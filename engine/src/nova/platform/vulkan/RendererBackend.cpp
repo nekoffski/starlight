@@ -102,11 +102,10 @@ void RendererBackend::uploadDataRange(
 
 TextureLoader* RendererBackend::getTextureLoader() const { return m_textureLoader.get(); }
 
-// TODO: pass as const ref
-void RendererBackend::updateObject(const gfx::GeometryRenderData& geometryRenderData) {
+void RendererBackend::drawGeometry(const gfx::GeometryRenderData& geometryRenderData) {
     auto& commandBuffer = m_commandBuffers[m_frameInfo.imageIndex];
 
-    m_simpleShader->updateObject(
+    m_simpleShader->drawGeometry(
         *m_pipeline, commandBuffer.getHandle(), geometryRenderData, m_frameInfo.imageIndex
     );
 
@@ -257,16 +256,16 @@ void RendererBackend::createCoreComponents(core::Window& window, const core::Con
 }
 
 void RendererBackend::createSemaphoresAndFences() {
-    m_imageAvailableSemaphores.reserve(s_maxFramesInFlight);
-    m_queueCompleteSemaphores.reserve(s_maxFramesInFlight);
+    m_imageAvailableSemaphores.reserve(maxFramesInFlight);
+    m_queueCompleteSemaphores.reserve(maxFramesInFlight);
 
-    m_imagesInFlight.resize(s_maxFramesInFlight);
-    m_inFlightFences.reserve(s_maxFramesInFlight);
+    m_imagesInFlight.resize(maxFramesInFlight);
+    m_inFlightFences.reserve(maxFramesInFlight);
 
     const auto contextPointer = m_context.get();
     const auto devicePointer  = m_device.get();
 
-    REPEAT(s_maxFramesInFlight) {
+    REPEAT(maxFramesInFlight) {
         m_imageAvailableSemaphores.emplace_back(contextPointer, devicePointer);
         m_queueCompleteSemaphores.emplace_back(contextPointer, devicePointer);
         m_inFlightFences.emplace_back(m_context.get(), m_device.get(), Fence::State::signaled);
@@ -474,7 +473,7 @@ bool RendererBackend::endFrame(float deltaTime) {
         m_queueCompleteSemaphores[m_frameInfo.currentFrame].getHandle(), m_frameInfo.imageIndex
     );
 
-    m_frameInfo.currentFrame = (m_frameInfo.currentFrame + 1) % s_maxFramesInFlight;
+    m_frameInfo.currentFrame = (m_frameInfo.currentFrame + 1) % maxFramesInFlight;
 
     return true;
 }

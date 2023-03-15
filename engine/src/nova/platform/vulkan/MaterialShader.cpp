@@ -148,7 +148,7 @@ VkDescriptorSetLayout MaterialShader::getObjectDescriptorSetLayout() const {
     return m_objectDescriptorSetLayout;
 }
 
-void MaterialShader::updateObject(
+void MaterialShader::drawGeometry(
     Pipeline& pipeline, VkCommandBuffer commandBuffer, const gfx::GeometryRenderData& renderData,
     uint32_t imageIndex
 ) {

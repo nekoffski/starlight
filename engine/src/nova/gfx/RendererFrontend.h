@@ -3,10 +3,9 @@
 #include "RendererBackend.h"
 #include "nova/event/Event.h"
 #include "Camera.h"
+#include "RenderPacket.h"
 
 namespace nova::gfx {
-
-struct RenderPacket {};
 
 class RendererFrontend : public event::EventObserver {
    public:

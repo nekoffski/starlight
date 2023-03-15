@@ -21,7 +21,8 @@ RendererFrontend::RendererFrontend(RendererBackend* backend) : m_backend(backend
 
     m_activeTexture = m_texture1;
 
-    m_material = gfx::MaterialManager::get().load("test");
+    // m_material = gfx::MaterialManager::get().load("test");
+    m_material = gfx::MaterialManager::get().getDefaultMaterial();
 }
 
 RendererFrontend::~RendererFrontend() { event::EventManager::get().unregisterObserver(this); }
@@ -49,7 +50,7 @@ bool RendererFrontend::drawFrame(
 
         // TODO: consider pasing delta timer directly
         m_backend->updateGlobalState(globalState);
-        m_backend->updateObject(renderData);
+        m_backend->drawGeometry(renderData);
 
         return m_backend->endFrame(deltaTime);
     }

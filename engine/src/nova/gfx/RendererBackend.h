@@ -6,6 +6,7 @@
 #include "nova/math/Glm.h"
 #include "Texture.h"
 #include "Material.h"
+#include "Geometry.h"
 
 #include "fwd.h"
 
@@ -29,7 +30,7 @@ struct GlobalState {
 
 struct GeometryRenderData {
     math::mat4 model;
-    gfx::Material* material;
+    Material* material;
     float deltaTime;
 };
 
@@ -47,7 +48,7 @@ struct RendererBackend {
     virtual bool endFrame(float deltaTime)   = 0;
 
     virtual void updateGlobalState(const GlobalState& globalState)   = 0;
-    virtual void updateObject(const GeometryRenderData& modelMatrix) = 0;
+    virtual void drawGeometry(const GeometryRenderData& modelMatrix) = 0;
 
     virtual void onViewportResize(uint32_t width, uint32_t height) = 0;
 

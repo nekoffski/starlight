@@ -22,7 +22,30 @@ MaterialManager::MaterialManager(
     : m_textureManager(textureManager)
     , m_resourceProxy(resourceProxy)
     , m_materialsPath(materialsPath)
-    , m_fileSystem(fileSystem) {}
+    , m_fileSystem(fileSystem) {
+    createDefaultMaterial();
+}
+
+MaterialManager::~MaterialManager() {
+    m_resourceProxy.releaseMaterialResources(m_defaultMaterial);
+    destroyAll();
+}
+
+Material* MaterialManager::getDefaultMaterial() { return &m_defaultMaterial; }
+
+void MaterialManager::createDefaultMaterial() {
+    TextureMap diffuseMap(m_textureManager.getDefaultTexture(), Texture::Use::diffuseMap);
+
+    m_defaultMaterial.generation   = 0;
+    m_defaultMaterial.internalId   = 0;
+    m_defaultMaterial.name         = "internal-default-material";
+    m_defaultMaterial.diffuseColor = math::Vec4f{1.0f};
+    m_defaultMaterial.diffuseMap   = diffuseMap;
+    m_defaultMaterial.id           = core::invalidId;
+
+    // TODO: RAII?
+    m_resourceProxy.acquireMaterialResources(m_defaultMaterial);
+}
 
 Material* MaterialManager::load(const std::string& name) {
     LOG_TRACE("Loading material '{}'", name);
@@ -67,11 +90,12 @@ Material* MaterialManager::load(const std::string& name) {
     );
 
     Material material;
-    material.generation = material.internalId = 0;
-    material.name                             = name;
-    material.diffuseColor                     = materialConfig->diffuseColor;
-    material.diffuseMap                       = diffuseMap;
-    material.id                               = core::invalidId;
+    material.generation   = 0;
+    material.internalId   = 0;
+    material.name         = name;
+    material.diffuseColor = materialConfig->diffuseColor;
+    material.diffuseMap   = diffuseMap;
+    material.id           = core::invalidId;
 
     m_resourceProxy.acquireMaterialResources(material);
 
@@ -101,7 +125,11 @@ void MaterialManager::destroy(const std::string& name) {
     }
 }
 
-void MaterialManager::destroyAll() { m_materials.clear(); }
+void MaterialManager::destroyAll() {
+    for (auto& material : m_materials | std::views::values)
+        m_resourceProxy.releaseMaterialResources(material);
+    m_materials.clear();
+}
 
 auto fieldFrom(auto& root) { return kc::json::fieldFrom<kc::json::JsonError>(root); }
 

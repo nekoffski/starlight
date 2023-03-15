@@ -20,7 +20,7 @@ struct Texture {
     } props;
 
     std::string name;
-    uint32_t generation;
+    uint32_t generation = 0;
 
     inline static uint32_t idGenerator = 0;
 };

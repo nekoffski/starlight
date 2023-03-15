@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <array>
 #include <cstdint>
 
 #include "nova/gfx/RendererBackend.h"
@@ -17,6 +18,7 @@
 #include "Semaphore.h"
 #include "Texture.h"
 #include "TextureLoader.h"
+#include "GeometryData.h"
 
 #include "Buffer.h"
 
@@ -39,7 +41,7 @@ class RendererBackend : public gfx::RendererBackend {
     bool endFrame(float deltaTime) override;
 
     void updateGlobalState(const gfx::GlobalState& globalState) override;
-    void updateObject(const gfx::GeometryRenderData& model) override;
+    void drawGeometry(const gfx::GeometryRenderData& model) override;
 
     void onViewportResize(uint32_t width, uint32_t height) override;
 
@@ -92,7 +94,9 @@ class RendererBackend : public gfx::RendererBackend {
     core::UniqPtr<Buffer> m_objectVertexBuffer;
     core::UniqPtr<Buffer> m_objectIndexBuffer;
 
-    static constexpr uint8_t s_maxFramesInFlight = 2;
+    static constexpr uint8_t maxFramesInFlight = 2;
+
+    std::array<GeometryData, vulkanMaxGeometryCount> m_geometries;
 };
 
 }  // namespace nova::platform::vulkan
