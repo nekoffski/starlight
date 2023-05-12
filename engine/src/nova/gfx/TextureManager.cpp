@@ -24,8 +24,7 @@ Texture* TextureManager::load(const std::string& name) {
         return texture->second.get();
     }
 
-    const auto fullPath = fmt::format("{}/{}.{}", m_texturesPath, name, extension);
-    m_textures[name]    = m_textureLoader.load(name, fullPath);
+    m_textures[name] = m_textureLoader.load(name);
     return m_textures[name].get();
 }
 

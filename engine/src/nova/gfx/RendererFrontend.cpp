@@ -16,8 +16,8 @@ namespace nova::gfx {
 RendererFrontend::RendererFrontend(RendererBackend* backend) : m_backend(backend) {
     event::EventManager::get().registerObserver(this);
 
-    m_texture1 = gfx::TextureManager::get().load("cobblestone");
-    m_texture2 = gfx::TextureManager::get().load("paving");
+    m_texture1 = gfx::TextureManager::get().load("cobblestone.png");
+    m_texture2 = gfx::TextureManager::get().load("paving.png");
 
     m_activeTexture = m_texture1;
 
@@ -33,24 +33,15 @@ bool RendererFrontend::drawFrame(
     if (m_backend->beginFrame(deltaTime)) {
         gfx::GlobalState globalState;
 
-        auto modelMatrix = glm::mat4{1.0f};
-
-        modelMatrix = glm::rotate(modelMatrix, glm::radians(0.0f), glm::vec3{0.0f, 0.0f, 1.0f});
-
         globalState.projectionMatrix = camera.getProjectionMatrix();
         globalState.viewMatrix       = camera.getViewMatrix();
         globalState.viewPosition     = camera.getPosition();
         globalState.ambientColor     = glm::vec4{1.0f};
         globalState.mode             = 0;
 
-        GeometryRenderData renderData;
-        renderData.model     = modelMatrix;
-        renderData.deltaTime = deltaTime;
-        renderData.material  = m_material;
-
-        // TODO: consider pasing delta timer directly
         m_backend->updateGlobalState(globalState);
-        m_backend->drawGeometry(renderData);
+
+        for (auto& geometry : renderPacket.geometries) m_backend->drawGeometry(geometry);
 
         return m_backend->endFrame(deltaTime);
     }

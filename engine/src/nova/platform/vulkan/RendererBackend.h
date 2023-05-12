@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <array>
+#include <span>
 #include <cstdint>
 
 #include "nova/gfx/RendererBackend.h"
@@ -50,6 +51,11 @@ class RendererBackend : public gfx::RendererBackend {
     void acquireMaterialResources(gfx::Material& material) override;
     void releaseMaterialResources(gfx::Material& material) override;
 
+    void acquireGeometryResources(
+        gfx::Geometry& geometry, std::span<math::Vertex3> vertices, std::span<uint32_t> indices
+    ) override;
+    void releaseGeometryResources(gfx::Geometry& geometry) override;
+
    private:
     void createCoreComponents(core::Window& window, const core::Config& config);
     void createCommandBuffers();
@@ -58,7 +64,7 @@ class RendererBackend : public gfx::RendererBackend {
 
     void uploadDataRange(
         VkCommandPool pool, VkFence fence, VkQueue queue, Buffer& outBuffer, uint64_t offset,
-        uint64_t size, void* data
+        uint64_t size, const void* data
     );
 
     void createBuffers();
@@ -97,6 +103,9 @@ class RendererBackend : public gfx::RendererBackend {
     static constexpr uint8_t maxFramesInFlight = 2;
 
     std::array<GeometryData, vulkanMaxGeometryCount> m_geometries;
+
+    uint32_t m_geometryVertexOffset = 0;
+    uint32_t m_geometryIndexOffset  = 0;
 };
 
 }  // namespace nova::platform::vulkan

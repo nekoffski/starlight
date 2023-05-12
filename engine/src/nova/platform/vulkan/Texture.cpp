@@ -130,33 +130,4 @@ void Texture::create(const std::string& name, const Properties& props, const voi
     LOG_TRACE("Texture created: {}", name);
 }
 
-ImageTexture::ImageTexture(
-    const Context* context, Device* device, const std::string& name, const std::string& path
-)
-    : Texture(context, device) {
-    int width;
-    int height;
-    int channels;
-
-    constexpr int requiredChannels = 4;
-
-    // TODO: consider not quiting in case of error, handle it in another way
-    stbi_uc* pixels = stbi_load(path.c_str(), &width, &height, &channels, requiredChannels);
-    ASSERT(pixels, "Could not load image {}", path);
-
-    ON_SCOPE_EXIT { stbi_image_free(pixels); };
-
-    // TODO: verify if the texture is really transparent
-    create(
-        name,
-        Properties{
-            .width         = static_cast<uint32_t>(width),
-            .height        = static_cast<uint32_t>(height),
-            .channels      = requiredChannels,
-            .isTransparent = true,
-        },
-        pixels
-    );
-}
-
 }  // namespace nova::platform::vulkan

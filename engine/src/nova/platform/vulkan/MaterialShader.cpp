@@ -99,15 +99,14 @@ void MaterialShader::createLocalDescriptorSetLayout() {
 }
 
 void MaterialShader::createShaderStages() {
-    core::FileSystem fs;
     m_stages.reserve(s_stagesCount);
 
     m_stages.emplace_back(
-        m_device, m_context, &fs, ShaderStage::Properties{"Simple", ShaderStage::Type::vertex}
+        m_device, m_context, ShaderStage::Properties{"Simple", ShaderStage::Type::vertex}
     );
 
     m_stages.emplace_back(
-        m_device, m_context, &fs, ShaderStage::Properties{"Simple", ShaderStage::Type::fragment}
+        m_device, m_context, ShaderStage::Properties{"Simple", ShaderStage::Type::fragment}
     );
 }
 
@@ -148,20 +147,20 @@ VkDescriptorSetLayout MaterialShader::getObjectDescriptorSetLayout() const {
     return m_objectDescriptorSetLayout;
 }
 
-void MaterialShader::drawGeometry(
-    Pipeline& pipeline, VkCommandBuffer commandBuffer, const gfx::GeometryRenderData& renderData,
-    uint32_t imageIndex
+void MaterialShader::setModel(
+    Pipeline& pipeline, VkCommandBuffer commandBuffer, const math::Mat4f& model
 ) {
-    // TODO: refactor it for God sake
     vkCmdPushConstants(
-        commandBuffer, pipeline.getLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0,
-        sizeof(renderData.model), glm::value_ptr(renderData.model)
+        commandBuffer, pipeline.getLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(model),
+        glm::value_ptr(model)
     );
+}
 
-    // Obtain material data.
-    auto& material = renderData.material;
-
-    auto& instanceState       = m_instanceStates[material->internalId];
+void MaterialShader::applyMaterial(
+    Pipeline& pipeline, VkCommandBuffer commandBuffer, uint32_t imageIndex,
+    const gfx::Material& material
+) {
+    auto& instanceState       = m_instanceStates[material.internalId];
     auto& objectDescriptorSet = instanceState.descriptorSets[imageIndex];
 
     // TODO: if needs update
@@ -177,10 +176,10 @@ void MaterialShader::drawGeometry(
     // Descriptor 0 - Uniform buffer
     uint32_t range = sizeof(gfx::MaterialUniformObject);
     uint64_t offset =
-        sizeof(gfx::MaterialUniformObject) * material->internalId;  // also the index into the
+        sizeof(gfx::MaterialUniformObject) * material.internalId;  // also the index into the
     gfx::MaterialUniformObject obo;
 
-    obo.diffuseColor = material->diffuseColor;
+    obo.diffuseColor = material.diffuseColor;
 
     // Load the data into the buffer.
     m_objectUniformBuffer->loadData(offset, range, 0, &obo);
@@ -189,7 +188,7 @@ void MaterialShader::drawGeometry(
     VkDescriptorBufferInfo bufferInfo;
     auto uboGeneration = instanceState.descriptorStates[descriptorIndex].generations[imageIndex];
 
-    if (uboGeneration == core::invalidId || uboGeneration != material->generation) {
+    if (uboGeneration == core::invalidId || uboGeneration != material.generation) {
         bufferInfo.buffer = m_objectUniformBuffer->getHandle();
         bufferInfo.offset = offset;
         bufferInfo.range  = range;
@@ -205,7 +204,7 @@ void MaterialShader::drawGeometry(
         descriptor_count++;
 
         // Update the frame generation. In this case it is only needed once since this is a
-        uboGeneration = material->generation;
+        uboGeneration = material.generation;
     }
     descriptorIndex++;
 
@@ -218,7 +217,7 @@ void MaterialShader::drawGeometry(
 
         switch (use) {
             case gfx::Texture::Use::diffuseMap:
-                t = static_cast<Texture*>(material->diffuseMap.texture);
+                t = static_cast<Texture*>(material.diffuseMap.texture);
                 break;
             case gfx::Texture::Use::unknown:
                 LOG_FATAL("Unable to bind sampler to unknown use");
@@ -366,6 +365,8 @@ void MaterialShader::acquireResources(gfx::Material& material) {  // TODO: free 
 
 void MaterialShader::releaseResources(gfx::Material& material) {
     auto& instanceState = m_instanceStates[material.internalId];
+
+    vkDeviceWaitIdle(m_device->getLogicalDevice());
 
     const uint32_t descriptor_set_count = 3;
     // Release object descriptor sets.

@@ -13,4 +13,11 @@ struct RendererBackendMock : nova::gfx::RendererBackend {
     MOCK_METHOD(nova::gfx::TextureLoader*, getTextureLoader, (), (const, override));
     MOCK_METHOD(void, acquireMaterialResources, (nova::gfx::Material & material), (override));
     MOCK_METHOD(void, releaseMaterialResources, (nova::gfx::Material & material), (override));
+    MOCK_METHOD(
+        void, acquireGeometryResources,
+        (nova::gfx::Geometry & geometry, std::span<nova::math::Vertex3> vertices,
+         std::span<uint32_t> indices),
+        (override)
+    );
+    MOCK_METHOD(void, releaseGeometryResources, (nova::gfx::Geometry & geometry), (override));
 };

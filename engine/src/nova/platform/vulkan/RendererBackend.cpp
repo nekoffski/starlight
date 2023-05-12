@@ -13,6 +13,8 @@
 #include "MaterialShader.h"
 #include "TextureLoader.h"
 
+#include "nova/gfx/MaterialManager.h"
+
 namespace nova::platform::vulkan {
 
 RendererBackend::RendererBackend(core::Window& window, const core::Config& config)
@@ -35,41 +37,90 @@ RendererBackend::RendererBackend(core::Window& window, const core::Config& confi
 
     m_simpleShader->createUniformBuffer();
 
-    const uint32_t vert_count = 4;
-    math::Vertex3 verts[vert_count];
+    for (auto& geometry : m_geometries) geometry.id = core::invalidId;
+}
 
-    verts[0].position.x         = -0.5;
-    verts[0].position.y         = -0.5;
-    verts[0].textureCoordinates = {0.0f, 0.0f};
+void RendererBackend::acquireGeometryResources(
+    gfx::Geometry& geometry, std::span<math::Vertex3> vertices, std::span<uint32_t> indices
+) {
+    bool isReupload = geometry.id != core::invalidId;
 
-    verts[1].position.x         = 0.5;
-    verts[1].position.y         = 0.5;
-    verts[1].textureCoordinates = {1.0f, 1.0f};
+    GeometryData oldRange;
+    GeometryData* internalData = nullptr;
 
-    verts[2].position.x         = -0.5;
-    verts[2].position.y         = 0.5;
-    verts[2].textureCoordinates = {0.0f, 1.0f};
+    if (isReupload) {
+        internalData = &m_geometries[geometry.internalId];
+        oldRange     = *internalData;
+    } else {
+        for (int i = 0; auto& geometryData : m_geometries) {
+            if (geometryData.id == core::invalidId) {
+                geometry.internalId = i;
+                internalData        = &geometryData;
+                break;
+            }
+            ++i;
+        }
+    }
 
-    verts[3].position.x         = 0.5;
-    verts[3].position.y         = -0.5;
-    verts[3].textureCoordinates = {1.0f, 0.0f};
+    if (not internalData) {
+        // TODO: not found, return false!!
+    }
 
-    const uint32_t index_count    = 6;
-    uint32_t indices[index_count] = {0, 1, 2, 0, 3, 1};
+    auto pool  = m_device->getGraphicsCommandPool();
+    auto queue = m_device->getQueues().graphics;
 
-    LOG_TRACE("Initializing test vertex and index buffers");
-
-    const auto& graphicsQueue = m_device->getQueues().graphics;
+    internalData->vertexBufferOffset = m_geometryVertexOffset;
+    internalData->vertexCount        = vertices.size();
+    internalData->vertexSize         = sizeof(math::Vertex3) * internalData->vertexCount;
 
     uploadDataRange(
-        m_device->getGraphicsCommandPool(), 0, graphicsQueue, *m_objectVertexBuffer, 0,
-        sizeof(math::Vertex3) * vert_count, verts
+        pool, nullptr, queue, *m_objectVertexBuffer, internalData->vertexBufferOffset,
+        internalData->vertexSize, vertices.data()
     );
 
+    m_geometryVertexOffset += internalData->vertexSize;
+
+    // TODO: allow for indices to be optional
+    internalData->indexBufferOffset = m_geometryIndexOffset;
+    internalData->indexCount        = indices.size();
+    internalData->indexSize         = sizeof(uint32_t) * internalData->indexCount;
+
     uploadDataRange(
-        m_device->getGraphicsCommandPool(), 0, graphicsQueue, *m_objectIndexBuffer, 0,
-        sizeof(uint32_t) * index_count, indices
+        pool, nullptr, queue, *m_objectIndexBuffer, internalData->indexBufferOffset,
+        internalData->indexSize, indices.data()
     );
+
+    m_geometryIndexOffset += internalData->indexSize;
+
+    if (internalData->generation == core::invalidId)
+        internalData->generation = 0;
+    else
+        internalData->generation++;
+
+    if (isReupload) {
+        // TODO: free data range
+
+        if (oldRange.indexSize > 0) {
+        }
+    }
+}
+
+void RendererBackend::releaseGeometryResources(gfx::Geometry& geometry) {
+    if (geometry.internalId != core::invalidId) {
+        vkDeviceWaitIdle(m_device->getLogicalDevice());
+
+        auto internalData = &m_geometries[geometry.internalId];
+
+        // TODO: free_data_range
+
+        if (internalData->indexSize > 0) {
+            // TODO: free
+        }
+
+        internalData->id         = core::invalidId;
+        internalData->generation = core::invalidId;
+        // TODO: is that required to reset also other properties?
+    }
 }
 
 void RendererBackend::acquireMaterialResources(gfx::Material& material) {
@@ -82,7 +133,7 @@ void RendererBackend::releaseMaterialResources(gfx::Material& material) {
 
 void RendererBackend::uploadDataRange(
     VkCommandPool pool, VkFence fence, VkQueue queue, Buffer& outBuffer, uint64_t offset,
-    uint64_t size, void* data
+    uint64_t size, const void* data
 ) {
     VkMemoryPropertyFlags flags =
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
@@ -103,30 +154,42 @@ void RendererBackend::uploadDataRange(
 TextureLoader* RendererBackend::getTextureLoader() const { return m_textureLoader.get(); }
 
 void RendererBackend::drawGeometry(const gfx::GeometryRenderData& geometryRenderData) {
+    if (geometryRenderData.geometry->internalId == core::invalidId) {
+        LOG_ERROR("Could not draw Geometry with invalid id");
+        return;
+    }
+
+    auto& bufferData    = m_geometries[geometryRenderData.geometry->internalId];
     auto& commandBuffer = m_commandBuffers[m_frameInfo.imageIndex];
 
-    m_simpleShader->drawGeometry(
-        *m_pipeline, commandBuffer.getHandle(), geometryRenderData, m_frameInfo.imageIndex
+    m_simpleShader->setModel(*m_pipeline, commandBuffer.getHandle(), geometryRenderData.model);
+
+    gfx::Material* material = geometryRenderData.geometry->material;
+
+    if (not material) material = gfx::MaterialManager::get().getDefaultMaterial();
+
+    m_simpleShader->applyMaterial(
+        *m_pipeline, commandBuffer.getHandle(), m_frameInfo.imageIndex, *material
     );
 
     m_pipeline->bind(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS);
 
-    // Bind vertex buffer at offset.
-    VkDeviceSize offsets[1] = {0};
+    VkDeviceSize offsets[1] = {bufferData.vertexBufferOffset};
 
     vkCmdBindVertexBuffers(
         commandBuffer.getHandle(), 0, 1, m_objectVertexBuffer->getHandlePointer(),
         (VkDeviceSize*)offsets
     );
 
-    // Bind index buffer at offset.
-    vkCmdBindIndexBuffer(
-        commandBuffer.getHandle(), m_objectIndexBuffer->getHandle(), 0, VK_INDEX_TYPE_UINT32
-    );
-
-    // Issue the draw.
-    vkCmdDrawIndexed(commandBuffer.getHandle(), 6, 1, 0, 0, 0);
-    // TODO: end temporary test code
+    if (bufferData.indexCount > 0) {
+        vkCmdBindIndexBuffer(
+            commandBuffer.getHandle(), m_objectIndexBuffer->getHandle(),
+            bufferData.indexBufferOffset, VK_INDEX_TYPE_UINT32
+        );
+        vkCmdDrawIndexed(commandBuffer.getHandle(), bufferData.indexCount, 1, 0, 0, 0);
+    } else {
+        vkCmdDraw(commandBuffer.getHandle(), bufferData.vertexCount, 1, 0, 0);
+    }
 }
 
 void RendererBackend::updateGlobalState(const gfx::GlobalState& globalState) {

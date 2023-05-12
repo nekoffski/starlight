@@ -2,14 +2,12 @@
 
 #include "nova/core/FileSystem.h"
 
+#include "nova/res/ShaderSource.h"
+
 #include "Device.h"
 #include "Context.h"
 
 namespace nova::platform::vulkan {
-
-#ifndef NOVA_ASSETS_SHADERS_PATH
-#define NOVA_ASSETS_SHADERS_PATH ""
-#endif
 
 std::string toString(ShaderStage::Type type) {
     switch (type) {
@@ -34,25 +32,18 @@ VkShaderStageFlagBits getStageFlagBits(ShaderStage::Type type) {
 }
 
 static std::string assembleShaderPath(const std::string& name, ShaderStage::Type type) {
-    static std::string_view shadersPath      = NOVA_ASSETS_SHADERS_PATH;  // TODO: read from cfg
     static std::string_view shadersExtension = "spv";
-
-    return fmt::format("{}/{}.{}.{}", shadersPath, name, toString(type), shadersExtension);
+    return fmt::format("{}.{}.{}", name, toString(type), shadersExtension);
 }
 
-ShaderStage::ShaderStage(
-    Device* device, const Context* context, core::FileSystem* fs, const Properties& props
-)
+ShaderStage::ShaderStage(Device* device, const Context* context, const Properties& props)
     : m_device(device), m_context(context), m_handle(VK_NULL_HANDLE) {
-    const auto path = assembleShaderPath(props.name, props.type);
-
-    ASSERT(fs->isFile(path), "Could not find shader file {}", path);
-
-    const auto shaderContent = fs->readFile(path);
+    auto shaderSource = res::ShaderSource::create(assembleShaderPath(props.name, props.type));
+    ASSERT(shaderSource, "Could not load shader source");
 
     m_moduleCreateInfo          = {VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO};
-    m_moduleCreateInfo.codeSize = shaderContent.size();
-    m_moduleCreateInfo.pCode    = (uint32_t*)(shaderContent.data());
+    m_moduleCreateInfo.codeSize = shaderSource->size;
+    m_moduleCreateInfo.pCode    = (uint32_t*)(shaderSource->data);
 
     VK_ASSERT(vkCreateShaderModule(
         device->getLogicalDevice(), &m_moduleCreateInfo, context->getAllocator(), &m_handle

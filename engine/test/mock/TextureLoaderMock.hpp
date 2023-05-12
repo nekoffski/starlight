@@ -14,8 +14,5 @@ struct TextureLoaderMock : TextureLoader {
         (const, override)
     );
 
-    MOCK_METHOD(
-        core::UniqPtr<Texture>, load, (const std::string& name, const std::string& path),
-        (const, override)
-    );
+    MOCK_METHOD(core::UniqPtr<Texture>, load, (const std::string& name), (const, override));
 };

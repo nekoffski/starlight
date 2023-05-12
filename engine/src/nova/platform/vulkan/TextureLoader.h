@@ -15,8 +15,7 @@ class TextureLoader : public gfx::TextureLoader {
         const std::string& name, const gfx::Texture::Properties& props, const void* pixels
     ) const override;
 
-    core::UniqPtr<gfx::Texture> load(const std::string& name, const std::string& path)
-        const override;
+    core::UniqPtr<gfx::Texture> load(const std::string& name) const override;
 
    private:
     const Context* m_context;

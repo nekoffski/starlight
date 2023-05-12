@@ -1,13 +1,13 @@
 #pragma once
 
-#include <vector>
+#include <span>
 
-#include "Geometry.h"
+#include "RendererBackend.h"
 
 namespace nova::gfx {
 
 struct RenderPacket {
-    std::vector<Geometry> geometries;
+    std::span<GeometryRenderData> geometries;
 };
 
 }  // namespace nova::gfx

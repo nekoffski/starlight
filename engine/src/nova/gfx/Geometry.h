@@ -8,11 +8,11 @@
 namespace nova::gfx {
 
 struct Geometry {
-    core::Id id;
-    core::Id internalId;
-    uint32_t generation;
+    core::Id id         = core::invalidId;
+    core::Id internalId = core::invalidId;
+    uint32_t generation = 0;
     std::string name;
-    Material* material;
+    Material* material = nullptr;  // todo, use constructor instead
 };
 
 }  // namespace nova::gfx

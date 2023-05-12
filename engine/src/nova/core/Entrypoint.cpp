@@ -8,6 +8,8 @@
 
 #include "nova/platform/Platform.h"
 
+#include "nova/res/Resource.h"
+
 namespace nova::core::detail {
 
 int mainImpl(int argc, char** argv) {

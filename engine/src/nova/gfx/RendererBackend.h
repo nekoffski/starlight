@@ -1,7 +1,9 @@
 #pragma once
 
 #include <array>
+#include <span>
 
+#include "nova/math/Vertex3.h"
 #include "nova/core/Id.h"
 #include "nova/math/Glm.h"
 #include "Texture.h"
@@ -30,8 +32,7 @@ struct GlobalState {
 
 struct GeometryRenderData {
     math::mat4 model;
-    Material* material;
-    float deltaTime;
+    Geometry* geometry;
 };
 
 struct MaterialUniformObject {
@@ -54,8 +55,14 @@ struct RendererBackend {
 
     virtual TextureLoader* getTextureLoader() const = 0;
 
+    // TODO: check for errors in acquire functions
     virtual void acquireMaterialResources(gfx::Material& material) = 0;
     virtual void releaseMaterialResources(gfx::Material& material) = 0;
+
+    virtual void acquireGeometryResources(
+        Geometry& geometry, std::span<math::Vertex3> vertices, std::span<uint32_t> indices
+    )                                                         = 0;
+    virtual void releaseGeometryResources(Geometry& geometry) = 0;
 };
 
 }  // namespace nova::gfx

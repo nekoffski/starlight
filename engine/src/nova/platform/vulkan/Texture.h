@@ -45,11 +45,4 @@ class Texture : public gfx::Texture {
     VkSampler m_sampler;
 };
 
-class ImageTexture : public Texture {
-   public:
-    explicit ImageTexture(
-        const Context* context, Device* device, const std::string& name, const std::string& path
-    );
-};
-
 }  // namespace nova::platform::vulkan

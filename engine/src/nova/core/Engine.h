@@ -11,6 +11,7 @@
 #include "nova/gfx/FirstPersonCamera.h"
 #include "nova/gfx/TextureManager.h"
 #include "nova/gfx/MaterialManager.h"
+#include "nova/gfx/GeometryManager.h"
 #include "TimeManager.h"
 #include "WindowManager.h"
 
@@ -40,6 +41,7 @@ class Engine : public kc::sig::SignalHandler, public event::EventObserver {
     WindowManager m_windowManager;
     gfx::TextureManager m_textureManager;
     gfx::MaterialManager m_materialManager;
+    gfx::GeometryManager m_geometryManager;
 
     gfx::RendererFrontend m_rendererFrontend;
     gfx::EulerCamera m_eulerCamera;

@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 3.10)
 project(nova)
 
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(NOVA_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/engine/src)
 
 add_definitions(-DDEV_MODE=1)
 add_definitions(-DSPDLOG_COMPILED_LIB=1)
+add_definitions(-DNOVA_ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets")
 add_definitions(-DNOVA_ASSETS_SHADERS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets/shaders")
 add_definitions(-DNOVA_ASSETS_TEXTURES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets/textures")
 add_definitions(-DNOVA_ASSETS_MATERIALS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets/materials")

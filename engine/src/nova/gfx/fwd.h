@@ -12,5 +12,6 @@ class TextureManager;
 class MaterialManager;
 class ResourceProxy;
 class Material;
+class Geometry;
 
 }  // namespace nova::gfx
