@@ -6,14 +6,9 @@
 
 #include "TextureManager.h"
 
+#include "nova/res/MaterialConfig.h"
+
 namespace nova::gfx {
-
-struct MaterialConfig {
-    static std::optional<MaterialConfig> load(const std::string& content, const std::string& name);
-
-    math::Vec4f diffuseColor;
-    std::string diffuseMap;
-};
 
 MaterialManager::MaterialManager(
     TextureManager& textureManager, const ResourceProxy& resourceProxy,
@@ -65,7 +60,7 @@ Material* MaterialManager::load(const std::string& name) {
 
     LOG_TRACE("Found material file, will try to process");
 
-    auto materialConfig = MaterialConfig::load(m_fileSystem.readFile(fullPath), name);
+    auto materialConfig = res::MaterialConfig::create(name);
 
     if (not materialConfig.has_value()) {
         LOG_WARN("Could not process material file '{}'", fullPath);
@@ -129,25 +124,6 @@ void MaterialManager::destroyAll() {
     for (auto& material : m_materials | std::views::values)
         m_resourceProxy.releaseMaterialResources(material);
     m_materials.clear();
-}
-
-auto fieldFrom(auto& root) { return kc::json::fieldFrom<kc::json::JsonError>(root); }
-
-std::optional<MaterialConfig> MaterialConfig::load(
-    const std::string& content, const std::string& name
-) {
-    MaterialConfig config;
-    try {
-        auto root = kc::json::loadJson(content);
-
-        config.diffuseColor = fieldFrom(root).withName("diffuse-color").ofType<math::Vec4f>().get();
-        config.diffuseMap   = fieldFrom(root).withName("diffuse-map").ofType<std::string>().get();
-
-        return config;
-    } catch (kc::json::JsonError& e) {
-        LOG_ERROR("Could not parse material '{}' file: {}", name, e.what());
-        return {};
-    }
 }
 
 }  // namespace nova::gfx

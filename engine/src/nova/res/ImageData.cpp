@@ -18,7 +18,7 @@ core::UniqPtr<ImageData> ImageData::create(std::string_view name) {
 
     LOG_TRACE("Loading image: '{}'", fullPath);
 
-    auto imageData = core::createUniqPtr<ImageData>(fullPath, name);
+    auto imageData = core::createUniqPtr<ImageData>(fullPath, removeExtension(name));
 
     int width;
     int height;
@@ -38,6 +38,7 @@ core::UniqPtr<ImageData> ImageData::create(std::string_view name) {
             requiredChannels, channels
         );
     }
+
     imageData->channels      = static_cast<uint8_t>(requiredChannels);
     imageData->width         = static_cast<uint32_t>(width);
     imageData->height        = static_cast<uint32_t>(height);

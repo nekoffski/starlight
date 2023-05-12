@@ -9,8 +9,7 @@ namespace nova::res {
 
 // TODO: use custom allocator to store data on stack instead of heap
 
-class ImageData : public Resource {
-   public:
+struct ImageData : public Resource {
     explicit ImageData(std::string_view fullPath, std::string_view name);
     ~ImageData();
 
@@ -27,8 +26,6 @@ class ImageData : public Resource {
     uint32_t height;
     uint8_t channels;
     bool isTransparent;
-
-   private:
 };
 
 }  // namespace nova::res
