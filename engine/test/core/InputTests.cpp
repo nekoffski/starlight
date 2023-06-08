@@ -1,10 +1,10 @@
-#include "nova/core/Input.hpp"
+#include "starlight/core/Input.hpp"
 
 #include <vector>
 
 #include <gtest/gtest.h>
 
-using namespace nova::core;
+using namespace sl::core;
 using namespace testing;
 
 using KeyActionTestsParam = std::pair<KeyAction, std::string>;

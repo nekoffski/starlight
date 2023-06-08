@@ -1,11 +1,11 @@
 #pragma once
 
-#include "nova/gfx/TextureLoader.h"
+#include "starlight/gfx/TextureLoader.h"
 
 #include <gmock/gmock.h>
 
-using namespace nova;
-using namespace nova::gfx;
+using namespace sl;
+using namespace sl::gfx;
 
 struct TextureLoaderMock : TextureLoader {
     MOCK_METHOD(

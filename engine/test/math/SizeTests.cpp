@@ -1,8 +1,8 @@
-#include "nova/math/Size.hpp"
+#include "starlight/math/Size.hpp"
 
 #include <gtest/gtest.h>
 
-using namespace nova;
+using namespace sl;
 
 TEST(SizeTests, givenSize2f_whenCastingToVector_shouldGiveCorrectVector) {
     math::Size2f s{1.0f, -5.0f};

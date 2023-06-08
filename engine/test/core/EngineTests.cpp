@@ -1,4 +1,4 @@
-#include "nova/core/Engine.h"
+#include "starlight/core/Engine.h"
 
 #include <memory>
 
@@ -9,8 +9,8 @@
 #include "mock/RendererBackendMock.hpp"
 #include "mock/TextureLoaderMock.hpp"
 
-#include "nova/event/Event.h"
-#include "nova/event/Quit.h"
+#include "starlight/event/Event.h"
+#include "starlight/event/Quit.h"
 
 using namespace testing;
 
@@ -20,12 +20,12 @@ struct EngineTests : Test {
     NiceMock<RendererBackendMock> rendererBackend;
     NiceMock<TextureLoaderMock> textureLoader;
 
-    std::unique_ptr<nova::core::Engine> engine;
+    std::unique_ptr<sl::core::Engine> engine;
 
     void SetUp() override {
         ON_CALL(rendererBackend, getTextureLoader).WillByDefault(Return(&textureLoader));
-        nova::platform::Platform platform(&window, &rendererBackend);
-        engine = std::make_unique<nova::core::Engine>(platform);
+        sl::platform::Platform platform(&window, &rendererBackend);
+        engine = std::make_unique<sl::core::Engine>(platform);
     }
 
     void setupSingleEngineIteration() {
@@ -52,7 +52,7 @@ TEST_F(EngineTests, givenApplication_whenRunningEngine_shouldCallUpdate) {
 TEST_F(EngineTests, givenEngine_whenEmittingQuitEvent_shouldQuit) {
     setupZeroEngineIterations();
 
-    nova::event::EventManager::get().emitEvent<nova::event::QuitEvent>("Test");
+    sl::event::EventManager::get().emitEvent<sl::event::QuitEvent>("Test");
     engine->run(application);
 }
 

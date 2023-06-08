@@ -1,26 +1,25 @@
 
 #include <iostream>
 
-#include "nova/core/Application.h"
-#include "nova/core/Entrypoint.hpp"
-#include "nova/core/Core.hpp"
+#include "starlight/core/Application.h"
+#include "starlight/core/Entrypoint.hpp"
+#include "starlight/core/Core.hpp"
 
-#include "nova/event/Event.h"
-#include "nova/event/Input.h"
-#include "nova/platform/Keys.h"
+#include "starlight/event/Event.h"
+#include "starlight/event/Input.h"
+#include "starlight/platform/Keys.h"
 
-class Editor : public nova::core::Application, public nova::event::EventObserver {
+class Editor : public sl::core::Application, public sl::event::EventObserver {
    public:
-    explicit Editor() { nova::event::EventManager::get().registerObserver(this); }
+    explicit Editor() { sl::event::EventManager::get().registerObserver(this); }
 
     bool isRunning() const { return m_running; }
 
-    void onEvent(nova::event::EventWrapper& event) override {
-        if (event.is<nova::event::KeyEvent>()) {
-            auto keyEvent = event.get<nova::event::KeyEvent>();
+    void onEvent(sl::event::EventWrapper& event) override {
+        if (event.is<sl::event::KeyEvent>()) {
+            auto keyEvent = event.get<sl::event::KeyEvent>();
 
-            if (keyEvent.key == NOVA_KEY_ESCAPE &&
-                keyEvent.action == nova::core::KeyAction::press) {
+            if (keyEvent.key == SL_KEY_ESCAPE && keyEvent.action == sl::core::KeyAction::press) {
                 m_running = false;
             }
         }
@@ -32,8 +31,8 @@ class Editor : public nova::core::Application, public nova::event::EventObserver
     bool m_running = true;
 };
 
-nova::core::UniqPtr<nova::core::Application> createApplication() {
-    return nova::core::createUniqPtr<Editor>();
+sl::core::UniqPtr<sl::core::Application> createApplication() {
+    return sl::core::createUniqPtr<Editor>();
 }
 
-NOVA_ENTRYPOINT;
+SL_ENTRYPOINT;

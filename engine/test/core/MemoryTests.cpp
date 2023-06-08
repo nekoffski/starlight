@@ -1,8 +1,8 @@
-#include "nova/core/Memory.hpp"
+#include "starlight/core/Memory.hpp"
 
 #include <gtest/gtest.h>
 
-using namespace nova;
+using namespace sl;
 
 constexpr int value = 1337;
 

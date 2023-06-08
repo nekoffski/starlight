@@ -1,17 +1,17 @@
-#include "nova/core/WindowManager.h"
+#include "starlight/core/WindowManager.h"
 
 #include <gtest/gtest.h>
 
 #include "mock/WindowMock.hpp"
 #include "mock/EventObserverMock.hpp"
 
-#include "nova/event/Event.h"
-#include "nova/event/Input.h"
-#include "nova/event/Quit.h"
+#include "starlight/event/Event.h"
+#include "starlight/event/Input.h"
+#include "starlight/event/Quit.h"
 
-using namespace nova;
-using namespace nova::event;
-using namespace nova::core;
+using namespace sl;
+using namespace sl::event;
+using namespace sl::core;
 using namespace testing;
 
 struct WindowManagerTests : Test {

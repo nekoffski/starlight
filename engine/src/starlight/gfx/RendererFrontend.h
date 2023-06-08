@@ -1,0 +1,28 @@
+#pragma once
+
+#include "RendererBackend.h"
+#include "starlight/event/Event.h"
+#include "Camera.h"
+#include "RenderPacket.h"
+
+namespace sl::gfx {
+
+class RendererFrontend : public event::EventObserver {
+   public:
+    explicit RendererFrontend(RendererBackend* backend);
+
+    virtual ~RendererFrontend();
+
+    bool drawFrame(const RenderPacket& renderPacket, const Camera& camera, float deltaTime);
+    void onEvent(event::EventWrapper& eventWrapper) override;
+
+   private:
+    RendererBackend* m_backend;
+
+    Texture* m_activeTexture;
+    Texture* m_texture1;
+    Texture* m_texture2;
+    Material* m_material;
+};
+
+}  // namespace sl::gfx

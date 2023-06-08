@@ -1,12 +1,12 @@
-#include <nova/gfx/TextureManager.h>
+#include <starlight/gfx/TextureManager.h>
 
 #include <gtest/gtest.h>
 
 #include "mock/TextureLoaderMock.hpp"
 
 using namespace testing;
-using namespace nova;
-using namespace nova::gfx;
+using namespace sl;
+using namespace sl::gfx;
 
 struct TextureLoaderTests : public Test {
     TextureLoaderMock textureLoader;
