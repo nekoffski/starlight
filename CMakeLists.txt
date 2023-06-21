@@ -5,6 +5,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(SL_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/engine/src)
 
 add_definitions(-DDEV_MODE=1)
+add_definitions(-DUSE_GLFW=1)
+add_definitions(-DUSE_VK=1)
 add_definitions(-DSPDLOG_COMPILED_LIB=1)
 add_definitions(-DSL_ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets")
 add_definitions(-DSL_ASSETS_SHADERS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets/shaders")

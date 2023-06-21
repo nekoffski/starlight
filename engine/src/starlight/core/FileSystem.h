@@ -2,10 +2,10 @@
 
 #include <kc/core/FileSystem.h>
 
-namespace sl::core {
+namespace sl {
 
 using FileSystem = kc::core::FileSystem;
 
 extern FileSystem fileSystem;
 
-}  // namespace sl::core
+}  // namespace sl

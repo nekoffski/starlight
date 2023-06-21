@@ -1,18 +1,18 @@
 #pragma once
 
-#include "starlight/gfx/TextureLoader.h"
+#include "starlight/renderer/TextureLoader.h"
 
 #include <gmock/gmock.h>
 
 using namespace sl;
-using namespace sl::gfx;
+using namespace sl;
 
 struct TextureLoaderMock : TextureLoader {
     MOCK_METHOD(
-        core::UniqPtr<Texture>, load,
+        UniqPtr<Texture>, load,
         (const std::string& name, const Texture::Properties& props, const void* pixels),
         (const, override)
     );
 
-    MOCK_METHOD(core::UniqPtr<Texture>, load, (const std::string& name), (const, override));
+    MOCK_METHOD(UniqPtr<Texture>, load, (const std::string& name), (const, override));
 };

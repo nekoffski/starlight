@@ -1,4 +1,4 @@
-#include <starlight/gfx/TextureManager.h>
+#include <starlight/renderer/TextureManager.h>
 
 #include <gtest/gtest.h>
 
@@ -6,7 +6,7 @@
 
 using namespace testing;
 using namespace sl;
-using namespace sl::gfx;
+using namespace sl;
 
 struct TextureLoaderTests : public Test {
     TextureLoaderMock textureLoader;

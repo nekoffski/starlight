@@ -9,7 +9,7 @@
 
 using namespace std::literals::chrono_literals;
 
-namespace sl::core {
+namespace sl {
 
 class TimeManager : public kc::core::Singleton<TimeManager> {
     using Clock = kc::core::Clock;
@@ -31,4 +31,4 @@ class TimeManager : public kc::core::Singleton<TimeManager> {
     float m_deltaTime;
 };
 
-}  // namespace sl::core
+}  // namespace sl

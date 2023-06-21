@@ -1,11 +1,11 @@
-#include "starlight/math/Size.hpp"
+#include "starlight/core/math/Size.hpp"
 
 #include <gtest/gtest.h>
 
 using namespace sl;
 
 TEST(SizeTests, givenSize2f_whenCastingToVector_shouldGiveCorrectVector) {
-    math::Size2f s{1.0f, -5.0f};
+    Size2f s{1.0f, -5.0f};
     glm::vec2 sv = s;
 
     EXPECT_EQ(sv.x, s.width);
@@ -13,7 +13,7 @@ TEST(SizeTests, givenSize2f_whenCastingToVector_shouldGiveCorrectVector) {
 }
 
 TEST(SizeTests, givenSize2i_whenCastingToVector_shouldGiveCorrectVector) {
-    math::Size2i s{1, -5};
+    Size2i s{1, -5};
     glm::vec2 sv = s;
 
     EXPECT_EQ(sv.x, s.width);

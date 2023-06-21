@@ -1,9 +1,7 @@
 #pragma once
 
-namespace sl::core {
+namespace sl {
 
-class Application;
-class Engine;
 class Window;
 
-}  // namespace sl::core
+}  // namespace sl

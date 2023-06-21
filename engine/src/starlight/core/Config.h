@@ -1,39 +1,19 @@
 #pragma once
 
-#include <string>
-
-#include "starlight/math/Size.hpp"
-
-namespace sl::core {
-
-using namespace std::string_literals;
+namespace sl {
 
 struct Config {
     struct Window {
-        math::Size2i size;
-        std::string name;
+        const int width        = 1600;
+        const int height       = 900;
+        const std::string name = "Starlight";
     } window;
 
     struct Version {
-        int major;
-        int minor;
-        int build;
+        const int major = 0;
+        const int minor = 1;
+        const int build = 1;
     } version;
 };
 
-// clang-format off
-const Config defaultConfig = Config{
-    .window = {
-        .size = { 1600, 900 },
-        .name = "Nova Engine"s
-    },
-    .version = {
-        .major = 1,
-        .minor = 0,
-        .build = 0
-    }
-    
-};
-// clang-format on
-
-}  // namespace sl::core
+}  // namespace sl

@@ -1,6 +1,6 @@
 #include "FileSystem.h"
 
-namespace sl::core {
+namespace sl {
 
 FileSystem fileSystem;
 

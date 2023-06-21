@@ -4,7 +4,7 @@
 
 #include <kc/mem/LocalPtr.hpp>
 
-namespace sl::core {
+namespace sl {
 
 using kc::mem::LocalPtr;
 
@@ -20,4 +20,4 @@ template <typename T, typename... Args> constexpr UniqPtr<T> createUniqPtr(Args&
     return std::make_unique<T>(std::forward<Args>(args)...);
 }
 
-}  // namespace sl::core
+}  // namespace sl
