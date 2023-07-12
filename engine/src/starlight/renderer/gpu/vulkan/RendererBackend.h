@@ -93,6 +93,8 @@ class RendererBackend : public sl::RendererBackend {
     std::vector<Semaphore> m_imageAvailableSemaphores;
     std::vector<Semaphore> m_queueCompleteSemaphores;
     std::vector<Fence> m_inFlightFences;
+
+    // one per frame
     std::vector<Fence*> m_imagesInFlight;
 
     UniqPtr<MaterialShader> m_simpleShader;

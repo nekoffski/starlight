@@ -3,13 +3,7 @@
 #include "starlight/core/math/Glm.h"
 #include "starlight/core/Memory.hpp"
 
-// #include "starlight/event/WindowResized.h"
-// #include "starlight/event/Input.h"
-
 #include "camera/EulerCamera.h"
-
-// #include "starlight/renderer/MaterialManager.h"
-// #include "starlight/renderer/TextureManager.h"
 
 namespace sl {
 
