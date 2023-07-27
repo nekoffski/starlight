@@ -16,6 +16,7 @@
 #include "fwd.h"
 
 #include "MaterialShader.h"
+#include "UIShader.h"
 #include "Pipeline.h"
 #include "Semaphore.h"
 #include "Texture.h"
@@ -42,7 +43,12 @@ class RendererBackend : public sl::RendererBackend {
     bool beginFrame(float deltaTime) override;
     bool endFrame(float deltaTime) override;
 
-    void updateGlobalState(const GlobalState& globalState) override;
+    void updateGlobalWorldState(const GlobalState& globalState) override;
+    void updateGlobalUIState(Mat4f projection, Mat4f view, int32_t mode);
+
+    bool beginRenderPass(uint8_t id);
+    bool endRenderPass(uint8_t id);
+
     void drawGeometry(const GeometryRenderData& model) override;
 
     void onViewportResize(uint32_t width, uint32_t height) override;
@@ -73,8 +79,6 @@ class RendererBackend : public sl::RendererBackend {
     void recreateSwapchain();
     void recordCommands(CommandBuffer& commandBuffer);
 
-    void createPipeline();
-
     FrameInfo m_frameInfo;
 
     Size2u32 m_framebufferSize;
@@ -84,7 +88,10 @@ class RendererBackend : public sl::RendererBackend {
     UniqPtr<Context> m_context;
     UniqPtr<Device> m_device;
     UniqPtr<Swapchain> m_swapchain;
-    UniqPtr<RenderPass> m_renderPass;
+
+    UniqPtr<RenderPass> m_mainRenderPass;
+    UniqPtr<RenderPass> m_uiRenderPass;
+
     UniqPtr<TextureLoader> m_textureLoader;
 
     // TODO: consider creating as ptrs to allow mocking
@@ -97,8 +104,8 @@ class RendererBackend : public sl::RendererBackend {
     // one per frame
     std::vector<Fence*> m_imagesInFlight;
 
-    UniqPtr<MaterialShader> m_simpleShader;
-    UniqPtr<Pipeline> m_pipeline;
+    UniqPtr<MaterialShader> m_materialShader;
+    UniqPtr<UIShader> m_uiShader;
 
     UniqPtr<Buffer> m_objectVertexBuffer;
     UniqPtr<Buffer> m_objectIndexBuffer;
@@ -106,6 +113,8 @@ class RendererBackend : public sl::RendererBackend {
     static constexpr uint8_t maxFramesInFlight = 2;
 
     std::array<GeometryData, vulkanMaxGeometryCount> m_geometries;
+
+    std::vector<Framebuffer> m_worldFramebuffers;
 
     uint32_t m_geometryVertexOffset = 0;
     uint32_t m_geometryIndexOffset  = 0;

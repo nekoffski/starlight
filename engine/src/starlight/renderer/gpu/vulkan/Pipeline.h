@@ -19,12 +19,14 @@ namespace sl::vk {
 class Pipeline {
    public:
     struct Properties {
+        uint32_t stride;
         std::span<VkVertexInputAttributeDescription> vertexAttributes;
         std::span<VkDescriptorSetLayout> descriptorSetLayouts;
         std::span<VkPipelineShaderStageCreateInfo> stages;
         VkViewport viewport;
         VkRect2D scissor;
         VkPolygonMode polygonMode;
+        bool depthTestEnabled;
     };
 
     explicit Pipeline(
@@ -67,11 +69,14 @@ class Pipeline {
         // Depth and stencil testing.
         VkPipelineDepthStencilStateCreateInfo depth_stencil = {
             VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO};
-        depth_stencil.depthTestEnable       = VK_TRUE;
-        depth_stencil.depthWriteEnable      = VK_TRUE;
-        depth_stencil.depthCompareOp        = VK_COMPARE_OP_LESS;
-        depth_stencil.depthBoundsTestEnable = VK_FALSE;
-        depth_stencil.stencilTestEnable     = VK_FALSE;
+
+        if (props.depthTestEnabled) {
+            depth_stencil.depthTestEnable       = VK_TRUE;
+            depth_stencil.depthWriteEnable      = VK_TRUE;
+            depth_stencil.depthCompareOp        = VK_COMPARE_OP_LESS;
+            depth_stencil.depthBoundsTestEnable = VK_FALSE;
+            depth_stencil.stencilTestEnable     = VK_FALSE;
+        }
 
         VkPipelineColorBlendAttachmentState color_blend_attachment_state;
         std::memset(&color_blend_attachment_state, 0, sizeof(VkPipelineColorBlendAttachmentState));
@@ -107,7 +112,7 @@ class Pipeline {
         // Vertex input
         VkVertexInputBindingDescription binding_description;
         binding_description.binding = 0;  // Binding index
-        binding_description.stride  = sizeof(Vertex3);
+        binding_description.stride  = props.stride;
         binding_description.inputRate =
             VK_VERTEX_INPUT_RATE_VERTEX;  // Move to next data entry for each vertex.
 
@@ -163,10 +168,10 @@ class Pipeline {
         pipeline_create_info.pViewportState      = &viewportState;
         pipeline_create_info.pRasterizationState = &rasterizerCreateInfo;
         pipeline_create_info.pMultisampleState   = &multisampling_create_info;
-        pipeline_create_info.pDepthStencilState  = &depth_stencil;
-        pipeline_create_info.pColorBlendState    = &color_blend_state_create_info;
-        pipeline_create_info.pDynamicState       = &dynamic_state_create_info;
-        pipeline_create_info.pTessellationState  = 0;
+        pipeline_create_info.pDepthStencilState = props.depthTestEnabled ? &depth_stencil : nullptr;
+        pipeline_create_info.pColorBlendState   = &color_blend_state_create_info;
+        pipeline_create_info.pDynamicState      = &dynamic_state_create_info;
+        pipeline_create_info.pTessellationState = 0;
 
         pipeline_create_info.layout = m_layout;
 

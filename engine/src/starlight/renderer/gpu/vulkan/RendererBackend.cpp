@@ -24,18 +24,21 @@ RendererBackend::RendererBackend(sl::Window& window, const Config& config)
     createCommandBuffers();
     createSemaphoresAndFences();
 
-    m_simpleShader = createUniqPtr<MaterialShader>(
-        m_context.get(), m_device.get(), m_swapchain->getImagesSize()
+    m_materialShader = createUniqPtr<MaterialShader>(
+        m_context.get(), m_device.get(), m_swapchain->getImagesSize(), m_framebufferSize,
+        *m_mainRenderPass
+    );
+
+    m_uiShader = createUniqPtr<UIShader>(
+        m_context.get(), m_device.get(), m_swapchain->getImagesSize(), m_framebufferSize,
+        *m_uiRenderPass
     );
 
     LOG_DEBUG("Basic shader created");
 
-    createPipeline();
     createBuffers();
 
     m_textureLoader = createUniqPtr<TextureLoader>(m_context.get(), m_device.get());
-
-    m_simpleShader->createUniformBuffer();
 
     for (auto& geometry : m_geometries) geometry.id = invalidId;
 }
@@ -124,11 +127,11 @@ void RendererBackend::releaseGeometryResources(Geometry& geometry) {
 }
 
 void RendererBackend::acquireMaterialResources(Material& material) {
-    m_simpleShader->acquireResources(material);
+    m_materialShader->acquireResources(material);
 }
 
 void RendererBackend::releaseMaterialResources(Material& material) {
-    m_simpleShader->releaseResources(material);
+    m_materialShader->releaseResources(material);
 }
 
 void RendererBackend::uploadDataRange(
@@ -162,7 +165,7 @@ void RendererBackend::drawGeometry(const GeometryRenderData& geometryRenderData)
     auto& bufferData    = m_geometries[geometryRenderData.geometry->internalId];
     auto& commandBuffer = m_commandBuffers[m_frameInfo.imageIndex];
 
-    m_simpleShader->setModel(*m_pipeline, commandBuffer.getHandle(), geometryRenderData.model);
+    m_materialShader->setModel(commandBuffer.getHandle(), geometryRenderData.model);
 
     Material* material = geometryRenderData.geometry->material;
 
@@ -171,11 +174,10 @@ void RendererBackend::drawGeometry(const GeometryRenderData& geometryRenderData)
     // TODO
     // if (not material) material = MaterialManager::get().getDefaultMaterial();
 
-    m_simpleShader->applyMaterial(
-        *m_pipeline, commandBuffer.getHandle(), m_frameInfo.imageIndex, *material
-    );
+    m_materialShader->applyMaterial(commandBuffer.getHandle(), m_frameInfo.imageIndex, *material);
 
-    m_pipeline->bind(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS);
+    // m_pipeline->bind(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS);
+    m_materialShader->use(commandBuffer);
 
     VkDeviceSize offsets[1] = {bufferData.vertexBufferOffset};
 
@@ -195,20 +197,83 @@ void RendererBackend::drawGeometry(const GeometryRenderData& geometryRenderData)
     }
 }
 
-void RendererBackend::updateGlobalState(const GlobalState& globalState) {
+void RendererBackend::updateGlobalWorldState(const GlobalState& globalState) {
     auto& commandBuffer = m_commandBuffers[m_frameInfo.imageIndex];
 
-    m_renderPass->setAmbient(globalState.ambientColor);
+    m_mainRenderPass->setAmbient(globalState.ambientColor);
 
     // temp test code
-    m_pipeline->bind(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS);
+    m_materialShader->use(commandBuffer);
+    m_materialShader->getGlobalUBO().projection = globalState.projectionMatrix;
+    m_materialShader->getGlobalUBO().view       = globalState.viewMatrix;
 
-    m_simpleShader->getGlobalUBO().projection = globalState.projectionMatrix;
-    m_simpleShader->getGlobalUBO().view       = globalState.viewMatrix;
+    m_materialShader->updateGlobalWorldState(commandBuffer.getHandle(), m_frameInfo.imageIndex);
+}
 
-    m_simpleShader->updateGlobalState(
-        commandBuffer.getHandle(), m_frameInfo.imageIndex, *m_pipeline
-    );
+void RendererBackend::updateGlobalUIState(Mat4f projection, Mat4f view, int32_t mode) {
+    auto& commandBuffer = m_commandBuffers[m_frameInfo.imageIndex];
+
+    m_uiShader->use(commandBuffer);
+    m_uiShader->getGlobalUBO().projection = projection;
+    m_uiShader->getGlobalUBO().view       = view;
+
+    m_uiShader->updateGlobalWorldState(commandBuffer.getHandle(), m_frameInfo.imageIndex);
+}
+
+bool RendererBackend::beginRenderPass(uint8_t id) {
+    auto& commandBuffer = m_commandBuffers[m_frameInfo.imageIndex];
+
+    Framebuffer* framebuffer = nullptr;
+    RenderPass* renderPass   = nullptr;
+
+    switch (id) {
+        case builtinRenderPassWorld: {
+            renderPass  = m_mainRenderPass.get();
+            framebuffer = &m_worldFramebuffers[m_frameInfo.imageIndex];
+            break;
+        }
+
+        case builtinRenderPassUI: {
+            renderPass  = m_uiRenderPass.get();
+            framebuffer = &m_swapchain->getFramebuffers()->at(m_frameInfo.imageIndex);
+            break;
+        }
+    }
+
+    renderPass->begin(commandBuffer, framebuffer->getHandle());
+
+    switch (id) {
+        case builtinRenderPassWorld:
+            m_materialShader->use(commandBuffer);
+            break;
+
+        case builtinRenderPassUI:
+            m_uiShader->use(commandBuffer);
+            break;
+    }
+
+    return true;
+}
+
+bool RendererBackend::endRenderPass(uint8_t id) {
+    auto& commandBuffer = m_commandBuffers[m_frameInfo.imageIndex];
+
+    RenderPass* renderPass = nullptr;
+
+    switch (id) {
+        case builtinRenderPassWorld: {
+            renderPass = m_mainRenderPass.get();
+            break;
+        }
+
+        case builtinRenderPassUI: {
+            renderPass = m_uiRenderPass.get();
+            break;
+        }
+    }
+    renderPass->end(commandBuffer);
+
+    return true;
 }
 
 void RendererBackend::createBuffers() {
@@ -233,74 +298,6 @@ void RendererBackend::createBuffers() {
     );
 }
 
-void RendererBackend::createPipeline() {
-    // Pipeline creation
-    const auto& [w, h] = m_framebufferSize;
-
-    VkViewport viewport;
-    viewport.x        = 0.0f;
-    viewport.y        = (float)w;
-    viewport.width    = (float)w;
-    viewport.height   = -(float)h;
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
-
-    // Scissor
-    VkRect2D scissor;
-    scissor.offset.x = scissor.offset.y = 0;
-    scissor.extent.width                = w;
-    scissor.extent.height               = h;
-
-    // Attributes
-    uint32_t offset               = 0;
-    const int32_t attribute_count = 2;
-    std::vector<VkVertexInputAttributeDescription> attribute_descriptions(attribute_count);
-    // Position
-
-    VkFormat formats[attribute_count] = {VK_FORMAT_R32G32B32_SFLOAT, VK_FORMAT_R32G32_SFLOAT};
-    uint64_t sizes[attribute_count]   = {sizeof(Vec3f), sizeof(Vec2f)};
-
-    for (uint32_t i = 0; i < attribute_count; ++i) {
-        attribute_descriptions[i].binding  = 0;  // binding index - should match binding desc
-        attribute_descriptions[i].location = i;  // attrib location
-        attribute_descriptions[i].format   = formats[i];
-        attribute_descriptions[i].offset   = offset;
-        offset += sizes[i];
-    }
-
-    // TODO: Desciptor set layouts.
-
-    // Stages
-    // NOTE: Should match the number of shader->stages.
-    std::vector<VkPipelineShaderStageCreateInfo> stage_create_infos(2);
-    const auto& shaderStages = m_simpleShader->getStages();
-
-    for (uint32_t i = 0; i < 2; ++i) {
-        auto stageCreateInfo = shaderStages[i].getStageCreateInfo();
-
-        stage_create_infos[i].sType = stageCreateInfo.sType;
-        stage_create_infos[i]       = stageCreateInfo;
-    }
-
-    Pipeline::Properties props;
-
-    std::vector<VkDescriptorSetLayout> descriptorSetLayout = {
-        m_simpleShader->getGlobalDescriptorSetLayout(),
-        m_simpleShader->getObjectDescriptorSetLayout()};
-
-    // TODO: seems like a lot of copying, consider passing a vector view?
-    props.vertexAttributes     = attribute_descriptions;
-    props.stages               = stage_create_infos;
-    props.scissor              = scissor;
-    props.viewport             = viewport;
-    props.polygonMode          = VK_POLYGON_MODE_FILL;
-    props.descriptorSetLayouts = descriptorSetLayout;
-
-    m_pipeline = createUniqPtr<Pipeline>(m_context.get(), m_device.get(), *m_renderPass, props);
-
-    LOG_DEBUG("Pipeline created");
-}
-
 void RendererBackend::createCoreComponents(sl::Window& window, const Config& config) {
     m_context   = createUniqPtr<Context>(window, config);
     m_device    = createUniqPtr<Device>(m_context.get());
@@ -313,9 +310,23 @@ void RendererBackend::createCoreComponents(sl::Window& window, const Config& con
     RenderPass::Properties renderPassProperties{
         .area  = glm::vec4{0.0f, 0.0f, width, height},
         .color = backgroundColor,
+        .clearFlags =
+            (RenderPass::clearFlagColorBuffer | RenderPass::clearFlagDepthBuffer |
+             RenderPass::clearFlagStencilBuffer),
+        .hasPreviousPass = false,
+        .hasNextPass     = false
     };
 
-    m_renderPass = createUniqPtr<RenderPass>(
+    m_mainRenderPass = createUniqPtr<RenderPass>(
+        m_context.get(), m_device.get(), *m_swapchain, renderPassProperties
+    );
+
+    renderPassProperties.color           = glm::vec4(0.0f);
+    renderPassProperties.clearFlags      = RenderPass::clearFlagNone;
+    renderPassProperties.hasPreviousPass = true;
+    renderPassProperties.hasNextPass     = false;
+
+    m_uiRenderPass = createUniqPtr<RenderPass>(
         m_context.get(), m_device.get(), *m_swapchain, renderPassProperties
     );
 }
@@ -368,16 +379,26 @@ void RendererBackend::regenerateFramebuffers() {
     auto framebuffers               = m_swapchain->getFramebuffers();
     auto depthBuffer                = m_swapchain->getDepthBuffer();
 
+    m_worldFramebuffers.clear();
+    m_worldFramebuffers.reserve(swapchainImagesCount);
+
     framebuffers->clear();
     framebuffers->reserve(swapchainImagesCount);
 
     for (auto& view : *m_swapchain->getImageViews()) {
-        uint32_t attachment_count            = 2;
-        std::vector<VkImageView> attachments = {view, depthBuffer->getView()};
+        std::vector<VkImageView> worldAttachments = {view, depthBuffer->getView()};
+
+        m_worldFramebuffers.emplace_back(
+            m_context.get(), m_device.get(), m_mainRenderPass->getHandle(), m_framebufferSize,
+            worldAttachments
+        );
+
+        std::vector<VkImageView> uiAttachments = {view};
 
         framebuffers->emplace_back(
-            m_context.get(), m_device.get(), m_renderPass->getHandle(), m_framebufferSize,
-            attachments
+            m_context.get(), m_device.get(), m_uiRenderPass->getHandle(), m_framebufferSize,
+            uiAttachments
+
         );
     }
 }
@@ -463,11 +484,8 @@ bool RendererBackend::beginFrame(float deltaTime) {
     auto& commandBuffer = m_commandBuffers[m_frameInfo.imageIndex];
     recordCommands(commandBuffer);
 
-    m_renderPass->getArea()->z = m_framebufferSize.width;
-    m_renderPass->getArea()->w = m_framebufferSize.height;
-
-    auto& framebuffer = m_swapchain->getFramebuffers()->at(m_frameInfo.imageIndex);
-    m_renderPass->begin(commandBuffer, framebuffer.getHandle());
+    m_mainRenderPass->getArea()->z = m_framebufferSize.width;
+    m_mainRenderPass->getArea()->w = m_framebufferSize.height;
 
     return true;
 }
@@ -476,7 +494,6 @@ bool RendererBackend::endFrame(float deltaTime) {
     const auto logicalDevice = m_device->getLogicalDevice();
     auto& commandBuffer      = m_commandBuffers[m_frameInfo.imageIndex];
 
-    m_renderPass->end(commandBuffer);
     commandBuffer.end();
 
     if (m_imagesInFlight[m_frameInfo.imageIndex] != VK_NULL_HANDLE)

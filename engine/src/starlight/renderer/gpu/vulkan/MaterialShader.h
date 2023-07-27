@@ -6,46 +6,62 @@
 #include "fwd.h"
 
 #include "starlight/core/Memory.hpp"
+#include "starlight/core/math/Size.hpp"
 
 #include "starlight/renderer/Texture.h"
 #include "starlight/renderer/Material.h"
 #include "starlight/renderer/gpu/RendererBackend.h"
 
+#include "Pipeline.h"
+#include "Buffer.h"
 #include "Device.h"
 #include "Vulkan.h"
+#include "DescriptorState.h"
 
 namespace sl::vk {
 
-struct DescriptorState {
-    uint32_t generations[3];  // generation per frame
-    uint32_t ids[3];          // generation per frame
-};
-
-#define VULKAN_MATERIAL_SHADER_DESCRIPTOR_COUNT 2
-#define VULKAN_MATERIAL_SHADER_SAMPLER_COUNT 1
-
-struct MaterialShaderObjectState {
-    VkDescriptorSet descriptorSets[3];
-    DescriptorState descriptorStates[VULKAN_MATERIAL_SHADER_DESCRIPTOR_COUNT];
-};
-
-#define VULKAN_MAX_MATERIAL_COUNT 1024
-
 class MaterialShader {
-    static constexpr uint8_t s_stagesCount = 2;  // vertex + fragment
    public:
-    explicit MaterialShader(const Context* context, Device* device, int swapchainImageCount);
+    static constexpr uint32_t stagesCount      = 2;  // vertex + fragment
+    static constexpr uint32_t descriptorCount  = 2;
+    static constexpr uint32_t samplerCount     = 1;
+    static constexpr uint32_t maxMaterialCount = 1024;
+
+    struct InstanceUBO {
+        Vec4f diffuseColor;  // 16 bytes
+        Vec4f reserved0;     // 16 bytes, reserved for future use
+        Vec4f reserved1;     // 16 bytes, reserved for future use
+        Vec4f reserved2;     // 16 bytes, reserved for future use
+    };
+
+    struct GlobalUBO {
+        Mat4f projection;
+        Mat4f view;
+        // pad to 256
+        Mat4f p0, p1;
+    };
+
+    struct InstanceState {
+        VkDescriptorSet descriptorSets[3];
+        DescriptorState descriptorStates[descriptorCount];
+    };
+
+    explicit MaterialShader(
+        const Context* context, Device* device, int swapchainImageCount,
+        const Size2u32& framebuffferSize, RenderPass& renderPass
+    );
 
     ~MaterialShader();
 
-    void setModel(Pipeline& pipeline, VkCommandBuffer commandBuffer, const Mat4f& model);
+    void use(CommandBuffer& buffer);
+
+    void setModel(VkCommandBuffer commandBuffer, const Mat4f& model);
 
     void applyMaterial(
-        Pipeline& pipeline, VkCommandBuffer commandBuffer, uint32_t imageIndex,
-        const Material& material
+        VkCommandBuffer commandBuffer, uint32_t imageIndex, const Material& material
     );
 
-    void updateGlobalState(VkCommandBuffer commandBuffer, uint32_t imageIndex, Pipeline& pipeline);
+    void updateGlobalWorldState(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
     void acquireResources(Material& material);
     void releaseResources(Material& material);
@@ -57,7 +73,7 @@ class MaterialShader {
 
     const std::vector<ShaderStage>& getStages() const;
 
-    GlobalUniformObject& getGlobalUBO();
+    GlobalUBO& getGlobalUBO();
 
    private:
     void createShaderStages();
@@ -66,12 +82,14 @@ class MaterialShader {
     void createGlobalDescriptorPool(int swapchainImageCount);
     void createLocalDescriptorPool();
 
+    void createPipeline(const Size2u32& framebuffferSize, RenderPass& renderPass);
+
     const Context* m_context;
     Device* m_device;
 
     std::vector<ShaderStage> m_stages;
 
-    GlobalUniformObject m_globalUBO;
+    GlobalUBO m_globalUBO;
 
     VkDescriptorPool m_globalDescriptorPool;
     VkDescriptorSetLayout m_globalDescriptorSetLayout;
@@ -82,12 +100,13 @@ class MaterialShader {
     VkDescriptorPool m_objectDescriptorPool;
     VkDescriptorSetLayout m_objectDescriptorSetLayout;
 
+    UniqPtr<Pipeline> m_pipeline;
     UniqPtr<Buffer> m_objectUniformBuffer;
     uint32_t m_objectUniformBufferIndex;
 
-    std::array<sl::Texture::Use, VULKAN_MATERIAL_SHADER_SAMPLER_COUNT> m_samplerUses;
+    std::array<sl::Texture::Use, samplerCount> m_samplerUses;
 
-    MaterialShaderObjectState m_instanceStates[VULKAN_MAX_MATERIAL_COUNT];
+    InstanceState m_instanceStates[maxMaterialCount];
 };
 
 }  // namespace sl::vk

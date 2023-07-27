@@ -9,8 +9,15 @@ namespace sl::vk {
 
 class RenderPass {
    public:
+    using ClearFlag = uint8_t;
+
+    static inline constexpr ClearFlag clearFlagNone          = 0x0;
+    static inline constexpr ClearFlag clearFlagColorBuffer   = 0x1;
+    static inline constexpr ClearFlag clearFlagDepthBuffer   = 0x2;
+    static inline constexpr ClearFlag clearFlagStencilBuffer = 0x4;
+
     enum class State : unsigned char {
-        ready = 0,
+        ready,
         recording,
         inRenderPass,
         recordingEnded,
@@ -19,8 +26,11 @@ class RenderPass {
     };
 
     struct Properties {
-        const glm::vec4& area;
-        const glm::vec4& color;
+        glm::vec4 area;
+        glm::vec4 color;
+        ClearFlag clearFlags;
+        bool hasPreviousPass;
+        bool hasNextPass;
     };
 
     explicit RenderPass(
@@ -40,7 +50,7 @@ class RenderPass {
     void setAmbient(const glm::vec4& ambient) { m_color = ambient; }
 
    private:
-    std::vector<VkClearValue> createClearValues() const;
+    std::vector<VkClearValue> createClearValues(RenderPass::ClearFlag flags) const;
 
     VkRenderPassBeginInfo createRenderPassBeginInfo(
         const std::vector<VkClearValue>& clearValues, VkFramebuffer framebuffer
@@ -57,6 +67,10 @@ class RenderPass {
     uint32_t m_stencil = 0;
 
     State m_state;
+
+    ClearFlag m_clearFlags;
+    bool m_hasPreviousPass;
+    bool m_hasNextPass;
 };
 
 }  // namespace sl::vk

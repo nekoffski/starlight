@@ -12,20 +12,37 @@
 #include "starlight/renderer/Geometry.h"
 #include "starlight/renderer/fwd.h"
 
-#include "GlobalUniformObject.h"
 #include "GlobalState.h"
 #include "GeometryRenderData.h"
-#include "MaterialUniformObject.h"
 
 namespace sl {
 
+// TODO: change to objects or something
+constexpr int builtinRenderPassWorld = 1;
+constexpr int builtinRenderPassUI    = 2;
+
 struct RendererBackend {
+    enum class BultinRenderPass { world, ui };
+
     virtual ~RendererBackend() {}
 
     virtual bool beginFrame(float deltaTime) = 0;
     virtual bool endFrame(float deltaTime)   = 0;
 
-    virtual void updateGlobalState(const GlobalState& globalState)   = 0;
+    virtual void updateGlobalWorldState(const GlobalState& globalState)          = 0;
+    virtual void updateGlobalUIState(Mat4f projection, Mat4f view, int32_t mode) = 0;
+
+    bool renderPass(uint8_t id, auto&& callback) {
+        if (beginRenderPass(id)) {
+            callback();
+            return endRenderPass(id);
+        }
+        return false;
+    }
+
+    virtual bool beginRenderPass(uint8_t id) = 0;
+    virtual bool endRenderPass(uint8_t id)   = 0;
+
     virtual void drawGeometry(const GeometryRenderData& modelMatrix) = 0;
 
     virtual void onViewportResize(uint32_t width, uint32_t height) = 0;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <array>
 #include <optional>
 #include <memory>
 
@@ -60,6 +61,7 @@ class Swapchain {
 
     std::unique_ptr<Image> m_depthBuffer;
 
+    // TODO: redefine to fixed-size array
     std::vector<Framebuffer> m_framebuffers;
 };
 

@@ -8,7 +8,7 @@ struct RendererBackendMock : sl::RendererBackend {
     MOCK_METHOD(bool, beginFrame, (float), (override));
     MOCK_METHOD(bool, endFrame, (float), (override));
     MOCK_METHOD(void, onViewportResize, (uint32_t, uint32_t), (override));
-    MOCK_METHOD(void, updateGlobalState, (const sl::GlobalState& globalState), (override));
+    MOCK_METHOD(void, updateGlobalWorldState, (const sl::GlobalState& globalState), (override));
     MOCK_METHOD(void, drawGeometry, (const sl::GeometryRenderData& modelMatrix), (override));
     MOCK_METHOD(sl::TextureLoader*, getTextureLoader, (), (const, override));
     MOCK_METHOD(void, acquireMaterialResources, (sl::Material & material), (override));

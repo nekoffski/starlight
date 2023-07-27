@@ -9,13 +9,27 @@ namespace sl::vk {
 
 // TODO: refactor
 struct RenderPassCreateInfo {
-    explicit RenderPassCreateInfo(VkFormat depthFormat, VkSurfaceFormatKHR surfaceFormat) {
-        createSubpass();
+    explicit RenderPassCreateInfo(
+        VkFormat depthFormat, VkSurfaceFormatKHR surfaceFormat, RenderPass::Properties props
+    )
+        : props(props) {
         createColorAttachment(surfaceFormat);
-        createDepthAttachment(depthFormat);
+        if (props.clearFlags & RenderPass::clearFlagDepthBuffer) createDepthAttachment(depthFormat);
 
-        // Depth stencil data.
-        subpass.pDepthStencilAttachment = &depthAttachmentReference;
+        createSubpass();
+
+        createRenderPassDependencies();
+        createRenderPassCreateInfo();
+    }
+
+    //  TODO: ASSIGN STRUCTURE TYPES IF MISSING!
+    void createSubpass() {
+        subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;  // Depth stencil data.
+
+        subpass.pDepthStencilAttachment = 0;
+
+        if (props.clearFlags & RenderPass::clearFlagDepthBuffer)
+            subpass.pDepthStencilAttachment = &depthAttachmentReference;
 
         // Input from a shader
         subpass.inputAttachmentCount = 0;
@@ -28,24 +42,23 @@ struct RenderPassCreateInfo {
         subpass.preserveAttachmentCount = 0;
         subpass.pPreserveAttachments    = 0;
         subpass.flags                   = 0;
-
-        createRenderPassDependencies();
-        createRenderPassCreateInfo();
     }
-
-    //  TODO: ASSIGN STRUCTURE TYPES IF MISSING!
-    void createSubpass() { subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS; }
 
     void createColorAttachment(VkSurfaceFormatKHR surfaceFormat) {
         colorAttachment.format         = surfaceFormat.format;  // TODO: configurable
         colorAttachment.samples        = VK_SAMPLE_COUNT_1_BIT;
-        colorAttachment.loadOp         = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        colorAttachment.loadOp         = (props.clearFlags & RenderPass::clearFlagColorBuffer)
+                                             ? VK_ATTACHMENT_LOAD_OP_CLEAR
+                                             : VK_ATTACHMENT_LOAD_OP_LOAD;
         colorAttachment.storeOp        = VK_ATTACHMENT_STORE_OP_STORE;
         colorAttachment.stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         // Do not expect any particular layout before render pass starts.
-        colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        colorAttachment.finalLayout   = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        colorAttachment.initialLayout = props.hasPreviousPass
+                                            ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+                                            : VK_IMAGE_LAYOUT_UNDEFINED;
+        colorAttachment.finalLayout   = props.hasNextPass ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+                                                          : VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
         colorAttachment.flags         = 0;
 
         attachmentDescriptions.push_back(colorAttachment);
@@ -98,6 +111,8 @@ struct RenderPassCreateInfo {
         handle.flags           = 0;
     }
 
+    RenderPass::Properties props;
+
     VkRenderPassCreateInfo handle;
     VkSubpassDescription subpass;
 
@@ -116,8 +131,18 @@ RenderPass::RenderPass(
     const Context* context, const Device* device, const Swapchain& swapchain,
     const Properties& properties
 )
-    : m_context(context), m_device(device), m_area(properties.area), m_color(properties.color) {
-    RenderPassCreateInfo createInfo{m_device->getDepthFormat(), swapchain.getSurfaceFormat()};
+    : m_context(context)
+    , m_device(device)
+    , m_area(properties.area)
+    , m_color(properties.color)
+    , m_clearFlags(properties.clearFlags)
+    , m_hasPreviousPass(properties.hasPreviousPass)
+    , m_hasNextPass(properties.hasNextPass) {
+    LOG_TRACE("Creating RenderPass instance");
+
+    RenderPassCreateInfo createInfo(
+        m_device->getDepthFormat(), swapchain.getSurfaceFormat(), properties
+    );
 
     VK_ASSERT(vkCreateRenderPass(
         m_device->getLogicalDevice(), &createInfo.handle, m_context->getAllocator(), &m_handle
@@ -131,15 +156,29 @@ RenderPass::~RenderPass() {
 
 VkRenderPass RenderPass::getHandle() { return m_handle; }
 
-std::vector<VkClearValue> RenderPass::createClearValues() const {
-    std::vector<VkClearValue> clearValues(2);
+std::vector<VkClearValue> RenderPass::createClearValues(RenderPass::ClearFlag flags) const {
+    std::vector<VkClearValue> clearValues;
+    clearValues.reserve(2);
 
-    clearValues[0].color.float32[0]     = m_color.r;
-    clearValues[0].color.float32[1]     = m_color.g;
-    clearValues[0].color.float32[2]     = m_color.b;
-    clearValues[0].color.float32[3]     = m_color.a;
-    clearValues[1].depthStencil.depth   = m_depth;
-    clearValues[1].depthStencil.stencil = m_stencil;
+    if (flags & RenderPass::clearFlagColorBuffer) {
+        VkClearValue clearValue;
+
+        clearValue.color.float32[0] = m_color.r;
+        clearValue.color.float32[1] = m_color.g;
+        clearValue.color.float32[2] = m_color.b;
+        clearValue.color.float32[3] = m_color.a;
+
+        clearValues.push_back(clearValue);
+    }
+
+    if (flags & RenderPass::clearFlagDepthBuffer) {
+        VkClearValue clearValue;
+        clearValue.depthStencil.depth = m_depth;
+
+        if (flags & RenderPass::clearFlagStencilBuffer) clearValue.depthStencil.stencil = m_stencil;
+
+        clearValues.push_back(clearValue);
+    }
 
     return clearValues;
 }
@@ -156,13 +195,13 @@ VkRenderPassBeginInfo RenderPass::createRenderPassBeginInfo(
     beginInfo.renderArea.extent.height = m_area.w;
 
     beginInfo.clearValueCount = clearValues.size();
-    beginInfo.pClearValues    = clearValues.data();
+    beginInfo.pClearValues    = beginInfo.clearValueCount > 0 ? clearValues.data() : nullptr;
 
     return beginInfo;
 }
 
 void RenderPass::begin(CommandBuffer& commandBuffer, VkFramebuffer framebuffer) {
-    auto clearValues = createClearValues();
+    auto clearValues = createClearValues(m_clearFlags);
     auto beginInfo   = createRenderPassBeginInfo(clearValues, framebuffer);
 
     vkCmdBeginRenderPass(commandBuffer.getHandle(), &beginInfo, VK_SUBPASS_CONTENTS_INLINE);

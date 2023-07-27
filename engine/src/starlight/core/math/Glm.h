@@ -12,15 +12,17 @@
 
 namespace sl {
 
+namespace math {
 using namespace glm;
+}
 
-using Vec2f = vec2;
-using Vec3f = vec3;
-using Vec4f = vec4;
+using Vec2f = math::vec2;
+using Vec3f = math::vec3;
+using Vec4f = math::vec4;
 
-using Mat2f = mat2;
-using Mat3f = mat3;
-using Mat4f = mat4;
+using Mat2f = math::mat2;
+using Mat3f = math::mat3;
+using Mat4f = math::mat4;
 
 const Mat4f identityMatrix = Mat4f{1.0f};
 

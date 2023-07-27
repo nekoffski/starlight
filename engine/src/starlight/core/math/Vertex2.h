@@ -4,7 +4,7 @@
 
 namespace sl {
 
-struct Vertex3 {
+struct Vertex2 {
     Vec2f position;
     Vec2f textureCoordinates;
 };
