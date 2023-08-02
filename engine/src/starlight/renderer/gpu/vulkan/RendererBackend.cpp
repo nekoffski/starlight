@@ -314,7 +314,7 @@ void RendererBackend::createCoreComponents(sl::Window& window, const Config& con
             (RenderPass::clearFlagColorBuffer | RenderPass::clearFlagDepthBuffer |
              RenderPass::clearFlagStencilBuffer),
         .hasPreviousPass = false,
-        .hasNextPass     = false
+        .hasNextPass     = true
     };
 
     m_mainRenderPass = createUniqPtr<RenderPass>(

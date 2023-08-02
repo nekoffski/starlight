@@ -165,7 +165,7 @@ void MaterialShader::createPipeline(const Size2u32& framebuffferSize, RenderPass
     Pipeline::Properties props;
 
     std::vector<VkDescriptorSetLayout> descriptorSetLayout = {
-        getGlobalDescriptorSetLayout(), getObjectDescriptorSetLayout()};
+        m_globalDescriptorSetLayout, m_objectDescriptorSetLayout};
 
     // TODO: seems like a lot of copying, consider passing a vector view?
     props.vertexAttributes     = attribute_descriptions;

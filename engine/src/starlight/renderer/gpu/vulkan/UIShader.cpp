@@ -111,53 +111,8 @@ void UIShader::createShaderStages() {
     );
 }
 
-UIShader::UIShader(
-    const Context* context, Device* device, int swapchainImageCount,
-    const Size2u32& framebuffferSize, RenderPass& renderPass
-)
-    : m_context(context), m_device(device) {
-    LOG_TRACE("Creating UIShader instance");
-
-    createShaderStages();
-    createGlobalDescriptorSetLayout();
-    createGlobalDescriptorPool(swapchainImageCount);
-
-    m_samplerUses[0] = Texture::Use::diffuseMap;
-
-    createLocalDescriptorSetLayout();
-    createLocalDescriptorPool();
-    createPipeline(framebuffferSize, renderPass);
-    createUniformBuffer();
-}
-
-UIShader::~UIShader() {
-    const auto logicalDevice = m_device->getLogicalDevice();
-    const auto allocator     = m_context->getAllocator();
-
-    LOG_TRACE("Destroying UIShader instance");
-
-    if (m_globalDescriptorPool)
-        vkDestroyDescriptorPool(logicalDevice, m_globalDescriptorPool, allocator);
-
-    if (m_globalDescriptorSetLayout)
-        vkDestroyDescriptorSetLayout(logicalDevice, m_globalDescriptorSetLayout, allocator);
-
-    if (m_objectDescriptorPool)
-        vkDestroyDescriptorPool(logicalDevice, m_objectDescriptorPool, allocator);
-
-    if (m_objectDescriptorSetLayout)
-        vkDestroyDescriptorSetLayout(logicalDevice, m_objectDescriptorSetLayout, allocator);
-}
-
-VkDescriptorSetLayout UIShader::getObjectDescriptorSetLayout() const {
-    return m_objectDescriptorSetLayout;
-}
-
-void UIShader::setModel(VkCommandBuffer commandBuffer, const Mat4f& model) {
-    vkCmdPushConstants(
-        commandBuffer, m_pipeline->getLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(model),
-        glm::value_ptr(model)
-    );
+void UIShader::use(CommandBuffer& buffer) {
+    m_pipeline->bind(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS);
 }
 
 void UIShader::createPipeline(const Size2u32& framebuffferSize, RenderPass& renderPass) {
@@ -212,7 +167,7 @@ void UIShader::createPipeline(const Size2u32& framebuffferSize, RenderPass& rend
     Pipeline::Properties props;
 
     std::vector<VkDescriptorSetLayout> descriptorSetLayout = {
-        m_globalDescriptorSetLayout, m_globalDescriptorSetLayout};
+        m_globalDescriptorSetLayout, m_objectDescriptorSetLayout};
 
     // TODO: seems like a lot of copying, consider passing a vector view?
     props.vertexAttributes     = attribute_descriptions;
@@ -227,6 +182,55 @@ void UIShader::createPipeline(const Size2u32& framebuffferSize, RenderPass& rend
     m_pipeline = createUniqPtr<Pipeline>(m_context, m_device, renderPass, props);
 
     LOG_DEBUG("Pipeline created");
+}
+
+UIShader::UIShader(
+    const Context* context, Device* device, int swapchainImageCount,
+    const Size2u32& framebuffferSize, RenderPass& renderPass
+)
+    : m_context(context), m_device(device) {
+    LOG_TRACE("Creating UIShader instance");
+
+    createShaderStages();
+    createGlobalDescriptorSetLayout();
+    createGlobalDescriptorPool(swapchainImageCount);
+
+    m_samplerUses[0] = Texture::Use::diffuseMap;
+
+    createLocalDescriptorSetLayout();
+    createLocalDescriptorPool();
+    createPipeline(framebuffferSize, renderPass);
+    createUniformBuffer();
+}
+
+UIShader::~UIShader() {
+    const auto logicalDevice = m_device->getLogicalDevice();
+    const auto allocator     = m_context->getAllocator();
+
+    LOG_TRACE("Destroying UIShader instance");
+
+    if (m_globalDescriptorPool)
+        vkDestroyDescriptorPool(logicalDevice, m_globalDescriptorPool, allocator);
+
+    if (m_globalDescriptorSetLayout)
+        vkDestroyDescriptorSetLayout(logicalDevice, m_globalDescriptorSetLayout, allocator);
+
+    if (m_objectDescriptorPool)
+        vkDestroyDescriptorPool(logicalDevice, m_objectDescriptorPool, allocator);
+
+    if (m_objectDescriptorSetLayout)
+        vkDestroyDescriptorSetLayout(logicalDevice, m_objectDescriptorSetLayout, allocator);
+}
+
+VkDescriptorSetLayout UIShader::getObjectDescriptorSetLayout() const {
+    return m_objectDescriptorSetLayout;
+}
+
+void UIShader::setModel(VkCommandBuffer commandBuffer, const Mat4f& model) {
+    vkCmdPushConstants(
+        commandBuffer, m_pipeline->getLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(model),
+        glm::value_ptr(model)
+    );
 }
 
 void UIShader::applyMaterial(
@@ -363,10 +367,6 @@ void UIShader::updateGlobalWorldState(VkCommandBuffer commandBuffer, uint32_t im
         commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->getLayout(), 0, 1,
         &globalDescriptor, 0, 0
     );
-}
-
-void UIShader::use(CommandBuffer& buffer) {
-    m_pipeline->bind(buffer, VK_PIPELINE_BIND_POINT_GRAPHICS);
 }
 
 void UIShader::createUniformBuffer() {

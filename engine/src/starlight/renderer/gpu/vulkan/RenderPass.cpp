@@ -26,7 +26,7 @@ struct RenderPassCreateInfo {
     void createSubpass() {
         subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;  // Depth stencil data.
 
-        subpass.pDepthStencilAttachment = 0;
+        subpass.pDepthStencilAttachment = nullptr;
 
         if (props.clearFlags & RenderPass::clearFlagDepthBuffer)
             subpass.pDepthStencilAttachment = &depthAttachmentReference;
