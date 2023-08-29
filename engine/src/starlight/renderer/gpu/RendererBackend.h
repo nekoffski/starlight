@@ -4,6 +4,7 @@
 #include <span>
 
 #include "starlight/core/math/Vertex3.h"
+#include "starlight/core/math/Vertex2.h"
 #include "starlight/core/Id.h"
 #include "starlight/core/math/Glm.h"
 
@@ -54,8 +55,10 @@ struct RendererBackend {
     virtual void releaseMaterialResources(Material& material) = 0;
 
     virtual void acquireGeometryResources(
-        Geometry& geometry, std::span<Vertex3> vertices, std::span<uint32_t> indices
-    )                                                         = 0;
+        Geometry& geometry, uint32_t vertexSize, uint32_t vertexCount, void* vertexData,
+        std::span<uint32_t> indices
+    ) = 0;
+
     virtual void releaseGeometryResources(Geometry& geometry) = 0;
 };
 

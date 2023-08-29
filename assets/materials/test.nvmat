@@ -1,4 +1,5 @@
 {
     "diffuse-color": [1.0, 1.0, 1.0, 1.0],
-    "diffuse-map": "cobblestone.png"
+    "diffuse-map": "cobblestone.png",
+    "type": "world"
 }

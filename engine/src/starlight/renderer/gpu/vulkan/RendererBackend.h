@@ -27,7 +27,7 @@
 
 namespace sl::vk {
 
-class RendererBackend : public sl::RendererBackend {
+class RendererBackend final : public sl::RendererBackend {
     struct FrameInfo {
         int frameCount                         = 0;
         uint32_t imageIndex                    = 0;
@@ -58,9 +58,11 @@ class RendererBackend : public sl::RendererBackend {
     void acquireMaterialResources(Material& material) override;
     void releaseMaterialResources(Material& material) override;
 
-    void acquireGeometryResources(
-        Geometry& geometry, std::span<Vertex3> vertices, std::span<uint32_t> indices
+    virtual void acquireGeometryResources(
+        Geometry& geometry, uint32_t vertexSize, uint32_t vertexCount, void* vertexData,
+        std::span<uint32_t> indices
     ) override;
+
     void releaseGeometryResources(Geometry& geometry) override;
 
    private:

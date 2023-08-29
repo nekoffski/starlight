@@ -13,7 +13,7 @@ auto fieldFrom(auto& root) { return kc::json::fieldFrom<kc::json::JsonError>(roo
 std::optional<MaterialConfig> MaterialConfig::create(
     const std::string& name, const FileSystem& fs
 ) {
-    const auto fullPath = fmt::format("{}/materials/{}", getAssetsBasePath(), name);
+    const auto fullPath = fmt::format("{}/materials/{}.nvmat", getAssetsBasePath(), name);
 
     if (not fs.isFile(fullPath)) {
         LOG_ERROR("Could not find file: '{}'", fullPath);
@@ -29,6 +29,13 @@ std::optional<MaterialConfig> MaterialConfig::create(
 
         config.diffuseColor = fieldFrom(root).withName("diffuse-color").ofType<Vec4f>().get();
         config.diffuseMap   = fieldFrom(root).withName("diffuse-map").ofType<std::string>().get();
+
+        const auto materialType =
+            materialTypeFromString(fieldFrom(root).withName("type").ofType<std::string>().get());
+
+        ASSERT(materialType, "Material config must contain material type");
+
+        config.type = materialType.value();
 
         return config;
     } catch (kc::json::JsonError& e) {

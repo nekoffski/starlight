@@ -36,16 +36,17 @@ class ResourceManager {
 
     Geometry* acquireGeometry(uint32_t id) { return m_geometryManager.acquire(id); }
 
-    Geometry* loadGeometry(GeometryProperties& props) { return m_geometryManager.load(props); }
+    Geometry* loadGeometry(GeometryProperties auto& props) { return m_geometryManager.load(props); }
 
     void destroyGeometry(uint32_t id) { m_geometryManager.destroy(id); }
 
     void destroyGeometry(Geometry& geometry) { m_geometryManager.destroy(geometry); }
 
-    Geometry* getDefaultGeometry() { return m_geometryManager.getDefault(); }
+    Geometry* getDefaultGeometry3D() { return m_geometryManager.getDefault3D(); }
+    Geometry* getDefaultGeometry2D() { return m_geometryManager.getDefault2D(); }
 
-    GeometryProperties generalePlaneGeometryProperties(PlaneProperties& props) {
-        return m_geometryManager.generalePlaneGeometryProperties(props);
+    GeometryProperties3D generatePlaneGeometryProperties(PlaneProperties& props) {
+        return m_geometryManager.generatePlaneGeometryProperties(props);
     }
 
    private:

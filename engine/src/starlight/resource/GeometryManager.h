@@ -3,6 +3,7 @@
 #include <unordered_map>
 
 #include <kc/core/Singleton.hpp>
+#include <kc/core/Meta.hpp>
 
 #include "starlight/core/FileSystem.h"
 #include "starlight/core/Memory.hpp"
@@ -10,19 +11,35 @@
 #include "starlight/renderer/Geometry.h"
 #include "starlight/renderer/Material.h"
 #include "starlight/renderer/gpu/GPUMemoryProxy.h"
-#include "MaterialManager.h"
 #include "starlight/core/math/Vertex3.h"
+
+#include "MaterialManager.h"
 
 constexpr int maxGeometries = 4096;
 
+// TODO: refactor
+
 namespace sl {
 
-struct GeometryProperties {
+namespace detail {
+
+struct GeometryPropertiesBase {
     std::string name;
     std::string materialName;
-    std::vector<Vertex3> vertices;
     std::vector<uint32_t> indices;
 };
+}  // namespace detail
+
+struct GeometryProperties3D final : public detail::GeometryPropertiesBase {
+    std::vector<Vertex3> vertices;
+};
+
+struct GeometryProperties2D final : public detail::GeometryPropertiesBase {
+    std::vector<Vertex2> vertices;
+};
+
+template <typename T>
+concept GeometryProperties = kc::core::is_one_of2_v<T, GeometryProperties3D, GeometryProperties2D>;
 
 struct PlaneProperties {
     float width;
@@ -39,7 +56,8 @@ struct PlaneProperties {
 class GeometryManager : public kc::core::Singleton<GeometryManager> {
    public:
     explicit GeometryManager(const GPUMemoryProxy& resourceProxy) : m_resourceProxy(resourceProxy) {
-        createDefaultGeometry();
+        for (auto& geometry : m_geometries) invalidateEntry(geometry);
+        createDefaultGeometries();
     }
 
     Geometry* acquire(uint32_t id) {
@@ -49,7 +67,7 @@ class GeometryManager : public kc::core::Singleton<GeometryManager> {
         return nullptr;
     }
 
-    Geometry* load(GeometryProperties& props) {
+    Geometry* load(GeometryProperties auto& props) {
         const auto findSlot = [&]() -> Geometry* {
             for (uint32_t i = 0; i < m_geometries.size(); ++i) {
                 if (auto slot = &m_geometries[i]; slot->id == invalidId) {
@@ -89,11 +107,12 @@ class GeometryManager : public kc::core::Singleton<GeometryManager> {
         invalidateEntry(geometry);
     }
 
-    Geometry* getDefault() { return &m_defaultGeometry; }
+    Geometry* getDefault3D() { return &m_defaultGeometry3D; }
+    Geometry* getDefault2D() { return &m_defaultGeometry2D; }
 
-    static GeometryProperties generalePlaneGeometryProperties(PlaneProperties& props) {
+    static GeometryProperties3D generatePlaneGeometryProperties(PlaneProperties& props) {
         // check for properties
-        GeometryProperties out;
+        GeometryProperties3D out;
 
         const auto vertexCount = props.xSegments * props.ySegments * 4;
         const auto indexCount  = props.xSegments * props.ySegments * 6;
@@ -153,7 +172,7 @@ class GeometryManager : public kc::core::Singleton<GeometryManager> {
         return out;
     }
 
-   private:
+    //    private:
     void invalidateEntry(Geometry& geometry) {
         geometry.generation = 0;
         geometry.id         = invalidId;
@@ -162,30 +181,62 @@ class GeometryManager : public kc::core::Singleton<GeometryManager> {
         geometry.name.clear();
     }
 
-    void createDefaultGeometry() {
-        std::array<Vertex3, 4> vertices;
+    void createDefaultGeometries() {
+        m_defaultGeometry2D.name = "default-2d-geometry";
+        m_defaultGeometry3D.name = "default-3d-geometry";
+
+        // 3D
         constexpr float scale = 10.0f;
 
-        vertices[0].position           = glm::vec3{-0.5f * scale, -0.5f * scale, 0.0f};
-        vertices[0].textureCoordinates = glm::vec2{0.0f, 0.0f};
+        const auto create3D = [&]() {
+            std::array<Vertex3, 4> vertices;
 
-        vertices[1].position           = glm::vec3{0.5f * scale, 0.5f * scale, 0.0f};
-        vertices[1].textureCoordinates = glm::vec2{1.0f, 1.0f};
+            vertices[0].position           = {-0.5f * scale, -0.5f * scale, 0.0f};
+            vertices[0].textureCoordinates = {0.0f, 0.0f};
 
-        vertices[2].position           = glm::vec3{-0.5f * scale, 0.5f * scale, 0.0f};
-        vertices[2].textureCoordinates = glm::vec2{0.0f, 1.0f};
+            vertices[1].position           = {0.5f * scale, 0.5f * scale, 0.0f};
+            vertices[1].textureCoordinates = {1.0f, 1.0f};
 
-        vertices[3].position           = glm::vec3{0.5f * scale, -0.5f * scale, 0.0f};
-        vertices[3].textureCoordinates = glm::vec2{1.0f, 0.0f};
+            vertices[2].position           = {-0.5f * scale, 0.5f * scale, 0.0f};
+            vertices[2].textureCoordinates = {0.0f, 1.0f};
 
-        std::array<uint32_t, 6> indices = {0, 1, 2, 0, 3, 1};
+            vertices[3].position           = {0.5f * scale, -0.5f * scale, 0.0f};
+            vertices[3].textureCoordinates = {1.0f, 0.0f};
 
-        m_resourceProxy.acquireGeometryResources(m_defaultGeometry, vertices, indices);
+            std::array<uint32_t, 6> indices = {0, 1, 2, 0, 3, 1};
 
-        m_defaultGeometry.material = MaterialManager::get().getDefaultMaterial();
+            m_resourceProxy.acquireGeometryResources(m_defaultGeometry3D, vertices, indices);
+            m_defaultGeometry3D.material = MaterialManager::get().getDefaultMaterial();
+        };
+        create3D();
+
+        // 2D
+        const auto create2D = [&]() {
+            std::array<Vertex2, 4> vertices;
+
+            vertices[0].position           = {-0.5f * scale, -0.5f * scale};
+            vertices[0].textureCoordinates = {0.0f, 0.0f};
+
+            vertices[1].position           = {0.5f * scale, 0.5f * scale};
+            vertices[1].textureCoordinates = {1.0f, 1.0f};
+
+            vertices[2].position           = {-0.5f * scale, 0.5f * scale};
+            vertices[2].textureCoordinates = {0.0f, 1.0f};
+
+            vertices[3].position           = {0.5f * scale, -0.5f * scale};
+            vertices[3].textureCoordinates = {1.0f, 0.0f};
+
+            std::array<uint32_t, 6> indices = {2, 1, 0, 3, 0, 1};
+
+            m_resourceProxy.acquireGeometryResources(m_defaultGeometry2D, vertices, indices);
+            m_defaultGeometry2D.material = MaterialManager::get().getDefaultMaterial();
+        };
+        create2D();
     }
 
-    bool createGeometry(GeometryProperties& props, Geometry& geometry) {
+    bool createGeometry(GeometryProperties auto& props, Geometry& geometry) {
+        geometry.name = props.name;
+
         m_resourceProxy.acquireGeometryResources(
             geometry, props.vertices, props.indices
         );  // TODO: check if succeed
@@ -193,14 +244,15 @@ class GeometryManager : public kc::core::Singleton<GeometryManager> {
         auto& materialManager = MaterialManager::get();
         geometry.material =
             materialManager.acquire(props.materialName) ?: materialManager.getDefaultMaterial();
-        geometry.name = props.name;
 
         return true;
     }
 
     GPUMemoryProxy m_resourceProxy;
     std::array<Geometry, maxGeometries> m_geometries;
-    Geometry m_defaultGeometry;
+
+    Geometry m_defaultGeometry3D;
+    Geometry m_defaultGeometry2D;
 };
 
 }  // namespace sl

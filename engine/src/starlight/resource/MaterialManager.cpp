@@ -37,6 +37,7 @@ void MaterialManager::createDefaultMaterial() {
     m_defaultMaterial.diffuseColor = Vec4f{1.0f};
     m_defaultMaterial.diffuseMap   = diffuseMap;
     m_defaultMaterial.id           = invalidId;
+    m_defaultMaterial.type         = Material::Type::world;
 
     // TODO: RAII?
     m_resourceProxy.acquireMaterialResources(m_defaultMaterial);
@@ -51,19 +52,12 @@ Material* MaterialManager::load(const std::string& name) {
         return &material->second;
     }
 
-    const auto fullPath = fmt::format("{}/{}.{}", m_materialsPath, name, extension);
-
-    if (not m_fileSystem.isFile(fullPath)) {
-        LOG_WARN("Could not find material file '{}'", fullPath);
-        return nullptr;
-    }
-
     LOG_TRACE("Found material file, will try to process");
 
     auto materialConfig = MaterialConfig::create(name);
 
     if (not materialConfig.has_value()) {
-        LOG_WARN("Could not process material file '{}'", fullPath);
+        LOG_WARN("Could not process material file '{}'", name);
         return nullptr;
     }
 
@@ -91,6 +85,7 @@ Material* MaterialManager::load(const std::string& name) {
     material.diffuseColor = materialConfig->diffuseColor;
     material.diffuseMap   = diffuseMap;
     material.id           = invalidId;
+    material.type         = materialConfig->type;
 
     m_resourceProxy.acquireMaterialResources(material);
 
@@ -105,7 +100,7 @@ Material* MaterialManager::acquire(const std::string& name) {
         return &material->second;
     } else {
         LOG_WARN("Material {} not found", name);
-        return nullptr;
+        return load(name);
     }
 }
 

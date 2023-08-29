@@ -20,7 +20,17 @@ void GPUMemoryProxy::releaseMaterialResources(Material& material) {
 void GPUMemoryProxy::acquireGeometryResources(
     Geometry& geometry, std::span<Vertex3> vertices, std::span<uint32_t> indices
 ) {
-    m_rendererBackend.acquireGeometryResources(geometry, vertices, indices);
+    m_rendererBackend.acquireGeometryResources(
+        geometry, sizeof(Vertex3), vertices.size(), vertices.data(), indices
+    );
+}
+
+void GPUMemoryProxy::acquireGeometryResources(
+    Geometry& geometry, std::span<Vertex2> vertices, std::span<uint32_t> indices
+) {
+    m_rendererBackend.acquireGeometryResources(
+        geometry, sizeof(Vertex2), vertices.size(), vertices.data(), indices
+    );
 }
 
 void GPUMemoryProxy::releaseGeometryResources(Geometry& geometry) {

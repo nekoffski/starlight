@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <optional>
 
 #include "starlight/core/math/Glm.h"
 
@@ -12,6 +13,8 @@
 namespace sl {
 
 struct Material {
+    enum class Type : unsigned char { world, ui };
+
     uint32_t generation;
     uint32_t internalId;
     std::string name;
@@ -20,7 +23,18 @@ struct Material {
 
     Id id = idGenerator++;
 
+    Type type;
+
     inline static Id idGenerator = 0;
 };
+
+inline std::optional<Material::Type> materialTypeFromString(const std::string& material) {
+    if (material == "ui")
+        return Material::Type::ui;
+    else if (material == "world")
+        return Material::Type::world;
+
+    return {};
+}
 
 }  // namespace sl

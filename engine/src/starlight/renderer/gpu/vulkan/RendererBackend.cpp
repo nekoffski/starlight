@@ -44,20 +44,29 @@ RendererBackend::RendererBackend(sl::Window& window, const Config& config)
 }
 
 void RendererBackend::acquireGeometryResources(
-    Geometry& geometry, std::span<Vertex3> vertices, std::span<uint32_t> indices
+    Geometry& geometry, uint32_t vertexSize, uint32_t vertexCount, void* vertexData,
+    std::span<uint32_t> indices
 ) {
-    bool isReupload = geometry.id != invalidId;
+    LOG_TRACE(
+        "Acquiring geometry resources vertexSize={}, vertexCount={}, indicesCount={}, vertexDataPtr={}",
+        vertexSize, vertexCount, indices.size(), vertexData
+    );
+
+    bool isReupload = geometry.internalId != invalidId;
 
     GeometryData oldRange;
     GeometryData* internalData = nullptr;
 
     if (isReupload) {
+        LOG_TRACE("Reuploading geometry");
         internalData = &m_geometries[geometry.internalId];
         oldRange     = *internalData;
     } else {
         for (int i = 0; auto& geometryData : m_geometries) {
             if (geometryData.id == invalidId) {
+                LOG_DEBUG("Found free geometry id={}", i);
                 geometry.internalId = i;
+                geometryData.id     = i;
                 internalData        = &geometryData;
                 break;
             }
@@ -65,35 +74,39 @@ void RendererBackend::acquireGeometryResources(
         }
     }
 
-    if (not internalData) {
-        // TODO: not found, return false!!
-    }
+    ASSERT(internalData != nullptr, "Could not find geometry slot");
 
     auto pool  = m_device->getGraphicsCommandPool();
     auto queue = m_device->getQueues().graphics;
 
     internalData->vertexBufferOffset = m_geometryVertexOffset;
-    internalData->vertexCount        = vertices.size();
-    internalData->vertexSize         = sizeof(Vertex3) * internalData->vertexCount;
+    internalData->vertexCount        = vertexCount;
+    internalData->vertexElementSize  = vertexSize;
+
+    const auto verticesTotalSize = internalData->getVerticesTotalSize();
 
     uploadDataRange(
         pool, nullptr, queue, *m_objectVertexBuffer, internalData->vertexBufferOffset,
-        internalData->vertexSize, vertices.data()
+        verticesTotalSize, vertexData
     );
 
-    m_geometryVertexOffset += internalData->vertexSize;
+    m_geometryVertexOffset += verticesTotalSize;
 
-    // TODO: allow for indices to be optional
-    internalData->indexBufferOffset = m_geometryIndexOffset;
-    internalData->indexCount        = indices.size();
-    internalData->indexSize         = sizeof(uint32_t) * internalData->indexCount;
+    if (indices.size() > 0) {
+        // TODO: allow for indices to be optional
+        internalData->indexBufferOffset = m_geometryIndexOffset;
+        internalData->indexCount        = indices.size();
+        internalData->indexElementSize  = sizeof(uint32_t);
 
-    uploadDataRange(
-        pool, nullptr, queue, *m_objectIndexBuffer, internalData->indexBufferOffset,
-        internalData->indexSize, indices.data()
-    );
+        const auto indicesTotalSize = internalData->getIndicesTotalSize();
 
-    m_geometryIndexOffset += internalData->indexSize;
+        uploadDataRange(
+            pool, nullptr, queue, *m_objectIndexBuffer, internalData->indexBufferOffset,
+            indicesTotalSize, indices.data()
+        );
+
+        m_geometryIndexOffset += indicesTotalSize;
+    }
 
     if (internalData->generation == invalidId)
         internalData->generation = 0;
@@ -103,7 +116,8 @@ void RendererBackend::acquireGeometryResources(
     if (isReupload) {
         // TODO: free data range
 
-        if (oldRange.indexSize > 0) {
+        if (oldRange.indexElementSize > 0) {
+            // freeDataRange
         }
     }
 }
@@ -116,7 +130,7 @@ void RendererBackend::releaseGeometryResources(Geometry& geometry) {
 
         // TODO: free_data_range
 
-        if (internalData->indexSize > 0) {
+        if (internalData->indexElementSize > 0) {
             // TODO: free
         }
 
@@ -127,11 +141,29 @@ void RendererBackend::releaseGeometryResources(Geometry& geometry) {
 }
 
 void RendererBackend::acquireMaterialResources(Material& material) {
-    m_materialShader->acquireResources(material);
+    switch (material.type) {
+        case Material::Type::world:
+            m_materialShader->acquireResources(material);
+            break;
+        case Material::Type::ui:
+            m_uiShader->acquireResources(material);
+            break;
+        default:
+            LOG_ERROR("Unknown material type, could not determine shader to acquire resources");
+    }
 }
 
 void RendererBackend::releaseMaterialResources(Material& material) {
-    m_materialShader->releaseResources(material);
+    switch (material.type) {
+        case Material::Type::world:
+            m_materialShader->releaseResources(material);
+            break;
+        case Material::Type::ui:
+            m_uiShader->releaseResources(material);
+            break;
+        default:
+            LOG_ERROR("Unknown material type, could not determine shader to release resources");
+    }
 }
 
 void RendererBackend::uploadDataRange(
@@ -165,19 +197,31 @@ void RendererBackend::drawGeometry(const GeometryRenderData& geometryRenderData)
     auto& bufferData    = m_geometries[geometryRenderData.geometry->internalId];
     auto& commandBuffer = m_commandBuffers[m_frameInfo.imageIndex];
 
-    m_materialShader->setModel(commandBuffer.getHandle(), geometryRenderData.model);
-
     Material* material = geometryRenderData.geometry->material;
-
     ASSERT(material, "Invalid material handle");
 
     // TODO
     // if (not material) material = MaterialManager::get().getDefaultMaterial();
 
-    m_materialShader->applyMaterial(commandBuffer.getHandle(), m_frameInfo.imageIndex, *material);
+    switch (material->type) {
+        case Material::Type::ui:
+            m_uiShader->setModel(commandBuffer.getHandle(), geometryRenderData.model);
+            m_uiShader->applyMaterial(commandBuffer.getHandle(), m_frameInfo.imageIndex, *material);
+            m_uiShader->use(commandBuffer);
+            break;
 
-    // m_pipeline->bind(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS);
-    m_materialShader->use(commandBuffer);
+        case Material::Type::world:
+            m_materialShader->setModel(commandBuffer.getHandle(), geometryRenderData.model);
+            m_materialShader->applyMaterial(
+                commandBuffer.getHandle(), m_frameInfo.imageIndex, *material
+            );
+            m_materialShader->use(commandBuffer);
+            break;
+
+        default:
+            LOG_ERROR("Could not draw geometry, unknown material type");
+            return;
+    }
 
     VkDeviceSize offsets[1] = {bufferData.vertexBufferOffset};
 
