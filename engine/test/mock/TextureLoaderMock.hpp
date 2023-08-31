@@ -1,6 +1,6 @@
 #pragma once
 
-#include "starlight/renderer/TextureLoader.h"
+#include "starlight/renderer/gpu/TextureLoader.h"
 
 #include <gmock/gmock.h>
 
@@ -13,6 +13,4 @@ struct TextureLoaderMock : TextureLoader {
         (const std::string& name, const Texture::Properties& props, const void* pixels),
         (const, override)
     );
-
-    MOCK_METHOD(UniqPtr<Texture>, load, (const std::string& name), (const, override));
 };

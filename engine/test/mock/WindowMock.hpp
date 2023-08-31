@@ -1,10 +1,10 @@
 #pragma once
 
-#include "starlight/core/Window.h"
+#include "starlight/core/window/Window.h"
 
 #include <gmock/gmock.h>
 
-struct WindowMock : sl:: ::Window {
+struct WindowMock : sl::Window {
     MOCK_METHOD(std::string_view, getVendor, (), (const, override));
     MOCK_METHOD(void, update, (), (override));
     MOCK_METHOD(void, swapBuffers, (), (override));
@@ -14,5 +14,5 @@ struct WindowMock : sl:: ::Window {
     MOCK_METHOD(void, onWindowCloseCallback, (OnWindowCloseCallback), (override));
     MOCK_METHOD(void, onWindowResizeCallback, (OnWindowResizeCallback), (override));
     MOCK_METHOD(sl::Vec2f, getMousePosition, (), (const, override));
-    MOCK_METHOD(bool, isKeyPressed, (sl:: ::Window::Key keyCode), (const, override));
+    MOCK_METHOD(bool, isKeyPressed, (sl::Window::Key keyCode), (const, override));
 };

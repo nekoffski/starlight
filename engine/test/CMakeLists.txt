@@ -1,13 +1,14 @@
 
 set(GTEST_LINK gtest gtest_main gmock gmock_main)
 set(MOCK_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR})
+set(SL_LIBS starlight-core starlight-renderer starlight-resource)
 
 include(GoogleTest)
 
 function(add_test_module MODULE)
     file(GLOB_RECURSE SRC ${CMAKE_CURRENT_SOURCE_DIR}/${MODULE}/*.cpp)
     add_executable(starlight_${MODULE}_tests ${SRC})
-    target_link_libraries(starlight_${MODULE}_tests PUBLIC starlight ${GTEST_LINK})
+    target_link_libraries(starlight_${MODULE}_tests PUBLIC ${SL_LIBS} ${GTEST_LINK})
     target_include_directories(starlight_${MODULE}_tests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
         ${SL_INCLUDE} ${MOCK_INCLUDE})
     set_property(TARGET starlight_${MODULE}_tests PROPERTY CXX_STANDARD 20)

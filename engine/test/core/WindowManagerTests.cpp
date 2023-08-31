@@ -1,17 +1,14 @@
-#include "starlight/core/WindowManager.h"
+#include "starlight/core/window/WindowManager.h"
 
 #include <gtest/gtest.h>
 
 #include "mock/WindowMock.hpp"
-#include "mock/EventObserverMock.hpp"
 
-#include "starlight/event/Event.h"
-#include "starlight/event/Input.h"
-#include "starlight/event/Quit.h"
+#include "starlight/core/event/Event.h"
+#include "starlight/core/event/Input.h"
+#include "starlight/core/event/Quit.h"
 
 using namespace sl;
-using namespace sl::event;
-using namespace sl::core;
 using namespace testing;
 
 struct WindowManagerTests : Test {
@@ -34,39 +31,43 @@ TEST_F(WindowManagerTests, givenWindowManager_whenCreating_shouldSetOnWindowClos
 }
 
 struct WindowManagerCallbacksTests : WindowManagerTests {
-    void SetUp() { eventManager.registerObserver(&eventObserver); }
+    void SetUp() override { called = false; }
 
-    void TearDown() { eventManager.unregisterObserver(&eventObserver); }
-
-    EventObserverMock eventObserver;
     EventManager eventManager;
+    bool called;
 };
-
-TEST_F(WindowManagerCallbacksTests, givenWindowManager_whenWindowCloses_shouldEmitQuitEvent) {
-    EXPECT_CALL(eventObserver, onEvent).Times(1).WillOnce([](EventWrapper& event) {
-        ASSERT_TRUE(event.is<QuitEvent>());
-    });
-
-    EXPECT_CALL(window, onWindowCloseCallback)
-        .Times(1)
-        .WillOnce([](Window::OnWindowCloseCallback callback) { callback(); });
-
-    WindowManager WindowManager{&window};
-}
 
 TEST_F(
     WindowManagerCallbacksTests,
-    givenWindowManager_whenMouseInteractionDetected_shouldEmitMouseEvent
+    givenWindowManager_whenKeyboardInteractionDetected_shouldEmitMouseEvent
 ) {
     EXPECT_CALL(window, onMouseCallback).Times(1).WillOnce([](Window::OnMouseCallback callback) {
         callback(MouseAction::press, 1);
     });
 
-    EXPECT_CALL(eventObserver, onEvent).Times(1).WillOnce([](EventWrapper& event) {
-        ASSERT_TRUE(event.is<MouseEvent>());
+    eventManager.on<MouseEvent>([&]([[maybe_unused]] MouseEvent* event) {
+        EXPECT_EQ(event->action, MouseAction::press);
+        EXPECT_EQ(event->button, 1);
+        called = true;
     });
 
-    WindowManager WindowManager{&window};
+    WindowManager windowManager{&window};
+
+    eventManager.dispatch();
+    EXPECT_TRUE(called);
+}
+
+TEST_F(WindowManagerCallbacksTests, givenWindowManager_whenWindowCloses_shouldEmitQuitEvent) {
+    eventManager.on<QuitEvent>([&]([[maybe_unused]] auto) { called = true; });
+
+    EXPECT_CALL(window, onWindowCloseCallback)
+        .Times(1)
+        .WillOnce([](Window::OnWindowCloseCallback callback) { callback(); });
+
+    WindowManager windowManager{&window};
+
+    eventManager.dispatch();
+    EXPECT_TRUE(called);
 }
 
 TEST_F(
@@ -77,9 +78,14 @@ TEST_F(
         callback(KeyAction::press, 1);
     });
 
-    EXPECT_CALL(eventObserver, onEvent).Times(1).WillOnce([](EventWrapper& event) {
-        ASSERT_TRUE(event.is<KeyEvent>());
+    eventManager.on<KeyEvent>([&]([[maybe_unused]] KeyEvent* event) {
+        EXPECT_EQ(event->action, KeyAction::press);
+        EXPECT_EQ(event->key, 1);
+        called = true;
     });
 
-    WindowManager WindowManager{&window};
+    WindowManager windowManager{&window};
+
+    eventManager.dispatch();
+    EXPECT_TRUE(called);
 }
