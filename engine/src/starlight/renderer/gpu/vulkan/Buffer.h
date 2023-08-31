@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#include "starlight/core/utils/FreeList.h"
+
 #include "Vulkan.h"
 #include "fwd.h"
 
@@ -27,10 +29,11 @@ class Buffer {
     void destroy();
 
     void bind(uint64_t offset);
-
     bool resize(uint64_t size, VkQueue queue, VkCommandPool pool);
-
     void* lockMemory(uint64_t offset, uint64_t size, VkMemoryPropertyFlags flags);
+
+    uint64_t allocate(uint64_t size);
+    void free(uint64_t size, uint64_t offset);
 
     void unlockMemory();
 
@@ -62,6 +65,8 @@ class Buffer {
 
     int32_t m_memoryIndex;
     uint32_t m_memoryPropertyFlags;
+
+    FreeList m_bufferFreeList;
 };
 
 }  // namespace sl::vk

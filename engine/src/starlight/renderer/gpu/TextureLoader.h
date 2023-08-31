@@ -1,6 +1,6 @@
 #pragma once
 
-#include "starlight/core/Memory.hpp"
+#include "starlight/core/memory/Memory.hpp"
 
 #include "starlight/renderer/Texture.h"
 

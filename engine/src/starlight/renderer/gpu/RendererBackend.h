@@ -5,7 +5,7 @@
 
 #include "starlight/core/math/Vertex3.h"
 #include "starlight/core/math/Vertex2.h"
-#include "starlight/core/Id.h"
+#include "starlight/core/utils/Id.h"
 #include "starlight/core/math/Glm.h"
 
 #include "starlight/renderer/Texture.h"

@@ -5,7 +5,7 @@
 #include "starlight/core/math/Glm.h"
 #include "starlight/core/math/Size.hpp"
 #include "starlight/core/math/Vertex2.h"
-#include "starlight/core/Memory.hpp"
+#include "starlight/core/memory/Memory.hpp"
 #include "starlight/renderer/Texture.h"
 #include "starlight/renderer/Material.h"
 

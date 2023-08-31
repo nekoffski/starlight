@@ -4,7 +4,7 @@
 #include <optional>
 
 #include "Resource.h"
-#include "starlight/core/FileSystem.h"
+#include "starlight/core/utils/FileSystem.h"
 
 namespace sl {
 

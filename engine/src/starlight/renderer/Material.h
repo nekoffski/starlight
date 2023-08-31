@@ -8,7 +8,7 @@
 #include "Texture.h"
 #include "TextureMap.h"
 
-#include "starlight/core/Id.h"
+#include "starlight/core/utils/Id.h"
 
 namespace sl {
 

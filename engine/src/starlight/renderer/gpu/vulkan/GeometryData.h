@@ -1,6 +1,6 @@
 #pragma once
 
-#include "starlight/core/Id.h"
+#include "starlight/core/utils/Id.h"
 
 namespace sl::vk {
 
@@ -11,10 +11,10 @@ struct GeometryData {
     uint32_t generation;
     uint32_t vertexCount;
     uint32_t vertexElementSize;
-    uint32_t vertexBufferOffset;
+    uint64_t vertexBufferOffset;
     uint32_t indexCount;
     uint32_t indexElementSize;
-    uint32_t indexBufferOffset;
+    uint64_t indexBufferOffset;
 
     uint32_t getIndicesTotalSize() const { return indexCount * indexElementSize; }
     uint32_t getVerticesTotalSize() const { return vertexCount * vertexElementSize; }

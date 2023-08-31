@@ -1,8 +1,15 @@
 #include "Context.h"
 
+#include "utils/Log.h"
+
 namespace sl {
 
-Context::Context() : m_windowManager(&m_window) {}
+Context::LoggerInitializator::LoggerInitializator(const std::string& applicationName) {
+    sl::initLogging(applicationName);
+}
+
+Context::Context(const std::string& applicationName)
+    : m_loggerInitializator(applicationName), m_windowManager(&m_window) {}
 
 Window* Context::getWindow() { return &m_window; }
 

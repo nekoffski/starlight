@@ -7,7 +7,7 @@
 
 #include <GLFW/glfw3.h>
 
-#include "starlight/core/Log.h"
+#include "starlight/core/utils/Log.h"
 
 #define VK_ASSERT(expr) \
     { ASSERT(expr == VK_SUCCESS, "Vulkan Fatal Error: {}", expr); }

@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "starlight/core/Id.h"
+#include "starlight/core/utils/Id.h"
 #include "Material.h"
 
 namespace sl {

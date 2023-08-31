@@ -2,7 +2,7 @@
 
 #include <GLFW/glfw3.h>
 
-#include "starlight/core/Log.h"
+#include "starlight/core/utils/Log.h"
 #include "starlight/core/event/Input.h"
 
 namespace sl::glfw {

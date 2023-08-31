@@ -79,33 +79,25 @@ void RendererBackend::acquireGeometryResources(
     auto pool  = m_device->getGraphicsCommandPool();
     auto queue = m_device->getQueues().graphics;
 
-    internalData->vertexBufferOffset = m_geometryVertexOffset;
-    internalData->vertexCount        = vertexCount;
-    internalData->vertexElementSize  = vertexSize;
+    internalData->vertexCount       = vertexCount;
+    internalData->vertexElementSize = vertexSize;
 
     const auto verticesTotalSize = internalData->getVerticesTotalSize();
 
-    uploadDataRange(
-        pool, nullptr, queue, *m_objectVertexBuffer, internalData->vertexBufferOffset,
-        verticesTotalSize, vertexData
-    );
-
-    m_geometryVertexOffset += verticesTotalSize;
+    internalData->vertexBufferOffset =
+        uploadDataRange(pool, nullptr, queue, *m_objectVertexBuffer, verticesTotalSize, vertexData);
 
     if (indices.size() > 0) {
         // TODO: allow for indices to be optional
-        internalData->indexBufferOffset = m_geometryIndexOffset;
-        internalData->indexCount        = indices.size();
-        internalData->indexElementSize  = sizeof(uint32_t);
+
+        internalData->indexCount       = indices.size();
+        internalData->indexElementSize = sizeof(uint32_t);
 
         const auto indicesTotalSize = internalData->getIndicesTotalSize();
 
-        uploadDataRange(
-            pool, nullptr, queue, *m_objectIndexBuffer, internalData->indexBufferOffset,
-            indicesTotalSize, indices.data()
+        internalData->indexBufferOffset = uploadDataRange(
+            pool, nullptr, queue, *m_objectIndexBuffer, indicesTotalSize, indices.data()
         );
-
-        m_geometryIndexOffset += indicesTotalSize;
     }
 
     if (internalData->generation == invalidId)
@@ -166,24 +158,33 @@ void RendererBackend::releaseMaterialResources(Material& material) {
     }
 }
 
-void RendererBackend::uploadDataRange(
-    VkCommandPool pool, VkFence fence, VkQueue queue, Buffer& outBuffer, uint64_t offset,
-    uint64_t size, const void* data
+uint64_t RendererBackend::uploadDataRange(
+    VkCommandPool pool, VkFence fence, VkQueue queue, Buffer& outBuffer, uint64_t size,
+    const void* data
 ) {
+    // TODO: shouldn't it be a part of Buffer class?
+    const auto offset = outBuffer.allocate(size);
+
     VkMemoryPropertyFlags flags =
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
-    Buffer staging(
+    Buffer stagingBuffer(
         m_context.get(), m_device.get(),
         Buffer::Properties{size, flags, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, true}
     );
 
-    staging.loadData(0, size, 0, data);
-
-    staging.copyTo(
+    stagingBuffer.loadData(0, size, 0, data);
+    stagingBuffer.copyTo(
         pool, fence, queue, outBuffer.getHandle(),
         VkBufferCopy{.srcOffset = 0, .dstOffset = offset, .size = size}
     );
+
+    // this should return optional in case if allocate returns false
+    return offset;
+}
+
+void RendererBackend::freeDataRange(Buffer& buffer, uint64_t offset, uint64_t size) {
+    buffer.free(size, offset);
 }
 
 TextureLoader* RendererBackend::getTextureLoader() const { return m_textureLoader.get(); }

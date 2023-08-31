@@ -1,6 +1,6 @@
 
-#include <starlight/core/Log.h>
 #include <starlight/core/Context.h>
+#include <starlight/core/utils/Log.h>
 #include <starlight/core/event/Event.h>
 #include <starlight/core/event/Quit.h>
 #include <starlight/core/event/Input.h>
@@ -11,6 +11,8 @@
 #include <starlight/renderer/Renderer.h>
 #include <starlight/renderer/camera/EulerCamera.h>
 #include <starlight/renderer/Geometry.h>
+
+#include <starlight/core/memory/DynamicAllocator.h>
 
 #include <starlight/resource/ResourceManager.h>
 
@@ -23,20 +25,19 @@ sl::Geometry* getTestUiGeometry(sl::ResourceManager& resourceManager) {
 
     constexpr float f = 512.0f;
     props.vertices    = {
-           sl::Vertex2{{0.0f, 0.0f}, {0.0f, 0.0f}},
-           sl::Vertex2{{f, f},       {1.0f, 1.0f}},
-           sl::Vertex2{{0.0f, f},    {0.0f, 1.0f}},
-           sl::Vertex2{{f, 0.0f},    {1.0f, 0.0f}},
+           sl::Vertex2{{0.0f, 0.0f}, {0.0f, 1.0f}},
+           sl::Vertex2{{f, f},       {1.0f, 0.0f}},
+           sl::Vertex2{{0.0f, f},    {0.0f, 0.0f}},
+           sl::Vertex2{{f, 0.0f},    {1.0f, 1.0f}},
     };
 
     return resourceManager.loadGeometry(props);
 }
 
 int main() {
-    sl::initLogging("starlight");
-    LOG_INFO("Sandbox starting!");
+    sl::Context ctx{"starligt-sandbox"};
 
-    sl::Context ctx;
+    LOG_INFO("Sandbox starting!");
 
     auto eventManager = sl::EventManager::getPtr();
 

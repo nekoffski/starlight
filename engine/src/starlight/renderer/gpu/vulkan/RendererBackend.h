@@ -8,7 +8,7 @@
 #include "starlight/core/fwd.h"
 #include "starlight/core/window/Window.h"
 #include "starlight/core/Config.h"
-#include "starlight/core/Memory.hpp"
+#include "starlight/core/memory/Memory.hpp"
 
 #include "starlight/renderer/gpu/RendererBackend.h"
 
@@ -71,10 +71,11 @@ class RendererBackend final : public sl::RendererBackend {
     void regenerateFramebuffers();
     void createSemaphoresAndFences();
 
-    void uploadDataRange(
-        VkCommandPool pool, VkFence fence, VkQueue queue, Buffer& outBuffer, uint64_t offset,
-        uint64_t size, const void* data
+    uint64_t uploadDataRange(
+        VkCommandPool pool, VkFence fence, VkQueue queue, Buffer& outBuffer, uint64_t size,
+        const void* data
     );
+    void freeDataRange(Buffer& buffer, uint64_t offset, uint64_t size);
 
     void createBuffers();
 
@@ -115,11 +116,7 @@ class RendererBackend final : public sl::RendererBackend {
     static constexpr uint8_t maxFramesInFlight = 2;
 
     std::array<GeometryData, vulkanMaxGeometryCount> m_geometries;
-
     std::vector<Framebuffer> m_worldFramebuffers;
-
-    uint32_t m_geometryVertexOffset = 0;
-    uint32_t m_geometryIndexOffset  = 0;
 };
 
 }  // namespace sl::vk

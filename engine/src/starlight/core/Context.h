@@ -1,17 +1,23 @@
 #pragma once
 
+#include <string>
+
 #include "window/WindowManager.h"
 #include "window/Vendor.h"
 
 #include "event/Event.h"
-#include "TimeManager.h"
+#include "utils/TimeManager.h"
 #include "Config.h"
 
 namespace sl {
 
 class Context {
+    struct LoggerInitializator {
+        explicit LoggerInitializator(const std::string& applicationName);
+    };
+
    public:
-    explicit Context();
+    explicit Context(const std::string& applicationName = "starlight");
 
     Window* getWindow();
 
@@ -21,6 +27,8 @@ class Context {
     Config* getConfig();
 
    private:
+    LoggerInitializator m_loggerInitializator;
+
     Config m_config;
     EventManager m_eventManager;
 

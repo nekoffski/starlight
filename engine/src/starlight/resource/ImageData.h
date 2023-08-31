@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Resource.h"
-#include "starlight/core/Memory.hpp"
+#include "starlight/core/memory/Memory.hpp"
 
 #include <optional>
 

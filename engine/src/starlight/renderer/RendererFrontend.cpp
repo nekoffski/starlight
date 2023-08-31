@@ -1,7 +1,7 @@
 #include "RendererFrontend.h"
 
 #include "starlight/core/math/Glm.h"
-#include "starlight/core/Memory.hpp"
+#include "starlight/core/memory/Memory.hpp"
 #include "starlight/core/window/WindowManager.h"
 
 #include "camera/EulerCamera.h"
@@ -35,7 +35,7 @@ bool RendererFrontend::drawFrame(
             Mat4f projection = math::ortho(
                 0.0f, static_cast<float>(w), static_cast<float>(h), 0.0f, -100.0f, 100.0f
             );
-            Mat4f view = math::inverse(identityMatrix);
+            Mat4f view = identityMatrix;
 
             m_backend->updateGlobalUIState(projection, view, 0);
 

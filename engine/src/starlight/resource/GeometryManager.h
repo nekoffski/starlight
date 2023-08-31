@@ -5,8 +5,8 @@
 #include <kc/core/Singleton.hpp>
 #include <kc/core/Meta.hpp>
 
-#include "starlight/core/FileSystem.h"
-#include "starlight/core/Memory.hpp"
+#include "starlight/core/utils/FileSystem.h"
+#include "starlight/core/memory/Memory.hpp"
 
 #include "starlight/renderer/Geometry.h"
 #include "starlight/renderer/Material.h"

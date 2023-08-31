@@ -1,6 +1,6 @@
 #include "ShaderStage.h"
 
-#include "starlight/core/FileSystem.h"
+#include "starlight/core/utils/FileSystem.h"
 
 #include "starlight/resource/ShaderSource.h"
 

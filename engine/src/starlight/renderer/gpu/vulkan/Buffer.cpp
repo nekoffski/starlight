@@ -13,7 +13,8 @@ Buffer::Buffer(const Context* context, const Device* device, const Buffer::Prope
     , m_device(device)
     , m_totalSize(props.size)
     , m_usageFlags(props.usageFlags)
-    , m_memoryPropertyFlags(props.memoryPropertyFlags) {
+    , m_memoryPropertyFlags(props.memoryPropertyFlags)
+    , m_bufferFreeList(props.size) {
     auto logicalDevice = m_device->getLogicalDevice();
     auto allocator     = m_context->getAllocator();
 
@@ -41,6 +42,10 @@ Buffer::Buffer(const Context* context, const Device* device, const Buffer::Prope
 }
 
 Buffer::~Buffer() { destroy(); }
+
+uint64_t Buffer::allocate(uint64_t size) { return m_bufferFreeList.allocateBlock(size); }
+
+void Buffer::free(uint64_t size, uint64_t offset) { m_bufferFreeList.freeBlock(size, offset); }
 
 VkMemoryAllocateInfo Buffer::createMemoryAllocateInfo(VkMemoryRequirements memoryRequirements
 ) const {
@@ -80,6 +85,13 @@ void Buffer::bind(uint64_t offset) {
 }
 
 bool Buffer::resize(uint64_t size, VkQueue queue, VkCommandPool pool) {
+    ASSERT(
+        size > m_totalSize,
+        "Buffer::resize(...) requires new size to be greater than the actual one"
+    );
+
+    m_bufferFreeList.resize(size);
+
     auto bufferCreateInfo = createBufferCreateInfo();
 
     auto logicalDevice = m_device->getLogicalDevice();

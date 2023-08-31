@@ -4,7 +4,7 @@
 
 #include <kc/core/Singleton.hpp>
 
-#include "starlight/core/Memory.hpp"
+#include "starlight/core/memory/Memory.hpp"
 #include "starlight/renderer/fwd.h"
 
 namespace sl {
