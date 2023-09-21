@@ -5,18 +5,25 @@
 
 namespace sl::vk {
 
-CommandBuffer::CommandBuffer(const Device* device, VkCommandPool commandPool, Severity severity)
-    : m_device(device), m_commandPool(commandPool) {
+CommandBuffer::CommandBuffer(
+  const Device* device, VkCommandPool commandPool, Severity severity
+) :
+    m_device(device),
+    m_commandPool(commandPool) {
     create(severity);
 }
 
 CommandBuffer::~CommandBuffer() { destroy(); }
 
 VkCommandBufferAllocateInfo CommandBuffer::createAllocateInfo(Severity severity) {
-    VkCommandBufferAllocateInfo allocateInfo = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};
+    VkCommandBufferAllocateInfo allocateInfo = {
+        VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO
+    };
 
-    const auto level = severity == Severity::primary ? VK_COMMAND_BUFFER_LEVEL_PRIMARY
-                                                     : VK_COMMAND_BUFFER_LEVEL_SECONDARY;
+    const auto level =
+      severity == Severity::primary
+        ? VK_COMMAND_BUFFER_LEVEL_PRIMARY
+        : VK_COMMAND_BUFFER_LEVEL_SECONDARY;
 
     allocateInfo.commandPool        = m_commandPool;
     allocateInfo.level              = level;
@@ -30,7 +37,9 @@ void CommandBuffer::create(Severity severity) {
     m_state = State::notAllocated;
 
     auto allocateInfo = createAllocateInfo(severity);
-    VK_ASSERT(vkAllocateCommandBuffers(m_device->getLogicalDevice(), &allocateInfo, &m_handle));
+    VK_ASSERT(vkAllocateCommandBuffers(
+      m_device->getLogicalDevice(), &allocateInfo, &m_handle
+    ));
 
     m_state = State::ready;
 }
@@ -39,7 +48,9 @@ void CommandBuffer::destroy() {
     LOG_TRACE("Destroying command buffer");
 
     if (m_handle) {
-        vkFreeCommandBuffers(m_device->getLogicalDevice(), m_commandPool, 1, &m_handle);
+        vkFreeCommandBuffers(
+          m_device->getLogicalDevice(), m_commandPool, 1, &m_handle
+        );
         m_handle = VK_NULL_HANDLE;
     }
     m_state = State::notAllocated;
@@ -65,14 +76,14 @@ void CommandBuffer::createAndBeginSingleUse() {
     create(Severity::primary);
 
     begin(BeginFlags{
-        .isSingleUse          = true,
-        .isRenderpassContinue = false,
-        .isSimultaneousUse    = false,
+      .isSingleUse          = true,
+      .isRenderpassContinue = false,
+      .isSimultaneousUse    = false,
     });
 }
 
 VkSubmitInfo CommandBuffer::createSubmitQueueInfo() const {
-    VkSubmitInfo submitInfo       = {VK_STRUCTURE_TYPE_SUBMIT_INFO};
+    VkSubmitInfo submitInfo       = { VK_STRUCTURE_TYPE_SUBMIT_INFO };
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers    = &m_handle;
 
@@ -98,18 +109,23 @@ void CommandBuffer::endSingleUse(VkQueue queue) {
     destroy();
 }
 
-VkCommandBufferBeginInfo CommandBuffer::createCommandBufferBeginInfo(const BeginFlags& flags
+VkCommandBufferBeginInfo CommandBuffer::createCommandBufferBeginInfo(
+  const BeginFlags& flags
 ) const {
-    VkCommandBufferBeginInfo beginInfo = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
+    VkCommandBufferBeginInfo beginInfo = {
+        VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO
+    };
 
     beginInfo.flags = 0;
 
-    if (flags.isSingleUse) beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+    if (flags.isSingleUse)
+        beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
     if (flags.isRenderpassContinue)
         beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT;
 
-    if (flags.isSimultaneousUse) beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+    if (flags.isSimultaneousUse)
+        beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
 
     return beginInfo;
 }
