@@ -16,7 +16,7 @@ class Context {
         explicit LoggerInitializator(const std::string& applicationName);
     };
 
-   public:
+  public:
     explicit Context(const std::string& applicationName = "starlight");
 
     Window* getWindow();
@@ -26,7 +26,7 @@ class Context {
 
     Config* getConfig();
 
-   private:
+  private:
     LoggerInitializator m_loggerInitializator;
 
     Config m_config;

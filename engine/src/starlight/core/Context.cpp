@@ -8,8 +8,8 @@ Context::LoggerInitializator::LoggerInitializator(const std::string& application
     sl::initLogging(applicationName);
 }
 
-Context::Context(const std::string& applicationName)
-    : m_loggerInitializator(applicationName), m_windowManager(&m_window) {}
+Context::Context(const std::string& applicationName) :
+    m_loggerInitializator(applicationName), m_windowManager(&m_window) {}
 
 Window* Context::getWindow() { return &m_window; }
 

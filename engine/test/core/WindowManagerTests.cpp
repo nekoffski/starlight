@@ -30,17 +30,14 @@ TEST_F(WindowManagerTests, givenWindowManager_whenCreating_shouldSetOnWindowClos
     WindowManager WindowManager{&window};
 }
 
-struct WindowManagerCallbacksTests : WindowManagerTests {
+struct CallbacksTests : WindowManagerTests {
     void SetUp() override { called = false; }
 
     EventManager eventManager;
     bool called;
 };
 
-TEST_F(
-    WindowManagerCallbacksTests,
-    givenWindowManager_whenKeyboardInteractionDetected_shouldEmitMouseEvent
-) {
+TEST_F(CallbacksTests, givenWindowManager_whenKeyboardInteractionDetected_shouldEmitMouseEvent) {
     EXPECT_CALL(window, onMouseCallback).Times(1).WillOnce([](Window::OnMouseCallback callback) {
         callback(MouseAction::press, 1);
     });
@@ -57,7 +54,7 @@ TEST_F(
     EXPECT_TRUE(called);
 }
 
-TEST_F(WindowManagerCallbacksTests, givenWindowManager_whenWindowCloses_shouldEmitQuitEvent) {
+TEST_F(CallbacksTests, givenWindowManager_whenWindowCloses_shouldEmitQuitEvent) {
     eventManager.on<QuitEvent>([&]([[maybe_unused]] auto) { called = true; });
 
     EXPECT_CALL(window, onWindowCloseCallback)
@@ -70,10 +67,7 @@ TEST_F(WindowManagerCallbacksTests, givenWindowManager_whenWindowCloses_shouldEm
     EXPECT_TRUE(called);
 }
 
-TEST_F(
-    WindowManagerCallbacksTests,
-    givenWindowManager_whenKeyboardInteractionDetected_shouldEmitKeyEvent
-) {
+TEST_F(CallbacksTests, givenWindowManager_whenKeyboardInteractionDetected_shouldEmitKeyEvent) {
     EXPECT_CALL(window, onKeyCallback).Times(1).WillOnce([](Window::OnKeyCallback callback) {
         callback(KeyAction::press, 1);
     });

@@ -14,9 +14,9 @@
 namespace sl {
 
 class Renderer {
-   public:
-    explicit Renderer(sl::Window& window, const sl::Config& config)
-        : m_backend(window, config), m_frontend(&m_backend), m_gpuMemoryProxy(m_backend) {}
+  public:
+    explicit Renderer(sl::Window& window, const sl::Config& config) :
+        m_backend(window, config), m_frontend(&m_backend), m_gpuMemoryProxy(m_backend) {}
 
     bool drawFrame(const RenderPacket& renderPacket, const Camera& camera, float deltaTime) {
         return m_frontend.drawFrame(renderPacket, camera, deltaTime);
@@ -31,7 +31,7 @@ class Renderer {
     TextureLoader* getTextureLoader() { return m_backend.getTextureLoader(); }
     GPUMemoryProxy* getGPUMemoryProxy() { return &m_gpuMemoryProxy; }
 
-   private:
+  private:
     RendererBackendVendor m_backend;
     RendererFrontend m_frontend;
     GPUMemoryProxy m_gpuMemoryProxy;

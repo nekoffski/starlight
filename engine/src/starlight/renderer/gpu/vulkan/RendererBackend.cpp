@@ -17,21 +17,21 @@
 
 namespace sl::vk {
 
-RendererBackend::RendererBackend(sl::Window& window, const Config& config)
-    : m_framebufferSize(window.getSize()) {
+RendererBackend::RendererBackend(sl::Window& window, const Config& config) :
+    m_framebufferSize(window.getSize()) {
     createCoreComponents(window, config);
     regenerateFramebuffers();
     createCommandBuffers();
     createSemaphoresAndFences();
 
     m_materialShader = createUniqPtr<MaterialShader>(
-        m_context.get(), m_device.get(), m_swapchain->getImagesSize(), m_framebufferSize,
-        *m_mainRenderPass
+      m_context.get(), m_device.get(), m_swapchain->getImagesSize(), m_framebufferSize,
+      *m_mainRenderPass
     );
 
     m_uiShader = createUniqPtr<UIShader>(
-        m_context.get(), m_device.get(), m_swapchain->getImagesSize(), m_framebufferSize,
-        *m_uiRenderPass
+      m_context.get(), m_device.get(), m_swapchain->getImagesSize(), m_framebufferSize,
+      *m_uiRenderPass
     );
 
     LOG_DEBUG("Basic shader created");
@@ -44,12 +44,12 @@ RendererBackend::RendererBackend(sl::Window& window, const Config& config)
 }
 
 void RendererBackend::acquireGeometryResources(
-    Geometry& geometry, uint32_t vertexSize, uint32_t vertexCount, void* vertexData,
-    std::span<uint32_t> indices
+  Geometry& geometry, uint32_t vertexSize, uint32_t vertexCount, void* vertexData,
+  std::span<uint32_t> indices
 ) {
     LOG_TRACE(
-        "Acquiring geometry resources vertexSize={}, vertexCount={}, indicesCount={}, vertexDataPtr={}",
-        vertexSize, vertexCount, indices.size(), vertexData
+      "Acquiring geometry resources vertexSize={}, vertexCount={}, indicesCount={}, vertexDataPtr={}",
+      vertexSize, vertexCount, indices.size(), vertexData
     );
 
     bool isReupload = geometry.internalId != invalidId;
@@ -85,7 +85,7 @@ void RendererBackend::acquireGeometryResources(
     const auto verticesTotalSize = internalData->getVerticesTotalSize();
 
     internalData->vertexBufferOffset =
-        uploadDataRange(pool, nullptr, queue, *m_objectVertexBuffer, verticesTotalSize, vertexData);
+      uploadDataRange(pool, nullptr, queue, *m_objectVertexBuffer, verticesTotalSize, vertexData);
 
     if (indices.size() > 0) {
         // TODO: allow for indices to be optional
@@ -96,7 +96,7 @@ void RendererBackend::acquireGeometryResources(
         const auto indicesTotalSize = internalData->getIndicesTotalSize();
 
         internalData->indexBufferOffset = uploadDataRange(
-            pool, nullptr, queue, *m_objectIndexBuffer, indicesTotalSize, indices.data()
+          pool, nullptr, queue, *m_objectIndexBuffer, indicesTotalSize, indices.data()
         );
     }
 
@@ -159,24 +159,24 @@ void RendererBackend::releaseMaterialResources(Material& material) {
 }
 
 uint64_t RendererBackend::uploadDataRange(
-    VkCommandPool pool, VkFence fence, VkQueue queue, Buffer& outBuffer, uint64_t size,
-    const void* data
+  VkCommandPool pool, VkFence fence, VkQueue queue, Buffer& outBuffer, uint64_t size,
+  const void* data
 ) {
     // TODO: shouldn't it be a part of Buffer class?
     const auto offset = outBuffer.allocate(size);
 
     VkMemoryPropertyFlags flags =
-        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
     Buffer stagingBuffer(
-        m_context.get(), m_device.get(),
-        Buffer::Properties{size, flags, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, true}
+      m_context.get(), m_device.get(),
+      Buffer::Properties{ size, flags, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, true }
     );
 
     stagingBuffer.loadData(0, size, 0, data);
     stagingBuffer.copyTo(
-        pool, fence, queue, outBuffer.getHandle(),
-        VkBufferCopy{.srcOffset = 0, .dstOffset = offset, .size = size}
+      pool, fence, queue, outBuffer.getHandle(),
+      VkBufferCopy{ .srcOffset = 0, .dstOffset = offset, .size = size }
     );
 
     // this should return optional in case if allocate returns false
@@ -214,7 +214,7 @@ void RendererBackend::drawGeometry(const GeometryRenderData& geometryRenderData)
         case Material::Type::world:
             m_materialShader->setModel(commandBuffer.getHandle(), geometryRenderData.model);
             m_materialShader->applyMaterial(
-                commandBuffer.getHandle(), m_frameInfo.imageIndex, *material
+              commandBuffer.getHandle(), m_frameInfo.imageIndex, *material
             );
             m_materialShader->use(commandBuffer);
             break;
@@ -224,17 +224,17 @@ void RendererBackend::drawGeometry(const GeometryRenderData& geometryRenderData)
             return;
     }
 
-    VkDeviceSize offsets[1] = {bufferData.vertexBufferOffset};
+    VkDeviceSize offsets[1] = { bufferData.vertexBufferOffset };
 
     vkCmdBindVertexBuffers(
-        commandBuffer.getHandle(), 0, 1, m_objectVertexBuffer->getHandlePointer(),
-        (VkDeviceSize*)offsets
+      commandBuffer.getHandle(), 0, 1, m_objectVertexBuffer->getHandlePointer(),
+      (VkDeviceSize*)offsets
     );
 
     if (bufferData.indexCount > 0) {
         vkCmdBindIndexBuffer(
-            commandBuffer.getHandle(), m_objectIndexBuffer->getHandle(),
-            bufferData.indexBufferOffset, VK_INDEX_TYPE_UINT32
+          commandBuffer.getHandle(), m_objectIndexBuffer->getHandle(), bufferData.indexBufferOffset,
+          VK_INDEX_TYPE_UINT32
         );
         vkCmdDrawIndexed(commandBuffer.getHandle(), bufferData.indexCount, 1, 0, 0, 0);
     } else {
@@ -325,21 +325,21 @@ void RendererBackend::createBuffers() {
     LOG_DEBUG("Creating buffers");
 
     m_objectVertexBuffer = createUniqPtr<Buffer>(
-        m_context.get(), m_device.get(),
-        Buffer::Properties{
-            sizeof(Vertex3) * 1024 * 1024, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-            true}
+      m_context.get(), m_device.get(),
+      Buffer::Properties{
+        sizeof(Vertex3) * 1024 * 1024, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT
+          | VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+        true }
     );
 
     m_objectIndexBuffer = createUniqPtr<Buffer>(
-        m_context.get(), m_device.get(),
-        Buffer::Properties{
-            sizeof(uint32_t) * 1024 * 1024, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-            true}
+      m_context.get(), m_device.get(),
+      Buffer::Properties{
+        sizeof(uint32_t) * 1024 * 1024, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+        VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT
+          | VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+        true }
     );
 }
 
@@ -350,20 +350,20 @@ void RendererBackend::createCoreComponents(sl::Window& window, const Config& con
 
     const auto& [width, height] = window.getSize();
 
-    auto backgroundColor = (1.0f / 255.0f) * glm::vec4{117, 210, 98, 255};
+    auto backgroundColor = (1.0f / 255.0f) * glm::vec4{ 117, 210, 98, 255 };
 
     RenderPass::Properties renderPassProperties{
         .area  = glm::vec4{0.0f, 0.0f, width, height},
         .color = backgroundColor,
         .clearFlags =
-            (RenderPass::clearFlagColorBuffer | RenderPass::clearFlagDepthBuffer |
-             RenderPass::clearFlagStencilBuffer),
+          (RenderPass::clearFlagColorBuffer | RenderPass::clearFlagDepthBuffer
+           | RenderPass::clearFlagStencilBuffer),
         .hasPreviousPass = false,
         .hasNextPass     = true
     };
 
     m_mainRenderPass = createUniqPtr<RenderPass>(
-        m_context.get(), m_device.get(), *m_swapchain, renderPassProperties
+      m_context.get(), m_device.get(), *m_swapchain, renderPassProperties
     );
 
     renderPassProperties.color           = glm::vec4(0.0f);
@@ -372,7 +372,7 @@ void RendererBackend::createCoreComponents(sl::Window& window, const Config& con
     renderPassProperties.hasNextPass     = false;
 
     m_uiRenderPass = createUniqPtr<RenderPass>(
-        m_context.get(), m_device.get(), *m_swapchain, renderPassProperties
+      m_context.get(), m_device.get(), *m_swapchain, renderPassProperties
     );
 }
 
@@ -401,8 +401,8 @@ void RendererBackend::onViewportResize(uint32_t width, uint32_t height) {
     m_frameInfo.framebufferSizeGeneration++;
 
     LOG_TRACE(
-        "Vulkan renderer backend onViewportResize {}/{}/{}", width, height,
-        m_frameInfo.framebufferSizeGeneration
+      "Vulkan renderer backend onViewportResize {}/{}/{}", width, height,
+      m_frameInfo.framebufferSizeGeneration
     );
 }
 
@@ -414,7 +414,7 @@ void RendererBackend::createCommandBuffers() {
 
     for (int i = 0; i < swapchainImagesCount; ++i) {
         m_commandBuffers.emplace_back(
-            m_device.get(), m_device->getGraphicsCommandPool(), CommandBuffer::Severity::primary
+          m_device.get(), m_device->getGraphicsCommandPool(), CommandBuffer::Severity::primary
         );
     }
 }
@@ -431,18 +431,18 @@ void RendererBackend::regenerateFramebuffers() {
     framebuffers->reserve(swapchainImagesCount);
 
     for (auto& view : *m_swapchain->getImageViews()) {
-        std::vector<VkImageView> worldAttachments = {view, depthBuffer->getView()};
+        std::vector<VkImageView> worldAttachments = { view, depthBuffer->getView() };
 
         m_worldFramebuffers.emplace_back(
-            m_context.get(), m_device.get(), m_mainRenderPass->getHandle(), m_framebufferSize,
-            worldAttachments
+          m_context.get(), m_device.get(), m_mainRenderPass->getHandle(), m_framebufferSize,
+          worldAttachments
         );
 
-        std::vector<VkImageView> uiAttachments = {view};
+        std::vector<VkImageView> uiAttachments = { view };
 
         framebuffers->emplace_back(
-            m_context.get(), m_device.get(), m_uiRenderPass->getHandle(), m_framebufferSize,
-            uiAttachments
+          m_context.get(), m_device.get(), m_uiRenderPass->getHandle(), m_framebufferSize,
+          uiAttachments
 
         );
     }
@@ -464,9 +464,9 @@ void RendererBackend::recreateSwapchain() {
 void RendererBackend::recordCommands(CommandBuffer& commandBuffer) {
     commandBuffer.reset();
     commandBuffer.begin(CommandBuffer::BeginFlags{
-        .isSingleUse          = false,
-        .isRenderpassContinue = false,
-        .isSimultaneousUse    = false,
+      .isSingleUse          = false,
+      .isRenderpassContinue = false,
+      .isSimultaneousUse    = false,
     });
 
     // Dynamic state
@@ -518,7 +518,7 @@ bool RendererBackend::beginFrame(float deltaTime) {
     // when this completes. This same semaphore will later be waited on by the queue submission
     // to ensure this image is available.
     auto nextImageIndex = m_swapchain->acquireNextImageIndex(
-        UINT64_MAX, m_imageAvailableSemaphores[m_frameInfo.currentFrame].getHandle(), nullptr
+      UINT64_MAX, m_imageAvailableSemaphores[m_frameInfo.currentFrame].getHandle(), nullptr
     );
 
     if (not nextImageIndex) return false;
@@ -557,7 +557,7 @@ bool RendererBackend::endFrame(float deltaTime) {
 
     // Submit the queue and wait for the operation to complete.
     // Begin queue submission
-    VkSubmitInfo submit_info = {VK_STRUCTURE_TYPE_SUBMIT_INFO};
+    VkSubmitInfo submit_info = { VK_STRUCTURE_TYPE_SUBMIT_INFO };
 
     auto commandBufferHandle = commandBuffer.getHandle();
 
@@ -568,24 +568,23 @@ bool RendererBackend::endFrame(float deltaTime) {
     // The semaphore(s) to be signaled when the queue is complete.
     submit_info.signalSemaphoreCount = 1;
     submit_info.pSignalSemaphores =
-        m_queueCompleteSemaphores[m_frameInfo.currentFrame].getHandlePointer();
+      m_queueCompleteSemaphores[m_frameInfo.currentFrame].getHandlePointer();
 
     // Wait semaphore ensures that the operation cannot begin until the image is available.
     submit_info.waitSemaphoreCount = 1;
     submit_info.pWaitSemaphores =
-        m_imageAvailableSemaphores[m_frameInfo.currentFrame].getHandlePointer();
+      m_imageAvailableSemaphores[m_frameInfo.currentFrame].getHandlePointer();
 
     // Each semaphore waits on the corresponding pipeline stage to complete. 1:1 ratio.
     // VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT prevents subsequent colour attachment
     // writes from executing until the semaphore signals (i.e. one frame is presented at atime)
-    VkPipelineStageFlags flags[1] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+    VkPipelineStageFlags flags[1] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
     submit_info.pWaitDstStageMask = flags;
 
     const auto& deviceQueues = m_device->getQueues();
 
     VkResult result = vkQueueSubmit(
-        deviceQueues.graphics, 1, &submit_info,
-        m_inFlightFences[m_frameInfo.currentFrame].getHandle()
+      deviceQueues.graphics, 1, &submit_info, m_inFlightFences[m_frameInfo.currentFrame].getHandle()
     );
 
     if (result != VK_SUCCESS) {
@@ -596,8 +595,8 @@ bool RendererBackend::endFrame(float deltaTime) {
     commandBuffer.updateSubmitted();
 
     m_swapchain->present(
-        deviceQueues.graphics, deviceQueues.present,
-        m_queueCompleteSemaphores[m_frameInfo.currentFrame].getHandle(), m_frameInfo.imageIndex
+      deviceQueues.graphics, deviceQueues.present,
+      m_queueCompleteSemaphores[m_frameInfo.currentFrame].getHandle(), m_frameInfo.imageIndex
     );
 
     m_frameInfo.currentFrame = (m_frameInfo.currentFrame + 1) % maxFramesInFlight;

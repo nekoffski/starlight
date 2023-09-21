@@ -10,13 +10,13 @@
 namespace sl {
 
 class RendererFrontend {
-   public:
+  public:
     explicit RendererFrontend(RendererBackend* backend);
     virtual ~RendererFrontend();
 
     bool drawFrame(const RenderPacket& renderPacket, const Camera& camera, float deltaTime);
 
-   private:
+  private:
     RendererBackend* m_backend;
 
     Texture* m_activeTexture;

@@ -36,7 +36,7 @@ class RendererBackend final : public sl::RendererBackend {
         uint32_t currentFrame                  = 0;
     };
 
-   public:
+  public:
     explicit RendererBackend(sl::Window& window, const Config& config);
     ~RendererBackend();
 
@@ -59,21 +59,21 @@ class RendererBackend final : public sl::RendererBackend {
     void releaseMaterialResources(Material& material) override;
 
     virtual void acquireGeometryResources(
-        Geometry& geometry, uint32_t vertexSize, uint32_t vertexCount, void* vertexData,
-        std::span<uint32_t> indices
+      Geometry& geometry, uint32_t vertexSize, uint32_t vertexCount, void* vertexData,
+      std::span<uint32_t> indices
     ) override;
 
     void releaseGeometryResources(Geometry& geometry) override;
 
-   private:
+  private:
     void createCoreComponents(sl::Window& window, const Config& config);
     void createCommandBuffers();
     void regenerateFramebuffers();
     void createSemaphoresAndFences();
 
     uint64_t uploadDataRange(
-        VkCommandPool pool, VkFence fence, VkQueue queue, Buffer& outBuffer, uint64_t size,
-        const void* data
+      VkCommandPool pool, VkFence fence, VkQueue queue, Buffer& outBuffer, uint64_t size,
+      const void* data
     );
     void freeDataRange(Buffer& buffer, uint64_t offset, uint64_t size);
 
