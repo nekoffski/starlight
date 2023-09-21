@@ -1,27 +1,27 @@
 #pragma once
 
-#include <vector>
 #include <array>
-#include <span>
 #include <cstdint>
+#include <span>
+#include <vector>
 
-#include "starlight/core/fwd.h"
-#include "starlight/core/window/Window.h"
 #include "starlight/core/Config.h"
+#include "starlight/core/fwd.h"
 #include "starlight/core/memory/Memory.hpp"
+#include "starlight/core/window/Window.h"
 
 #include "starlight/renderer/gpu/RendererBackend.h"
 
 #include "Vulkan.h"
 #include "fwd.h"
 
+#include "GeometryData.h"
 #include "MaterialShader.h"
-#include "UIShader.h"
 #include "Pipeline.h"
 #include "Semaphore.h"
 #include "Texture.h"
 #include "TextureLoader.h"
-#include "GeometryData.h"
+#include "UIShader.h"
 
 #include "Buffer.h"
 
@@ -29,14 +29,14 @@ namespace sl::vk {
 
 class RendererBackend final : public sl::RendererBackend {
     struct FrameInfo {
-        int frameCount                         = 0;
-        uint32_t imageIndex                    = 0;
-        uint32_t framebufferSizeGeneration     = 0;
+        int frameCount = 0;
+        uint32_t imageIndex = 0;
+        uint32_t framebufferSizeGeneration = 0;
         uint32_t lastFramebufferSizeGeneration = 0;
-        uint32_t currentFrame                  = 0;
+        uint32_t currentFrame = 0;
     };
 
-  public:
+public:
     explicit RendererBackend(sl::Window& window, const Config& config);
     ~RendererBackend();
 
@@ -58,23 +58,23 @@ class RendererBackend final : public sl::RendererBackend {
     void acquireMaterialResources(Material& material) override;
     void releaseMaterialResources(Material& material) override;
 
-    virtual void acquireGeometryResources(
-      Geometry& geometry, uint32_t vertexSize, uint32_t vertexCount, void* vertexData,
-      std::span<uint32_t> indices
-    ) override;
+    virtual void acquireGeometryResources(Geometry& geometry,
+                                          uint32_t vertexSize,
+                                          uint32_t vertexCount,
+                                          void* vertexData,
+                                          std::span<uint32_t> indices) override;
 
     void releaseGeometryResources(Geometry& geometry) override;
 
-  private:
+private:
     void createCoreComponents(sl::Window& window, const Config& config);
     void createCommandBuffers();
     void regenerateFramebuffers();
     void createSemaphoresAndFences();
 
-    uint64_t uploadDataRange(
-      VkCommandPool pool, VkFence fence, VkQueue queue, Buffer& outBuffer, uint64_t size,
-      const void* data
-    );
+    uint64_t uploadDataRange(VkCommandPool pool, VkFence fence, VkQueue queue,
+                             Buffer& outBuffer, uint64_t size,
+                             const void* data);
     void freeDataRange(Buffer& buffer, uint64_t offset, uint64_t size);
 
     void createBuffers();

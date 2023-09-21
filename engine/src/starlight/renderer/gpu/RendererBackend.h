@@ -3,24 +3,24 @@
 #include <array>
 #include <span>
 
-#include "starlight/core/math/Vertex3.h"
-#include "starlight/core/math/Vertex2.h"
-#include "starlight/core/utils/Id.h"
 #include "starlight/core/math/Glm.h"
+#include "starlight/core/math/Vertex2.h"
+#include "starlight/core/math/Vertex3.h"
+#include "starlight/core/utils/Id.h"
 
-#include "starlight/renderer/Texture.h"
-#include "starlight/renderer/Material.h"
 #include "starlight/renderer/Geometry.h"
+#include "starlight/renderer/Material.h"
+#include "starlight/renderer/Texture.h"
 #include "starlight/renderer/fwd.h"
 
-#include "GlobalState.h"
 #include "GeometryRenderData.h"
+#include "GlobalState.h"
 
 namespace sl {
 
 // TODO: change to objects or something
 constexpr int builtinRenderPassWorld = 1;
-constexpr int builtinRenderPassUI    = 2;
+constexpr int builtinRenderPassUI = 2;
 
 struct RendererBackend {
     enum class BultinRenderPass { world, ui };
@@ -28,10 +28,11 @@ struct RendererBackend {
     virtual ~RendererBackend() {}
 
     virtual bool beginFrame(float deltaTime) = 0;
-    virtual bool endFrame(float deltaTime)   = 0;
+    virtual bool endFrame(float deltaTime) = 0;
 
-    virtual void updateGlobalWorldState(const GlobalState& globalState)          = 0;
-    virtual void updateGlobalUIState(Mat4f projection, Mat4f view, int32_t mode) = 0;
+    virtual void updateGlobalWorldState(const GlobalState& globalState) = 0;
+    virtual void updateGlobalUIState(Mat4f projection, Mat4f view,
+                                     int32_t mode) = 0;
 
     bool renderPass(uint8_t id, auto&& callback) {
         if (beginRenderPass(id)) {
@@ -42,7 +43,7 @@ struct RendererBackend {
     }
 
     virtual bool beginRenderPass(uint8_t id) = 0;
-    virtual bool endRenderPass(uint8_t id)   = 0;
+    virtual bool endRenderPass(uint8_t id) = 0;
 
     virtual void drawGeometry(const GeometryRenderData& modelMatrix) = 0;
 
@@ -54,10 +55,11 @@ struct RendererBackend {
     virtual void acquireMaterialResources(Material& material) = 0;
     virtual void releaseMaterialResources(Material& material) = 0;
 
-    virtual void acquireGeometryResources(
-        Geometry& geometry, uint32_t vertexSize, uint32_t vertexCount, void* vertexData,
-        std::span<uint32_t> indices
-    ) = 0;
+    virtual void acquireGeometryResources(Geometry& geometry,
+                                          uint32_t vertexSize,
+                                          uint32_t vertexCount,
+                                          void* vertexData,
+                                          std::span<uint32_t> indices) = 0;
 
     virtual void releaseGeometryResources(Geometry& geometry) = 0;
 };

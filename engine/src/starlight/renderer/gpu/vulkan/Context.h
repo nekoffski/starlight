@@ -8,7 +8,7 @@
 namespace sl::vk {
 
 struct Context {
-   public:
+public:
     explicit Context(sl::Window& window, const Config& config);
     ~Context();
 
@@ -16,7 +16,7 @@ struct Context {
     VkInstance getInstance() const;
     VkSurfaceKHR getSurface() const;
 
-   private:
+private:
     VkAllocationCallbacks* m_allocator;
     VkInstance m_instance;
     VkSurfaceKHR m_surface;

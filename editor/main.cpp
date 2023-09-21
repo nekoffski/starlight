@@ -46,7 +46,23 @@ int main() {
 
     auto& eventManager = sl::EventManager::get();
 
-    eventManager.on<sl::QuitEvent>([&]([[maybe_unused]] sl::QuitEvent*) { isRunning = false; })
+    const auto onQuit = [&]([[maybe_unused]] sl::QuitEvent*) { isRunning = false; };
+
+    const auto onKey = [&](sl::KeyEvent* event) {
+        if ((event->key == SL_KEY_ESCAPE || event->key == SL_KEY_Q) && event->action == sl::KeyAction::press)
+            isRunning = false;
+    };
+
+    const auto onWindowResized = [&](sl::WindowResized* event) {
+        renderer.resizeViewport(event->width, event->height);
+    };
+
+    eventManager.on<sl::QuitEvent>(onQuit)
+      .on<sl::KeyEvent>(onKey)
+      .on<sl::WindowResized>(onWindowResized);
+
+    eventManager
+      .on<sl::QuitEvent>([&]([[maybe_unused]] sl::QuitEvent*) { isRunning = false; })
       .on<sl::KeyEvent>([&](sl::KeyEvent* event) {
           if ((event->key == SL_KEY_ESCAPE || event->key == SL_KEY_Q) && event->action == sl::KeyAction::press)
               isRunning = false;
@@ -79,9 +95,8 @@ int main() {
     packet.geometries   = geometries;
     packet.uiGeometries = uiGeometries;
 
-    sl::EulerCamera camera{
-        sl::EulerCamera::Properties{.target = sl::Vec3f{ 0.0f }, .radius = 5.0f}
-    };
+    sl::EulerCamera camera(sl::EulerCamera::Properties{
+      .target = sl::Vec3f{ 0.0f }, .radius = 5.0f });
 
     while (isRunning) {
         const auto deltaTime = ctx.beginFrame();

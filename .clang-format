@@ -1,7 +1,7 @@
 ---
 Language: Cpp
 # BasedOnStyle:  Google
-AccessModifierOffset: -2
+AccessModifierOffset: -4
 AlignArrayOfStructures: Left
 AlignAfterOpenBracket: BlockIndent
 AlignConsecutiveMacros: None
@@ -56,7 +56,7 @@ BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: AfterColon
 BreakAfterJavaFieldAnnotations: false
 BreakStringLiterals: false
-ColumnLimit: 100
+ColumnLimit: 85
 CommentPragmas: "^ IWYU pragma:"
 QualifierAlignment: Leave
 CompactNamespaces: true

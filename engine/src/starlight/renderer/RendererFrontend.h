@@ -2,21 +2,23 @@
 
 // #include "starlight/event/Event.h"
 
-#include "starlight/renderer/gpu/RendererBackend.h"
 #include "starlight/renderer/camera/Camera.h"
+#include "starlight/renderer/gpu/RendererBackend.h"
 
 #include "RenderPacket.h"
 
 namespace sl {
 
 class RendererFrontend {
-  public:
+public:
     explicit RendererFrontend(RendererBackend* backend);
     virtual ~RendererFrontend();
 
-    bool drawFrame(const RenderPacket& renderPacket, const Camera& camera, float deltaTime);
+    bool drawFrame(
+      const RenderPacket& renderPacket, const Camera& camera, float deltaTime
+    );
 
-  private:
+private:
     RendererBackend* m_backend;
 
     Texture* m_activeTexture;

@@ -8,25 +8,34 @@
 namespace sl::vk {
 
 VkFenceCreateInfo createFenceCreateInfo(Fence::State state) {
-    VkFenceCreateInfo fenceCreateInfo = {VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};
+    VkFenceCreateInfo fenceCreateInfo = { VK_STRUCTURE_TYPE_FENCE_CREATE_INFO };
 
-    if (state == Fence::State::signaled) fenceCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+    if (state == Fence::State::signaled)
+        fenceCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
     return fenceCreateInfo;
 }
 
-Fence::Fence(const Context* context, const Device* device, State state)
-    : m_context(context), m_device(device), m_state(state) {
+Fence::Fence(const Context* context, const Device* device, State state) :
+    m_context(context), m_device(device), m_state(state) {
     auto fenceCreateInfo = createFenceCreateInfo(state);
+
     VK_ASSERT(vkCreateFence(
-        m_device->getLogicalDevice(), &fenceCreateInfo, m_context->getAllocator(), &m_handle
+      m_device->getLogicalDevice(), &fenceCreateInfo, m_context->getAllocator(),
+      &m_handle
     ));
 }
 
 Fence::~Fence() {
-    vkWaitForFences(m_device->getLogicalDevice(), 1, &m_handle, true, UINT64_MAX);
+    vkWaitForFences(
+      m_device->getLogicalDevice(), 1, &m_handle, true, UINT64_MAX
+    );
 
-    if (m_handle) vkDestroyFence(m_device->getLogicalDevice(), m_handle, m_context->getAllocator());
+    if (m_handle) {
+        vkDestroyFence(
+          m_device->getLogicalDevice(), m_handle, m_context->getAllocator()
+        );
+    }
 }
 
 VkFence Fence::getHandle() { return m_handle; }
@@ -58,7 +67,9 @@ void logError(VkResult result) {
 bool Fence::wait(Nanoseconds timeout) {
     if (m_state == State::signaled) return true;
 
-    const auto result = vkWaitForFences(m_device->getLogicalDevice(), 1, &m_handle, true, timeout);
+    const auto result = vkWaitForFences(
+      m_device->getLogicalDevice(), 1, &m_handle, true, timeout
+    );
 
     if (result == VK_SUCCESS) {
         m_state = State::signaled;

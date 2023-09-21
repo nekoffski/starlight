@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include <optional>
+#include <string>
 
 #include "starlight/core/math/Glm.h"
 
@@ -28,7 +28,8 @@ struct Material {
     inline static Id idGenerator = 0;
 };
 
-inline std::optional<Material::Type> materialTypeFromString(const std::string& material) {
+inline std::optional<Material::Type> materialTypeFromString(
+    const std::string& material) {
     if (material == "ui")
         return Material::Type::ui;
     else if (material == "world")

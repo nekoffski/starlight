@@ -16,8 +16,12 @@ struct GeometryData {
     uint32_t indexElementSize;
     uint64_t indexBufferOffset;
 
-    uint32_t getIndicesTotalSize() const { return indexCount * indexElementSize; }
-    uint32_t getVerticesTotalSize() const { return vertexCount * vertexElementSize; }
+    uint32_t getIndicesTotalSize() const {
+        return indexCount * indexElementSize;
+    }
+    uint32_t getVerticesTotalSize() const {
+        return vertexCount * vertexElementSize;
+    }
 };
 
 }  // namespace sl::vk
