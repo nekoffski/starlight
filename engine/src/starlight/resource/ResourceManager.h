@@ -1,42 +1,59 @@
 #pragma once
 
-#include "TextureManager.h"
-#include "MaterialManager.h"
-#include "GeometryManager.h"
+#include <kc/core/Singleton.hpp>
+
+#include "managers/TextureManager.h"
+#include "managers/MaterialManager.h"
+#include "managers/GeometryManager.h"
 
 #include "starlight/renderer/gpu/GPUMemoryProxy.h"
 #include "starlight/renderer/gpu/TextureLoader.h"
+#include "ResourceLoader.h"
 
 namespace sl {
 
-class ResourceManager {
-   public:
-    explicit ResourceManager(TextureLoader& textureLoader, const GPUMemoryProxy& gpuMemoryProxy)
-        : m_textureManager(textureLoader, SL_ASSETS_TEXTURES_PATH)
-        , m_materialManager(m_textureManager, gpuMemoryProxy, SL_ASSETS_MATERIALS_PATH)
-        , m_geometryManager(gpuMemoryProxy) {}
+class ResourceManager : public kc::core::Singleton<ResourceManager> {
+public:
+    explicit ResourceManager(
+      TextureLoader& textureLoader, const GPUMemoryProxy& gpuMemoryProxy
+    ) :
+        m_textureManager(textureLoader, m_resourceLoader),
+        m_materialManager(m_textureManager, gpuMemoryProxy, m_resourceLoader),
+        m_geometryManager(gpuMemoryProxy, m_materialManager) {}
 
-    Texture* loadTexture(const std::string& name) { return m_textureManager.load(name); }
+    Texture* loadTexture(const std::string& name) {
+        return m_textureManager.load(name);
+    }
 
     Texture* acquireTexture(const std::string& name) const {
         return m_textureManager.acquire(name);
     }
 
-    Texture* getDefaultTexture() const { return m_textureManager.getDefaultTexture(); }
+    Texture* getDefaultTexture() const {
+        return m_textureManager.getDefaultTexture();
+    }
 
     void destroyTexture(const std::string& name) { m_textureManager.destroy(name); }
 
-    Material* loadMaterial(const std::string& name) { return m_materialManager.load(name); }
+    Material* loadMaterial(const std::string& name) {
+        return m_materialManager.load(name);
+    }
 
-    Material* acquireMaterial(const std::string& name) { return m_materialManager.acquire(name); }
+    Material* acquireMaterial(const std::string& name) {
+        return m_materialManager.acquire(name);
+    }
 
     Material* getDefaultMaterial() { return m_materialManager.getDefaultMaterial(); }
 
-    void destroyMaterial(const std::string& name) { m_materialManager.destroy(name); }
+    void destroyMaterial(const std::string& name) {
+        m_materialManager.destroy(name);
+    }
 
     Geometry* acquireGeometry(uint32_t id) { return m_geometryManager.acquire(id); }
 
-    Geometry* loadGeometry(GeometryProperties auto& props) { return m_geometryManager.load(props); }
+    Geometry* loadGeometry(GeometryProperties auto& props) {
+        return m_geometryManager.load(props);
+    }
 
     void destroyGeometry(uint32_t id) { m_geometryManager.destroy(id); }
 
@@ -49,7 +66,9 @@ class ResourceManager {
         return m_geometryManager.generatePlaneGeometryProperties(props);
     }
 
-   private:
+private:
+    ResourceLoader m_resourceLoader;
+
     TextureManager m_textureManager;
     MaterialManager m_materialManager;
     GeometryManager m_geometryManager;

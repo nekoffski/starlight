@@ -38,15 +38,14 @@ RendererBackend::RendererBackend(sl::Window& window, const Config& config) :
 
     createBuffers();
 
-    m_textureLoader =
-      createUniqPtr<TextureLoader>(m_context.get(), m_device.get());
+    m_textureLoader = createUniqPtr<TextureLoader>(m_context.get(), m_device.get());
 
     for (auto& geometry : m_geometries) geometry.id = invalidId;
 }
 
 void RendererBackend::acquireGeometryResources(
-  Geometry& geometry, uint32_t vertexSize, uint32_t vertexCount,
-  void* vertexData, std::span<uint32_t> indices
+  Geometry& geometry, uint32_t vertexSize, uint32_t vertexCount, void* vertexData,
+  std::span<uint32_t> indices
 ) {
     LOG_TRACE(
       "Acquiring geometry resources vertexSize={}, vertexCount={}, "
@@ -170,15 +169,14 @@ void RendererBackend::releaseMaterialResources(Material& material) {
 }
 
 uint64_t RendererBackend::uploadDataRange(
-  VkCommandPool pool, VkFence fence, VkQueue queue, Buffer& outBuffer,
-  uint64_t size, const void* data
+  VkCommandPool pool, VkFence fence, VkQueue queue, Buffer& outBuffer, uint64_t size,
+  const void* data
 ) {
     // TODO: shouldn't it be a part of Buffer class?
     const auto offset = outBuffer.allocate(size);
 
     VkMemoryPropertyFlags flags =
-      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
-      | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
     Buffer stagingBuffer(
       m_context.get(), m_device.get(),
@@ -195,9 +193,7 @@ uint64_t RendererBackend::uploadDataRange(
     return offset;
 }
 
-void RendererBackend::freeDataRange(
-  Buffer& buffer, uint64_t offset, uint64_t size
-) {
+void RendererBackend::freeDataRange(Buffer& buffer, uint64_t offset, uint64_t size) {
     buffer.free(size, offset);
 }
 
@@ -205,8 +201,7 @@ TextureLoader* RendererBackend::getTextureLoader() const {
     return m_textureLoader.get();
 }
 
-void RendererBackend::drawGeometry(const GeometryRenderData& geometryRenderData
-) {
+void RendererBackend::drawGeometry(const GeometryRenderData& geometryRenderData) {
     if (geometryRenderData.geometry->internalId == invalidId) {
         LOG_ERROR("Could not draw Geometry with invalid id");
         return;
@@ -310,9 +305,9 @@ bool RendererBackend::beginRenderPass(uint8_t id) {
         }
 
         case builtinRenderPassUI: {
-            renderPass = m_uiRenderPass.get();
-            framebuffer =
-              &m_swapchain->getFramebuffers()->at(m_frameInfo.imageIndex);
+            renderPass  = m_uiRenderPass.get();
+            framebuffer = &m_swapchain->getFramebuffers()->at(m_frameInfo.imageIndex
+            );
             break;
         }
     }
@@ -378,11 +373,10 @@ void RendererBackend::createBuffers() {
 void RendererBackend::createCoreComponents(
   sl::Window& window, const Config& config
 ) {
-    m_context   = createUniqPtr<Context>(window, config);
-    m_device    = createUniqPtr<Device>(m_context.get());
-    m_swapchain = createUniqPtr<Swapchain>(
-      m_device.get(), m_context.get(), window.getSize()
-    );
+    m_context = createUniqPtr<Context>(window, config);
+    m_device  = createUniqPtr<Device>(m_context.get());
+    m_swapchain =
+      createUniqPtr<Swapchain>(m_device.get(), m_context.get(), window.getSize());
 
     const auto& [width, height] = window.getSize();
 
@@ -471,9 +465,7 @@ void RendererBackend::regenerateFramebuffers() {
     framebuffers->reserve(swapchainImagesCount);
 
     for (auto& view : *m_swapchain->getImageViews()) {
-        std::vector<VkImageView> worldAttachments = {
-            view, depthBuffer->getView()
-        };
+        std::vector<VkImageView> worldAttachments = { view, depthBuffer->getView() };
 
         m_worldFramebuffers.emplace_back(
           m_context.get(), m_device.get(), m_mainRenderPass->getHandle(),
@@ -497,9 +489,7 @@ RendererBackend::~RendererBackend() {
 void RendererBackend::recreateSwapchain() {
     if (auto result = vkDeviceWaitIdle(m_device->getLogicalDevice());
         not isGood(result)) {
-        LOG_ERROR(
-          "vkDeviceWaitIdle (2) failed: {}", getResultString(result, true)
-        );
+        LOG_ERROR("vkDeviceWaitIdle (2) failed: {}", getResultString(result, true));
         return;
     }
 
@@ -540,9 +530,7 @@ bool RendererBackend::beginFrame(float deltaTime) {
 
     if (m_recreatingSwapchain) {
         if (auto result = vkDeviceWaitIdle(logicalDevice); not isGood(result)) {
-            LOG_ERROR(
-              "vkDeviceWaitDile failed: %s", getResultString(result, true)
-            );
+            LOG_ERROR("vkDeviceWaitDile failed: %s", getResultString(result, true));
             return false;
         }
 
@@ -568,8 +556,8 @@ bool RendererBackend::beginFrame(float deltaTime) {
     // should signaled when this completes. This same semaphore will later be
     // waited on by the queue submission to ensure this image is available.
     auto nextImageIndex = m_swapchain->acquireNextImageIndex(
-      UINT64_MAX,
-      m_imageAvailableSemaphores[m_frameInfo.currentFrame].getHandle(), nullptr
+      UINT64_MAX, m_imageAvailableSemaphores[m_frameInfo.currentFrame].getHandle(),
+      nullptr
     );
 
     if (not nextImageIndex) return false;
@@ -660,8 +648,7 @@ bool RendererBackend::endFrame(float deltaTime) {
       m_frameInfo.imageIndex
     );
 
-    m_frameInfo.currentFrame =
-      (m_frameInfo.currentFrame + 1) % maxFramesInFlight;
+    m_frameInfo.currentFrame = (m_frameInfo.currentFrame + 1) % maxFramesInFlight;
 
     return true;
 }

@@ -39,7 +39,8 @@ struct GeometryProperties2D final : public detail::GeometryPropertiesBase {
 };
 
 template <typename T>
-concept GeometryProperties = kc::core::is_one_of2_v<T, GeometryProperties3D, GeometryProperties2D>;
+concept GeometryProperties =
+  kc::core::is_one_of2_v<T, GeometryProperties3D, GeometryProperties2D>;
 
 struct PlaneProperties {
     float width;
@@ -53,15 +54,20 @@ struct PlaneProperties {
 };
 
 // TODO: pass objects as views instead of references
-class GeometryManager : public kc::core::Singleton<GeometryManager> {
-   public:
-    explicit GeometryManager(const GPUMemoryProxy& resourceProxy) : m_resourceProxy(resourceProxy) {
+class GeometryManager {
+public:
+    explicit GeometryManager(
+      const GPUMemoryProxy& resourceProxy, MaterialManager& materialManager
+    ) :
+        m_resourceProxy(resourceProxy),
+        m_materialManager(materialManager) {
         for (auto& geometry : m_geometries) invalidateEntry(geometry);
         createDefaultGeometries();
     }
 
     Geometry* acquire(uint32_t id) {
-        if (id != invalidId && m_geometries[id].id != invalidId) return &m_geometries[id];
+        if (id != invalidId && m_geometries[id].id != invalidId)
+            return &m_geometries[id];
 
         LOG_WARN("Geometry with id='{}' not found", id);
         return nullptr;
@@ -81,7 +87,9 @@ class GeometryManager : public kc::core::Singleton<GeometryManager> {
         auto geometry = findSlot();
 
         if (not geometry) {
-            LOG_ERROR("Could not find empty slot for geometry, consider changing configuration");
+            LOG_ERROR(
+              "Could not find empty slot for geometry, consider changing configuration"
+            );
             return nullptr;
         }
 
@@ -110,7 +118,9 @@ class GeometryManager : public kc::core::Singleton<GeometryManager> {
     Geometry* getDefault3D() { return &m_defaultGeometry3D; }
     Geometry* getDefault2D() { return &m_defaultGeometry2D; }
 
-    static GeometryProperties3D generatePlaneGeometryProperties(PlaneProperties& props) {
+    static GeometryProperties3D generatePlaneGeometryProperties(
+      PlaneProperties& props
+    ) {
         // check for properties
         GeometryProperties3D out;
 
@@ -144,17 +154,17 @@ class GeometryManager : public kc::core::Singleton<GeometryManager> {
                 auto v2 = &out.vertices[vOffset + 2];
                 auto v3 = &out.vertices[vOffset + 3];
 
-                v0->position           = glm::vec3{minX, minY, 0.0f};
-                v0->textureCoordinates = glm::vec2{minUVX, minUVY};
+                v0->position           = glm::vec3{ minX, minY, 0.0f };
+                v0->textureCoordinates = glm::vec2{ minUVX, minUVY };
 
-                v1->position           = glm::vec3{maxX, maxY, 0.0f};
-                v1->textureCoordinates = glm::vec2{minUVX, maxUVY};
+                v1->position           = glm::vec3{ maxX, maxY, 0.0f };
+                v1->textureCoordinates = glm::vec2{ minUVX, maxUVY };
 
-                v2->position           = glm::vec3{minX, maxY, 0.0f};
-                v2->textureCoordinates = glm::vec2{minUVX, maxUVY};
+                v2->position           = glm::vec3{ minX, maxY, 0.0f };
+                v2->textureCoordinates = glm::vec2{ minUVX, maxUVY };
 
-                v3->position           = glm::vec3{maxX, minY, 0.0f};
-                v3->textureCoordinates = glm::vec2{maxUVX, minUVY};
+                v3->position           = glm::vec3{ maxX, minY, 0.0f };
+                v3->textureCoordinates = glm::vec2{ maxUVX, minUVY };
 
                 uint32_t iOffset = ((y * props.xSegments) + x) * 6;
 
@@ -191,22 +201,24 @@ class GeometryManager : public kc::core::Singleton<GeometryManager> {
         const auto create3D = [&]() {
             std::array<Vertex3, 4> vertices;
 
-            vertices[0].position           = {-0.5f * scale, -0.5f * scale, 0.0f};
-            vertices[0].textureCoordinates = {0.0f, 0.0f};
+            vertices[0].position           = { -0.5f * scale, -0.5f * scale, 0.0f };
+            vertices[0].textureCoordinates = { 0.0f, 0.0f };
 
-            vertices[1].position           = {0.5f * scale, 0.5f * scale, 0.0f};
-            vertices[1].textureCoordinates = {1.0f, 1.0f};
+            vertices[1].position           = { 0.5f * scale, 0.5f * scale, 0.0f };
+            vertices[1].textureCoordinates = { 1.0f, 1.0f };
 
-            vertices[2].position           = {-0.5f * scale, 0.5f * scale, 0.0f};
-            vertices[2].textureCoordinates = {0.0f, 1.0f};
+            vertices[2].position           = { -0.5f * scale, 0.5f * scale, 0.0f };
+            vertices[2].textureCoordinates = { 0.0f, 1.0f };
 
-            vertices[3].position           = {0.5f * scale, -0.5f * scale, 0.0f};
-            vertices[3].textureCoordinates = {1.0f, 0.0f};
+            vertices[3].position           = { 0.5f * scale, -0.5f * scale, 0.0f };
+            vertices[3].textureCoordinates = { 1.0f, 0.0f };
 
-            std::array<uint32_t, 6> indices = {0, 1, 2, 0, 3, 1};
+            std::array<uint32_t, 6> indices = { 0, 1, 2, 0, 3, 1 };
 
-            m_resourceProxy.acquireGeometryResources(m_defaultGeometry3D, vertices, indices);
-            m_defaultGeometry3D.material = MaterialManager::get().getDefaultMaterial();
+            m_resourceProxy.acquireGeometryResources(
+              m_defaultGeometry3D, vertices, indices
+            );
+            m_defaultGeometry3D.material = m_materialManager.getDefaultMaterial();
         };
         create3D();
 
@@ -214,22 +226,24 @@ class GeometryManager : public kc::core::Singleton<GeometryManager> {
         const auto create2D = [&]() {
             std::array<Vertex2, 4> vertices;
 
-            vertices[0].position           = {-0.5f * scale, -0.5f * scale};
-            vertices[0].textureCoordinates = {0.0f, 0.0f};
+            vertices[0].position           = { -0.5f * scale, -0.5f * scale };
+            vertices[0].textureCoordinates = { 0.0f, 0.0f };
 
-            vertices[1].position           = {0.5f * scale, 0.5f * scale};
-            vertices[1].textureCoordinates = {1.0f, 1.0f};
+            vertices[1].position           = { 0.5f * scale, 0.5f * scale };
+            vertices[1].textureCoordinates = { 1.0f, 1.0f };
 
-            vertices[2].position           = {-0.5f * scale, 0.5f * scale};
-            vertices[2].textureCoordinates = {0.0f, 1.0f};
+            vertices[2].position           = { -0.5f * scale, 0.5f * scale };
+            vertices[2].textureCoordinates = { 0.0f, 1.0f };
 
-            vertices[3].position           = {0.5f * scale, -0.5f * scale};
-            vertices[3].textureCoordinates = {1.0f, 0.0f};
+            vertices[3].position           = { 0.5f * scale, -0.5f * scale };
+            vertices[3].textureCoordinates = { 1.0f, 0.0f };
 
-            std::array<uint32_t, 6> indices = {2, 1, 0, 3, 0, 1};
+            std::array<uint32_t, 6> indices = { 2, 1, 0, 3, 0, 1 };
 
-            m_resourceProxy.acquireGeometryResources(m_defaultGeometry2D, vertices, indices);
-            m_defaultGeometry2D.material = MaterialManager::get().getDefaultMaterial();
+            m_resourceProxy.acquireGeometryResources(
+              m_defaultGeometry2D, vertices, indices
+            );
+            m_defaultGeometry2D.material = m_materialManager.getDefaultMaterial();
         };
         create2D();
     }
@@ -238,17 +252,18 @@ class GeometryManager : public kc::core::Singleton<GeometryManager> {
         geometry.name = props.name;
 
         m_resourceProxy.acquireGeometryResources(
-            geometry, props.vertices, props.indices
+          geometry, props.vertices, props.indices
         );  // TODO: check if succeed
 
-        auto& materialManager = MaterialManager::get();
         geometry.material =
-            materialManager.acquire(props.materialName) ?: materialManager.getDefaultMaterial();
+          m_materialManager.acquire(props.materialName)
+            ?: m_materialManager.getDefaultMaterial();
 
         return true;
     }
 
     GPUMemoryProxy m_resourceProxy;
+    MaterialManager& m_materialManager;
     std::array<Geometry, maxGeometries> m_geometries;
 
     Geometry m_defaultGeometry3D;

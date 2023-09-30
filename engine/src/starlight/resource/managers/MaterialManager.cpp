@@ -5,19 +5,16 @@
 #include <kc/json/Utils.hpp>
 
 #include "TextureManager.h"
-
-#include "MaterialConfig.h"
+#include "starlight/resource/resources/MaterialConfig.h"
 
 namespace sl {
 
 MaterialManager::MaterialManager(
-    TextureManager& textureManager, const GPUMemoryProxy& resourceProxy,
-    std::string_view materialsPath, FileSystem& fileSystem
-)
-    : m_textureManager(textureManager)
-    , m_resourceProxy(resourceProxy)
-    , m_materialsPath(materialsPath)
-    , m_fileSystem(fileSystem) {
+  TextureManager& textureManager, const GPUMemoryProxy& resourceProxy,
+  const ResourceLoader& resourceLoader
+) :
+    m_textureManager(textureManager),
+    m_resourceProxy(resourceProxy), m_resourceLoader(resourceLoader) {
     createDefaultMaterial();
 }
 
@@ -29,12 +26,14 @@ MaterialManager::~MaterialManager() {
 Material* MaterialManager::getDefaultMaterial() { return &m_defaultMaterial; }
 
 void MaterialManager::createDefaultMaterial() {
-    TextureMap diffuseMap(m_textureManager.getDefaultTexture(), Texture::Use::diffuseMap);
+    TextureMap diffuseMap(
+      m_textureManager.getDefaultTexture(), Texture::Use::diffuseMap
+    );
 
     m_defaultMaterial.generation   = 0;
     m_defaultMaterial.internalId   = 0;
     m_defaultMaterial.name         = "internal-default-material";
-    m_defaultMaterial.diffuseColor = Vec4f{1.0f};
+    m_defaultMaterial.diffuseColor = Vec4f{ 1.0f };
     m_defaultMaterial.diffuseMap   = diffuseMap;
     m_defaultMaterial.id           = invalidId;
     m_defaultMaterial.type         = Material::Type::world;
@@ -48,34 +47,39 @@ Material* MaterialManager::load(const std::string& name) {
     static const std::string_view extension = "nvmat";
 
     if (auto material = m_materials.find(name); material != m_materials.end()) {
-        LOG_WARN("Material '{}' already stored, returning pointer to the existing one", name);
+        LOG_WARN(
+          "Material '{}' already stored, returning pointer to the existing one", name
+        );
         return &material->second;
     }
 
     LOG_TRACE("Found material file, will try to process");
 
-    auto materialConfig = MaterialConfig::create(name);
+    auto materialConfig = m_resourceLoader.loadMaterialConfig(name);
 
     if (not materialConfig.has_value()) {
         LOG_WARN("Could not process material file '{}'", name);
         return nullptr;
     }
 
-    const auto getDiffuseMapTexture = [&](const std::string& diffuseMapName) -> Texture* {
+    const auto getDiffuseMapTexture =
+      [&](const std::string& diffuseMapName) -> Texture* {
         if (auto texture = m_textureManager.acquire(diffuseMapName); texture) {
-            LOG_DEBUG("Found diffuse map '{}' required by material '{}'", texture->name, name);
+            LOG_DEBUG(
+              "Found diffuse map '{}' required by material '{}'", texture->name, name
+            );
             return texture;
         } else {
             LOG_INFO(
-                "Diffuse map '{}' required by material '{}' not found, will try to load",
-                diffuseMapName, name
+              "Diffuse map '{}' required by material '{}' not found, will try to load",
+              diffuseMapName, name
             );
             return m_textureManager.load(diffuseMapName);
         }
     };
 
     TextureMap diffuseMap(
-        getDiffuseMapTexture(materialConfig->diffuseMap), Texture::Use::diffuseMap
+      getDiffuseMapTexture(materialConfig->diffuseMap), Texture::Use::diffuseMap
     );
 
     Material material;
@@ -107,7 +111,8 @@ Material* MaterialManager::acquire(const std::string& name) {
 void MaterialManager::destroy(const std::string& name) {
     LOG_TRACE("Destroying material '{}'", name);
     // TODO: should we also destroy texture?
-    if (auto material = m_materials.find(name); material != m_materials.end()) [[likely]] {
+    if (auto material = m_materials.find(name); material != m_materials.end())
+      [[likely]] {
         m_resourceProxy.releaseMaterialResources(material->second);
         m_materials.erase(material);
     } else {

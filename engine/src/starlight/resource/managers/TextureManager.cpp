@@ -3,31 +3,32 @@
 #include <kc/core/Log.h>
 #include <fmt/core.h>
 
+#include "starlight/core/math/Glm.h"
 #include "starlight/renderer/Texture.h"
 #include "starlight/renderer/gpu/TextureLoader.h"
-
-#include "starlight/core/math/Glm.h"
-
-#include "ImageData.h"
+#include "starlight/resource/resources/ImageData.h"
 
 namespace sl {
 
-TextureManager::TextureManager(TextureLoader& textureLoader, std::string_view texturesPath)
-    : m_textureLoader(textureLoader), m_texturesPath(texturesPath) {
+TextureManager::TextureManager(
+  TextureLoader& textureLoader, const ResourceLoader& resourceLoader
+) :
+    m_textureLoader(textureLoader),
+    m_resourceLoader(resourceLoader) {
     loadDefaultTexture();
 }
 
 Texture* TextureManager::load(const std::string& name) {
     LOG_TRACE("Loading texture '{}'", name);
-    LOG_TRACE("Loading texture '{}'", name);
-    static const std::string_view extension = "png";
 
     if (auto texture = m_textures.find(name); texture != m_textures.end()) {
-        LOG_WARN("Texture {} already loaded, returning pointer to the existing one", name);
+        LOG_WARN(
+          "Texture {} already loaded, returning pointer to the existing one", name
+        );
         return texture->second.get();
     }
 
-    const auto imageData = ImageData::create(name);
+    const auto imageData = m_resourceLoader.loadImageData(name);
 
     sl::Texture::Properties props{
         .width         = imageData->width,
@@ -53,7 +54,9 @@ Texture* TextureManager::acquire(const std::string& name) const {
 }
 
 void TextureManager::loadDefaultTexture() {
-    Texture::Properties props{.width = 256, .height = 256, .channels = 4, .isTransparent = false};
+    Texture::Properties props{
+        .width = 256, .height = 256, .channels = 4, .isTransparent = false
+    };
     std::vector<uint8_t> pixels(props.width * props.height * props.channels, 255);
 
     float scale = 8;
@@ -71,10 +74,13 @@ void TextureManager::loadDefaultTexture() {
         float xPattern = std::sin(((float)x / props.width) * 2.0f * M_PI * scale);
         float yPattern = std::cos(((float)y / props.height) * 2.0f * M_PI * scale);
 
-        setColor(i, xPattern * yPattern > 0.0f ? Vec3f{0.0f} : Vec3f{255.0f, 0.0f, 0.0f});
+        setColor(
+          i, xPattern * yPattern > 0.0f ? Vec3f{ 0.0f } : Vec3f{ 255.0f, 0.0f, 0.0f }
+        );
     }
 
-    m_defaultTexture = m_textureLoader.load("internal-default-texture", props, pixels.data());
+    m_defaultTexture =
+      m_textureLoader.load("internal-default-texture", props, pixels.data());
 }
 
 Texture* TextureManager::getDefaultTexture() const { return m_defaultTexture.get(); }

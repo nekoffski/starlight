@@ -3,25 +3,24 @@
 #include <string>
 #include <optional>
 
-#include "Resource.h"
 #include "starlight/core/utils/FileSystem.h"
 
 namespace sl {
 
-class ShaderSource : public Resource {
-   public:
+class ShaderSource {
+public:
     explicit ShaderSource(
-        std::string_view fullPath, std::string_view name, std::string_view source
+      std::string_view fullPath, std::string_view name, std::string_view source
     );
 
     static std::optional<ShaderSource> create(
-        std::string_view name, const FileSystem& fs = fileSystem
+      std::string_view name, const FileSystem& fs = fileSystem
     );
 
-   private:
+private:
     std::string m_source;
 
-   public:
+public:
     const char* data;
     std::size_t size;
 };

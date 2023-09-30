@@ -61,16 +61,6 @@ int main() {
       .on<sl::KeyEvent>(onKey)
       .on<sl::WindowResized>(onWindowResized);
 
-    eventManager
-      .on<sl::QuitEvent>([&]([[maybe_unused]] sl::QuitEvent*) { isRunning = false; })
-      .on<sl::KeyEvent>([&](sl::KeyEvent* event) {
-          if ((event->key == SL_KEY_ESCAPE || event->key == SL_KEY_Q) && event->action == sl::KeyAction::press)
-              isRunning = false;
-      })
-      .on<sl::WindowResized>([&](sl::WindowResized* event) {
-          renderer.resizeViewport(event->width, event->height);
-      });
-
     sl::ResourceManager resourceManager(
       *renderer.getTextureLoader(), *renderer.getGPUMemoryProxy()
     );

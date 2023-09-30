@@ -2,3 +2,6 @@
 	path = 3rdparty/libkc
 	url = https://github.com/nekoffski/libkc.git
 	branch = dev
+[submodule "3rdparty/expected"]
+	path = 3rdparty/expected
+	url = https://github.com/TartanLlama/expected.git

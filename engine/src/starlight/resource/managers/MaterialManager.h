@@ -7,18 +7,17 @@
 #include "starlight/core/utils/FileSystem.h"
 #include "starlight/core/memory/Memory.hpp"
 #include "starlight/renderer/Material.h"
-
 #include "starlight/renderer/gpu/GPUMemoryProxy.h"
+
+#include "starlight/resource/ResourceLoader.h"
 
 namespace sl {
 
-// DEFINE_SUB_ERROR(MaterialError, core::StarlightError);
-
-class MaterialManager : public kc::core::Singleton<MaterialManager> {
-   public:
+class MaterialManager {
+public:
     explicit MaterialManager(
-        TextureManager& textureManager, const GPUMemoryProxy& resourceProxy,
-        std::string_view materialsPath, FileSystem& fileSystem = fileSystem
+      TextureManager& textureManager, const GPUMemoryProxy& resourceProxy,
+      const ResourceLoader& resourceLoader
     );
 
     ~MaterialManager();
@@ -30,17 +29,15 @@ class MaterialManager : public kc::core::Singleton<MaterialManager> {
     void destroy(const std::string& name);
     void destroyAll();
 
-   private:
+private:
     void createDefaultMaterial();
 
     TextureManager& m_textureManager;
     GPUMemoryProxy m_resourceProxy;
-
-    std::string_view m_materialsPath;
+    const ResourceLoader& m_resourceLoader;
 
     std::unordered_map<std::string, Material> m_materials;
     Material m_defaultMaterial;
-    FileSystem& m_fileSystem;
 };
 
 }  // namespace sl

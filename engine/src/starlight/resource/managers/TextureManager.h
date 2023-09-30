@@ -7,11 +7,15 @@
 #include "starlight/core/memory/Memory.hpp"
 #include "starlight/renderer/fwd.h"
 
+#include "starlight/resource/ResourceLoader.h"
+
 namespace sl {
 
-class TextureManager : public kc::core::Singleton<TextureManager> {
-   public:
-    explicit TextureManager(TextureLoader& textureLoader, std::string_view texturesPath);
+class TextureManager {
+public:
+    explicit TextureManager(
+      TextureLoader& textureLoader, const ResourceLoader& resourceLoader
+    );
 
     Texture* load(const std::string& name);
     Texture* acquire(const std::string& name) const;
@@ -20,11 +24,11 @@ class TextureManager : public kc::core::Singleton<TextureManager> {
     void destroy(const std::string& name);
     void destroyAll();
 
-   private:
+private:
     void loadDefaultTexture();
 
     TextureLoader& m_textureLoader;
-    std::string_view m_texturesPath;
+    const ResourceLoader& m_resourceLoader;
 
     std::unordered_map<std::string, UniqPtr<Texture>> m_textures;
     UniqPtr<Texture> m_defaultTexture;
