@@ -9,24 +9,26 @@
 
 namespace sl {
 
-class GPUMemoryProxy {
-   public:
-    explicit GPUMemoryProxy(RendererBackend& rendererBackend);
+class RendererProxy {
+public:
+    explicit RendererProxy(RendererBackend& rendererBackend);
 
     void acquireMaterialResources(Material& material);
     void releaseMaterialResources(Material& material);
 
     void acquireGeometryResources(
-        Geometry& geometry, const std::span<Vertex3> vertices, std::span<uint32_t> indices
+      Geometry& geometry, const std::span<Vertex3> vertices,
+      std::span<uint32_t> indices
     );
 
     void acquireGeometryResources(
-        Geometry& geometry, const std::span<Vertex2> vertices, std::span<uint32_t> indices
+      Geometry& geometry, const std::span<Vertex2> vertices,
+      std::span<uint32_t> indices
     );
 
     void releaseGeometryResources(Geometry& geometry);
 
-   private:
+private:
     RendererBackend& m_rendererBackend;
 };
 

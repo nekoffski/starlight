@@ -5,7 +5,7 @@
 
 #include "camera/Camera.h"
 
-#include "gpu/GPUMemoryProxy.h"
+#include "gpu/RendererProxy.h"
 #include "gpu/TextureLoader.h"
 #include "gpu/Vendor.h"
 
@@ -17,7 +17,7 @@ class Renderer {
 public:
     explicit Renderer(sl::Window& window, const sl::Config& config) :
         m_backend(window, config), m_frontend(&m_backend),
-        m_gpuMemoryProxy(m_backend) {}
+        m_rendererProxy(m_backend) {}
 
     ~Renderer() { LOG_TRACE("Renderer destroyed"); }
 
@@ -35,12 +35,12 @@ public:
     }
 
     TextureLoader* getTextureLoader() { return m_backend.getTextureLoader(); }
-    GPUMemoryProxy* getGPUMemoryProxy() { return &m_gpuMemoryProxy; }
+    RendererProxy* getProxy() { return &m_rendererProxy; }
 
 private:
     RendererBackendVendor m_backend;
     RendererFrontend m_frontend;
-    GPUMemoryProxy m_gpuMemoryProxy;
+    RendererProxy m_rendererProxy;
 };
 
 }  // namespace sl

@@ -10,16 +10,16 @@
 namespace sl {
 
 MaterialManager::MaterialManager(
-  TextureManager& textureManager, const GPUMemoryProxy& resourceProxy,
+  TextureManager& textureManager, RendererProxy& resourceProxy,
   const ResourceLoader& resourceLoader
 ) :
     m_textureManager(textureManager),
-    m_resourceProxy(resourceProxy), m_resourceLoader(resourceLoader) {
+    m_rendererProxy(resourceProxy), m_resourceLoader(resourceLoader) {
     createDefaultMaterial();
 }
 
 MaterialManager::~MaterialManager() {
-    m_resourceProxy.releaseMaterialResources(m_defaultMaterial);
+    m_rendererProxy.releaseMaterialResources(m_defaultMaterial);
     destroyAll();
 }
 
@@ -39,7 +39,7 @@ void MaterialManager::createDefaultMaterial() {
     m_defaultMaterial.type         = Material::Type::world;
 
     // TODO: RAII?
-    m_resourceProxy.acquireMaterialResources(m_defaultMaterial);
+    m_rendererProxy.acquireMaterialResources(m_defaultMaterial);
 }
 
 Material* MaterialManager::load(const std::string& name) {
@@ -91,7 +91,7 @@ Material* MaterialManager::load(const std::string& name) {
     material.id           = invalidId;
     material.type         = materialConfig->type;
 
-    m_resourceProxy.acquireMaterialResources(material);
+    m_rendererProxy.acquireMaterialResources(material);
 
     m_materials[name] = std::move(material);
 
@@ -113,7 +113,7 @@ void MaterialManager::destroy(const std::string& name) {
     // TODO: should we also destroy texture?
     if (auto material = m_materials.find(name); material != m_materials.end())
       [[likely]] {
-        m_resourceProxy.releaseMaterialResources(material->second);
+        m_rendererProxy.releaseMaterialResources(material->second);
         m_materials.erase(material);
     } else {
         LOG_WARN("Attempt to destroy not existing material - {}, will ignore", name);
@@ -122,7 +122,7 @@ void MaterialManager::destroy(const std::string& name) {
 
 void MaterialManager::destroyAll() {
     for (auto& material : m_materials | std::views::values)
-        m_resourceProxy.releaseMaterialResources(material);
+        m_rendererProxy.releaseMaterialResources(material);
     m_materials.clear();
 }
 

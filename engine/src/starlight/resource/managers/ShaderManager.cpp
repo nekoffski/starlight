@@ -12,10 +12,10 @@ ShaderManager::Config ShaderManager::defaultConfig = {
 };
 
 ShaderManager::ShaderManager(
-  const GPUMemoryProxy& resourceProxy, const ResourceLoader& resourceLoader,
+  RendererProxy& resourceProxy, const ResourceLoader& resourceLoader,
   const Config& conf
 ) :
-    m_resourceProxy(resourceProxy),
+    m_rendererProxy(resourceProxy),
     m_resourceLoader(resourceLoader), m_conf(conf),
     m_shaders(m_conf.maxShaderCount) {}
 

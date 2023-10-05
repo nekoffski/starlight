@@ -6,7 +6,7 @@
 #include "starlight/renderer/ShaderAttribute.h"
 #include "starlight/renderer/ShaderUniform.h"
 #include "starlight/renderer/Shader.h"
-#include "starlight/renderer/gpu/GPUMemoryProxy.h"
+#include "starlight/renderer/gpu/RendererProxy.h"
 
 #include "starlight/resource/ResourceLoader.h"
 
@@ -26,7 +26,7 @@ public:
     static Config defaultConfig;
 
     explicit ShaderManager(
-      const GPUMemoryProxy& resourceProxy, const ResourceLoader& resourceLoader,
+      RendererProxy& resourceProxy, const ResourceLoader& resourceLoader,
       const Config& conf = defaultConfig
     );
 
@@ -49,7 +49,7 @@ private:
       ShaderScope scope, u32 setLocation, bool isSampler
     );
 
-    GPUMemoryProxy m_resourceProxy;
+    RendererProxy& m_rendererProxy;
     const ResourceLoader& m_resourceLoader;
     Config m_conf;
 

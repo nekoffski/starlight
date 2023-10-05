@@ -82,7 +82,7 @@ int main() {
       .on<sl::WindowResized>(onWindowResized);
 
     sl::ResourceManager resourceManager(
-      *renderer.getTextureLoader(), *renderer.getGPUMemoryProxy()
+      *renderer.getTextureLoader(), *renderer.getProxy()
     );
 
     sl::EulerCamera camera(sl::EulerCamera::Properties{

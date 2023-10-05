@@ -10,7 +10,7 @@ class Texture;
 class TextureLoader;
 class TextureManager;
 class MaterialManager;
-class GPUMemoryProxy;
+class RendererProxy;
 class Material;
 class Geometry;
 

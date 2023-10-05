@@ -10,7 +10,7 @@
 
 #include "starlight/renderer/Geometry.h"
 #include "starlight/renderer/Material.h"
-#include "starlight/renderer/gpu/GPUMemoryProxy.h"
+#include "starlight/renderer/gpu/RendererProxy.h"
 #include "starlight/core/math/Vertex3.h"
 
 #include "MaterialManager.h"
@@ -57,9 +57,9 @@ struct PlaneProperties {
 class GeometryManager {
 public:
     explicit GeometryManager(
-      const GPUMemoryProxy& resourceProxy, MaterialManager& materialManager
+      RendererProxy& resourceProxy, MaterialManager& materialManager
     ) :
-        m_resourceProxy(resourceProxy),
+        m_rendererProxy(resourceProxy),
         m_materialManager(materialManager) {
         for (auto& geometry : m_geometries) invalidateEntry(geometry);
         createDefaultGeometries();
@@ -111,7 +111,7 @@ public:
     }
 
     void destroy(Geometry& geometry) {
-        m_resourceProxy.releaseGeometryResources(geometry);
+        m_rendererProxy.releaseGeometryResources(geometry);
         invalidateEntry(geometry);
     }
 
@@ -215,7 +215,7 @@ public:
 
             std::array<uint32_t, 6> indices = { 0, 1, 2, 0, 3, 1 };
 
-            m_resourceProxy.acquireGeometryResources(
+            m_rendererProxy.acquireGeometryResources(
               m_defaultGeometry3D, vertices, indices
             );
             m_defaultGeometry3D.material = m_materialManager.getDefaultMaterial();
@@ -240,7 +240,7 @@ public:
 
             std::array<uint32_t, 6> indices = { 2, 1, 0, 3, 0, 1 };
 
-            m_resourceProxy.acquireGeometryResources(
+            m_rendererProxy.acquireGeometryResources(
               m_defaultGeometry2D, vertices, indices
             );
             m_defaultGeometry2D.material = m_materialManager.getDefaultMaterial();
@@ -251,7 +251,7 @@ public:
     bool createGeometry(GeometryProperties auto& props, Geometry& geometry) {
         geometry.name = props.name;
 
-        m_resourceProxy.acquireGeometryResources(
+        m_rendererProxy.acquireGeometryResources(
           geometry, props.vertices, props.indices
         );  // TODO: check if succeed
 
@@ -262,7 +262,7 @@ public:
         return true;
     }
 
-    GPUMemoryProxy m_resourceProxy;
+    RendererProxy& m_rendererProxy;
     MaterialManager& m_materialManager;
     std::array<Geometry, maxGeometries> m_geometries;
 

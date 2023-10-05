@@ -7,7 +7,7 @@
 #include "starlight/core/utils/FileSystem.h"
 #include "starlight/core/memory/Memory.hpp"
 #include "starlight/renderer/Material.h"
-#include "starlight/renderer/gpu/GPUMemoryProxy.h"
+#include "starlight/renderer/gpu/RendererProxy.h"
 
 #include "starlight/resource/ResourceLoader.h"
 
@@ -16,7 +16,7 @@ namespace sl {
 class MaterialManager {
 public:
     explicit MaterialManager(
-      TextureManager& textureManager, const GPUMemoryProxy& resourceProxy,
+      TextureManager& textureManager, RendererProxy& resourceProxy,
       const ResourceLoader& resourceLoader
     );
 
@@ -33,7 +33,7 @@ private:
     void createDefaultMaterial();
 
     TextureManager& m_textureManager;
-    GPUMemoryProxy m_resourceProxy;
+    RendererProxy& m_rendererProxy;
     const ResourceLoader& m_resourceLoader;
 
     std::unordered_map<std::string, Material> m_materials;
