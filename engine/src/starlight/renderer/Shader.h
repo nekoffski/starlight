@@ -58,12 +58,10 @@ public:
 
     ShaderScope boundScope;
 
-    u32 boundInstanceId;
+    Id32 boundInstanceId;
     u32 boundUboOffset;
 
-    // std::unordered_map uniformLut;
-
-    std::vector<ShaderUniform> uniforms;
+    std::unordered_map<std::string, ShaderUniform> uniforms;
     std::vector<ShaderAttribute> attributes;
 
     State state;

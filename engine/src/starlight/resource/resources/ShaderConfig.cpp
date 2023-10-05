@@ -43,10 +43,10 @@ std::string ShaderConfig::toString() const {
     };
 
     return fmt::format(
-      "ShaderConfig: [\n\tname={}, use-instance={}, use-local={}, renderpass={},\n"
+      "ShaderConfig: [\n\tname={}, use-instances={}, use-local={}, renderpass={},\n"
       "\tstages=[{} \n\t], attributes=[{}\n\t], uniforms=[{}\n\t]"
       "\n]",
-      name, useInstance, useLocal, renderpassName, formatRange(stages),
+      name, useInstances, useLocal, renderpassName, formatRange(stages),
       formatRange(attributes), formatRange(uniforms)
     );
 }

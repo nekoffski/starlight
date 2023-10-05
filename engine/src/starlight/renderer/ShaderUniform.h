@@ -1,6 +1,7 @@
 #pragma once
 
 #include "starlight/core/Core.h"
+#include "starlight/core/Id.hpp"
 
 #include "ShaderScope.h"
 
@@ -31,7 +32,7 @@ struct ShaderUniform {
     u16 location;
     u16 index;
     u16 size;
-    u8 setIndex;
+    Id8 setIndex;
 
     ShaderScope scope;
     Type type;

@@ -6,7 +6,7 @@
     { "stage": "vertex", "file": "UIShader.vert.spv" },
     { "stage": "fragment", "file": "UIShader.vert.spv" }
   ],
-  "use-instance": true,
+  "use-instances": true,
   "use-local": true,
   "attributes": [
     { "type": "vec2", "name": "in_position" },

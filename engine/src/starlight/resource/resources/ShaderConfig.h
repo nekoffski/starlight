@@ -40,7 +40,7 @@ struct ShaderConfig {
     std::string toString() const;
 
     std::string name;
-    bool useInstance;
+    bool useInstances;
     bool useLocal;
 
     std::vector<ShaderAttributeConfig> attributes;

@@ -38,11 +38,23 @@ public:
     // Shader* get(const std::string& name);
 
 private:
+    Shader* findSlot();
+
+    void addAttribute(Shader* shader, const ShaderAttributeConfig& cfg);
+    void addUniform(Shader* shader, const ShaderUniformConfig& cfg);
+    void addSampler(Shader* shader, const ShaderUniformConfig& cfg);
+
+    void addUniformImpl(
+      Shader* shader, const std::string& name, u32 size, ShaderUniform::Type type,
+      ShaderScope scope, u32 setLocation, bool isSampler
+    );
+
     GPUMemoryProxy m_resourceProxy;
     const ResourceLoader& m_resourceLoader;
     Config m_conf;
 
     std::vector<Shader> m_shaders;
+    std::unordered_map<std::string, Shader*> m_shaderByName;
 };
 
 }  // namespace sl

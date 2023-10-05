@@ -170,7 +170,7 @@ std::optional<ShaderConfig> ResourceLoader::loadShaderConfig(const std::string& 
         config.stages         = processStages(getArray(root, "stages"));
         config.attributes     = processAttributes(getArray(root, "attributes"));
         config.uniforms       = processUniforms(getArray(root, "uniforms"));
-        config.useInstance    = getField<bool>(root, "use-instance");
+        config.useInstances   = getField<bool>(root, "use-instances");
         config.useLocal       = getField<bool>(root, "use-local");
 
         return config;

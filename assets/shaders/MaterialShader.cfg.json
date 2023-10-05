@@ -6,7 +6,7 @@
     { "stage": "vertex", "file": "MaterialShader.vert.spv" },
     { "stage": "fragment", "file": "MaterialShader.vert.spv" }
   ],
-  "use-instance": true,
+  "use-instances": true,
   "use-local": true,
   "attributes": [
     { "type": "vec3", "name": "in_position" },
