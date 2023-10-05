@@ -35,12 +35,32 @@ sl::Geometry* getTestUiGeometry(sl::ResourceManager& resourceManager) {
     return resourceManager.loadGeometry(props);
 }
 
+sl::RenderPacket getRenderPacket(sl::ResourceManager& resourceManager) {
+    auto testUiGeometry = getTestUiGeometry(resourceManager);
+
+    // test render data
+    sl::RenderPacket packet{};
+
+    sl::GeometryRenderData testRender;
+    testRender.geometry = resourceManager.getDefaultGeometry3D();
+    testRender.model    = sl::identityMatrix;
+
+    sl::GeometryRenderData testUiRender;
+    testUiRender.geometry = testUiGeometry;
+    testUiRender.model    = sl::identityMatrix;
+
+    packet.geometries   = { testRender };
+    packet.uiGeometries = { testUiRender };
+
+    return packet;
+}
+
 int main() {
     sl::Context ctx("starligt-sandbox");
 
     LOG_INFO("Sandbox starting!");
 
-    bool isRunning = true;
+    bool isRunning = false;
 
     sl::Renderer renderer(*ctx.getWindow(), *ctx.getConfig());
 
@@ -65,28 +85,10 @@ int main() {
       *renderer.getTextureLoader(), *renderer.getGPUMemoryProxy()
     );
 
-    auto testUiGeometry = getTestUiGeometry(resourceManager);
-
-    // test render data
-    sl::RenderPacket packet{};
-
-    sl::GeometryRenderData testRender;
-    testRender.geometry = resourceManager.getDefaultGeometry3D();
-    testRender.model    = sl::identityMatrix;
-
-    sl::GeometryRenderData testUiRender;
-    testUiRender.geometry = testUiGeometry;
-    testUiRender.model    = sl::identityMatrix;
-
-    // TODO: am I sure that using spans in packet is a good idea?
-    std::vector<sl::GeometryRenderData> geometries   = { testRender };
-    std::vector<sl::GeometryRenderData> uiGeometries = { testUiRender };
-
-    packet.geometries   = geometries;
-    packet.uiGeometries = uiGeometries;
-
     sl::EulerCamera camera(sl::EulerCamera::Properties{
       .target = sl::Vec3f{ 0.0f }, .radius = 5.0f });
+
+    const auto packet = getRenderPacket(resourceManager);
 
     while (isRunning) {
         const auto deltaTime = ctx.beginFrame();
@@ -96,6 +98,8 @@ int main() {
         camera.update(deltaTime);
         ctx.endFrame();
     }
+
+    const auto shader = resourceManager.loadShader("MaterialShader");
 
     return 0;
 }

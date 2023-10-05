@@ -21,6 +21,10 @@ struct ShaderAttribute {
         uint32
     };
 
+    static Type typeFromString(const std::string& name);
+    static std::string typeToString(Type type);
+    static u32 getTypeSize(Type type);
+
     std::string name;
     Type type;
     u32 size;

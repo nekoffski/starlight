@@ -19,7 +19,7 @@ class FreeList {
         Node* next;
     };
 
-   public:
+public:
     explicit FreeList(uint64_t size);
 
     void freeBlock(uint64_t size, uint64_t offset);
@@ -30,7 +30,7 @@ class FreeList {
 
     void clear();
 
-   private:
+private:
     Node* getFreeNode();
 
     uint64_t m_totalSize;

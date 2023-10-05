@@ -29,7 +29,8 @@ struct Material {
 };
 
 inline std::optional<Material::Type> materialTypeFromString(
-    const std::string& material) {
+  const std::string& material
+) {
     if (material == "ui")
         return Material::Type::ui;
     else if (material == "world")

@@ -12,6 +12,14 @@ namespace sl {
 
 auto fieldFrom(auto& root) { return kc::json::fieldFrom<kc::json::JsonError>(root); }
 
+template <typename T> T getField(auto& root, const std::string& name) {
+    return fieldFrom(root).withName(name).template ofType<T>().get();
+}
+
+auto getArray(auto& root, const std::string& name) {
+    return fieldFrom(root).withName(name).asArray().get();
+}
+
 ResourceLoader::ResourceLoader(const std::string& baseResourcePath, FileSystem& fs) :
     m_baseResourcePath(baseResourcePath), m_fs(fs) {}
 
@@ -21,35 +29,31 @@ std::optional<MaterialConfig> ResourceLoader::loadMaterialConfig(
     const auto fullPath =
       fmt::format("{}/materials/{}.nvmat", m_baseResourcePath, name);
 
+    LOG_TRACE("Loading material config file: {}", fullPath);
+
     if (not m_fs.isFile(fullPath)) {
         LOG_ERROR("Could not find file: '{}'", fullPath);
         return {};
     }
 
-    MaterialConfig config;
-
-    const auto content = m_fs.readFile(fullPath);
-
     try {
-        auto root = kc::json::loadJson(content);
+        auto root = kc::json::loadJson(m_fs.readFile(fullPath));
+        MaterialConfig config;
 
-        config.diffuseColor =
-          fieldFrom(root).withName("diffuse-color").ofType<Vec4f>().get();
-        config.diffuseMap =
-          fieldFrom(root).withName("diffuse-map").ofType<std::string>().get();
+        config.diffuseColor = getField<Vec4f>(root, "diffuse-color");
+        config.diffuseMap   = getField<std::string>(root, "diffuse-map");
 
-        const auto materialType = materialTypeFromString(
-          fieldFrom(root).withName("type").ofType<std::string>().get()
-        );
+        const auto materialType =
+          materialTypeFromString(getField<std::string>(root, "type"));
 
         ASSERT(materialType, "Material config must contain material type");
         config.type = materialType.value();
 
         return config;
     } catch (kc::json::JsonError& e) {
-        LOG_ERROR("Could not parse material '{}' file: {}", name, e.what());
-        return {};
+        LOG_ERROR("Could not parse material '{}' file: {}", name, e.asString());
     }
+    return {};
 }
 
 std::optional<STBImageData> ResourceLoader::loadImageData(const std::string& name
@@ -93,6 +97,87 @@ std::optional<STBImageData> ResourceLoader::loadImageData(const std::string& nam
     );
 
     return image;
+}
+
+std::optional<ShaderConfig> ResourceLoader::loadShaderConfig(const std::string& name
+) const {
+    const auto fullPath =
+      fmt::format("{}/shaders/{}.cfg.json", m_baseResourcePath, name);
+
+    LOG_TRACE("Loading shader config file: {}", fullPath);
+
+    if (not m_fs.isFile(fullPath)) {
+        LOG_ERROR("Could not find file: '{}'", fullPath);
+        return {};
+    }
+
+    static auto processStages =
+      [](const auto& root) -> std::vector<ShaderStageConfig> {
+        std::vector<ShaderStageConfig> stages;
+        stages.reserve(root.size());
+
+        for (auto& stage : root) {
+            const auto file      = getField<std::string>(stage, "file");
+            const auto stageName = getField<std::string>(stage, "stage");
+
+            stages.emplace_back(Shader::stageFromString(stageName), file);
+        }
+        return stages;
+    };
+
+    static auto processAttributes =
+      [](const auto& root) -> std::vector<ShaderAttributeConfig> {
+        std::vector<ShaderAttributeConfig> attributes;
+        attributes.reserve(root.size());
+
+        for (auto& attribute : root) {
+            const auto type = ShaderAttribute::typeFromString(
+              getField<std::string>(attribute, "type")
+            );
+            const auto size = ShaderAttribute::getTypeSize(type);
+            const auto name = getField<std::string>(attribute, "name");
+
+            attributes.emplace_back(name, type, size);
+        }
+
+        return attributes;
+    };
+
+    static auto processUniforms =
+      [](const auto& root) -> std::vector<ShaderUniformConfig> {
+        std::vector<ShaderUniformConfig> uniforms;
+        uniforms.reserve(root.size());
+
+        for (auto& uniform : root) {
+            const auto type =
+              ShaderUniform::typeFromString(getField<std::string>(uniform, "type"));
+            const auto size  = ShaderUniform::getTypeSize(type);
+            const auto name  = getField<std::string>(uniform, "name");
+            const auto scope = getField<std::string>(uniform, "scope");
+
+            uniforms.emplace_back(name, size, 0, type, shaderScopeFromString(scope));
+        }
+
+        return uniforms;
+    };
+
+    try {
+        auto root = kc::json::loadJson(m_fs.readFile(fullPath));
+        ShaderConfig config;
+
+        config.name           = getField<std::string>(root, "name");
+        config.renderpassName = getField<std::string>(root, "renderpass");
+        config.stages         = processStages(getArray(root, "stages"));
+        config.attributes     = processAttributes(getArray(root, "attributes"));
+        config.uniforms       = processUniforms(getArray(root, "uniforms"));
+        config.useInstance    = getField<bool>(root, "use-instance");
+        config.useLocal       = getField<bool>(root, "use-local");
+
+        return config;
+    } catch (kc::json::JsonError& e) {
+        LOG_ERROR("Could not parse shader '{}' file: {}", name, e.asString());
+    }
+    return {};
 }
 
 }  // namespace sl

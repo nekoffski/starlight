@@ -21,10 +21,10 @@
 namespace sl::vk {
 
 class Texture : public sl::Texture {
-   public:
+public:
     explicit Texture(
-        const Context* context, Device* device, const std::string& name, const Properties& props,
-        const void* pixels
+      const Context* context, Device* device, const std::string& name,
+      const Properties& props, const void* pixels
     );
 
     ~Texture();
@@ -32,12 +32,14 @@ class Texture : public sl::Texture {
     Image* getImage();
     VkSampler getSampler();
 
-   protected:
+protected:
     explicit Texture(const Context* context, Device* device);
 
-    void create(const std::string& name, const Properties& props, const void* pixels);
+    void create(
+      const std::string& name, const Properties& props, const void* pixels
+    );
 
-   private:
+private:
     const Context* m_context;
     Device* m_device;
 

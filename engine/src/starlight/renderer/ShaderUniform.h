@@ -23,6 +23,10 @@ struct ShaderUniform {
         custom
     };
 
+    static Type typeFromString(const std::string& name);
+    static std::string typeToString(Type type);
+    static u32 getTypeSize(Type type);
+
     u64 offset;
     u16 location;
     u16 index;

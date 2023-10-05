@@ -6,4 +6,6 @@ namespace sl {
 
 using kc::core::initLogging;
 
-}
+#define FAIL(...) ASSERT(false, __VA_ARGS__)
+
+}  // namespace sl

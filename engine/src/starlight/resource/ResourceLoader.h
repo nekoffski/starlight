@@ -8,6 +8,7 @@
 
 #include "resources/MaterialConfig.h"
 #include "resources/ImageData.h"
+#include "resources/ShaderConfig.h"
 
 namespace sl {
 
@@ -20,6 +21,7 @@ public:
 
     std::optional<MaterialConfig> loadMaterialConfig(const std::string& name) const;
     std::optional<STBImageData> loadImageData(const std::string& name) const;
+    std::optional<ShaderConfig> loadShaderConfig(const std::string& name) const;
 
 private:
     std::string m_baseResourcePath;

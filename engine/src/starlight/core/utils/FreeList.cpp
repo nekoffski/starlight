@@ -10,11 +10,9 @@ void FreeList::Node::invalidate() {
     next   = nullptr;
 }
 
-FreeList::FreeList(uint64_t size)
-    : m_totalSize(size)
-    , m_maxEntries(size / sizeof(void*))
-    , m_nodes(m_maxEntries)
-    , m_head(&m_nodes[0]) {
+FreeList::FreeList(uint64_t size) :
+    m_totalSize(size), m_maxEntries(size / sizeof(void*)), m_nodes(m_maxEntries),
+    m_head(&m_nodes[0]) {
     m_head->offset = 0;
     m_head->size   = m_totalSize;
 }
@@ -37,8 +35,8 @@ void FreeList::resize(uint64_t newSize) {
 
 void FreeList::freeBlock(uint64_t size, uint64_t offset) {
     ASSERT(
-        size > 0 && offset > 0, "Could not free block with invalid offset ({}) or size ({})",
-        offset, size
+      size > 0 && offset > 0,
+      "Could not free block with invalid offset ({}) or size ({})", offset, size
     );
 
     Node* previous = nullptr;
@@ -115,15 +113,17 @@ uint64_t FreeList::allocateBlock(uint64_t size) {
 
     // TODO: handle it as std::optional
     ASSERT(
-        false, "Could not find block with enough memory {} bytes requested, total space left: {}",
-        size, spaceLeft()
+      false,
+      "Could not find block with enough memory {} bytes requested, total space left: {}",
+      size, spaceLeft()
     );
 }
 
 uint64_t FreeList::spaceLeft() {
     uint64_t totalSpace;
 
-    for (Node* node = m_head; node != nullptr; node = node->next) totalSpace += node->size;
+    for (Node* node = m_head; node != nullptr; node = node->next)
+        totalSpace += node->size;
 
     return totalSpace;
 }

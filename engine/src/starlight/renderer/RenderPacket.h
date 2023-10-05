@@ -7,8 +7,8 @@
 namespace sl {
 
 struct RenderPacket {
-    std::span<GeometryRenderData> geometries;
-    std::span<GeometryRenderData> uiGeometries;
+    std::vector<GeometryRenderData> geometries;
+    std::vector<GeometryRenderData> uiGeometries;
 };
 
 }  // namespace sl

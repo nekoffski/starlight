@@ -4,9 +4,11 @@
 #include <vector>
 #include <unordered_map>
 #include <array>
+#include <memory>
 
 #include "starlight/core/Id.hpp"
 #include "starlight/core/Core.h"
+#include "starlight/core/utils/Log.h"
 
 #include "Texture.h"
 #include "ShaderScope.h"
@@ -16,61 +18,62 @@
 namespace sl {
 
 class Shader {
+    struct Impl {};
+
 public:
     using Stage = u16;
 
     static constexpr Stage stageVertex   = 0x1;
     static constexpr Stage stageGeometry = 0x2;
-    static constexpr Stage stagePixel    = 0x4;
-    static constexpr Stage stageComputer = 0x8;
+    static constexpr Stage stageFragment = 0x4;
+    static constexpr Stage stageCompute  = 0x8;
+
+    static Stage stageFromString(const std::string& name);
+    static std::string stageToString(Stage stage);
 
     enum class State : u8 { notCreated, uninitialized, initialized };
 
-    virtual void use()         = 0;
-    virtual void bindGlobals() = 0;
+    u16 getUniformIndex(const std::string& uniformName);
 
-    u16 getUniformIndex(const std::string& uniformName) {}
+    Id32 id;
+    std::string name;
 
-    Id32 getId() const { return m_id; }
+    bool useInstances;
+    bool useLocals;
 
-protected:
-    Id32 m_id;
-    std::string m_name;
+    u64 requiredUboAlignment;
 
-    bool m_useInstances;
-    bool m_useLocals;
+    u64 globalUboSize;
+    u64 globalUboStride;
+    u64 globalUboOffset;
 
-    u64 m_requiredUboAlignment;
+    u64 uboSize;
+    u64 uboStride;
 
-    u64 m_globalUboSize;
-    u64 m_globalUboStride;
-    u64 m_globalUboOffset;
+    u64 pushConstantSize;
+    u64 pushConstantStride;
 
-    u64 m_uboSize;
-    u64 m_uboStride;
+    std::vector<Texture*> globalTextures;
+    u8 instanceTextureCount;
 
-    u64 m_pushConstantSize;
-    u64 m_pushConstantStride;
+    ShaderScope boundScope;
 
-    std::vector<Texture*> m_globalTextures;
-    u8 m_instanceTextureCount;
+    u32 boundInstanceId;
+    u32 boundUboOffset;
 
-    ShaderScope m_boundScope;
+    // std::unordered_map uniformLut;
 
-    u32 m_boundInstanceId;
-    u32 m_boundUboOffset;
+    std::vector<ShaderUniform> uniforms;
+    std::vector<ShaderAttribute> attributes;
 
-    // std::unordered_map m_uniformLut;
+    State state;
 
-    std::vector<ShaderUniform> m_uniforms;
-    std::vector<ShaderAttribute> m_attributes;
+    u8 pushConstantRangeCount;
+    std::array<Range, 32> pushConstantRanges;
 
-    State m_state;
+    u16 attributeStride;
 
-    u8 m_pushConstantRangeCount;
-    std::array<Range, 32> m_pushConstantRanges;
-
-    u16 m_attributeStride;
+    std::unique_ptr<Impl> impl;
 };
 
 }  // namespace sl
