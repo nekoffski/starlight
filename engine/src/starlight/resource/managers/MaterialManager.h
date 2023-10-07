@@ -16,7 +16,7 @@ namespace sl {
 class MaterialManager {
 public:
     explicit MaterialManager(
-      TextureManager& textureManager, RendererProxy& resourceProxy,
+      TextureManager& textureManager, RendererProxy& rendererProxy,
       const ResourceLoader& resourceLoader
     );
 

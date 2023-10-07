@@ -2,9 +2,10 @@
 
 #include <span>
 
-#include "starlight/core/math/Vertex3.h"
-#include "starlight/core/math/Vertex2.h"
+#include "starlight/core/Core.h"
+#include "starlight/core/math/Vertex.h"
 
+#include "starlight/renderer/Shader.h"
 #include "starlight/renderer/fwd.h"
 
 namespace sl {
@@ -15,6 +16,10 @@ public:
 
     void acquireMaterialResources(Material& material);
     void releaseMaterialResources(Material& material);
+
+    u32 getRenderpassId(const std::string& renderpass) { return 1; }
+
+    std::unique_ptr<Shader::Impl> createShaderImpl(Shader& shader) const;
 
     void acquireGeometryResources(
       Geometry& geometry, const std::span<Vertex3> vertices,

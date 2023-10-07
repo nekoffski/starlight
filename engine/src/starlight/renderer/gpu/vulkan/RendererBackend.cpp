@@ -12,6 +12,7 @@
 #include "ShaderStage.h"
 #include "Swapchain.h"
 #include "TextureLoader.h"
+#include "Shader.h"
 
 // #include "starlight/renderer/MaterialManager.h"
 
@@ -477,13 +478,17 @@ void RendererBackend::regenerateFramebuffers() {
         framebuffers->emplace_back(
           m_context.get(), m_device.get(), m_uiRenderPass->getHandle(),
           m_framebufferSize, uiAttachments
-
         );
     }
 }
 
 RendererBackend::~RendererBackend() {
     vkDeviceWaitIdle(m_device->getLogicalDevice());
+}
+
+std::unique_ptr<Shader::Impl> RendererBackend::createShaderImpl(sl::Shader& shader
+) const {
+    return std::make_unique<vk::Shader>(shader, m_device.get(), m_context.get());
 }
 
 void RendererBackend::recreateSwapchain() {

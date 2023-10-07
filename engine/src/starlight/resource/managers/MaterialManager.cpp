@@ -10,11 +10,11 @@
 namespace sl {
 
 MaterialManager::MaterialManager(
-  TextureManager& textureManager, RendererProxy& resourceProxy,
+  TextureManager& textureManager, RendererProxy& rendererProxy,
   const ResourceLoader& resourceLoader
 ) :
     m_textureManager(textureManager),
-    m_rendererProxy(resourceProxy), m_resourceLoader(resourceLoader) {
+    m_rendererProxy(rendererProxy), m_resourceLoader(resourceLoader) {
     createDefaultMaterial();
 }
 

@@ -26,7 +26,7 @@ public:
     static Config defaultConfig;
 
     explicit ShaderManager(
-      RendererProxy& resourceProxy, const ResourceLoader& resourceLoader,
+      RendererProxy& rendererProxy, const ResourceLoader& resourceLoader,
       const Config& conf = defaultConfig
     );
 

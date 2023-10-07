@@ -14,22 +14,15 @@
 #include "ShaderScope.h"
 #include "ShaderUniform.h"
 #include "ShaderAttribute.h"
+#include "ShaderStage.h"
 
 namespace sl {
 
 class Shader {
-    struct Impl {};
-
 public:
-    using Stage = u16;
-
-    static constexpr Stage stageVertex   = 0x1;
-    static constexpr Stage stageGeometry = 0x2;
-    static constexpr Stage stageFragment = 0x4;
-    static constexpr Stage stageCompute  = 0x8;
-
-    static Stage stageFromString(const std::string& name);
-    static std::string stageToString(Stage stage);
+    struct Impl {
+        virtual void initialize() = 0;
+    };
 
     enum class State : u8 { notCreated, uninitialized, initialized };
 
@@ -63,6 +56,7 @@ public:
 
     std::unordered_map<std::string, ShaderUniform> uniforms;
     std::vector<ShaderAttribute> attributes;
+    std::vector<ShaderStage> stages;
 
     State state;
 

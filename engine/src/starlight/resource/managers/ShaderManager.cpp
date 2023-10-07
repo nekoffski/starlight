@@ -12,10 +12,10 @@ ShaderManager::Config ShaderManager::defaultConfig = {
 };
 
 ShaderManager::ShaderManager(
-  RendererProxy& resourceProxy, const ResourceLoader& resourceLoader,
+  RendererProxy& rendererProxy, const ResourceLoader& resourceLoader,
   const Config& conf
 ) :
-    m_rendererProxy(resourceProxy),
+    m_rendererProxy(rendererProxy),
     m_resourceLoader(resourceLoader), m_conf(conf),
     m_shaders(m_conf.maxShaderCount) {}
 
@@ -34,6 +34,7 @@ Shader* ShaderManager::load(const std::string& name) {
         return nullptr;
     }
 
+    // TODO: move logic to ctor and use placement new instead
     shader->state                  = Shader::State::notCreated;
     shader->name                   = cfg->name;
     shader->useInstances           = cfg->useInstances;
@@ -45,15 +46,28 @@ Shader* ShaderManager::load(const std::string& name) {
     shader->pushConstantSize       = 0;
     shader->boundInstanceId.invalidate();
 
-    // getRenderpassId from backend
-    // getShaderImpl from backend
+    shader->stages.reserve(cfg->stages.size());
+    for (auto& stageConfig : cfg->stages) {
+        const auto shaderSource =
+          m_resourceLoader.loadShaderSource(stageConfig.filename);
+        ASSERT(
+          shaderSource, "Could not load shader stage source for file: {}",
+          stageConfig.filename
+        );
+        shader->stages.emplace_back(stageConfig.stage, *shaderSource);
+    }
+
+    shader->impl = m_rendererProxy.createShaderImpl(*shader);
+    ASSERT(shader->impl, "Failed to create shader implementation");
+
+    const auto renderpassId = m_rendererProxy.getRenderpassId(cfg->renderpassName);
 
     shader->state = Shader::State::uninitialized;
 
     for (auto& attribute : cfg->attributes) addAttribute(shader, attribute);
     for (auto& uniform : cfg->uniforms) addUniform(shader, uniform);
 
-    // initialize shader from backend
+    shader->impl->initialize();
 
     // check if it wasn't inserted previously!
     m_shaderByName[name] = shader;
@@ -161,8 +175,10 @@ void ShaderManager::addUniformImpl(
 
         uniform.setIndex.invalidate();
 
-        // range
-        // shader->pushConstantRanges[shader->pushConstantRangeCount++] = r;
+        const auto r   = Range::aligned(shader->pushConstantSize, size, 4);
+        uniform.offset = r.offset;
+        uniform.size   = r.size;
+        shader->pushConstantRanges[shader->pushConstantRangeCount++] = r;
     }
 
     shader->uniforms[name] = uniform;

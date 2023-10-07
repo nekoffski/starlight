@@ -100,6 +100,7 @@ int main() {
     }
 
     const auto shader = resourceManager.loadShader("MaterialShader");
+    ASSERT(shader, "oppsie");
 
     return 0;
 }

@@ -24,7 +24,7 @@ std::string ShaderUniformConfig::toString() const {
 
 std::string ShaderStageConfig::toString() const {
     return fmt::format(
-      "Stage: [type={}, file={}]", Shader::stageToString(stage), filename
+      "Stage: [type={}, file={}]", ShaderStage::typeToString(stage), filename
     );
 }
 

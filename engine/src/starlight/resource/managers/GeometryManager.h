@@ -57,9 +57,9 @@ struct PlaneProperties {
 class GeometryManager {
 public:
     explicit GeometryManager(
-      RendererProxy& resourceProxy, MaterialManager& materialManager
+      RendererProxy& rendererProxy, MaterialManager& materialManager
     ) :
-        m_rendererProxy(resourceProxy),
+        m_rendererProxy(rendererProxy),
         m_materialManager(materialManager) {
         for (auto& geometry : m_geometries) invalidateEntry(geometry);
         createDefaultGeometries();

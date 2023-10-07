@@ -18,6 +18,8 @@ using u8  = uint8_t;
 struct Range {
     u64 offset;
     u64 size;
+
+    static Range aligned(u64 offset, u64 size, u64 granularity);
 };
 
 template <typename T> using Expected = tl::expected<T, SLError>;

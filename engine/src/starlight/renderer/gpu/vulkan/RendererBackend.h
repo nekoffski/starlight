@@ -15,6 +15,8 @@
 #include "Vulkan.h"
 #include "fwd.h"
 
+#include "starlight/renderer/Shader.h"
+
 #include "GeometryData.h"
 #include "MaterialShader.h"
 #include "Pipeline.h"
@@ -22,23 +24,25 @@
 #include "Texture.h"
 #include "TextureLoader.h"
 #include "UIShader.h"
-
 #include "Buffer.h"
 
 namespace sl::vk {
 
 class RendererBackend final : public sl::RendererBackend {
     struct FrameInfo {
-        int frameCount = 0;
-        uint32_t imageIndex = 0;
-        uint32_t framebufferSizeGeneration = 0;
+        int frameCount                         = 0;
+        uint32_t imageIndex                    = 0;
+        uint32_t framebufferSizeGeneration     = 0;
         uint32_t lastFramebufferSizeGeneration = 0;
-        uint32_t currentFrame = 0;
+        uint32_t currentFrame                  = 0;
     };
 
 public:
     explicit RendererBackend(sl::Window& window, const Config& config);
     ~RendererBackend();
+
+    std::unique_ptr<Shader::Impl> createShaderImpl(sl::Shader& shader
+    ) const override;
 
     bool beginFrame(float deltaTime) override;
     bool endFrame(float deltaTime) override;
@@ -58,11 +62,10 @@ public:
     void acquireMaterialResources(Material& material) override;
     void releaseMaterialResources(Material& material) override;
 
-    virtual void acquireGeometryResources(Geometry& geometry,
-                                          uint32_t vertexSize,
-                                          uint32_t vertexCount,
-                                          void* vertexData,
-                                          std::span<uint32_t> indices) override;
+    virtual void acquireGeometryResources(
+      Geometry& geometry, uint32_t vertexSize, uint32_t vertexCount,
+      void* vertexData, std::span<uint32_t> indices
+    ) override;
 
     void releaseGeometryResources(Geometry& geometry) override;
 
@@ -72,9 +75,10 @@ private:
     void regenerateFramebuffers();
     void createSemaphoresAndFences();
 
-    uint64_t uploadDataRange(VkCommandPool pool, VkFence fence, VkQueue queue,
-                             Buffer& outBuffer, uint64_t size,
-                             const void* data);
+    uint64_t uploadDataRange(
+      VkCommandPool pool, VkFence fence, VkQueue queue, Buffer& outBuffer,
+      uint64_t size, const void* data
+    );
     void freeDataRange(Buffer& buffer, uint64_t offset, uint64_t size);
 
     void createBuffers();

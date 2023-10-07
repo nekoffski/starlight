@@ -5,6 +5,7 @@
 
 #include "starlight/core/Core.h"
 #include "starlight/renderer/Shader.h"
+#include "starlight/renderer/ShaderStage.h"
 #include "starlight/renderer/ShaderAttribute.h"
 #include "starlight/renderer/ShaderScope.h"
 #include "starlight/renderer/ShaderUniform.h"
@@ -32,7 +33,7 @@ struct ShaderUniformConfig {
 struct ShaderStageConfig {
     std::string toString() const;
 
-    Shader::Stage stage;
+    ShaderStage::Type stage;
     std::string filename;
 };
 

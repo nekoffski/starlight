@@ -11,6 +11,7 @@
 #include "starlight/renderer/Geometry.h"
 #include "starlight/renderer/Material.h"
 #include "starlight/renderer/Texture.h"
+#include "starlight/renderer/Shader.h"
 #include "starlight/renderer/fwd.h"
 
 #include "GeometryRenderData.h"
@@ -40,6 +41,8 @@ struct RendererBackend {
         }
         return false;
     }
+
+    virtual std::unique_ptr<Shader::Impl> createShaderImpl(Shader&) const = 0;
 
     virtual bool beginRenderPass(uint8_t id) = 0;
     virtual bool endRenderPass(uint8_t id)   = 0;

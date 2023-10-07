@@ -17,6 +17,10 @@ void RendererProxy::releaseMaterialResources(Material& material) {
     m_rendererBackend.releaseMaterialResources(material);
 }
 
+std::unique_ptr<Shader::Impl> RendererProxy::createShaderImpl(Shader& shader) const {
+    return m_rendererBackend.createShaderImpl(shader);
+}
+
 void RendererProxy::acquireGeometryResources(
   Geometry& geometry, std::span<Vertex3> vertices, std::span<uint32_t> indices
 ) {

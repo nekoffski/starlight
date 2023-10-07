@@ -3,12 +3,12 @@
 namespace sl {
 
 ResourceManager::ResourceManager(
-  TextureLoader& textureLoader, RendererProxy& RendererProxy
+  TextureLoader& textureLoader, RendererProxy& rendererProxy
 ) :
     m_textureManager(textureLoader, m_resourceLoader),
-    m_materialManager(m_textureManager, RendererProxy, m_resourceLoader),
-    m_geometryManager(RendererProxy, m_materialManager),
-    m_shaderManager(RendererProxy, m_resourceLoader) {}
+    m_materialManager(m_textureManager, rendererProxy, m_resourceLoader),
+    m_geometryManager(rendererProxy, m_materialManager),
+    m_shaderManager(rendererProxy, m_resourceLoader) {}
 
 Shader* ResourceManager::loadShader(const std::string& name) {
     return m_shaderManager.load(name);

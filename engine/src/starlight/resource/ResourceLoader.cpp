@@ -120,7 +120,7 @@ std::optional<ShaderConfig> ResourceLoader::loadShaderConfig(const std::string& 
             const auto file      = getField<std::string>(stage, "file");
             const auto stageName = getField<std::string>(stage, "stage");
 
-            stages.emplace_back(Shader::stageFromString(stageName), file);
+            stages.emplace_back(ShaderStage::typeFromString(stageName), file);
         }
         return stages;
     };
@@ -178,6 +178,17 @@ std::optional<ShaderConfig> ResourceLoader::loadShaderConfig(const std::string& 
         LOG_ERROR("Could not parse shader '{}' file: {}", name, e.asString());
     }
     return {};
+}
+
+std::optional<std::string> ResourceLoader::loadShaderSource(const std::string& name
+) const {
+    const auto fullPath = fmt::format("{}/shaders/{}", m_baseResourcePath, name);
+
+    if (not m_fs.isFile(fullPath)) {
+        LOG_WARN("Could not find shader file '{}'", fullPath);
+        return {};
+    }
+    return m_fs.readFile(fullPath);
 }
 
 }  // namespace sl
