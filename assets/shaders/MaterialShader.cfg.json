@@ -1,10 +1,10 @@
 {
   "version": 1.0,
   "name": "MaterialShader",
-  "renderpass": "Renderpass.Builtin.World",
+  "renderpass": "RenderPass.Builtin.World",
   "stages": [
     { "stage": "vertex", "file": "MaterialShader.vert.spv" },
-    { "stage": "fragment", "file": "MaterialShader.vert.spv" }
+    { "stage": "fragment", "file": "MaterialShader.frag.spv" }
   ],
   "use-instances": true,
   "use-local": true,

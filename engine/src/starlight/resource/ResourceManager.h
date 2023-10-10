@@ -50,6 +50,11 @@ public:
 
     GeometryProperties3D generatePlaneGeometryProperties(PlaneProperties& props);
 
+    // TODO: remove
+    std::optional<std::string> temp_loadShaderSource(const std::string& name) {
+        return m_resourceLoader.loadShaderSource(name);
+    }
+
 private:
     ResourceLoader m_resourceLoader;
 

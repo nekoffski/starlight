@@ -26,4 +26,8 @@ template <typename T> using Expected = tl::expected<T, SLError>;
 
 std::string_view removeExtension(std::string_view path);
 
+template <typename T> T getAlignedValue(T value, T granularity) {
+    return (value + granularity - 1) & ~(granularity - 1);
+}
+
 }  // namespace sl

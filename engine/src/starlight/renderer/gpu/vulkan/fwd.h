@@ -2,19 +2,19 @@
 
 namespace sl::vk {
 
-class Context;
-class CommandBuffer;
-class Device;
-class Fence;
-class Image;
-class Framebuffer;
-class RenderPass;
-class Swapchain;
-class ShaderStage;
-class MaterialShader;
-class Pipeline;
-class Buffer;
-class Texture;
-class TextureLoader;
+class VKContext;
+class VKCommandBuffer;
+class VKDevice;
+class VKFence;
+class VKImage;
+class VKFramebuffer;
+class VKRenderPass;
+class VKSwapchain;
+class VKShaderStage;
+class VKMaterialShader;
+class VKPipeline;
+class VKBuffer;
+class VKTexture;
+class VKTextureLoader;
 
 }  // namespace sl::vk

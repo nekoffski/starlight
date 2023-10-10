@@ -57,10 +57,9 @@ Shader* ShaderManager::load(const std::string& name) {
         shader->stages.emplace_back(stageConfig.stage, *shaderSource);
     }
 
-    shader->impl = m_rendererProxy.createShaderImpl(*shader);
+    shader->renderPassId = m_rendererProxy.getRenderPassId(cfg->renderpassName);
+    shader->impl         = m_rendererProxy.createShaderImpl(*shader);
     ASSERT(shader->impl, "Failed to create shader implementation");
-
-    const auto renderpassId = m_rendererProxy.getRenderpassId(cfg->renderpassName);
 
     shader->state = Shader::State::uninitialized;
 

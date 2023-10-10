@@ -17,6 +17,10 @@ void RendererProxy::releaseMaterialResources(Material& material) {
     m_rendererBackend.releaseMaterialResources(material);
 }
 
+u32 RendererProxy::getRenderPassId(const std::string& renderPass) const {
+    return m_rendererBackend.getRenderPassId(renderPass);
+}
+
 std::unique_ptr<Shader::Impl> RendererProxy::createShaderImpl(Shader& shader) const {
     return m_rendererBackend.createShaderImpl(shader);
 }

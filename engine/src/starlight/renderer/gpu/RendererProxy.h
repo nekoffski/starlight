@@ -17,7 +17,7 @@ public:
     void acquireMaterialResources(Material& material);
     void releaseMaterialResources(Material& material);
 
-    u32 getRenderpassId(const std::string& renderpass) { return 1; }
+    u32 getRenderPassId(const std::string& renderPass) const;
 
     std::unique_ptr<Shader::Impl> createShaderImpl(Shader& shader) const;
 

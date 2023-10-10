@@ -66,6 +66,8 @@ public:
     u16 attributeStride;
 
     std::unique_ptr<Impl> impl;
+
+    u32 renderPassId;
 };
 
 }  // namespace sl

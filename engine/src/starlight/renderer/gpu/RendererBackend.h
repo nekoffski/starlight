@@ -26,7 +26,9 @@ constexpr int builtinRenderPassUI    = 2;
 struct RendererBackend {
     enum class BultinRenderPass { world, ui };
 
-    virtual ~RendererBackend() {}
+    virtual ~RendererBackend() = default;
+
+    virtual u32 getRenderPassId(const std::string& renderPass) const = 0;
 
     virtual bool beginFrame(float deltaTime) = 0;
     virtual bool endFrame(float deltaTime)   = 0;
@@ -42,7 +44,7 @@ struct RendererBackend {
         return false;
     }
 
-    virtual std::unique_ptr<Shader::Impl> createShaderImpl(Shader&) const = 0;
+    virtual std::unique_ptr<Shader::Impl> createShaderImpl(Shader&) = 0;
 
     virtual bool beginRenderPass(uint8_t id) = 0;
     virtual bool endRenderPass(uint8_t id)   = 0;
