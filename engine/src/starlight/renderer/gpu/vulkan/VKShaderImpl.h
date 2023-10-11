@@ -22,15 +22,15 @@ class VKShaderImpl final : public Shader::Impl {
     };
 
     struct DescriptorSetConfig {
-        u8 bindingCount;
+        u8 bindingCount = 0;
         std::array<VkDescriptorSetLayoutBinding, 32> bindings;
     };
 
     struct Config {
         std::vector<StageConfig> stages;
         std::array<VkDescriptorPoolSize, 2> poolSizes;
-        u16 maxDescriptorSetCount;
-        u8 descriptorSetCount;
+        u16 maxDescriptorSetCount = 0;
+        u8 descriptorSetCount     = 0;
         std::array<DescriptorSetConfig, 2> descriptorSets;
         std::vector<VkVertexInputAttributeDescription> attributes;
     };
@@ -48,7 +48,7 @@ class VKShaderImpl final : public Shader::Impl {
 
     struct InstanceState {
         Id32 id;
-        u64 offset;
+        u64 offset = 0;
         DescriptorSetState descriptorSetState;
         std::vector<Texture*> instanceTextures;
     };
@@ -58,6 +58,7 @@ public:
       sl::Shader& self, VKDevice* device, const VKContext* context,
       VKRenderPass* renderPass
     );
+    ~VKShaderImpl() override;
 
     void initialize() override;
 

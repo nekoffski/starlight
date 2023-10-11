@@ -206,6 +206,7 @@ void VKMaterialShader::createPipeline(
     props.polygonMode          = VK_POLYGON_MODE_FILL;
     props.descriptorSetLayouts = descriptorSetLayout;
     props.depthTestEnabled     = true;
+    props.pushConstantRanges   = {};
 
     m_pipeline = createUniqPtr<VKPipeline>(m_context, m_device, renderPass, props);
 

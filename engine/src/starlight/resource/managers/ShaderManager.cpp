@@ -146,6 +146,8 @@ void ShaderManager::addUniformImpl(
 ) {
     const auto uniformCount = shader->uniforms.size();
 
+    LOG_TRACE("Adding uniform: {}/{}/{}", name, size, shaderScopeToString(scope));
+
     ASSERT(
       uniformCount + 1 <= m_conf.maxUniformCount,
       "Uniform count {} exceeds limit {}", uniformCount + 1, m_conf.maxUniformCount
@@ -178,13 +180,19 @@ void ShaderManager::addUniformImpl(
         uniform.offset = r.offset;
         uniform.size   = r.size;
         shader->pushConstantRanges[shader->pushConstantRangeCount++] = r;
+        shader->pushConstantSize += r.size;
+
+        LOG_TRACE(
+          "Push constant range: {} - {}, total push constants: {}", r.offset, r.size,
+          shader->pushConstantRangeCount
+        );
     }
 
     shader->uniforms[name] = uniform;
 
     if (not isSampler) {
         if (uniform.scope == ShaderScope::global)
-            shader->globalUboOffset += uniform.size;
+            shader->globalUboSize += uniform.size;
         else
             shader->uboSize += uniform.size;
     }

@@ -22,6 +22,7 @@ class Shader {
 public:
     struct Impl {
         virtual void initialize() = 0;
+        virtual ~Impl()           = default;
     };
 
     enum class State : u8 { notCreated, uninitialized, initialized };
@@ -34,25 +35,25 @@ public:
     bool useInstances;
     bool useLocals;
 
-    u64 requiredUboAlignment;
+    u64 requiredUboAlignment = 0;
 
-    u64 globalUboSize;
-    u64 globalUboStride;
-    u64 globalUboOffset;
+    u64 globalUboSize   = 0;
+    u64 globalUboStride = 0;
+    u64 globalUboOffset = 0;
 
-    u64 uboSize;
-    u64 uboStride;
+    u64 uboSize   = 0;
+    u64 uboStride = 0;
 
-    u64 pushConstantSize;
-    u64 pushConstantStride;
+    u64 pushConstantSize   = 0;
+    u64 pushConstantStride = 0;
 
     std::vector<Texture*> globalTextures;
-    u8 instanceTextureCount;
+    u8 instanceTextureCount = 0;
 
     ShaderScope boundScope;
 
     Id32 boundInstanceId;
-    u32 boundUboOffset;
+    u32 boundUboOffset = 0;
 
     std::unordered_map<std::string, ShaderUniform> uniforms;
     std::vector<ShaderAttribute> attributes;
@@ -60,14 +61,14 @@ public:
 
     State state;
 
-    u8 pushConstantRangeCount;
+    u8 pushConstantRangeCount = 0;
     std::array<Range, 32> pushConstantRanges;
 
-    u16 attributeStride;
+    u16 attributeStride = 0;
 
     std::unique_ptr<Impl> impl;
 
-    u32 renderPassId;
+    u32 renderPassId = 0;
 };
 
 }  // namespace sl

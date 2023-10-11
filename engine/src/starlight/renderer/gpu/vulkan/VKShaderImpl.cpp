@@ -104,6 +104,23 @@ VKShaderImpl::VKShaderImpl(
     m_instanceStates.resize(1024);
 }
 
+VKShaderImpl::~VKShaderImpl() {
+    const auto allocator     = m_context->getAllocator();
+    const auto logicalDevice = m_device->getLogicalDevice();
+
+    for (int i = 0; i < m_config.descriptorSetCount; ++i) {
+        if (m_descriptorSetLayouts[i]) {
+            vkDestroyDescriptorSetLayout(
+              logicalDevice, m_descriptorSetLayouts[i], allocator
+            );
+        }
+    }
+    if (m_descriptorPool)
+        vkDestroyDescriptorPool(logicalDevice, m_descriptorPool, allocator);
+    m_uniformBuffer->unlockMemory();
+    m_mappedUniformBufferBlock = nullptr;
+}
+
 void VKShaderImpl::initialize() {
     createModules();
     processAttributes();
@@ -141,14 +158,19 @@ void VKShaderImpl::initialize() {
     pipelineProps.scissor              = scissor;
     pipelineProps.polygonMode          = VK_POLYGON_MODE_FILL;
     pipelineProps.depthTestEnabled     = true;
-    pipelineProps.pushConstantRanges   = m_self.pushConstantRanges;
+
+    // todo: use vector
+    pipelineProps.pushConstantRanges = {
+        m_self.pushConstantRanges.data(),
+        m_self.pushConstantRanges.data() + m_self.pushConstantRangeCount
+    };
 
     m_pipeline.emplace(m_context, m_device, *m_renderPass, pipelineProps);
 
     m_self.requiredUboAlignment =
       m_device->getProperties().limits.minUniformBufferOffsetAlignment;
     m_self.globalUboStride =
-      getAlignedValue(m_self.globalUboStride, m_self.requiredUboAlignment);
+      getAlignedValue(m_self.globalUboSize, m_self.requiredUboAlignment);
     m_self.uboStride = getAlignedValue(m_self.uboSize, m_self.requiredUboAlignment);
 
     const u32 deviceLocalBits =
@@ -168,8 +190,10 @@ void VKShaderImpl::initialize() {
       VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
     bufferProps.bindOnCreate = true;
 
+    LOG_TRACE("Creating uniform buffer");
     m_uniformBuffer.emplace(m_context, m_device, bufferProps);
 
+    LOG_TRACE("Allocating {}b of memory", m_self.globalUboStride);
     m_self.globalUboOffset     = m_uniformBuffer->allocate(m_self.globalUboStride);
     m_mappedUniformBufferBlock = m_uniformBuffer->lockMemory(0, VK_WHOLE_SIZE, 0);
 
@@ -205,12 +229,12 @@ void VKShaderImpl::processUniforms() {
     for (const auto& uniform : m_self.uniforms | std::views::values) {
         if (uniform.type == ShaderUniform::Type::sampler) {
             const auto setIndex =
-              uniform.scope == ShaderScope::global
-                ? descSetIndexGlobal
-                : descSetIndexInstance;
+              (uniform.scope == ShaderScope::global
+                 ? descSetIndexGlobal
+                 : descSetIndexInstance);
             auto setConfig = &m_config.descriptorSets[setIndex];
 
-            if (setConfig->bindings.size() < 2) {
+            if (setConfig->bindingCount < 2) {
                 // no binding yet, this is first sampler to be added
                 // create a binding with a single descriptor for this sampler
                 auto& binding           = setConfig->bindings[bindingIndexSampler];
@@ -219,6 +243,7 @@ void VKShaderImpl::processUniforms() {
                 binding.descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                 binding.stageFlags =
                   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+                setConfig->bindingCount++;
             } else {
                 setConfig->bindings[bindingIndexSampler].descriptorCount++;
             }
@@ -243,11 +268,16 @@ void VKShaderImpl::createDescriptorPool() {
 
 void VKShaderImpl::createDescriptorSetLayouts() {
     for (int i = 0; i < m_config.descriptorSetCount; ++i) {
+        LOG_TRACE(
+          "Creating descriptor set layout: {} - bindings: {}", i,
+          m_config.descriptorSets[i].bindingCount
+        );
         VkDescriptorSetLayoutCreateInfo info = {
             VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO
         };
         info.bindingCount = m_config.descriptorSets[i].bindingCount;
         info.pBindings    = m_config.descriptorSets[i].bindings.data();
+
         VK_ASSERT(vkCreateDescriptorSetLayout(
           m_device->getLogicalDevice(), &info, m_context->getAllocator(),
           &m_descriptorSetLayouts[i]

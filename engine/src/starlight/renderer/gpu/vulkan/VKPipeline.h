@@ -157,6 +157,8 @@ public:
         };
 
         std::vector<VkPushConstantRange> ranges;
+        VkPushConstantRange push_constant;
+
         if (const auto pushConstantRangeCount = props.pushConstantRanges.size();
             pushConstantRangeCount > 0) {
             ASSERT(
@@ -168,6 +170,7 @@ public:
             ranges.reserve(pushConstantRangeCount);
 
             for (const auto& range : props.pushConstantRanges) {
+                LOG_TRACE("Push constant range: {}-{}", range.offset, range.size);
                 ranges.push_back(VkPushConstantRange{
                   .stageFlags =
                     VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
@@ -175,13 +178,16 @@ public:
                   .size   = static_cast<u32>(range.size) });
             }
 
+            LOG_TRACE(
+              "Total push constants for pipeline: {}", pushConstantRangeCount
+            );
+
             pipeline_layout_create_info.pushConstantRangeCount =
               pushConstantRangeCount;
             pipeline_layout_create_info.pPushConstantRanges = ranges.data();
 
         } else {
             // TEMPORARY: todo remove
-            VkPushConstantRange push_constant;
             push_constant.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
             push_constant.offset     = sizeof(glm::mat4) * 0;
             push_constant.size       = sizeof(glm::mat4) * 2;
@@ -199,6 +205,14 @@ public:
         pipeline_layout_create_info.setLayoutCount =
           props.descriptorSetLayouts.size();
         pipeline_layout_create_info.pSetLayouts = props.descriptorSetLayouts.data();
+
+        LOG_TRACE(
+          "Descriptor set layouts in pipeline: {}",
+          pipeline_layout_create_info.setLayoutCount
+        );
+
+        for (int i = 0; i < pipeline_layout_create_info.setLayoutCount; ++i) {
+        }
 
         auto logicalDevice = device->getLogicalDevice();
         auto allocator     = context->getAllocator();
