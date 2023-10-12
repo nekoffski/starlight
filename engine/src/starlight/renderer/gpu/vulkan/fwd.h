@@ -6,6 +6,7 @@ class VKContext;
 class VKCommandBuffer;
 class VKDevice;
 class VKFence;
+class VKSemaphore;
 class VKImage;
 class VKFramebuffer;
 class VKRenderPass;

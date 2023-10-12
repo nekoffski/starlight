@@ -24,6 +24,8 @@ struct ShaderUniform {
         custom
     };
 
+    bool isSampler() const;
+
     static Type typeFromString(const std::string& name);
     static std::string typeToString(Type type);
     static u32 getTypeSize(Type type);

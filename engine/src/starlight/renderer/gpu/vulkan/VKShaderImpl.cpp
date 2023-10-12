@@ -7,7 +7,9 @@
 #include "starlight/core/Core.h"
 #include "starlight/core/window/WindowManager.h"
 #include "starlight/renderer/ShaderStage.h"
+#include "starlight/renderer/Texture.h"
 
+#include "VKTexture.h"
 #include "VKPipeline.h"
 
 namespace sl::vk {
@@ -49,8 +51,6 @@ VKShaderImpl::VKShaderImpl(
     m_self(self),
     m_device(device), m_context(context), m_renderPass(renderPass),
     m_rendererContext(rendererContext) {
-    // TODO: pass renderpass
-
     const auto stageCount = self.stages.size();
 
     ASSERT(
@@ -133,7 +133,237 @@ void VKShaderImpl::initialize() {
 }
 
 void VKShaderImpl::use() {
-    // m_pipeline->bind()
+    m_pipeline->bind(
+      *m_rendererContext.getCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS
+    );
+}
+
+void VKShaderImpl::bindGlobals() {
+    // Global UBO is always at the beginning
+    m_self.boundUboOffset = m_self.globalUboOffset;
+}
+
+void VKShaderImpl::bindInstance(u32 instanceId) {
+    m_self.boundInstanceId = instanceId;
+    m_self.boundUboOffset  = m_instanceStates[instanceId].offset;
+}
+
+void VKShaderImpl::applyGlobals() {
+    // Apply UBO
+    VkDescriptorBufferInfo bufferInfo;
+    bufferInfo.buffer = m_uniformBuffer->getHandle();
+    bufferInfo.offset = m_self.globalUboOffset;
+    bufferInfo.range  = m_self.globalUboStride;
+
+    const auto imageIndex = m_rendererContext.getImageIndex();
+
+    // Update desriptor sets
+    VkWriteDescriptorSet uboWrite = { VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET };
+    uboWrite.dstSet               = m_globalDescriptorSets[imageIndex];
+    uboWrite.dstBinding           = 0;
+    uboWrite.dstArrayElement      = 0;
+    uboWrite.descriptorType       = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboWrite.descriptorCount      = 1;
+    uboWrite.pBufferInfo          = &bufferInfo;
+
+    std::array<VkWriteDescriptorSet, 2> descriptorWrites;
+    descriptorWrites[0] = uboWrite;
+
+    const auto globalSetBindingCount =
+      m_config.descriptorSets[descSetIndexGlobal].bindingCount;
+    ASSERT(globalSetBindingCount <= 1, "Global image samplers not supported yet");
+
+    vkUpdateDescriptorSets(
+      m_device->getLogicalDevice(), globalSetBindingCount, descriptorWrites.data(),
+      0, 0
+    );
+
+    auto globalDescriptor = &m_globalDescriptorSets[imageIndex];
+    vkCmdBindDescriptorSets(
+      m_rendererContext.getCommandBuffer()->getHandle(),
+      VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->getLayout(), 0, 1,
+      globalDescriptor, 0, 0
+    );
+}
+
+void VKShaderImpl::applyInstance() {
+    const auto imageIndex = m_rendererContext.getImageIndex();
+
+    auto objectState = &m_instanceStates[m_self.boundInstanceId];
+    auto objectDescriptorSet =
+      objectState->descriptorSetState.descriptorSets[imageIndex];
+
+    std::array<VkWriteDescriptorSet, 2> descriptorWrites;
+
+    u32 descriptorCount = 0;
+    u32 descriptorIndex = 0;
+
+    // 0 - uniform buffer
+    auto& instanceUboGeneration =
+      objectState->descriptorSetState.descriptorStates[descriptorIndex]
+        .generations[imageIndex];
+
+    VkDescriptorBufferInfo bufferInfo;
+    if (not instanceUboGeneration) {
+        bufferInfo.buffer = m_uniformBuffer->getHandle();
+        bufferInfo.offset = objectState->offset;
+        bufferInfo.range  = m_self.uboStride;
+
+        VkWriteDescriptorSet uboDescriptor = {
+            VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET
+        };
+        uboDescriptor.dstSet         = objectDescriptorSet;
+        uboDescriptor.dstBinding     = descriptorIndex;
+        uboDescriptor.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        uboDescriptor.pBufferInfo    = &bufferInfo;
+
+        descriptorWrites[descriptorCount++] = uboDescriptor;
+        instanceUboGeneration               = 1;
+    }
+    descriptorIndex++;
+
+    // Samplers will always be in the binding. If the binding count is less than 2,
+    // there are no samplers
+    std::vector<VkDescriptorImageInfo> imageInfos;
+    if (m_config.descriptorSets[descSetIndexInstance].bindingCount > 1) {
+        // iterate samplers
+        auto totalSamplerCount =
+          m_config.descriptorSets[descSetIndexInstance]
+            .bindings[bindingIndexSampler]
+            .descriptorCount;
+
+        imageInfos.reserve(totalSamplerCount);
+        for (int i = 0; i < totalSamplerCount; ++i) {
+            VKTexture* texture = static_cast<VKTexture*>(
+              m_instanceStates[m_self.boundInstanceId].instanceTextures[i]
+            );
+            imageInfos.emplace_back(
+              texture->getSampler(), texture->getImage()->getView(),
+              VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+            );
+        }
+
+        VkWriteDescriptorSet samplerDescriptor = {
+            VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET
+        };
+        samplerDescriptor.dstSet         = objectDescriptorSet;
+        samplerDescriptor.dstBinding     = descriptorIndex;
+        samplerDescriptor.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        samplerDescriptor.descriptorCount = totalSamplerCount;
+        samplerDescriptor.pImageInfo      = imageInfos.data();
+
+        descriptorWrites[descriptorCount++] = samplerDescriptor;
+    }
+
+    if (descriptorCount > 0) {
+        vkUpdateDescriptorSets(
+          m_device->getLogicalDevice(), descriptorCount, descriptorWrites.data(), 0,
+          0
+        );
+    }
+
+    vkCmdBindDescriptorSets(
+      m_rendererContext.getCommandBuffer()->getHandle(),
+      VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->getLayout(), 1, 1,
+      &objectDescriptorSet, 0, 0
+    );
+}
+
+u32 VKShaderImpl::acquireInstanceResources() {
+    Id32 id = 0;
+
+    for (int i = 0; i < 1024; ++i) {
+        if (not m_instanceStates[i].id) {
+            id                     = i;
+            m_instanceStates[i].id = i;
+            break;
+        }
+    }
+    ASSERT(id, "Coult not acquire new resource id");
+
+    auto& instanceState = m_instanceStates[*id];
+    const auto instanceTextureCount =
+      m_config.descriptorSets[descSetIndexInstance]
+        .bindings[bindingIndexSampler]
+        .descriptorCount;
+
+    // todo: should we set all to default?
+    instanceState.instanceTextures.resize(m_self.instanceTextureCount, nullptr);
+    // allocate space in the UBO - by the stride, not the size
+    instanceState.offset = m_uniformBuffer->allocate(m_self.uboStride);
+
+    auto& setState = instanceState.descriptorSetState;
+    const auto bindingCount =
+      m_config.descriptorSets[descSetIndexInstance].bindingCount;
+    setState.descriptorStates.resize(maxBindings);
+
+    // allocate 3 descirptor sets, one per frame
+    std::array<VkDescriptorSetLayout, 3> layouts = {
+        m_descriptorSetLayouts[descSetIndexInstance],
+        m_descriptorSetLayouts[descSetIndexInstance],
+        m_descriptorSetLayouts[descSetIndexInstance]
+    };
+
+    VkDescriptorSetAllocateInfo allocateInfo = {
+        VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO
+    };
+    allocateInfo.descriptorPool     = m_descriptorPool;
+    allocateInfo.descriptorSetCount = 3;
+    allocateInfo.pSetLayouts        = layouts.data();
+
+    VK_ASSERT(vkAllocateDescriptorSets(
+      m_device->getLogicalDevice(), &allocateInfo,
+      instanceState.descriptorSetState.descriptorSets.data()
+    ));
+
+    return *id;
+}
+
+void VKShaderImpl::releaseInstanceResources(u32 instanceId) {
+    const auto logicalDevice = m_device->getLogicalDevice();
+    vkDeviceWaitIdle(logicalDevice);
+
+    auto& instanceState = m_instanceStates[instanceId];
+
+    VK_ASSERT(vkFreeDescriptorSets(
+      logicalDevice, m_descriptorPool, 3,
+      instanceState.descriptorSetState.descriptorSets.data()
+    ));
+
+    // TODO: clear in place instead
+    instanceState.descriptorSetState.descriptorStates.clear();
+    instanceState.descriptorSetState.descriptorStates.resize(maxBindings);
+    instanceState.instanceTextures.clear();
+
+    m_uniformBuffer->free(m_self.uboStride, *instanceState.offset);
+
+    instanceState.id.invalidate();
+    instanceState.offset.invalidate();
+}
+
+void VKShaderImpl::setUniform(const ShaderUniform& uniform, void* value) {
+    if (uniform.isSampler()) {
+        if (uniform.scope == ShaderScope::global) {
+            m_self.globalTextures[uniform.location] = static_cast<Texture*>(value);
+        } else {
+            m_instanceStates[m_self.boundInstanceId]
+              .instanceTextures[uniform.location] = static_cast<Texture*>(value);
+        }
+    } else {
+        if (uniform.scope == ShaderScope::local) {
+            vkCmdPushConstants(
+              m_rendererContext.getCommandBuffer()->getHandle(),
+              m_pipeline->getLayout(),
+              VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+              uniform.offset, uniform.size, value
+            );
+        } else {
+            char* address =
+              static_cast<char*>(m_mappedUniformBufferBlock) + m_self.boundUboOffset
+              + uniform.offset;
+            std::memcpy(address, value, uniform.size);
+        }
+    }
 }
 
 void VKShaderImpl::createModules() {
@@ -149,7 +379,7 @@ void VKShaderImpl::createModules() {
 
 void VKShaderImpl::processUniforms() {
     for (const auto& uniform : m_self.uniforms | std::views::values) {
-        if (uniform.type == ShaderUniform::Type::sampler) {
+        if (uniform.isSampler()) {
             const auto setIndex =
               (uniform.scope == ShaderScope::global
                  ? descSetIndexGlobal

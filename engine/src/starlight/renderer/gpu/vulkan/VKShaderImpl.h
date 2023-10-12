@@ -17,6 +17,8 @@
 namespace sl::vk {
 
 class VKShaderImpl final : public Shader::Impl {
+    static constexpr u32 maxBindings = 32;
+
     struct StageConfig {
         ShaderStage::Type type;
         std::string source;
@@ -38,8 +40,8 @@ class VKShaderImpl final : public Shader::Impl {
 
     struct VKDescriptorState {
         // 1 per frame
-        std::array<u8, 3> generations;
-        std::array<u32, 3> ids;
+        std::array<Id8, 3> generations;
+        std::array<Id32, 3> ids;
     };
 
     struct DescriptorSetState {
@@ -49,7 +51,7 @@ class VKShaderImpl final : public Shader::Impl {
 
     struct InstanceState {
         Id32 id;
-        u64 offset = 0;
+        Id64 offset;
         DescriptorSetState descriptorSetState;
         std::vector<Texture*> instanceTextures;
     };
@@ -63,6 +65,13 @@ public:
 
     void initialize() override;
     void use() override;
+    void bindGlobals() override;
+    void bindInstance(u32 instanceId) override;
+    void applyGlobals() override;
+    void applyInstance() override;
+    u32 acquireInstanceResources() override;
+    void releaseInstanceResources(u32 instanceId) override;
+    void setUniform(const ShaderUniform& uniform, void* value) override;
 
 private:
     void createModules();

@@ -13,10 +13,10 @@ ShaderManager::Config ShaderManager::defaultConfig = {
 
 ShaderManager::ShaderManager(
   RendererProxy& rendererProxy, const ResourceLoader& resourceLoader,
-  const Config& conf
+  const TextureManager& textureManager, const Config& conf
 ) :
     m_rendererProxy(rendererProxy),
-    m_resourceLoader(resourceLoader), m_conf(conf),
+    m_resourceLoader(resourceLoader), m_conf(conf), m_textureManager(textureManager),
     m_shaders(m_conf.maxShaderCount) {}
 
 Shader* ShaderManager::load(const std::string& name) {
@@ -128,6 +128,7 @@ void ShaderManager::addSampler(Shader* shader, const ShaderUniformConfig& cfg) {
           globalTextureCount
         );
         location = globalTextureCount;
+        shader->globalTextures.push_back(m_textureManager.getDefaultTexture());
     } else {
         ASSERT(
           shader->instanceTextureCount + 1 <= m_conf.maxInstanceTextures,

@@ -8,7 +8,7 @@ ResourceManager::ResourceManager(
     m_textureManager(textureLoader, m_resourceLoader),
     m_materialManager(m_textureManager, rendererProxy, m_resourceLoader),
     m_geometryManager(rendererProxy, m_materialManager),
-    m_shaderManager(rendererProxy, m_resourceLoader) {}
+    m_shaderManager(rendererProxy, m_resourceLoader, m_textureManager) {}
 
 Shader* ResourceManager::loadShader(const std::string& name) {
     return m_shaderManager.load(name);

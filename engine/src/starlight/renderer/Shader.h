@@ -23,8 +23,15 @@ public:
     struct Impl {
         virtual ~Impl() = default;
 
-        virtual void initialize() = 0;
-        virtual void use()        = 0;
+        virtual void initialize()                                          = 0;
+        virtual void use()                                                 = 0;
+        virtual void bindGlobals()                                         = 0;
+        virtual void bindInstance(u32 instanceId)                          = 0;
+        virtual void applyGlobals()                                        = 0;
+        virtual void applyInstance()                                       = 0;
+        virtual u32 acquireInstanceResources()                             = 0;
+        virtual void releaseInstanceResources(u32 instanceId)              = 0;
+        virtual void setUniform(const ShaderUniform& uniform, void* value) = 0;
     };
 
     enum class State : u8 { notCreated, uninitialized, initialized };

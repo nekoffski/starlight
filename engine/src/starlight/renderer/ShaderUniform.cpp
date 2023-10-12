@@ -56,6 +56,8 @@ static const std::unordered_map<ShaderUniform::Type, u32> typeToSize{
 
 }  // namespace
 
+bool ShaderUniform::isSampler() const { return type == Type::sampler; }
+
 ShaderUniform::Type ShaderUniform::typeFromString(const std::string& name) {
     const auto record = nameToType.find(name);
     ASSERT(record != nameToType.end(), "Invalid type Uniform name: {}", name);

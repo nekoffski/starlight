@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <kc/core/Singleton.hpp>
 
 #include "starlight/renderer/ShaderScope.h"
@@ -7,10 +9,8 @@
 #include "starlight/renderer/ShaderUniform.h"
 #include "starlight/renderer/Shader.h"
 #include "starlight/renderer/gpu/RendererProxy.h"
-
 #include "starlight/resource/ResourceLoader.h"
-
-#include <vector>
+#include "TextureManager.h"
 
 namespace sl {
 
@@ -27,7 +27,7 @@ public:
 
     explicit ShaderManager(
       RendererProxy& rendererProxy, const ResourceLoader& resourceLoader,
-      const Config& conf = defaultConfig
+      const TextureManager& textureManager, const Config& conf = defaultConfig
     );
 
     Shader* load(const std::string& name);
@@ -51,6 +51,7 @@ private:
 
     RendererProxy& m_rendererProxy;
     const ResourceLoader& m_resourceLoader;
+    const TextureManager& m_textureManager;
     Config m_conf;
 
     std::vector<Shader> m_shaders;
