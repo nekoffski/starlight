@@ -13,7 +13,10 @@ VKBuffer::VKBuffer(
 ) :
     m_context(context),
     m_device(device), m_totalSize(props.size), m_usageFlags(props.usageFlags),
-    m_memoryPropertyFlags(props.memoryPropertyFlags), m_bufferFreeList(props.size) {
+    m_memoryPropertyFlags(props.memoryPropertyFlags),
+    m_useFreeList(props.useFreeList) {
+    if (m_useFreeList) m_bufferFreeList.emplace(props.size);
+
     auto logicalDevice = m_device->getLogicalDevice();
     auto allocator     = m_context->getAllocator();
 
@@ -45,11 +48,20 @@ VKBuffer::VKBuffer(
 VKBuffer::~VKBuffer() { destroy(); }
 
 uint64_t VKBuffer::allocate(uint64_t size) {
-    return m_bufferFreeList.allocateBlock(size);
+    if (m_useFreeList) [[likely]]
+        return m_bufferFreeList->allocateBlock(size);
+    LOG_WARN(
+      "Allocating from buffer that doesn't have free list, offset won't be valid"
+    );
+    return 0;
 }
 
 void VKBuffer::free(uint64_t size, uint64_t offset) {
-    m_bufferFreeList.freeBlock(size, offset);
+    if (m_useFreeList) [[likely]] {
+        m_bufferFreeList->freeBlock(size, offset);
+        return;
+    }
+    LOG_WARN("Freeing memory on buffer that doesn't have free list, will skip");
 }
 
 VkMemoryAllocateInfo VKBuffer::createMemoryAllocateInfo(
@@ -100,7 +112,7 @@ bool VKBuffer::resize(uint64_t size, VkQueue queue, VkCommandPool pool) {
       "VKBuffer::resize(...) requires new size to be greater than the actual one"
     );
 
-    m_bufferFreeList.resize(size);
+    if (m_useFreeList) m_bufferFreeList->resize(size);
 
     auto bufferCreateInfo = createBufferCreateInfo();
 

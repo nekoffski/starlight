@@ -10,6 +10,7 @@
 #include "VKDevice.h"
 #include "VKShaderStage.h"
 #include "VKPipeline.h"
+#include "VKRendererContext.h"
 
 #include "starlight/renderer/Shader.h"
 
@@ -56,11 +57,12 @@ class VKShaderImpl final : public Shader::Impl {
 public:
     explicit VKShaderImpl(
       sl::Shader& self, VKDevice* device, const VKContext* context,
-      VKRenderPass* renderPass
+      VKRenderPass* renderPass, VKRendererContext& rendererContext
     );
     ~VKShaderImpl() override;
 
     void initialize() override;
+    void use() override;
 
 private:
     void createModules();
@@ -68,11 +70,14 @@ private:
     void processUniforms();
     void createDescriptorPool();
     void createDescriptorSetLayouts();
+    void createPipeline();
+    void createUniformBuffer();
 
     sl::Shader& m_self;
     VKDevice* m_device;
     const VKContext* m_context;
     VKRenderPass* m_renderPass;
+    VKRendererContext& m_rendererContext;
 
     void* m_mappedUniformBufferBlock;
     Id32 m_id;

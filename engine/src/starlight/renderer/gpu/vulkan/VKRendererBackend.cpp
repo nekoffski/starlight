@@ -19,7 +19,7 @@
 namespace sl::vk {
 
 VKRendererBackend::VKRendererBackend(sl::Window& window, const Config& config) :
-    m_framebufferSize(window.getSize()) {
+    m_rendererContext(maxFramesInFlight, window.getSize()) {
     createCoreComponents(window, config);
     regenerateFramebuffers();
     createCommandBuffers();
@@ -27,12 +27,12 @@ VKRendererBackend::VKRendererBackend(sl::Window& window, const Config& config) :
 
     m_materialShader = createUniqPtr<VKMaterialShader>(
       m_context.get(), m_device.get(), m_swapchain->getImagesSize(),
-      m_framebufferSize, *m_mainRenderPass
+      m_rendererContext.getFramebufferSize(), *m_mainRenderPass
     );
 
     m_uiShader = createUniqPtr<VKUIShader>(
       m_context.get(), m_device.get(), m_swapchain->getImagesSize(),
-      m_framebufferSize, *m_uiRenderPass
+      m_rendererContext.getFramebufferSize(), *m_uiRenderPass
     );
 
     LOG_DEBUG("Basic shader created");
@@ -212,7 +212,7 @@ void VKRendererBackend::drawGeometry(const GeometryRenderData& geometryRenderDat
     }
 
     auto& bufferData    = m_geometries[geometryRenderData.geometry->internalId];
-    auto& commandBuffer = m_commandBuffers[m_frameInfo.imageIndex];
+    auto& commandBuffer = *m_rendererContext.getCommandBuffer();
 
     Material* material = geometryRenderData.geometry->material;
     ASSERT(material, "Invalid material handle");
@@ -226,7 +226,7 @@ void VKRendererBackend::drawGeometry(const GeometryRenderData& geometryRenderDat
               commandBuffer.getHandle(), geometryRenderData.model
             );
             m_uiShader->applyMaterial(
-              commandBuffer.getHandle(), m_frameInfo.imageIndex, *material
+              commandBuffer.getHandle(), m_rendererContext.getImageIndex(), *material
             );
             m_uiShader->use(commandBuffer);
             break;
@@ -236,7 +236,7 @@ void VKRendererBackend::drawGeometry(const GeometryRenderData& geometryRenderDat
               commandBuffer.getHandle(), geometryRenderData.model
             );
             m_materialShader->applyMaterial(
-              commandBuffer.getHandle(), m_frameInfo.imageIndex, *material
+              commandBuffer.getHandle(), m_rendererContext.getImageIndex(), *material
             );
             m_materialShader->use(commandBuffer);
             break;
@@ -267,7 +267,7 @@ void VKRendererBackend::drawGeometry(const GeometryRenderData& geometryRenderDat
 }
 
 void VKRendererBackend::updateGlobalWorldState(const GlobalState& globalState) {
-    auto& commandBuffer = m_commandBuffers[m_frameInfo.imageIndex];
+    auto& commandBuffer = *m_rendererContext.getCommandBuffer();
 
     m_mainRenderPass->setAmbient(globalState.ambientColor);
 
@@ -277,26 +277,26 @@ void VKRendererBackend::updateGlobalWorldState(const GlobalState& globalState) {
     m_materialShader->getGlobalUBO().view       = globalState.viewMatrix;
 
     m_materialShader->updateGlobalWorldState(
-      commandBuffer.getHandle(), m_frameInfo.imageIndex
+      commandBuffer.getHandle(), m_rendererContext.getImageIndex()
     );
 }
 
 void VKRendererBackend::updateGlobalUIState(
   Mat4f projection, Mat4f view, int32_t mode
 ) {
-    auto& commandBuffer = m_commandBuffers[m_frameInfo.imageIndex];
+    auto& commandBuffer = *m_rendererContext.getCommandBuffer();
 
     m_uiShader->use(commandBuffer);
     m_uiShader->getGlobalUBO().projection = projection;
     m_uiShader->getGlobalUBO().view       = view;
 
     m_uiShader->updateGlobalWorldState(
-      commandBuffer.getHandle(), m_frameInfo.imageIndex
+      commandBuffer.getHandle(), m_rendererContext.getImageIndex()
     );
 }
 
 bool VKRendererBackend::beginRenderPass(uint8_t id) {
-    auto& commandBuffer = m_commandBuffers[m_frameInfo.imageIndex];
+    auto& commandBuffer = *m_rendererContext.getCommandBuffer();
 
     VKFramebuffer* framebuffer = nullptr;
     VKRenderPass* renderPass   = nullptr;
@@ -304,14 +304,14 @@ bool VKRendererBackend::beginRenderPass(uint8_t id) {
     switch (id) {
         case builtinRenderPassWorld: {
             renderPass  = m_mainRenderPass.get();
-            framebuffer = &m_worldFramebuffers[m_frameInfo.imageIndex];
+            framebuffer = &m_worldFramebuffers[m_rendererContext.getImageIndex()];
             break;
         }
 
         case builtinRenderPassUI: {
-            renderPass  = m_uiRenderPass.get();
-            framebuffer = &m_swapchain->getFramebuffers()->at(m_frameInfo.imageIndex
-            );
+            renderPass = m_uiRenderPass.get();
+            framebuffer =
+              &m_swapchain->getFramebuffers()->at(m_rendererContext.getImageIndex());
             break;
         }
     }
@@ -332,7 +332,7 @@ bool VKRendererBackend::beginRenderPass(uint8_t id) {
 }
 
 bool VKRendererBackend::endRenderPass(uint8_t id) {
-    auto& commandBuffer = m_commandBuffers[m_frameInfo.imageIndex];
+    auto& commandBuffer = *m_rendererContext.getCommandBuffer();
 
     VKRenderPass* renderPass = nullptr;
 
@@ -411,50 +411,16 @@ void VKRendererBackend::createCoreComponents(
 }
 
 void VKRendererBackend::createSemaphoresAndFences() {
-    m_imageAvailableSemaphores.reserve(maxFramesInFlight);
-    m_queueCompleteSemaphores.reserve(maxFramesInFlight);
-
-    m_imagesInFlight.resize(maxFramesInFlight);
-    m_inFlightFences.reserve(maxFramesInFlight);
-
-    const auto contextPointer = m_context.get();
-    const auto devicePointer  = m_device.get();
-
-    REPEAT(maxFramesInFlight) {
-        m_imageAvailableSemaphores.emplace_back(contextPointer, devicePointer);
-        m_queueCompleteSemaphores.emplace_back(contextPointer, devicePointer);
-        m_inFlightFences.emplace_back(
-          m_context.get(), m_device.get(), VKFence::State::signaled
-        );
-    }
+    m_rendererContext.createSemaphoresAndFences(m_context.get(), m_device.get());
 }
 
 void VKRendererBackend::onViewportResize(uint32_t width, uint32_t height) {
-    m_framebufferSize.width = width;
-    m_framebufferSize.width = height;
-
-    m_frameInfo.lastFramebufferSizeGeneration =
-      m_frameInfo.framebufferSizeGeneration;
-    m_frameInfo.framebufferSizeGeneration++;
-
-    LOG_TRACE(
-      "Vulkan renderer backend onViewportResize {}/{}/{}", width, height,
-      m_frameInfo.framebufferSizeGeneration
-    );
+    m_rendererContext.changeFramebufferSize(width, height);
 }
 
 void VKRendererBackend::createCommandBuffers() {
     const auto swapchainImagesCount = m_swapchain->getImagesSize();
-    LOG_TRACE("Creating {} command buffers", swapchainImagesCount);
-
-    m_commandBuffers.reserve(swapchainImagesCount);
-
-    for (int i = 0; i < swapchainImagesCount; ++i) {
-        m_commandBuffers.emplace_back(
-          m_device.get(), m_device->getGraphicsCommandPool(),
-          VKCommandBuffer::Severity::primary
-        );
-    }
+    m_rendererContext.createCommandBuffers(m_device.get(), swapchainImagesCount);
 }
 
 void VKRendererBackend::regenerateFramebuffers() {
@@ -473,14 +439,14 @@ void VKRendererBackend::regenerateFramebuffers() {
 
         m_worldFramebuffers.emplace_back(
           m_context.get(), m_device.get(), m_mainRenderPass->getHandle(),
-          m_framebufferSize, worldAttachments
+          m_rendererContext.getFramebufferSize(), worldAttachments
         );
 
         std::vector<VkImageView> uiAttachments = { view };
 
         framebuffers->emplace_back(
           m_context.get(), m_device.get(), m_uiRenderPass->getHandle(),
-          m_framebufferSize, uiAttachments
+          m_rendererContext.getFramebufferSize(), uiAttachments
         );
     }
 }
@@ -492,7 +458,8 @@ VKRendererBackend::~VKRendererBackend() {
 std::unique_ptr<Shader::Impl> VKRendererBackend::createShaderImpl(sl::Shader& shader
 ) {
     return std::make_unique<VKShaderImpl>(
-      shader, m_device.get(), m_context.get(), getRenderPass(shader.renderPassId)
+      shader, m_device.get(), m_context.get(), getRenderPass(shader.renderPassId),
+      m_rendererContext
     );
 }
 
@@ -524,20 +491,22 @@ void VKRendererBackend::recordCommands(VKCommandBuffer& commandBuffer) {
       .isSimultaneousUse    = false,
     });
 
+    const auto& [w, h] = m_rendererContext.getFramebufferSize();
+
     // Dynamic state
     VkViewport viewport;
     viewport.x        = 0.0f;
-    viewport.y        = (float)m_framebufferSize.height;
-    viewport.width    = (float)m_framebufferSize.width;
-    viewport.height   = -(float)m_framebufferSize.height;
+    viewport.y        = (float)h;
+    viewport.width    = (float)w;
+    viewport.height   = -(float)h;
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
     // Scissor
     VkRect2D scissor;
     scissor.offset.x = scissor.offset.y = 0;
-    scissor.extent.width                = m_framebufferSize.width;
-    scissor.extent.height               = m_framebufferSize.height;
+    scissor.extent.width                = w;
+    scissor.extent.height               = h;
 
     vkCmdSetViewport(commandBuffer.getHandle(), 0, 1, &viewport);
     vkCmdSetScissor(commandBuffer.getHandle(), 0, 1, &scissor);
@@ -566,14 +535,14 @@ bool VKRendererBackend::beginFrame(float deltaTime) {
 
     // Check if the framebuffer has been resized. If so, a new swapchain must be
     // created.
-    if (m_frameInfo.framebufferSizeGeneration != m_frameInfo.lastFramebufferSizeGeneration) {
+    if (m_rendererContext.wasFramebufferResized()) {
         recreateSwapchain();
         return false;
     }
 
     // Wait for the execution of the current frame to complete. The fence being
     // free will allow this one to move on.
-    if (not m_inFlightFences[m_frameInfo.currentFrame].wait(UINT64_MAX)) {
+    if (not m_rendererContext.getCurrentFence()->wait(UINT64_MAX)) {
         LOG_WARN("In-flight fence wait failure!");
         return false;
     }
@@ -582,45 +551,37 @@ bool VKRendererBackend::beginFrame(float deltaTime) {
     // should signaled when this completes. This same semaphore will later be
     // waited on by the queue submission to ensure this image is available.
     auto nextImageIndex = m_swapchain->acquireNextImageIndex(
-      UINT64_MAX, m_imageAvailableSemaphores[m_frameInfo.currentFrame].getHandle(),
-      nullptr
+      UINT64_MAX, m_rendererContext.getCurrentImageSemaphore()->getHandle(), nullptr
     );
 
     if (not nextImageIndex) return false;
 
-    m_frameInfo.imageIndex = *nextImageIndex;
+    m_rendererContext.setImageIndex(*nextImageIndex);
 
     // Begin recording commands.
-    auto& commandBuffer = m_commandBuffers[m_frameInfo.imageIndex];
+    auto& commandBuffer = *m_rendererContext.getCommandBuffer();
     recordCommands(commandBuffer);
 
-    m_mainRenderPass->getArea()->z = m_framebufferSize.width;
-    m_mainRenderPass->getArea()->w = m_framebufferSize.height;
+    const auto& [w, h] = m_rendererContext.getFramebufferSize();
+
+    m_mainRenderPass->getArea()->z = w;
+    m_mainRenderPass->getArea()->w = h;
 
     return true;
 }
 
 bool VKRendererBackend::endFrame(float deltaTime) {
     const auto logicalDevice = m_device->getLogicalDevice();
-    auto& commandBuffer      = m_commandBuffers[m_frameInfo.imageIndex];
+    auto& commandBuffer      = *m_rendererContext.getCommandBuffer();
 
     commandBuffer.end();
-
-    if (m_imagesInFlight[m_frameInfo.imageIndex] != VK_NULL_HANDLE)
-        m_imagesInFlight[m_frameInfo.imageIndex]->wait(UINT64_MAX);
 
     // Make sure the previous frame is not using this image (i.e. its fence is
     // being waited on) if (context.images_in_flight[context.image_index] !=
     // VK_NULL_HANDLE) {  // was frame vulkan_fence_wait(&context,
     // context.images_in_flight[context.image_index], UINT64_MAX);
     // }
-
-    // Mark the image fence as in-use by this frame.
-    m_imagesInFlight[m_frameInfo.imageIndex] =
-      &m_inFlightFences[m_frameInfo.currentFrame];
-
-    // Reset the fence for use on the next frame
-    m_inFlightFences[m_frameInfo.currentFrame].reset();
+    auto fence = m_rendererContext.acquireImageFence();
 
     // Submit the queue and wait for the operation to complete.
     // Begin queue submission
@@ -635,13 +596,13 @@ bool VKRendererBackend::endFrame(float deltaTime) {
     // The semaphore(s) to be signaled when the queue is complete.
     submit_info.signalSemaphoreCount = 1;
     submit_info.pSignalSemaphores =
-      m_queueCompleteSemaphores[m_frameInfo.currentFrame].getHandlePointer();
+      m_rendererContext.getCurrentQueueSemaphore()->getHandlePointer();
 
     // Wait semaphore ensures that the operation cannot begin until the image is
     // available.
     submit_info.waitSemaphoreCount = 1;
     submit_info.pWaitSemaphores =
-      m_imageAvailableSemaphores[m_frameInfo.currentFrame].getHandlePointer();
+      m_rendererContext.getCurrentImageSemaphore()->getHandlePointer();
 
     // Each semaphore waits on the corresponding pipeline stage to complete. 1:1
     // ratio. VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT prevents subsequent
@@ -654,10 +615,8 @@ bool VKRendererBackend::endFrame(float deltaTime) {
 
     const auto& deviceQueues = m_device->getQueues();
 
-    VkResult result = vkQueueSubmit(
-      deviceQueues.graphics, 1, &submit_info,
-      m_inFlightFences[m_frameInfo.currentFrame].getHandle()
-    );
+    VkResult result =
+      vkQueueSubmit(deviceQueues.graphics, 1, &submit_info, fence->getHandle());
 
     if (result != VK_SUCCESS) {
         LOG_ERROR(
@@ -670,11 +629,11 @@ bool VKRendererBackend::endFrame(float deltaTime) {
 
     m_swapchain->present(
       deviceQueues.graphics, deviceQueues.present,
-      m_queueCompleteSemaphores[m_frameInfo.currentFrame].getHandle(),
-      m_frameInfo.imageIndex
+      m_rendererContext.getCurrentQueueSemaphore()->getHandle(),
+      m_rendererContext.getImageIndex()
     );
 
-    m_frameInfo.currentFrame = (m_frameInfo.currentFrame + 1) % maxFramesInFlight;
+    m_rendererContext.bumpFrameCounter();
 
     return true;
 }

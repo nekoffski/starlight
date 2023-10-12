@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+#include "starlight/core/memory/Memory.hpp"
 #include "starlight/core/utils/FreeList.h"
 
 #include "Vulkan.h"
@@ -17,6 +18,7 @@ public:
         VkBufferUsageFlags usageFlags;
 
         bool bindOnCreate;
+        bool useFreeList = true;
     };
 
     explicit VKBuffer(
@@ -72,7 +74,8 @@ private:
     int32_t m_memoryIndex;
     uint32_t m_memoryPropertyFlags;
 
-    FreeList m_bufferFreeList;
+    bool m_useFreeList;
+    LocalPtr<FreeList> m_bufferFreeList;
 };
 
 }  // namespace sl::vk

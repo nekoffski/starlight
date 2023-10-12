@@ -24,18 +24,11 @@
 #include "VKUIShader.h"
 #include "VKBuffer.h"
 #include "VKTextureLoader.h"
+#include "VKRendererContext.h"
 
 namespace sl::vk {
 
 class VKRendererBackend final : public RendererBackend {
-    struct FrameInfo {
-        int frameCount                         = 0;
-        uint32_t imageIndex                    = 0;
-        uint32_t framebufferSizeGeneration     = 0;
-        uint32_t lastFramebufferSizeGeneration = 0;
-        uint32_t currentFrame                  = 0;
-    };
-
 public:
     explicit VKRendererBackend(sl::Window& window, const Config& config);
     ~VKRendererBackend();
@@ -88,10 +81,6 @@ private:
 
     VKRenderPass* getRenderPass(u32 id);
 
-    FrameInfo m_frameInfo;
-
-    Size2u32 m_framebufferSize;
-
     bool m_recreatingSwapchain = false;
 
     UniqPtr<VKContext> m_context;
@@ -103,15 +92,11 @@ private:
 
     UniqPtr<VKTextureLoader> m_textureLoader;
 
-    // TODO: consider creating as ptrs to allow mocking
-    std::vector<VKCommandBuffer> m_commandBuffers;
+    VKRendererContext m_rendererContext;
 
-    std::vector<VKSemaphore> m_imageAvailableSemaphores;
-    std::vector<VKSemaphore> m_queueCompleteSemaphores;
-    std::vector<VKFence> m_inFlightFences;
+    // TODO: consider creating as ptrs to allow mocking
 
     // one per frame
-    std::vector<VKFence*> m_imagesInFlight;
 
     UniqPtr<VKMaterialShader> m_materialShader;
     UniqPtr<VKUIShader> m_uiShader;

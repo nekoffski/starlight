@@ -16,5 +16,6 @@ class VKPipeline;
 class VKBuffer;
 class VKTexture;
 class VKTextureLoader;
+class VKRendererContext;
 
 }  // namespace sl::vk

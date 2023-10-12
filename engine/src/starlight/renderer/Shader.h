@@ -21,8 +21,10 @@ namespace sl {
 class Shader {
 public:
     struct Impl {
+        virtual ~Impl() = default;
+
         virtual void initialize() = 0;
-        virtual ~Impl()           = default;
+        virtual void use()        = 0;
     };
 
     enum class State : u8 { notCreated, uninitialized, initialized };

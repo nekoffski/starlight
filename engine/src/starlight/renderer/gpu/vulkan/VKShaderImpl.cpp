@@ -44,10 +44,11 @@ static const std::unordered_map<ShaderAttribute::Type, VkFormat> vkAttributeType
 
 VKShaderImpl::VKShaderImpl(
   sl::Shader& self, VKDevice* device, const VKContext* context,
-  VKRenderPass* renderPass
+  VKRenderPass* renderPass, VKRendererContext& rendererContext
 ) :
     m_self(self),
-    m_device(device), m_context(context), m_renderPass(renderPass) {
+    m_device(device), m_context(context), m_renderPass(renderPass),
+    m_rendererContext(rendererContext) {
     // TODO: pass renderpass
 
     const auto stageCount = self.stages.size();
@@ -127,91 +128,12 @@ void VKShaderImpl::initialize() {
     processUniforms();
     createDescriptorPool();
     createDescriptorSetLayouts();
+    createPipeline();
+    createUniformBuffer();
+}
 
-    // viewport & scissor
-    const auto [w, h] = WindowManager::get().getSize();
-
-    VkViewport viewport;
-    viewport.x        = 0.0f;
-    viewport.y        = static_cast<float>(h);
-    viewport.width    = static_cast<float>(w);
-    viewport.height   = -static_cast<float>(h);
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
-
-    VkRect2D scissor;
-    scissor.offset.x = scissor.offset.y = 0;
-    scissor.extent.width                = w;
-    scissor.extent.height               = h;
-
-    std::vector<VkPipelineShaderStageCreateInfo> stageCreateInfos;
-    stageCreateInfos.reserve(m_stages.size());
-    for (auto& stage : m_stages)
-        stageCreateInfos.push_back(stage.getStageCreateInfo());
-
-    VKPipeline::Properties pipelineProps;
-    pipelineProps.stride               = m_self.attributeStride;
-    pipelineProps.vertexAttributes     = m_config.attributes;
-    pipelineProps.descriptorSetLayouts = m_descriptorSetLayouts;
-    pipelineProps.stages               = stageCreateInfos;
-    pipelineProps.viewport             = viewport;
-    pipelineProps.scissor              = scissor;
-    pipelineProps.polygonMode          = VK_POLYGON_MODE_FILL;
-    pipelineProps.depthTestEnabled     = true;
-
-    // todo: use vector
-    pipelineProps.pushConstantRanges = {
-        m_self.pushConstantRanges.data(),
-        m_self.pushConstantRanges.data() + m_self.pushConstantRangeCount
-    };
-
-    m_pipeline.emplace(m_context, m_device, *m_renderPass, pipelineProps);
-
-    m_self.requiredUboAlignment =
-      m_device->getProperties().limits.minUniformBufferOffsetAlignment;
-    m_self.globalUboStride =
-      getAlignedValue(m_self.globalUboSize, m_self.requiredUboAlignment);
-    m_self.uboStride = getAlignedValue(m_self.uboSize, m_self.requiredUboAlignment);
-
-    const u32 deviceLocalBits =
-      m_device->supportsDeviceLocalHostVisible()
-        ? VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-        : 0;
-
-    // material max count should be configurable!
-    const u64 totalBufferSize = m_self.globalUboStride + (m_self.uboStride * 1024);
-
-    VKBuffer::Properties bufferProps;
-    bufferProps.size = totalBufferSize;
-    bufferProps.memoryPropertyFlags =
-      deviceLocalBits | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
-      | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-    bufferProps.usageFlags =
-      VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-    bufferProps.bindOnCreate = true;
-
-    LOG_TRACE("Creating uniform buffer");
-    m_uniformBuffer.emplace(m_context, m_device, bufferProps);
-
-    LOG_TRACE("Allocating {}b of memory", m_self.globalUboStride);
-    m_self.globalUboOffset     = m_uniformBuffer->allocate(m_self.globalUboStride);
-    m_mappedUniformBufferBlock = m_uniformBuffer->lockMemory(0, VK_WHOLE_SIZE, 0);
-
-    std::array<VkDescriptorSetLayout, 3> globalLayouts = {
-        m_descriptorSetLayouts[descSetIndexGlobal],
-        m_descriptorSetLayouts[descSetIndexGlobal],
-        m_descriptorSetLayouts[descSetIndexGlobal]
-    };
-    VkDescriptorSetAllocateInfo allocateInfo = {
-        VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO
-    };
-    allocateInfo.descriptorPool     = m_descriptorPool;
-    allocateInfo.descriptorSetCount = 3;
-    allocateInfo.pSetLayouts        = globalLayouts.data();
-
-    VK_ASSERT(vkAllocateDescriptorSets(
-      m_device->getLogicalDevice(), &allocateInfo, m_globalDescriptorSets.data()
-    ));
+void VKShaderImpl::use() {
+    // m_pipeline->bind()
 }
 
 void VKShaderImpl::createModules() {
@@ -283,6 +205,95 @@ void VKShaderImpl::createDescriptorSetLayouts() {
           &m_descriptorSetLayouts[i]
         ));
     }
+}
+
+void VKShaderImpl::createPipeline() {
+    // viewport & scissor
+    const auto [w, h] = WindowManager::get().getSize();
+
+    VkViewport viewport;
+    viewport.x        = 0.0f;
+    viewport.y        = static_cast<float>(h);
+    viewport.width    = static_cast<float>(w);
+    viewport.height   = -static_cast<float>(h);
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+
+    VkRect2D scissor;
+    scissor.offset.x = scissor.offset.y = 0;
+    scissor.extent.width                = w;
+    scissor.extent.height               = h;
+
+    std::vector<VkPipelineShaderStageCreateInfo> stageCreateInfos;
+    stageCreateInfos.reserve(m_stages.size());
+    for (auto& stage : m_stages)
+        stageCreateInfos.push_back(stage.getStageCreateInfo());
+
+    VKPipeline::Properties pipelineProps;
+    pipelineProps.stride               = m_self.attributeStride;
+    pipelineProps.vertexAttributes     = m_config.attributes;
+    pipelineProps.descriptorSetLayouts = m_descriptorSetLayouts;
+    pipelineProps.stages               = stageCreateInfos;
+    pipelineProps.viewport             = viewport;
+    pipelineProps.scissor              = scissor;
+    pipelineProps.polygonMode          = VK_POLYGON_MODE_FILL;
+    pipelineProps.depthTestEnabled     = true;
+
+    // todo: use vector
+    pipelineProps.pushConstantRanges = {
+        m_self.pushConstantRanges.data(),
+        m_self.pushConstantRanges.data() + m_self.pushConstantRangeCount
+    };
+
+    m_pipeline.emplace(m_context, m_device, *m_renderPass, pipelineProps);
+}
+
+void VKShaderImpl::createUniformBuffer() {
+    m_self.requiredUboAlignment =
+      m_device->getProperties().limits.minUniformBufferOffsetAlignment;
+    m_self.globalUboStride =
+      getAlignedValue(m_self.globalUboSize, m_self.requiredUboAlignment);
+    m_self.uboStride = getAlignedValue(m_self.uboSize, m_self.requiredUboAlignment);
+
+    const u32 deviceLocalBits =
+      m_device->supportsDeviceLocalHostVisible()
+        ? VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+        : 0;
+
+    // material max count should be configurable!
+    const u64 totalBufferSize = m_self.globalUboStride + (m_self.uboStride * 1024);
+
+    VKBuffer::Properties bufferProps;
+    bufferProps.size = totalBufferSize;
+    bufferProps.memoryPropertyFlags =
+      deviceLocalBits | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+      | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+    bufferProps.usageFlags =
+      VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+    bufferProps.bindOnCreate = true;
+
+    LOG_TRACE("Creating uniform buffer");
+    m_uniformBuffer.emplace(m_context, m_device, bufferProps);
+
+    LOG_TRACE("Allocating {}b of memory", m_self.globalUboStride);
+    m_self.globalUboOffset     = m_uniformBuffer->allocate(m_self.globalUboStride);
+    m_mappedUniformBufferBlock = m_uniformBuffer->lockMemory(0, VK_WHOLE_SIZE, 0);
+
+    std::array<VkDescriptorSetLayout, 3> globalLayouts = {
+        m_descriptorSetLayouts[descSetIndexGlobal],
+        m_descriptorSetLayouts[descSetIndexGlobal],
+        m_descriptorSetLayouts[descSetIndexGlobal]
+    };
+    VkDescriptorSetAllocateInfo allocateInfo = {
+        VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO
+    };
+    allocateInfo.descriptorPool     = m_descriptorPool;
+    allocateInfo.descriptorSetCount = 3;
+    allocateInfo.pSetLayouts        = globalLayouts.data();
+
+    VK_ASSERT(vkAllocateDescriptorSets(
+      m_device->getLogicalDevice(), &allocateInfo, m_globalDescriptorSets.data()
+    ));
 }
 
 void VKShaderImpl::processAttributes() {
