@@ -10,6 +10,7 @@
 #include "gpu/Vendor.h"
 
 #include "RendererFrontend.h"
+#include "Shader.h"
 
 namespace sl {
 
@@ -21,8 +22,12 @@ public:
 
     ~Renderer() { LOG_TRACE("Renderer destroyed"); }
 
+    void setCoreShaders(Shader* uiShader, Shader* materialShader) {
+        m_frontend.setCoreShaders(uiShader, materialShader);
+    }
+
     bool drawFrame(
-      const RenderPacket& renderPacket, const Camera& camera, float deltaTime
+      RenderPacket& renderPacket, const Camera& camera, float deltaTime
     ) {
         return m_frontend.drawFrame(renderPacket, camera, deltaTime);
     }

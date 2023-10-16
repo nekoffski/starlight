@@ -31,11 +31,7 @@ public:
     );
 
     Shader* load(const std::string& name);
-
-    // Id32 getShaderId(const std::string& name);
-
-    // Shader* getById(Id32 id);
-    // Shader* get(const std::string& name);
+    Shader* get(const std::string& name);
 
 private:
     Shader* findSlot();

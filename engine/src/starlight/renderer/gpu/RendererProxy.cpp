@@ -9,14 +9,6 @@ namespace sl {
 RendererProxy::RendererProxy(RendererBackend& rendererBackend) :
     m_rendererBackend(rendererBackend) {}
 
-void RendererProxy::acquireMaterialResources(Material& material) {
-    m_rendererBackend.acquireMaterialResources(material);
-}
-
-void RendererProxy::releaseMaterialResources(Material& material) {
-    m_rendererBackend.releaseMaterialResources(material);
-}
-
 u32 RendererProxy::getRenderPassId(const std::string& renderPass) const {
     return m_rendererBackend.getRenderPassId(renderPass);
 }

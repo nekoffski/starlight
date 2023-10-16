@@ -42,12 +42,7 @@ std::optional<MaterialConfig> ResourceLoader::loadMaterialConfig(
 
         config.diffuseColor = getField<Vec4f>(root, "diffuse-color");
         config.diffuseMap   = getField<std::string>(root, "diffuse-map");
-
-        const auto materialType =
-          materialTypeFromString(getField<std::string>(root, "type"));
-
-        ASSERT(materialType, "Material config must contain material type");
-        config.type = materialType.value();
+        config.shaderName   = getField<std::string>(root, "shader-name");
 
         return config;
     } catch (kc::json::JsonError& e) {

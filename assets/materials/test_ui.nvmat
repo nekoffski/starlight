@@ -1,5 +1,5 @@
 {
     "diffuse-color": [1.0, 1.0, 1.0, 1.0],
     "diffuse-map": "orange_lines_512.png",
-    "type": "ui"
+    "shader-name": "UIShader"
 }

@@ -55,13 +55,19 @@ public:
         return m_resourceLoader.loadShaderSource(name);
     }
 
+    Shader* getUIDefaultShader() { return m_uiDefaultShader; }
+    Shader* getMaterialDefaultShader() { return m_materialDefaultShader; }
+
 private:
     ResourceLoader m_resourceLoader;
 
     TextureManager m_textureManager;
+    ShaderManager m_shaderManager;
     MaterialManager m_materialManager;
     GeometryManager m_geometryManager;
-    ShaderManager m_shaderManager;
+
+    Shader* m_materialDefaultShader;
+    Shader* m_uiDefaultShader;
 };
 
 }  // namespace sl

@@ -74,6 +74,13 @@ Shader* ShaderManager::load(const std::string& name) {
     return shader;
 }
 
+Shader* ShaderManager::get(const std::string& name) {
+    if (auto record = m_shaderByName.find(name); record != m_shaderByName.end())
+        return record->second;
+    LOG_WARN("Could not find shader with name: {}", name);
+    return nullptr;
+}
+
 Shader* ShaderManager::findSlot() {
     for (int i = 0; i < m_conf.maxShaderCount; ++i) {
         if (auto shader = &m_shaders[i]; not shader->id) {

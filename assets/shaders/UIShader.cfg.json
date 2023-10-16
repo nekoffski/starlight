@@ -17,6 +17,6 @@
     { "type": "mat4", "scope": "global", "name": "view" },
     { "type": "vec4", "scope": "instance", "name": "diffuse_colour" },
     { "type": "samp", "scope": "instance", "name": "diffuse_texture" },
-    { "type": "mat4", "scope": "model", "name": "model" }
+    { "type": "mat4", "scope": "local", "name": "model" }
   ]
 }

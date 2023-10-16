@@ -1,5 +1,5 @@
 {
     "diffuse-color": [1.0, 1.0, 1.0, 1.0],
     "diffuse-map": "cobblestone.png",
-    "type": "world"
+    "shader-name": "MaterialShader"
 }

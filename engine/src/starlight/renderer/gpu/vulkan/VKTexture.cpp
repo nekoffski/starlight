@@ -82,6 +82,7 @@ void VKTexture::create(
         .memoryPropertyFlags = memoryProps,
         .usageFlags          = usage,
         .bindOnCreate        = true,
+        .useFreeList         = false
     };
 
     VKBuffer stagingBuffer(m_context, m_device, stagingBufferProperties);

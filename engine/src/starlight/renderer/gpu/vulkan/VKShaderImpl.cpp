@@ -206,16 +206,17 @@ void VKShaderImpl::applyInstance() {
     VkDescriptorBufferInfo bufferInfo;
     if (not instanceUboGeneration) {
         bufferInfo.buffer = m_uniformBuffer->getHandle();
-        bufferInfo.offset = objectState->offset;
+        bufferInfo.offset = *objectState->offset;
         bufferInfo.range  = m_self.uboStride;
 
         VkWriteDescriptorSet uboDescriptor = {
             VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET
         };
-        uboDescriptor.dstSet         = objectDescriptorSet;
-        uboDescriptor.dstBinding     = descriptorIndex;
-        uboDescriptor.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        uboDescriptor.pBufferInfo    = &bufferInfo;
+        uboDescriptor.dstSet          = objectDescriptorSet;
+        uboDescriptor.dstBinding      = descriptorIndex;
+        uboDescriptor.descriptorType  = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        uboDescriptor.pBufferInfo     = &bufferInfo;
+        uboDescriptor.descriptorCount = 1;
 
         descriptorWrites[descriptorCount++] = uboDescriptor;
         instanceUboGeneration               = 1;
@@ -236,6 +237,11 @@ void VKShaderImpl::applyInstance() {
         for (int i = 0; i < totalSamplerCount; ++i) {
             VKTexture* texture = static_cast<VKTexture*>(
               m_instanceStates[m_self.boundInstanceId].instanceTextures[i]
+            );
+            ASSERT(
+              texture,
+              "Could not cast texture to internal type, something went wrong, is texture pointer null: {}",
+              m_instanceStates[m_self.boundInstanceId].instanceTextures[i] == nullptr
             );
             imageInfos.emplace_back(
               texture->getSampler(), texture->getImage()->getView(),
@@ -261,7 +267,6 @@ void VKShaderImpl::applyInstance() {
           0
         );
     }
-
     vkCmdBindDescriptorSets(
       m_rendererContext.getCommandBuffer()->getHandle(),
       VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->getLayout(), 1, 1,
@@ -358,9 +363,13 @@ void VKShaderImpl::setUniform(const ShaderUniform& uniform, void* value) {
               uniform.offset, uniform.size, value
             );
         } else {
+            const auto totalOffset = m_self.boundUboOffset + uniform.offset;
+            LOG_TRACE(
+              "Setting uniform {} size {}, total offset = {}",
+              uniform.typeToString(uniform.type), uniform.size, totalOffset
+            );
             char* address =
-              static_cast<char*>(m_mappedUniformBufferBlock) + m_self.boundUboOffset
-              + uniform.offset;
+              static_cast<char*>(m_mappedUniformBufferBlock) + totalOffset;
             std::memcpy(address, value, uniform.size);
         }
     }
@@ -499,7 +508,7 @@ void VKShaderImpl::createUniformBuffer() {
       deviceLocalBits | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
       | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
     bufferProps.usageFlags =
-      VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+      VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
     bufferProps.bindOnCreate = true;
 
     LOG_TRACE("Creating uniform buffer");

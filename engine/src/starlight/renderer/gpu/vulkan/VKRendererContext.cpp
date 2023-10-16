@@ -11,6 +11,7 @@ VKRendererContext::VKRendererContext(
     m_framebufferSize(framebufferSize) {}
 
 u32 VKRendererContext::getImageIndex() const { return m_imageIndex; }
+
 u32 VKRendererContext::getFramebufferSizeGeneration() const {
     return m_framebufferSizeGeneration;
 }

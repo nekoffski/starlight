@@ -10,7 +10,7 @@ namespace sl {
 struct MaterialConfig {
     Vec4f diffuseColor;
     std::string diffuseMap;
-    Material::Type type;
+    std::string shaderName;
 };
 
 }  // namespace sl

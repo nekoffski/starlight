@@ -11,13 +11,15 @@
 
 #include "starlight/resource/ResourceLoader.h"
 
+#include "ShaderManager.h"
+
 namespace sl {
 
 class MaterialManager {
 public:
     explicit MaterialManager(
-      TextureManager& textureManager, RendererProxy& rendererProxy,
-      const ResourceLoader& resourceLoader
+      ShaderManager& shaderManager, TextureManager& textureManager,
+      RendererProxy& rendererProxy, const ResourceLoader& resourceLoader
     );
 
     ~MaterialManager();
@@ -26,12 +28,13 @@ public:
     Material* acquire(const std::string& name);
     Material* getDefaultMaterial();
 
+    void createDefaultMaterial();
+
     void destroy(const std::string& name);
     void destroyAll();
 
 private:
-    void createDefaultMaterial();
-
+    ShaderManager& m_shaderManager;
     TextureManager& m_textureManager;
     RendererProxy& m_rendererProxy;
     const ResourceLoader& m_resourceLoader;

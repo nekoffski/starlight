@@ -60,7 +60,7 @@ int main() {
 
     LOG_INFO("Sandbox starting!");
 
-    bool isRunning = false;
+    bool isRunning = true;
 
     sl::Renderer renderer(*ctx.getWindow(), *ctx.getConfig());
 
@@ -88,7 +88,12 @@ int main() {
     sl::EulerCamera camera(sl::EulerCamera::Properties{
       .target = sl::Vec3f{ 0.0f }, .radius = 5.0f });
 
-    const auto packet = getRenderPacket(resourceManager);
+    renderer.setCoreShaders(
+      resourceManager.getUIDefaultShader(),
+      resourceManager.getMaterialDefaultShader()
+    );
+
+    auto packet = getRenderPacket(resourceManager);
 
     while (isRunning) {
         const auto deltaTime = ctx.beginFrame();
@@ -97,10 +102,9 @@ int main() {
 
         camera.update(deltaTime);
         ctx.endFrame();
-    }
 
-    const auto shader = resourceManager.loadShader("MaterialShader");
-    ASSERT(shader, "oppsie");
+        // break;
+    }
 
     return 0;
 }

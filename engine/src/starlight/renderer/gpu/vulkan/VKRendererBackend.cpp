@@ -7,7 +7,6 @@
 #include "VKFence.h"
 #include "VKFramebuffer.h"
 #include "VKImage.h"
-#include "VKMaterialShader.h"
 #include "VKRenderPass.h"
 #include "VKShaderStage.h"
 #include "VKSwapchain.h"
@@ -24,19 +23,6 @@ VKRendererBackend::VKRendererBackend(sl::Window& window, const Config& config) :
     regenerateFramebuffers();
     createCommandBuffers();
     createSemaphoresAndFences();
-
-    m_materialShader = createUniqPtr<VKMaterialShader>(
-      m_context.get(), m_device.get(), m_swapchain->getImagesSize(),
-      m_rendererContext.getFramebufferSize(), *m_mainRenderPass
-    );
-
-    m_uiShader = createUniqPtr<VKUIShader>(
-      m_context.get(), m_device.get(), m_swapchain->getImagesSize(),
-      m_rendererContext.getFramebufferSize(), *m_uiRenderPass
-    );
-
-    LOG_DEBUG("Basic shader created");
-
     createBuffers();
 
     m_textureLoader =
@@ -137,39 +123,6 @@ void VKRendererBackend::releaseGeometryResources(Geometry& geometry) {
     }
 }
 
-void VKRendererBackend::acquireMaterialResources(Material& material) {
-    switch (material.type) {
-        case Material::Type::world:
-            m_materialShader->acquireResources(material);
-            break;
-        case Material::Type::ui:
-            m_uiShader->acquireResources(material);
-            break;
-        default:
-            LOG_ERROR(
-              "Unknown material type, could not determine shader to acquire "
-              "resources"
-            );
-    }
-}
-
-void VKRendererBackend::releaseMaterialResources(Material& material) {
-    switch (material.type) {
-        case Material::Type::world:
-            m_materialShader->releaseResources(material);
-            break;
-        case Material::Type::ui:
-            m_uiShader->releaseResources(material);
-            break;
-        default: {
-            LOG_ERROR(
-              "Unknown material type, could not determine shader to release "
-              "resources"
-            );
-        }
-    }
-}
-
 uint64_t VKRendererBackend::uploadDataRange(
   VkCommandPool pool, VkFence fence, VkQueue queue, VKBuffer& outBuffer,
   uint64_t size, const void* data
@@ -217,42 +170,12 @@ void VKRendererBackend::drawGeometry(const GeometryRenderData& geometryRenderDat
     Material* material = geometryRenderData.geometry->material;
     ASSERT(material, "Invalid material handle");
 
-    // TODO
-    // if (not material) material = MaterialManager::get().getDefaultMaterial();
-
-    switch (material->type) {
-        case Material::Type::ui:
-            m_uiShader->setModel(
-              commandBuffer.getHandle(), geometryRenderData.model
-            );
-            m_uiShader->applyMaterial(
-              commandBuffer.getHandle(), m_rendererContext.getImageIndex(), *material
-            );
-            m_uiShader->use(commandBuffer);
-            break;
-
-        case Material::Type::world:
-            m_materialShader->setModel(
-              commandBuffer.getHandle(), geometryRenderData.model
-            );
-            m_materialShader->applyMaterial(
-              commandBuffer.getHandle(), m_rendererContext.getImageIndex(), *material
-            );
-            m_materialShader->use(commandBuffer);
-            break;
-
-        default:
-            LOG_ERROR("Could not draw geometry, unknown material type");
-            return;
-    }
-
     VkDeviceSize offsets[1] = { bufferData.vertexBufferOffset };
 
     vkCmdBindVertexBuffers(
       commandBuffer.getHandle(), 0, 1, m_objectVertexBuffer->getHandlePointer(),
       (VkDeviceSize*)offsets
     );
-
     if (bufferData.indexCount > 0) {
         vkCmdBindIndexBuffer(
           commandBuffer.getHandle(), m_objectIndexBuffer->getHandle(),
@@ -264,35 +187,6 @@ void VKRendererBackend::drawGeometry(const GeometryRenderData& geometryRenderDat
     } else {
         vkCmdDraw(commandBuffer.getHandle(), bufferData.vertexCount, 1, 0, 0);
     }
-}
-
-void VKRendererBackend::updateGlobalWorldState(const GlobalState& globalState) {
-    auto& commandBuffer = *m_rendererContext.getCommandBuffer();
-
-    m_mainRenderPass->setAmbient(globalState.ambientColor);
-
-    // temp test code
-    m_materialShader->use(commandBuffer);
-    m_materialShader->getGlobalUBO().projection = globalState.projectionMatrix;
-    m_materialShader->getGlobalUBO().view       = globalState.viewMatrix;
-
-    m_materialShader->updateGlobalWorldState(
-      commandBuffer.getHandle(), m_rendererContext.getImageIndex()
-    );
-}
-
-void VKRendererBackend::updateGlobalUIState(
-  Mat4f projection, Mat4f view, int32_t mode
-) {
-    auto& commandBuffer = *m_rendererContext.getCommandBuffer();
-
-    m_uiShader->use(commandBuffer);
-    m_uiShader->getGlobalUBO().projection = projection;
-    m_uiShader->getGlobalUBO().view       = view;
-
-    m_uiShader->updateGlobalWorldState(
-      commandBuffer.getHandle(), m_rendererContext.getImageIndex()
-    );
 }
 
 bool VKRendererBackend::beginRenderPass(uint8_t id) {
@@ -317,17 +211,6 @@ bool VKRendererBackend::beginRenderPass(uint8_t id) {
     }
 
     renderPass->begin(commandBuffer, framebuffer->getHandle());
-
-    switch (id) {
-        case builtinRenderPassWorld:
-            m_materialShader->use(commandBuffer);
-            break;
-
-        case builtinRenderPassUI:
-            m_uiShader->use(commandBuffer);
-            break;
-    }
-
     return true;
 }
 
@@ -466,7 +349,7 @@ std::unique_ptr<Shader::Impl> VKRendererBackend::createShaderImpl(sl::Shader& sh
 u32 VKRendererBackend::getRenderPassId(const std::string& renderPass) const {
     if (renderPass == "RenderPass.Builtin.World")
         return builtinRenderPassWorld;
-    else if (renderPass == "RenderPass.Builting.UI")
+    else if (renderPass == "RenderPass.Builtin.UI")
         return builtinRenderPassUI;
     FAIL("Could not find render pass: {}", renderPass);
 }

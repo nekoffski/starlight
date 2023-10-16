@@ -17,11 +17,9 @@
 #include "starlight/renderer/Shader.h"
 
 #include "VKGeometryData.h"
-#include "VKMaterialShader.h"
 #include "VKPipeline.h"
 #include "VKSemaphore.h"
 #include "VKTexture.h"
-#include "VKUIShader.h"
 #include "VKBuffer.h"
 #include "VKTextureLoader.h"
 #include "VKRendererContext.h"
@@ -40,9 +38,6 @@ public:
     bool beginFrame(float deltaTime) override;
     bool endFrame(float deltaTime) override;
 
-    void updateGlobalWorldState(const GlobalState& globalState) override;
-    void updateGlobalUIState(Mat4f projection, Mat4f view, int32_t mode);
-
     bool beginRenderPass(uint8_t id);
     bool endRenderPass(uint8_t id);
 
@@ -51,9 +46,6 @@ public:
     void onViewportResize(uint32_t width, uint32_t height) override;
 
     TextureLoader* getTextureLoader() const override;
-
-    void acquireMaterialResources(Material& material) override;
-    void releaseMaterialResources(Material& material) override;
 
     virtual void acquireGeometryResources(
       Geometry& geometry, uint32_t vertexSize, uint32_t vertexCount,
@@ -95,12 +87,6 @@ private:
     VKRendererContext m_rendererContext;
 
     // TODO: consider creating as ptrs to allow mocking
-
-    // one per frame
-
-    UniqPtr<VKMaterialShader> m_materialShader;
-    UniqPtr<VKUIShader> m_uiShader;
-
     UniqPtr<VKBuffer> m_objectVertexBuffer;
     UniqPtr<VKBuffer> m_objectIndexBuffer;
 

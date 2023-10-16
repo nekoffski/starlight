@@ -10,16 +10,15 @@
 namespace sl {
 
 MaterialManager::MaterialManager(
-  TextureManager& textureManager, RendererProxy& rendererProxy,
-  const ResourceLoader& resourceLoader
+  ShaderManager& shaderManager, TextureManager& textureManager,
+  RendererProxy& rendererProxy, const ResourceLoader& resourceLoader
 ) :
-    m_textureManager(textureManager),
-    m_rendererProxy(rendererProxy), m_resourceLoader(resourceLoader) {
-    createDefaultMaterial();
-}
+    m_shaderManager(shaderManager),
+    m_textureManager(textureManager), m_rendererProxy(rendererProxy),
+    m_resourceLoader(resourceLoader) {}
 
 MaterialManager::~MaterialManager() {
-    m_rendererProxy.releaseMaterialResources(m_defaultMaterial);
+    m_defaultMaterial.releaseInstanceResources();
     destroyAll();
 }
 
@@ -36,10 +35,8 @@ void MaterialManager::createDefaultMaterial() {
     m_defaultMaterial.diffuseColor = Vec4f{ 1.0f };
     m_defaultMaterial.diffuseMap   = diffuseMap;
     m_defaultMaterial.id           = invalidId;
-    m_defaultMaterial.type         = Material::Type::world;
-
-    // TODO: RAII?
-    m_rendererProxy.acquireMaterialResources(m_defaultMaterial);
+    m_defaultMaterial.shader       = m_shaderManager.get("MaterialShader");
+    m_defaultMaterial.acquireInstanceResources();
 }
 
 Material* MaterialManager::load(const std::string& name) {
@@ -89,10 +86,14 @@ Material* MaterialManager::load(const std::string& name) {
     material.diffuseColor = materialConfig->diffuseColor;
     material.diffuseMap   = diffuseMap;
     material.id           = invalidId;
-    material.type         = materialConfig->type;
+    material.shader       = m_shaderManager.get(materialConfig->shaderName);
 
-    m_rendererProxy.acquireMaterialResources(material);
+    ASSERT(
+      material.shader, "Could not find shader: {} for material: {}",
+      materialConfig->shaderName, name
+    );
 
+    material.acquireInstanceResources();
     m_materials[name] = std::move(material);
 
     return &m_materials[name];
@@ -113,7 +114,7 @@ void MaterialManager::destroy(const std::string& name) {
     // TODO: should we also destroy texture?
     if (auto material = m_materials.find(name); material != m_materials.end())
       [[likely]] {
-        m_rendererProxy.releaseMaterialResources(material->second);
+        material->second.releaseInstanceResources();
         m_materials.erase(material);
     } else {
         LOG_WARN("Attempt to destroy not existing material - {}, will ignore", name);
@@ -122,7 +123,7 @@ void MaterialManager::destroy(const std::string& name) {
 
 void MaterialManager::destroyAll() {
     for (auto& material : m_materials | std::views::values)
-        m_rendererProxy.releaseMaterialResources(material);
+        material.releaseInstanceResources();
     m_materials.clear();
 }
 

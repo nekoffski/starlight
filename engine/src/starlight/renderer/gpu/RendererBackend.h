@@ -33,9 +33,6 @@ struct RendererBackend {
     virtual bool beginFrame(float deltaTime) = 0;
     virtual bool endFrame(float deltaTime)   = 0;
 
-    virtual void updateGlobalWorldState(const GlobalState& globalState)          = 0;
-    virtual void updateGlobalUIState(Mat4f projection, Mat4f view, int32_t mode) = 0;
-
     bool renderPass(uint8_t id, auto&& callback) {
         if (beginRenderPass(id)) {
             callback();
@@ -54,10 +51,6 @@ struct RendererBackend {
     virtual void onViewportResize(uint32_t width, uint32_t height) = 0;
 
     virtual TextureLoader* getTextureLoader() const = 0;
-
-    // TODO: check for errors in acquire functions
-    virtual void acquireMaterialResources(Material& material) = 0;
-    virtual void releaseMaterialResources(Material& material) = 0;
 
     virtual void acquireGeometryResources(
       Geometry& geometry, uint32_t vertexSize, uint32_t vertexCount,

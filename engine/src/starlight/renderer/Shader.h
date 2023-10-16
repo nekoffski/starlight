@@ -34,9 +34,16 @@ public:
         virtual void setUniform(const ShaderUniform& uniform, void* value) = 0;
     };
 
-    enum class State : u8 { notCreated, uninitialized, initialized };
+    void use();
+    void bindGlobals();
+    void bindInstance(u32 instanceId);
+    void applyGlobals();
+    void applyInstance();
+    u32 acquireInstanceResources();
+    void releaseInstanceResources(u32 instanceId);
+    void setUniform(const std::string& uniform, void* value);
 
-    u16 getUniformIndex(const std::string& uniformName);
+    enum class State : u8 { notCreated, uninitialized, initialized };
 
     Id32 id;
     std::string name;
