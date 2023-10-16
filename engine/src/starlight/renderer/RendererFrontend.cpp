@@ -30,6 +30,7 @@ bool RendererFrontend::drawFrame(
             globalState.mode             = 0;
 
             m_materialShader->use();
+            m_materialShader->bindGlobals();
             LOG_WARN("Set uniform start");
             m_materialShader->setUniform(
               "view", glm::value_ptr(globalState.viewMatrix)
@@ -42,11 +43,14 @@ bool RendererFrontend::drawFrame(
             m_materialShader->applyGlobals();
 
             for (auto& geometry : renderPacket.geometries) {
+                m_materialShader->bindInstance(
+                  geometry.geometry->material->internalId
+                );
                 LOG_WARN("Local start");
-                // m_materialShader->setUniform(
-                //   "diffuse_colour",
-                //   glm::value_ptr(geometry.geometry->material->diffuseColor)
-                // );
+                m_materialShader->setUniform(
+                  "diffuse_colour",
+                  glm::value_ptr(geometry.geometry->material->diffuseColor)
+                );
 
                 auto t = ResourceManager::get().getDefaultTexture();
 
@@ -60,7 +64,9 @@ bool RendererFrontend::drawFrame(
                 m_backend->drawGeometry(geometry);
             }
         };
+        LOG_ERROR("World pass start");
         m_backend->renderPass(builtinRenderPassWorld, mainPass);
+        LOG_ERROR("World pass end");
 
         const auto uiPass = [&] {
             const auto& [w, h] = WindowManager::get().getSize();
@@ -72,24 +78,24 @@ bool RendererFrontend::drawFrame(
             Mat4f view = identityMatrix;
 
             m_uiShader->use();
+            m_uiShader->bindGlobals();
             m_uiShader->setUniform("projection", glm::value_ptr(projection));
             m_uiShader->setUniform("view", glm::value_ptr(view));
             m_uiShader->applyGlobals();
 
             for (auto& uiGeometry : renderPacket.uiGeometries) {
-                // m_materialShader->setUniform(
-                //   "diffuse_colour",
-                //   glm::value_ptr(uiGeometry.geometry->material->diffuseColor)
-                // );
+                m_uiShader->bindInstance(uiGeometry.geometry->material->internalId);
+                m_uiShader->setUniform(
+                  "diffuse_colour",
+                  glm::value_ptr(uiGeometry.geometry->material->diffuseColor)
+                );
 
-                m_materialShader->setUniform(
+                m_uiShader->setUniform(
                   "diffuse_texture",
                   uiGeometry.geometry->material->diffuseMap.texture
                 );
-                m_materialShader->applyInstance();
-                m_materialShader->setUniform(
-                  "model", glm::value_ptr(uiGeometry.model)
-                );
+                m_uiShader->applyInstance();
+                m_uiShader->setUniform("model", glm::value_ptr(uiGeometry.model));
 
                 m_backend->drawGeometry(uiGeometry);
             }

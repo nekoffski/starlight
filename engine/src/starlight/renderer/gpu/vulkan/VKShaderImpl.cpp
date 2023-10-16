@@ -145,7 +145,8 @@ void VKShaderImpl::bindGlobals() {
 
 void VKShaderImpl::bindInstance(u32 instanceId) {
     m_self.boundInstanceId = instanceId;
-    m_self.boundUboOffset  = m_instanceStates[instanceId].offset;
+    m_self.boundUboOffset  = *m_instanceStates[instanceId].offset;
+    LOG_TRACE("Binding instance: {}, offset={}", instanceId, m_self.boundUboOffset);
 }
 
 void VKShaderImpl::applyGlobals() {
@@ -189,7 +190,7 @@ void VKShaderImpl::applyGlobals() {
 void VKShaderImpl::applyInstance() {
     const auto imageIndex = m_rendererContext.getImageIndex();
 
-    auto objectState = &m_instanceStates[m_self.boundInstanceId];
+    auto objectState = &m_instanceStates[*m_self.boundInstanceId];
     auto objectDescriptorSet =
       objectState->descriptorSetState.descriptorSets[imageIndex];
 
@@ -204,7 +205,7 @@ void VKShaderImpl::applyInstance() {
         .generations[imageIndex];
 
     VkDescriptorBufferInfo bufferInfo;
-    if (not instanceUboGeneration) {
+    if (not instanceUboGeneration.hasValue()) {
         bufferInfo.buffer = m_uniformBuffer->getHandle();
         bufferInfo.offset = *objectState->offset;
         bufferInfo.range  = m_self.uboStride;
@@ -236,12 +237,13 @@ void VKShaderImpl::applyInstance() {
         imageInfos.reserve(totalSamplerCount);
         for (int i = 0; i < totalSamplerCount; ++i) {
             VKTexture* texture = static_cast<VKTexture*>(
-              m_instanceStates[m_self.boundInstanceId].instanceTextures[i]
+              m_instanceStates[*m_self.boundInstanceId].instanceTextures[i]
             );
             ASSERT(
               texture,
               "Could not cast texture to internal type, something went wrong, is texture pointer null: {}",
-              m_instanceStates[m_self.boundInstanceId].instanceTextures[i] == nullptr
+              m_instanceStates[*m_self.boundInstanceId].instanceTextures[i]
+                == nullptr
             );
             imageInfos.emplace_back(
               texture->getSampler(), texture->getImage()->getView(),
@@ -278,13 +280,13 @@ u32 VKShaderImpl::acquireInstanceResources() {
     Id32 id = 0;
 
     for (int i = 0; i < 1024; ++i) {
-        if (not m_instanceStates[i].id) {
+        if (not m_instanceStates[i].id.hasValue()) {
             id                     = i;
             m_instanceStates[i].id = i;
             break;
         }
     }
-    ASSERT(id, "Coult not acquire new resource id");
+    ASSERT(id.hasValue(), "Coult not acquire new resource id");
 
     auto& instanceState = m_instanceStates[*id];
     const auto instanceTextureCount =
@@ -295,7 +297,12 @@ u32 VKShaderImpl::acquireInstanceResources() {
     // todo: should we set all to default?
     instanceState.instanceTextures.resize(m_self.instanceTextureCount, nullptr);
     // allocate space in the UBO - by the stride, not the size
+
     instanceState.offset = m_uniformBuffer->allocate(m_self.uboStride);
+    LOG_FATAL(
+      "Allocating memory for instance id={}: {}, offset={}", *id, m_self.uboStride,
+      *instanceState.offset
+    );
 
     auto& setState = instanceState.descriptorSetState;
     const auto bindingCount =
@@ -347,12 +354,16 @@ void VKShaderImpl::releaseInstanceResources(u32 instanceId) {
 }
 
 void VKShaderImpl::setUniform(const ShaderUniform& uniform, void* value) {
+    LOG_TRACE("hello: {}", uniform.typeToString(uniform.type));
+
     if (uniform.isSampler()) {
         if (uniform.scope == ShaderScope::global) {
             m_self.globalTextures[uniform.location] = static_cast<Texture*>(value);
         } else {
-            m_instanceStates[m_self.boundInstanceId]
+            LOG_TRACE("hir im sure");
+            m_instanceStates[*m_self.boundInstanceId]
               .instanceTextures[uniform.location] = static_cast<Texture*>(value);
+            LOG_TRACE("hehe");
         }
     } else {
         if (uniform.scope == ShaderScope::local) {
@@ -365,8 +376,9 @@ void VKShaderImpl::setUniform(const ShaderUniform& uniform, void* value) {
         } else {
             const auto totalOffset = m_self.boundUboOffset + uniform.offset;
             LOG_TRACE(
-              "Setting uniform {} size {}, total offset = {}",
-              uniform.typeToString(uniform.type), uniform.size, totalOffset
+              "Setting uniform {} size {}, bound offset = {}, total offset = {}",
+              uniform.typeToString(uniform.type), uniform.size,
+              m_self.boundUboOffset, totalOffset
             );
             char* address =
               static_cast<char*>(m_mappedUniformBufferBlock) + totalOffset;

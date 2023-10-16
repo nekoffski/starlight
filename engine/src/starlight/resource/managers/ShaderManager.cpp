@@ -83,7 +83,7 @@ Shader* ShaderManager::get(const std::string& name) {
 
 Shader* ShaderManager::findSlot() {
     for (int i = 0; i < m_conf.maxShaderCount; ++i) {
-        if (auto shader = &m_shaders[i]; not shader->id) {
+        if (auto shader = &m_shaders[i]; not shader->id.hasValue()) {
             shader->id = i;
             return shader;
         }
@@ -176,6 +176,8 @@ void ShaderManager::addUniformImpl(
             ? shader->globalUboSize
             : shader->uboSize;
         uniform.size = isSampler ? 0 : size;
+
+        LOG_TRACE("Uniform offset: {}", uniform.offset);
     } else {
         ASSERT(
           scope != ShaderScope::instance || shader->useInstances,

@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#include <kc/core/Countable.hpp>
+
 #include "starlight/core/memory/Memory.hpp"
 #include "starlight/core/utils/FreeList.h"
 
@@ -10,7 +12,7 @@
 
 namespace sl::vk {
 
-class VKBuffer {
+class VKBuffer : public kc::core::Countable<VKBuffer> {
 public:
     struct Properties {
         uint64_t size;

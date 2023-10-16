@@ -48,8 +48,14 @@ VKBuffer::VKBuffer(
 VKBuffer::~VKBuffer() { destroy(); }
 
 uint64_t VKBuffer::allocate(uint64_t size) {
-    if (m_useFreeList) [[likely]]
-        return m_bufferFreeList->allocateBlock(size);
+    if (m_useFreeList) [[likely]] {
+        const auto offset = m_bufferFreeList->allocateBlock(size);
+        LOG_ERROR(
+          "Buffer_{} - Allocating {} bytes of memory, returned offset: {}", getId(),
+          size, offset
+        );
+        return offset;
+    }
     LOG_WARN(
       "Allocating from buffer that doesn't have free list, offset won't be valid"
     );

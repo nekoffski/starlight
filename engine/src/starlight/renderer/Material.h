@@ -27,6 +27,7 @@ struct Material {
 
     void acquireInstanceResources() {
         internalId = shader->acquireInstanceResources();
+        LOG_ERROR("{} - Acquired instance resources id = {}", name, internalId);
     }
 
     void releaseInstanceResources() {
