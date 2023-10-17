@@ -297,12 +297,7 @@ u32 VKShaderImpl::acquireInstanceResources() {
     // todo: should we set all to default?
     instanceState.instanceTextures.resize(m_self.instanceTextureCount, nullptr);
     // allocate space in the UBO - by the stride, not the size
-
     instanceState.offset = m_uniformBuffer->allocate(m_self.uboStride);
-    LOG_FATAL(
-      "Allocating memory for instance id={}: {}, offset={}", *id, m_self.uboStride,
-      *instanceState.offset
-    );
 
     auto& setState = instanceState.descriptorSetState;
     const auto bindingCount =
@@ -354,16 +349,12 @@ void VKShaderImpl::releaseInstanceResources(u32 instanceId) {
 }
 
 void VKShaderImpl::setUniform(const ShaderUniform& uniform, void* value) {
-    LOG_TRACE("hello: {}", uniform.typeToString(uniform.type));
-
     if (uniform.isSampler()) {
         if (uniform.scope == ShaderScope::global) {
             m_self.globalTextures[uniform.location] = static_cast<Texture*>(value);
         } else {
-            LOG_TRACE("hir im sure");
             m_instanceStates[*m_self.boundInstanceId]
               .instanceTextures[uniform.location] = static_cast<Texture*>(value);
-            LOG_TRACE("hehe");
         }
     } else {
         if (uniform.scope == ShaderScope::local) {

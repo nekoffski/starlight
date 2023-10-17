@@ -12,5 +12,6 @@ layout(set = 1, binding = 1) uniform sampler2D diffuse_texture;
 layout(location = 1) in struct dto { vec2 tex_coord; } in_dto;
 
 void main() {
-    object_ubo.diffuse_colour* texture(diffuse_texture, in_dto.tex_coord);
+    out_colour =
+      object_ubo.diffuse_colour * texture(diffuse_texture, in_dto.tex_coord);
 }

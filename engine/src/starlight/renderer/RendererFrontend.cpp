@@ -31,7 +31,7 @@ bool RendererFrontend::drawFrame(
 
             m_materialShader->use();
             m_materialShader->bindGlobals();
-            LOG_WARN("Set uniform start");
+
             m_materialShader->setUniform(
               "view", glm::value_ptr(globalState.viewMatrix)
             );
@@ -39,14 +39,12 @@ bool RendererFrontend::drawFrame(
               "projection", glm::value_ptr(globalState.projectionMatrix)
             );
 
-            LOG_WARN("Set uniform stop");
             m_materialShader->applyGlobals();
 
             for (auto& geometry : renderPacket.geometries) {
                 m_materialShader->bindInstance(
                   geometry.geometry->material->internalId
                 );
-                LOG_WARN("Local start");
                 m_materialShader->setUniform(
                   "diffuse_colour",
                   glm::value_ptr(geometry.geometry->material->diffuseColor)
@@ -59,14 +57,11 @@ bool RendererFrontend::drawFrame(
                 m_materialShader->setUniform(
                   "model", glm::value_ptr(geometry.model)
                 );
-                LOG_WARN("Local stop");
 
                 m_backend->drawGeometry(geometry);
             }
         };
-        LOG_ERROR("World pass start");
         m_backend->renderPass(builtinRenderPassWorld, mainPass);
-        LOG_ERROR("World pass end");
 
         const auto uiPass = [&] {
             const auto& [w, h] = WindowManager::get().getSize();
@@ -89,7 +84,6 @@ bool RendererFrontend::drawFrame(
                   "diffuse_colour",
                   glm::value_ptr(uiGeometry.geometry->material->diffuseColor)
                 );
-
                 m_uiShader->setUniform(
                   "diffuse_texture",
                   uiGeometry.geometry->material->diffuseMap.texture
