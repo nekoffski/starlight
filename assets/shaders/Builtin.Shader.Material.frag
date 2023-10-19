@@ -10,9 +10,10 @@ layout (set = 1, binding = 0) uniform LocalUBO {
 
 const int diffuseMap  = 0;
 const int specularMap = 1;
-const int normalMap   = 3;
+const int normalMap   = 2;
 
-layout (set = 1, binding = 1) uniform sampler2D textures[2];
+
+layout (set = 1, binding = 1) uniform sampler2D textures[3];
 
 layout (location = 1) in struct DTO { 
     vec2 textureCoordinates; 
@@ -20,7 +21,11 @@ layout (location = 1) in struct DTO {
     vec3 viewPosition;
     vec3 fragmentPosition;
     vec4 ambient;
+    vec4 color;
+    vec4 tangent;
 } dto;
+
+mat3 TBN;
 
 struct DirectionalLight {
     vec3 direction;
@@ -50,6 +55,15 @@ vec4 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir
 }
 
 void main() { 
+    vec3 normal = dto.normal;
+    vec3 tangent = dto.tangent.xyz;
+    tangent = tangent - dot(tangent, normal) * normal;
+    vec3 bitangent = cross(dto.normal, dto.tangent.xyz) * dto.tangent.w;
+
+    TBN = mat3(tangent, bitangent, normal);
+    vec3 localNormal = 2.0 * texture(textures[normalMap], dto.textureCoordinates).rgb - 1.0;
+    normal = normalize(TBN * localNormal);
+
     vec3 viewDirection = normalize(dto.viewPosition - dto.fragmentPosition);
-    outColor = calculateDirectionalLight(light, dto.normal, viewDirection);
+    outColor = calculateDirectionalLight(light, normal, viewDirection);
 }

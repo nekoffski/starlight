@@ -5,6 +5,8 @@
 layout (location = 0) in vec3 inPosition;
 layout (location = 1) in vec3 inNormal;
 layout (location = 2) in vec2 inTextureCoordinates;
+layout (location = 3) in vec4 inColor;
+layout (location = 4) in vec4 inTangent;
 
 layout (set = 0, binding = 0) uniform GlobalUBO {
     mat4 projection;
@@ -19,6 +21,8 @@ layout (location = 1) out struct DTO {
     vec3 viewPosition;
     vec3 fragmentPosition;
     vec4 ambient;
+    vec4 color;
+    vec4 tangent;
 } dto;
 
 layout (push_constant) uniform pushConstants_t { 
@@ -31,6 +35,8 @@ void main() {
     dto.viewPosition = globalUBO.viewPosition;
     dto.fragmentPosition = vec3(pushConstants.model * vec4(inPosition, 1.0));
     dto.ambient = globalUBO.ambientColor;
+    dto.color = inColor;
+    dto.tangent = vec4(normalize(mat3(pushConstants.model) * inTangent.xyz), inTangent.w);
 
     gl_Position = globalUBO.projection * 
         globalUBO.view * pushConstants.model* vec4(inPosition, 1.0);

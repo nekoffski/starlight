@@ -9,6 +9,7 @@ void Material::applyUniforms(Shader* shader) {
         self->setUniform("diffuseColor", diffuseColor);
         self->setUniform("diffuseTexture", diffuseMap.texture);
         self->setUniform("specularTexture", specularMap.texture);
+        self->setUniform("normalTexture", normalMap.texture);
         self->setUniform("shininess", shininess);
     });
 }

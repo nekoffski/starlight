@@ -20,6 +20,7 @@ struct Material {
     Vec4f diffuseColor;
     TextureMap diffuseMap;
     TextureMap specularMap;
+    TextureMap normalMap;
     Shader* shader;
     float shininess;
 

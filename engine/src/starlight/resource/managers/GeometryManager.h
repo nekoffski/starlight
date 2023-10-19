@@ -16,6 +16,8 @@
 
 #include "MaterialManager.h"
 
+#include <starlight/core/math/Geometry.h>
+
 constexpr int maxGeometries = 4096;
 
 // TODO: refactor
@@ -33,6 +35,8 @@ struct GeometryPropertiesBase {
 
 struct GeometryProperties3D final : public detail::GeometryPropertiesBase {
     std::vector<Vertex3> vertices;
+
+    void generateTangents() { sl::generateTangents(vertices, indices); }
 };
 
 struct GeometryProperties2D final : public detail::GeometryPropertiesBase {

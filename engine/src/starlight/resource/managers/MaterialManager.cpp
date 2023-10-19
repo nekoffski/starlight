@@ -34,9 +34,12 @@ void MaterialManager::createDefaultMaterial() {
     m_defaultMaterial.name         = "internal-default-material";
     m_defaultMaterial.diffuseColor = Vec4f{ 1.0f };
     m_defaultMaterial.diffuseMap   = diffuseMap;
-    m_defaultMaterial.id           = invalidId;
-    m_defaultMaterial.shader       = m_shaderManager.get("Builtin.Shader.Material");
-    m_defaultMaterial.shininess    = 32.0f;
+    // TODO: create default normal/specular maps
+    m_defaultMaterial.normalMap   = diffuseMap;
+    m_defaultMaterial.specularMap = diffuseMap;
+    m_defaultMaterial.id          = invalidId;
+    m_defaultMaterial.shader      = m_shaderManager.get("Builtin.Shader.Material");
+    m_defaultMaterial.shininess   = 32.0f;
     m_defaultMaterial.acquireInstanceResources();
 }
 
@@ -88,6 +91,9 @@ Material* MaterialManager::load(const std::string& name) {
     };
     material.specularMap = {
         getTexture(materialConfig->specularMap), Texture::Use::specularMap
+    };
+    material.normalMap = {
+        getTexture(materialConfig->normalMap), Texture::Use::normalMap
     };
 
     material.id     = invalidId;

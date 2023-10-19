@@ -45,8 +45,8 @@ bool RendererFrontend::drawFrame(
                 self->setUniform("ambientColor", ambientColor);
             });
 
-            for (auto& geometry : renderPacket.geometries) {
-                auto& material = geometry.geometry->material;
+            for (auto& geometryRenderData : renderPacket.geometries) {
+                auto& material = geometryRenderData.geometry->material;
 
                 material->applyUniforms(m_materialShader);
 
@@ -54,7 +54,7 @@ bool RendererFrontend::drawFrame(
                     self->setUniform("model", model);
                 });
 
-                m_backend->drawGeometry(geometry);
+                m_backend->drawGeometry(geometryRenderData);
             }
         };
         m_backend->renderPass(builtinRenderPassWorld, mainPass);
@@ -88,7 +88,7 @@ bool RendererFrontend::drawFrame(
                 m_uiShader->setUniform("model", glm::value_ptr(uiGeometry.model));
 
                 // TODO: skip for now
-                // m_backend->drawGeometry(uiGeometry);
+                // m_backend->ddrawGeometry(uiGeometry);
             }
         };
         m_backend->renderPass(builtinRenderPassUI, uiPass);

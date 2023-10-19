@@ -43,6 +43,7 @@ std::optional<MaterialConfig> ResourceLoader::loadMaterialConfig(
         config.diffuseColor = getField<Vec4f>(root, "diffuse-color");
         config.diffuseMap   = getField<std::string>(root, "diffuse-map");
         config.specularMap  = getField<std::string>(root, "specular-map");
+        config.normalMap    = getField<std::string>(root, "normal-map");
         config.shaderName   = getField<std::string>(root, "shader-name");
         config.shininess    = getField<float>(root, "shininess");
 

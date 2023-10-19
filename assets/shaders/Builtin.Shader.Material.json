@@ -11,7 +11,9 @@
   "attributes": [
     { "type": "vec3", "name": "inPosition" },
     { "type": "vec3", "name": "inNormal" },
-    { "type": "vec2", "name": "inTextureCoordinates" }
+    { "type": "vec2", "name": "inTextureCoordinates" },
+    { "type": "vec4", "name": "inColor" },
+    { "type": "vec4", "name": "inTangent" }
   ],
   "uniforms": [
     { "type": "mat4", "scope": "global", "name": "projection" },
@@ -21,6 +23,7 @@
     { "type": "vec4", "scope": "instance", "name": "diffuseColor" },
     { "type": "samp", "scope": "instance", "name": "diffuseTexture" },
     { "type": "samp", "scope": "instance", "name": "specularTexture" },
+    { "type": "samp", "scope": "instance", "name": "normalTexture" },
     { "type": "f32", "scope": "instance", "name": "shininess" },
     { "type": "mat4", "scope": "local", "name": "model" }
   ]

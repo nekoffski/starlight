@@ -44,6 +44,7 @@ sl::RenderPacket getRenderPacket(sl::ResourceManager& resourceManager) {
     auto props =
       sl::GeometryManager::generateCubeGeometryProperties(sl::CubeProperties{
         10.0f, 10.0f, 10.0f, 1, 1, "test_cube", "Builtin.Material.Test" });
+    props.generateTangents();
 
     auto cube = resourceManager.loadGeometry(props);
 
