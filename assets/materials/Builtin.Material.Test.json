@@ -1,0 +1,7 @@
+{
+  "diffuse-color": [0.8, 0.8, 0.8, 1.0],
+  "diffuse-map": "cobblestone.png",
+  "specular-map": "cobblestone_SPEC.png",
+  "shader-name": "Builtin.Shader.Material",
+  "shininess": 32
+}

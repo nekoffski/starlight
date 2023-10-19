@@ -29,34 +29,30 @@ bool RendererFrontend::drawFrame(
             globalState.ambientColor     = glm::vec4{ 1.0f };
             globalState.mode             = 0;
 
+            static float angle = 0.0f;
+            angle += (0.3f * deltaTime);
+
+            auto model =
+              glm::rotate(identityMatrix, angle, Vec3f{ 0.0f, 1.0f, 0.0f });
+            glm::vec4 ambientColor(0.3f, 0.3f, 0.3f, 1.0f);
+
             m_materialShader->use();
-            m_materialShader->bindGlobals();
 
-            m_materialShader->setUniform(
-              "view", glm::value_ptr(globalState.viewMatrix)
-            );
-            m_materialShader->setUniform(
-              "projection", glm::value_ptr(globalState.projectionMatrix)
-            );
-
-            m_materialShader->applyGlobals();
+            m_materialShader->setGlobalUniforms([&](auto self) {
+                self->setUniform("view", globalState.viewMatrix);
+                self->setUniform("projection", globalState.projectionMatrix);
+                self->setUniform("viewPosition", globalState.viewPosition);
+                self->setUniform("ambientColor", ambientColor);
+            });
 
             for (auto& geometry : renderPacket.geometries) {
-                m_materialShader->bindInstance(
-                  geometry.geometry->material->internalId
-                );
-                m_materialShader->setUniform(
-                  "diffuse_colour",
-                  glm::value_ptr(geometry.geometry->material->diffuseColor)
-                );
+                auto& material = geometry.geometry->material;
 
-                auto t = ResourceManager::get().getDefaultTexture();
+                material->applyUniforms(m_materialShader);
 
-                m_materialShader->setUniform("diffuse_texture", t);
-                m_materialShader->applyInstance();
-                m_materialShader->setUniform(
-                  "model", glm::value_ptr(geometry.model)
-                );
+                m_materialShader->setLocalUniforms([&](auto self) {
+                    self->setUniform("model", model);
+                });
 
                 m_backend->drawGeometry(geometry);
             }
@@ -91,7 +87,8 @@ bool RendererFrontend::drawFrame(
                 m_uiShader->applyInstance();
                 m_uiShader->setUniform("model", glm::value_ptr(uiGeometry.model));
 
-                m_backend->drawGeometry(uiGeometry);
+                // TODO: skip for now
+                // m_backend->drawGeometry(uiGeometry);
             }
         };
         m_backend->renderPass(builtinRenderPassUI, uiPass);

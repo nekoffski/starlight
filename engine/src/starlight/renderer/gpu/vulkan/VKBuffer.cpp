@@ -50,7 +50,7 @@ VKBuffer::~VKBuffer() { destroy(); }
 uint64_t VKBuffer::allocate(uint64_t size) {
     if (m_useFreeList) [[likely]] {
         const auto offset = m_bufferFreeList->allocateBlock(size);
-        LOG_ERROR(
+        LOG_TRACE(
           "Buffer_{} - Allocating {} bytes of memory, returned offset: {}", getId(),
           size, offset
         );

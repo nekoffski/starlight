@@ -1,0 +1,7 @@
+{
+  "diffuse-color": [1.0, 1.0, 1.0, 1.0],
+  "diffuse-map": "orange_lines_512.png",
+  "specular-map": "cobblestone_SPEC.png",
+  "shader-name": "Builtin.Shader.UI",
+  "shininess": 64.0
+}

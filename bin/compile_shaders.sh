@@ -29,14 +29,16 @@ $COMPILER --version
 echo ""
 echo "$ - Compiling shaders from $DIR"
 
-for FILE in $DIR/*.glsl; do
+rm -rf $DIR/*.spv
+
+for FILE in $DIR/*.vert $DIR/*.frag; do
     if ! [ -f $FILE ]; then
         echo "$ - $FILE is a directory, skipping"
         continue
     fi 
 
-    STAGE=`echo $FILE | rev | cut -d '.'  -f2 | rev`
-    OUTPUT_PATH=`echo $FILE | rev | cut -d '.' -f2- | rev`$OUTPUT_EXTENSION
+    STAGE=`echo $FILE | rev | cut -d '.'  -f1 | rev`
+    OUTPUT_PATH=$FILE$OUTPUT_EXTENSION
 
     echo "$ - Compiling $FILE -> $OUTPUT_PATH" 
     $COMPILER -fshader-stage=$STAGE $FILE -o $OUTPUT_PATH 

@@ -14,26 +14,22 @@
 namespace sl {
 
 struct Material {
-    uint32_t generation;
-    uint32_t internalId;
+    u32 generation;
+    u32 internalId;
     std::string name;
     Vec4f diffuseColor;
     TextureMap diffuseMap;
+    TextureMap specularMap;
     Shader* shader;
+    float shininess;
 
-    Id id = idGenerator++;
-
+    // TODO: CRTP
+    Id id                        = idGenerator++;
     inline static Id idGenerator = 0;
 
-    void acquireInstanceResources() {
-        internalId = shader->acquireInstanceResources();
-        LOG_ERROR("{} - Acquired instance resources id = {}", name, internalId);
-    }
-
-    void releaseInstanceResources() {
-        shader->releaseInstanceResources(internalId);
-        internalId = 0;
-    }
+    void applyUniforms(Shader* shader);
+    void acquireInstanceResources();
+    void releaseInstanceResources();
 };
 
 }  // namespace sl

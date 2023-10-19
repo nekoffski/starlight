@@ -1,10 +1,10 @@
 {
   "version": 1.0,
-  "name": "UIShader",
-  "renderpass": "RenderPass.Builtin.UI",
+  "name": "Builtin.Shader.UI",
+  "renderpass": "Builtin.RenderPass.UI",
   "stages": [
-    { "stage": "vertex", "file": "UIShader.vert.spv" },
-    { "stage": "fragment", "file": "UIShader.frag.spv" }
+    { "stage": "vertex", "file": "Builtin.Shader.UI.vert.spv" },
+    { "stage": "fragment", "file": "Builtin.Shader.UI.frag.spv" }
   ],
   "use-instances": true,
   "use-local": true,

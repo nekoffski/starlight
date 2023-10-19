@@ -7,6 +7,7 @@
 #include <glm/geometric.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <kc/math/Format.h>
 
@@ -24,6 +25,6 @@ using Mat2f = math::mat2;
 using Mat3f = math::mat3;
 using Mat4f = math::mat4;
 
-const Mat4f identityMatrix = Mat4f{1.0f};
+const Mat4f identityMatrix = Mat4f{ 1.0f };
 
 }  // namespace sl

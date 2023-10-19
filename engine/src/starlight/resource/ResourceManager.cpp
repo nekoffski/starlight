@@ -11,8 +11,8 @@ ResourceManager::ResourceManager(
       m_shaderManager, m_textureManager, rendererProxy, m_resourceLoader
     ),
     m_geometryManager(rendererProxy, m_materialManager) {
-    m_uiDefaultShader       = loadShader("UIShader");
-    m_materialDefaultShader = loadShader("MaterialShader");
+    m_uiDefaultShader       = loadShader("Builtin.Shader.UI");
+    m_materialDefaultShader = loadShader("Builtin.Shader.Material");
 
     m_materialManager.createDefaultMaterial();
 }

@@ -49,7 +49,7 @@ public:
 
     virtual void acquireGeometryResources(
       Geometry& geometry, uint32_t vertexSize, uint32_t vertexCount,
-      void* vertexData, std::span<uint32_t> indices
+      void* vertexData, const std::span<uint32_t> indices
     ) override;
 
     void releaseGeometryResources(Geometry& geometry) override;

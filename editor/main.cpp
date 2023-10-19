@@ -19,7 +19,7 @@
 sl::Geometry* getTestUiGeometry(sl::ResourceManager& resourceManager) {
     sl::GeometryProperties2D props;
 
-    props.materialName = "test_ui";
+    props.materialName = "Builtin.Material.UI";
     props.name         = "test_geometry";
     props.indices      = { 2, 1, 0, 3, 0, 1 };
 
@@ -41,8 +41,14 @@ sl::RenderPacket getRenderPacket(sl::ResourceManager& resourceManager) {
     // test render data
     sl::RenderPacket packet{};
 
+    auto props =
+      sl::GeometryManager::generateCubeGeometryProperties(sl::CubeProperties{
+        10.0f, 10.0f, 10.0f, 1, 1, "test_cube", "Builtin.Material.Test" });
+
+    auto cube = resourceManager.loadGeometry(props);
+
     sl::GeometryRenderData testRender;
-    testRender.geometry = resourceManager.getDefaultGeometry3D();
+    testRender.geometry = cube;  // resourceManager.getDefaultGeometry3D();
     testRender.model    = sl::identityMatrix;
 
     sl::GeometryRenderData testUiRender;

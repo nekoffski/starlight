@@ -146,7 +146,6 @@ void VKShaderImpl::bindGlobals() {
 void VKShaderImpl::bindInstance(u32 instanceId) {
     m_self.boundInstanceId = instanceId;
     m_self.boundUboOffset  = *m_instanceStates[instanceId].offset;
-    LOG_TRACE("Binding instance: {}, offset={}", instanceId, m_self.boundUboOffset);
 }
 
 void VKShaderImpl::applyGlobals() {
@@ -366,11 +365,6 @@ void VKShaderImpl::setUniform(const ShaderUniform& uniform, void* value) {
             );
         } else {
             const auto totalOffset = m_self.boundUboOffset + uniform.offset;
-            LOG_TRACE(
-              "Setting uniform {} size {}, bound offset = {}, total offset = {}",
-              uniform.typeToString(uniform.type), uniform.size,
-              m_self.boundUboOffset, totalOffset
-            );
             char* address =
               static_cast<char*>(m_mappedUniformBufferBlock) + totalOffset;
             std::memcpy(address, value, uniform.size);

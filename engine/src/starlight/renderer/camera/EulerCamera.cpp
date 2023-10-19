@@ -5,8 +5,8 @@
 
 namespace sl {
 
-EulerCamera::EulerCamera(const Properties& props)
-    : m_target(props.target), m_radius(props.radius), m_pitch(90.0f), m_yaw(90.0f) {
+EulerCamera::EulerCamera(const Properties& props) :
+    m_target(props.target), m_radius(props.radius), m_pitch(90.0f), m_yaw(90.0f) {
     recalculateVectors();
 }
 
@@ -19,7 +19,7 @@ Mat4f EulerCamera::getProjectionMatrix() const {
 Vec3f EulerCamera::getPosition() const { return m_position; }
 
 void EulerCamera::update(float deltaTime) {
-    static constexpr float speed = 100.0f;
+    static constexpr float speed = 150.0f;
 
     processInput(speed * deltaTime);
     truncateCoefficients();
@@ -33,8 +33,8 @@ void EulerCamera::processInput(const float speed) {
     if (WindowManager::get().isKeyPressed(SL_KEY_D)) m_yaw -= speed;
     if (WindowManager::get().isKeyPressed(SL_KEY_A)) m_yaw += speed;
 
-    if (WindowManager::get().isKeyPressed(SL_KEY_1)) m_radius += speed / 10.0f;
-    if (WindowManager::get().isKeyPressed(SL_KEY_2)) m_radius -= speed / 10.0f;
+    if (WindowManager::get().isKeyPressed(SL_KEY_1)) m_radius += speed / 5.0f;
+    if (WindowManager::get().isKeyPressed(SL_KEY_2)) m_radius -= speed / 5.0f;
 }
 
 void EulerCamera::truncateCoefficients() {
@@ -44,14 +44,14 @@ void EulerCamera::truncateCoefficients() {
     if (m_pitch > 170.0f) m_pitch = 170.0f;
     if (m_pitch < 10.0f) m_pitch = 10.0f;
 
-    static constexpr float maxRadius = 25.0f;
+    static constexpr float maxRadius = 100.0f;
 
     if (m_radius < 0.0f) m_radius = 0.0f;
     if (m_radius > maxRadius) m_radius = maxRadius;
 }
 
 void EulerCamera::recalculateVectors() {
-    const static Vec3f worldUp = Vec3f{0.0f, 1.0f, 0.0f};
+    const static Vec3f worldUp = Vec3f{ 0.0f, 1.0f, 0.0f };
 
     const auto pitchRadians = glm::radians(m_pitch);
     const auto yawRadians   = glm::radians(m_yaw);
@@ -69,6 +69,8 @@ void EulerCamera::recalculateVectors() {
     m_up    = glm::cross(m_right, m_front);
 }
 
-void EulerCamera::updateViewMatrix() { m_viewMatrix = glm::lookAt(m_position, m_target, m_up); }
+void EulerCamera::updateViewMatrix() {
+    m_viewMatrix = glm::lookAt(m_position, m_target, m_up);
+}
 
 }  // namespace sl

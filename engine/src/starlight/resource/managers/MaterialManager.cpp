@@ -35,13 +35,13 @@ void MaterialManager::createDefaultMaterial() {
     m_defaultMaterial.diffuseColor = Vec4f{ 1.0f };
     m_defaultMaterial.diffuseMap   = diffuseMap;
     m_defaultMaterial.id           = invalidId;
-    m_defaultMaterial.shader       = m_shaderManager.get("MaterialShader");
+    m_defaultMaterial.shader       = m_shaderManager.get("Builtin.Shader.Material");
+    m_defaultMaterial.shininess    = 32.0f;
     m_defaultMaterial.acquireInstanceResources();
 }
 
 Material* MaterialManager::load(const std::string& name) {
     LOG_TRACE("Loading material '{}'", name);
-    static const std::string_view extension = "nvmat";
 
     if (auto material = m_materials.find(name); material != m_materials.end()) {
         LOG_WARN(
@@ -59,9 +59,8 @@ Material* MaterialManager::load(const std::string& name) {
         return nullptr;
     }
 
-    const auto getDiffuseMapTexture =
-      [&](const std::string& diffuseMapName) -> Texture* {
-        if (auto texture = m_textureManager.acquire(diffuseMapName); texture) {
+    const auto getTexture = [&](const std::string& textureName) -> Texture* {
+        if (auto texture = m_textureManager.acquire(textureName); texture) {
             LOG_DEBUG(
               "Found diffuse map '{}' required by material '{}'", texture->name, name
             );
@@ -69,24 +68,30 @@ Material* MaterialManager::load(const std::string& name) {
         } else {
             LOG_INFO(
               "Diffuse map '{}' required by material '{}' not found, will try to load",
-              diffuseMapName, name
+              textureName, name
             );
-            return m_textureManager.load(diffuseMapName);
+            return m_textureManager.load(textureName);
         }
+        LOG_WARN("Could not find/load texture: {}, will use default", textureName);
+        return m_textureManager.getDefaultTexture();
     };
-
-    TextureMap diffuseMap(
-      getDiffuseMapTexture(materialConfig->diffuseMap), Texture::Use::diffuseMap
-    );
 
     Material material;
     material.generation   = 0;
     material.internalId   = 0;
     material.name         = name;
     material.diffuseColor = materialConfig->diffuseColor;
-    material.diffuseMap   = diffuseMap;
-    material.id           = invalidId;
-    material.shader       = m_shaderManager.get(materialConfig->shaderName);
+    material.shininess    = materialConfig->shininess;
+
+    material.diffuseMap = {
+        getTexture(materialConfig->diffuseMap), Texture::Use::diffuseMap
+    };
+    material.specularMap = {
+        getTexture(materialConfig->specularMap), Texture::Use::specularMap
+    };
+
+    material.id     = invalidId;
+    material.shader = m_shaderManager.get(materialConfig->shaderName);
 
     ASSERT(
       material.shader, "Could not find shader: {} for material: {}",

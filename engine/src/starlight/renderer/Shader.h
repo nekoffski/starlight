@@ -5,7 +5,10 @@
 #include <unordered_map>
 #include <array>
 #include <memory>
+#include <functional>
+#include <concepts>
 
+#include "starlight/core/math/Glm.h"
 #include "starlight/core/Id.hpp"
 #include "starlight/core/Core.h"
 #include "starlight/core/utils/Log.h"
@@ -18,8 +21,16 @@
 
 namespace sl {
 
+template <typename T>
+concept GlmCompatible = requires(T object) {
+    { glm::value_ptr(object) } -> std::convertible_to<void*>;
+};
+
+// TODO: implement higher coupling, is Impl necessary?
 class Shader {
 public:
+    using SelfCallback = std::function<void(Shader*)>;
+
     struct Impl {
         virtual ~Impl() = default;
 
@@ -34,6 +45,10 @@ public:
         virtual void setUniform(const ShaderUniform& uniform, void* value) = 0;
     };
 
+    void setGlobalUniforms(SelfCallback&&);
+    void setInstanceUniforms(u32 instanceId, SelfCallback&&);
+    void setLocalUniforms(SelfCallback&&);
+
     void use();
     void bindGlobals();
     void bindInstance(u32 instanceId);
@@ -41,7 +56,17 @@ public:
     void applyInstance();
     u32 acquireInstanceResources();
     void releaseInstanceResources(u32 instanceId);
+
     void setUniform(const std::string& uniform, void* value);
+    void setUniform(const std::string& uniform, Texture* value);
+
+    void setUniform(const std::string& uniform, GlmCompatible auto& value) {
+        setUniform(uniform, glm::value_ptr(value));
+    }
+
+    void setUniform(const std::string& uniform, auto& value) {
+        setUniform(uniform, &value);
+    }
 
     enum class State : u8 { notCreated, uninitialized, initialized };
 

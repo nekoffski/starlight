@@ -17,7 +17,7 @@
 namespace sl::vk {
 
 class VKShaderImpl final : public Shader::Impl {
-    static constexpr u32 maxBindings = 32;
+    static constexpr u32 maxBindings = 2;
 
     struct StageConfig {
         ShaderStage::Type type;

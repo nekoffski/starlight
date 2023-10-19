@@ -267,7 +267,7 @@ void VKRendererBackend::createCoreComponents(
 
     const auto& [width, height] = window.getSize();
 
-    auto backgroundColor = (1.0f / 255.0f) * glm::vec4{ 117, 210, 98, 255 };
+    auto backgroundColor = (1.0f / 255.0f) * glm::vec4{ 11, 16, 47, 255 };
 
     VKRenderPass::Properties renderPassProperties{
         .area  = glm::vec4{0.0f, 0.0f, width, height},
@@ -347,9 +347,9 @@ std::unique_ptr<Shader::Impl> VKRendererBackend::createShaderImpl(sl::Shader& sh
 }
 
 u32 VKRendererBackend::getRenderPassId(const std::string& renderPass) const {
-    if (renderPass == "RenderPass.Builtin.World")
+    if (renderPass == "Builtin.RenderPass.World")
         return builtinRenderPassWorld;
-    else if (renderPass == "RenderPass.Builtin.UI")
+    else if (renderPass == "Builtin.RenderPass.UI")
         return builtinRenderPassUI;
     FAIL("Could not find render pass: {}", renderPass);
 }

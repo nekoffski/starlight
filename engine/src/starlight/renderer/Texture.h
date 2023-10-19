@@ -6,7 +6,7 @@ namespace sl {
 
 // TODO: implement some kind of CRTP for ids
 struct Texture {
-    enum class Use { unknown, diffuseMap };
+    enum class Use { unknown, diffuseMap, specularMap };
 
     virtual ~Texture() {}
 

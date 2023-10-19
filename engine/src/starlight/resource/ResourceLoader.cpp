@@ -27,7 +27,7 @@ std::optional<MaterialConfig> ResourceLoader::loadMaterialConfig(
   const std::string& name
 ) const {
     const auto fullPath =
-      fmt::format("{}/materials/{}.nvmat", m_baseResourcePath, name);
+      fmt::format("{}/materials/{}.json", m_baseResourcePath, name);
 
     LOG_TRACE("Loading material config file: {}", fullPath);
 
@@ -42,7 +42,9 @@ std::optional<MaterialConfig> ResourceLoader::loadMaterialConfig(
 
         config.diffuseColor = getField<Vec4f>(root, "diffuse-color");
         config.diffuseMap   = getField<std::string>(root, "diffuse-map");
+        config.specularMap  = getField<std::string>(root, "specular-map");
         config.shaderName   = getField<std::string>(root, "shader-name");
+        config.shininess    = getField<float>(root, "shininess");
 
         return config;
     } catch (kc::json::JsonError& e) {
@@ -97,7 +99,7 @@ std::optional<STBImageData> ResourceLoader::loadImageData(const std::string& nam
 std::optional<ShaderConfig> ResourceLoader::loadShaderConfig(const std::string& name
 ) const {
     const auto fullPath =
-      fmt::format("{}/shaders/{}.cfg.json", m_baseResourcePath, name);
+      fmt::format("{}/shaders/{}.json", m_baseResourcePath, name);
 
     LOG_TRACE("Loading shader config file: {}", fullPath);
 
