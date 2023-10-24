@@ -64,7 +64,9 @@ public:
         setUniform(uniform, glm::value_ptr(value));
     }
 
-    void setUniform(const std::string& uniform, auto& value) {
+    template <typename T>
+    requires std::is_arithmetic_v<T>
+    void setUniform(const std::string& uniform, T value) {
         setUniform(uniform, &value);
     }
 

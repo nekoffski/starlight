@@ -297,6 +297,10 @@ u32 VKShaderImpl::acquireInstanceResources() {
     instanceState.instanceTextures.resize(m_self.instanceTextureCount, nullptr);
     // allocate space in the UBO - by the stride, not the size
     instanceState.offset = m_uniformBuffer->allocate(m_self.uboStride);
+    LOG_INFO(
+      "Shader {} allocated offset={} for instance resources", m_self.name,
+      instanceState.offset.get()
+    );
 
     auto& setState = instanceState.descriptorSetState;
     const auto bindingCount =
@@ -364,9 +368,17 @@ void VKShaderImpl::setUniform(const ShaderUniform& uniform, void* value) {
               uniform.offset, uniform.size, value
             );
         } else {
-            const auto totalOffset = m_self.boundUboOffset + uniform.offset;
-            char* address =
-              static_cast<char*>(m_mappedUniformBufferBlock) + totalOffset;
+            const auto offset = m_self.boundUboOffset + uniform.offset;
+            void* address     = static_cast<void*>(
+              static_cast<char*>(m_mappedUniformBufferBlock) + offset
+            );
+            if (false) {
+                LOG_TRACE(
+                  "Setting uniform {}/{} offset={}, totalOffset={}",
+                  uniform.typeToString(uniform.type), uniform.size, uniform.offset,
+                  offset
+                );
+            }
             std::memcpy(address, value, uniform.size);
         }
     }
@@ -374,7 +386,6 @@ void VKShaderImpl::setUniform(const ShaderUniform& uniform, void* value) {
 
 void VKShaderImpl::createModules() {
     m_stages.reserve(m_config.stages.size());
-
     for (auto& stageConfig : m_config.stages) {
         m_stages.emplace_back(
           m_device, m_context,
@@ -490,6 +501,10 @@ void VKShaderImpl::createUniformBuffer() {
     m_self.globalUboStride =
       getAlignedValue(m_self.globalUboSize, m_self.requiredUboAlignment);
     m_self.uboStride = getAlignedValue(m_self.uboSize, m_self.requiredUboAlignment);
+
+    LOG_INFO(
+      "Minimal uniform buffer offset alignment={}", m_self.requiredUboAlignment
+    );
 
     const u32 deviceLocalBits =
       m_device->supportsDeviceLocalHostVisible()

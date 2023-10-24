@@ -8,6 +8,7 @@
 #include "Shader.h"
 
 #include "RenderPacket.h"
+#include "RenderMode.h"
 
 namespace sl {
 
@@ -21,6 +22,7 @@ public:
     );
 
     void setCoreShaders(Shader* uiShader, Shader* materialShader);
+    void setRenderMode(RenderMode mode);
 
 private:
     RendererBackend* m_backend;
@@ -32,6 +34,8 @@ private:
 
     Shader* m_materialShader;
     Shader* m_uiShader;
+
+    RenderMode m_renderMode;
 };
 
 }  // namespace sl

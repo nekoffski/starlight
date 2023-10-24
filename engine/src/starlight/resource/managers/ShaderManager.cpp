@@ -68,6 +68,11 @@ Shader* ShaderManager::load(const std::string& name) {
 
     shader->impl->initialize();
 
+    LOG_DEBUG(
+      "Shader: {}, global ubo size={} offset={}", name, shader->globalUboSize,
+      shader->globalUboOffset
+    );
+
     // check if it wasn't inserted previously!
     m_shaderByName[name] = shader;
 
@@ -176,8 +181,7 @@ void ShaderManager::addUniformImpl(
             ? shader->globalUboSize
             : shader->uboSize;
         uniform.size = isSampler ? 0 : size;
-
-        LOG_TRACE("Uniform offset: {}", uniform.offset);
+        LOG_TRACE("Uniform {} offset: {}", name, uniform.offset);
     } else {
         ASSERT(
           scope != ShaderScope::instance || shader->useInstances,

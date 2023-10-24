@@ -13,7 +13,8 @@
 namespace sl {
 
 RendererFrontend::RendererFrontend(RendererBackend* backend) :
-    m_backend(backend), m_materialShader(nullptr), m_uiShader(nullptr) {}
+    m_backend(backend), m_materialShader(nullptr), m_uiShader(nullptr),
+    m_renderMode(RenderMode::standard) {}
 
 RendererFrontend::~RendererFrontend() {}
 
@@ -43,6 +44,7 @@ bool RendererFrontend::drawFrame(
                 self->setUniform("projection", globalState.projectionMatrix);
                 self->setUniform("viewPosition", globalState.viewPosition);
                 self->setUniform("ambientColor", ambientColor);
+                self->setUniform("renderMode", static_cast<int>(m_renderMode));
             });
 
             for (auto& geometryRenderData : renderPacket.geometries) {
@@ -102,6 +104,11 @@ bool RendererFrontend::drawFrame(
 void RendererFrontend::setCoreShaders(Shader* uiShader, Shader* materialShader) {
     m_uiShader       = uiShader;
     m_materialShader = materialShader;
+}
+
+void RendererFrontend::setRenderMode(RenderMode mode) {
+    LOG_TRACE("Render mode set to: {}", mode);  // TODO: toString{}
+    m_renderMode = mode;
 }
 
 }  // namespace sl

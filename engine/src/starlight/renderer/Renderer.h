@@ -32,6 +32,8 @@ public:
         return m_frontend.drawFrame(renderPacket, camera, deltaTime);
     }
 
+    void setRenderMode(RenderMode mode) { m_frontend.setRenderMode(mode); }
+
     void resizeViewport(uint32_t width, uint32_t height) {
         // TODO: handle changing viewport as different event, viewport.size !=
         // window.size (GUI)

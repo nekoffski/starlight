@@ -76,8 +76,15 @@ int main() {
     const auto onQuit = [&]([[maybe_unused]] sl::QuitEvent*) { isRunning = false; };
 
     const auto onKey = [&](sl::KeyEvent* event) {
-        if ((event->key == SL_KEY_ESCAPE || event->key == SL_KEY_Q) && event->action == sl::KeyAction::press)
-            isRunning = false;
+        if (event->action == sl::KeyAction::press) {
+            const auto& key = event->key;
+
+            if ((key == SL_KEY_ESCAPE || key == SL_KEY_Q)) isRunning = false;
+
+            if (key == SL_KEY_0) renderer.setRenderMode(sl::RenderMode::lights);
+            if (key == SL_KEY_9) renderer.setRenderMode(sl::RenderMode::normals);
+            if (key == SL_KEY_8) renderer.setRenderMode(sl::RenderMode::standard);
+        }
     };
 
     const auto onWindowResized = [&](sl::WindowResized* event) {

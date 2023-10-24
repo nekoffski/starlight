@@ -12,8 +12,11 @@ layout (set = 0, binding = 0) uniform GlobalUBO {
     mat4 projection;
     mat4 view;
     vec3 viewPosition;
+    int mode;
     vec4 ambientColor;
 } globalUBO;
+
+layout (location = 0) out int renderMode;
 
 layout (location = 1) out struct DTO { 
     vec2 textureCoordinates; 
@@ -37,6 +40,7 @@ void main() {
     dto.ambient = globalUBO.ambientColor;
     dto.color = inColor;
     dto.tangent = vec4(normalize(mat3(pushConstants.model) * inTangent.xyz), inTangent.w);
+    renderMode = globalUBO.mode;
 
     gl_Position = globalUBO.projection * 
         globalUBO.view * pushConstants.model* vec4(inPosition, 1.0);
