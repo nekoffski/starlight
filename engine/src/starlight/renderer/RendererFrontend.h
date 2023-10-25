@@ -36,6 +36,8 @@ private:
     Shader* m_uiShader;
 
     RenderMode m_renderMode;
+
+    u64 m_frameNumber;
 };
 
 }  // namespace sl

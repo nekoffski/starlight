@@ -11,10 +11,44 @@
 #include <starlight/renderer/RenderPacket.h>
 #include <starlight/renderer/Renderer.h>
 #include <starlight/renderer/camera/EulerCamera.h>
+#include <starlight/renderer/Mesh.h>
 
 #include <starlight/core/memory/DynamicAllocator.h>
-
 #include <starlight/resource/ResourceManager.h>
+
+std::vector<sl::Mesh> meshes;
+
+void generateCubes(sl::ResourceManager& resourceManager) {
+    sl::Mesh cubeMesh1;
+    auto props1 =
+      sl::GeometryManager::generateCubeGeometryProperties(sl::CubeProperties{
+        10.0f, 10.0f, 10.0f, 1, 1, "test_cube", "Builtin.Material.Test" });
+    props1.generateTangents();
+    cubeMesh1.geometries.push_back(resourceManager.loadGeometry(props1));
+
+    sl::Mesh cubeMesh2;
+    auto props2 =
+      sl::GeometryManager::generateCubeGeometryProperties(sl::CubeProperties{
+        5.0f, 5.0f, 5.0f, 1, 1, "test_cube2", "Builtin.Material.Test" });
+    props2.generateTangents();
+    cubeMesh2.geometries.push_back(resourceManager.loadGeometry(props2));
+    cubeMesh2.transform.translate(sl::Vec3f(10.0f, 0.0f, 1.0f));
+
+    sl::Mesh cubeMesh3;
+    auto props3 =
+      sl::GeometryManager::generateCubeGeometryProperties(sl::CubeProperties{
+        2.0f, 2.0f, 2.0f, 1, 1, "test_cube3", "Builtin.Material.Test" });
+    props3.generateTangents();
+    cubeMesh3.geometries.push_back(resourceManager.loadGeometry(props3));
+    cubeMesh3.transform.translate(sl::Vec3f(5.0f, 0.0f, 1.0f));
+
+    meshes.push_back(cubeMesh1);
+    meshes.push_back(cubeMesh2);
+    meshes.push_back(cubeMesh3);
+
+    meshes[1].transform.setParent(&meshes[0].transform);
+    meshes[2].transform.setParent(&meshes[1].transform);
+}
 
 sl::Geometry* getTestUiGeometry(sl::ResourceManager& resourceManager) {
     sl::GeometryProperties2D props;
@@ -41,28 +75,39 @@ sl::RenderPacket getRenderPacket(sl::ResourceManager& resourceManager) {
     // test render data
     sl::RenderPacket packet{};
 
-    auto props =
-      sl::GeometryManager::generateCubeGeometryProperties(sl::CubeProperties{
-        10.0f, 10.0f, 10.0f, 1, 1, "test_cube", "Builtin.Material.Test" });
-    props.generateTangents();
-
-    auto cube = resourceManager.loadGeometry(props);
-
-    sl::GeometryRenderData testRender;
-    testRender.geometry = cube;  // resourceManager.getDefaultGeometry3D();
-    testRender.model    = sl::identityMatrix;
-
     sl::GeometryRenderData testUiRender;
     testUiRender.geometry = testUiGeometry;
     testUiRender.model    = sl::identityMatrix;
 
-    packet.geometries   = { testRender };
     packet.uiGeometries = { testUiRender };
 
     return packet;
 }
 
+void update(sl::RenderPacket& packet, float dt) {
+    packet.geometries.clear();
+
+    const auto rotationAxis = sl::Vec3f{ 0.0f, 1.0f, 0.0f };
+    const auto angle        = 0.5f * dt;
+
+    meshes[0].transform.rotate(rotationAxis, angle);
+    meshes[1].transform.rotate(rotationAxis, angle);
+    meshes[2].transform.rotate(rotationAxis, angle);
+
+    for (auto& mesh : meshes) {
+        for (auto& geometry : mesh.geometries) {
+            sl::GeometryRenderData data;
+            data.geometry = geometry;
+            data.model    = mesh.transform.getWorld();
+
+            packet.geometries.push_back(data);
+        }
+    }
+}
+
 int main() {
+    meshes.reserve(10);
+
     sl::Context ctx("starligt-sandbox");
 
     LOG_INFO("Sandbox starting!");
@@ -107,12 +152,14 @@ int main() {
       resourceManager.getMaterialDefaultShader()
     );
 
+    generateCubes(resourceManager);
     auto packet = getRenderPacket(resourceManager);
 
     while (isRunning) {
         const auto deltaTime = ctx.beginFrame();
 
         renderer.drawFrame(packet, camera, deltaTime);
+        update(packet, deltaTime);
 
         camera.update(deltaTime);
         ctx.endFrame();

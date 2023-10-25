@@ -23,6 +23,7 @@ struct Material {
     TextureMap normalMap;
     Shader* shader;
     float shininess;
+    Id32 renderFrameNumber;
 
     // TODO: CRTP
     Id id                        = idGenerator++;

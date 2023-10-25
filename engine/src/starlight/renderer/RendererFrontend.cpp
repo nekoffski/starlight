@@ -14,35 +14,29 @@ namespace sl {
 
 RendererFrontend::RendererFrontend(RendererBackend* backend) :
     m_backend(backend), m_materialShader(nullptr), m_uiShader(nullptr),
-    m_renderMode(RenderMode::standard) {}
+    m_renderMode(RenderMode::standard), m_frameNumber(0ul) {}
 
 RendererFrontend::~RendererFrontend() {}
 
 bool RendererFrontend::drawFrame(
   RenderPacket& renderPacket, const Camera& camera, float deltaTime
 ) {
+    m_frameNumber++;
+
     if (m_backend->beginFrame(deltaTime)) {
         const auto mainPass = [&] {
-            GlobalState globalState;
-            globalState.projectionMatrix = camera.getProjectionMatrix();
-            globalState.viewMatrix       = camera.getViewMatrix();
-            globalState.viewPosition     = camera.getPosition();
-            globalState.ambientColor     = glm::vec4{ 1.0f };
-            globalState.mode             = 0;
-
-            static float angle = 0.0f;
-            angle += (0.3f * deltaTime);
-
-            auto model =
-              glm::rotate(identityMatrix, angle, Vec3f{ 0.0f, 1.0f, 0.0f });
             glm::vec4 ambientColor(0.3f, 0.3f, 0.3f, 1.0f);
 
             m_materialShader->use();
 
+            auto viewMatrix       = camera.getViewMatrix();
+            auto projectionMatrix = camera.getProjectionMatrix();
+            auto viewPosition     = camera.getPosition();
+
             m_materialShader->setGlobalUniforms([&](auto self) {
-                self->setUniform("view", globalState.viewMatrix);
-                self->setUniform("projection", globalState.projectionMatrix);
-                self->setUniform("viewPosition", globalState.viewPosition);
+                self->setUniform("view", viewMatrix);
+                self->setUniform("projection", projectionMatrix);
+                self->setUniform("viewPosition", viewPosition);
                 self->setUniform("ambientColor", ambientColor);
                 self->setUniform("renderMode", static_cast<int>(m_renderMode));
             });
@@ -50,10 +44,13 @@ bool RendererFrontend::drawFrame(
             for (auto& geometryRenderData : renderPacket.geometries) {
                 auto& material = geometryRenderData.geometry->material;
 
-                material->applyUniforms(m_materialShader);
+                if (not material->renderFrameNumber.hasValue() || material->renderFrameNumber.get() != m_frameNumber) {
+                    material->applyUniforms(m_materialShader);
+                    material->renderFrameNumber = m_frameNumber;
+                }
 
                 m_materialShader->setLocalUniforms([&](auto self) {
-                    self->setUniform("model", model);
+                    self->setUniform("model", geometryRenderData.model);
                 });
 
                 m_backend->drawGeometry(geometryRenderData);

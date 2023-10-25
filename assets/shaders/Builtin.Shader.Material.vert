@@ -43,5 +43,5 @@ void main() {
     renderMode = globalUBO.mode;
 
     gl_Position = globalUBO.projection * 
-        globalUBO.view * pushConstants.model* vec4(inPosition, 1.0);
+        globalUBO.view * pushConstants.model * vec4(inPosition, 1.0);
 }

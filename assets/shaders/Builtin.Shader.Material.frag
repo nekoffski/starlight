@@ -106,13 +106,16 @@ vec4 calculatePointLight(PointLight light, vec3 normal, vec3 fragmentPosition, v
 
 void main() { 
     vec3 normal = dto.normal;
-    vec3 tangent = dto.tangent.xyz;
-    tangent = tangent - dot(tangent, normal) * normal;
-    vec3 bitangent = cross(dto.normal, dto.tangent.xyz) * dto.tangent.w;
 
-    TBN = mat3(tangent, bitangent, normal);
-    vec3 localNormal = 2.0 * texture(textures[normalMap], dto.textureCoordinates).rgb - 1.0;
-    normal = normalize(TBN * localNormal);
+    if (renderMode != 1) {
+        vec3 tangent = dto.tangent.xyz;
+        tangent = tangent - dot(tangent, normal) * normal;
+        vec3 bitangent = cross(dto.normal, dto.tangent.xyz) * dto.tangent.w;
+
+        TBN = mat3(tangent, bitangent, normal);
+        vec3 localNormal = 2.0 * texture(textures[normalMap], dto.textureCoordinates).rgb - 1.0;
+        normal = normalize(TBN * localNormal);
+    }
 
     if (renderMode == 0 || renderMode == 1) {
         vec3 viewDirection = normalize(dto.viewPosition - dto.fragmentPosition);
