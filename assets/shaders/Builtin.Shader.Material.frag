@@ -107,7 +107,7 @@ vec4 calculatePointLight(PointLight light, vec3 normal, vec3 fragmentPosition, v
 void main() { 
     vec3 normal = dto.normal;
 
-    if (renderMode != 1) {
+    if (renderMode != 2) {
         vec3 tangent = dto.tangent.xyz;
         tangent = tangent - dot(tangent, normal) * normal;
         vec3 bitangent = cross(dto.normal, dto.tangent.xyz) * dto.tangent.w;

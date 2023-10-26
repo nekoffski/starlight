@@ -16,6 +16,12 @@ template <typename T> T getField(auto& root, const std::string& name) {
     return fieldFrom(root).withName(name).template ofType<T>().get();
 }
 
+template <typename T>
+T getFieldOr(auto& root, const std::string& name, const T& defaultValue) {
+    if (root.isMember(name)) return getField<T>(root, name);
+    return defaultValue;
+}
+
 auto getArray(auto& root, const std::string& name) {
     return fieldFrom(root).withName(name).asArray().get();
 }
@@ -36,16 +42,23 @@ std::optional<MaterialConfig> ResourceLoader::loadMaterialConfig(
         return {};
     }
 
+    static auto defaultDiffuseColor = Vec4f{ 1.0f };
+    static auto defaultDiffuseMap   = "Internal.Texture.Default"s;
+    static auto defaultNormalMap    = "Internal.Texture.DefaultNormalMap"s;
+    static auto defaultSpecularMap  = "Internal.Texture.DefaultSpecularMap"s;
+    static auto defaultShader       = "Builtin.Shader.Material"s;
+    static auto defaultShininess    = 32.0f;
+
     try {
         auto root = kc::json::loadJson(m_fs.readFile(fullPath));
         MaterialConfig config;
 
-        config.diffuseColor = getField<Vec4f>(root, "diffuse-color");
-        config.diffuseMap   = getField<std::string>(root, "diffuse-map");
-        config.specularMap  = getField<std::string>(root, "specular-map");
-        config.normalMap    = getField<std::string>(root, "normal-map");
-        config.shaderName   = getField<std::string>(root, "shader-name");
-        config.shininess    = getField<float>(root, "shininess");
+        config.diffuseColor = getFieldOr(root, "diffuse-color", defaultDiffuseColor);
+        config.diffuseMap   = getFieldOr(root, "diffuse-map", defaultDiffuseMap);
+        config.specularMap  = getFieldOr(root, "specular-map", defaultSpecularMap);
+        config.normalMap    = getFieldOr(root, "normal-map", defaultNormalMap);
+        config.shaderName   = getFieldOr(root, "shader-name", defaultShader);
+        config.shininess    = getFieldOr(root, "shininess", defaultShininess);
 
         return config;
     } catch (kc::json::JsonError& e) {

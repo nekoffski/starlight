@@ -15,7 +15,9 @@ TextureManager::TextureManager(
 ) :
     m_textureLoader(textureLoader),
     m_resourceLoader(resourceLoader) {
-    loadDefaultTexture();
+    createDefaultTexture();
+    createDefaultNormalMap();
+    createDefaultSpecularMap();
 }
 
 Texture* TextureManager::load(const std::string& name) {
@@ -53,21 +55,21 @@ Texture* TextureManager::acquire(const std::string& name) const {
     }
 }
 
-void TextureManager::loadDefaultTexture() {
+void setColor(uint32_t i, const Vec4f& color, std::vector<u8>& pixels) {
+    pixels[i]     = color.x;
+    pixels[i + 1] = color.y;
+    pixels[i + 2] = color.z;
+    pixels[i + 3] = color.w;
+}
+
+void TextureManager::createDefaultTexture() {
     Texture::Properties props{
         .width = 256, .height = 256, .channels = 4, .isTransparent = false
     };
-    std::vector<uint8_t> pixels(props.width * props.height * props.channels, 255);
-
+    std::vector<u8> pixels(props.width * props.height * props.channels, 255);
     float scale = 8;
 
-    const auto setColor = [&](uint32_t i, const Vec3f& color) {
-        pixels[i]     = color.x;
-        pixels[i + 1] = color.y;
-        pixels[i + 2] = color.z;
-    };
-
-    for (uint32_t i = 0; i < pixels.size(); i += 4) {
+    for (uint32_t i = 0; i < pixels.size(); i += props.channels) {
         uint32_t x = (i / 4) % props.width;
         uint32_t y = std::floor((i / 4) / props.width);
 
@@ -75,15 +77,52 @@ void TextureManager::loadDefaultTexture() {
         float yPattern = std::cos(((float)y / props.height) * 2.0f * M_PI * scale);
 
         setColor(
-          i, xPattern * yPattern > 0.0f ? Vec3f{ 0.0f } : Vec3f{ 255.0f, 0.0f, 0.0f }
+          i,
+          xPattern * yPattern > 0.0f
+            ? Vec4f{ 0.0f }
+            : Vec4f{ 255.0f, 0.0f, 0.0f, 255.0f },
+          pixels
         );
     }
 
     m_defaultTexture =
-      m_textureLoader.load("internal-default-texture", props, pixels.data());
+      m_textureLoader.load("Internal.Texture.Default", props, pixels.data());
+}
+
+void TextureManager::createDefaultSpecularMap() {
+    Texture::Properties props{
+        .width = 16, .height = 16, .channels = 4, .isTransparent = false
+    };
+    std::vector<u8> pixels(props.width * props.height * props.channels, 0);
+    m_defaultSpecularMap = m_textureLoader.load(
+      "Internal.Texture.DefaultSpecularMap", props, pixels.data()
+    );
+}
+
+void TextureManager::createDefaultNormalMap() {
+    Texture::Properties props{
+        .width = 16, .height = 16, .channels = 4, .isTransparent = false
+    };
+    std::vector<u8> pixels(props.width * props.height * props.channels, 0);
+
+    Vec4f zAxis{ 0.0f, 0.0f, 255.0f, 255.0f };
+    for (int i = 0; i < pixels.size(); i += props.channels)
+        setColor(i, zAxis, pixels);
+
+    m_defaultNormalMap = m_textureLoader.load(
+      "Internal.Texture.DefaultNormalMap", props, pixels.data()
+    );
 }
 
 Texture* TextureManager::getDefaultTexture() const { return m_defaultTexture.get(); }
+
+Texture* TextureManager::getDefaultNormalMap() const {
+    return m_defaultNormalMap.get();
+}
+
+Texture* TextureManager::getDefaultSpecularMap() const {
+    return m_defaultSpecularMap.get();
+}
 
 void TextureManager::destroy(const std::string& name) {
     LOG_TRACE("Destroying texture '{}'", name);

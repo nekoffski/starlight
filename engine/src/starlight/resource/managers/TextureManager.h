@@ -19,19 +19,27 @@ public:
 
     Texture* load(const std::string& name);
     Texture* acquire(const std::string& name) const;
+
     Texture* getDefaultTexture() const;
+    Texture* getDefaultNormalMap() const;
+    Texture* getDefaultSpecularMap() const;
 
     void destroy(const std::string& name);
     void destroyAll();
 
 private:
-    void loadDefaultTexture();
+    void createDefaultTexture();
+    void createDefaultSpecularMap();
+    void createDefaultNormalMap();
 
     TextureLoader& m_textureLoader;
     const ResourceLoader& m_resourceLoader;
 
     std::unordered_map<std::string, UniqPtr<Texture>> m_textures;
+
     UniqPtr<Texture> m_defaultTexture;
+    UniqPtr<Texture> m_defaultNormalMap;
+    UniqPtr<Texture> m_defaultSpecularMap;
 };
 
 }  // namespace sl

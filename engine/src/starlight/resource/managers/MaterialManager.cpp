@@ -25,21 +25,23 @@ MaterialManager::~MaterialManager() {
 Material* MaterialManager::getDefaultMaterial() { return &m_defaultMaterial; }
 
 void MaterialManager::createDefaultMaterial() {
-    TextureMap diffuseMap(
-      m_textureManager.getDefaultTexture(), Texture::Use::diffuseMap
-    );
-
     m_defaultMaterial.generation   = 0;
     m_defaultMaterial.internalId   = 0;
-    m_defaultMaterial.name         = "internal-default-material";
+    m_defaultMaterial.name         = "Internal.Material.Default";
     m_defaultMaterial.diffuseColor = Vec4f{ 1.0f };
-    m_defaultMaterial.diffuseMap   = diffuseMap;
+    m_defaultMaterial.diffuseMap   = {
+          m_textureManager.getDefaultTexture(), Texture::Use::diffuseMap
+    };
     // TODO: create default normal/specular maps
-    m_defaultMaterial.normalMap   = diffuseMap;
-    m_defaultMaterial.specularMap = diffuseMap;
-    m_defaultMaterial.id          = invalidId;
-    m_defaultMaterial.shader      = m_shaderManager.get("Builtin.Shader.Material");
-    m_defaultMaterial.shininess   = 32.0f;
+    m_defaultMaterial.normalMap = {
+        m_textureManager.getDefaultNormalMap(), Texture::Use::normalMap
+    };
+    m_defaultMaterial.specularMap = {
+        m_textureManager.getDefaultSpecularMap(), Texture::Use::specularMap
+    };
+    m_defaultMaterial.id        = invalidId;
+    m_defaultMaterial.shader    = m_shaderManager.get("Builtin.Shader.Material");
+    m_defaultMaterial.shininess = 32.0f;
     m_defaultMaterial.acquireInstanceResources();
 }
 
@@ -62,21 +64,22 @@ Material* MaterialManager::load(const std::string& name) {
         return nullptr;
     }
 
-    const auto getTexture = [&](const std::string& textureName) -> Texture* {
+    const auto getTexture =
+      [&](const std::string& textureName) -> std::optional<Texture*> {
         if (auto texture = m_textureManager.acquire(textureName); texture) {
             LOG_DEBUG(
-              "Found diffuse map '{}' required by material '{}'", texture->name, name
+              "Found texture map '{}' required by material '{}'", texture->name, name
             );
             return texture;
         } else {
             LOG_INFO(
-              "Diffuse map '{}' required by material '{}' not found, will try to load",
+              "Texture map '{}' required by material '{}' not found, will try to load",
               textureName, name
             );
             return m_textureManager.load(textureName);
         }
-        LOG_WARN("Could not find/load texture: {}, will use default", textureName);
-        return m_textureManager.getDefaultTexture();
+        LOG_WARN("Could not find/load texture: {}, returning nullptr", textureName);
+        return {};
     };
 
     Material material;
@@ -87,13 +90,19 @@ Material* MaterialManager::load(const std::string& name) {
     material.shininess    = materialConfig->shininess;
 
     material.diffuseMap = {
-        getTexture(materialConfig->diffuseMap), Texture::Use::diffuseMap
+        getTexture(materialConfig->diffuseMap)
+          .value_or(m_textureManager.getDefaultTexture()),
+        Texture::Use::diffuseMap
     };
     material.specularMap = {
-        getTexture(materialConfig->specularMap), Texture::Use::specularMap
+        getTexture(materialConfig->specularMap)
+          .value_or(m_textureManager.getDefaultSpecularMap()),
+        Texture::Use::specularMap
     };
     material.normalMap = {
-        getTexture(materialConfig->normalMap), Texture::Use::normalMap
+        getTexture(materialConfig->normalMap)
+          .value_or(m_textureManager.getDefaultNormalMap()),
+        Texture::Use::normalMap
     };
 
     material.id     = invalidId;
