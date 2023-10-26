@@ -84,9 +84,8 @@ void TextureManager::createDefaultTexture() {
           pixels
         );
     }
-
-    m_defaultTexture =
-      m_textureLoader.load("Internal.Texture.Default", props, pixels.data());
+    m_textures[defaultTextureName] =
+      m_textureLoader.load(defaultTextureName, props, pixels.data());
 }
 
 void TextureManager::createDefaultSpecularMap() {
@@ -94,9 +93,8 @@ void TextureManager::createDefaultSpecularMap() {
         .width = 16, .height = 16, .channels = 4, .isTransparent = false
     };
     std::vector<u8> pixels(props.width * props.height * props.channels, 0);
-    m_defaultSpecularMap = m_textureLoader.load(
-      "Internal.Texture.DefaultSpecularMap", props, pixels.data()
-    );
+    m_textures[defaultSpecularMapName] =
+      m_textureLoader.load(defaultSpecularMapName, props, pixels.data());
 }
 
 void TextureManager::createDefaultNormalMap() {
@@ -109,19 +107,20 @@ void TextureManager::createDefaultNormalMap() {
     for (int i = 0; i < pixels.size(); i += props.channels)
         setColor(i, zAxis, pixels);
 
-    m_defaultNormalMap = m_textureLoader.load(
-      "Internal.Texture.DefaultNormalMap", props, pixels.data()
-    );
+    m_textures[defaultNormalMapName] =
+      m_textureLoader.load(defaultNormalMapName, props, pixels.data());
 }
 
-Texture* TextureManager::getDefaultTexture() const { return m_defaultTexture.get(); }
+Texture* TextureManager::getDefaultTexture() const {
+    return m_textures.at(defaultTextureName).get();
+}
 
 Texture* TextureManager::getDefaultNormalMap() const {
-    return m_defaultNormalMap.get();
+    return m_textures.at(defaultNormalMapName).get();
 }
 
 Texture* TextureManager::getDefaultSpecularMap() const {
-    return m_defaultSpecularMap.get();
+    return m_textures.at(defaultSpecularMapName).get();
 }
 
 void TextureManager::destroy(const std::string& name) {

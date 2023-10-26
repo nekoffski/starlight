@@ -13,6 +13,12 @@ namespace sl {
 
 class TextureManager {
 public:
+    inline static const std::string defaultNormalMapName =
+      "Internal.Texture.DefaultNormalMap";
+    inline static const std::string defaultTextureName = "Internal.Texture.Default";
+    inline static const std::string defaultSpecularMapName =
+      "Internal.Texture.DefaultSpecularMap";
+
     explicit TextureManager(
       TextureLoader& textureLoader, const ResourceLoader& resourceLoader
     );

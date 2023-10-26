@@ -43,11 +43,12 @@ std::optional<MaterialConfig> ResourceLoader::loadMaterialConfig(
     }
 
     static auto defaultDiffuseColor = Vec4f{ 1.0f };
-    static auto defaultDiffuseMap   = "Internal.Texture.Default"s;
-    static auto defaultNormalMap    = "Internal.Texture.DefaultNormalMap"s;
-    static auto defaultSpecularMap  = "Internal.Texture.DefaultSpecularMap"s;
-    static auto defaultShader       = "Builtin.Shader.Material"s;
-    static auto defaultShininess    = 32.0f;
+    // TODO: pass it from outside
+    static auto defaultDiffuseMap  = "Internal.Texture.Default"s;
+    static auto defaultNormalMap   = "Internal.Texture.DefaultNormalMap"s;
+    static auto defaultSpecularMap = "Internal.Texture.DefaultSpecularMap"s;
+    static auto defaultShader      = "Builtin.Shader.Material"s;
+    static auto defaultShininess   = 32.0f;
 
     try {
         auto root = kc::json::loadJson(m_fs.readFile(fullPath));
