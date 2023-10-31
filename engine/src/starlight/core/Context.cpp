@@ -4,7 +4,8 @@
 
 namespace sl {
 
-Context::LoggerInitializator::LoggerInitializator(const std::string& applicationName) {
+Context::LoggerInitializator::LoggerInitializator(const std::string& applicationName
+) {
     sl::initLogging(applicationName);
 }
 
@@ -22,6 +23,8 @@ float Context::beginFrame() {
 }
 
 void Context::endFrame() {
+    sl::disableVariableLogging();
+
     m_window.swapBuffers();
     m_eventManager.dispatch();
     m_timeManager.update();

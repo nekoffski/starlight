@@ -27,4 +27,8 @@ using Mat4f = math::mat4;
 
 const Mat4f identityMatrix = Mat4f{ 1.0f };
 
+const Vec3f worldUp    = Vec3f{ 0.0f, 1.0f, 0.0f };
+const Vec3f worldRight = Vec3f{ 1.0f, 0.0f, 0.0 };
+const Vec3f worldFront = Vec3f{ 0.0f, 0.0f, 1.0f };
+
 }  // namespace sl

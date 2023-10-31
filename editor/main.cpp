@@ -11,6 +11,7 @@
 #include <starlight/renderer/RenderPacket.h>
 #include <starlight/renderer/Renderer.h>
 #include <starlight/renderer/camera/EulerCamera.h>
+#include <starlight/renderer/camera/FirstPersonCamera.h>
 #include <starlight/renderer/Mesh.h>
 
 #include <starlight/core/memory/DynamicAllocator.h>
@@ -116,6 +117,13 @@ int main() {
 
     sl::Renderer renderer(*ctx.getWindow(), *ctx.getConfig());
 
+    sl::EulerCamera eulerCamera(sl::EulerCamera::Properties{
+      .target = sl::Vec3f{ 0.0f }, .radius = 5.0f });
+    sl::FirstPersonCamera firstPersonCamera(sl::FirstPersonCamera::Properties{
+      .position = sl::Vec3f{ 0.0f } });
+
+    sl::Camera* currentCamera = &eulerCamera;
+
     auto& eventManager = sl::EventManager::get();
 
     const auto onQuit = [&]([[maybe_unused]] sl::QuitEvent*) { isRunning = false; };
@@ -129,6 +137,9 @@ int main() {
             if (key == SL_KEY_0) renderer.setRenderMode(sl::RenderMode::lights);
             if (key == SL_KEY_9) renderer.setRenderMode(sl::RenderMode::normals);
             if (key == SL_KEY_8) renderer.setRenderMode(sl::RenderMode::standard);
+            if (key == SL_KEY_6) sl::enableVariableLogging();
+            if (key == SL_KEY_4) currentCamera = &eulerCamera;
+            if (key == SL_KEY_3) currentCamera = &firstPersonCamera;
         }
     };
 
@@ -144,9 +155,6 @@ int main() {
       *renderer.getTextureLoader(), *renderer.getProxy()
     );
 
-    sl::EulerCamera camera(sl::EulerCamera::Properties{
-      .target = sl::Vec3f{ 0.0f }, .radius = 5.0f });
-
     renderer.setCoreShaders(
       resourceManager.getUIDefaultShader(),
       resourceManager.getMaterialDefaultShader()
@@ -158,13 +166,14 @@ int main() {
     while (isRunning) {
         const auto deltaTime = ctx.beginFrame();
 
-        renderer.drawFrame(packet, camera, deltaTime);
+        LOG_VAR(deltaTime);
+        LOG_VAR(currentCamera->getPosition());
+
+        renderer.drawFrame(packet, *currentCamera, deltaTime);
         update(packet, deltaTime);
 
-        camera.update(deltaTime);
+        currentCamera->update(deltaTime);
         ctx.endFrame();
-
-        // break;
     }
 
     return 0;
