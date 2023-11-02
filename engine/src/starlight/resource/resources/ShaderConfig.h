@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "starlight/core/Core.h"
+#include "starlight/core/utils/FileSystem.h"
 #include "starlight/renderer/Shader.h"
 #include "starlight/renderer/ShaderStage.h"
 #include "starlight/renderer/ShaderAttribute.h"
@@ -35,9 +36,18 @@ struct ShaderStageConfig {
 
     ShaderStage::Type stage;
     std::string filename;
+    std::string source;
 };
 
 struct ShaderConfig {
+    inline static const std::string baseShaderPath =
+      SL_ASSETS_PATH + std::string("/shaders");
+
+    static std::optional<ShaderConfig> load(
+      const std::string& name, const std::string& shadersPath = baseShaderPath,
+      const FileSystem& fs = fileSystem
+    );
+
     std::string toString() const;
 
     std::string name;

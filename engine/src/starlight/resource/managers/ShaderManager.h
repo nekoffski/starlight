@@ -9,7 +9,8 @@
 #include "starlight/renderer/ShaderUniform.h"
 #include "starlight/renderer/Shader.h"
 #include "starlight/renderer/gpu/RendererProxy.h"
-#include "starlight/resource/ResourceLoader.h"
+
+#include "starlight/resource/resources/ShaderConfig.h"
 #include "TextureManager.h"
 
 namespace sl {
@@ -26,8 +27,8 @@ public:
     static Config defaultConfig;
 
     explicit ShaderManager(
-      RendererProxy& rendererProxy, const ResourceLoader& resourceLoader,
-      const TextureManager& textureManager, const Config& conf = defaultConfig
+      RendererProxy& rendererProxy, const TextureManager& textureManager,
+      const Config& conf = defaultConfig
     );
 
     Shader* load(const std::string& name);
@@ -46,7 +47,6 @@ private:
     );
 
     RendererProxy& m_rendererProxy;
-    const ResourceLoader& m_resourceLoader;
     const TextureManager& m_textureManager;
     Config m_conf;
 

@@ -34,7 +34,7 @@ layout (push_constant) uniform pushConstants_t {
 
 void main() {
     dto.textureCoordinates = inTextureCoordinates;
-    dto.normal = mat3(pushConstants.model) * inNormal;
+    dto.normal = normalize(mat3(pushConstants.model) * inNormal);
     dto.viewPosition = globalUBO.viewPosition;
     dto.fragmentPosition = vec3(pushConstants.model * vec4(inPosition, 1.0));
     dto.ambient = globalUBO.ambientColor;

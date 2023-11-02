@@ -19,7 +19,7 @@
 
 std::vector<sl::Mesh> meshes;
 
-void generateCubes(sl::ResourceManager& resourceManager) {
+void generateMeshes(sl::ResourceManager& resourceManager) {
     sl::Mesh cubeMesh1;
     auto props1 =
       sl::GeometryManager::generateCubeGeometryProperties(sl::CubeProperties{
@@ -49,6 +49,7 @@ void generateCubes(sl::ResourceManager& resourceManager) {
 
     meshes[1].transform.setParent(&meshes[0].transform);
     meshes[2].transform.setParent(&meshes[1].transform);
+    // Car
 }
 
 sl::Geometry* getTestUiGeometry(sl::ResourceManager& resourceManager) {
@@ -160,7 +161,7 @@ int main() {
       resourceManager.getMaterialDefaultShader()
     );
 
-    generateCubes(resourceManager);
+    generateMeshes(resourceManager);
     auto packet = getRenderPacket(resourceManager);
 
     while (isRunning) {

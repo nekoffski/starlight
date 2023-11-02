@@ -4,10 +4,9 @@
 
 #include <kc/core/Singleton.hpp>
 
+#include "starlight/core/Core.h"
 #include "starlight/core/memory/Memory.hpp"
 #include "starlight/renderer/fwd.h"
-
-#include "starlight/resource/ResourceLoader.h"
 
 namespace sl {
 
@@ -19,9 +18,7 @@ public:
     inline static const std::string defaultSpecularMapName =
       "Internal.Texture.DefaultSpecularMap";
 
-    explicit TextureManager(
-      TextureLoader& textureLoader, const ResourceLoader& resourceLoader
-    );
+    explicit TextureManager(TextureLoader& textureLoader);
 
     Texture* load(const std::string& name);
     Texture* acquire(const std::string& name) const;
@@ -39,7 +36,6 @@ private:
     void createDefaultNormalMap();
 
     TextureLoader& m_textureLoader;
-    const ResourceLoader& m_resourceLoader;
 
     std::unordered_map<std::string, UniqPtr<Texture>> m_textures;
 

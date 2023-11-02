@@ -12,17 +12,17 @@ ShaderManager::Config ShaderManager::defaultConfig = {
 };
 
 ShaderManager::ShaderManager(
-  RendererProxy& rendererProxy, const ResourceLoader& resourceLoader,
-  const TextureManager& textureManager, const Config& conf
+  RendererProxy& rendererProxy, const TextureManager& textureManager,
+  const Config& conf
 ) :
     m_rendererProxy(rendererProxy),
-    m_resourceLoader(resourceLoader), m_conf(conf), m_textureManager(textureManager),
+    m_conf(conf), m_textureManager(textureManager),
     m_shaders(m_conf.maxShaderCount) {}
 
 Shader* ShaderManager::load(const std::string& name) {
     LOG_TRACE("Loading shader: {}", name);
 
-    auto cfg = m_resourceLoader.loadShaderConfig(name);
+    auto cfg = ShaderConfig::load(name);
     LOG_DEBUG("Loaded shader config: {}", cfg->toString());
 
     auto shader = findSlot();
@@ -47,15 +47,8 @@ Shader* ShaderManager::load(const std::string& name) {
     shader->boundInstanceId.invalidate();
 
     shader->stages.reserve(cfg->stages.size());
-    for (auto& stageConfig : cfg->stages) {
-        const auto shaderSource =
-          m_resourceLoader.loadShaderSource(stageConfig.filename);
-        ASSERT(
-          shaderSource, "Could not load shader stage source for file: {}",
-          stageConfig.filename
-        );
-        shader->stages.emplace_back(stageConfig.stage, *shaderSource);
-    }
+    for (auto& stageConfig : cfg->stages)
+        shader->stages.emplace_back(stageConfig.stage, stageConfig.source);
 
     shader->renderPassId = m_rendererProxy.getRenderPassId(cfg->renderpassName);
     shader->impl         = m_rendererProxy.createShaderImpl(*shader);

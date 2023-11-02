@@ -10,11 +10,8 @@
 
 namespace sl {
 
-TextureManager::TextureManager(
-  TextureLoader& textureLoader, const ResourceLoader& resourceLoader
-) :
-    m_textureLoader(textureLoader),
-    m_resourceLoader(resourceLoader) {
+TextureManager::TextureManager(TextureLoader& textureLoader) :
+    m_textureLoader(textureLoader) {
     createDefaultTexture();
     createDefaultNormalMap();
     createDefaultSpecularMap();
@@ -30,7 +27,7 @@ Texture* TextureManager::load(const std::string& name) {
         return texture->second.get();
     }
 
-    const auto imageData = m_resourceLoader.loadImageData(name);
+    const auto imageData = STBImageData::load(name);
 
     sl::Texture::Properties props{
         .width         = imageData->width,

@@ -5,11 +5,9 @@ namespace sl {
 ResourceManager::ResourceManager(
   TextureLoader& textureLoader, RendererProxy& rendererProxy
 ) :
-    m_textureManager(textureLoader, m_resourceLoader),
-    m_shaderManager(rendererProxy, m_resourceLoader, m_textureManager),
-    m_materialManager(
-      m_shaderManager, m_textureManager, rendererProxy, m_resourceLoader
-    ),
+    m_textureManager(textureLoader),
+    m_shaderManager(rendererProxy, m_textureManager),
+    m_materialManager(m_shaderManager, m_textureManager, rendererProxy),
     m_geometryManager(rendererProxy, m_materialManager) {
     m_uiDefaultShader       = loadShader("Builtin.Shader.UI");
     m_materialDefaultShader = loadShader("Builtin.Shader.Material");

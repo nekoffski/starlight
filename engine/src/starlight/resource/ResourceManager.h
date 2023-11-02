@@ -13,7 +13,6 @@
 
 #include "starlight/renderer/gpu/RendererProxy.h"
 #include "starlight/renderer/gpu/TextureLoader.h"
-#include "ResourceLoader.h"
 
 namespace sl {
 
@@ -50,17 +49,10 @@ public:
 
     GeometryProperties3D generatePlaneGeometryProperties(PlaneProperties& props);
 
-    // TODO: remove
-    std::optional<std::string> temp_loadShaderSource(const std::string& name) {
-        return m_resourceLoader.loadShaderSource(name);
-    }
-
     Shader* getUIDefaultShader() { return m_uiDefaultShader; }
     Shader* getMaterialDefaultShader() { return m_materialDefaultShader; }
 
 private:
-    ResourceLoader m_resourceLoader;
-
     TextureManager m_textureManager;
     ShaderManager m_shaderManager;
     MaterialManager m_materialManager;

@@ -17,14 +17,18 @@ struct ImageData {
 };
 
 class STBImageData : public ImageData {
-    friend class ResourceLoader;
-
-private:
 public:
+    inline static const std::string baseTexturesPath =
+      SL_ASSETS_PATH + std::string("/textures");
+
     ~STBImageData();
 
     STBImageData(STBImageData&& oth);
     STBImageData& operator=(STBImageData&& oth);
+
+    static std::optional<STBImageData> load(
+      const std::string& name, const std::string& imagesPath = baseTexturesPath
+    );
 
 private:
     explicit STBImageData(

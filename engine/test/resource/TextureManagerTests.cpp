@@ -11,8 +11,7 @@ using namespace sl;
 // TODO:: pass file loader mock
 struct DISABLED_TextureLoaderTests : public Test {
     TextureLoaderMock textureLoader;
-    ResourceLoader resourceLoader;
-    TextureManager textureManager{ textureLoader, resourceLoader };
+    TextureManager textureManager{ textureLoader };
     std::unique_ptr<Texture> texture = std::make_unique<Texture>();
 };
 

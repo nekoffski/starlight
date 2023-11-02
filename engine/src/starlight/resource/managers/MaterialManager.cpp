@@ -11,11 +11,10 @@ namespace sl {
 
 MaterialManager::MaterialManager(
   ShaderManager& shaderManager, TextureManager& textureManager,
-  RendererProxy& rendererProxy, const ResourceLoader& resourceLoader
+  RendererProxy& rendererProxy
 ) :
     m_shaderManager(shaderManager),
-    m_textureManager(textureManager), m_rendererProxy(rendererProxy),
-    m_resourceLoader(resourceLoader) {}
+    m_textureManager(textureManager), m_rendererProxy(rendererProxy) {}
 
 MaterialManager::~MaterialManager() {
     m_defaultMaterial.releaseInstanceResources();
@@ -57,7 +56,7 @@ Material* MaterialManager::load(const std::string& name) {
 
     LOG_TRACE("Found material file, will try to process");
 
-    auto materialConfig = m_resourceLoader.loadMaterialConfig(name);
+    auto materialConfig = MaterialConfig::load(name);
 
     if (not materialConfig.has_value()) {
         LOG_WARN("Could not process material file '{}'", name);

@@ -9,8 +9,6 @@
 #include "starlight/renderer/Material.h"
 #include "starlight/renderer/gpu/RendererProxy.h"
 
-#include "starlight/resource/ResourceLoader.h"
-
 #include "ShaderManager.h"
 
 namespace sl {
@@ -19,7 +17,7 @@ class MaterialManager {
 public:
     explicit MaterialManager(
       ShaderManager& shaderManager, TextureManager& textureManager,
-      RendererProxy& rendererProxy, const ResourceLoader& resourceLoader
+      RendererProxy& rendererProxy
     );
 
     ~MaterialManager();
@@ -37,7 +35,6 @@ private:
     ShaderManager& m_shaderManager;
     TextureManager& m_textureManager;
     RendererProxy& m_rendererProxy;
-    const ResourceLoader& m_resourceLoader;
 
     std::unordered_map<std::string, Material> m_materials;
     Material m_defaultMaterial;
