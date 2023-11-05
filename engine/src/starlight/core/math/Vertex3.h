@@ -10,6 +10,8 @@ struct Vertex3 {
     Vec2f textureCoordinates;
     Vec4f color;
     Vec4f tangent;
+
+    std::string toString() const;
 };
 
 }  // namespace sl

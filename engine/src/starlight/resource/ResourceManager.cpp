@@ -35,6 +35,10 @@ void ResourceManager::destroyTexture(const std::string& name) {
     m_textureManager.destroy(name);
 }
 
+Material* ResourceManager::loadMaterial(const MaterialConfig& config) {
+    return m_materialManager.load(config);
+}
+
 Material* ResourceManager::loadMaterial(const std::string& name) {
     return m_materialManager.load(name);
 }
@@ -67,12 +71,6 @@ Geometry* ResourceManager::getDefaultGeometry3D() {
 
 Geometry* ResourceManager::getDefaultGeometry2D() {
     return m_geometryManager.getDefault2D();
-}
-
-GeometryProperties3D ResourceManager::generatePlaneGeometryProperties(
-  PlaneProperties& props
-) {
-    return m_geometryManager.generatePlaneGeometryProperties(props);
 }
 
 }  // namespace sl

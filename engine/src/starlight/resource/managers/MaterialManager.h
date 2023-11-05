@@ -9,6 +9,8 @@
 #include "starlight/renderer/Material.h"
 #include "starlight/renderer/gpu/RendererProxy.h"
 
+#include "starlight/resource/resources/MaterialConfig.h"
+
 #include "ShaderManager.h"
 
 namespace sl {
@@ -23,6 +25,8 @@ public:
     ~MaterialManager();
 
     Material* load(const std::string& name);
+    Material* load(const MaterialConfig& config);
+
     Material* acquire(const std::string& name);
     Material* getDefaultMaterial();
 

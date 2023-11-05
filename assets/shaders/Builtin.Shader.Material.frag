@@ -66,9 +66,9 @@ vec4 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir
     vec4 specularTextureSample = vec4(texture(
         textures[specularMap], dto.textureCoordinates).rgb, diffuseTextureSample.a);
 
-    vec4 ambient = vec4(vec3(localUBO.diffuseColor * dto.ambient), diffuseTextureSample.a);
-    vec4 diffuse = vec4(vec3(light.color * diffuseFactor), diffuseTextureSample.a);
-    vec4 specular = vec4(vec3(light.color * specularFactor), diffuseTextureSample.a);
+    vec4 ambient = vec4(vec3(localUBO.diffuseColor * dto.ambient), 1.0);
+    vec4 diffuse = vec4(vec3(light.color * diffuseFactor), 1.0);
+    vec4 specular = vec4(vec3(light.color * specularFactor), 1.0);
 
     if (renderMode == 0) {
         diffuse *= diffuseTextureSample;
@@ -107,7 +107,7 @@ vec4 calculatePointLight(PointLight light, vec3 normal, vec3 fragmentPosition, v
 void main() { 
     vec3 normal = dto.normal;
 
-    if (renderMode != 2) {
+    if (renderMode == 0) {
         vec3 tangent = dto.tangent.xyz;
         tangent = tangent - dot(tangent, normal) * normal;
         vec3 bitangent = cross(dto.normal, dto.tangent.xyz) * dto.tangent.w;

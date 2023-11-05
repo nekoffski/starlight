@@ -24,6 +24,7 @@ VKTexture::VKTexture(
     m_context(context),
     m_device(device) {
     create(name, props, pixels);
+    this->name = name;
 }
 
 VKTexture::~VKTexture() {

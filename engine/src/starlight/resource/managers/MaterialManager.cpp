@@ -5,7 +5,6 @@
 #include <kc/json/Utils.hpp>
 
 #include "TextureManager.h"
-#include "starlight/resource/resources/MaterialConfig.h"
 
 namespace sl {
 
@@ -56,24 +55,27 @@ Material* MaterialManager::load(const std::string& name) {
 
     LOG_TRACE("Found material file, will try to process");
 
-    auto materialConfig = MaterialConfig::load(name);
-
-    if (not materialConfig.has_value()) {
+    if (auto materialConfig = MaterialConfig::load(name); not materialConfig) {
         LOG_WARN("Could not process material file '{}'", name);
         return nullptr;
+    } else {
+        return load(*materialConfig);
     }
+}
 
+Material* MaterialManager::load(const MaterialConfig& config) {
     const auto getTexture =
       [&](const std::string& textureName) -> std::optional<Texture*> {
         if (auto texture = m_textureManager.acquire(textureName); texture) {
             LOG_DEBUG(
-              "Found texture map '{}' required by material '{}'", texture->name, name
+              "Found texture map '{}' required by material '{}'", texture->name,
+              config.name
             );
             return texture;
         } else {
             LOG_INFO(
               "Texture map '{}' required by material '{}' not found, will try to load",
-              textureName, name
+              textureName, config.name
             );
             return m_textureManager.load(textureName);
         }
@@ -84,38 +86,37 @@ Material* MaterialManager::load(const std::string& name) {
     Material material;
     material.generation   = 0;
     material.internalId   = 0;
-    material.name         = name;
-    material.diffuseColor = materialConfig->diffuseColor;
-    material.shininess    = materialConfig->shininess;
+    material.name         = config.name;
+    material.diffuseColor = config.diffuseColor;
+    material.shininess    = config.shininess;
 
     material.diffuseMap = {
-        getTexture(materialConfig->diffuseMap)
-          .value_or(m_textureManager.getDefaultTexture()),
+        getTexture(config.diffuseMap).value_or(m_textureManager.getDefaultTexture()),
         Texture::Use::diffuseMap
     };
     material.specularMap = {
-        getTexture(materialConfig->specularMap)
+        getTexture(config.specularMap)
           .value_or(m_textureManager.getDefaultSpecularMap()),
         Texture::Use::specularMap
     };
     material.normalMap = {
-        getTexture(materialConfig->normalMap)
+        getTexture(config.normalMap)
           .value_or(m_textureManager.getDefaultNormalMap()),
         Texture::Use::normalMap
     };
 
     material.id     = invalidId;
-    material.shader = m_shaderManager.get(materialConfig->shaderName);
+    material.shader = m_shaderManager.get(config.shaderName);
 
     ASSERT(
       material.shader, "Could not find shader: {} for material: {}",
-      materialConfig->shaderName, name
+      config.shaderName, config.name
     );
 
     material.acquireInstanceResources();
-    m_materials[name] = std::move(material);
+    m_materials[config.name] = std::move(material);
 
-    return &m_materials[name];
+    return &m_materials[config.name];
 }
 
 Material* MaterialManager::acquire(const std::string& name) {

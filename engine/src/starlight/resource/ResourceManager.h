@@ -30,13 +30,14 @@ public:
 
     void destroyTexture(const std::string& name);
 
+    Material* loadMaterial(const MaterialConfig& config);
     Material* loadMaterial(const std::string& name);
     Material* acquireMaterial(const std::string& name);
     Material* getDefaultMaterial();
 
     void destroyMaterial(const std::string& name);
 
-    Geometry* loadGeometry(GeometryProperties auto& props) {
+    Geometry* loadGeometry(GeometryConfig auto& props) {
         return m_geometryManager.load(props);
     }
     Geometry* acquireGeometry(uint32_t id);
@@ -46,8 +47,6 @@ public:
 
     Geometry* getDefaultGeometry3D();
     Geometry* getDefaultGeometry2D();
-
-    GeometryProperties3D generatePlaneGeometryProperties(PlaneProperties& props);
 
     Shader* getUIDefaultShader() { return m_uiDefaultShader; }
     Shader* getMaterialDefaultShader() { return m_materialDefaultShader; }

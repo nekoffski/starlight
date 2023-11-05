@@ -1,0 +1,51 @@
+newmtl darkwood.002
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+map_Kd wood/T_brightwood_basecolor.png
+map_Ks wood/T_wood_roughness.png
+map_bump wood/T_wood_normal.png
+illum 2
+
+newmtl rocks.002
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+map_Kd rocks/rock_bc.jpg
+map_Ks rocks/rock_r.jpg
+map_bump rocks/rock_n.jpg
+illum 2
+
+newmtl rooftiles.002
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+map_Kd rooftiles/T_darkwood_basecolor.png
+map_Ks rooftiles/T_wood_roughness.png
+map_bump rooftiles/T_wood_normal.png
+illum 2
+
+newmtl wood.002
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+map_Kd wood/T_darkwood_basecolor.png
+map_Ks wood/T_wood_roughness.png
+map_bump wood/T_wood_normal.png
+illum 2

@@ -4,6 +4,18 @@
 
 namespace sl {
 
+MaterialConfig MaterialConfig::createDefault(const std::string& name) {
+    return MaterialConfig{
+        .name         = name,
+        .diffuseColor = defaultDiffuseColor,
+        .shininess    = defaultShininess,
+        .diffuseMap   = defaultDiffuseMap,
+        .specularMap  = defaultSpecularMap,
+        .normalMap    = defaultNormalMap,
+        .shaderName   = defaultShader
+    };
+}
+
 std::optional<MaterialConfig> MaterialConfig::load(
   const std::string& name, const std::string& materialsPath, const FileSystem& fs
 ) {
@@ -16,18 +28,11 @@ std::optional<MaterialConfig> MaterialConfig::load(
         return {};
     }
 
-    static auto defaultDiffuseColor = Vec4f{ 1.0f };
-    // TODO: pass it from outside
-    static auto defaultDiffuseMap  = "Internal.Texture.Default"s;
-    static auto defaultNormalMap   = "Internal.Texture.DefaultNormalMap"s;
-    static auto defaultSpecularMap = "Internal.Texture.DefaultSpecularMap"s;
-    static auto defaultShader      = "Builtin.Shader.Material"s;
-    static auto defaultShininess   = 32.0f;
-
     try {
         auto root = kc::json::loadJson(fs.readFile(fullPath));
         MaterialConfig config;
 
+        config.name         = name;
         config.diffuseColor = getFieldOr(root, "diffuse-color", defaultDiffuseColor);
         config.diffuseMap   = getFieldOr(root, "diffuse-map", defaultDiffuseMap);
         config.specularMap  = getFieldOr(root, "specular-map", defaultSpecularMap);
