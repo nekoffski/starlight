@@ -48,14 +48,12 @@ void generateMeshes(sl::ResourceManager& resourceManager) {
     // Loaded mesh
     sl::Mesh mesh;
 
-    auto config = sl::MeshConfig::loadOBJ("highpoly_town_house_01");
-    for (auto& material : config->materials) {
-        resourceManager.loadMaterial(material);
-    }
-    for (auto& geometry : config->geometries) {
+    // auto config = sl::MeshConfig::loadOBJ("sponza");
+    auto config = sl::MeshConfig::loadOBJ("falcon");
+    for (auto& material : config->materials) resourceManager.loadMaterial(material);
+    for (auto& geometry : config->geometries)
         mesh.geometries.push_back(resourceManager.loadGeometry(geometry));
-    }
-    mesh.transform.translate(sl::Vec3f{ 0.0, -1.0f, 0.0f });
+    // mesh.transform.translate(sl::Vec3f{ 0.0, -1.0f, 0.0f }).scale(0.05f);
 
     meshes.push_back(mesh);
 
@@ -97,13 +95,17 @@ sl::RenderPacket getRenderPacket(sl::ResourceManager& resourceManager) {
     return packet;
 }
 
+bool s_update = true;
+
 void update(sl::RenderPacket& packet, float dt) {
     packet.geometries.clear();
 
     const auto rotationAxis = sl::Vec3f{ 0.0f, 1.0f, 0.0f };
-    const auto angle        = 0.5f * dt;
+    const auto angle        = 0.1f * dt;
 
-    // meshes[0].transform.rotate(rotationAxis, angle);
+    if (s_update) {
+        meshes[0].transform.rotate(rotationAxis, angle);
+    }
     // meshes[1].transform.rotate(rotationAxis, angle);
     // meshes[2].transform.rotate(rotationAxis, angle);
 
@@ -150,8 +152,15 @@ int main() {
             if (key == SL_KEY_9) renderer.setRenderMode(sl::RenderMode::normals);
             if (key == SL_KEY_8) renderer.setRenderMode(sl::RenderMode::standard);
             if (key == SL_KEY_6) sl::enableVariableLogging();
-            if (key == SL_KEY_4) currentCamera = &eulerCamera;
-            if (key == SL_KEY_3) currentCamera = &firstPersonCamera;
+            if (key == SL_KEY_4) {
+                currentCamera = &eulerCamera;
+                ctx.getWindow()->showCursor();
+            }
+            if (key == SL_KEY_3) {
+                currentCamera = &firstPersonCamera;
+                ctx.getWindow()->hideCursor();
+            }
+            if (key == SL_KEY_U) s_update = !s_update;
         }
     };
 

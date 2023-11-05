@@ -7,18 +7,21 @@
 namespace sl {
 
 class WindowManager : public kc::core::Singleton<WindowManager> {
-   public:
+public:
     explicit WindowManager(Window* window);
 
     Size2u32 getSize() const;
     Vec2f getMousePosition() const;
     Vec2f getMousePositionDelta() const;
 
+    void showCursor();
+    void hideCursor();
+
     void update();
 
     bool isKeyPressed(Window::Key keyCode) const;
 
-   private:
+private:
     void calculateMousePositionDelta();
 
     void setCallbacks();

@@ -7,6 +7,8 @@
 struct WindowMock : sl::Window {
     MOCK_METHOD(std::string_view, getVendor, (), (const, override));
     MOCK_METHOD(void, update, (), (override));
+    MOCK_METHOD(void, showCursor, (), (override));
+    MOCK_METHOD(void, hideCursor, (), (override));
     MOCK_METHOD(void, swapBuffers, (), (override));
     MOCK_METHOD(sl::Size2u32, getSize, (), (const, override));
     MOCK_METHOD(void, onKeyCallback, (OnKeyCallback), (override));

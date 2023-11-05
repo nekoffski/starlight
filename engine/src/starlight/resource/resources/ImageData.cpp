@@ -39,6 +39,8 @@ std::optional<STBImageData> STBImageData::load(
     int height;
     int channels;
 
+    stbi_set_flip_vertically_on_load(true);
+
     const auto pixelsHandle =
       stbi_load(fullPath.c_str(), &width, &height, &channels, requiredChannels);
 

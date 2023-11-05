@@ -9,8 +9,8 @@
 
 namespace sl {
 
-WindowManager::WindowManager(Window* window)
-    : m_window(window), m_previousMousePosition(m_window->getMousePosition()) {
+WindowManager::WindowManager(Window* window) :
+    m_window(window), m_previousMousePosition(m_window->getMousePosition()) {
     setCallbacks();
 }
 
@@ -25,19 +25,19 @@ void WindowManager::setCallbacks() {
     });
 
     m_window->onKeyCallback([](KeyAction action, int key) {
-        KeyEvent event{action, key};
+        KeyEvent event{ action, key };
         LOG_TRACE("Detected key action, emitting event: {}", event);
         EventManager::get().emit<KeyEvent>(event);
     });
 
     m_window->onMouseCallback([](MouseAction action, int button) {
-        MouseEvent event{action, button};
+        MouseEvent event{ action, button };
         LOG_TRACE("Detected mouse action, emitting event: {}", event);
         EventManager::get().emit<MouseEvent>(event);
     });
 
     m_window->onWindowResizeCallback([](uint32_t width, uint32_t height) {
-        WindowResized event{width, height};
+        WindowResized event{ width, height };
         LOG_TRACE("Window resized, emitting event: {}", event);
         EventManager::get().emit<WindowResized>(event);
     });
@@ -45,9 +45,15 @@ void WindowManager::setCallbacks() {
 
 Size2u32 WindowManager::getSize() const { return m_window->getSize(); }
 
-Vec2f WindowManager::getMousePosition() const { return m_window->getMousePosition(); }
+Vec2f WindowManager::getMousePosition() const {
+    return m_window->getMousePosition();
+}
 
 Vec2f WindowManager::getMousePositionDelta() const { return m_mousePositionDelta; }
+
+void WindowManager::hideCursor() { m_window->hideCursor(); }
+
+void WindowManager::showCursor() { m_window->showCursor(); }
 
 void WindowManager::update() { calculateMousePositionDelta(); }
 

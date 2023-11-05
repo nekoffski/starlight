@@ -23,6 +23,7 @@ public:
     Vec3f getScale() const;
     Mat4f getRotation() const;
 
+    Transform& scale(float scale);
     Transform& scale(const Vec3f& scale);
     Transform& rotate(const Mat4f& rotation);
     Transform& rotate(const Vec3f& axis, const float angle);

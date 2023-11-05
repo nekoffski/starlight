@@ -25,6 +25,9 @@ struct Window {
     virtual void update()      = 0;
     virtual void swapBuffers() = 0;
 
+    virtual void showCursor() = 0;
+    virtual void hideCursor() = 0;
+
     virtual Size2u32 getSize() const       = 0;
     virtual Vec2f getMousePosition() const = 0;
 

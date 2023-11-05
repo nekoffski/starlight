@@ -28,6 +28,7 @@ void Context::endFrame() {
     m_window.swapBuffers();
     m_eventManager.dispatch();
     m_timeManager.update();
+    m_windowManager.update();
 }
 
 Config* Context::getConfig() { return &m_config; }

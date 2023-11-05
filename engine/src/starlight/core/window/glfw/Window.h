@@ -12,8 +12,11 @@ class Window : public sl::Window {
         OnWindowResizeCallback onWindowResize;
     };
 
-   public:
+public:
     explicit Window();
+
+    void showCursor() override;
+    void hideCursor() override;
 
     std::string_view getVendor() const override;
     Size2u32 getSize() const override;
@@ -31,7 +34,7 @@ class Window : public sl::Window {
 
     void* getHandle() override;
 
-   private:
+private:
     void* m_windowHandle;
     Callbacks m_callbacks;
 };

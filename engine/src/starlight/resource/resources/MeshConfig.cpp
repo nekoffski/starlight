@@ -35,6 +35,8 @@ private:
     MeshConfig m_config;
 
     int m_verticesWithoutUV;
+    Vec3f m_currentMax;
+    Vec3f m_currentMin;
 };
 
 }  // namespace
@@ -160,10 +162,8 @@ void MeshProcessor::processMesh(const aiMesh* mesh, int index) {
 
     GeometryConfig3D config;
     config.vertices.reserve(mesh->mNumVertices);
-
     config.materialName = materialName;
-    // config.materialName = "Builtin.Material.Test";
-    config.name = fmt::format("{}_mesh_{}", m_name, index);
+    config.name         = fmt::format("{}_mesh_{}", m_name, index);
 
     for (int i = 0; i < mesh->mNumVertices; ++i)
         config.vertices.push_back(processVertex(mesh, i, hasNormals, hasTangents));

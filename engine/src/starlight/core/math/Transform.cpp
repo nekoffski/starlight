@@ -53,6 +53,8 @@ Transform& Transform::rotate(const Vec3f& axis, const float angle) {
     return *this;
 }
 
+Transform& Transform::scale(float scale) { return this->scale(Vec3f{ scale }); }
+
 Transform& Transform::scale(const Vec3f& scale) {
     m_scale *= scale;
     m_updated = true;
