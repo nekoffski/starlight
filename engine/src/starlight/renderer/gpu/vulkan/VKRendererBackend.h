@@ -53,6 +53,11 @@ public:
     ) override;
 
     void releaseGeometryResources(Geometry& geometry) override;
+    void renderUI(std::function<void()>&&) override;
+
+    void executeNow(
+      VkQueue queue, std::function<void(VKCommandBuffer& buffer)>&& callback
+    );
 
 private:
     void createCoreComponents(sl::Window& window, const Config& config);
@@ -67,6 +72,8 @@ private:
     void freeDataRange(VKBuffer& buffer, uint64_t offset, uint64_t size);
 
     void createBuffers();
+
+    void initUI(Window& window);
 
     void recreateSwapchain();
     void recordCommands(VKCommandBuffer& commandBuffer);
@@ -94,6 +101,8 @@ private:
 
     std::array<VKGeometryData, vulkanMaxGeometryCount> m_geometries;
     std::vector<VKFramebuffer> m_worldFramebuffers;
+
+    VkDescriptorPool m_uiPool;
 };
 
 }  // namespace sl::vk

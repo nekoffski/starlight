@@ -13,11 +13,14 @@
 #include "VKTextureLoader.h"
 #include "VKShaderImpl.h"
 
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_vulkan.h>
+
 // #include "starlight/renderer/MaterialManager.h"
 
 namespace sl::vk {
 
-VKRendererBackend::VKRendererBackend(sl::Window& window, const Config& config) :
+VKRendererBackend::VKRendererBackend(Window& window, const Config& config) :
     m_rendererContext(maxFramesInFlight, window.getSize()) {
     createCoreComponents(window, config);
     regenerateFramebuffers();
@@ -29,6 +32,109 @@ VKRendererBackend::VKRendererBackend(sl::Window& window, const Config& config) :
       createUniqPtr<VKTextureLoader>(m_context.get(), m_device.get());
 
     for (auto& geometry : m_geometries) geometry.id = invalidId;
+
+    initUI(window);
+}
+
+VKRendererBackend::~VKRendererBackend() {
+    m_device->waitIdle();
+
+    if (m_uiPool) {
+        vkDestroyDescriptorPool(
+          m_device->getLogicalDevice(), m_uiPool, m_context->getAllocator()
+        );
+    }
+
+    ImGui_ImplVulkan_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+}
+
+void VKRendererBackend::initUI(Window& window) {
+    // GUI: temporary
+    LOG_TRACE("Initializing UI backend");
+    VkDescriptorPoolSize poolSizes[] = {
+        {VK_DESCRIPTOR_TYPE_SAMPLER,                 1000},
+        { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000},
+        { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,          1000},
+        { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,          1000},
+        { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER,   1000},
+        { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER,   1000},
+        { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,         1000},
+        { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,         1000},
+        { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000},
+        { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000},
+        { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,       1000}
+    };
+    VkDescriptorPoolCreateInfo poolInfo = {};
+    poolInfo.sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    poolInfo.flags         = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+    poolInfo.maxSets       = 1000;
+    poolInfo.poolSizeCount = std::size(poolSizes);
+    poolInfo.pPoolSizes    = poolSizes;
+
+    VK_ASSERT(vkCreateDescriptorPool(
+      m_device->getLogicalDevice(), &poolInfo, m_context->getAllocator(), &m_uiPool
+    ));
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
+    io.ConfigFlags |=
+      ImGuiConfigFlags_NavEnableKeyboard;                 // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplGlfw_InitForVulkan(static_cast<GLFWwindow*>(window.getHandle()), true);
+
+    auto graphicsQueue = m_device->getQueues().graphics;
+
+    ImGui_ImplVulkan_InitInfo init_info = {};
+    init_info.Instance                  = m_context->getInstance();
+    init_info.PhysicalDevice            = m_device->getGPU();
+    init_info.Device                    = m_device->getLogicalDevice();
+    init_info.Queue                     = graphicsQueue;
+    init_info.DescriptorPool            = m_uiPool;
+    init_info.MinImageCount             = 3;
+    init_info.ImageCount                = 3;
+    init_info.MSAASamples               = VK_SAMPLE_COUNT_1_BIT;
+
+    ImGui_ImplVulkan_Init(&init_info, m_uiRenderPass->getHandle());
+
+    executeNow(graphicsQueue, [&](VKCommandBuffer& buffer) {
+        ImGui_ImplVulkan_CreateFontsTexture(buffer.getHandle());
+    });
+
+    ImGui_ImplVulkan_DestroyFontUploadObjects();
+
+    LOG_TRACE("UI backend initialized successfully");
+}
+
+void VKRendererBackend::executeNow(
+  VkQueue queue, std::function<void(VKCommandBuffer& buffer)>&& callback
+) {
+    vkQueueWaitIdle(queue);
+    VKCommandBuffer commandBuffer(
+      m_device.get(), m_device->getGraphicsCommandPool(),
+      VKCommandBuffer::Severity::primary
+    );
+    commandBuffer.createAndBeginSingleUse();
+    callback(commandBuffer);
+    commandBuffer.endSingleUse(queue);
+    m_device->waitIdle();
+}
+
+void VKRendererBackend::renderUI(std::function<void()>&& callback) {
+    renderPass(builtinRenderPassUI, [&]() {
+        ImGui_ImplVulkan_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        callback();
+
+        ImGui::Render();
+    });
 }
 
 void VKRendererBackend::acquireGeometryResources(
@@ -107,7 +213,7 @@ void VKRendererBackend::acquireGeometryResources(
 
 void VKRendererBackend::releaseGeometryResources(Geometry& geometry) {
     if (geometry.internalId != invalidId) {
-        vkDeviceWaitIdle(m_device->getLogicalDevice());
+        m_device->waitIdle();
 
         auto internalData = &m_geometries[geometry.internalId];
 
@@ -226,6 +332,9 @@ bool VKRendererBackend::endRenderPass(uint8_t id) {
         }
 
         case builtinRenderPassUI: {
+            ImGui_ImplVulkan_RenderDrawData(
+              ImGui::GetDrawData(), commandBuffer.getHandle()
+            );
             renderPass = m_uiRenderPass.get();
             break;
         }
@@ -334,10 +443,6 @@ void VKRendererBackend::regenerateFramebuffers() {
     }
 }
 
-VKRendererBackend::~VKRendererBackend() {
-    vkDeviceWaitIdle(m_device->getLogicalDevice());
-}
-
 std::unique_ptr<Shader::Impl> VKRendererBackend::createShaderImpl(sl::Shader& shader
 ) {
     return std::make_unique<VKShaderImpl>(
@@ -355,8 +460,7 @@ u32 VKRendererBackend::getRenderPassId(const std::string& renderPass) const {
 }
 
 void VKRendererBackend::recreateSwapchain() {
-    if (auto result = vkDeviceWaitIdle(m_device->getLogicalDevice());
-        not isGood(result)) {
+    if (auto result = m_device->waitIdle(); not isGood(result)) {
         LOG_ERROR("vkDeviceWaitIdle (2) failed: {}", getResultString(result, true));
         return;
     }

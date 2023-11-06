@@ -1,5 +1,7 @@
 #include "RendererFrontend.h"
 
+#include <imgui.h>
+
 #include "starlight/core/math/Glm.h"
 #include "starlight/core/memory/Memory.hpp"
 #include "starlight/core/window/WindowManager.h"
@@ -57,40 +59,7 @@ bool RendererFrontend::drawFrame(
             }
         };
         m_backend->renderPass(builtinRenderPassWorld, mainPass);
-
-        const auto uiPass = [&] {
-            const auto& [w, h] = WindowManager::get().getSize();
-
-            Mat4f projection = math::ortho(
-              0.0f, static_cast<float>(w), static_cast<float>(h), 0.0f, -100.0f,
-              100.0f
-            );
-            Mat4f view = identityMatrix;
-
-            m_uiShader->use();
-            m_uiShader->bindGlobals();
-            m_uiShader->setUniform("projection", glm::value_ptr(projection));
-            m_uiShader->setUniform("view", glm::value_ptr(view));
-            m_uiShader->applyGlobals();
-
-            for (auto& uiGeometry : renderPacket.uiGeometries) {
-                m_uiShader->bindInstance(uiGeometry.geometry->material->internalId);
-                m_uiShader->setUniform(
-                  "diffuse_colour",
-                  glm::value_ptr(uiGeometry.geometry->material->diffuseColor)
-                );
-                m_uiShader->setUniform(
-                  "diffuse_texture",
-                  uiGeometry.geometry->material->diffuseMap.texture
-                );
-                m_uiShader->applyInstance();
-                m_uiShader->setUniform("model", glm::value_ptr(uiGeometry.model));
-
-                // TODO: skip for now
-                // m_backend->ddrawGeometry(uiGeometry);
-            }
-        };
-        m_backend->renderPass(builtinRenderPassUI, uiPass);
+        m_backend->renderUI([&]() { ImGui::ShowDemoWindow(); });
 
         m_backend->endFrame(deltaTime);
     }

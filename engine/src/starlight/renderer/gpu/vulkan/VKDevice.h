@@ -62,6 +62,7 @@ public:
     ~VKDevice();
 
     VkDevice getLogicalDevice() const;
+    VkPhysicalDevice getGPU() const;
     VkFormat getDepthFormat() const;
 
     const VkPhysicalDeviceProperties& getProperties() const;
@@ -81,6 +82,8 @@ public:
     VkCommandPool getGraphicsCommandPool() const;
 
     bool supportsDeviceLocalHostVisible() const;
+
+    VkResult waitIdle();
 
 private:
     void createCommandPool();

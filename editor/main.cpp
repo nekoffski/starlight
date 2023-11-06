@@ -21,27 +21,27 @@
 std::vector<sl::Mesh> meshes;
 
 void generateMeshes(sl::ResourceManager& resourceManager) {
-    // sl::Mesh cubeMesh1;
-    // auto props1 = sl::GeometryConfig3D::generateCube(sl::CubeProperties{
-    //   10.0f, 10.0f, 10.0f, 1, 1, "test_cube", "Builtin.Material.Test" });
-    // props1.generateTangents();
-    // cubeMesh1.geometries.push_back(resourceManager.loadGeometry(props1));
+    sl::Mesh cubeMesh1;
+    auto props1 = sl::GeometryConfig3D::generateCube(sl::CubeProperties{
+      10.0f, 10.0f, 10.0f, 1, 1, "test_cube", "Builtin.Material.Test" });
+    props1.generateTangents();
+    cubeMesh1.geometries.push_back(resourceManager.loadGeometry(props1));
 
-    // sl::Mesh cubeMesh2;
-    // auto props2 = sl::GeometryConfig3D::generateCube(sl::CubeProperties{
-    //   5.0f, 5.0f, 5.0f, 1, 1, "test_cube2", "Builtin.Material.Test" });
-    // props2.generateTangents();
-    // cubeMesh2.geometries.push_back(resourceManager.loadGeometry(props2));
-    // cubeMesh2.transform.translate(sl::Vec3f(10.0f, 0.0f, 1.0f));
+    sl::Mesh cubeMesh2;
+    auto props2 = sl::GeometryConfig3D::generateCube(sl::CubeProperties{
+      5.0f, 5.0f, 5.0f, 1, 1, "test_cube2", "Builtin.Material.Test" });
+    props2.generateTangents();
+    cubeMesh2.geometries.push_back(resourceManager.loadGeometry(props2));
+    cubeMesh2.transform.translate(sl::Vec3f(10.0f, 0.0f, 1.0f));
 
-    // sl::Mesh cubeMesh3;
-    // auto props3 = sl::GeometryConfig3D::generateCube(sl::CubeProperties{
-    //   2.0f, 2.0f, 2.0f, 1, 1, "test_cube3", "Builtin.Material.Test" });
-    // props3.generateTangents();
-    // cubeMesh3.geometries.push_back(resourceManager.loadGeometry(props3));
-    // cubeMesh3.transform.translate(sl::Vec3f(5.0f, 0.0f, 1.0f));
+    sl::Mesh cubeMesh3;
+    auto props3 = sl::GeometryConfig3D::generateCube(sl::CubeProperties{
+      2.0f, 2.0f, 2.0f, 1, 1, "test_cube3", "Builtin.Material.Test" });
+    props3.generateTangents();
+    cubeMesh3.geometries.push_back(resourceManager.loadGeometry(props3));
+    cubeMesh3.transform.translate(sl::Vec3f(5.0f, 0.0f, 1.0f));
 
-    // meshes.push_back(cubeMesh1);
+    meshes.push_back(cubeMesh1);
     // meshes.push_back(cubeMesh2);
     // meshes.push_back(cubeMesh3);
 
@@ -49,13 +49,14 @@ void generateMeshes(sl::ResourceManager& resourceManager) {
     sl::Mesh mesh;
 
     // auto config = sl::MeshConfig::loadOBJ("sponza");
-    auto config = sl::MeshConfig::loadOBJ("falcon");
-    for (auto& material : config->materials) resourceManager.loadMaterial(material);
-    for (auto& geometry : config->geometries)
-        mesh.geometries.push_back(resourceManager.loadGeometry(geometry));
-    // mesh.transform.translate(sl::Vec3f{ 0.0, -1.0f, 0.0f }).scale(0.05f);
+    // auto config = sl::MeshConfig::loadOBJ("falcon");
+    // for (auto& material : config->materials)
+    // resourceManager.loadMaterial(material); for (auto& geometry :
+    // config->geometries)
+    //     mesh.geometries.push_back(resourceManager.loadGeometry(geometry));
+    // // mesh.transform.translate(sl::Vec3f{ 0.0, -1.0f, 0.0f }).scale(0.05f);
 
-    meshes.push_back(mesh);
+    // meshes.push_back(mesh);
 
     meshes[1].transform.setParent(&meshes[0].transform);
     meshes[2].transform.setParent(&meshes[1].transform);

@@ -2,6 +2,7 @@
 
 #include <array>
 #include <span>
+#include <functional>
 
 #include "starlight/core/math/Glm.h"
 #include "starlight/core/math/Vertex2.h"
@@ -45,6 +46,8 @@ struct RendererBackend {
 
     virtual bool beginRenderPass(uint8_t id) = 0;
     virtual bool endRenderPass(uint8_t id)   = 0;
+
+    virtual void renderUI(std::function<void()>&&) = 0;
 
     virtual void drawGeometry(const GeometryRenderData& modelMatrix) = 0;
 

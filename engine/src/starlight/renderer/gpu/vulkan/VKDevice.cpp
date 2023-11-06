@@ -23,6 +23,8 @@ VKDevice::~VKDevice() {
 
 VkDevice VKDevice::getLogicalDevice() const { return m_logicalDevice; }
 
+VkPhysicalDevice VKDevice::getGPU() const { return m_physicalDevice; }
+
 const VKDevice::QueueIndices& VKDevice::getQueueIndices() const {
     return m_queueIndices;
 }
@@ -503,6 +505,8 @@ VkCommandPool VKDevice::getGraphicsCommandPool() const {
 bool VKDevice::supportsDeviceLocalHostVisible() const {
     return m_supportsDeviceLocalHostVisible;
 }
+
+VkResult VKDevice::waitIdle() { return vkDeviceWaitIdle(m_logicalDevice); }
 
 const VKDevice::Queues& VKDevice::getQueues() { return m_queues; }
 
