@@ -23,9 +23,10 @@ public:
     void setCoreShaders(Shader* uiShader, Shader* materialShader);
     void setRenderMode(RenderMode mode);
 
-    bool drawFrame(
-      RenderPacket& renderPacket, const Camera& camera, float deltaTime
-    );
+    bool renderFrame(float deltaTime);
+
+    void addUIPass(std::function<void()>&& callback);
+    void addMainPass(RenderPacket& renderPacket, const Camera& camera);
 
     void resizeViewport(uint32_t width, uint32_t height);
 

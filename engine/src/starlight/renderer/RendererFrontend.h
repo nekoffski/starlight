@@ -1,6 +1,6 @@
 #pragma once
 
-// #include "starlight/event/Event.h"
+#include <functional>
 
 #include "starlight/renderer/camera/Camera.h"
 #include "starlight/renderer/gpu/RendererBackend.h"
@@ -13,18 +13,26 @@
 namespace sl {
 
 class RendererFrontend {
+    struct RenderPass {
+        u32 id;
+        std::function<void()> callback;
+    };
+
 public:
     explicit RendererFrontend(RendererBackend* backend);
     virtual ~RendererFrontend();
 
-    bool drawFrame(
-      RenderPacket& renderPacket, const Camera& camera, float deltaTime
-    );
+    bool renderFrame(float deltaTime);
+
+    void addUIPass(std::function<void()>&& callback);
+    void addMainPass(RenderPacket& renderPacket, const Camera& camera);
 
     void setCoreShaders(Shader* uiShader, Shader* materialShader);
     void setRenderMode(RenderMode mode);
 
 private:
+    std::vector<RenderPass> m_renderPasses;
+
     RendererBackend* m_backend;
 
     Texture* m_activeTexture;

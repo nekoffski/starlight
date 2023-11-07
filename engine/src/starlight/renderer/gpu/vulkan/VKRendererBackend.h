@@ -53,6 +53,7 @@ public:
     ) override;
 
     void releaseGeometryResources(Geometry& geometry) override;
+
     void renderUI(std::function<void()>&&) override;
 
     void executeNow(

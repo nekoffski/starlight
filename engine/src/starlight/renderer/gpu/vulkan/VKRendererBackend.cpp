@@ -126,15 +126,11 @@ void VKRendererBackend::executeNow(
 }
 
 void VKRendererBackend::renderUI(std::function<void()>&& callback) {
-    renderPass(builtinRenderPassUI, [&]() {
-        ImGui_ImplVulkan_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        callback();
-
-        ImGui::Render();
-    });
+    ImGui_ImplVulkan_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+    callback();
+    ImGui::Render();
 }
 
 void VKRendererBackend::acquireGeometryResources(

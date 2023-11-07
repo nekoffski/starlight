@@ -20,51 +20,60 @@ RendererFrontend::RendererFrontend(RendererBackend* backend) :
 
 RendererFrontend::~RendererFrontend() {}
 
-bool RendererFrontend::drawFrame(
-  RenderPacket& renderPacket, const Camera& camera, float deltaTime
-) {
+bool RendererFrontend::renderFrame(float deltaTime) {
     m_frameNumber++;
 
     if (m_backend->beginFrame(deltaTime)) {
-        const auto mainPass = [&] {
-            glm::vec4 ambientColor(0.3f, 0.3f, 0.3f, 1.0f);
-
-            m_materialShader->use();
-
-            auto viewMatrix       = camera.getViewMatrix();
-            auto projectionMatrix = camera.getProjectionMatrix();
-            auto viewPosition     = camera.getPosition();
-
-            m_materialShader->setGlobalUniforms([&](auto self) {
-                self->setUniform("view", viewMatrix);
-                self->setUniform("projection", projectionMatrix);
-                self->setUniform("viewPosition", viewPosition);
-                self->setUniform("ambientColor", ambientColor);
-                self->setUniform("renderMode", static_cast<int>(m_renderMode));
-            });
-
-            for (auto& geometryRenderData : renderPacket.geometries) {
-                auto& material = geometryRenderData.geometry->material;
-
-                if (not material->renderFrameNumber.hasValue() || material->renderFrameNumber.get() != m_frameNumber) {
-                    material->applyUniforms(m_materialShader);
-                    material->renderFrameNumber = m_frameNumber;
-                }
-
-                m_materialShader->setLocalUniforms([&](auto self) {
-                    self->setUniform("model", geometryRenderData.model);
-                });
-
-                m_backend->drawGeometry(geometryRenderData);
-            }
-        };
-        m_backend->renderPass(builtinRenderPassWorld, mainPass);
-        m_backend->renderUI([&]() { ImGui::ShowDemoWindow(); });
-
+        for (auto& [renderPassId, renderPassCallback] : m_renderPasses)
+            m_backend->renderPass(renderPassId, renderPassCallback);
+        m_renderPasses.clear();
         m_backend->endFrame(deltaTime);
     }
 
     return true;
+}
+
+void RendererFrontend::addUIPass(std::function<void()>&& callback) {
+    m_renderPasses.push_back(RenderPass(builtinRenderPassUI, [&]() {
+        m_backend->renderUI(std::move(callback));
+    }));
+}
+
+void RendererFrontend::addMainPass(
+  RenderPacket& renderPacket, const Camera& camera
+) {
+    m_renderPasses.push_back(RenderPass(builtinRenderPassWorld, [&]() {
+        glm::vec4 ambientColor(0.3f, 0.3f, 0.3f, 1.0f);
+
+        m_materialShader->use();
+
+        auto viewMatrix       = camera.getViewMatrix();
+        auto projectionMatrix = camera.getProjectionMatrix();
+        auto viewPosition     = camera.getPosition();
+
+        m_materialShader->setGlobalUniforms([&](auto self) {
+            self->setUniform("view", viewMatrix);
+            self->setUniform("projection", projectionMatrix);
+            self->setUniform("viewPosition", viewPosition);
+            self->setUniform("ambientColor", ambientColor);
+            self->setUniform("renderMode", static_cast<int>(m_renderMode));
+        });
+
+        for (auto& geometryRenderData : renderPacket.geometries) {
+            auto& material = geometryRenderData.geometry->material;
+
+            if (not material->renderFrameNumber.hasValue() || material->renderFrameNumber.get() != m_frameNumber) {
+                material->applyUniforms(m_materialShader);
+                material->renderFrameNumber = m_frameNumber;
+            }
+
+            m_materialShader->setLocalUniforms([&](auto self) {
+                self->setUniform("model", geometryRenderData.model);
+            });
+
+            m_backend->drawGeometry(geometryRenderData);
+        }
+    }));
 }
 
 void RendererFrontend::setCoreShaders(Shader* uiShader, Shader* materialShader) {
