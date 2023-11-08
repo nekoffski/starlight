@@ -32,7 +32,6 @@ void Renderer::resizeViewport(uint32_t width, uint32_t height) {
     m_backend.onViewportResize(width, height);
 }
 
-TextureLoader* Renderer::getTextureLoader() { return m_backend.getTextureLoader(); }
 RendererProxy* Renderer::getProxy() { return &m_rendererProxy; }
 
 }  // namespace sl

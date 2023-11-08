@@ -23,21 +23,14 @@ namespace sl::vk {
 class VKTexture : public Texture {
 public:
     explicit VKTexture(
-      const VKContext* context, VKDevice* device, const std::string& name,
-      const Properties& props, const void* pixels
+      const VKContext* context, VKDevice* device, const Properties& props, u32 id,
+      const void* pixels
     );
 
-    ~VKTexture();
+    ~VKTexture() override;
 
     VKImage* getImage();
     VkSampler getSampler();
-
-protected:
-    explicit VKTexture(const VKContext* context, VKDevice* device);
-
-    void create(
-      const std::string& name, const Properties& props, const void* pixels
-    );
 
 private:
     const VKContext* m_context;

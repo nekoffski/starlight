@@ -18,7 +18,8 @@ public:
     inline static const std::string defaultSpecularMapName =
       "Internal.Texture.DefaultSpecularMap";
 
-    explicit TextureManager(TextureLoader& textureLoader);
+    explicit TextureManager(RendererProxy& rendererProxy);
+    ~TextureManager();
 
     Texture* load(const std::string& name);
     Texture* acquire(const std::string& name) const;
@@ -35,13 +36,13 @@ private:
     void createDefaultSpecularMap();
     void createDefaultNormalMap();
 
-    TextureLoader& m_textureLoader;
+    RendererProxy& m_rendererProxy;
 
-    std::unordered_map<std::string, UniqPtr<Texture>> m_textures;
+    std::unordered_map<std::string, Texture*> m_textures;
 
-    UniqPtr<Texture> m_defaultTexture;
-    UniqPtr<Texture> m_defaultNormalMap;
-    UniqPtr<Texture> m_defaultSpecularMap;
+    Texture* m_defaultTexture;
+    Texture* m_defaultNormalMap;
+    Texture* m_defaultSpecularMap;
 };
 
 }  // namespace sl

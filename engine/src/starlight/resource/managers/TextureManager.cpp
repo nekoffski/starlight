@@ -5,26 +5,33 @@
 
 #include "starlight/core/math/Glm.h"
 #include "starlight/renderer/Texture.h"
-#include "starlight/renderer/gpu/TextureLoader.h"
+#include "starlight/renderer/gpu/RendererProxy.h"
 #include "starlight/resource/resources/ImageData.h"
 
 namespace sl {
 
-TextureManager::TextureManager(TextureLoader& textureLoader) :
-    m_textureLoader(textureLoader) {
+TextureManager::TextureManager(RendererProxy& rendererProxy) :
+    m_rendererProxy(rendererProxy), m_defaultTexture(nullptr),
+    m_defaultNormalMap(nullptr), m_defaultSpecularMap(nullptr) {
+    LOG_TRACE("Creating TextureManager");
     createDefaultTexture();
     createDefaultNormalMap();
     createDefaultSpecularMap();
 }
 
+TextureManager::~TextureManager() {
+    LOG_TRACE("Destroying TextureManager");
+    destroyAll();
+}
+
 Texture* TextureManager::load(const std::string& name) {
-    LOG_TRACE("Loading texture '{}'", name);
+    LOG_DEBUG("Loading texture '{}'", name);
 
     if (auto texture = m_textures.find(name); texture != m_textures.end()) {
-        LOG_WARN(
+        LOG_INFO(
           "Texture {} already loaded, returning pointer to the existing one", name
         );
-        return texture->second.get();
+        return texture->second;
     }
 
     const auto imageData = STBImageData::load(name);
@@ -34,25 +41,26 @@ Texture* TextureManager::load(const std::string& name) {
         .height        = imageData->height,
         .channels      = imageData->channels,
         .isTransparent = imageData->isTransparent,
+        .name          = name
     };
 
     ASSERT(imageData, "Could not load image: {}", name);
 
-    m_textures[name] = m_textureLoader.load(name, props, imageData->pixels);
-    return m_textures[name].get();
+    m_textures[name] = m_rendererProxy.createTexture(props, imageData->pixels);
+    return m_textures[name];
 }
 
 Texture* TextureManager::acquire(const std::string& name) const {
-    LOG_TRACE("Acquiring texture '{}'", name);
+    LOG_DEBUG("Acquiring texture '{}'", name);
     if (auto texture = m_textures.find(name); texture != m_textures.end()) {
-        return texture->second.get();
+        return texture->second;
     } else {
         LOG_WARN("Texture {} not found", name);
         return nullptr;
     }
 }
 
-void setColor(uint32_t i, const Vec4f& color, std::vector<u8>& pixels) {
+static void setColor(uint32_t i, const Vec4f& color, std::vector<u8>& pixels) {
     pixels[i]     = color.x;
     pixels[i + 1] = color.y;
     pixels[i + 2] = color.z;
@@ -60,6 +68,7 @@ void setColor(uint32_t i, const Vec4f& color, std::vector<u8>& pixels) {
 }
 
 void TextureManager::createDefaultTexture() {
+    LOG_TRACE("Creating default texture");
     Texture::Properties props{
         .width = 256, .height = 256, .channels = 4, .isTransparent = false
     };
@@ -82,21 +91,33 @@ void TextureManager::createDefaultTexture() {
         );
     }
     m_textures[defaultTextureName] =
-      m_textureLoader.load(defaultTextureName, props, pixels.data());
+      m_rendererProxy.createTexture(props, pixels.data());
+    LOG_TRACE("Default texture created");
 }
 
 void TextureManager::createDefaultSpecularMap() {
+    LOG_TRACE("Creating default specular map");
     Texture::Properties props{
-        .width = 16, .height = 16, .channels = 4, .isTransparent = false
+        .width         = 16,
+        .height        = 16,
+        .channels      = 4,
+        .isTransparent = false,
+        .name          = defaultSpecularMapName
     };
     std::vector<u8> pixels(props.width * props.height * props.channels, 0);
     m_textures[defaultSpecularMapName] =
-      m_textureLoader.load(defaultSpecularMapName, props, pixels.data());
+      m_rendererProxy.createTexture(props, pixels.data());
+    LOG_TRACE("Default specular map created");
 }
 
 void TextureManager::createDefaultNormalMap() {
+    LOG_TRACE("Creating default normal map");
     Texture::Properties props{
-        .width = 16, .height = 16, .channels = 4, .isTransparent = false
+        .width         = 16,
+        .height        = 16,
+        .channels      = 4,
+        .isTransparent = false,
+        .name          = defaultNormalMapName
     };
     std::vector<u8> pixels(props.width * props.height * props.channels, 0);
 
@@ -105,29 +126,38 @@ void TextureManager::createDefaultNormalMap() {
         setColor(i, zAxis, pixels);
 
     m_textures[defaultNormalMapName] =
-      m_textureLoader.load(defaultNormalMapName, props, pixels.data());
+      m_rendererProxy.createTexture(props, pixels.data());
+    LOG_TRACE("Default specular normal map created");
 }
 
 Texture* TextureManager::getDefaultTexture() const {
-    return m_textures.at(defaultTextureName).get();
+    return m_textures.at(defaultTextureName);
 }
 
 Texture* TextureManager::getDefaultNormalMap() const {
-    return m_textures.at(defaultNormalMapName).get();
+    return m_textures.at(defaultNormalMapName);
 }
 
 Texture* TextureManager::getDefaultSpecularMap() const {
-    return m_textures.at(defaultSpecularMapName).get();
+    return m_textures.at(defaultSpecularMapName);
 }
 
 void TextureManager::destroy(const std::string& name) {
-    LOG_TRACE("Destroying texture '{}'", name);
-    if (auto texture = m_textures.find(name); texture != m_textures.end()) [[likely]]
+    LOG_DEBUG("Destroying texture '{}'", name);
+    if (auto texture = m_textures.find(name); texture != m_textures.end())
+      [[likely]] {
+        m_rendererProxy.destroyTexture(texture->second);
         m_textures.erase(texture);
-    else
+    } else {
         LOG_WARN("Attempt to destroy not existing texture - {}, will ignore", name);
+    }
 }
 
-void TextureManager::destroyAll() { m_textures.clear(); }
+void TextureManager::destroyAll() {
+    LOG_DEBUG("Destroying all textures");
+    for (auto& texture : m_textures | std::views::values)
+        m_rendererProxy.destroyTexture(texture);
+    m_textures.clear();
+}
 
 }  // namespace sl

@@ -12,15 +12,12 @@
 #include "starlight/renderer/Material.h"
 
 #include "starlight/renderer/gpu/RendererProxy.h"
-#include "starlight/renderer/gpu/TextureLoader.h"
 
 namespace sl {
 
 class ResourceManager : public kc::core::Singleton<ResourceManager> {
 public:
-    explicit ResourceManager(
-      TextureLoader& textureLoader, RendererProxy& RendererProxy
-    );
+    explicit ResourceManager(RendererProxy& RendererProxy);
 
     Shader* loadShader(const std::string& name);
 

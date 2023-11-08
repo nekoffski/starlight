@@ -21,7 +21,6 @@
 #include "VKSemaphore.h"
 #include "VKTexture.h"
 #include "VKBuffer.h"
-#include "VKTextureLoader.h"
 #include "VKRendererContext.h"
 
 namespace sl::vk {
@@ -45,8 +44,6 @@ public:
 
     void onViewportResize(uint32_t width, uint32_t height) override;
 
-    TextureLoader* getTextureLoader() const override;
-
     virtual void acquireGeometryResources(
       Geometry& geometry, uint32_t vertexSize, uint32_t vertexCount,
       void* vertexData, const std::span<uint32_t> indices
@@ -60,11 +57,18 @@ public:
       VkQueue queue, std::function<void(VKCommandBuffer& buffer)>&& callback
     );
 
+    // resources
+    Texture* createTexture(const Texture::Properties& props, const void* pixels)
+      override;
+    void destroyTexture(Texture* texture) override;
+
 private:
     void createCoreComponents(sl::Window& window, const Config& config);
     void createCommandBuffers();
     void regenerateFramebuffers();
     void createSemaphoresAndFences();
+
+    void prepareResources();
 
     uint64_t uploadDataRange(
       VkCommandPool pool, VkFence fence, VkQueue queue, VKBuffer& outBuffer,
@@ -90,8 +94,6 @@ private:
     UniqPtr<VKRenderPass> m_mainRenderPass;
     UniqPtr<VKRenderPass> m_uiRenderPass;
 
-    UniqPtr<VKTextureLoader> m_textureLoader;
-
     VKRendererContext m_rendererContext;
 
     // TODO: consider creating as ptrs to allow mocking
@@ -104,6 +106,9 @@ private:
     std::vector<VKFramebuffer> m_worldFramebuffers;
 
     VkDescriptorPool m_uiPool;
+
+    // resources
+    std::vector<LocalPtr<VKTexture>> m_textures;
 };
 
 }  // namespace sl::vk

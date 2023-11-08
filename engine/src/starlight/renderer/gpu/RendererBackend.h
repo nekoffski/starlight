@@ -53,14 +53,18 @@ struct RendererBackend {
 
     virtual void onViewportResize(uint32_t width, uint32_t height) = 0;
 
-    virtual TextureLoader* getTextureLoader() const = 0;
-
     virtual void acquireGeometryResources(
       Geometry& geometry, uint32_t vertexSize, uint32_t vertexCount,
       void* vertexData, std::span<uint32_t> indices
     ) = 0;
 
     virtual void releaseGeometryResources(Geometry& geometry) = 0;
+
+    // resources
+    virtual Texture* createTexture(
+      const Texture::Properties& props, const void* pixels
+    )                                             = 0;
+    virtual void destroyTexture(Texture* texture) = 0;
 };
 
 }  // namespace sl

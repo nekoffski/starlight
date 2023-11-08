@@ -6,7 +6,6 @@
 #include "starlight/core/math/Glm.h"
 
 #include "Texture.h"
-#include "TextureMap.h"
 #include "Shader.h"
 
 #include "starlight/core/utils/Id.h"

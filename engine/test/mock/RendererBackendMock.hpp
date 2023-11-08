@@ -1,33 +1,26 @@
 #pragma once
 
-#include "starlight/renderer/RendererBackend.h"
+#include "starlight/renderer/gpu/RendererBackend.h"
 
 #include <gmock/gmock.h>
 
-struct RendererBackendMock : sl::RendererBackend {
-    MOCK_METHOD(bool, beginFrame, (float), (override));
-    MOCK_METHOD(bool, endFrame, (float), (override));
-    MOCK_METHOD(void, onViewportResize, (uint32_t, uint32_t), (override));
-    MOCK_METHOD(
-      void, updateGlobalWorldState, (const sl::GlobalState& globalState), (override)
-    );
-    MOCK_METHOD(
-      void, drawGeometry, (const sl::GeometryRenderData& modelMatrix), (override)
-    );
-    MOCK_METHOD(sl::TextureLoader*, getTextureLoader, (), (const, override));
-    MOCK_METHOD(
-      void, acquireMaterialResources, (sl::Material & material), (override)
-    );
-    MOCK_METHOD(
-      void, releaseMaterialResources, (sl::Material & material), (override)
-    );
+using namespace sl;
+
+struct RendererBackendMock : RendererBackend {
+    MOCK_METHOD(u32, getRenderPassId, (const std::string&), (const));
+    MOCK_METHOD(bool, beginFrame, (float));
+    MOCK_METHOD(bool, endFrame, (float));
+    MOCK_METHOD(std::unique_ptr<Shader::Impl>, createShaderImpl, (Shader&));
+    MOCK_METHOD(bool, beginRenderPass, (uint8_t));
+    MOCK_METHOD(bool, endRenderPass, (uint8_t));
+    MOCK_METHOD(void, renderUI, (std::function<void()> &&));
+    MOCK_METHOD(void, drawGeometry, (const GeometryRenderData&));
+    MOCK_METHOD(void, onViewportResize, (uint32_t, uint32_t));
     MOCK_METHOD(
       void, acquireGeometryResources,
-      (sl::Geometry & geometry, std::span<sl::Vertex3> vertices,
-       std::span<uint32_t> indices),
-      (override)
+      (Geometry&, uint32_t, uint32_t, void*, std::span<uint32_t>)
     );
-    MOCK_METHOD(
-      void, releaseGeometryResources, (sl::Geometry & geometry), (override)
-    );
+    MOCK_METHOD(void, releaseGeometryResources, (Geometry&));
+    MOCK_METHOD(Texture*, createTexture, (const Texture::Properties&, const void*));
+    MOCK_METHOD(void, destroyTexture, (Texture*));
 };

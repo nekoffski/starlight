@@ -10,7 +10,6 @@
 #include "VKRenderPass.h"
 #include "VKShaderStage.h"
 #include "VKSwapchain.h"
-#include "VKTextureLoader.h"
 #include "VKShaderImpl.h"
 
 #include <backends/imgui_impl_glfw.h>
@@ -27,13 +26,19 @@ VKRendererBackend::VKRendererBackend(Window& window, const Config& config) :
     createCommandBuffers();
     createSemaphoresAndFences();
     createBuffers();
-
-    m_textureLoader =
-      createUniqPtr<VKTextureLoader>(m_context.get(), m_device.get());
+    prepareResources();
 
     for (auto& geometry : m_geometries) geometry.id = invalidId;
 
     initUI(window);
+}
+
+void VKRendererBackend::prepareResources() {
+    LOG_DEBUG("Preparing backend resources");
+    static const u32 maxTextures = 1024;
+
+    LOG_DEBUG("Max textures={}", maxTextures);
+    m_textures.resize(maxTextures);
 }
 
 VKRendererBackend::~VKRendererBackend() {
@@ -254,10 +259,6 @@ void VKRendererBackend::freeDataRange(
   VKBuffer& buffer, uint64_t offset, uint64_t size
 ) {
     buffer.free(size, offset);
-}
-
-TextureLoader* VKRendererBackend::getTextureLoader() const {
-    return m_textureLoader.get();
 }
 
 void VKRendererBackend::drawGeometry(const GeometryRenderData& geometryRenderData) {
@@ -619,6 +620,26 @@ bool VKRendererBackend::endFrame(float deltaTime) {
     m_rendererContext.bumpFrameCounter();
 
     return true;
+}
+
+// resources
+Texture* VKRendererBackend::createTexture(
+  const Texture::Properties& props, const void* pixels
+) {
+    for (int i = 0; i < m_textures.size(); ++i) {
+        if (not m_textures[i]) {
+            m_textures[i].emplace(m_context.get(), m_device.get(), props, i, pixels);
+            return m_textures[i].get();
+        }
+    }
+    LOG_WARN(
+      "Couldn't find slot for a new texture, consider changing configuration to allow more"
+    );
+    return nullptr;
+}
+
+void VKRendererBackend::destroyTexture(Texture* texture) {
+    m_textures[texture->getId()].clear();
 }
 
 }  // namespace sl::vk

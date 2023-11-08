@@ -28,14 +28,14 @@ void MaterialManager::createDefaultMaterial() {
     m_defaultMaterial.name         = "Internal.Material.Default";
     m_defaultMaterial.diffuseColor = Vec4f{ 1.0f };
     m_defaultMaterial.diffuseMap   = {
-          m_textureManager.getDefaultTexture(), Texture::Use::diffuseMap
+          m_textureManager.getDefaultTexture(), TextureMap::Use::diffuseMap
     };
     // TODO: create default normal/specular maps
     m_defaultMaterial.normalMap = {
-        m_textureManager.getDefaultNormalMap(), Texture::Use::normalMap
+        m_textureManager.getDefaultNormalMap(), TextureMap::Use::normalMap
     };
     m_defaultMaterial.specularMap = {
-        m_textureManager.getDefaultSpecularMap(), Texture::Use::specularMap
+        m_textureManager.getDefaultSpecularMap(), TextureMap::Use::specularMap
     };
     m_defaultMaterial.id        = invalidId;
     m_defaultMaterial.shader    = m_shaderManager.get("Builtin.Shader.Material");
@@ -68,8 +68,8 @@ Material* MaterialManager::load(const MaterialConfig& config) {
       [&](const std::string& textureName) -> std::optional<Texture*> {
         if (auto texture = m_textureManager.acquire(textureName); texture) {
             LOG_DEBUG(
-              "Found texture map '{}' required by material '{}'", texture->name,
-              config.name
+              "Found texture map '{}' required by material '{}'",
+              texture->getProperties().name, config.name
             );
             return texture;
         } else {
@@ -92,17 +92,17 @@ Material* MaterialManager::load(const MaterialConfig& config) {
 
     material.diffuseMap = {
         getTexture(config.diffuseMap).value_or(m_textureManager.getDefaultTexture()),
-        Texture::Use::diffuseMap
+        TextureMap::Use::diffuseMap
     };
     material.specularMap = {
         getTexture(config.specularMap)
           .value_or(m_textureManager.getDefaultSpecularMap()),
-        Texture::Use::specularMap
+        TextureMap::Use::specularMap
     };
     material.normalMap = {
         getTexture(config.normalMap)
           .value_or(m_textureManager.getDefaultNormalMap()),
-        Texture::Use::normalMap
+        TextureMap::Use::normalMap
     };
 
     material.id     = invalidId;

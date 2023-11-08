@@ -1,28 +1,43 @@
 #pragma once
 
+#include "starlight/core/Core.h"
 #include "starlight/core/memory/Memory.hpp"
+#include "starlight/core/math/Size.hpp"
 
 namespace sl {
 
-// TODO: implement some kind of CRTP for ids
-struct Texture {
-    enum class Use { unknown, diffuseMap, specularMap, normalMap };
-
-    virtual ~Texture() {}
-
-    uint32_t id = idGenerator++;
+class Texture {
+public:
+    enum class Filter { nearest, linear };
+    enum class Repeat { repeat, mirroredRepeat, clampToEdge, clmapToBorder };
 
     struct Properties {
-        uint32_t width;
-        uint32_t height;
-        uint8_t channels;
+        u32 width;
+        u32 height;
+        u32 channels;
         bool isTransparent;
-    } props;
+        bool isWritable;
+        std::string name;
+    };
 
-    std::string name;
-    uint32_t generation = 0;
+    virtual ~Texture() = default;
 
-    inline static uint32_t idGenerator = 0;
+    const Properties& getProperties() const;
+    const u32 getId() const;
+
+protected:
+    explicit Texture(const Properties& props, u32 id);
+
+    Properties m_props;
+    u32 m_generation;
+    u32 m_id;
+};
+
+struct TextureMap {
+    enum class Use { unknown, diffuseMap, specularMap, normalMap };
+
+    Texture* texture;
+    Use use;
 };
 
 }  // namespace sl

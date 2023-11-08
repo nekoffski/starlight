@@ -37,4 +37,14 @@ void RendererProxy::releaseGeometryResources(Geometry& geometry) {
     m_rendererBackend.releaseGeometryResources(geometry);
 }
 
+void RendererProxy::destroyTexture(Texture* texture) {
+    m_rendererBackend.destroyTexture(texture);
+}
+
+Texture* RendererProxy::createTexture(
+  const Texture::Properties& props, const void* pixels
+) {
+    return m_rendererBackend.createTexture(props, pixels);
+}
+
 }  // namespace sl

@@ -6,7 +6,6 @@
 #include "camera/Camera.h"
 
 #include "gpu/RendererProxy.h"
-#include "gpu/TextureLoader.h"
 #include "gpu/Vendor.h"
 
 #include "RendererFrontend.h"
@@ -30,7 +29,6 @@ public:
 
     void resizeViewport(uint32_t width, uint32_t height);
 
-    TextureLoader* getTextureLoader();
     RendererProxy* getProxy();
 
 private:

@@ -42,7 +42,7 @@ void generateMeshes(sl::ResourceManager& resourceManager) {
     cubeMesh3.geometries.push_back(resourceManager.loadGeometry(props3));
     cubeMesh3.transform.translate(sl::Vec3f(5.0f, 0.0f, 1.0f));
 
-    meshes.push_back(cubeMesh1);
+    // meshes.push_back(cubeMesh1);
     // meshes.push_back(cubeMesh2);
     // meshes.push_back(cubeMesh3);
 
@@ -50,14 +50,13 @@ void generateMeshes(sl::ResourceManager& resourceManager) {
     sl::Mesh mesh;
 
     // auto config = sl::MeshConfig::loadOBJ("sponza");
-    // auto config = sl::MeshConfig::loadOBJ("falcon");
-    // for (auto& material : config->materials)
-    // resourceManager.loadMaterial(material); for (auto& geometry :
-    // config->geometries)
-    //     mesh.geometries.push_back(resourceManager.loadGeometry(geometry));
-    // // mesh.transform.translate(sl::Vec3f{ 0.0, -1.0f, 0.0f }).scale(0.05f);
+    auto config = sl::MeshConfig::loadOBJ("falcon");
+    for (auto& material : config->materials) resourceManager.loadMaterial(material);
+    for (auto& geometry : config->geometries)
+        mesh.geometries.push_back(resourceManager.loadGeometry(geometry));
+    // mesh.transform.translate(sl::Vec3f{ 0.0, -1.0f, 0.0f }).scale(0.05f);
 
-    // meshes.push_back(mesh);
+    meshes.push_back(mesh);
 
     meshes[1].transform.setParent(&meshes[0].transform);
     meshes[2].transform.setParent(&meshes[1].transform);
@@ -174,9 +173,7 @@ int main() {
       .on<sl::KeyEvent>(onKey)
       .on<sl::WindowResized>(onWindowResized);
 
-    sl::ResourceManager resourceManager(
-      *renderer.getTextureLoader(), *renderer.getProxy()
-    );
+    sl::ResourceManager resourceManager(*renderer.getProxy());
 
     renderer.setCoreShaders(
       resourceManager.getUIDefaultShader(),

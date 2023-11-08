@@ -17,33 +17,7 @@
 
 namespace sl::vk {
 
-VKTexture::VKTexture(
-  const VKContext* context, VKDevice* device, const std::string& name,
-  const Properties& props, const void* pixels
-) :
-    m_context(context),
-    m_device(device) {
-    create(name, props, pixels);
-    this->name = name;
-}
-
-VKTexture::~VKTexture() {
-    const auto logicalDevice = m_device->getLogicalDevice();
-
-    vkDeviceWaitIdle(logicalDevice);
-    vkDestroySampler(logicalDevice, m_sampler, m_context->getAllocator());
-
-    LOG_TRACE("Texture destroyed: {}", name);
-}
-
-VKImage* VKTexture::getImage() { return m_image.get(); }
-
-VkSampler VKTexture::getSampler() { return m_sampler; }
-
-VKTexture::VKTexture(const VKContext* context, VKDevice* device) :
-    m_context(context), m_device(device) {}
-
-VkSamplerCreateInfo createSamplerCreateInfo() {
+static VkSamplerCreateInfo createSamplerCreateInfo() {
     VkSamplerCreateInfo samplerInfo = { VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO };
     // TODO: These filters should be configurable.
     samplerInfo.magFilter               = VK_FILTER_LINEAR;
@@ -65,12 +39,12 @@ VkSamplerCreateInfo createSamplerCreateInfo() {
     return samplerInfo;
 }
 
-void VKTexture::create(
-  const std::string& name, const Properties& props, const void* pixels
-) {
-    this->props      = props;
-    this->generation = invalidId;
-
+VKTexture::VKTexture(
+  const VKContext* context, VKDevice* device, const Properties& props, u32 id,
+  const void* pixels
+) :
+    Texture(props, id),
+    m_context(context), m_device(device) {
     VkDeviceSize imageSize = props.width * props.height * props.channels;
     VkFormat format        = VK_FORMAT_R8G8B8A8_UNORM;
 
@@ -131,9 +105,22 @@ void VKTexture::create(
       &m_sampler
     ));
 
-    generation++;
+    m_generation++;
 
-    LOG_TRACE("Texture created: {}", name);
+    LOG_TRACE("Texture created: {}", m_props.name);
 }
+
+VKTexture::~VKTexture() {
+    const auto logicalDevice = m_device->getLogicalDevice();
+
+    vkDeviceWaitIdle(logicalDevice);
+    vkDestroySampler(logicalDevice, m_sampler, m_context->getAllocator());
+
+    LOG_TRACE("Texture destroyed: {}", m_props.name);
+}
+
+VKImage* VKTexture::getImage() { return m_image.get(); }
+
+VkSampler VKTexture::getSampler() { return m_sampler; }
 
 }  // namespace sl::vk

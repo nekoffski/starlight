@@ -6,6 +6,7 @@
 #include "starlight/core/math/Vertex.h"
 
 #include "starlight/renderer/Shader.h"
+#include "starlight/renderer/Texture.h"
 #include "starlight/renderer/fwd.h"
 
 namespace sl {
@@ -29,6 +30,9 @@ public:
     );
 
     void releaseGeometryResources(Geometry& geometry);
+
+    Texture* createTexture(const Texture::Properties& props, const void* pixels);
+    void destroyTexture(Texture* texture);
 
 private:
     RendererBackend& m_rendererBackend;

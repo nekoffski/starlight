@@ -2,10 +2,8 @@
 
 namespace sl {
 
-ResourceManager::ResourceManager(
-  TextureLoader& textureLoader, RendererProxy& rendererProxy
-) :
-    m_textureManager(textureLoader),
+ResourceManager::ResourceManager(RendererProxy& rendererProxy) :
+    m_textureManager(rendererProxy),
     m_shaderManager(rendererProxy, m_textureManager),
     m_materialManager(m_shaderManager, m_textureManager, rendererProxy),
     m_geometryManager(rendererProxy, m_materialManager) {
