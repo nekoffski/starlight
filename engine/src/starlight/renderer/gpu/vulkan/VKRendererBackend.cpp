@@ -28,8 +28,6 @@ VKRendererBackend::VKRendererBackend(Window& window, const Config& config) :
     createBuffers();
     prepareResources();
 
-    for (auto& geometry : m_geometries) geometry.id = invalidId;
-
     initUI(window);
 }
 
@@ -39,6 +37,8 @@ void VKRendererBackend::prepareResources() {
 
     LOG_DEBUG("Max textures={}", maxTextures);
     m_textures.resize(maxTextures);
+    LOG_DEBUG("Max geometires={}", vulkanMaxGeometryCount);
+    m_geometries.resize(vulkanMaxGeometryCount);
 }
 
 VKRendererBackend::~VKRendererBackend() {
@@ -138,123 +138,6 @@ void VKRendererBackend::renderUI(std::function<void()>&& callback) {
     ImGui::Render();
 }
 
-void VKRendererBackend::acquireGeometryResources(
-  Geometry& geometry, uint32_t vertexSize, uint32_t vertexCount, void* vertexData,
-  std::span<uint32_t> indices
-) {
-    LOG_TRACE(
-      "Acquiring geometry resources vertexSize={}, vertexCount={}, "
-      "indicesCount={}, vertexDataPtr={}",
-      vertexSize, vertexCount, indices.size(), vertexData
-    );
-
-    bool isReupload = geometry.internalId != invalidId;
-
-    VKGeometryData oldRange;
-    VKGeometryData* internalData = nullptr;
-
-    if (isReupload) {
-        LOG_TRACE("Reuploading geometry");
-        internalData = &m_geometries[geometry.internalId];
-        oldRange     = *internalData;
-    } else {
-        for (int i = 0; auto& geometryData : m_geometries) {
-            if (geometryData.id == invalidId) {
-                LOG_DEBUG("Found free geometry id={}", i);
-                geometry.internalId = i;
-                geometryData.id     = i;
-                internalData        = &geometryData;
-                break;
-            }
-            ++i;
-        }
-    }
-
-    ASSERT(internalData != nullptr, "Could not find geometry slot");
-
-    auto pool  = m_device->getGraphicsCommandPool();
-    auto queue = m_device->getQueues().graphics;
-
-    internalData->vertexCount       = vertexCount;
-    internalData->vertexElementSize = vertexSize;
-
-    const auto verticesTotalSize = internalData->getVerticesTotalSize();
-
-    internalData->vertexBufferOffset = uploadDataRange(
-      pool, nullptr, queue, *m_objectVertexBuffer, verticesTotalSize, vertexData
-    );
-
-    if (indices.size() > 0) {
-        // TODO: allow for indices to be optional
-
-        internalData->indexCount       = indices.size();
-        internalData->indexElementSize = sizeof(uint32_t);
-
-        const auto indicesTotalSize = internalData->getIndicesTotalSize();
-
-        internalData->indexBufferOffset = uploadDataRange(
-          pool, nullptr, queue, *m_objectIndexBuffer, indicesTotalSize,
-          indices.data()
-        );
-    }
-
-    if (internalData->generation == invalidId)
-        internalData->generation = 0;
-    else
-        internalData->generation++;
-
-    if (isReupload) {
-        // TODO: free data range
-
-        if (oldRange.indexElementSize > 0) {
-            // freeDataRange
-        }
-    }
-}
-
-void VKRendererBackend::releaseGeometryResources(Geometry& geometry) {
-    if (geometry.internalId != invalidId) {
-        m_device->waitIdle();
-
-        auto internalData = &m_geometries[geometry.internalId];
-
-        // TODO: free_data_range
-
-        if (internalData->indexElementSize > 0) {
-            // TODO: free
-        }
-
-        internalData->id         = invalidId;
-        internalData->generation = invalidId;
-        // TODO: is that required to reset also other properties?
-    }
-}
-
-uint64_t VKRendererBackend::uploadDataRange(
-  VkCommandPool pool, VkFence fence, VkQueue queue, VKBuffer& outBuffer,
-  uint64_t size, const void* data
-) {
-    // TODO: shouldn't it be a part of VKBuffer class?
-    const auto offset = outBuffer.allocate(size);
-
-    VkMemoryPropertyFlags flags =
-      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-
-    VKBuffer stagingBuffer(
-      m_context.get(), m_device.get(),
-      VKBuffer::Properties{ size, flags, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, true }
-    );
-
-    stagingBuffer.loadData(0, size, 0, data);
-    stagingBuffer.copyTo(
-      pool, fence, queue, outBuffer.getHandle(),
-      VkBufferCopy{ .srcOffset = 0, .dstOffset = offset, .size = size }
-    );
-
-    // this should return optional in case if allocate returns false
-    return offset;
-}
-
 void VKRendererBackend::freeDataRange(
   VKBuffer& buffer, uint64_t offset, uint64_t size
 ) {
@@ -262,33 +145,25 @@ void VKRendererBackend::freeDataRange(
 }
 
 void VKRendererBackend::drawGeometry(const GeometryRenderData& geometryRenderData) {
-    if (geometryRenderData.geometry->internalId == invalidId) {
-        LOG_ERROR("Could not draw Geometry with invalid id");
-        return;
-    }
+    const auto& dataDescription = geometryRenderData.geometry->getDataDescription();
+    auto& commandBuffer         = *m_rendererContext.getCommandBuffer();
 
-    auto& bufferData    = m_geometries[geometryRenderData.geometry->internalId];
-    auto& commandBuffer = *m_rendererContext.getCommandBuffer();
-
-    Material* material = geometryRenderData.geometry->material;
-    ASSERT(material, "Invalid material handle");
-
-    VkDeviceSize offsets[1] = { bufferData.vertexBufferOffset };
+    VkDeviceSize offsets[1] = { dataDescription.vertexBufferOffset };
 
     vkCmdBindVertexBuffers(
       commandBuffer.getHandle(), 0, 1, m_objectVertexBuffer->getHandlePointer(),
       (VkDeviceSize*)offsets
     );
-    if (bufferData.indexCount > 0) {
+    if (dataDescription.indexCount > 0) {
         vkCmdBindIndexBuffer(
           commandBuffer.getHandle(), m_objectIndexBuffer->getHandle(),
-          bufferData.indexBufferOffset, VK_INDEX_TYPE_UINT32
+          dataDescription.indexBufferOffset, VK_INDEX_TYPE_UINT32
         );
         vkCmdDrawIndexed(
-          commandBuffer.getHandle(), bufferData.indexCount, 1, 0, 0, 0
+          commandBuffer.getHandle(), dataDescription.indexCount, 1, 0, 0, 0
         );
     } else {
-        vkCmdDraw(commandBuffer.getHandle(), bufferData.vertexCount, 1, 0, 0);
+        vkCmdDraw(commandBuffer.getHandle(), dataDescription.vertexCount, 1, 0, 0);
     }
 }
 
@@ -626,8 +501,10 @@ bool VKRendererBackend::endFrame(float deltaTime) {
 Texture* VKRendererBackend::createTexture(
   const Texture::Properties& props, const void* pixels
 ) {
+    LOG_DEBUG("Backend looking for free texture slot");
     for (int i = 0; i < m_textures.size(); ++i) {
         if (not m_textures[i]) {
+            LOG_DEBUG("Slot {} found, will create texture", i);
             m_textures[i].emplace(m_context.get(), m_device.get(), props, i, pixels);
             return m_textures[i].get();
         }
@@ -638,8 +515,32 @@ Texture* VKRendererBackend::createTexture(
     return nullptr;
 }
 
-void VKRendererBackend::destroyTexture(Texture* texture) {
-    m_textures[texture->getId()].clear();
+void VKRendererBackend::destroyTexture(Texture& texture) {
+    m_textures[texture.getId()].clear();
+}
+
+Geometry* VKRendererBackend::createGeometry(
+  const Geometry::Properties& props, const Geometry::Data& data
+) {
+    LOG_DEBUG("Backend looking for free geometry slot");
+    for (int i = 0; i < m_geometries.size(); ++i) {
+        if (not m_geometries[i]) {
+            LOG_DEBUG("Slot {} found, will create geometry", i);
+            m_geometries[i].emplace(
+              m_device.get(), m_context.get(), *m_objectVertexBuffer,
+              *m_objectIndexBuffer, props, i, data
+            );
+            return m_geometries[i].get();
+        }
+    }
+    LOG_WARN(
+      "Couldn't find slot for a new texture, consider changing configuration to allow more"
+    );
+    return nullptr;
+}
+
+void VKRendererBackend::destroyGeometry(Geometry& geometry) {
+    m_geometries[geometry.getId()].clear();
 }
 
 }  // namespace sl::vk

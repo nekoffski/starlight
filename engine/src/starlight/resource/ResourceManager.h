@@ -40,7 +40,6 @@ public:
     Geometry* acquireGeometry(uint32_t id);
 
     void destroyGeometry(uint32_t id);
-    void destroyGeometry(Geometry& geometry);
 
     Geometry* getDefaultGeometry3D();
     Geometry* getDefaultGeometry2D();

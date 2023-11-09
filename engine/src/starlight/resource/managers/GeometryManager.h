@@ -1,5 +1,7 @@
 #pragma once
 
+#include <unordered_map>
+
 #include "starlight/core/Core.h"
 
 #include "starlight/renderer/Geometry.h"
@@ -20,58 +22,45 @@ public:
       RendererProxy& rendererProxy, MaterialManager& materialManager
     );
 
-    Geometry* acquire(uint32_t id);
-
+    Geometry* acquire(u32 id);
     Geometry* load(GeometryConfig auto& props) {
-        auto geometry = findSlot();
+        auto geometry = createGeometry(props);
 
         if (not geometry) {
-            LOG_ERROR(
-              "Could not find empty slot for geometry, consider changing configuration"
-            );
-            return nullptr;
-        }
-
-        if (not createGeometry(props, *geometry)) {
             LOG_ERROR("Could not create geometry");
             return nullptr;
         }
 
+        m_geometries[geometry->getId()] = geometry;
         return geometry;
     }
 
     void destroy(uint32_t id);
-    void destroy(Geometry& geometry);
 
     Geometry* getDefault3D();
     Geometry* getDefault2D();
 
 private:
-    Geometry* findSlot();
-
-    void invalidateEntry(Geometry& geometry);
     void createDefaultGeometries();
 
-    bool createGeometry(GeometryConfig auto& props, Geometry& geometry) {
-        geometry.name = props.name;
-
-        m_rendererProxy.acquireGeometryResources(
-          geometry, props.vertices, props.indices
-        );  // TODO: check if succeed
-
-        geometry.material =
-          m_materialManager.acquire(props.materialName)
+    Geometry* createGeometry(GeometryConfig auto& config) {
+        auto material =
+          m_materialManager.acquire(config.materialName)
             ?: m_materialManager.getDefaultMaterial();
 
-        return true;
+        return m_rendererProxy.createGeometry(
+          Geometry::Properties{ config.name, material }, config.vertices,
+          config.indices
+        );
     }
 
     RendererProxy& m_rendererProxy;
     MaterialManager& m_materialManager;
-    std::array<Geometry, maxGeometries> m_geometries;
 
-    Geometry m_defaultGeometry3D;
-    Geometry m_defaultGeometry2D;
+    std::unordered_map<u32, Geometry*> m_geometries;
+
+    Geometry* m_defaultGeometry3D;
+    Geometry* m_defaultGeometry2D;
 };
 
 }  // namespace sl

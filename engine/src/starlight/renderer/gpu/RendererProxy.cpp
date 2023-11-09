@@ -17,27 +17,27 @@ std::unique_ptr<Shader::Impl> RendererProxy::createShaderImpl(Shader& shader) co
     return m_rendererBackend.createShaderImpl(shader);
 }
 
-void RendererProxy::acquireGeometryResources(
-  Geometry& geometry, std::span<Vertex3> vertices, std::span<uint32_t> indices
+Geometry* RendererProxy::createGeometry(
+  const Geometry::Properties& props, const std::span<Vertex3> vertices,
+  const std::span<uint32_t> indices
 ) {
-    m_rendererBackend.acquireGeometryResources(
-      geometry, sizeof(Vertex3), vertices.size(), vertices.data(), indices
-    );
+    Geometry::Data data(sizeof(Vertex3), vertices.size(), vertices.data(), indices);
+    return m_rendererBackend.createGeometry(props, data);
 }
 
-void RendererProxy::acquireGeometryResources(
-  Geometry& geometry, std::span<Vertex2> vertices, std::span<uint32_t> indices
+Geometry* RendererProxy::createGeometry(
+  const Geometry::Properties& props, const std::span<Vertex2> vertices,
+  const std::span<uint32_t> indices
 ) {
-    m_rendererBackend.acquireGeometryResources(
-      geometry, sizeof(Vertex2), vertices.size(), vertices.data(), indices
-    );
+    Geometry::Data data(sizeof(Vertex2), vertices.size(), vertices.data(), indices);
+    return m_rendererBackend.createGeometry(props, data);
 }
 
-void RendererProxy::releaseGeometryResources(Geometry& geometry) {
-    m_rendererBackend.releaseGeometryResources(geometry);
+void RendererProxy::destroyGeometry(Geometry& geometry) {
+    m_rendererBackend.destroyGeometry(geometry);
 }
 
-void RendererProxy::destroyTexture(Texture* texture) {
+void RendererProxy::destroyTexture(Texture& texture) {
     m_rendererBackend.destroyTexture(texture);
 }
 

@@ -38,6 +38,8 @@ private:
 
     LocalPtr<VKImage> m_image;
     VkSampler m_sampler;
+
+    u32 m_generation;
 };
 
 }  // namespace sl::vk

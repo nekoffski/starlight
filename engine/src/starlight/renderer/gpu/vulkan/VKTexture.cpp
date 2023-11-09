@@ -44,7 +44,8 @@ VKTexture::VKTexture(
   const void* pixels
 ) :
     Texture(props, id),
-    m_context(context), m_device(device) {
+    m_context(context), m_device(device), m_generation(0u) {
+    LOG_TRACE("Creating Texture");
     VkDeviceSize imageSize = props.width * props.height * props.channels;
     VkFormat format        = VK_FORMAT_R8G8B8A8_UNORM;
 
@@ -106,7 +107,6 @@ VKTexture::VKTexture(
     ));
 
     m_generation++;
-
     LOG_TRACE("Texture created: {}", m_props.name);
 }
 

@@ -146,7 +146,7 @@ void TextureManager::destroy(const std::string& name) {
     LOG_DEBUG("Destroying texture '{}'", name);
     if (auto texture = m_textures.find(name); texture != m_textures.end())
       [[likely]] {
-        m_rendererProxy.destroyTexture(texture->second);
+        m_rendererProxy.destroyTexture(*texture->second);
         m_textures.erase(texture);
     } else {
         LOG_WARN("Attempt to destroy not existing texture - {}, will ignore", name);
@@ -156,7 +156,7 @@ void TextureManager::destroy(const std::string& name) {
 void TextureManager::destroyAll() {
     LOG_DEBUG("Destroying all textures");
     for (auto& texture : m_textures | std::views::values)
-        m_rendererProxy.destroyTexture(texture);
+        m_rendererProxy.destroyTexture(*texture);
     m_textures.clear();
 }
 

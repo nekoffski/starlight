@@ -16,7 +16,7 @@
 
 #include "starlight/renderer/Shader.h"
 
-#include "VKGeometryData.h"
+#include "VKGeometry.h"
 #include "VKPipeline.h"
 #include "VKSemaphore.h"
 #include "VKTexture.h"
@@ -44,13 +44,6 @@ public:
 
     void onViewportResize(uint32_t width, uint32_t height) override;
 
-    virtual void acquireGeometryResources(
-      Geometry& geometry, uint32_t vertexSize, uint32_t vertexCount,
-      void* vertexData, const std::span<uint32_t> indices
-    ) override;
-
-    void releaseGeometryResources(Geometry& geometry) override;
-
     void renderUI(std::function<void()>&&) override;
 
     void executeNow(
@@ -60,7 +53,12 @@ public:
     // resources
     Texture* createTexture(const Texture::Properties& props, const void* pixels)
       override;
-    void destroyTexture(Texture* texture) override;
+    void destroyTexture(Texture& texture) override;
+
+    Geometry* createGeometry(
+      const Geometry::Properties& props, const Geometry::Data& data
+    ) override;
+    void destroyGeometry(Geometry& geometry) override;
 
 private:
     void createCoreComponents(sl::Window& window, const Config& config);
@@ -70,10 +68,6 @@ private:
 
     void prepareResources();
 
-    uint64_t uploadDataRange(
-      VkCommandPool pool, VkFence fence, VkQueue queue, VKBuffer& outBuffer,
-      uint64_t size, const void* data
-    );
     void freeDataRange(VKBuffer& buffer, uint64_t offset, uint64_t size);
 
     void createBuffers();
@@ -102,13 +96,13 @@ private:
 
     static constexpr uint8_t maxFramesInFlight = 2;
 
-    std::array<VKGeometryData, vulkanMaxGeometryCount> m_geometries;
     std::vector<VKFramebuffer> m_worldFramebuffers;
 
     VkDescriptorPool m_uiPool;
 
     // resources
     std::vector<LocalPtr<VKTexture>> m_textures;
+    std::vector<LocalPtr<VKGeometry>> m_geometries;
 };
 
 }  // namespace sl::vk

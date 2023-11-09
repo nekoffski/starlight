@@ -59,10 +59,6 @@ Geometry* ResourceManager::acquireGeometry(uint32_t id) {
 
 void ResourceManager::destroyGeometry(uint32_t id) { m_geometryManager.destroy(id); }
 
-void ResourceManager::destroyGeometry(Geometry& geometry) {
-    m_geometryManager.destroy(geometry);
-}
-
 Geometry* ResourceManager::getDefaultGeometry3D() {
     return m_geometryManager.getDefault3D();
 }

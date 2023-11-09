@@ -29,7 +29,6 @@ protected:
     explicit Texture(const Properties& props, u32 id);
 
     Properties m_props;
-    u32 m_generation;
     u32 m_id;
 };
 

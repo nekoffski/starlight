@@ -60,7 +60,7 @@ void RendererFrontend::addMainPass(
         });
 
         for (auto& geometryRenderData : renderPacket.geometries) {
-            auto& material = geometryRenderData.geometry->material;
+            auto& material = geometryRenderData.geometry->getProperties().material;
 
             if (not material->renderFrameNumber.hasValue() || material->renderFrameNumber.get() != m_frameNumber) {
                 material->applyUniforms(m_materialShader);
