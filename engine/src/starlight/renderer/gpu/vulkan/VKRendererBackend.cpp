@@ -534,7 +534,7 @@ Geometry* VKRendererBackend::createGeometry(
         }
     }
     LOG_WARN(
-      "Couldn't find slot for a new texture, consider changing configuration to allow more"
+      "Couldn't find slot for a new Geometry, consider changing configuration to allow more"
     );
     return nullptr;
 }
