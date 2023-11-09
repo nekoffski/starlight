@@ -14,16 +14,93 @@
 #include "starlight/core/utils/Log.h"
 
 #include "Texture.h"
-#include "ShaderScope.h"
-#include "ShaderUniform.h"
-#include "ShaderAttribute.h"
-#include "ShaderStage.h"
 
 namespace sl {
 
 template <typename T>
 concept GlmCompatible = requires(T object) {
     { glm::value_ptr(object) } -> std::convertible_to<void*>;
+};
+
+enum class ShaderScope : u8 {
+    global   = 0,  // updated once per frame
+    instance = 1,  // per instance
+    local    = 2   // per object
+};
+
+ShaderScope shaderScopeFromString(const std::string& name);
+std::string shaderScopeToString(ShaderScope scope);
+
+struct ShaderAttribute {
+    enum class Type : u8 {
+        float32,
+        float32_2,
+        float32_3,
+        float32_4,
+        mat4,
+        int8,
+        uint8,
+        int16,
+        uint16,
+        int32,
+        uint32
+    };
+
+    static Type typeFromString(const std::string& name);
+    static std::string typeToString(Type type);
+    static u32 getTypeSize(Type type);
+
+    std::string name;
+    Type type;
+    u32 size;
+};
+
+struct ShaderStage {
+    using Type = u16;
+
+    static constexpr Type vertex   = 0x1;
+    static constexpr Type geometry = 0x2;
+    static constexpr Type fragment = 0x4;
+    static constexpr Type compute  = 0x8;
+
+    static Type typeFromString(const std::string& name);
+    static std::string typeToString(Type stage);
+
+    Type type;
+    std::string source;
+};
+
+struct ShaderUniform {
+    enum class Type : u8 {
+        float32,
+        float32_2,
+        float32_3,
+        float32_4,
+        int8,
+        uint8,
+        int16,
+        uint16,
+        int32,
+        uint32,
+        mat4,
+        sampler,
+        custom
+    };
+
+    bool isSampler() const;
+
+    static Type typeFromString(const std::string& name);
+    static std::string typeToString(Type type);
+    static u32 getTypeSize(Type type);
+
+    u64 offset;
+    u16 location;
+    u16 index;
+    u16 size;
+    Id8 setIndex;
+
+    ShaderScope scope;
+    Type type;
 };
 
 // TODO: implement higher coupling, is Impl necessary?

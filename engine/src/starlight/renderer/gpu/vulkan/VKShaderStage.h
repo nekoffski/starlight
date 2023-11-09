@@ -3,7 +3,7 @@
 #include "Vulkan.h"
 #include "fwd.h"
 
-#include "starlight/renderer/ShaderStage.h"
+#include "starlight/renderer/Shader.h"
 
 namespace sl::vk {
 

@@ -4,9 +4,6 @@
 
 #include <kc/core/Singleton.hpp>
 
-#include "starlight/renderer/ShaderScope.h"
-#include "starlight/renderer/ShaderAttribute.h"
-#include "starlight/renderer/ShaderUniform.h"
 #include "starlight/renderer/Shader.h"
 #include "starlight/renderer/gpu/RendererProxy.h"
 

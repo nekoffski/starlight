@@ -6,10 +6,6 @@
 #include "starlight/core/Core.h"
 #include "starlight/core/utils/FileSystem.h"
 #include "starlight/renderer/Shader.h"
-#include "starlight/renderer/ShaderStage.h"
-#include "starlight/renderer/ShaderAttribute.h"
-#include "starlight/renderer/ShaderScope.h"
-#include "starlight/renderer/ShaderUniform.h"
 
 namespace sl {
 
