@@ -13,44 +13,44 @@ MaterialManager::MaterialManager(
   RendererProxy& rendererProxy
 ) :
     m_shaderManager(shaderManager),
-    m_textureManager(textureManager), m_rendererProxy(rendererProxy) {}
-
-MaterialManager::~MaterialManager() {
-    m_defaultMaterial.releaseInstanceResources();
-    destroyAll();
+    m_textureManager(textureManager), m_rendererProxy(rendererProxy) {
+    static constexpr u32 maxMaterials = 1024;
+    LOG_DEBUG("Max materials={}", maxMaterials);
+    m_materials.resize(maxMaterials);
 }
 
-Material* MaterialManager::getDefaultMaterial() { return &m_defaultMaterial; }
+MaterialManager::~MaterialManager() { destroyAll(); }
+
+Material* MaterialManager::getDefaultMaterial() { return m_defaultMaterial; }
 
 void MaterialManager::createDefaultMaterial() {
-    m_defaultMaterial.generation   = 0;
-    m_defaultMaterial.internalId   = 0;
-    m_defaultMaterial.name         = "Internal.Material.Default";
-    m_defaultMaterial.diffuseColor = Vec4f{ 1.0f };
-    m_defaultMaterial.diffuseMap   = {
+    Material::Properties props;
+    props.name         = "Internal.Material.Default";
+    props.diffuseColor = Vec4f{ 1.0f };
+    props.diffuseMap   = {
           m_textureManager.getDefaultTexture(), TextureMap::Use::diffuseMap
     };
-    // TODO: create default normal/specular maps
-    m_defaultMaterial.normalMap = {
+    props.normalMap = {
         m_textureManager.getDefaultNormalMap(), TextureMap::Use::normalMap
     };
-    m_defaultMaterial.specularMap = {
+    props.specularMap = {
         m_textureManager.getDefaultSpecularMap(), TextureMap::Use::specularMap
     };
-    m_defaultMaterial.id        = invalidId;
-    m_defaultMaterial.shader    = m_shaderManager.get("Builtin.Shader.Material");
-    m_defaultMaterial.shininess = 32.0f;
-    m_defaultMaterial.acquireInstanceResources();
+    props.shininess = 32.0f;
+
+    m_defaultMaterial =
+      create(props, *m_shaderManager.get("Builtin.Shader.Material"));
 }
 
 Material* MaterialManager::load(const std::string& name) {
     LOG_TRACE("Loading material '{}'", name);
 
-    if (auto material = m_materials.find(name); material != m_materials.end()) {
+    if (auto material = m_materialsLUT.find(name);
+        material != m_materialsLUT.end()) {
         LOG_WARN(
           "Material '{}' already stored, returning pointer to the existing one", name
         );
-        return &material->second;
+        return material->second;
     }
 
     LOG_TRACE("Found material file, will try to process");
@@ -83,46 +83,40 @@ Material* MaterialManager::load(const MaterialConfig& config) {
         return {};
     };
 
-    Material material;
-    material.generation   = 0;
-    material.internalId   = 0;
-    material.name         = config.name;
-    material.diffuseColor = config.diffuseColor;
-    material.shininess    = config.shininess;
+    Material::Properties props;
+    props.name         = config.name;
+    props.diffuseColor = config.diffuseColor;
+    props.shininess    = config.shininess;
 
-    material.diffuseMap = {
+    props.diffuseMap = {
         getTexture(config.diffuseMap).value_or(m_textureManager.getDefaultTexture()),
         TextureMap::Use::diffuseMap
     };
-    material.specularMap = {
+    props.specularMap = {
         getTexture(config.specularMap)
           .value_or(m_textureManager.getDefaultSpecularMap()),
         TextureMap::Use::specularMap
     };
-    material.normalMap = {
+    props.normalMap = {
         getTexture(config.normalMap)
           .value_or(m_textureManager.getDefaultNormalMap()),
         TextureMap::Use::normalMap
     };
 
-    material.id     = invalidId;
-    material.shader = m_shaderManager.get(config.shaderName);
+    auto shader = m_shaderManager.get(config.shaderName);
 
     ASSERT(
-      material.shader, "Could not find shader: {} for material: {}",
-      config.shaderName, config.name
+      shader, "Could not find shader: {} for material: {}", config.shaderName,
+      config.name
     );
-
-    material.acquireInstanceResources();
-    m_materials[config.name] = std::move(material);
-
-    return &m_materials[config.name];
+    return create(props, *shader);
 }
 
 Material* MaterialManager::acquire(const std::string& name) {
     LOG_TRACE("Acquiring material '{}'", name);
-    if (auto material = m_materials.find(name); material != m_materials.end()) {
-        return &material->second;
+    if (auto material = m_materialsLUT.find(name);
+        material != m_materialsLUT.end()) {
+        return material->second;
     } else {
         LOG_WARN("Material {} not found", name);
         return load(name);
@@ -132,19 +126,42 @@ Material* MaterialManager::acquire(const std::string& name) {
 void MaterialManager::destroy(const std::string& name) {
     LOG_TRACE("Destroying material '{}'", name);
     // TODO: should we also destroy texture?
-    if (auto material = m_materials.find(name); material != m_materials.end())
+    if (auto material = m_materialsLUT.find(name); material != m_materialsLUT.end())
       [[likely]] {
-        material->second.releaseInstanceResources();
-        m_materials.erase(material);
+        auto id = material->second->getId();
+        m_materials[id].clear();
+        m_materialsLUT.erase(material);
     } else {
         LOG_WARN("Attempt to destroy not existing material - {}, will ignore", name);
     }
 }
 
 void MaterialManager::destroyAll() {
-    for (auto& material : m_materials | std::views::values)
-        material.releaseInstanceResources();
+    m_materialsLUT.clear();
     m_materials.clear();
+    m_defaultMaterial = nullptr;
+}
+
+Material* MaterialManager::create(
+  const Material::Properties& props, Shader& shader
+) {
+    const auto id = findSlot();
+    m_materials[id].emplace(props, id, shader);
+    auto material              = m_materials[id].get();
+    m_materialsLUT[props.name] = material;
+    return material;
+}
+
+int MaterialManager::findSlot() const {
+    LOG_DEBUG("Looking for free material slot");
+    for (int i = 0; i < m_materials.size(); ++i) {
+        if (not m_materials[i]) {
+            LOG_DEBUG("Found slot: {}", i);
+            return i;
+        }
+    }
+    // TODO: it's not critical error..
+    FAIL("Could not find free material slot, consider changing configuration");
 }
 
 }  // namespace sl

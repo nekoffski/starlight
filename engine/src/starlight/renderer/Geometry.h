@@ -4,7 +4,6 @@
 #include <span>
 
 #include "Material.h"
-#include "starlight/core/utils/Id.h"
 
 namespace sl {
 

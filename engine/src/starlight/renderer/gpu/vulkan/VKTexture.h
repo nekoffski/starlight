@@ -8,7 +8,6 @@
 #include <kc/core/Log.h>
 
 #include "starlight/core/memory/Memory.hpp"
-#include "starlight/core/utils/Id.h"
 #include "starlight/renderer/Texture.h"
 
 #include "Vulkan.h"

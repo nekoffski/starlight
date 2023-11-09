@@ -1,8 +1,7 @@
 #pragma once
 
 #include <unordered_map>
-
-#include <kc/core/Singleton.hpp>
+#include <vector>
 
 #include "starlight/core/utils/FileSystem.h"
 #include "starlight/core/memory/Memory.hpp"
@@ -36,12 +35,18 @@ public:
     void destroyAll();
 
 private:
+    Material* create(const Material::Properties& props, Shader& shader);
+
+    int findSlot() const;
+
     ShaderManager& m_shaderManager;
     TextureManager& m_textureManager;
     RendererProxy& m_rendererProxy;
 
-    std::unordered_map<std::string, Material> m_materials;
-    Material m_defaultMaterial;
+    std::vector<LocalPtr<Material>> m_materials;
+    std::unordered_map<std::string, Material*> m_materialsLUT;
+
+    Material* m_defaultMaterial;
 };
 
 }  // namespace sl

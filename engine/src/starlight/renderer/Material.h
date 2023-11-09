@@ -12,25 +12,32 @@
 
 namespace sl {
 
-struct Material {
-    u32 generation;
-    u32 internalId;
-    std::string name;
-    Vec4f diffuseColor;
-    TextureMap diffuseMap;
-    TextureMap specularMap;
-    TextureMap normalMap;
-    Shader* shader;
-    float shininess;
-    Id32 renderFrameNumber;
+class Material {
+public:
+    struct Properties {
+        Vec4f diffuseColor;
+        TextureMap diffuseMap;
+        TextureMap specularMap;
+        TextureMap normalMap;
+        float shininess;
+        std::string name;
+    };
 
-    // TODO: CRTP
-    Id id                        = idGenerator++;
-    inline static Id idGenerator = 0;
+    explicit Material(const Properties& props, u32 id, Shader& shader);
+    ~Material();
 
-    void applyUniforms(Shader* shader);
-    void acquireInstanceResources();
-    void releaseInstanceResources();
+    void applyUniforms(u32 frameNumber);
+
+    u32 getId() const;
+    const std::string& getName() const;
+
+private:
+    Properties m_props;
+    Shader& m_shader;
+
+    u32 m_id;
+    u32 m_renderFrameNumber;
+    u32 m_instanceId;
 };
 
 }  // namespace sl
