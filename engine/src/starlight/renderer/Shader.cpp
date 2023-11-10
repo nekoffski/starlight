@@ -194,7 +194,7 @@ Shader::Shader(const Properties& props, u32 id) :
     m_useLocals(props.useLocals) {}
 
 void Shader::setUniform(const std::string& uniform, Texture* value) {
-    // setUniform(uniform, static_cast<void*>(value));
+    setUniform(uniform, static_cast<void*>(value));
 }
 
 }  // namespace sl

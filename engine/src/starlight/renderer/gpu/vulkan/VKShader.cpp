@@ -527,6 +527,8 @@ void VKShader::processUniforms() {
                 binding.descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                 binding.stageFlags =
                   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+                binding.pImmutableSamplers = nullptr;
+
                 setConfig->bindingCount++;
             } else {
                 setConfig->bindings[bindingIndexSampler].descriptorCount++;
