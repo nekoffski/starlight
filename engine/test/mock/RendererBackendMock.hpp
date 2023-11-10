@@ -10,7 +10,6 @@ struct RendererBackendMock : RendererBackend {
     MOCK_METHOD(u32, getRenderPassId, (const std::string&), (const));
     MOCK_METHOD(bool, beginFrame, (float));
     MOCK_METHOD(bool, endFrame, (float));
-    MOCK_METHOD(std::unique_ptr<Shader::Impl>, createShaderImpl, (Shader&));
     MOCK_METHOD(bool, beginRenderPass, (uint8_t));
     MOCK_METHOD(bool, endRenderPass, (uint8_t));
     MOCK_METHOD(void, renderUI, (std::function<void()> &&));
@@ -23,4 +22,6 @@ struct RendererBackendMock : RendererBackend {
       (const Geometry::Properties&, const Geometry::Data&), (override)
     );
     MOCK_METHOD(void, destroyGeometry, (Geometry&), (override));
+    MOCK_METHOD(Shader*, createShader, (const Shader::Properties&));
+    MOCK_METHOD(void, destroyShader, (Shader&));
 };

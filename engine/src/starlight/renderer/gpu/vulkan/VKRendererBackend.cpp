@@ -10,7 +10,7 @@
 #include "VKRenderPass.h"
 #include "VKShaderStage.h"
 #include "VKSwapchain.h"
-#include "VKShaderImpl.h"
+#include "VKShader.h"
 
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_vulkan.h>
@@ -34,11 +34,14 @@ VKRendererBackend::VKRendererBackend(Window& window, const Config& config) :
 void VKRendererBackend::prepareResources() {
     LOG_DEBUG("Preparing backend resources");
     static const u32 maxTextures = 1024;
+    static const u32 maxShaders  = 1024;
 
     LOG_DEBUG("Max textures={}", maxTextures);
     m_textures.resize(maxTextures);
-    LOG_DEBUG("Max geometires={}", vulkanMaxGeometryCount);
+    LOG_DEBUG("Max geometries={}", vulkanMaxGeometryCount);
     m_geometries.resize(vulkanMaxGeometryCount);
+    LOG_DEBUG("Max shaders={}", maxShaders);
+    m_shaders.resize(maxShaders);
 }
 
 VKRendererBackend::~VKRendererBackend() {
@@ -315,14 +318,6 @@ void VKRendererBackend::regenerateFramebuffers() {
     }
 }
 
-std::unique_ptr<Shader::Impl> VKRendererBackend::createShaderImpl(sl::Shader& shader
-) {
-    return std::make_unique<VKShaderImpl>(
-      shader, m_device.get(), m_context.get(), getRenderPass(shader.renderPassId),
-      m_rendererContext
-    );
-}
-
 u32 VKRendererBackend::getRenderPassId(const std::string& renderPass) const {
     if (renderPass == "Builtin.RenderPass.World")
         return builtinRenderPassWorld;
@@ -534,13 +529,37 @@ Geometry* VKRendererBackend::createGeometry(
         }
     }
     LOG_WARN(
-      "Couldn't find slot for a new Geometry, consider changing configuration to allow more"
+      "Couldn't find slot for a new geometry, consider changing configuration to allow more"
     );
     return nullptr;
 }
 
 void VKRendererBackend::destroyGeometry(Geometry& geometry) {
     m_geometries[geometry.getId()].clear();
+}
+
+Shader* VKRendererBackend::createShader(const Shader::Properties& props) {
+    // TODO: unify with other create* methods?
+    LOG_DEBUG("Backend looking for free shader slot");
+    for (int i = 0; i < m_shaders.size(); ++i) {
+        if (not m_shaders[i]) {
+            LOG_DEBUG("Slot {} found, will create shader", i);
+            m_shaders[i].emplace(
+              m_device.get(), m_context.get(),
+              getRenderPass(getRenderPassId(props.renderPassName)),
+              m_rendererContext, props, i
+            );
+            return m_shaders[i].get();
+        }
+    }
+    LOG_WARN(
+      "Couldn't find slot for a new shader, consider changing configuration to allow more"
+    );
+    return nullptr;
+}
+
+void VKRendererBackend::destroyShader(Shader& shader) {
+    m_shaders[shader.getId()].clear();
 }
 
 }  // namespace sl::vk

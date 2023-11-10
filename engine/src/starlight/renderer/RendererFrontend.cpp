@@ -10,8 +10,6 @@
 
 #include "camera/EulerCamera.h"
 
-#include "starlight/resource/ResourceManager.h"
-
 namespace sl {
 
 RendererFrontend::RendererFrontend(RendererBackend* backend) :

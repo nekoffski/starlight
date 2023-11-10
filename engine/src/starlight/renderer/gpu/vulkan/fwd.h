@@ -12,6 +12,7 @@ class VKFramebuffer;
 class VKRenderPass;
 class VKSwapchain;
 class VKShaderStage;
+class VKShader;
 class VKMaterialShader;
 class VKPipeline;
 class VKBuffer;

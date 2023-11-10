@@ -21,6 +21,7 @@ public:
     explicit GeometryManager(
       RendererProxy& rendererProxy, MaterialManager& materialManager
     );
+    ~GeometryManager();
 
     Geometry* acquire(u32 id);
     Geometry* load(GeometryConfig auto& props) {
@@ -36,6 +37,7 @@ public:
     }
 
     void destroy(uint32_t id);
+    void destroyAll();
 
     Geometry* getDefault3D();
     Geometry* getDefault2D();

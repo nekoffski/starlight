@@ -41,8 +41,6 @@ struct RendererBackend {
         return false;
     }
 
-    virtual std::unique_ptr<Shader::Impl> createShaderImpl(Shader&) = 0;
-
     virtual bool beginRenderPass(uint8_t id) = 0;
     virtual bool endRenderPass(uint8_t id)   = 0;
 
@@ -62,6 +60,9 @@ struct RendererBackend {
       const Geometry::Properties& props, const Geometry::Data& data
     )                                                = 0;
     virtual void destroyGeometry(Geometry& geometry) = 0;
+
+    virtual Shader* createShader(const Shader::Properties& props) = 0;
+    virtual void destroyShader(Shader& shader)                    = 0;
 };
 
 }  // namespace sl

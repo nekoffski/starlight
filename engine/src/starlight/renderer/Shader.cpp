@@ -2,166 +2,166 @@
 
 namespace sl {
 
-ShaderScope shaderScopeFromString(const std::string& name) {
+Shader::Scope Shader::scopeFromString(const std::string& name) {
     if (name == "local")
-        return ShaderScope::local;
+        return Shader::Scope::local;
     else if (name == "instance")
-        return ShaderScope::instance;
+        return Shader::Scope::instance;
     else if (name == "global")
-        return ShaderScope::global;
+        return Shader::Scope::global;
     FAIL("Could not parse shader scope: {}", name);
 }
 
-std::string shaderScopeToString(ShaderScope scope) {
+std::string Shader::scopeToString(Shader::Scope scope) {
     switch (scope) {
-        case ShaderScope::global:
+        case Shader::Scope::global:
             return "global";
-        case ShaderScope::instance:
+        case Shader::Scope::instance:
             return "instance";
-        case ShaderScope::local:
+        case Shader::Scope::local:
             return "local";
     }
     __builtin_unreachable();
 }
 
-ShaderAttribute::Type ShaderAttribute::typeFromString(const std::string& name) {
-    static const std::unordered_map<std::string_view, ShaderAttribute::Type>
+Shader::Attribute::Type Shader::Attribute::typeFromString(const std::string& name) {
+    static const std::unordered_map<std::string_view, Shader::Attribute::Type>
       nameToType{
-          {"f32",   ShaderAttribute::Type::float32  },
-          { "vec2", ShaderAttribute::Type::float32_2},
-          { "vec3", ShaderAttribute::Type::float32_3},
-          { "vec4", ShaderAttribute::Type::float32_4},
-          { "u8",   ShaderAttribute::Type::uint8    },
-          { "u16",  ShaderAttribute::Type::uint16   },
-          { "u32",  ShaderAttribute::Type::uint32   },
-          { "i8",   ShaderAttribute::Type::int8     },
-          { "i16",  ShaderAttribute::Type::int16    },
-          { "i32",  ShaderAttribute::Type::int32    },
+          {"f32",   Shader::Attribute::Type::float32  },
+          { "vec2", Shader::Attribute::Type::float32_2},
+          { "vec3", Shader::Attribute::Type::float32_3},
+          { "vec4", Shader::Attribute::Type::float32_4},
+          { "u8",   Shader::Attribute::Type::uint8    },
+          { "u16",  Shader::Attribute::Type::uint16   },
+          { "u32",  Shader::Attribute::Type::uint32   },
+          { "i8",   Shader::Attribute::Type::int8     },
+          { "i16",  Shader::Attribute::Type::int16    },
+          { "i32",  Shader::Attribute::Type::int32    },
     };
     const auto record = nameToType.find(name);
     ASSERT(record != nameToType.end(), "Invalid type attribute name: {}", name);
     return record->second;
 }
 
-std::string ShaderAttribute::typeToString(Type type) {
-    static const std::unordered_map<ShaderAttribute::Type, std::string> typeToName{
-        {ShaderAttribute::Type::float32,    "f32" },
-        { ShaderAttribute::Type::float32_2, "vec2"},
-        { ShaderAttribute::Type::float32_3, "vec3"},
-        { ShaderAttribute::Type::float32_4, "vec4"},
-        { ShaderAttribute::Type::uint8,     "u8"  },
-        { ShaderAttribute::Type::uint16,    "u16" },
-        { ShaderAttribute::Type::uint32,    "u32" },
-        { ShaderAttribute::Type::int8,      "i8"  },
-        { ShaderAttribute::Type::int16,     "i16" },
-        { ShaderAttribute::Type::int32,     "i32" },
+std::string Shader::Attribute::typeToString(Type type) {
+    static const std::unordered_map<Shader::Attribute::Type, std::string> typeToName{
+        {Shader::Attribute::Type::float32,    "f32" },
+        { Shader::Attribute::Type::float32_2, "vec2"},
+        { Shader::Attribute::Type::float32_3, "vec3"},
+        { Shader::Attribute::Type::float32_4, "vec4"},
+        { Shader::Attribute::Type::uint8,     "u8"  },
+        { Shader::Attribute::Type::uint16,    "u16" },
+        { Shader::Attribute::Type::uint32,    "u32" },
+        { Shader::Attribute::Type::int8,      "i8"  },
+        { Shader::Attribute::Type::int16,     "i16" },
+        { Shader::Attribute::Type::int32,     "i32" },
     };
     const auto record = typeToName.find(type);
     ASSERT(record != typeToName.end(), "Invalid attribute type: {}", type);
     return record->second;
 }
 
-u32 ShaderAttribute::getTypeSize(Type type) {
-    static const std::unordered_map<ShaderAttribute::Type, u32> typeToSize{
-        {ShaderAttribute::Type::float32,    4 },
-        { ShaderAttribute::Type::float32_2, 8 },
-        { ShaderAttribute::Type::float32_3, 12},
-        { ShaderAttribute::Type::float32_4, 16},
-        { ShaderAttribute::Type::uint8,     1 },
-        { ShaderAttribute::Type::uint16,    2 },
-        { ShaderAttribute::Type::uint32,    4 },
-        { ShaderAttribute::Type::int8,      1 },
-        { ShaderAttribute::Type::int16,     2 },
-        { ShaderAttribute::Type::int32,     4 },
+u32 Shader::Attribute::getTypeSize(Type type) {
+    static const std::unordered_map<Shader::Attribute::Type, u32> typeToSize{
+        {Shader::Attribute::Type::float32,    4 },
+        { Shader::Attribute::Type::float32_2, 8 },
+        { Shader::Attribute::Type::float32_3, 12},
+        { Shader::Attribute::Type::float32_4, 16},
+        { Shader::Attribute::Type::uint8,     1 },
+        { Shader::Attribute::Type::uint16,    2 },
+        { Shader::Attribute::Type::uint32,    4 },
+        { Shader::Attribute::Type::int8,      1 },
+        { Shader::Attribute::Type::int16,     2 },
+        { Shader::Attribute::Type::int32,     4 },
     };
     const auto record = typeToSize.find(type);
     ASSERT(record != typeToSize.end(), "Invalid attribute type: {}", type);
     return record->second;
 }
 
-ShaderStage::Type ShaderStage::typeFromString(const std::string& name) {
+Shader::Stage::Type Shader::Stage::typeFromString(const std::string& name) {
     if (name == "vertex")
-        return vertex;
+        return Shader::Stage::Type::vertex;
     else if (name == "geometry")
-        return geometry;
+        return Shader::Stage::Type::geometry;
     else if (name == "fragment")
-        return fragment;
+        return Shader::Stage::Type::fragment;
     else if (name == "compute")
-        return compute;
+        return Shader::Stage::Type::compute;
     FAIL("Invalid stage name: {}", name);
 }
 
-std::string ShaderStage::typeToString(ShaderStage::Type type) {
+std::string Shader::Stage::typeToString(Shader::Stage::Type type) {
     switch (type) {
-        case vertex:
+        case Shader::Stage::Type::vertex:
             return "vertex";
-        case geometry:
+        case Shader::Stage::Type::geometry:
             return "geometry";
-        case fragment:
+        case Shader::Stage::Type::fragment:
             return "fragment";
-        case compute:
+        case Shader::Stage::Type::compute:
             return "compute";
     }
     FAIL("Invalid stage type: {}", type);
 }
 
-bool ShaderUniform::isSampler() const { return type == Type::sampler; }
+bool Shader::Uniform::isSampler() const { return type == Type::sampler; }
 
-ShaderUniform::Type ShaderUniform::typeFromString(const std::string& name) {
-    static const std::unordered_map<std::string_view, ShaderUniform::Type>
+Shader::Uniform::Type Shader::Uniform::typeFromString(const std::string& name) {
+    static const std::unordered_map<std::string_view, Shader::Uniform::Type>
       nameToType{
-          {"f32",   ShaderUniform::Type::float32  },
-          { "vec2", ShaderUniform::Type::float32_2},
-          { "vec3", ShaderUniform::Type::float32_3},
-          { "vec4", ShaderUniform::Type::float32_4},
-          { "u8",   ShaderUniform::Type::uint8    },
-          { "u16",  ShaderUniform::Type::uint16   },
-          { "u32",  ShaderUniform::Type::uint32   },
-          { "i8",   ShaderUniform::Type::int8     },
-          { "i16",  ShaderUniform::Type::int16    },
-          { "i32",  ShaderUniform::Type::int32    },
-          { "mat4", ShaderUniform::Type::mat4     },
-          { "samp", ShaderUniform::Type::sampler  },
+          {"f32",   Shader::Uniform::Type::float32  },
+          { "vec2", Shader::Uniform::Type::float32_2},
+          { "vec3", Shader::Uniform::Type::float32_3},
+          { "vec4", Shader::Uniform::Type::float32_4},
+          { "u8",   Shader::Uniform::Type::uint8    },
+          { "u16",  Shader::Uniform::Type::uint16   },
+          { "u32",  Shader::Uniform::Type::uint32   },
+          { "i8",   Shader::Uniform::Type::int8     },
+          { "i16",  Shader::Uniform::Type::int16    },
+          { "i32",  Shader::Uniform::Type::int32    },
+          { "mat4", Shader::Uniform::Type::mat4     },
+          { "samp", Shader::Uniform::Type::sampler  },
     };
     const auto record = nameToType.find(name);
     ASSERT(record != nameToType.end(), "Invalid type Uniform name: {}", name);
     return record->second;
 }
 
-std::string ShaderUniform::typeToString(Type type) {
-    static const std::unordered_map<ShaderUniform::Type, std::string> typeToName{
-        {ShaderUniform::Type::float32,    "f32" },
-        { ShaderUniform::Type::float32_2, "vec2"},
-        { ShaderUniform::Type::float32_3, "vec3"},
-        { ShaderUniform::Type::float32_4, "vec4"},
-        { ShaderUniform::Type::uint8,     "u8"  },
-        { ShaderUniform::Type::uint16,    "u16" },
-        { ShaderUniform::Type::uint32,    "u32" },
-        { ShaderUniform::Type::int8,      "i8"  },
-        { ShaderUniform::Type::int16,     "i16" },
-        { ShaderUniform::Type::int32,     "i32" },
-        { ShaderUniform::Type::mat4,      "mat4"},
-        { ShaderUniform::Type::sampler,   "samp"},
+std::string Shader::Uniform::typeToString(Type type) {
+    static const std::unordered_map<Shader::Uniform::Type, std::string> typeToName{
+        {Shader::Uniform::Type::float32,    "f32" },
+        { Shader::Uniform::Type::float32_2, "vec2"},
+        { Shader::Uniform::Type::float32_3, "vec3"},
+        { Shader::Uniform::Type::float32_4, "vec4"},
+        { Shader::Uniform::Type::uint8,     "u8"  },
+        { Shader::Uniform::Type::uint16,    "u16" },
+        { Shader::Uniform::Type::uint32,    "u32" },
+        { Shader::Uniform::Type::int8,      "i8"  },
+        { Shader::Uniform::Type::int16,     "i16" },
+        { Shader::Uniform::Type::int32,     "i32" },
+        { Shader::Uniform::Type::mat4,      "mat4"},
+        { Shader::Uniform::Type::sampler,   "samp"},
     };
     const auto record = typeToName.find(type);
     ASSERT(record != typeToName.end(), "Invalid Uniform type: {}", type);
     return record->second;
 }
 
-u32 ShaderUniform::getTypeSize(Type type) {
-    static const std::unordered_map<ShaderUniform::Type, u32> typeToSize{
-        {ShaderUniform::Type::float32,    4 },
-        { ShaderUniform::Type::float32_2, 8 },
-        { ShaderUniform::Type::float32_3, 12},
-        { ShaderUniform::Type::float32_4, 16},
-        { ShaderUniform::Type::uint8,     1 },
-        { ShaderUniform::Type::uint16,    2 },
-        { ShaderUniform::Type::uint32,    4 },
-        { ShaderUniform::Type::int8,      1 },
-        { ShaderUniform::Type::int16,     2 },
-        { ShaderUniform::Type::int32,     4 },
-        { ShaderUniform::Type::mat4,      64},
-        { ShaderUniform::Type::sampler,   0 },
+u32 Shader::Uniform::getTypeSize(Type type) {
+    static const std::unordered_map<Shader::Uniform::Type, u32> typeToSize{
+        {Shader::Uniform::Type::float32,    4 },
+        { Shader::Uniform::Type::float32_2, 8 },
+        { Shader::Uniform::Type::float32_3, 12},
+        { Shader::Uniform::Type::float32_4, 16},
+        { Shader::Uniform::Type::uint8,     1 },
+        { Shader::Uniform::Type::uint16,    2 },
+        { Shader::Uniform::Type::uint32,    4 },
+        { Shader::Uniform::Type::int8,      1 },
+        { Shader::Uniform::Type::int16,     2 },
+        { Shader::Uniform::Type::int32,     4 },
+        { Shader::Uniform::Type::mat4,      64},
+        { Shader::Uniform::Type::sampler,   0 },
     };
     const auto record = typeToSize.find(type);
     ASSERT(record != typeToSize.end(), "Invalid Uniform type: {}", type);
@@ -185,28 +185,16 @@ void Shader::setLocalUniforms(SelfCallback&& callback) {
     callback(this);
 }
 
-void Shader::use() { impl->use(); }
+u32 Shader::getId() const { return m_id; }
 
-void Shader::bindGlobals() { impl->bindGlobals(); }
+const std::string& Shader::getName() const { return m_name; }
 
-void Shader::bindInstance(u32 instanceId) { impl->bindInstance(instanceId); }
-
-void Shader::applyGlobals() { impl->applyGlobals(); }
-
-void Shader::applyInstance() { impl->applyInstance(); }
-
-u32 Shader::acquireInstanceResources() { return impl->acquireInstanceResources(); }
-
-void Shader::releaseInstanceResources(u32 instanceId) {
-    impl->releaseInstanceResources(instanceId);
-}
-
-void Shader::setUniform(const std::string& uniform, void* value) {
-    impl->setUniform(uniforms[uniform], value);
-}
+Shader::Shader(const Properties& props, u32 id) :
+    m_name(props.name), m_id(id), m_useInstances(props.useInstances),
+    m_useLocals(props.useLocals) {}
 
 void Shader::setUniform(const std::string& uniform, Texture* value) {
-    setUniform(uniform, static_cast<void*>(value));
+    // setUniform(uniform, static_cast<void*>(value));
 }
 
 }  // namespace sl

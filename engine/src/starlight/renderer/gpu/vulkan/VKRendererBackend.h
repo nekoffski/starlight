@@ -30,8 +30,6 @@ public:
     explicit VKRendererBackend(sl::Window& window, const Config& config);
     ~VKRendererBackend();
 
-    std::unique_ptr<Shader::Impl> createShaderImpl(sl::Shader& shader) override;
-
     u32 getRenderPassId(const std::string& renderPass) const override;
 
     bool beginFrame(float deltaTime) override;
@@ -59,6 +57,9 @@ public:
       const Geometry::Properties& props, const Geometry::Data& data
     ) override;
     void destroyGeometry(Geometry& geometry) override;
+
+    Shader* createShader(const Shader::Properties& props) override;
+    void destroyShader(Shader& shader) override;
 
 private:
     void createCoreComponents(sl::Window& window, const Config& config);
@@ -103,6 +104,7 @@ private:
     // resources
     std::vector<LocalPtr<VKTexture>> m_textures;
     std::vector<LocalPtr<VKGeometry>> m_geometries;
+    std::vector<LocalPtr<VKShader>> m_shaders;
 };
 
 }  // namespace sl::vk

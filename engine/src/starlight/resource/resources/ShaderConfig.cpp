@@ -9,51 +9,6 @@
 
 namespace sl {
 
-// it's only for debug purposes but if it'll impact performance consider caching
-std::string ShaderAttributeConfig::toString() const {
-    return fmt::format(
-      "Attribute: [name={}, type={}, size={}]", name,
-      ShaderAttribute::typeToString(type), size
-    );
-}
-
-std::string ShaderUniformConfig::toString() const {
-    return fmt::format(
-      "Uniform: [name={}, type={}, size={}, location={}, scope={}]", name,
-      ShaderUniform::typeToString(type), size, location, shaderScopeToString(scope)
-    );
-}
-
-std::string ShaderStageConfig::toString() const {
-    return fmt::format(
-      "Stage: [type={}/{}, file={}]", stage, ShaderStage::typeToString(stage),
-      filename
-    );
-}
-
-template <typename T>
-concept RangeConvertibleToString = requires(T t) {
-    { t.begin()->toString() };
-};
-
-std::string ShaderConfig::toString() const {
-    static const auto formatRange =
-      [](RangeConvertibleToString auto& range) -> std::string {
-        std::string formattedRange;
-        for (auto& item : range)
-            formattedRange += fmt::format("\n\t\t{},", item.toString());
-        return formattedRange;
-    };
-
-    return fmt::format(
-      "ShaderConfig: [\n\tname={}, use-instances={}, use-local={}, renderpass={},\n"
-      "\tstages=[{} \n\t], attributes=[{}\n\t], uniforms=[{}\n\t]"
-      "\n]",
-      name, useInstances, useLocal, renderpassName, formatRange(stages),
-      formatRange(attributes), formatRange(uniforms)
-    );
-}
-
 static std::optional<std::string> getShaderSource(
   const std::string shadersPath, const std::string& name, const FileSystem& fs
 ) {
@@ -66,8 +21,61 @@ static std::optional<std::string> getShaderSource(
     return fs.readFile(fullPath);
 }
 
+static std::vector<Shader::Stage> processStages(
+  const kc::json::Node& root, const std::string& shadersPath, const FileSystem& fs
+) {
+    std::vector<Shader::Stage> stages;
+    stages.reserve(root.size());
+
+    for (auto& stage : root) {
+        const auto file      = getField<std::string>(stage, "file");
+        const auto stageName = getField<std::string>(stage, "stage");
+
+        auto source = getShaderSource(shadersPath, file, fs);
+        ASSERT(source, "Could not find source file for: {}", file);
+
+        stages.emplace_back(Shader::Stage::typeFromString(stageName), *source);
+    }
+    return stages;
+}
+std::vector<Shader::Attribute> processAttributes(const kc::json::Node& root) {
+    std::vector<Shader::Attribute> attributes;
+    attributes.reserve(root.size());
+
+    for (auto& attribute : root) {
+        const auto type = Shader::Attribute::typeFromString(
+          getField<std::string>(attribute, "type")
+        );
+        const auto size = Shader::Attribute::getTypeSize(type);
+        const auto name = getField<std::string>(attribute, "name");
+
+        attributes.emplace_back(name, type, size);
+    }
+
+    return attributes;
+};
+
+std::vector<Shader::Uniform::Properties> processUniforms(const kc::json::Node& root
+) {
+    std::vector<Shader::Uniform::Properties> uniforms;
+    uniforms.reserve(root.size());
+
+    for (auto& uniform : root) {
+        const auto type =
+          Shader::Uniform::typeFromString(getField<std::string>(uniform, "type"));
+        const auto size  = Shader::Uniform::getTypeSize(type);
+        const auto name  = getField<std::string>(uniform, "name");
+        const auto scope = getField<std::string>(uniform, "scope");
+
+        uniforms.emplace_back(name, size, 0, type, Shader::scopeFromString(scope));
+    }
+
+    return uniforms;
+};
+
 std::optional<ShaderConfig> ShaderConfig::load(
-  const std::string& name, const std::string& shadersPath, const FileSystem& fs
+  const std::string& name, Texture* defaultTexture, const std::string& shadersPath,
+  const FileSystem& fs
 ) {
     const auto fullPath = fmt::format("{}/{}.json", shadersPath, name);
 
@@ -78,74 +86,20 @@ std::optional<ShaderConfig> ShaderConfig::load(
         return {};
     }
 
-    // TODO: extract to free-functions or methods
-    auto processStages = [&](const auto& root) -> std::vector<ShaderStageConfig> {
-        std::vector<ShaderStageConfig> stages;
-        stages.reserve(root.size());
-
-        for (auto& stage : root) {
-            const auto file      = getField<std::string>(stage, "file");
-            const auto stageName = getField<std::string>(stage, "stage");
-
-            auto source = getShaderSource(shadersPath, file, fs);
-            ASSERT(source, "Could not find source file for: {}", file);
-
-            stages.emplace_back(
-              ShaderStage::typeFromString(stageName), file, *source
-            );
-        }
-        return stages;
-    };
-
-    auto processAttributes =
-      [&](const auto& root) -> std::vector<ShaderAttributeConfig> {
-        std::vector<ShaderAttributeConfig> attributes;
-        attributes.reserve(root.size());
-
-        for (auto& attribute : root) {
-            const auto type = ShaderAttribute::typeFromString(
-              getField<std::string>(attribute, "type")
-            );
-            const auto size = ShaderAttribute::getTypeSize(type);
-            const auto name = getField<std::string>(attribute, "name");
-
-            attributes.emplace_back(name, type, size);
-        }
-
-        return attributes;
-    };
-
-    static auto processUniforms =
-      [](const auto& root) -> std::vector<ShaderUniformConfig> {
-        std::vector<ShaderUniformConfig> uniforms;
-        uniforms.reserve(root.size());
-
-        for (auto& uniform : root) {
-            const auto type =
-              ShaderUniform::typeFromString(getField<std::string>(uniform, "type"));
-            const auto size  = ShaderUniform::getTypeSize(type);
-            const auto name  = getField<std::string>(uniform, "name");
-            const auto scope = getField<std::string>(uniform, "scope");
-
-            uniforms.emplace_back(name, size, 0, type, shaderScopeFromString(scope));
-        }
-
-        return uniforms;
-    };
-
     try {
         auto root = kc::json::loadJson(fs.readFile(fullPath));
-        ShaderConfig config;
+        Shader::Properties props;
 
-        config.name           = getField<std::string>(root, "name");
-        config.renderpassName = getField<std::string>(root, "renderpass");
-        config.stages         = processStages(getArray(root, "stages"));
-        config.attributes     = processAttributes(getArray(root, "attributes"));
-        config.uniforms       = processUniforms(getArray(root, "uniforms"));
-        config.useInstances   = getField<bool>(root, "use-instances");
-        config.useLocal       = getField<bool>(root, "use-local");
+        props.defaultTexture = defaultTexture;
+        props.name           = getField<std::string>(root, "name");
+        props.renderPassName = getField<std::string>(root, "renderpass");
+        props.stages     = processStages(getArray(root, "stages"), shadersPath, fs);
+        props.attributes = processAttributes(getArray(root, "attributes"));
+        props.uniformProperties = processUniforms(getArray(root, "uniforms"));
+        props.useInstances      = getField<bool>(root, "use-instances");
+        props.useLocals         = getField<bool>(root, "use-local");
 
-        return config;
+        return ShaderConfig{ props };
     } catch (kc::json::JsonError& e) {
         LOG_ERROR("Could not parse shader '{}' file: {}", name, e.asString());
     }

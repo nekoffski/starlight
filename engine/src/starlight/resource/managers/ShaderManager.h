@@ -14,41 +14,22 @@ namespace sl {
 
 class ShaderManager {
 public:
-    struct Config {
-        u64 maxShaderCount;
-        u8 maxUniformCount;
-        u8 maxGlobalTextures;
-        u8 maxInstanceTextures;
-    };
-
-    static Config defaultConfig;
-
     explicit ShaderManager(
-      RendererProxy& rendererProxy, const TextureManager& textureManager,
-      const Config& conf = defaultConfig
+      RendererProxy& rendererProxy, const TextureManager& textureManager
     );
+    ~ShaderManager();
 
     Shader* load(const std::string& name);
-    Shader* get(const std::string& name);
+    Shader* acquire(const std::string& name);
+
+    void destroy(const std::string& name);
+    void destroyAll();
 
 private:
-    Shader* findSlot();
-
-    void addAttribute(Shader* shader, const ShaderAttributeConfig& cfg);
-    void addUniform(Shader* shader, const ShaderUniformConfig& cfg);
-    void addSampler(Shader* shader, const ShaderUniformConfig& cfg);
-
-    void addUniformImpl(
-      Shader* shader, const std::string& name, u32 size, ShaderUniform::Type type,
-      ShaderScope scope, u32 setLocation, bool isSampler
-    );
-
     RendererProxy& m_rendererProxy;
     const TextureManager& m_textureManager;
-    Config m_conf;
 
-    std::vector<Shader> m_shaders;
-    std::unordered_map<std::string, Shader*> m_shaderByName;
+    std::unordered_map<std::string, Shader*> m_shaders;
 };
 
 }  // namespace sl

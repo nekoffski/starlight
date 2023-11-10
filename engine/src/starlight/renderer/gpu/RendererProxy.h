@@ -18,8 +18,6 @@ public:
 
     u32 getRenderPassId(const std::string& renderPass) const;
 
-    std::unique_ptr<Shader::Impl> createShaderImpl(Shader& shader) const;
-
     Geometry* createGeometry(
       const Geometry::Properties& props, const std::span<Vertex3> vertices,
       const std::span<uint32_t> indices
@@ -32,6 +30,9 @@ public:
 
     Texture* createTexture(const Texture::Properties& props, const void* pixels);
     void destroyTexture(Texture& texture);
+
+    Shader* createShader(const Shader::Properties& props);
+    void destroyShader(Shader& shader);
 
 private:
     RendererBackend& m_rendererBackend;

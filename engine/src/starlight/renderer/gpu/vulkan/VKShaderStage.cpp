@@ -7,11 +7,11 @@
 
 namespace sl::vk {
 
-VkShaderStageFlagBits getStageFlagBits(ShaderStage::Type type) {
+VkShaderStageFlagBits getStageFlagBits(Shader::Stage::Type type) {
     switch (type) {
-        case ShaderStage::vertex:
+        case Shader::Stage::Type::vertex:
             return VK_SHADER_STAGE_VERTEX_BIT;
-        case ShaderStage::fragment:
+        case Shader::Stage::Type::fragment:
             return VK_SHADER_STAGE_FRAGMENT_BIT;
     }
     FAIL("Unknown shader type: {}", type);

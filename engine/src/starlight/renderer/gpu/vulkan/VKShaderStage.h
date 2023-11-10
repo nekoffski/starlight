@@ -11,7 +11,7 @@ class VKShaderStage {
 public:
     struct Properties {
         const std::string& source;
-        ShaderStage::Type type;
+        Shader::Stage::Type type;
     };
 
     explicit VKShaderStage(

@@ -13,10 +13,6 @@ u32 RendererProxy::getRenderPassId(const std::string& renderPass) const {
     return m_rendererBackend.getRenderPassId(renderPass);
 }
 
-std::unique_ptr<Shader::Impl> RendererProxy::createShaderImpl(Shader& shader) const {
-    return m_rendererBackend.createShaderImpl(shader);
-}
-
 Geometry* RendererProxy::createGeometry(
   const Geometry::Properties& props, const std::span<Vertex3> vertices,
   const std::span<uint32_t> indices
@@ -45,6 +41,14 @@ Texture* RendererProxy::createTexture(
   const Texture::Properties& props, const void* pixels
 ) {
     return m_rendererBackend.createTexture(props, pixels);
+}
+
+Shader* RendererProxy::createShader(const Shader::Properties& props) {
+    return m_rendererBackend.createShader(props);
+}
+
+void RendererProxy::destroyShader(Shader& shader) {
+    m_rendererBackend.destroyShader(shader);
 }
 
 }  // namespace sl

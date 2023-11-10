@@ -10,6 +10,8 @@ GeometryManager::GeometryManager(
     createDefaultGeometries();
 }
 
+GeometryManager::~GeometryManager() { destroyAll(); }
+
 Geometry* GeometryManager::acquire(u32 id) {
     if (auto geometry = m_geometries.find(id); geometry != m_geometries.end())
         return geometry->second;
@@ -26,6 +28,13 @@ void GeometryManager::destroy(uint32_t id) {
     } else {
         m_rendererProxy.destroyGeometry(*geometry->second);
     }
+}
+
+void GeometryManager::destroyAll() {
+    LOG_TRACE("Destroying all geometries");
+    for (auto& geometry : m_geometries | std::views::values)
+        m_rendererProxy.destroyGeometry(*geometry);
+    m_geometries.clear();
 }
 
 Geometry* GeometryManager::getDefault3D() { return m_defaultGeometry3D; }

@@ -39,7 +39,7 @@ void MaterialManager::createDefaultMaterial() {
     props.shininess = 32.0f;
 
     m_defaultMaterial =
-      create(props, *m_shaderManager.get("Builtin.Shader.Material"));
+      create(props, *m_shaderManager.load("Builtin.Shader.Material"));
 }
 
 Material* MaterialManager::load(const std::string& name) {
@@ -47,7 +47,7 @@ Material* MaterialManager::load(const std::string& name) {
 
     if (auto material = m_materialsLUT.find(name);
         material != m_materialsLUT.end()) {
-        LOG_WARN(
+        LOG_INFO(
           "Material '{}' already stored, returning pointer to the existing one", name
         );
         return material->second;
@@ -103,7 +103,7 @@ Material* MaterialManager::load(const MaterialConfig& config) {
         TextureMap::Use::normalMap
     };
 
-    auto shader = m_shaderManager.get(config.shaderName);
+    auto shader = m_shaderManager.load(config.shaderName);
 
     ASSERT(
       shader, "Could not find shader: {} for material: {}", config.shaderName,
