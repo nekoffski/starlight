@@ -168,21 +168,21 @@ u32 Shader::Uniform::getTypeSize(Type type) {
     return record->second;
 }
 
-void Shader::setGlobalUniforms(SelfCallback&& callback) {
+void Shader::setGlobalUniforms(UniformCallback&& callback) {
     bindGlobals();
-    callback(this);
+    callback(m_uniformProxy);
     applyGlobals();
 }
 
-void Shader::setInstanceUniforms(u32 instanceId, SelfCallback&& callback) {
+void Shader::setInstanceUniforms(u32 instanceId, UniformCallback&& callback) {
     bindInstance(instanceId);
-    callback(this);
+    callback(m_uniformProxy);
     applyInstance();
 }
 
-void Shader::setLocalUniforms(SelfCallback&& callback) {
+void Shader::setLocalUniforms(UniformCallback&& callback) {
     // nothing to do here, just for consistency
-    callback(this);
+    callback(m_uniformProxy);
 }
 
 u32 Shader::getId() const { return m_id; }
@@ -191,10 +191,12 @@ const std::string& Shader::getName() const { return m_name; }
 
 Shader::Shader(const Properties& props, u32 id) :
     m_name(props.name), m_id(id), m_useInstances(props.useInstances),
-    m_useLocals(props.useLocals) {}
+    m_useLocals(props.useLocals), m_uniformProxy(*this) {}
 
-void Shader::setUniform(const std::string& uniform, Texture* value) {
-    setUniform(uniform, static_cast<void*>(value));
+void Shader::UniformProxy::set(const std::string& uniform, Texture* value) {
+    m_shader.setUniform(uniform, static_cast<void*>(value));
 }
+
+Shader::UniformProxy::UniformProxy(Shader& shader) : m_shader(shader) {}
 
 }  // namespace sl

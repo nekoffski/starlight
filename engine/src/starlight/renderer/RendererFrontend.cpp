@@ -49,12 +49,12 @@ void RendererFrontend::addMainPass(
         auto projectionMatrix = camera.getProjectionMatrix();
         auto viewPosition     = camera.getPosition();
 
-        m_materialShader->setGlobalUniforms([&](auto self) {
-            self->setUniform("view", viewMatrix);
-            self->setUniform("projection", projectionMatrix);
-            self->setUniform("viewPosition", viewPosition);
-            self->setUniform("ambientColor", ambientColor);
-            self->setUniform("renderMode", static_cast<int>(m_renderMode));
+        m_materialShader->setGlobalUniforms([&](Shader::UniformProxy& proxy) {
+            proxy.set("view", viewMatrix);
+            proxy.set("projection", projectionMatrix);
+            proxy.set("viewPosition", viewPosition);
+            proxy.set("ambientColor", ambientColor);
+            proxy.set("renderMode", static_cast<int>(m_renderMode));
         });
 
         for (auto& geometryRenderData : renderPacket.geometries) {
@@ -62,8 +62,8 @@ void RendererFrontend::addMainPass(
 
             material->applyUniforms(m_frameNumber);
 
-            m_materialShader->setLocalUniforms([&](auto self) {
-                self->setUniform("model", geometryRenderData.model);
+            m_materialShader->setLocalUniforms([&](Shader::UniformProxy& proxy) {
+                proxy.set("model", geometryRenderData.model);
             });
 
             m_backend->drawGeometry(geometryRenderData);

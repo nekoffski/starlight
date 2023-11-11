@@ -104,7 +104,27 @@ public:
         Texture* defaultTexture;
     };
 
-    using SelfCallback = std::function<void(Shader*)>;
+    class UniformProxy {
+        friend class Shader;
+
+    public:
+        void set(const std::string& uniform, Texture* value);
+        void set(const std::string& uniform, GlmCompatible auto& value) {
+            m_shader.setUniform(uniform, glm::value_ptr(value));
+        }
+
+        template <typename T>
+        requires std::is_arithmetic_v<T>
+        void set(const std::string& uniform, T value) {
+            m_shader.setUniform(uniform, &value);
+        }
+
+    private:
+        explicit UniformProxy(Shader& shader);
+        Shader& m_shader;
+    };
+
+    using UniformCallback = std::function<void(UniformProxy&)>;
 
     virtual ~Shader() = default;
 
@@ -112,20 +132,9 @@ public:
     virtual u32 acquireInstanceResources()                = 0;
     virtual void releaseInstanceResources(u32 instanceId) = 0;
 
-    void setGlobalUniforms(SelfCallback&&);
-    void setInstanceUniforms(u32 instanceId, SelfCallback&&);
-    void setLocalUniforms(SelfCallback&&);
-
-    void setUniform(const std::string& uniform, Texture* value);
-    void setUniform(const std::string& uniform, GlmCompatible auto& value) {
-        setUniform(uniform, glm::value_ptr(value));
-    }
-
-    template <typename T>
-    requires std::is_arithmetic_v<T>
-    void setUniform(const std::string& uniform, T value) {
-        setUniform(uniform, &value);
-    }
+    void setGlobalUniforms(UniformCallback&&);
+    void setInstanceUniforms(u32 instanceId, UniformCallback&&);
+    void setLocalUniforms(UniformCallback&&);
 
     u32 getId() const;
     const std::string& getName() const;
@@ -137,6 +146,8 @@ protected:
     std::string m_name;
     bool m_useInstances;
     bool m_useLocals;
+
+    UniformProxy m_uniformProxy;
 
 private:
     virtual void bindGlobals()                                       = 0;

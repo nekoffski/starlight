@@ -18,12 +18,12 @@ Material::~Material() {
 
 void Material::applyUniforms(u32 renderFrameNumber) {
     if (m_renderFrameNumber != renderFrameNumber) {
-        m_shader.setInstanceUniforms(m_instanceId, [&](auto self) {
-            self->setUniform("diffuseColor", m_props.diffuseColor);
-            self->setUniform("diffuseTexture", m_props.diffuseMap.texture);
-            self->setUniform("specularTexture", m_props.specularMap.texture);
-            self->setUniform("normalTexture", m_props.normalMap.texture);
-            self->setUniform("shininess", m_props.shininess);
+        m_shader.setInstanceUniforms(m_instanceId, [&](Shader::UniformProxy& proxy) {
+            proxy.set("diffuseColor", m_props.diffuseColor);
+            proxy.set("diffuseTexture", m_props.diffuseMap.texture);
+            proxy.set("specularTexture", m_props.specularMap.texture);
+            proxy.set("normalTexture", m_props.normalMap.texture);
+            proxy.set("shininess", m_props.shininess);
         });
         m_renderFrameNumber = renderFrameNumber;
     }
