@@ -88,18 +88,20 @@ std::optional<ShaderConfig> ShaderConfig::load(
 
     try {
         auto root = kc::json::loadJson(fs.readFile(fullPath));
-        Shader::Properties props;
-
-        props.defaultTexture = defaultTexture;
-        props.name           = getField<std::string>(root, "name");
-        props.renderPassName = getField<std::string>(root, "renderpass");
-        props.stages     = processStages(getArray(root, "stages"), shadersPath, fs);
-        props.attributes = processAttributes(getArray(root, "attributes"));
-        props.uniformProperties = processUniforms(getArray(root, "uniforms"));
-        props.useInstances      = getField<bool>(root, "use-instances");
-        props.useLocals         = getField<bool>(root, "use-local");
-
-        return ShaderConfig{ props };
+        // clang-format off
+        return ShaderConfig{
+            Shader::Properties{
+                .name           = getField<std::string>(root, "name"),
+                .useInstances   = getField<bool>(root, "use-instances"),
+                .useLocals      = getField<bool>(root, "use-local"),
+                .renderPassName = getField<std::string>(root, "renderpass"),
+                .attributes     = processAttributes(getArray(root, "attributes")),
+                .stages = processStages(getArray(root, "stages"), shadersPath, fs),
+                .uniformProperties = processUniforms(getArray(root, "uniforms")),
+                .defaultTexture    = defaultTexture
+            }
+        };
+        // clang-format on
     } catch (kc::json::JsonError& e) {
         LOG_ERROR("Could not parse shader '{}' file: {}", name, e.asString());
     }

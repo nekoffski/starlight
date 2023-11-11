@@ -29,18 +29,17 @@ std::optional<MaterialConfig> MaterialConfig::load(
     }
 
     try {
-        auto root = kc::json::loadJson(fs.readFile(fullPath));
-        MaterialConfig config;
+        const auto root = kc::json::loadJson(fs.readFile(fullPath));
 
-        config.name         = name;
-        config.diffuseColor = getFieldOr(root, "diffuse-color", defaultDiffuseColor);
-        config.diffuseMap   = getFieldOr(root, "diffuse-map", defaultDiffuseMap);
-        config.specularMap  = getFieldOr(root, "specular-map", defaultSpecularMap);
-        config.normalMap    = getFieldOr(root, "normal-map", defaultNormalMap);
-        config.shaderName   = getFieldOr(root, "shader-name", defaultShader);
-        config.shininess    = getFieldOr(root, "shininess", defaultShininess);
-
-        return config;
+        return MaterialConfig{
+            .name         = name,
+            .diffuseColor = getFieldOr(root, "diffuse-color", defaultDiffuseColor),
+            .shininess    = getFieldOr(root, "shininess", defaultShininess),
+            .diffuseMap   = getFieldOr(root, "diffuse-map", defaultDiffuseMap),
+            .specularMap  = getFieldOr(root, "specular-map", defaultSpecularMap),
+            .normalMap    = getFieldOr(root, "normal-map", defaultNormalMap),
+            .shaderName   = getFieldOr(root, "shader-name", defaultShader)
+        };
     } catch (kc::json::JsonError& e) {
         LOG_ERROR("Could not parse material '{}' file: {}", name, e.asString());
     }
