@@ -3,8 +3,8 @@
 #include <vector>
 #include <cstdint>
 
+#include <starlight/core/Core.h>
 #include <starlight/core/utils/Log.h>
-#include <starlight/core/utils/Id.h>
 
 namespace sl {
 
@@ -14,27 +14,27 @@ class FreeList {
 
         void invalidate();
 
-        uint64_t offset;
-        uint64_t size;
+        u64 offset;
+        u64 size;
         Node* next;
     };
 
 public:
-    explicit FreeList(uint64_t size);
+    explicit FreeList(u64 size);
 
-    void freeBlock(uint64_t size, uint64_t offset);
-    uint64_t allocateBlock(uint64_t size);
-    uint64_t spaceLeft();
+    void freeBlock(u64 size, u64 offset);
+    u64 allocateBlock(u64 size);
+    u64 spaceLeft();
 
-    void resize(uint64_t newSize);
+    void resize(u64 newSize);
 
     void clear();
 
 private:
     Node* getFreeNode();
 
-    uint64_t m_totalSize;
-    uint64_t m_maxEntries;
+    u64 m_totalSize;
+    u64 m_maxEntries;
 
     std::vector<Node> m_nodes;
     Node* m_head;

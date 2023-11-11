@@ -4,23 +4,26 @@ namespace sl {
 
 FreeList::Node::Node() { invalidate(); }
 
+// TODO: ugly, refactor
+static constexpr auto invalidId = std::numeric_limits<u64>::max();
+
 void FreeList::Node::invalidate() {
     offset = invalidId;
     size   = invalidId;
     next   = nullptr;
 }
 
-FreeList::FreeList(uint64_t size) :
+FreeList::FreeList(u64 size) :
     m_totalSize(size), m_maxEntries(size / sizeof(void*)), m_nodes(m_maxEntries),
     m_head(&m_nodes[0]) {
     m_head->offset = 0;
     m_head->size   = m_totalSize;
 }
 
-void FreeList::resize(uint64_t newSize) {
+void FreeList::resize(u64 newSize) {
     m_maxEntries = newSize / sizeof(void*);
 
-    uint64_t sizeDiff = newSize - m_totalSize;
+    u64 sizeDiff = newSize - m_totalSize;
     ASSERT(sizeDiff > 0, "New size of the list must be greater than the actual one");
 
     m_totalSize = newSize;
@@ -33,7 +36,7 @@ void FreeList::resize(uint64_t newSize) {
     ASSERT(false, "NOT IMPLEMENTED YET!");
 }
 
-void FreeList::freeBlock(uint64_t size, uint64_t offset) {
+void FreeList::freeBlock(u64 size, u64 offset) {
     ASSERT(
       size > 0 && offset > 0,
       "Could not free block with invalid offset ({}) or size ({})", offset, size
@@ -82,7 +85,7 @@ void FreeList::freeBlock(uint64_t size, uint64_t offset) {
     LOG_WARN("Unable to find block to free, that's unexpected");
 }
 
-uint64_t FreeList::allocateBlock(uint64_t size) {
+u64 FreeList::allocateBlock(u64 size) {
     ASSERT(size > 0, "Could not allocate block with size less or equal 0");
 
     Node* previous = nullptr;
@@ -90,7 +93,7 @@ uint64_t FreeList::allocateBlock(uint64_t size) {
 
     while (node != nullptr) {
         if (node->size == size) {
-            uint64_t offset = node->offset;
+            u64 offset = node->offset;
 
             if (previous) {
                 previous->next = node->next;
@@ -100,7 +103,7 @@ uint64_t FreeList::allocateBlock(uint64_t size) {
                 m_head = node->next;
             }
         } else if (node->size > size) {
-            uint64_t offset = node->offset;
+            u64 offset = node->offset;
 
             node->size -= size;
             node->offset += size;
@@ -119,8 +122,8 @@ uint64_t FreeList::allocateBlock(uint64_t size) {
     );
 }
 
-uint64_t FreeList::spaceLeft() {
-    uint64_t totalSpace;
+u64 FreeList::spaceLeft() {
+    u64 totalSpace;
 
     for (Node* node = m_head; node != nullptr; node = node->next)
         totalSpace += node->size;
@@ -129,7 +132,7 @@ uint64_t FreeList::spaceLeft() {
 }
 
 void FreeList::clear() {
-    for (uint64_t i = 0; i < m_maxEntries; ++i) m_nodes[i].invalidate();
+    for (u64 i = 0; i < m_maxEntries; ++i) m_nodes[i].invalidate();
 
     m_head->offset = 0;
     m_head->size   = m_totalSize;
@@ -137,7 +140,7 @@ void FreeList::clear() {
 }
 
 FreeList::Node* FreeList::getFreeNode() {
-    for (uint64_t i = 0; i < m_maxEntries; ++i)
+    for (u64 i = 0; i < m_maxEntries; ++i)
         if (m_nodes[i].offset == invalidId) return &m_nodes[i];
     return nullptr;
 }
