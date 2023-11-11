@@ -109,7 +109,7 @@ public:
 
     public:
         void set(const std::string& uniform, Texture* value);
-        void set(const std::string& uniform, GlmCompatible auto& value) {
+        void set(const std::string& uniform, const GlmCompatible auto& value) {
             m_shader.setUniform(uniform, glm::value_ptr(value));
         }
 
@@ -150,11 +150,11 @@ protected:
     UniformProxy m_uniformProxy;
 
 private:
-    virtual void bindGlobals()                                       = 0;
-    virtual void bindInstance(u32 instanceId)                        = 0;
-    virtual void applyGlobals()                                      = 0;
-    virtual void applyInstance()                                     = 0;
-    virtual void setUniform(const std::string& uniform, void* value) = 0;
+    virtual void bindGlobals()                                             = 0;
+    virtual void bindInstance(u32 instanceId)                              = 0;
+    virtual void applyGlobals()                                            = 0;
+    virtual void applyInstance()                                           = 0;
+    virtual void setUniform(const std::string& uniform, const void* value) = 0;
 };
 
 }  // namespace sl

@@ -39,7 +39,7 @@ class VKShader final : public Shader {
         Id32 id;
         Id64 offset;
         DescriptorSetState descriptorSetState;
-        std::vector<Texture*> instanceTextures;
+        std::vector<const Texture*> instanceTextures;
     };
 
 public:
@@ -54,7 +54,7 @@ public:
     void releaseInstanceResources(u32 instanceId) override;
 
 private:
-    void setUniform(const std::string& uniform, void* value) override;
+    void setUniform(const std::string& uniform, const void* value) override;
     void bindInstance(u32 instanceId) override;
 
     void bindGlobals() override;
@@ -110,7 +110,7 @@ private:
     u64 m_pushConstantSize;
     u64 m_pushConstantStride;
 
-    std::vector<Texture*> m_globalTextures;
+    std::vector<const Texture*> m_globalTextures;
     u8 m_instanceTextureCount;
 
     u32 m_boundInstanceId;

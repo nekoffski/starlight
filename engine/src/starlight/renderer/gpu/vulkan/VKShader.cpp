@@ -352,7 +352,7 @@ void VKShader::applyInstance() {
             .descriptorCount;
         imageInfos.reserve(totalSamplerCount);
         for (int i = 0; i < totalSamplerCount; ++i) {
-            VKTexture* texture = static_cast<VKTexture*>(
+            const VKTexture* texture = static_cast<const VKTexture*>(
               m_instanceStates[m_boundInstanceId].instanceTextures[i]
             );
             ASSERT(
@@ -465,14 +465,14 @@ void VKShader::releaseInstanceResources(u32 instanceId) {
     instanceState.offset.invalidate();
 }
 
-void VKShader::setUniform(const std::string& name, void* value) {
+void VKShader::setUniform(const std::string& name, const void* value) {
     auto& uniform = m_uniforms[name];
     if (uniform.isSampler()) {
         if (uniform.scope == Scope::global) {
-            m_globalTextures[uniform.location] = static_cast<Texture*>(value);
+            m_globalTextures[uniform.location] = static_cast<const Texture*>(value);
         } else {
             m_instanceStates[m_boundInstanceId].instanceTextures[uniform.location] =
-              static_cast<Texture*>(value);
+              static_cast<const Texture*>(value);
         }
     } else {
         if (uniform.scope == Scope::local) {

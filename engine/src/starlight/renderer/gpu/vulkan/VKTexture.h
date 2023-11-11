@@ -28,8 +28,8 @@ public:
 
     ~VKTexture() override;
 
-    VKImage* getImage();
-    VkSampler getSampler();
+    const VKImage* getImage() const;
+    VkSampler getSampler() const;
 
 private:
     const VKContext* m_context;

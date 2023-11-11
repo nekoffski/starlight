@@ -165,7 +165,7 @@ VkMemoryAllocateInfo createMemoryAllocateInfo(
     return memoryAllocateInfo;
 }
 
-VkImageView VKImage::getView() { return m_view; }
+VkImageView VKImage::getView() const { return m_view; }
 
 void VKImage::createImage(
   const Properties& properties, VkDevice logicalDevice, VkAllocator allocator

@@ -119,8 +119,8 @@ VKTexture::~VKTexture() {
     LOG_TRACE("Texture destroyed: {}", m_props.name);
 }
 
-VKImage* VKTexture::getImage() { return m_image.get(); }
+const VKImage* VKTexture::getImage() const { return m_image.get(); }
 
-VkSampler VKTexture::getSampler() { return m_sampler; }
+VkSampler VKTexture::getSampler() const { return m_sampler; }
 
 }  // namespace sl::vk

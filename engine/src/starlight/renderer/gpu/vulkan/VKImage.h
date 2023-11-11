@@ -39,7 +39,7 @@ public:
 
     ~VKImage();
 
-    VkImageView getView();
+    VkImageView getView() const;
 
 private:
     void createImage(

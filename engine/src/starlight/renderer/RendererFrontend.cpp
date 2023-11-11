@@ -45,14 +45,10 @@ void RendererFrontend::addMainPass(
 
         m_materialShader->use();
 
-        auto viewMatrix       = camera.getViewMatrix();
-        auto projectionMatrix = camera.getProjectionMatrix();
-        auto viewPosition     = camera.getPosition();
-
         m_materialShader->setGlobalUniforms([&](Shader::UniformProxy& proxy) {
-            proxy.set("view", viewMatrix);
-            proxy.set("projection", projectionMatrix);
-            proxy.set("viewPosition", viewPosition);
+            proxy.set("view", camera.getViewMatrix());
+            proxy.set("projection", camera.getProjectionMatrix());
+            proxy.set("viewPosition", camera.getPosition());
             proxy.set("ambientColor", ambientColor);
             proxy.set("renderMode", static_cast<int>(m_renderMode));
         });
