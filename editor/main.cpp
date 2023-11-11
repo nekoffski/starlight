@@ -17,7 +17,7 @@
 #include <starlight/core/memory/DynamicAllocator.h>
 #include <starlight/resource/ResourceManager.h>
 #include <starlight/resource/resources/MeshConfig.h>
-#include <starlight/renderer/ui/UI.h>
+#include <starlight/renderer/ui/UI.hpp>
 
 std::vector<sl::Mesh> meshes;
 
@@ -121,6 +121,15 @@ void update(sl::RenderPacket& packet, float dt) {
     }
 }
 
+void renderUI(float deltaTime) {
+    static bool active = true;
+    ImGui::Begin("Starlight debug", &active, ImGuiWindowFlags_MenuBar);
+    ImGui::Text("Frame time: %f", deltaTime);
+    ImGui::Text("Frames per second: %d", int(1.0f / deltaTime));
+
+    ImGui::End();
+}
+
 int main() {
     meshes.reserve(10);
 
@@ -190,7 +199,7 @@ int main() {
         LOG_VAR(currentCamera->getPosition());
 
         renderer.addMainPass(packet, *currentCamera);
-        renderer.addUIPass([&]() { ImGui::ShowDemoWindow(); });
+        renderer.addUIPass([&]() { renderUI(deltaTime); });
         renderer.renderFrame(deltaTime);
 
         update(packet, deltaTime);
