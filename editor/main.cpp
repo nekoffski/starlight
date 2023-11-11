@@ -121,11 +121,14 @@ void update(sl::RenderPacket& packet, float dt) {
     }
 }
 
-void renderUI(float deltaTime) {
+void renderUI(float deltaTime, sl::FrameStatistics& stats) {
     static bool active = true;
     ImGui::Begin("Starlight debug", &active, ImGuiWindowFlags_MenuBar);
     ImGui::Text("Frame time: %f", deltaTime);
     ImGui::Text("Frames per second: %d", int(1.0f / deltaTime));
+    ImGui::Text("Frame number: %lu", stats.frameNumber);
+    ImGui::Separator();
+    ImGui::Text("Rendered vertices: %lu", stats.renderedVertices);
 
     ImGui::End();
 }
@@ -192,6 +195,8 @@ int main() {
     generateMeshes(resourceManager);
     auto packet = getRenderPacket(resourceManager);
 
+    sl::FrameStatistics stats;
+
     while (isRunning) {
         const auto deltaTime = ctx.beginFrame();
 
@@ -199,8 +204,8 @@ int main() {
         LOG_VAR(currentCamera->getPosition());
 
         renderer.addMainPass(packet, *currentCamera);
-        renderer.addUIPass([&]() { renderUI(deltaTime); });
-        renderer.renderFrame(deltaTime);
+        renderer.addUIPass([&]() { renderUI(deltaTime, stats); });
+        stats = renderer.renderFrame(deltaTime);
 
         update(packet, deltaTime);
 

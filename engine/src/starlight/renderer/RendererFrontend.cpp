@@ -18,17 +18,21 @@ RendererFrontend::RendererFrontend(RendererBackend* backend) :
 
 RendererFrontend::~RendererFrontend() {}
 
-bool RendererFrontend::renderFrame(float deltaTime) {
+FrameStatistics RendererFrontend::renderFrame(float deltaTime) {
     m_frameNumber++;
+    FrameStatistics stats;
+    stats.frameNumber = m_frameNumber;
 
     if (m_backend->beginFrame(deltaTime)) {
-        for (auto& [renderPassId, renderPassCallback] : m_renderPasses)
-            m_backend->renderPass(renderPassId, renderPassCallback);
+        for (auto& [renderPassId, renderPassCallback] : m_renderPasses) {
+            auto renderPassStats =
+              m_backend->renderPass(renderPassId, renderPassCallback);
+            stats.renderedVertices += renderPassStats.renderedVertices;
+        }
         m_renderPasses.clear();
         m_backend->endFrame(deltaTime);
     }
-
-    return true;
+    return stats;
 }
 
 void RendererFrontend::addUIPass(std::function<void()>&& callback) {

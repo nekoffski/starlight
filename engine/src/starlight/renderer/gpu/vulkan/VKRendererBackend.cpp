@@ -20,7 +20,7 @@
 namespace sl::vk {
 
 VKRendererBackend::VKRendererBackend(Window& window, const Config& config) :
-    m_rendererContext(maxFramesInFlight, window.getSize()) {
+    m_rendererContext(maxFramesInFlight, window.getSize()), m_renderedVertices(0u) {
     createCoreComponents(window, config);
     regenerateFramebuffers();
     createCommandBuffers();
@@ -165,8 +165,11 @@ void VKRendererBackend::drawGeometry(const GeometryRenderData& geometryRenderDat
         vkCmdDrawIndexed(
           commandBuffer.getHandle(), dataDescription.indexCount, 1, 0, 0, 0
         );
+
+        m_renderedVertices += dataDescription.indexCount;
     } else {
         vkCmdDraw(commandBuffer.getHandle(), dataDescription.vertexCount, 1, 0, 0);
+        m_renderedVertices += dataDescription.vertexCount;
     }
 }
 
@@ -192,10 +195,11 @@ bool VKRendererBackend::beginRenderPass(uint8_t id) {
     }
 
     renderPass->begin(commandBuffer, framebuffer->getHandle());
+    m_renderedVertices = 0u;
     return true;
 }
 
-bool VKRendererBackend::endRenderPass(uint8_t id) {
+u64 VKRendererBackend::endRenderPass(uint8_t id) {
     auto& commandBuffer = *m_rendererContext.getCommandBuffer();
 
     VKRenderPass* renderPass = nullptr;
@@ -215,8 +219,7 @@ bool VKRendererBackend::endRenderPass(uint8_t id) {
         }
     }
     renderPass->end(commandBuffer);
-
-    return true;
+    return m_renderedVertices;
 }
 
 void VKRendererBackend::createBuffers() {

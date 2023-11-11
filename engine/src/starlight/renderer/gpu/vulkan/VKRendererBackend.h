@@ -36,7 +36,7 @@ public:
     bool endFrame(float deltaTime) override;
 
     bool beginRenderPass(uint8_t id);
-    bool endRenderPass(uint8_t id);
+    u64 endRenderPass(uint8_t id);
 
     void drawGeometry(const GeometryRenderData& model) override;
 
@@ -105,6 +105,8 @@ private:
     std::vector<LocalPtr<VKTexture>> m_textures;
     std::vector<LocalPtr<VKGeometry>> m_geometries;
     std::vector<LocalPtr<VKShader>> m_shaders;
+
+    u64 m_renderedVertices;
 };
 
 }  // namespace sl::vk

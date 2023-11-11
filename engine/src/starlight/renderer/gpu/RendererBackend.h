@@ -24,6 +24,10 @@ constexpr int builtinRenderPassWorld = 1;
 constexpr int builtinRenderPassUI    = 2;
 
 struct RendererBackend {
+    struct RenderPassStatistics {
+        u64 renderedVertices;
+    };
+
     enum class BultinRenderPass { world, ui };
 
     virtual ~RendererBackend() = default;
@@ -33,16 +37,17 @@ struct RendererBackend {
     virtual bool beginFrame(float deltaTime) = 0;
     virtual bool endFrame(float deltaTime)   = 0;
 
-    bool renderPass(uint8_t id, auto&& callback) {
+    RenderPassStatistics renderPass(uint8_t id, auto&& callback) {
         if (beginRenderPass(id)) {
             callback();
-            return endRenderPass(id);
+            return RenderPassStatistics{ .renderedVertices = endRenderPass(id) };
         }
-        return false;
+        return RenderPassStatistics{};
+        // TODO: return null optional
     }
 
     virtual bool beginRenderPass(uint8_t id) = 0;
-    virtual bool endRenderPass(uint8_t id)   = 0;
+    virtual u64 endRenderPass(uint8_t id)    = 0;
 
     virtual void renderUI(std::function<void()>&&) = 0;
 

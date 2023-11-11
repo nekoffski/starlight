@@ -13,7 +13,7 @@ void Renderer::setCoreShaders(Shader* uiShader, Shader* materialShader) {
 
 void Renderer::setRenderMode(RenderMode mode) { m_frontend.setRenderMode(mode); }
 
-bool Renderer::renderFrame(float deltaTime) {
+FrameStatistics Renderer::renderFrame(float deltaTime) {
     return m_frontend.renderFrame(deltaTime);
 }
 

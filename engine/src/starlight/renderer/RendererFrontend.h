@@ -9,6 +9,7 @@
 
 #include "RenderPacket.h"
 #include "RenderMode.h"
+#include "FrameStatistics.h"
 
 namespace sl {
 
@@ -22,7 +23,7 @@ public:
     explicit RendererFrontend(RendererBackend* backend);
     virtual ~RendererFrontend();
 
-    bool renderFrame(float deltaTime);
+    FrameStatistics renderFrame(float deltaTime);
 
     void addUIPass(std::function<void()>&& callback);
     void addMainPass(RenderPacket& renderPacket, const Camera& camera);

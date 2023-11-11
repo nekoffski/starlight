@@ -22,7 +22,7 @@ public:
     void setCoreShaders(Shader* uiShader, Shader* materialShader);
     void setRenderMode(RenderMode mode);
 
-    bool renderFrame(float deltaTime);
+    FrameStatistics renderFrame(float deltaTime);
 
     void addUIPass(std::function<void()>&& callback);
     void addMainPass(RenderPacket& renderPacket, const Camera& camera);
