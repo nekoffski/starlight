@@ -23,7 +23,6 @@ public:
 
     Texture* loadTexture(const std::string& name);
     Texture* acquireTexture(const std::string& name) const;
-    Texture* getDefaultTexture() const;
 
     void destroyTexture(const std::string& name);
 

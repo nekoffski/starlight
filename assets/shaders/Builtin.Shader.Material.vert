@@ -16,7 +16,7 @@ layout (set = 0, binding = 0) uniform GlobalUBO {
     vec4 ambientColor;
 } globalUBO;
 
-layout (location = 0) out int renderMode;
+layout (location = 0) flat out int renderMode;
 
 layout (location = 1) out struct DTO { 
     vec2 textureCoordinates; 

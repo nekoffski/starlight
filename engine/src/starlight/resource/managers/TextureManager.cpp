@@ -17,10 +17,12 @@ TextureManager::TextureManager(RendererProxy& rendererProxy) :
     createDefaultTexture();
     createDefaultNormalMap();
     createDefaultSpecularMap();
+    createDefaultTextureMap();
 }
 
 TextureManager::~TextureManager() {
     LOG_TRACE("Destroying TextureManager");
+    m_rendererProxy.destroyTextureMap(*TextureMap::defaultMap);
     destroyAll();
 }
 
@@ -41,6 +43,7 @@ Texture* TextureManager::load(const std::string& name) {
         .height        = imageData->height,
         .channels      = imageData->channels,
         .isTransparent = imageData->isTransparent,
+        .isWritable    = false,
         .name          = name
     };
 
@@ -67,10 +70,21 @@ static void setColor(uint32_t i, const Vec4f& color, std::vector<u8>& pixels) {
     pixels[i + 3] = color.w;
 }
 
+void TextureManager::createDefaultTextureMap() {
+    TextureMap::defaultMap = m_rendererProxy.createTextureMap(
+      TextureMap::Properties{ TextureMap::Use::diffuseMap }, *Texture::defaultDiffuse
+    );
+}
+
 void TextureManager::createDefaultTexture() {
     LOG_TRACE("Creating default texture");
     Texture::Properties props{
-        .width = 256, .height = 256, .channels = 4, .isTransparent = false
+        .width         = 256,
+        .height        = 256,
+        .channels      = 4,
+        .isTransparent = false,
+        .isWritable    = false,
+        .name          = "DefaultTexture"
     };
     std::vector<u8> pixels(props.width * props.height * props.channels, 255);
     float scale = 8;
@@ -92,6 +106,7 @@ void TextureManager::createDefaultTexture() {
     }
     m_textures[defaultTextureName] =
       m_rendererProxy.createTexture(props, pixels.data());
+    Texture::defaultDiffuse = m_textures[defaultTextureName];
     LOG_TRACE("Default texture created");
 }
 
@@ -102,11 +117,13 @@ void TextureManager::createDefaultSpecularMap() {
         .height        = 16,
         .channels      = 4,
         .isTransparent = false,
+        .isWritable    = false,
         .name          = defaultSpecularMapName
     };
     std::vector<u8> pixels(props.width * props.height * props.channels, 0);
     m_textures[defaultSpecularMapName] =
       m_rendererProxy.createTexture(props, pixels.data());
+    Texture::defaultSpecular = m_textures[defaultSpecularMapName];
     LOG_TRACE("Default specular map created");
 }
 
@@ -117,6 +134,7 @@ void TextureManager::createDefaultNormalMap() {
         .height        = 16,
         .channels      = 4,
         .isTransparent = false,
+        .isWritable    = false,
         .name          = defaultNormalMapName
     };
     std::vector<u8> pixels(props.width * props.height * props.channels, 0);
@@ -127,19 +145,8 @@ void TextureManager::createDefaultNormalMap() {
 
     m_textures[defaultNormalMapName] =
       m_rendererProxy.createTexture(props, pixels.data());
+    Texture::defaultNormal = m_textures[defaultNormalMapName];
     LOG_TRACE("Default specular normal map created");
-}
-
-Texture* TextureManager::getDefaultTexture() const {
-    return m_textures.at(defaultTextureName);
-}
-
-Texture* TextureManager::getDefaultNormalMap() const {
-    return m_textures.at(defaultNormalMapName);
-}
-
-Texture* TextureManager::getDefaultSpecularMap() const {
-    return m_textures.at(defaultSpecularMapName);
 }
 
 void TextureManager::destroy(const std::string& name) {

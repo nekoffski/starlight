@@ -37,6 +37,16 @@ void RendererProxy::destroyTexture(Texture& texture) {
     m_rendererBackend.destroyTexture(texture);
 }
 
+TextureMap* RendererProxy::createTextureMap(
+  const TextureMap::Properties& props, Texture& texture
+) {
+    return m_rendererBackend.createTextureMap(props, texture);
+}
+
+void RendererProxy::destroyTextureMap(TextureMap& textureMap) {
+    m_rendererBackend.destroyTextureMap(textureMap);
+}
+
 Texture* RendererProxy::createTexture(
   const Texture::Properties& props, const void* pixels
 ) {

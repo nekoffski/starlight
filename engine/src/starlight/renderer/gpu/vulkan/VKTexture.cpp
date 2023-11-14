@@ -17,28 +17,6 @@
 
 namespace sl::vk {
 
-static VkSamplerCreateInfo createSamplerCreateInfo() {
-    VkSamplerCreateInfo samplerInfo = { VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO };
-    // TODO: These filters should be configurable.
-    samplerInfo.magFilter               = VK_FILTER_LINEAR;
-    samplerInfo.minFilter               = VK_FILTER_LINEAR;
-    samplerInfo.addressModeU            = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    samplerInfo.addressModeV            = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    samplerInfo.addressModeW            = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    samplerInfo.anisotropyEnable        = VK_TRUE;
-    samplerInfo.maxAnisotropy           = 16;
-    samplerInfo.borderColor             = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-    samplerInfo.unnormalizedCoordinates = VK_FALSE;
-    samplerInfo.compareEnable           = VK_FALSE;
-    samplerInfo.compareOp               = VK_COMPARE_OP_ALWAYS;
-    samplerInfo.mipmapMode              = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-    samplerInfo.mipLodBias              = 0.0f;
-    samplerInfo.minLod                  = 0.0f;
-    samplerInfo.maxLod                  = 0.0f;
-
-    return samplerInfo;
-}
-
 VKTexture::VKTexture(
   const VKContext* context, VKDevice* device, const Properties& props, u32 id,
   const void* pixels
@@ -100,27 +78,74 @@ VKTexture::VKTexture(
 
     tempCommandBuffer.endSingleUse(graphicsQueue);
 
-    auto samplerInfo = createSamplerCreateInfo();
-    VK_ASSERT(vkCreateSampler(
-      m_device->getLogicalDevice(), &samplerInfo, m_context->getAllocator(),
-      &m_sampler
-    ));
-
     m_generation++;
     LOG_TRACE("Texture created: {}", m_props.name);
 }
 
-VKTexture::~VKTexture() {
-    const auto logicalDevice = m_device->getLogicalDevice();
-
-    vkDeviceWaitIdle(logicalDevice);
-    vkDestroySampler(logicalDevice, m_sampler, m_context->getAllocator());
-
-    LOG_TRACE("Texture destroyed: {}", m_props.name);
-}
+VKTexture::~VKTexture() { LOG_TRACE("Texture destroyed: {}", m_props.name); }
 
 const VKImage* VKTexture::getImage() const { return m_image.get(); }
 
-VkSampler VKTexture::getSampler() const { return m_sampler; }
+static VkSamplerCreateInfo createSamplerCreateInfo(
+  const TextureMap::Properties& props
+) {
+    // clang-format off
+    static std::unordered_map<TextureMap::Repeat, VkSamplerAddressMode> vkRepeat{
+        {TextureMap::Repeat::repeat,          VK_SAMPLER_ADDRESS_MODE_REPEAT},
+        { TextureMap::Repeat::mirroredRepeat, VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT},
+        { TextureMap::Repeat::clampToEdge,    VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE},
+        { TextureMap::Repeat::clampToBorder,  VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER},
+    };
+    // clang-format on
+    static std::unordered_map<TextureMap::Filter, VkFilter> vkFilter{
+        {TextureMap::Filter::nearest, VK_FILTER_NEAREST},
+        { TextureMap::Filter::linear, VK_FILTER_LINEAR }
+    };
+
+    VkSamplerCreateInfo samplerInfo     = { VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO };
+    samplerInfo.magFilter               = vkFilter[props.magnifyFilter];
+    samplerInfo.minFilter               = vkFilter[props.minifyFilter];
+    samplerInfo.addressModeU            = vkRepeat[props.uRepeat];
+    samplerInfo.addressModeV            = vkRepeat[props.vRepeat];
+    samplerInfo.addressModeW            = vkRepeat[props.wRepeat];
+    samplerInfo.anisotropyEnable        = VK_TRUE;
+    samplerInfo.maxAnisotropy           = 16;
+    samplerInfo.borderColor             = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+    samplerInfo.unnormalizedCoordinates = VK_FALSE;
+    samplerInfo.compareEnable           = VK_FALSE;
+    samplerInfo.compareOp               = VK_COMPARE_OP_ALWAYS;
+    samplerInfo.mipmapMode              = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+    samplerInfo.mipLodBias              = 0.0f;
+    samplerInfo.minLod                  = 0.0f;
+    samplerInfo.maxLod                  = 0.0f;
+
+    return samplerInfo;
+}
+
+VKTextureMap::VKTextureMap(
+  VKContext& context, VKDevice& device, const Properties& props, u32 id,
+  VKTexture& texture
+) :
+    TextureMap(props, id),
+    m_context(context), m_device(device), m_texture(texture) {
+    const auto samplerInfo = createSamplerCreateInfo(props);
+    VK_ASSERT(vkCreateSampler(
+      m_device.getLogicalDevice(), &samplerInfo, m_context.getAllocator(), &m_sampler
+    ));
+}
+
+VKTextureMap::~VKTextureMap() {
+    const auto logicalDevice = m_device.getLogicalDevice();
+
+    vkDeviceWaitIdle(logicalDevice);
+    vkDestroySampler(logicalDevice, m_sampler, m_context.getAllocator());
+    LOG_TRACE("Texture map destroyed");
+}
+
+Texture* VKTextureMap::getTexture() const { return &m_texture; }
+
+const VKImage* VKTextureMap::getImage() const { return m_texture.getImage(); }
+
+VkSampler VKTextureMap::getSampler() const { return m_sampler; }
 
 }  // namespace sl::vk

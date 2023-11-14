@@ -25,10 +25,6 @@ Texture* ResourceManager::acquireTexture(const std::string& name) const {
     return m_textureManager.acquire(name);
 }
 
-Texture* ResourceManager::getDefaultTexture() const {
-    return m_textureManager.getDefaultTexture();
-}
-
 void ResourceManager::destroyTexture(const std::string& name) {
     m_textureManager.destroy(name);
 }

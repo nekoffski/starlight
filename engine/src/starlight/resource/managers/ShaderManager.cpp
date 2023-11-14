@@ -15,7 +15,7 @@ ShaderManager::~ShaderManager() { destroyAll(); }
 Shader* ShaderManager::load(const std::string& name) {
     LOG_TRACE("Loading shader: {}", name);
 
-    auto config = ShaderConfig::load(name, m_textureManager.getDefaultTexture());
+    auto config = ShaderConfig::load(name, Texture::defaultDiffuse);
     auto shader = m_rendererProxy.createShader(config->properties);
 
     if (not shader) {

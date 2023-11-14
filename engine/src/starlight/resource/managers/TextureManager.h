@@ -24,14 +24,11 @@ public:
     Texture* load(const std::string& name);
     Texture* acquire(const std::string& name) const;
 
-    Texture* getDefaultTexture() const;
-    Texture* getDefaultNormalMap() const;
-    Texture* getDefaultSpecularMap() const;
-
     void destroy(const std::string& name);
     void destroyAll();
 
 private:
+    void createDefaultTextureMap();
     void createDefaultTexture();
     void createDefaultSpecularMap();
     void createDefaultNormalMap();

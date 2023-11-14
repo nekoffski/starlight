@@ -20,19 +20,20 @@ RendererFrontend::~RendererFrontend() {}
 
 FrameStatistics RendererFrontend::renderFrame(float deltaTime) {
     m_frameNumber++;
-    FrameStatistics stats;
-    stats.frameNumber = m_frameNumber;
+    u64 totalVerticesRendered = 0u;
 
     if (m_backend->beginFrame(deltaTime)) {
         for (auto& [renderPassId, renderPassCallback] : m_renderPasses) {
             auto renderPassStats =
               m_backend->renderPass(renderPassId, renderPassCallback);
-            stats.renderedVertices += renderPassStats.renderedVertices;
+            totalVerticesRendered += renderPassStats.renderedVertices;
         }
         m_renderPasses.clear();
         m_backend->endFrame(deltaTime);
     }
-    return stats;
+    return FrameStatistics{
+        .renderedVertices = totalVerticesRendered, .frameNumber = m_frameNumber
+    };
 }
 
 void RendererFrontend::addUIPass(std::function<void()>&& callback) {

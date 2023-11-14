@@ -7,6 +7,7 @@
 
 #include "Texture.h"
 #include "Shader.h"
+#include "fwd.h"
 
 namespace sl {
 
@@ -14,9 +15,9 @@ class Material {
 public:
     struct Properties {
         Vec4f diffuseColor;
-        TextureMap diffuseMap;
-        TextureMap specularMap;
-        TextureMap normalMap;
+        TextureMap* diffuseMap;
+        TextureMap* specularMap;
+        TextureMap* normalMap;
         float shininess;
         std::string name;
     };
@@ -28,6 +29,8 @@ public:
 
     u32 getId() const;
     const std::string& getName() const;
+
+    void destroyTextureMaps(RendererProxy& rendererProxy);
 
 private:
     Properties m_props;

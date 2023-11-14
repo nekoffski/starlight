@@ -18,6 +18,11 @@ struct RendererBackendMock : RendererBackend {
     MOCK_METHOD(Texture*, createTexture, (const Texture::Properties&, const void*));
     MOCK_METHOD(void, destroyTexture, (Texture&));
     MOCK_METHOD(
+      TextureMap*, createTextureMap,
+      (const TextureMap::Properties&, Texture& texture)
+    );
+    MOCK_METHOD(void, destroyTextureMap, (TextureMap&));
+    MOCK_METHOD(
       Geometry*, createGeometry,
       (const Geometry::Properties&, const Geometry::Data&), (override)
     );

@@ -8,13 +8,38 @@
 #include "VKRenderPass.h"
 #include "VKBuffer.h"
 #include "VKDevice.h"
-#include "VKShaderStage.h"
 #include "VKPipeline.h"
 #include "VKRendererContext.h"
 
 #include "starlight/renderer/Shader.h"
 
 namespace sl::vk {
+
+class VKShaderStage {
+public:
+    struct Properties {
+        const std::string& source;
+        Shader::Stage::Type type;
+    };
+
+    explicit VKShaderStage(
+      VKDevice* device, const VKContext* context, const Properties& properties
+    );
+
+    VkPipelineShaderStageCreateInfo getStageCreateInfo() const {
+        return m_stageCreateInfo;
+    }
+
+    ~VKShaderStage();
+
+private:
+    VKDevice* m_device;
+    const VKContext* m_context;
+
+    VkShaderModuleCreateInfo m_moduleCreateInfo;
+    VkPipelineShaderStageCreateInfo m_stageCreateInfo;
+    VkShaderModule m_handle;
+};
 
 class VKShader final : public Shader {
     static constexpr u32 maxBindings = 2;
@@ -39,7 +64,7 @@ class VKShader final : public Shader {
         Id32 id;
         Id64 offset;
         DescriptorSetState descriptorSetState;
-        std::vector<const Texture*> instanceTextures;
+        std::vector<const TextureMap*> instanceTextureMaps;
     };
 
 public:
@@ -49,9 +74,13 @@ public:
     );
     ~VKShader() override;
 
+    // clang-format off
     void use() override;
-    u32 acquireInstanceResources() override;
+    u32 acquireInstanceResources(
+        const std::vector<TextureMap*>& textureMaps
+    ) override;
     void releaseInstanceResources(u32 instanceId) override;
+    // clang-format on
 
 private:
     void setUniform(const std::string& uniform, const void* value) override;
@@ -110,7 +139,7 @@ private:
     u64 m_pushConstantSize;
     u64 m_pushConstantStride;
 
-    std::vector<const Texture*> m_globalTextures;
+    std::vector<const TextureMap*> m_globalTextureMaps;
     u8 m_instanceTextureCount;
 
     u32 m_boundInstanceId;

@@ -61,6 +61,11 @@ public:
     Shader* createShader(const Shader::Properties& props) override;
     void destroyShader(Shader& shader) override;
 
+    TextureMap* createTextureMap(
+      const TextureMap::Properties& props, Texture& texture
+    ) override;
+    void destroyTextureMap(TextureMap& textureMap) override;
+
 private:
     void createCoreComponents(sl::Window& window, const Config& config);
     void createCommandBuffers();
@@ -103,6 +108,7 @@ private:
 
     // resources
     std::vector<LocalPtr<VKTexture>> m_textures;
+    std::vector<LocalPtr<VKTextureMap>> m_textureMaps;
     std::vector<LocalPtr<VKGeometry>> m_geometries;
     std::vector<LocalPtr<VKShader>> m_shaders;
 

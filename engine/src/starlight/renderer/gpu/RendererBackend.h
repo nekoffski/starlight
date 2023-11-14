@@ -61,6 +61,11 @@ struct RendererBackend {
     )                                             = 0;
     virtual void destroyTexture(Texture& texture) = 0;
 
+    virtual TextureMap* createTextureMap(
+      const TextureMap::Properties& props, Texture& texture
+    )                                                      = 0;
+    virtual void destroyTextureMap(TextureMap& textureMap) = 0;
+
     virtual Geometry* createGeometry(
       const Geometry::Properties& props, const Geometry::Data& data
     )                                                = 0;

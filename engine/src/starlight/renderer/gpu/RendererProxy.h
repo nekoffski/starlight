@@ -31,6 +31,11 @@ public:
     Texture* createTexture(const Texture::Properties& props, const void* pixels);
     void destroyTexture(Texture& texture);
 
+    TextureMap* createTextureMap(
+      const TextureMap::Properties& props, Texture& texture
+    );
+    void destroyTextureMap(TextureMap& textureMap);
+
     Shader* createShader(const Shader::Properties& props);
     void destroyShader(Shader& shader);
 

@@ -8,14 +8,11 @@
 #include "VKFramebuffer.h"
 #include "VKImage.h"
 #include "VKRenderPass.h"
-#include "VKShaderStage.h"
 #include "VKSwapchain.h"
 #include "VKShader.h"
 
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_vulkan.h>
-
-// #include "starlight/renderer/MaterialManager.h"
 
 namespace sl::vk {
 
@@ -38,6 +35,8 @@ void VKRendererBackend::prepareResources() {
 
     LOG_DEBUG("Max textures={}", maxTextures);
     m_textures.resize(maxTextures);
+    LOG_DEBUG("Max texture maps={}", maxTextures);
+    m_textureMaps.resize(maxTextures);
     LOG_DEBUG("Max geometries={}", vulkanMaxGeometryCount);
     m_geometries.resize(vulkanMaxGeometryCount);
     LOG_DEBUG("Max shaders={}", maxShaders);
@@ -563,6 +562,29 @@ Shader* VKRendererBackend::createShader(const Shader::Properties& props) {
 
 void VKRendererBackend::destroyShader(Shader& shader) {
     m_shaders[shader.getId()].clear();
+}
+
+TextureMap* VKRendererBackend::createTextureMap(
+  const TextureMap::Properties& props, Texture& texture
+) {
+    LOG_DEBUG("Backend looking for free texture map slot");
+    for (int i = 0; i < m_textureMaps.size(); ++i) {
+        if (not m_textureMaps[i]) {
+            LOG_DEBUG("Slot {} found, will create texture map", i);
+            m_textureMaps[i].emplace(
+              *m_context, *m_device, props, i, *m_textures[texture.getId()]
+            );
+            return m_textureMaps[i].get();
+        }
+    }
+    LOG_WARN(
+      "Couldn't find slot for a new texture map, consider changing configuration to allow more"
+    );
+    return nullptr;
+}
+
+void VKRendererBackend::destroyTextureMap(TextureMap& textureMap) {
+    m_textureMaps[textureMap.getId()].clear();
 }
 
 }  // namespace sl::vk
