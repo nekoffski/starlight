@@ -135,8 +135,7 @@ public:
         const std::vector<TextureMap*>& textureMaps
     ) = 0;
     virtual void releaseInstanceResources(u32 instanceId) = 0;
-    // clangoformat on
-
+    // clang-format on
 
     void setGlobalUniforms(UniformCallback&&);
     void setInstanceUniforms(u32 instanceId, UniformCallback&&);
