@@ -5,29 +5,108 @@
 namespace sl::vk {
 
 VKImage::VKImage(
-  const VKDevice* device, const VKContext* context,
-  const VKImage::Properties& properties
+  VKDevice* device, const VKContext* context, const VKImage::Properties& properties
 ) :
-    m_size(properties.size),
-    m_device(device), m_context(context) {
-    auto logicalDevice = m_device->getLogicalDevice();
-    auto allocator     = m_context->getAllocator();
-
-    createImage(properties, logicalDevice, allocator);
-    allocateAndBindMemory(properties, allocator);
-
-    if (properties.createView) createView(properties, logicalDevice, allocator);
+    m_device(device),
+    m_context(context), m_props(properties), m_handle(VK_NULL_HANDLE),
+    m_memory(VK_NULL_HANDLE), m_view(VK_NULL_HANDLE), m_destroyImage(true) {
+    create();
 }
 
-VKImage::~VKImage() {
+VKImage::VKImage(
+  VKDevice* device, const VKContext* context, const Properties& properties,
+  const std::span<u8> pixels
+) :
+    VKImage(device, context, properties) {
+    write(0, pixels);
+}
+
+VKImage::VKImage(
+  VKDevice* device, const VKContext* context, const Properties& properties,
+  VkImage handle
+) :
+    m_device(device),
+    m_context(context), m_props(properties), m_handle(handle),
+    m_memory(VK_NULL_HANDLE), m_view(VK_NULL_HANDLE), m_destroyImage(false) {
+    if (m_props.createView) createView();
+}
+
+void VKImage::destroy() {
     auto logicalDevice = m_device->getLogicalDevice();
     auto allocator     = m_context->getAllocator();
 
-    vkDestroyImageView(logicalDevice, m_view, allocator);
-    vkFreeMemory(logicalDevice, m_memory, allocator);
-    vkDestroyImage(logicalDevice, m_handle, allocator);
-
+    if (m_view) vkDestroyImageView(logicalDevice, m_view, allocator);
+    if (m_memory) vkFreeMemory(logicalDevice, m_memory, allocator);
+    if (m_handle && m_destroyImage)
+        vkDestroyImage(logicalDevice, m_handle, allocator);
     LOG_TRACE("VKImage destroyed");
+}
+
+const VKImage::Properties& VKImage::getProperties() const { return m_props; }
+
+void VKImage::recreate(const Properties& properties, VkImage handle) {
+    destroy();
+
+    m_props        = properties;
+    m_destroyImage = false;
+    m_handle       = handle;
+
+    if (m_props.createView) createView();
+}
+
+void VKImage::recreate(const Properties& properties) {
+    destroy();
+    m_props = properties;
+    create();
+}
+
+void VKImage::create() {
+    createImage();
+    allocateAndBindMemory();
+
+    if (m_props.createView) createView();
+}
+
+VKImage::~VKImage() { destroy(); }
+
+void VKImage::write(u32 offset, std::span<u8> pixels) {
+    VkDeviceSize imageSize = pixels.size();
+
+    VkBufferUsageFlags usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+    VkMemoryPropertyFlags memoryProps =
+      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+
+    VKBuffer::Properties stagingBufferProperties{
+        .size                = imageSize,
+        .memoryPropertyFlags = memoryProps,
+        .usageFlags          = usage,
+        .bindOnCreate        = true,
+        .useFreeList         = false
+    };
+
+    VKBuffer stagingBuffer(m_context, m_device, stagingBufferProperties);
+
+    stagingBuffer.loadData(0, imageSize, 0, pixels.data());
+
+    VKCommandBuffer tempCommandBuffer{
+        m_device, m_device->getGraphicsCommandPool()
+    };
+    VkQueue graphicsQueue = m_device->getQueues().graphics;
+
+    tempCommandBuffer.createAndBeginSingleUse();
+
+    transitionLayout(
+      tempCommandBuffer, m_props.format, VK_IMAGE_LAYOUT_UNDEFINED,
+      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+    );
+
+    copyFromBuffer(stagingBuffer, tempCommandBuffer);
+    transitionLayout(
+      tempCommandBuffer, m_props.format, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+    );
+
+    tempCommandBuffer.endSingleUse(graphicsQueue);
 }
 
 void VKImage::copyFromBuffer(VKBuffer& buffer, VKCommandBuffer& commandBuffer) {
@@ -43,8 +122,8 @@ void VKImage::copyFromBuffer(VKBuffer& buffer, VKCommandBuffer& commandBuffer) {
     region.imageSubresource.baseArrayLayer = 0;
     region.imageSubresource.layerCount     = 1;
 
-    region.imageExtent.width  = m_size.width;
-    region.imageExtent.height = m_size.height;
+    region.imageExtent.width  = m_props.width;
+    region.imageExtent.height = m_props.height;
     region.imageExtent.depth  = 1;
 
     vkCmdCopyBufferToImage(
@@ -109,8 +188,8 @@ void VKImage::transitionLayout(
 VkImageCreateInfo createImageCreateInfo(const VKImage::Properties& properties) {
     VkImageCreateInfo imageCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO };
     imageCreateInfo.imageType         = VK_IMAGE_TYPE_2D;
-    imageCreateInfo.extent.width      = properties.size.width;
-    imageCreateInfo.extent.height     = properties.size.height;
+    imageCreateInfo.extent.width      = properties.width;
+    imageCreateInfo.extent.height     = properties.height;
     imageCreateInfo.extent.depth      = 1;  // TODO: Support configurable depth.
     imageCreateInfo.mipLevels         = 4;  // TODO: Support mip mapping
     imageCreateInfo.arrayLayers = 1;  // TODO: Support number of layers in the image.
@@ -168,40 +247,45 @@ VkMemoryAllocateInfo createMemoryAllocateInfo(
 VkImageView VKImage::getView() const { return m_view; }
 
 void VKImage::createImage(
-  const Properties& properties, VkDevice logicalDevice, VkAllocator allocator
+
 ) {
-    auto imageCreateInfo = createImageCreateInfo(properties);
-    VK_ASSERT(vkCreateImage(logicalDevice, &imageCreateInfo, allocator, &m_handle));
+    auto imageCreateInfo = createImageCreateInfo(m_props);
+    VK_ASSERT(vkCreateImage(
+      m_device->getLogicalDevice(), &imageCreateInfo, m_context->getAllocator(),
+      &m_handle
+    ));
+    m_destroyImage = true;
     LOG_TRACE("VKImage created");
 }
 
-void VKImage::allocateAndBindMemory(
-  const Properties& properties, VkAllocator allocator
-) {
-    auto logicalDevice = m_device->getLogicalDevice();
-
+void VKImage::allocateAndBindMemory() {
+    auto logicalDevice      = m_device->getLogicalDevice();
     auto memoryRequirements = getMemoryRequirements(logicalDevice, m_handle);
-    auto memoryType         = m_device->findMemoryIndex(
-              memoryRequirements.memoryTypeBits, properties.memoryFlags
-            );
+
+    auto memoryType = m_device->findMemoryIndex(
+      memoryRequirements.memoryTypeBits, m_props.memoryFlags
+    );
 
     if (not memoryType)
         LOG_ERROR("Required memory type not found. VKImage not valid.");
 
     auto memoryAllocateInfo =
       createMemoryAllocateInfo(memoryRequirements, memoryType.value_or(-1));
-    VK_ASSERT(
-      vkAllocateMemory(logicalDevice, &memoryAllocateInfo, allocator, &m_memory)
-    );
+    VK_ASSERT(vkAllocateMemory(
+      logicalDevice, &memoryAllocateInfo, m_context->getAllocator(), &m_memory
+    ));
 
     VK_ASSERT(vkBindImageMemory(logicalDevice, m_handle, m_memory, 0));
 }
 
 void VKImage::createView(
-  const Properties& properties, VkDevice logicalDevice, VkAllocator allocator
+
 ) {
-    auto viewCreateInfo = createViewCreateInfo(properties, m_handle);
-    VK_ASSERT(vkCreateImageView(logicalDevice, &viewCreateInfo, allocator, &m_view));
+    auto viewCreateInfo = createViewCreateInfo(m_props, m_handle);
+    VK_ASSERT(vkCreateImageView(
+      m_device->getLogicalDevice(), &viewCreateInfo, m_context->getAllocator(),
+      &m_view
+    ));
 }
 
 }  // namespace sl::vk

@@ -57,7 +57,7 @@ struct RendererBackend {
 
     // resources
     virtual Texture* createTexture(
-      const Texture::Properties& props, const void* pixels
+      const Texture::Properties& props, const std::span<u8> pixels
     )                                             = 0;
     virtual void destroyTexture(Texture& texture) = 0;
 

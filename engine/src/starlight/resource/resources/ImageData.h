@@ -3,16 +3,17 @@
 #include <optional>
 #include <functional>
 
+#include <starlight/core/Core.h>
 #include "starlight/core/memory/Memory.hpp"
 #include "starlight/resource/fwd.h"
 
 namespace sl {
 
 struct ImageData {
-    unsigned char* pixels;
-    uint32_t width;
-    uint32_t height;
-    uint8_t channels;
+    u8* pixels;
+    u32 width;
+    u32 height;
+    u8 channels;
     bool isTransparent;
 };
 
@@ -32,8 +33,7 @@ public:
 
 private:
     explicit STBImageData(
-      unsigned char* pixels, uint32_t width, uint32_t height, uint8_t channels,
-      bool isTransparent
+      u8* pixels, u32 width, u32 height, u8 channels, bool isTransparent
     );
 
     STBImageData(const STBImageData& oth)            = default;

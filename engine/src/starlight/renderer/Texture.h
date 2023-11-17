@@ -1,5 +1,7 @@
 #pragma once
 
+#include <span>
+
 #include "starlight/core/Core.h"
 #include "starlight/core/memory/Memory.hpp"
 #include "starlight/core/math/Size.hpp"
@@ -18,6 +20,9 @@ public:
     };
 
     virtual ~Texture() = default;
+
+    virtual void resize(u32 width, u32 height)           = 0;
+    virtual void write(u32 offset, std::span<u8> pixels) = 0;
 
     const Properties& getProperties() const;
     const u32 getId() const;

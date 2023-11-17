@@ -288,12 +288,12 @@ void VKRendererBackend::onViewportResize(uint32_t width, uint32_t height) {
 }
 
 void VKRendererBackend::createCommandBuffers() {
-    const auto swapchainImagesCount = m_swapchain->getImagesSize();
+    const auto swapchainImagesCount = m_swapchain->getImageCount();
     m_rendererContext.createCommandBuffers(m_device.get(), swapchainImagesCount);
 }
 
 void VKRendererBackend::regenerateFramebuffers() {
-    const auto swapchainImagesCount = m_swapchain->getImagesSize();
+    const auto swapchainImagesCount = m_swapchain->getImageCount();
     auto framebuffers               = m_swapchain->getFramebuffers();
     auto depthBuffer                = m_swapchain->getDepthBuffer();
 
@@ -303,7 +303,9 @@ void VKRendererBackend::regenerateFramebuffers() {
     framebuffers->clear();
     framebuffers->reserve(swapchainImagesCount);
 
-    for (auto& view : *m_swapchain->getImageViews()) {
+    for (auto& texture : m_swapchain->getTextures()) {
+        auto view = texture->getImage()->getView();
+
         std::vector<VkImageView> worldAttachments = { view, depthBuffer->getView() };
 
         m_worldFramebuffers.emplace_back(
@@ -496,7 +498,7 @@ bool VKRendererBackend::endFrame(float deltaTime) {
 
 // resources
 Texture* VKRendererBackend::createTexture(
-  const Texture::Properties& props, const void* pixels
+  const Texture::Properties& props, const std::span<u8> pixels
 ) {
     LOG_DEBUG("Backend looking for free texture slot");
     for (int i = 0; i < m_textures.size(); ++i) {

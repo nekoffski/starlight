@@ -61,15 +61,11 @@ VkExtent2D createSwapchainExtent(
     return swapchainExtent;
 }
 
-uint64_t VKSwapchain::getImagesSize() const { return m_images.size(); }
-
 std::vector<VKFramebuffer>* VKSwapchain::getFramebuffers() {
     return &m_framebuffers;
 }
 
 VKImage* VKSwapchain::getDepthBuffer() { return m_depthBuffer.get(); }
-
-std::vector<VkImageView>* VKSwapchain::getImageViews() { return &m_views; }
 
 uint32_t getDeviceImageCount(const VKDevice::SwapchainSupportInfo& swapchainSupport
 ) {
@@ -84,6 +80,8 @@ uint32_t getDeviceImageCount(const VKDevice::SwapchainSupportInfo& swapchainSupp
 }
 
 VkSurfaceFormatKHR VKSwapchain::getSurfaceFormat() const { return m_imageFormat; }
+
+std::span<LocalPtr<VKTexture>> VKSwapchain::getTextures() { return m_textures; }
 
 struct SwapchainCreateInfo {
     VkSwapchainCreateInfoKHR handle;
@@ -176,33 +174,50 @@ void VKSwapchain::createImages() {
     const auto logicalDevice = m_device->getLogicalDevice();
     const auto allocator     = m_context->getAllocator();
 
-    uint32_t swapchainImageCount;
-    VK_ASSERT(
-      vkGetSwapchainImagesKHR(logicalDevice, m_handle, &swapchainImageCount, 0)
-    );
+    VK_ASSERT(vkGetSwapchainImagesKHR(logicalDevice, m_handle, &m_imageCount, 0));
 
-    ASSERT(swapchainImageCount > 0, "swapchainImageCount==0 for vulkan swapchain");
+    ASSERT(m_imageCount > 0, "swapchainImageCount==0 for vulkan swapchain");
 
-    m_images.resize(swapchainImageCount);
-    m_views.resize(swapchainImageCount);
+    std::array<VkImage, 16> swapchainImages = { 0 };
 
     VK_ASSERT(vkGetSwapchainImagesKHR(
-      logicalDevice, m_handle, &swapchainImageCount, m_images.data()
+      logicalDevice, m_handle, &m_imageCount, swapchainImages.data()
     ));
 
-    // Views
-    for (uint32_t i = 0; i < swapchainImageCount; ++i) {
-        auto viewCreateInfo =
-          createImageViewCreateInfo(m_images[i], m_imageFormat.format);
-        VK_ASSERT(
-          vkCreateImageView(logicalDevice, &viewCreateInfo, allocator, &m_views[i])
-        );
+    if (m_textures.size() != m_imageCount) {
+        m_textures.clear();
+        m_textures.resize(m_imageCount);
+
+        VKTexture::Properties props{};
+        props.width         = m_swapchainExtent.width;
+        props.height        = m_swapchainExtent.height;
+        props.channels      = 4;
+        props.isTransparent = false;
+        props.isWritable    = true;
+
+        for (int i = 0; i < m_imageCount; ++i) {
+            auto& swapchainImageHandle = swapchainImages[i];
+            props.name = fmt::format("SL_InternalSwapchainTexture_{}", i);
+
+            m_textures[i].emplace(
+              m_context, m_device, props, static_cast<u32>(i + 2048),
+              swapchainImageHandle, m_imageFormat.format
+            );
+        }
+    } else {
+        for (int i = 0; i < m_imageCount; ++i) {
+            auto& swapchainImageHandle = swapchainImages[i];
+            auto& texture              = m_textures[i];
+
+            texture->resize(m_swapchainExtent.width, m_swapchainExtent.height);
+        }
     }
 
     // Create depth image and its view.
     VKImage::Properties imageProperties{
         VK_IMAGE_TYPE_2D,
-        Size2u32(m_swapchainExtent.width, m_swapchainExtent.height),
+        m_swapchainExtent.width,
+        m_swapchainExtent.height,
         m_device->getDepthFormat(),
         VK_IMAGE_TILING_OPTIMAL,
         VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
@@ -211,7 +226,7 @@ void VKSwapchain::createImages() {
         VK_IMAGE_ASPECT_DEPTH_BIT,
     };
 
-    m_depthBuffer = std::make_unique<VKImage>(m_device, m_context, imageProperties);
+    m_depthBuffer.emplace(m_device, m_context, imageProperties);
 }
 
 void VKSwapchain::create() {
@@ -229,13 +244,10 @@ void VKSwapchain::changeSize(const Size2u32& size) {
 }
 
 void VKSwapchain::destroy() {
-    const auto logicalDevice = m_device->getLogicalDevice();
-    const auto allocator     = m_context->getAllocator();
-
-    for (auto& imageView : m_views)
-        vkDestroyImageView(logicalDevice, imageView, allocator);
-
-    vkDestroySwapchainKHR(logicalDevice, m_handle, allocator);
+    vkDestroySwapchainKHR(
+      m_device->getLogicalDevice(), m_handle, m_context->getAllocator()
+    );
+    LOG_TRACE("VKSwapchain destroyed");
 }
 
 std::optional<uint32_t> VKSwapchain::acquireNextImageIndex(
@@ -297,5 +309,7 @@ void VKSwapchain::recreate() {
     destroy();
     create();
 }
+
+u32 VKSwapchain::getImageCount() const { return m_imageCount; }
 
 }  // namespace sl::vk

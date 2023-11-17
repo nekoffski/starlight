@@ -8,6 +8,8 @@
 #include "starlight/core/math/Size.hpp"
 
 #include "Vulkan.h"
+#include "VKTexture.h"
+
 #include "fwd.h"
 
 namespace sl::vk {
@@ -30,15 +32,13 @@ public:
 
     void recreate();
 
-    uint64_t getImagesSize() const;
+    u32 getImageCount() const;
 
     std::vector<VKFramebuffer>* getFramebuffers();
-
     VKImage* getDepthBuffer();
-
-    std::vector<VkImageView>* getImageViews();
-
     VkSurfaceFormatKHR getSurfaceFormat() const;
+
+    std::span<LocalPtr<VKTexture>> getTextures();
 
 private:
     void create();
@@ -56,13 +56,13 @@ private:
     VkSwapchainKHR m_handle;
     VkExtent2D m_swapchainExtent;
 
-    std::vector<VkImage> m_images;
-    std::vector<VkImageView> m_views;
-
-    std::unique_ptr<VKImage> m_depthBuffer;
+    LocalPtr<VKImage> m_depthBuffer;
+    std::vector<LocalPtr<VKTexture>> m_textures;
 
     // TODO: redefine to fixed-size array
     std::vector<VKFramebuffer> m_framebuffers;
+
+    u32 m_imageCount;
 };
 
 }  // namespace sl::vk

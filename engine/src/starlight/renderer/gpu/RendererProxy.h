@@ -28,7 +28,9 @@ public:
     );
     void destroyGeometry(Geometry& geometry);
 
-    Texture* createTexture(const Texture::Properties& props, const void* pixels);
+    Texture* createTexture(
+      const Texture::Properties& props, const std::span<u8> pixels
+    );
     void destroyTexture(Texture& texture);
 
     TextureMap* createTextureMap(

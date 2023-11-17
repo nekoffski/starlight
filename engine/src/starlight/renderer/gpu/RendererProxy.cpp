@@ -48,7 +48,7 @@ void RendererProxy::destroyTextureMap(TextureMap& textureMap) {
 }
 
 Texture* RendererProxy::createTexture(
-  const Texture::Properties& props, const void* pixels
+  const Texture::Properties& props, const std::span<u8> pixels
 ) {
     return m_rendererBackend.createTexture(props, pixels);
 }

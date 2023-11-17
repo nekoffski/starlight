@@ -17,35 +17,28 @@
 
 namespace sl::vk {
 
-VKTexture::VKTexture(
-  const VKContext* context, VKDevice* device, const Properties& props, u32 id,
-  const void* pixels
-) :
-    Texture(props, id),
-    m_context(context), m_device(device), m_generation(0u) {
-    LOG_TRACE("Creating Texture");
-    VkDeviceSize imageSize = props.width * props.height * props.channels;
-    VkFormat format        = VK_FORMAT_R8G8B8A8_UNORM;
+static VkFormat channelsToFormat(u32 channels) {
+    switch (channels) {
+        case 1:
+            return VK_FORMAT_R8_UNORM;
+        case 2:
+            return VK_FORMAT_R8G8_UNORM;
+        case 3:
+            return VK_FORMAT_R8G8B8_UNORM;
+        case 4:
+            return VK_FORMAT_R8G8B8A8_UNORM;
+        default:
+            return VK_FORMAT_R8G8B8A8_UNORM;
+    }
+}
 
-    VkBufferUsageFlags usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-    VkMemoryPropertyFlags memoryProps =
-      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-
-    VKBuffer::Properties stagingBufferProperties{
-        .size                = imageSize,
-        .memoryPropertyFlags = memoryProps,
-        .usageFlags          = usage,
-        .bindOnCreate        = true,
-        .useFreeList         = false
-    };
-
-    VKBuffer stagingBuffer(m_context, m_device, stagingBufferProperties);
-
-    stagingBuffer.loadData(0, imageSize, 0, pixels);
-
-    VKImage::Properties imageProperties{
+VKImage::Properties getImageProperties(
+  u32 width, u32 height, VkFormat format = VK_FORMAT_R8G8B8A8_UNORM
+) {
+    return VKImage::Properties{
         VK_IMAGE_TYPE_2D,
-        {props.width, props.height},
+        width,
+        height,
         format,
         VK_IMAGE_TILING_OPTIMAL,
         VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT
@@ -54,37 +47,66 @@ VKTexture::VKTexture(
         true,
         VK_IMAGE_ASPECT_COLOR_BIT
     };
+}
 
-    m_image.emplace(m_device, m_context, imageProperties);
-
-    VKCommandBuffer tempCommandBuffer{
-        m_device, m_device->getGraphicsCommandPool()
-    };
-    VkQueue graphicsQueue = m_device->getQueues().graphics;
-
-    tempCommandBuffer.createAndBeginSingleUse();
-
-    m_image->transitionLayout(
-      tempCommandBuffer, format, VK_IMAGE_LAYOUT_UNDEFINED,
-      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
-    );
-
-    m_image->copyFromBuffer(stagingBuffer, tempCommandBuffer);
-
-    m_image->transitionLayout(
-      tempCommandBuffer, format, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-    );
-
-    tempCommandBuffer.endSingleUse(graphicsQueue);
-
-    m_generation++;
+VKTexture::VKTexture(
+  const VKContext* context, VKDevice* device, const Properties& props, u32 id,
+  const std::span<u8> pixels
+) :
+    Texture(props, id),
+    m_context(context), m_device(device),
+    m_image(
+      m_device, m_context,
+      getImageProperties(
+        props.width, props.height, channelsToFormat(props.channels)
+      ),
+      pixels
+    ),
+    m_generation(1u) {
     LOG_TRACE("Texture created: {}", m_props.name);
+}
+
+VKTexture::VKTexture(
+  const VKContext* context, VKDevice* device, const Properties& props, u32 id,
+  VkImage handle, VkFormat format
+) :
+    Texture(props, id),
+    m_context(context), m_device(device),
+    m_image(
+      device, context, getImageProperties(props.width, props.height, format), handle
+    ),
+    m_generation(1u) {
+    LOG_TRACE("Texture created: {} from existing VKImage", m_props.name);
 }
 
 VKTexture::~VKTexture() { LOG_TRACE("Texture destroyed: {}", m_props.name); }
 
-const VKImage* VKTexture::getImage() const { return m_image.get(); }
+VKImage* VKTexture::getImage() { return &m_image; }
+
+void VKTexture::resize(u32 width, u32 height) {
+    m_props.width  = width;
+    m_props.height = height;
+
+    m_image.recreate(
+      getImageProperties(width, height, channelsToFormat(m_props.channels))
+    );
+}
+
+void VKTexture::resize(u32 width, u32 height, VkImage handle) {
+    m_props.width  = width;
+    m_props.height = height;
+
+    auto props       = m_image.getProperties();
+    props.width      = width;
+    props.height     = height;
+    props.createView = true;
+
+    m_image.recreate(props, handle);
+}
+
+void VKTexture::write(u32 offset, std::span<u8> pixels) {
+    m_image.write(offset, pixels);
+}
 
 static VkSamplerCreateInfo createSamplerCreateInfo(
   const TextureMap::Properties& props

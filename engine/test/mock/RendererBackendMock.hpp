@@ -15,7 +15,9 @@ struct RendererBackendMock : RendererBackend {
     MOCK_METHOD(void, renderUI, (std::function<void()> &&));
     MOCK_METHOD(void, drawGeometry, (const GeometryRenderData&));
     MOCK_METHOD(void, onViewportResize, (uint32_t, uint32_t));
-    MOCK_METHOD(Texture*, createTexture, (const Texture::Properties&, const void*));
+    MOCK_METHOD(
+      Texture*, createTexture, (const Texture::Properties&, const std::span<u8>)
+    );
     MOCK_METHOD(void, destroyTexture, (Texture&));
     MOCK_METHOD(
       TextureMap*, createTextureMap,

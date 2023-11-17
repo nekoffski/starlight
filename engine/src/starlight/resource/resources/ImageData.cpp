@@ -7,8 +7,7 @@
 namespace sl {
 
 STBImageData::STBImageData(
-  unsigned char* pixels, uint32_t width, uint32_t height, uint8_t channels,
-  bool isTransparent
+  u8* pixels, u32 width, u32 height, u8 channels, bool isTransparent
 ) :
     ImageData{ pixels, width, height, channels, isTransparent } {}
 
@@ -61,8 +60,8 @@ std::optional<STBImageData> STBImageData::load(
     bool isTransparent = true;
 
     STBImageData image(
-      pixelsHandle, static_cast<uint32_t>(width), static_cast<uint32_t>(height),
-      static_cast<uint8_t>(requiredChannels), isTransparent
+      pixelsHandle, static_cast<u32>(width), static_cast<u32>(height),
+      static_cast<u8>(requiredChannels), isTransparent
     );
 
     LOG_TRACE(

@@ -49,8 +49,9 @@ public:
     );
 
     // resources
-    Texture* createTexture(const Texture::Properties& props, const void* pixels)
-      override;
+    Texture* createTexture(
+      const Texture::Properties& props, const std::span<u8> pixels
+    ) override;
     void destroyTexture(Texture& texture) override;
 
     Geometry* createGeometry(

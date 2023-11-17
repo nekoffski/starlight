@@ -23,18 +23,28 @@ class VKTexture : public Texture {
 public:
     explicit VKTexture(
       const VKContext* context, VKDevice* device, const Properties& props, u32 id,
-      const void* pixels
+      const std::span<u8> pixels
+    );
+
+    explicit VKTexture(
+      const VKContext* context, VKDevice* device, const Properties& props, u32 id,
+      VkImage handle, VkFormat format
     );
 
     ~VKTexture() override;
 
-    const VKImage* getImage() const;
+    VKImage* getImage();
+
+    void resize(u32 width, u32 height) override;
+    void write(u32 offset, std::span<u8> pixels) override;
+
+    void resize(u32 width, u32 height, VkImage handle);
 
 private:
     const VKContext* m_context;
     VKDevice* m_device;
 
-    LocalPtr<VKImage> m_image;
+    VKImage m_image;
     u32 m_generation;
 };
 

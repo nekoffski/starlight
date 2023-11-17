@@ -6,11 +6,11 @@
 namespace sl {
 
 Material::Material(const Properties& props, u32 id, Shader& shader) :
-    m_props(props), m_id(id), m_shader(shader), m_renderFrameNumber(0),
-    m_instanceId(shader.acquireInstanceResources(
+    m_props(props), m_id(id), m_shader(shader), m_renderFrameNumber(0) {
+    LOG_TRACE("Creating Material: {}", m_props.name);
+    m_instanceId = shader.acquireInstanceResources(
       { m_props.diffuseMap, m_props.specularMap, m_props.normalMap }
-    )) {
-    LOG_TRACE("Creating Material");
+    );
     LOG_DEBUG("Material '{}' instance id: {}", m_props.name, m_instanceId);
 }
 

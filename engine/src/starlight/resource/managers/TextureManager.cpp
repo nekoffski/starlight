@@ -49,7 +49,12 @@ Texture* TextureManager::load(const std::string& name) {
 
     ASSERT(imageData, "Could not load image: {}", name);
 
-    m_textures[name] = m_rendererProxy.createTexture(props, imageData->pixels);
+    m_textures[name] = m_rendererProxy.createTexture(
+      props,
+      std::span<u8>(
+        imageData->pixels, imageData->width * imageData->height * imageData->channels
+      )
+    );
     return m_textures[name];
 }
 
@@ -104,9 +109,8 @@ void TextureManager::createDefaultTexture() {
           pixels
         );
     }
-    m_textures[defaultTextureName] =
-      m_rendererProxy.createTexture(props, pixels.data());
-    Texture::defaultDiffuse = m_textures[defaultTextureName];
+    m_textures[defaultTextureName] = m_rendererProxy.createTexture(props, pixels);
+    Texture::defaultDiffuse        = m_textures[defaultTextureName];
     LOG_TRACE("Default texture created");
 }
 
@@ -122,7 +126,7 @@ void TextureManager::createDefaultSpecularMap() {
     };
     std::vector<u8> pixels(props.width * props.height * props.channels, 0);
     m_textures[defaultSpecularMapName] =
-      m_rendererProxy.createTexture(props, pixels.data());
+      m_rendererProxy.createTexture(props, pixels);
     Texture::defaultSpecular = m_textures[defaultSpecularMapName];
     LOG_TRACE("Default specular map created");
 }
@@ -143,9 +147,8 @@ void TextureManager::createDefaultNormalMap() {
     for (int i = 0; i < pixels.size(); i += props.channels)
         setColor(i, zAxis, pixels);
 
-    m_textures[defaultNormalMapName] =
-      m_rendererProxy.createTexture(props, pixels.data());
-    Texture::defaultNormal = m_textures[defaultNormalMapName];
+    m_textures[defaultNormalMapName] = m_rendererProxy.createTexture(props, pixels);
+    Texture::defaultNormal           = m_textures[defaultNormalMapName];
     LOG_TRACE("Default specular normal map created");
 }
 
