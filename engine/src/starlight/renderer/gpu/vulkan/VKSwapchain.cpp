@@ -200,7 +200,7 @@ void VKSwapchain::createImages() {
             props.name = fmt::format("SL_InternalSwapchainTexture_{}", i);
 
             m_textures[i].emplace(
-              m_context, m_device, props, static_cast<u32>(i + 2048),
+              static_cast<u32>(i + 2048), m_context, m_device, props,
               swapchainImageHandle, m_imageFormat.format
             );
         }

@@ -23,24 +23,13 @@ VKRendererBackend::VKRendererBackend(Window& window, const Config& config) :
     createCommandBuffers();
     createSemaphoresAndFences();
     createBuffers();
-    prepareResources();
+
+    m_resourcePools.emplace(
+      *m_context, *m_device, *m_objectVertexBuffer, *m_objectIndexBuffer,
+      m_rendererContext, this
+    );
 
     initUI(window);
-}
-
-void VKRendererBackend::prepareResources() {
-    LOG_DEBUG("Preparing backend resources");
-    static const u32 maxTextures = 1024;
-    static const u32 maxShaders  = 1024;
-
-    LOG_DEBUG("Max textures={}", maxTextures);
-    m_textures.resize(maxTextures);
-    LOG_DEBUG("Max texture maps={}", maxTextures);
-    m_textureMaps.resize(maxTextures);
-    LOG_DEBUG("Max geometries={}", vulkanMaxGeometryCount);
-    m_geometries.resize(vulkanMaxGeometryCount);
-    LOG_DEBUG("Max shaders={}", maxShaders);
-    m_shaders.resize(maxShaders);
 }
 
 VKRendererBackend::~VKRendererBackend() {
@@ -496,97 +485,61 @@ bool VKRendererBackend::endFrame(float deltaTime) {
     return true;
 }
 
-// resources
-Texture* VKRendererBackend::createTexture(
-  const Texture::Properties& props, const std::span<u8> pixels
-) {
-    LOG_DEBUG("Backend looking for free texture slot");
-    for (int i = 0; i < m_textures.size(); ++i) {
-        if (not m_textures[i]) {
-            LOG_DEBUG("Slot {} found, will create texture", i);
-            m_textures[i].emplace(m_context.get(), m_device.get(), props, i, pixels);
-            return m_textures[i].get();
-        }
-    }
-    LOG_WARN(
-      "Couldn't find slot for a new texture, consider changing configuration to allow more"
-    );
-    return nullptr;
+ResourcePools* VKRendererBackend::getResourcePools() {
+    return m_resourcePools.get();
 }
 
-void VKRendererBackend::destroyTexture(Texture& texture) {
-    m_textures[texture.getId()].clear();
-}
+// void VKRendererBackend::destroyGeometry(Geometry& geometry) {
+//     m_geometries[geometry.getId()].clear();
+// }
 
-Geometry* VKRendererBackend::createGeometry(
-  const Geometry::Properties& props, const Geometry::Data& data
-) {
-    LOG_DEBUG("Backend looking for free geometry slot");
-    for (int i = 0; i < m_geometries.size(); ++i) {
-        if (not m_geometries[i]) {
-            LOG_DEBUG("Slot {} found, will create geometry", i);
-            m_geometries[i].emplace(
-              m_device.get(), m_context.get(), *m_objectVertexBuffer,
-              *m_objectIndexBuffer, props, i, data
-            );
-            return m_geometries[i].get();
-        }
-    }
-    LOG_WARN(
-      "Couldn't find slot for a new geometry, consider changing configuration to allow more"
-    );
-    return nullptr;
-}
+// Shader* VKRendererBackend::createShader(const Shader::Properties& props) {
+//     // TODO: unify with other create* methods?
+//     LOG_DEBUG("Backend looking for free shader slot");
+//     for (int i = 0; i < m_shaders.size(); ++i) {
+//         if (not m_shaders[i]) {
+//             LOG_DEBUG("Slot {} found, will create shader", i);
+//             m_shaders[i].emplace(
+//               m_device.get(), m_context.get(),
+//               getRenderPass(getRenderPassId(props.renderPassName)),
+//               m_rendererContext, props, i
+//             );
+//             return m_shaders[i].get();
+//         }
+//     }
+//     LOG_WARN(
+//       "Couldn't find slot for a new shader, consider changing configuration to
+//       allow more"
+//     );
+//     return nullptr;
+// }
 
-void VKRendererBackend::destroyGeometry(Geometry& geometry) {
-    m_geometries[geometry.getId()].clear();
-}
+// void VKRendererBackend::destroyShader(Shader& shader) {
+//     m_shaders[shader.getId()].clear();
+// }
 
-Shader* VKRendererBackend::createShader(const Shader::Properties& props) {
-    // TODO: unify with other create* methods?
-    LOG_DEBUG("Backend looking for free shader slot");
-    for (int i = 0; i < m_shaders.size(); ++i) {
-        if (not m_shaders[i]) {
-            LOG_DEBUG("Slot {} found, will create shader", i);
-            m_shaders[i].emplace(
-              m_device.get(), m_context.get(),
-              getRenderPass(getRenderPassId(props.renderPassName)),
-              m_rendererContext, props, i
-            );
-            return m_shaders[i].get();
-        }
-    }
-    LOG_WARN(
-      "Couldn't find slot for a new shader, consider changing configuration to allow more"
-    );
-    return nullptr;
-}
+// TextureMap* VKRendererBackend::createTextureMap(
+//   const TextureMap::Properties& props, Texture& texture
+// ) {
+//     LOG_DEBUG("Backend looking for free texture map slot");
+//     for (int i = 0; i < m_textureMaps.size(); ++i) {
+//         if (not m_textureMaps[i]) {
+//             LOG_DEBUG("Slot {} found, will create texture map", i);
+//             m_textureMaps[i].emplace(
+//               *m_context, *m_device, props, i, *m_textures[texture.getId()]
+//             );
+//             return m_textureMaps[i].get();
+//         }
+//     }
+//     LOG_WARN(
+//       "Couldn't find slot for a new texture map, consider changing configuration
+//       to allow more"
+//     );
+//     return nullptr;
+// }
 
-void VKRendererBackend::destroyShader(Shader& shader) {
-    m_shaders[shader.getId()].clear();
-}
-
-TextureMap* VKRendererBackend::createTextureMap(
-  const TextureMap::Properties& props, Texture& texture
-) {
-    LOG_DEBUG("Backend looking for free texture map slot");
-    for (int i = 0; i < m_textureMaps.size(); ++i) {
-        if (not m_textureMaps[i]) {
-            LOG_DEBUG("Slot {} found, will create texture map", i);
-            m_textureMaps[i].emplace(
-              *m_context, *m_device, props, i, *m_textures[texture.getId()]
-            );
-            return m_textureMaps[i].get();
-        }
-    }
-    LOG_WARN(
-      "Couldn't find slot for a new texture map, consider changing configuration to allow more"
-    );
-    return nullptr;
-}
-
-void VKRendererBackend::destroyTextureMap(TextureMap& textureMap) {
-    m_textureMaps[textureMap.getId()].clear();
-}
+// void VKRendererBackend::destroyTextureMap(TextureMap& textureMap) {
+//     m_textureMaps[textureMap.getId()].clear();
+// }
 
 }  // namespace sl::vk

@@ -185,7 +185,7 @@ int main() {
       .on<sl::KeyEvent>(onKey)
       .on<sl::WindowResized>(onWindowResized);
 
-    sl::ResourceManager resourceManager(*renderer.getProxy());
+    sl::ResourceManager resourceManager(*renderer.getResourcePools());
 
     renderer.setCoreShaders(
       resourceManager.getUIDefaultShader(),

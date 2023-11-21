@@ -10,10 +10,10 @@ namespace sl {
 
 MaterialManager::MaterialManager(
   ShaderManager& shaderManager, TextureManager& textureManager,
-  RendererProxy& rendererProxy
+  ResourcePools& resourcePools
 ) :
     m_shaderManager(shaderManager),
-    m_textureManager(textureManager), m_rendererProxy(rendererProxy) {
+    m_textureManager(textureManager), m_resourcePools(resourcePools) {
     static constexpr u32 maxMaterials = 1024;
     LOG_DEBUG("Max materials={}", maxMaterials);
     m_materials.resize(maxMaterials);
@@ -27,15 +27,15 @@ void MaterialManager::createDefaultMaterial() {
     Material::Properties props;
     props.name         = "Internal.Material.Default";
     props.diffuseColor = Vec4f{ 1.0f };
-    props.diffuseMap   = m_rendererProxy.createTextureMap(
+    props.diffuseMap   = m_resourcePools.createTextureMap(
         TextureMap::Properties{ .use = TextureMap::Use::diffuseMap },
         *Texture::defaultDiffuse
       );
-    props.normalMap = m_rendererProxy.createTextureMap(
+    props.normalMap = m_resourcePools.createTextureMap(
       TextureMap::Properties{ .use = TextureMap::Use::normalMap },
       *Texture::defaultNormal
     );
-    props.specularMap = m_rendererProxy.createTextureMap(
+    props.specularMap = m_resourcePools.createTextureMap(
       TextureMap::Properties{ .use = TextureMap::Use::specularMap },
       *Texture::defaultSpecular
     );
@@ -91,15 +91,15 @@ Material* MaterialManager::load(const MaterialConfig& config) {
     props.diffuseColor = config.diffuseColor;
     props.shininess    = config.shininess;
 
-    props.diffuseMap = m_rendererProxy.createTextureMap(
+    props.diffuseMap = m_resourcePools.createTextureMap(
       TextureMap::Properties{ .use = TextureMap::Use::diffuseMap },
       *getTexture(config.diffuseMap).value_or(Texture::defaultDiffuse)
     );
-    props.normalMap = m_rendererProxy.createTextureMap(
+    props.normalMap = m_resourcePools.createTextureMap(
       TextureMap::Properties{ .use = TextureMap::Use::normalMap },
       *getTexture(config.normalMap).value_or(Texture::defaultNormal)
     );
-    props.specularMap = m_rendererProxy.createTextureMap(
+    props.specularMap = m_resourcePools.createTextureMap(
       TextureMap::Properties{ .use = TextureMap::Use::specularMap },
       *getTexture(config.specularMap).value_or(Texture::defaultSpecular)
     );
@@ -130,7 +130,7 @@ void MaterialManager::destroy(const std::string& name) {
     if (auto material = m_materialsLUT.find(name); material != m_materialsLUT.end())
       [[likely]] {
         // TODO: I really don't like this idea, come up with RAII solution
-        material->second->destroyTextureMaps(m_rendererProxy);
+        material->second->destroyTextureMaps(m_resourcePools);
         auto id = material->second->getId();
 
         m_materials[id].clear();

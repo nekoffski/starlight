@@ -30,7 +30,7 @@ public:
     u32 getId() const;
     const std::string& getName() const;
 
-    void destroyTextureMaps(RendererProxy& rendererProxy);
+    void destroyTextureMaps(ResourcePools& resourcePools);
 
 private:
     Properties m_props;

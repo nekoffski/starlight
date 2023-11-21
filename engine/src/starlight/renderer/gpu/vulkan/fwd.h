@@ -19,5 +19,7 @@ class VKBuffer;
 class VKTexture;
 class VKTextureLoader;
 class VKRendererContext;
+class VKResourcePools;
+class VKRendererBackend;
 
 }  // namespace sl::vk

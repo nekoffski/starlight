@@ -18,7 +18,7 @@ public:
     inline static const std::string defaultSpecularMapName =
       "Internal.Texture.DefaultSpecularMap";
 
-    explicit TextureManager(RendererProxy& rendererProxy);
+    explicit TextureManager(ResourcePools& resourcePools);
     ~TextureManager();
 
     Texture* load(const std::string& name);
@@ -33,7 +33,7 @@ private:
     void createDefaultSpecularMap();
     void createDefaultNormalMap();
 
-    RendererProxy& m_rendererProxy;
+    ResourcePools& m_resourcePools;
 
     std::unordered_map<std::string, Texture*> m_textures;
 

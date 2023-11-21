@@ -1,5 +1,5 @@
 #include <starlight/resource/managers/TextureManager.h>
-#include <starlight/renderer/gpu/RendererProxy.h>
+#include <starlight/renderer/ResourcePools.h>
 
 #include "mock/RendererBackendMock.hpp"
 
@@ -12,8 +12,8 @@ using namespace sl;
 // TODO:: fix
 struct DISABLED_TextureLoaderTests : public Test {
     RendererBackendMock backend;
-    RendererProxy proxy{ backend };
-    TextureManager textureManager{ proxy };
+    // ResourcePools proxy{ backend };
+    // TextureManager textureManager{ proxy };
     // std::unique_ptr<Texture> texture = std::make_unique<Texture>();
 };
 
@@ -80,5 +80,5 @@ TEST_F(
 TEST_F(
   DISABLED_TextureLoaderTests, whenDestroyingNotExistingTexture_shouldNotThrow
 ) {
-    EXPECT_NO_THROW({ textureManager.destroy("bleble"); });
+    // EXPECT_NO_THROW({ textureManager.destroy("bleble"); });
 }

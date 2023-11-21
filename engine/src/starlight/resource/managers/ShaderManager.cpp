@@ -5,9 +5,9 @@
 namespace sl {
 
 ShaderManager::ShaderManager(
-  RendererProxy& rendererProxy, const TextureManager& textureManager
+  ResourcePools& resourcePools, const TextureManager& textureManager
 ) :
-    m_rendererProxy(rendererProxy),
+    m_resourcePools(resourcePools),
     m_textureManager(textureManager) {}
 
 ShaderManager::~ShaderManager() { destroyAll(); }
@@ -16,7 +16,7 @@ Shader* ShaderManager::load(const std::string& name) {
     LOG_TRACE("Loading shader: {}", name);
 
     auto config = ShaderConfig::load(name, Texture::defaultDiffuse);
-    auto shader = m_rendererProxy.createShader(config->properties);
+    auto shader = m_resourcePools.createShader(config->properties);
 
     if (not shader) {
         LOG_ERROR("Could not create shader '{}'", name);
@@ -39,14 +39,14 @@ void ShaderManager::destroy(const std::string& name) {
         LOG_WARN("Trying to destroy shader '{}' that couldn't be found", name);
         return;
     } else {
-        m_rendererProxy.destroyShader(*shader->second);
+        m_resourcePools.destroyShader(*shader->second);
     }
 }
 
 void ShaderManager::destroyAll() {
     LOG_TRACE("Destroying all shaders");
     for (auto& shader : m_shaders | std::views::values)
-        m_rendererProxy.destroyShader(*shader);
+        m_resourcePools.destroyShader(*shader);
     m_shaders.clear();
 }
 

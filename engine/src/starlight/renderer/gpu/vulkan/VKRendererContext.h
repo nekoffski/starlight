@@ -10,6 +10,7 @@
 
 namespace sl::vk {
 
+// TODO: this name should be changed to something more descriptive
 class VKRendererContext {
     friend class VKRendererBackend;
 

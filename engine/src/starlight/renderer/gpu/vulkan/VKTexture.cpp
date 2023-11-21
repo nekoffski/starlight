@@ -50,7 +50,7 @@ VKImage::Properties getImageProperties(
 }
 
 VKTexture::VKTexture(
-  const VKContext* context, VKDevice* device, const Properties& props, u32 id,
+  u32 id, const VKContext* context, VKDevice* device, const Properties& props,
   const std::span<u8> pixels
 ) :
     Texture(props, id),
@@ -67,7 +67,7 @@ VKTexture::VKTexture(
 }
 
 VKTexture::VKTexture(
-  const VKContext* context, VKDevice* device, const Properties& props, u32 id,
+  u32 id, const VKContext* context, VKDevice* device, const Properties& props,
   VkImage handle, VkFormat format
 ) :
     Texture(props, id),
@@ -145,7 +145,7 @@ static VkSamplerCreateInfo createSamplerCreateInfo(
 }
 
 VKTextureMap::VKTextureMap(
-  VKContext& context, VKDevice& device, const Properties& props, u32 id,
+  u32 id, VKContext& context, VKDevice& device, const Properties& props,
   VKTexture& texture
 ) :
     TextureMap(props, id),

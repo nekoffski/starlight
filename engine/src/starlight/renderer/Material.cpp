@@ -1,7 +1,7 @@
 #include "Material.h"
 
 #include "Shader.h"
-#include "gpu/RendererProxy.h"
+#include "ResourcePools.h"
 
 namespace sl {
 
@@ -36,10 +36,10 @@ u32 Material::getId() const { return m_id; }
 
 const std::string& Material::getName() const { return m_props.name; }
 
-void Material::destroyTextureMaps(RendererProxy& rendererProxy) {
-    rendererProxy.destroyTextureMap(*m_props.diffuseMap);
-    rendererProxy.destroyTextureMap(*m_props.specularMap);
-    rendererProxy.destroyTextureMap(*m_props.normalMap);
+void Material::destroyTextureMaps(ResourcePools& resourcePools) {
+    resourcePools.destroyTextureMap(*m_props.diffuseMap);
+    resourcePools.destroyTextureMap(*m_props.specularMap);
+    resourcePools.destroyTextureMap(*m_props.normalMap);
 }
 
 }  // namespace sl

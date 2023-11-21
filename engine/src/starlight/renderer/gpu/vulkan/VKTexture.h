@@ -22,12 +22,12 @@ namespace sl::vk {
 class VKTexture : public Texture {
 public:
     explicit VKTexture(
-      const VKContext* context, VKDevice* device, const Properties& props, u32 id,
+      u32 id, const VKContext* context, VKDevice* device, const Properties& props,
       const std::span<u8> pixels
     );
 
     explicit VKTexture(
-      const VKContext* context, VKDevice* device, const Properties& props, u32 id,
+      u32 id, const VKContext* context, VKDevice* device, const Properties& props,
       VkImage handle, VkFormat format
     );
 
@@ -35,10 +35,10 @@ public:
 
     VKImage* getImage();
 
+    void resize(u32 width, u32 height, VkImage handle);
+
     void resize(u32 width, u32 height) override;
     void write(u32 offset, std::span<u8> pixels) override;
-
-    void resize(u32 width, u32 height, VkImage handle);
 
 private:
     const VKContext* m_context;
@@ -51,7 +51,7 @@ private:
 class VKTextureMap : public TextureMap {
 public:
     explicit VKTextureMap(
-      VKContext& context, VKDevice& device, const Properties& props, u32 id,
+      u32 id, VKContext& context, VKDevice& device, const Properties& props,
       VKTexture& texture
     );
     ~VKTextureMap() override;

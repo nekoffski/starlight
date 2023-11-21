@@ -5,7 +5,7 @@
 #include "starlight/core/Core.h"
 
 #include "starlight/renderer/Geometry.h"
-#include "starlight/renderer/gpu/RendererProxy.h"
+#include "starlight/renderer/ResourcePools.h"
 
 #include "MaterialManager.h"
 
@@ -19,7 +19,7 @@ class GeometryManager {
 
 public:
     explicit GeometryManager(
-      RendererProxy& rendererProxy, MaterialManager& materialManager
+      ResourcePools& resourcePools, MaterialManager& materialManager
     );
     ~GeometryManager();
 
@@ -50,13 +50,13 @@ private:
           m_materialManager.acquire(config.materialName)
             ?: m_materialManager.getDefaultMaterial();
 
-        return m_rendererProxy.createGeometry(
+        return m_resourcePools.createGeometry(
           Geometry::Properties{ config.name, material }, config.vertices,
           config.indices
         );
     }
 
-    RendererProxy& m_rendererProxy;
+    ResourcePools& m_resourcePools;
     MaterialManager& m_materialManager;
 
     std::unordered_map<u32, Geometry*> m_geometries;

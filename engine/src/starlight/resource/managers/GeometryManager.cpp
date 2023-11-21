@@ -3,9 +3,9 @@
 namespace sl {
 
 GeometryManager::GeometryManager(
-  RendererProxy& rendererProxy, MaterialManager& materialManager
+  ResourcePools& resourcePools, MaterialManager& materialManager
 ) :
-    m_rendererProxy(rendererProxy),
+    m_resourcePools(resourcePools),
     m_materialManager(materialManager) {
     createDefaultGeometries();
 }
@@ -26,14 +26,14 @@ void GeometryManager::destroy(uint32_t id) {
         );
         return;
     } else {
-        m_rendererProxy.destroyGeometry(*geometry->second);
+        m_resourcePools.destroyGeometry(*geometry->second);
     }
 }
 
 void GeometryManager::destroyAll() {
     LOG_TRACE("Destroying all geometries");
     for (auto& geometry : m_geometries | std::views::values)
-        m_rendererProxy.destroyGeometry(*geometry);
+        m_resourcePools.destroyGeometry(*geometry);
     m_geometries.clear();
 }
 
@@ -64,7 +64,7 @@ void GeometryManager::createDefaultGeometries() {
         Geometry::Properties props{
             "default-3d-geometry", m_materialManager.getDefaultMaterial()
         };
-        return m_rendererProxy.createGeometry(props, vertices, indices);
+        return m_resourcePools.createGeometry(props, vertices, indices);
     };
     m_defaultGeometry3D = create3D();
 
@@ -89,7 +89,7 @@ void GeometryManager::createDefaultGeometries() {
         Geometry::Properties props{
             "default-2d-geometry", m_materialManager.getDefaultMaterial()
         };
-        return m_rendererProxy.createGeometry(props, vertices, indices);
+        return m_resourcePools.createGeometry(props, vertices, indices);
     };
     m_defaultGeometry2D = create2D();
 }

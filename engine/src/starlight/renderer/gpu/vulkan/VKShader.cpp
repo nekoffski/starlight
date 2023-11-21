@@ -84,8 +84,8 @@ VKShaderStage::~VKShaderStage() {
 }
 
 VKShader::VKShader(
-  VKDevice* device, const VKContext* context, VKRenderPass* renderPass,
-  VKRendererContext& rendererContext, const Shader::Properties& props, u32 id
+  u32 id, VKDevice* device, const VKContext* context, VKRenderPass* renderPass,
+  VKRendererContext& rendererContext, const Shader::Properties& props
 ) :
     Shader(props, id),
     m_device(device), m_context(context), m_renderPass(renderPass),

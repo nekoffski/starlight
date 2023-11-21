@@ -6,7 +6,7 @@
 #include "starlight/core/utils/FileSystem.h"
 #include "starlight/core/memory/Memory.hpp"
 #include "starlight/renderer/Material.h"
-#include "starlight/renderer/gpu/RendererProxy.h"
+#include "starlight/renderer/ResourcePools.h"
 
 #include "starlight/resource/resources/MaterialConfig.h"
 
@@ -18,7 +18,7 @@ class MaterialManager {
 public:
     explicit MaterialManager(
       ShaderManager& shaderManager, TextureManager& textureManager,
-      RendererProxy& rendererProxy
+      ResourcePools& resourcePools
     );
 
     ~MaterialManager();
@@ -41,7 +41,7 @@ private:
 
     ShaderManager& m_shaderManager;
     TextureManager& m_textureManager;
-    RendererProxy& m_rendererProxy;
+    ResourcePools& m_resourcePools;
 
     std::vector<LocalPtr<Material>> m_materials;
     std::unordered_map<std::string, Material*> m_materialsLUT;

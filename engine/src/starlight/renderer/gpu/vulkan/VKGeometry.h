@@ -15,8 +15,8 @@ public:
     struct BufferData {};
 
     explicit VKGeometry(
-      VKDevice* device, VKContext* context, VKBuffer& vertexBuffer,
-      VKBuffer& indexBuffer, const Properties& props, u32 id, const Data& data
+      u32 id, VKDevice* device, VKContext* context, VKBuffer& vertexBuffer,
+      VKBuffer& indexBuffer, const Properties& props, const Data& data
     );
     ~VKGeometry();
 

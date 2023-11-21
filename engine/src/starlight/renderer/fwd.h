@@ -8,8 +8,8 @@ class RendererBackend;
 class RendererFrontend;
 class Texture;
 class MaterialManager;
-class RendererProxy;
 class Material;
 class Geometry;
+class ResourcePools;
 
 }  // namespace sl

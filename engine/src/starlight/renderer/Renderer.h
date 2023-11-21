@@ -5,9 +5,9 @@
 
 #include "camera/Camera.h"
 
-#include "gpu/RendererProxy.h"
 #include "gpu/Vendor.h"
 
+#include "ResourcePools.h"
 #include "RendererFrontend.h"
 #include "Shader.h"
 
@@ -29,12 +29,11 @@ public:
 
     void resizeViewport(uint32_t width, uint32_t height);
 
-    RendererProxy* getProxy();
+    ResourcePools* getResourcePools();
 
 private:
     RendererBackendVendor m_backend;
     RendererFrontend m_frontend;
-    RendererProxy m_rendererProxy;
 };
 
 }  // namespace sl

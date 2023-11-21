@@ -22,6 +22,7 @@
 #include "VKTexture.h"
 #include "VKBuffer.h"
 #include "VKRendererContext.h"
+#include "VKResourcePools.h"
 
 namespace sl::vk {
 
@@ -30,7 +31,7 @@ public:
     explicit VKRendererBackend(sl::Window& window, const Config& config);
     ~VKRendererBackend();
 
-    u32 getRenderPassId(const std::string& renderPass) const override;
+    u32 getRenderPassId(const std::string& renderPass) const;
 
     bool beginFrame(float deltaTime) override;
     bool endFrame(float deltaTime) override;
@@ -49,31 +50,15 @@ public:
     );
 
     // resources
-    Texture* createTexture(
-      const Texture::Properties& props, const std::span<u8> pixels
-    ) override;
-    void destroyTexture(Texture& texture) override;
+    ResourcePools* getResourcePools() override;
 
-    Geometry* createGeometry(
-      const Geometry::Properties& props, const Geometry::Data& data
-    ) override;
-    void destroyGeometry(Geometry& geometry) override;
-
-    Shader* createShader(const Shader::Properties& props) override;
-    void destroyShader(Shader& shader) override;
-
-    TextureMap* createTextureMap(
-      const TextureMap::Properties& props, Texture& texture
-    ) override;
-    void destroyTextureMap(TextureMap& textureMap) override;
+    VKRenderPass* getRenderPass(u32 id);
 
 private:
     void createCoreComponents(sl::Window& window, const Config& config);
     void createCommandBuffers();
     void regenerateFramebuffers();
     void createSemaphoresAndFences();
-
-    void prepareResources();
 
     void freeDataRange(VKBuffer& buffer, uint64_t offset, uint64_t size);
 
@@ -83,8 +68,6 @@ private:
 
     void recreateSwapchain();
     void recordCommands(VKCommandBuffer& commandBuffer);
-
-    VKRenderPass* getRenderPass(u32 id);
 
     bool m_recreatingSwapchain = false;
 
@@ -114,6 +97,8 @@ private:
     std::vector<LocalPtr<VKShader>> m_shaders;
 
     u64 m_renderedVertices;
+
+    LocalPtr<VKResourcePools> m_resourcePools;
 };
 
 }  // namespace sl::vk

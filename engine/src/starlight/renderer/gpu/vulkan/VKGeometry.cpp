@@ -3,8 +3,8 @@
 namespace sl::vk {
 
 VKGeometry::VKGeometry(
-  VKDevice* device, VKContext* context, VKBuffer& vertexBuffer,
-  VKBuffer& indexBuffer, const Properties& props, u32 id, const Data& data
+  u32 id, VKDevice* device, VKContext* context, VKBuffer& vertexBuffer,
+  VKBuffer& indexBuffer, const Properties& props, const Data& data
 ) :
     Geometry(props, id),
     m_device(device), m_context(context) {

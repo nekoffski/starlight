@@ -5,7 +5,7 @@
 #include <kc/core/Singleton.hpp>
 
 #include "starlight/renderer/Shader.h"
-#include "starlight/renderer/gpu/RendererProxy.h"
+#include "starlight/renderer/ResourcePools.h"
 
 #include "starlight/resource/resources/ShaderConfig.h"
 #include "TextureManager.h"
@@ -15,7 +15,7 @@ namespace sl {
 class ShaderManager {
 public:
     explicit ShaderManager(
-      RendererProxy& rendererProxy, const TextureManager& textureManager
+      ResourcePools& resourcePools, const TextureManager& textureManager
     );
     ~ShaderManager();
 
@@ -26,7 +26,7 @@ public:
     void destroyAll();
 
 private:
-    RendererProxy& m_rendererProxy;
+    ResourcePools& m_resourcePools;
     const TextureManager& m_textureManager;
 
     std::unordered_map<std::string, Shader*> m_shaders;

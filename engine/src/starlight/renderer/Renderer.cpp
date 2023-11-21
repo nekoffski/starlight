@@ -3,7 +3,7 @@
 namespace sl {
 
 Renderer::Renderer(Window& window, const Config& config) :
-    m_backend(window, config), m_frontend(&m_backend), m_rendererProxy(m_backend) {}
+    m_backend(window, config), m_frontend(&m_backend) {}
 
 Renderer::~Renderer() { LOG_TRACE("Renderer destroyed"); }
 
@@ -32,6 +32,6 @@ void Renderer::resizeViewport(uint32_t width, uint32_t height) {
     m_backend.onViewportResize(width, height);
 }
 
-RendererProxy* Renderer::getProxy() { return &m_rendererProxy; }
+ResourcePools* Renderer::getResourcePools() { return m_backend.getResourcePools(); }
 
 }  // namespace sl
