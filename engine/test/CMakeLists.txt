@@ -12,7 +12,8 @@ function(add_test_module MODULE)
     target_include_directories(starlight_${MODULE}_tests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
         ${SL_INCLUDE} ${MOCK_INCLUDE})
     set_property(TARGET starlight_${MODULE}_tests PROPERTY CXX_STANDARD 20)
-    gtest_add_tests(TARGET starlight_${MODULE}_tests)
+    message("-- Adding test module -> ${MODULE}")
+    gtest_discover_tests(starlight_${MODULE}_tests)
 endfunction()
 
 file(GLOB TEST_MODULES LIST_DIRECTORIES true ${CMAKE_CURRENT_SOURCE_DIR}/*)
@@ -22,7 +23,6 @@ foreach(TEST_MODULE ${TEST_MODULES})
         get_filename_component(MODULE_NAME ${TEST_MODULE} NAME)
 
         if(NOT ${MODULE_NAME} STREQUAL "mock")
-            message("-- Adding test module -> ${MODULE_NAME}")
             add_test_module(${MODULE_NAME})
         endif()
     endif()

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <concepts>
 
 #include "starlight/core/Core.h"
 #include "starlight/core/memory/Memory.hpp"
@@ -10,6 +11,11 @@
 
 namespace sl {
 
+template <typename T, typename... Args>
+concept ConstructibleWithId = requires(Args&&... args) {
+    { T(u64{}, std::forward<Args>(args)...) };
+};
+
 template <typename T> class ResourcePool {
 public:
     explicit ResourcePool(const std::string& resourceName, u64 size) :
@@ -17,7 +23,8 @@ public:
         LOG_INFO("Creating resource pool for '{}' of size {}", resourceName, size);
     }
 
-    template <typename... Args> T* create(Args&&... args) {
+    template <typename... Args>
+    T* create(Args&&... args) requires ConstructibleWithId<T, Args...> {
         LOG_DEBUG("Looking for free {} slot", m_resourceName);
         for (int i = 0; i < m_size; ++i) {
             if (not m_buffer[i]) {
@@ -34,9 +41,14 @@ public:
         );
         return nullptr;
     }
+
     void destroy(u64 id) { m_buffer[id].clear(); }
 
     T& get(u64 id) { return *m_buffer.at(id); }
+
+    u64 getSize() const { return m_size; }
+
+    const std::string getResourceName() const { return m_resourceName; }
 
 private:
     std::string m_resourceName;

@@ -1,7 +1,7 @@
 #include <starlight/resource/managers/TextureManager.h>
 #include <starlight/renderer/ResourcePools.h>
 
-#include "mock/RendererBackendMock.hpp"
+#include "mock/All.h"
 
 #include <gtest/gtest.h>
 
@@ -10,21 +10,21 @@ using namespace sl;
 using namespace sl;
 
 // TODO:: fix
-struct DISABLED_TextureLoaderTests : public Test {
+struct TextureLoaderTests : public Test {
     RendererBackendMock backend;
-    // ResourcePools proxy{ backend };
-    // TextureManager textureManager{ proxy };
+    ResourcePoolsMock resourcePools;
+
+    // TextureManager textureManager{ resourcePools };
     // std::unique_ptr<Texture> texture = std::make_unique<Texture>();
 };
 
 TEST_F(
-  DISABLED_TextureLoaderTests,
-  givenNonExistingTextureName_whenAcquiring_shouldReturnNullptr
+  TextureLoaderTests, givenNonExistingTextureName_whenAcquiring_shouldReturnNullptr
 ) {
     // EXPECT_EQ(textureManager.acquire("bleble"), nullptr);
 }
 
-TEST_F(DISABLED_TextureLoaderTests, whenLoadingTexture_shouldLoadAndReturnPointer) {
+TEST_F(TextureLoaderTests, whenLoadingTexture_shouldLoadAndReturnPointer) {
     // auto pointer = texture.get();
     // EXPECT_CALL(backend, load(_, _))
     //   .Times(1)
@@ -35,7 +35,7 @@ TEST_F(DISABLED_TextureLoaderTests, whenLoadingTexture_shouldLoadAndReturnPointe
 }
 
 TEST_F(
-  DISABLED_TextureLoaderTests,
+  TextureLoaderTests,
   givenLoadedTexture_whenLoadingTheSameTexture_shouldReturnPointer
 ) {
     // auto pointer = texture.get();
@@ -48,8 +48,7 @@ TEST_F(
 }
 
 TEST_F(
-  DISABLED_TextureLoaderTests,
-  givenLoadedTexture_whenDestroyingTexture_shouldDestroyTexture
+  TextureLoaderTests, givenLoadedTexture_whenDestroyingTexture_shouldDestroyTexture
 ) {
     //     auto pointer = texture.get();
     //     EXPECT_CALL(textureLoader, load(_, _, _))
@@ -63,7 +62,7 @@ TEST_F(
 }
 
 TEST_F(
-  DISABLED_TextureLoaderTests,
+  TextureLoaderTests,
   givenLoadedTexture_whenDestroyingAllTextures_shouldDestroyTexture
 ) {
     // auto pointer = texture.get();
@@ -77,8 +76,6 @@ TEST_F(
     // EXPECT_EQ(textureManager.acquire("bleble"), nullptr);
 }
 
-TEST_F(
-  DISABLED_TextureLoaderTests, whenDestroyingNotExistingTexture_shouldNotThrow
-) {
+TEST_F(TextureLoaderTests, whenDestroyingNotExistingTexture_shouldNotThrow) {
     // EXPECT_NO_THROW({ textureManager.destroy("bleble"); });
 }

@@ -176,7 +176,7 @@ void VKImage::transitionLayout(
         // The fragment stage.
         destination = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
     } else {
-        LOG_FATAL("Unsupported layout transition");
+        LOG_ERROR("Unsupported layout transition");
         return;
     }
 

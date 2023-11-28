@@ -8,7 +8,7 @@ namespace sl {
 
 using kc::core::initLogging;
 
-#define FAIL(...) ASSERT(false, __VA_ARGS__)
+#define FATAL_ERROR(...) ASSERT(false, __VA_ARGS__)
 
 void enableVariableLogging();
 void disableVariableLogging();

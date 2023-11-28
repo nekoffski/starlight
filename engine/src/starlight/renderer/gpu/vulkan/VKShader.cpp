@@ -51,7 +51,7 @@ VkShaderStageFlagBits getStageFlagBits(Shader::Stage::Type type) {
         case Shader::Stage::Type::fragment:
             return VK_SHADER_STAGE_FRAGMENT_BIT;
     }
-    FAIL("Unknown shader type: {}", type);
+    FATAL_ERROR("Unknown shader type: {}", type);
 }
 
 VKShaderStage::VKShaderStage(

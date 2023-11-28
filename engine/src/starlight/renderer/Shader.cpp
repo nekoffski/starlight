@@ -9,7 +9,7 @@ Shader::Scope Shader::scopeFromString(const std::string& name) {
         return Shader::Scope::instance;
     else if (name == "global")
         return Shader::Scope::global;
-    FAIL("Could not parse shader scope: {}", name);
+    FATAL_ERROR("Could not parse shader scope: {}", name);
 }
 
 std::string Shader::scopeToString(Shader::Scope scope) {
@@ -88,7 +88,7 @@ Shader::Stage::Type Shader::Stage::typeFromString(const std::string& name) {
         return Shader::Stage::Type::fragment;
     else if (name == "compute")
         return Shader::Stage::Type::compute;
-    FAIL("Invalid stage name: {}", name);
+    FATAL_ERROR("Invalid stage name: {}", name);
 }
 
 std::string Shader::Stage::typeToString(Shader::Stage::Type type) {
@@ -102,7 +102,7 @@ std::string Shader::Stage::typeToString(Shader::Stage::Type type) {
         case Shader::Stage::Type::compute:
             return "compute";
     }
-    FAIL("Invalid stage type: {}", type);
+    FATAL_ERROR("Invalid stage type: {}", type);
 }
 
 bool Shader::Uniform::isSampler() const { return type == Type::sampler; }

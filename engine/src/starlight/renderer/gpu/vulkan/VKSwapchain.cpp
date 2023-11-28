@@ -264,7 +264,7 @@ std::optional<uint32_t> VKSwapchain::acquireNextImageIndex(
         recreate();
         return {};
     } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-        LOG_FATAL("Failed to acquire swapchain image!");
+        LOG_ERROR("Failed to acquire swapchain image!");
         return {};
     }
 
@@ -301,7 +301,7 @@ void VKSwapchain::present(
         // occurred. Trigger swapchain recreation
         recreate();
     } else if (result != VK_SUCCESS) {
-        LOG_FATAL("Failed to present swap chain image!");
+        LOG_ERROR("Failed to present swap chain image!");
     }
 }
 

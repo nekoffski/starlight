@@ -165,7 +165,8 @@ int MaterialManager::findSlot() const {
         }
     }
     // TODO: it's not critical error..
-    FAIL("Could not find free material slot, consider changing configuration");
+    FATAL_ERROR("Could not find free material slot, consider changing configuration"
+    );
 }
 
 }  // namespace sl

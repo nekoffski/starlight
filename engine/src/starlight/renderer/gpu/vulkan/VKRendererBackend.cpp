@@ -316,7 +316,7 @@ u32 VKRendererBackend::getRenderPassId(const std::string& renderPass) const {
         return builtinRenderPassWorld;
     else if (renderPass == "Builtin.RenderPass.UI")
         return builtinRenderPassUI;
-    FAIL("Could not find render pass: {}", renderPass);
+    FATAL_ERROR("Could not find render pass: {}", renderPass);
 }
 
 void VKRendererBackend::recreateSwapchain() {
@@ -364,7 +364,7 @@ VKRenderPass* VKRendererBackend::getRenderPass(u32 id) {
         return m_mainRenderPass.get();
     else if (id == builtinRenderPassUI)
         return m_uiRenderPass.get();
-    FAIL("Could not find render pass with id {}", id);
+    FATAL_ERROR("Could not find render pass with id {}", id);
 }
 
 bool VKRendererBackend::beginFrame(float deltaTime) {
@@ -488,58 +488,5 @@ bool VKRendererBackend::endFrame(float deltaTime) {
 ResourcePools* VKRendererBackend::getResourcePools() {
     return m_resourcePools.get();
 }
-
-// void VKRendererBackend::destroyGeometry(Geometry& geometry) {
-//     m_geometries[geometry.getId()].clear();
-// }
-
-// Shader* VKRendererBackend::createShader(const Shader::Properties& props) {
-//     // TODO: unify with other create* methods?
-//     LOG_DEBUG("Backend looking for free shader slot");
-//     for (int i = 0; i < m_shaders.size(); ++i) {
-//         if (not m_shaders[i]) {
-//             LOG_DEBUG("Slot {} found, will create shader", i);
-//             m_shaders[i].emplace(
-//               m_device.get(), m_context.get(),
-//               getRenderPass(getRenderPassId(props.renderPassName)),
-//               m_rendererContext, props, i
-//             );
-//             return m_shaders[i].get();
-//         }
-//     }
-//     LOG_WARN(
-//       "Couldn't find slot for a new shader, consider changing configuration to
-//       allow more"
-//     );
-//     return nullptr;
-// }
-
-// void VKRendererBackend::destroyShader(Shader& shader) {
-//     m_shaders[shader.getId()].clear();
-// }
-
-// TextureMap* VKRendererBackend::createTextureMap(
-//   const TextureMap::Properties& props, Texture& texture
-// ) {
-//     LOG_DEBUG("Backend looking for free texture map slot");
-//     for (int i = 0; i < m_textureMaps.size(); ++i) {
-//         if (not m_textureMaps[i]) {
-//             LOG_DEBUG("Slot {} found, will create texture map", i);
-//             m_textureMaps[i].emplace(
-//               *m_context, *m_device, props, i, *m_textures[texture.getId()]
-//             );
-//             return m_textureMaps[i].get();
-//         }
-//     }
-//     LOG_WARN(
-//       "Couldn't find slot for a new texture map, consider changing configuration
-//       to allow more"
-//     );
-//     return nullptr;
-// }
-
-// void VKRendererBackend::destroyTextureMap(TextureMap& textureMap) {
-//     m_textureMaps[textureMap.getId()].clear();
-// }
 
 }  // namespace sl::vk
