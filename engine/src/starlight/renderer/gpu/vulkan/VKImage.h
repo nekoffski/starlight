@@ -26,6 +26,7 @@ public:
         VkMemoryPropertyFlags memoryFlags;
         bool createView;
         VkImageAspectFlags viewAspectFlags;
+        u8 channels;
     };
 
     explicit VKImage(

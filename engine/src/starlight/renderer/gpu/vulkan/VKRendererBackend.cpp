@@ -295,7 +295,9 @@ void VKRendererBackend::regenerateFramebuffers() {
     for (auto& texture : m_swapchain->getTextures()) {
         auto view = texture->getImage()->getView();
 
-        std::vector<VkImageView> worldAttachments = { view, depthBuffer->getView() };
+        std::vector<VkImageView> worldAttachments = {
+            view, depthBuffer->getImage()->getView()
+        };
 
         m_worldFramebuffers.emplace_back(
           m_context.get(), m_device.get(), m_mainRenderPass->getHandle(),

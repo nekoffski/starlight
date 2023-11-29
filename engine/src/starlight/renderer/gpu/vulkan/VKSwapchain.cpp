@@ -65,7 +65,7 @@ std::vector<VKFramebuffer>* VKSwapchain::getFramebuffers() {
     return &m_framebuffers;
 }
 
-VKImage* VKSwapchain::getDepthBuffer() { return m_depthBuffer.get(); }
+VKTexture* VKSwapchain::getDepthBuffer() { return m_depthTexture.get(); }
 
 uint32_t getDeviceImageCount(const VKDevice::SwapchainSupportInfo& swapchainSupport
 ) {
@@ -224,9 +224,11 @@ void VKSwapchain::createImages() {
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
         true,
         VK_IMAGE_ASPECT_DEPTH_BIT,
+        m_device->getDepthChannelCount()
     };
 
-    m_depthBuffer.emplace(m_device, m_context, imageProperties);
+    // TODO: those internal ids should be removed or stored somewhere
+    m_depthTexture.emplace(10000u, m_context, m_device, imageProperties);
 }
 
 void VKSwapchain::create() {

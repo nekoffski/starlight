@@ -4,6 +4,8 @@
 
 #include <kc/core/Log.h>
 
+#include "starlight/core/Core.h"
+
 #include "VKContext.h"
 
 namespace sl::vk {
@@ -71,7 +73,7 @@ public:
     const QueueIndices& getQueueIndices() const;
     const Queues& getQueues();
 
-    // void querySwapchainSupport(VkSurfaceKHR surface);
+    u8 getDepthChannelCount() const;
 
     std::optional<int32_t> findMemoryIndex(
       uint32_t typeFilter, uint32_t propertyFlags
@@ -114,6 +116,7 @@ private:
     VkPhysicalDeviceMemoryProperties m_memory;
 
     VkFormat m_depthFormat;
+    u8 m_depthChannelCount;
 
     bool m_supportsDeviceLocalHostVisible;
 };

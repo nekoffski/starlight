@@ -149,6 +149,8 @@ int main() {
     sl::FirstPersonCamera firstPersonCamera(sl::FirstPersonCamera::Properties{
       .position = sl::Vec3f{ 0.0f } });
 
+    std::string renderMode = "standard";
+
     sl::Camera* currentCamera = &eulerCamera;
 
     auto& eventManager = sl::EventManager::get();
@@ -161,9 +163,18 @@ int main() {
 
             if ((key == SL_KEY_ESCAPE || key == SL_KEY_Q)) isRunning = false;
 
-            if (key == SL_KEY_0) renderer.setRenderMode(sl::RenderMode::lights);
-            if (key == SL_KEY_9) renderer.setRenderMode(sl::RenderMode::normals);
-            if (key == SL_KEY_8) renderer.setRenderMode(sl::RenderMode::standard);
+            if (key == SL_KEY_0) {
+                renderer.setRenderMode(sl::RenderMode::lights);
+                renderMode = "lights only";
+            }
+            if (key == SL_KEY_9) {
+                renderer.setRenderMode(sl::RenderMode::normals);
+                renderMode = "normals only";
+            }
+            if (key == SL_KEY_8) {
+                renderer.setRenderMode(sl::RenderMode::standard);
+                renderMode = "standard";
+            }
             if (key == SL_KEY_6) sl::enableVariableLogging();
             if (key == SL_KEY_4) {
                 currentCamera = &eulerCamera;

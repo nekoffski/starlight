@@ -29,9 +29,7 @@ public:
         for (int i = 0; i < m_size; ++i) {
             if (not m_buffer[i]) {
                 LOG_DEBUG("Slot {} found, will create {}", i, m_resourceName);
-                m_buffer[i].emplace(
-                  i, std::forward<Args>(args)...
-                );  // TODO: this requires some concept as well
+                m_buffer[i].emplace(i, std::forward<Args>(args)...);
                 return m_buffer[i].get();
             }
         }

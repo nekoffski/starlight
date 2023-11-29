@@ -26,9 +26,15 @@ public:
       const std::span<u8> pixels
     );
 
+    // TODO: consider splitting those classes somehow
     explicit VKTexture(
       u32 id, const VKContext* context, VKDevice* device, const Properties& props,
       VkImage handle, VkFormat format
+    );
+
+    explicit VKTexture(
+      u32 id, const VKContext* context, VKDevice* device,
+      const VKImage::Properties& props
     );
 
     ~VKTexture() override;

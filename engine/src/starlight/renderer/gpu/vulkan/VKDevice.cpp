@@ -40,20 +40,23 @@ const VkPhysicalDeviceProperties& VKDevice::getProperties() const {
 }
 
 void VKDevice::detectDepthFormat() {
-    std::vector<VkFormat> candidates{
-        VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT,
-        VK_FORMAT_D24_UNORM_S8_UINT
+    static std::array<std::pair<VkFormat, u8>, 3> candidates = {
+        std::make_pair(VK_FORMAT_D32_SFLOAT, 4),
+        std::make_pair(VK_FORMAT_D32_SFLOAT_S8_UINT, 4),
+        std::make_pair(VK_FORMAT_D24_UNORM_S8_UINT, 3),
     };
+
     uint32_t flags = VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
 
     m_depthFormat = VK_FORMAT_UNDEFINED;
 
-    for (const auto& format : candidates) {
+    for (const auto& [format, channelCount] : candidates) {
         VkFormatProperties properties;
         vkGetPhysicalDeviceFormatProperties(m_physicalDevice, format, &properties);
 
         if (((properties.linearTilingFeatures & flags) == flags) || ((properties.optimalTilingFeatures & flags) == flags)) {
-            m_depthFormat = format;
+            m_depthFormat       = format;
+            m_depthChannelCount = channelCount;
             break;
         }
     }
@@ -509,6 +512,8 @@ bool VKDevice::supportsDeviceLocalHostVisible() const {
 VkResult VKDevice::waitIdle() { return vkDeviceWaitIdle(m_logicalDevice); }
 
 const VKDevice::Queues& VKDevice::getQueues() { return m_queues; }
+
+u8 VKDevice::getDepthChannelCount() const { return m_depthChannelCount; }
 
 std::optional<int32_t> VKDevice::findMemoryIndex(
   uint32_t typeFilter, uint32_t propertyFlags

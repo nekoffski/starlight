@@ -35,7 +35,7 @@ public:
     u32 getImageCount() const;
 
     std::vector<VKFramebuffer>* getFramebuffers();
-    VKImage* getDepthBuffer();
+    VKTexture* getDepthBuffer();
     VkSurfaceFormatKHR getSurfaceFormat() const;
 
     std::span<LocalPtr<VKTexture>> getTextures();
@@ -56,10 +56,9 @@ private:
     VkSwapchainKHR m_handle;
     VkExtent2D m_swapchainExtent;
 
-    LocalPtr<VKImage> m_depthBuffer;
+    LocalPtr<VKTexture> m_depthTexture;
     std::vector<LocalPtr<VKTexture>> m_textures;
 
-    // TODO: redefine to fixed-size array
     std::vector<VKFramebuffer> m_framebuffers;
 
     u32 m_imageCount;

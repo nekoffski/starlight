@@ -79,6 +79,18 @@ VKTexture::VKTexture(
     LOG_TRACE("Texture created: {} from existing VKImage", m_props.name);
 }
 
+VKTexture::VKTexture(
+  u32 id, const VKContext* context, VKDevice* device,
+  const VKImage::Properties& props
+) :
+    Texture(
+      Properties(
+        props.width, props.height, props.channels, true, false, "InternalTexture"
+      ),
+      id
+    ),
+    m_context(context), m_device(device), m_image(m_device, m_context, props) {}
+
 VKTexture::~VKTexture() { LOG_TRACE("Texture destroyed: {}", m_props.name); }
 
 VKImage* VKTexture::getImage() { return &m_image; }
