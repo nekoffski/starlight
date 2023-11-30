@@ -5,7 +5,7 @@
 #include <starlight/core/Core.h>
 #include <starlight/core/math/Glm.h>
 
-#include "RenderTarget.h"
+#include "fwd.h"
 
 namespace sl {
 
@@ -16,13 +16,30 @@ public:
     static constexpr u8 clearDepthBuffer   = 0x2;
     static constexpr u8 clearStencilBuffer = 0x4;
 
-private:
+    struct Properties {
+        Vec4f area;
+        Vec4f clearColor;
+        u8 clearFlags;
+        bool hasPreviousPass;
+        bool hasNextPass;
+    };
+
+    explicit RenderPass(u32 id, const Properties& props);
+    virtual ~RenderPass() = default;
+
+    void setClearColor(const Vec4f& color);
+    void setArea(const Vec4f& area);
+    void setAreaSize(u32 w, u32 h);
+
+    u32 getId() const;
+
+    void regenerateRenderTargets(
+      std::vector<Texture*> attachments, u32 width, u32 height
+    );
+
+protected:
     u32 m_id;
-
-    Vec4f m_renderArea;
-    Vec4f m_clearColor;
-
-    u8 m_clearFlags;
+    Properties m_props;
 
     std::vector<RenderTarget*> m_renderTargets;
 };

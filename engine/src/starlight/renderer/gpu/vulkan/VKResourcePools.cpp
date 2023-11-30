@@ -6,16 +6,17 @@ namespace sl::vk {
 
 VKResourcePools::VKResourcePools(
   VKContext& context, VKDevice& device, VKBuffer& vertexBuffer,
-  VKBuffer& indexBuffer, VKRendererContext& rendererContext,
+  VKBuffer& indexBuffer, VKRendererContext& rendererContext, VKSwapchain& swapchain,
   VKRendererBackend* backend
 ) :
     m_context(context),
     m_device(device), m_vertexBuffer(vertexBuffer), m_indexBuffer(indexBuffer),
-    m_rendererContext(rendererContext), backend(backend),
+    m_rendererContext(rendererContext), m_swapchain(swapchain), backend(backend),
     m_textures("Texture", 1024), m_textureMaps("TextureMap", 1024),
-    m_shaders("Shader", 1024), m_geometries("Geometry", vulkanMaxGeometryCount) {}
+    m_shaders("Shader", 1024), m_geometries("Geometry", vulkanMaxGeometryCount),
+    m_renderTargets("RenderTarget", 64), m_renderPasses("RenderPass", 64) {}
 
-Geometry* VKResourcePools::createGeometry(
+VKGeometry* VKResourcePools::createGeometry(
   const Geometry::Properties& props, const std::span<Vertex3> vertices,
   const std::span<uint32_t> indices
 ) {
@@ -25,7 +26,7 @@ Geometry* VKResourcePools::createGeometry(
     );
 }
 
-Geometry* VKResourcePools::createGeometry(
+VKGeometry* VKResourcePools::createGeometry(
   const Geometry::Properties& props, const std::span<Vertex2> vertices,
   const std::span<uint32_t> indices
 ) {
@@ -39,7 +40,7 @@ void VKResourcePools::destroyGeometry(Geometry& geometry) {
     m_geometries.destroy(geometry.getId());
 }
 
-Texture* VKResourcePools::createTexture(
+VKTexture* VKResourcePools::createTexture(
   const Texture::Properties& props, const std::span<u8> pixels
 ) {
     return m_textures.create(&m_context, &m_device, props, pixels);
@@ -49,7 +50,7 @@ void VKResourcePools::destroyTexture(Texture& texture) {
     m_textures.destroy(texture.getId());
 }
 
-TextureMap* VKResourcePools::createTextureMap(
+VKTextureMap* VKResourcePools::createTextureMap(
   const TextureMap::Properties& props, Texture& texture
 ) {
     return m_textureMaps.create(
@@ -61,7 +62,7 @@ void VKResourcePools::destroyTextureMap(TextureMap& textureMap) {
     m_textureMaps.destroy(textureMap.getId());
 }
 
-Shader* VKResourcePools::createShader(const Shader::Properties& props) {
+VKShader* VKResourcePools::createShader(const Shader::Properties& props) {
     return m_shaders.create(
       &m_device, &m_context,
       backend->getRenderPass(backend->getRenderPassId(props.renderPassName)),
@@ -71,6 +72,24 @@ Shader* VKResourcePools::createShader(const Shader::Properties& props) {
 
 void VKResourcePools::destroyShader(Shader& shader) {
     m_shaders.destroy(shader.getId());
+}
+
+VKRenderTarget* VKResourcePools::createRenderTarget(
+  const RenderTarget::Properties& props
+) {
+    return m_renderTargets.create(m_context, m_device, props);
+}
+void VKResourcePools::destroyRenderTarget(RenderTarget& renderTarget) {
+    m_renderTargets.destroy(renderTarget.getId());
+}
+
+VKRenderPass* VKResourcePools::createRenderPass(const RenderPass::Properties& props
+) {
+    return m_renderPasses.create(&m_context, &m_device, m_swapchain, props);
+}
+
+void VKResourcePools::destroyRenderPass(RenderPass& renderPass) {
+    m_renderPasses.destroy(renderPass.getId());
 }
 
 }  // namespace sl::vk

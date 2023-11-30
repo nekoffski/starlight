@@ -15,7 +15,7 @@ struct RenderPassCreateInfo {
     ) :
         props(props) {
         createColorAttachment(surfaceFormat);
-        if (props.clearFlags & VKRenderPass::clearFlagDepthBuffer)
+        if (props.clearFlags & RenderPass::clearDepthBuffer)
             createDepthAttachment(depthFormat);
 
         createSubpass();
@@ -31,7 +31,7 @@ struct RenderPassCreateInfo {
 
         subpass.pDepthStencilAttachment = nullptr;
 
-        if (props.clearFlags & VKRenderPass::clearFlagDepthBuffer)
+        if (props.clearFlags & RenderPass::clearDepthBuffer)
             subpass.pDepthStencilAttachment = &depthAttachmentReference;
 
         // Input from a shader
@@ -51,7 +51,7 @@ struct RenderPassCreateInfo {
         colorAttachment.format  = surfaceFormat.format;  // TODO: configurable
         colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
         colorAttachment.loadOp =
-          (props.clearFlags & VKRenderPass::clearFlagColorBuffer)
+          (props.clearFlags & RenderPass::clearColorBuffer)
             ? VK_ATTACHMENT_LOAD_OP_CLEAR
             : VK_ATTACHMENT_LOAD_OP_LOAD;
         colorAttachment.storeOp        = VK_ATTACHMENT_STORE_OP_STORE;
@@ -138,14 +138,11 @@ struct RenderPassCreateInfo {
 };
 
 VKRenderPass::VKRenderPass(
-  const VKContext* context, const VKDevice* device, const VKSwapchain& swapchain,
-  const Properties& properties
+  u32 id, const VKContext* context, const VKDevice* device,
+  const VKSwapchain& swapchain, const Properties& properties
 ) :
-    m_context(context),
-    m_device(device), m_area(properties.area), m_color(properties.color),
-    m_clearFlags(properties.clearFlags),
-    m_hasPreviousPass(properties.hasPreviousPass),
-    m_hasNextPass(properties.hasNextPass) {
+    RenderPass(id, properties),
+    m_context(context), m_device(device) {
     LOG_TRACE("Creating VKRenderPass instance");
 
     RenderPassCreateInfo createInfo(
@@ -167,29 +164,26 @@ VKRenderPass::~VKRenderPass() {
 
 VkRenderPass VKRenderPass::getHandle() { return m_handle; }
 
-std::vector<VkClearValue> VKRenderPass::createClearValues(
-  VKRenderPass::ClearFlag flags
-) const {
+std::vector<VkClearValue> VKRenderPass::createClearValues(u8 flags) const {
     std::vector<VkClearValue> clearValues;
     clearValues.reserve(2);
 
-    if (flags & VKRenderPass::clearFlagColorBuffer) {
+    if (flags & clearColorBuffer) {
         VkClearValue clearValue;
 
-        clearValue.color.float32[0] = m_color.r;
-        clearValue.color.float32[1] = m_color.g;
-        clearValue.color.float32[2] = m_color.b;
-        clearValue.color.float32[3] = m_color.a;
+        clearValue.color.float32[0] = m_props.clearColor.r;
+        clearValue.color.float32[1] = m_props.clearColor.g;
+        clearValue.color.float32[2] = m_props.clearColor.b;
+        clearValue.color.float32[3] = m_props.clearColor.a;
 
         clearValues.push_back(clearValue);
     }
 
-    if (flags & VKRenderPass::clearFlagDepthBuffer) {
+    if (flags & clearDepthBuffer) {
         VkClearValue clearValue;
         clearValue.depthStencil.depth = m_depth;
 
-        if (flags & VKRenderPass::clearFlagStencilBuffer)
-            clearValue.depthStencil.stencil = m_stencil;
+        if (flags & clearStencilBuffer) clearValue.depthStencil.stencil = m_stencil;
 
         clearValues.push_back(clearValue);
     }
@@ -203,10 +197,10 @@ VkRenderPassBeginInfo VKRenderPass::createRenderPassBeginInfo(
     VkRenderPassBeginInfo beginInfo   = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO };
     beginInfo.renderPass              = m_handle;
     beginInfo.framebuffer             = framebuffer;
-    beginInfo.renderArea.offset.x     = m_area.x;
-    beginInfo.renderArea.offset.y     = m_area.y;
-    beginInfo.renderArea.extent.width = m_area.z;
-    beginInfo.renderArea.extent.height = m_area.w;
+    beginInfo.renderArea.offset.x     = m_props.area.x;
+    beginInfo.renderArea.offset.y     = m_props.area.y;
+    beginInfo.renderArea.extent.width = m_props.area.z;
+    beginInfo.renderArea.extent.height = m_props.area.w;
 
     beginInfo.clearValueCount = clearValues.size();
     beginInfo.pClearValues =
@@ -216,7 +210,7 @@ VkRenderPassBeginInfo VKRenderPass::createRenderPassBeginInfo(
 }
 
 void VKRenderPass::begin(VKCommandBuffer& commandBuffer, VkFramebuffer framebuffer) {
-    auto clearValues = createClearValues(m_clearFlags);
+    auto clearValues = createClearValues(m_props.clearFlags);
     auto beginInfo   = createRenderPassBeginInfo(clearValues, framebuffer);
 
     vkCmdBeginRenderPass(

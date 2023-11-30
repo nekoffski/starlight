@@ -11,5 +11,8 @@ class MaterialManager;
 class Material;
 class Geometry;
 class ResourcePools;
+class RenderTarget;
+class RenderPass;
+class Texture;
 
 }  // namespace sl

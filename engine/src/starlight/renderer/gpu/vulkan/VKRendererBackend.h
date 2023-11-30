@@ -75,8 +75,8 @@ private:
     UniqPtr<VKDevice> m_device;
     UniqPtr<VKSwapchain> m_swapchain;
 
-    UniqPtr<VKRenderPass> m_mainRenderPass;
-    UniqPtr<VKRenderPass> m_uiRenderPass;
+    VKRenderPass* m_mainRenderPass;
+    VKRenderPass* m_uiRenderPass;
 
     VKRendererContext m_rendererContext;
 

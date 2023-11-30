@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "starlight/core/Core.h"
 #include "starlight/core/math/Size.hpp"
 
 #include "Vulkan.h"
@@ -13,7 +14,7 @@ class VKFramebuffer {
 public:
     explicit VKFramebuffer(
       const VKContext* context, const VKDevice* device, VkRenderPass renderPass,
-      const Size2u32& size, const std::vector<VkImageView>& attachments
+      u32 width, u32 height, const std::vector<VkImageView>& attachments
     );
 
     VkFramebuffer getHandle();

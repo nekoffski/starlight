@@ -22,12 +22,6 @@ VKRendererBackend::VKRendererBackend(Window& window, const Config& config) :
     regenerateFramebuffers();
     createCommandBuffers();
     createSemaphoresAndFences();
-    createBuffers();
-
-    m_resourcePools.emplace(
-      *m_context, *m_device, *m_objectVertexBuffer, *m_objectIndexBuffer,
-      m_rendererContext, this
-    );
 
     initUI(window);
 }
@@ -169,13 +163,13 @@ bool VKRendererBackend::beginRenderPass(uint8_t id) {
 
     switch (id) {
         case builtinRenderPassWorld: {
-            renderPass  = m_mainRenderPass.get();
+            renderPass  = m_mainRenderPass;
             framebuffer = &m_worldFramebuffers[m_rendererContext.getImageIndex()];
             break;
         }
 
         case builtinRenderPassUI: {
-            renderPass = m_uiRenderPass.get();
+            renderPass = m_uiRenderPass;
             framebuffer =
               &m_swapchain->getFramebuffers()->at(m_rendererContext.getImageIndex());
             break;
@@ -194,7 +188,7 @@ u64 VKRendererBackend::endRenderPass(uint8_t id) {
 
     switch (id) {
         case builtinRenderPassWorld: {
-            renderPass = m_mainRenderPass.get();
+            renderPass = m_mainRenderPass;
             break;
         }
 
@@ -202,7 +196,7 @@ u64 VKRendererBackend::endRenderPass(uint8_t id) {
             ImGui_ImplVulkan_RenderDrawData(
               ImGui::GetDrawData(), commandBuffer.getHandle()
             );
-            renderPass = m_uiRenderPass.get();
+            renderPass = m_uiRenderPass;
             break;
         }
     }
@@ -240,32 +234,35 @@ void VKRendererBackend::createCoreComponents(
     m_swapchain =
       createUniqPtr<VKSwapchain>(m_device.get(), m_context.get(), window.getSize());
 
+    createBuffers();
+
+    m_resourcePools.emplace(
+      *m_context, *m_device, *m_objectVertexBuffer, *m_objectIndexBuffer,
+      m_rendererContext, *m_swapchain, this
+    );
+
     const auto& [width, height] = window.getSize();
 
     auto backgroundColor = (1.0f / 255.0f) * glm::vec4{ 11, 16, 47, 255 };
 
     VKRenderPass::Properties renderPassProperties{
-        .area  = glm::vec4{0.0f, 0.0f, width, height},
-        .color = backgroundColor,
+        .area       = glm::vec4{0.0f, 0.0f, width, height},
+        .clearColor = backgroundColor,
         .clearFlags =
-          (VKRenderPass::clearFlagColorBuffer | VKRenderPass::clearFlagDepthBuffer
-           | VKRenderPass::clearFlagStencilBuffer),
+          (VKRenderPass::clearColorBuffer | VKRenderPass::clearDepthBuffer
+           | VKRenderPass::clearStencilBuffer),
         .hasPreviousPass = false,
         .hasNextPass     = true
     };
 
-    m_mainRenderPass = createUniqPtr<VKRenderPass>(
-      m_context.get(), m_device.get(), *m_swapchain, renderPassProperties
-    );
+    m_mainRenderPass = m_resourcePools->createRenderPass(renderPassProperties);
 
-    renderPassProperties.color           = glm::vec4(0.0f);
-    renderPassProperties.clearFlags      = VKRenderPass::clearFlagNone;
+    renderPassProperties.clearColor      = glm::vec4(0.0f);
+    renderPassProperties.clearFlags      = VKRenderPass::clearNone;
     renderPassProperties.hasPreviousPass = true;
     renderPassProperties.hasNextPass     = false;
 
-    m_uiRenderPass = createUniqPtr<VKRenderPass>(
-      m_context.get(), m_device.get(), *m_swapchain, renderPassProperties
-    );
+    m_uiRenderPass = m_resourcePools->createRenderPass(renderPassProperties);
 }
 
 void VKRendererBackend::createSemaphoresAndFences() {
@@ -299,16 +296,18 @@ void VKRendererBackend::regenerateFramebuffers() {
             view, depthBuffer->getImage()->getView()
         };
 
+        const auto& [w, h] = m_rendererContext.getFramebufferSize();
+
         m_worldFramebuffers.emplace_back(
-          m_context.get(), m_device.get(), m_mainRenderPass->getHandle(),
-          m_rendererContext.getFramebufferSize(), worldAttachments
+          m_context.get(), m_device.get(), m_mainRenderPass->getHandle(), w, h,
+          worldAttachments
         );
 
         std::vector<VkImageView> uiAttachments = { view };
 
         framebuffers->emplace_back(
-          m_context.get(), m_device.get(), m_uiRenderPass->getHandle(),
-          m_rendererContext.getFramebufferSize(), uiAttachments
+          m_context.get(), m_device.get(), m_uiRenderPass->getHandle(), w, h,
+          uiAttachments
         );
     }
 }
@@ -363,9 +362,9 @@ void VKRendererBackend::recordCommands(VKCommandBuffer& commandBuffer) {
 
 VKRenderPass* VKRendererBackend::getRenderPass(u32 id) {
     if (id == builtinRenderPassWorld)
-        return m_mainRenderPass.get();
+        return m_mainRenderPass;
     else if (id == builtinRenderPassUI)
-        return m_uiRenderPass.get();
+        return m_uiRenderPass;
     FATAL_ERROR("Could not find render pass with id {}", id);
 }
 
@@ -412,9 +411,7 @@ bool VKRendererBackend::beginFrame(float deltaTime) {
     recordCommands(commandBuffer);
 
     const auto& [w, h] = m_rendererContext.getFramebufferSize();
-
-    m_mainRenderPass->getArea()->z = w;
-    m_mainRenderPass->getArea()->w = h;
+    m_mainRenderPass->setAreaSize(w, h);
 
     return true;
 }

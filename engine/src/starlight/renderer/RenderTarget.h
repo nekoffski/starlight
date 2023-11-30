@@ -4,15 +4,31 @@
 
 #include "starlight/core/Core.h"
 
-#include "Texture.h"
+#include "fwd.h"
 
 namespace sl {
 
-struct RenderTarget {
+class RenderTarget {
+public:
     enum class SyncMode { noSync, syncWithWindowSize };
 
-    SyncMode syncMode;
-    std::vector<Texture*> attachments;
+    struct Properties {
+        std::vector<Texture*> attachments;
+        RenderPass* renderPass;
+        u32 width;
+        u32 height;
+    };
+
+    explicit RenderTarget(u32 id, const Properties& props);
+    virtual ~RenderTarget() = default;
+
+    u32 getId() const;
+
+    virtual void regenerate(const Properties& properties) = 0;
+
+protected:
+    u32 m_id;
+    Properties m_props;
 };
 
 }  // namespace sl

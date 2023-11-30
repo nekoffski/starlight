@@ -5,6 +5,9 @@
 #include "starlight/renderer/Shader.h"
 #include "starlight/renderer/Texture.h"
 #include "starlight/renderer/Geometry.h"
+#include "starlight/renderer/RenderPass.h"
+#include "starlight/renderer/RenderTarget.h"
+
 #include "starlight/renderer/fwd.h"
 
 namespace sl {
@@ -32,6 +35,13 @@ struct ResourcePools {
 
     virtual Shader* createShader(const Shader::Properties& props) = 0;
     virtual void destroyShader(Shader& shader)                    = 0;
+
+    virtual RenderTarget* createRenderTarget(const RenderTarget::Properties& props
+    )                                                            = 0;
+    virtual void destroyRenderTarget(RenderTarget& renderTarget) = 0;
+
+    virtual RenderPass* createRenderPass(const RenderPass::Properties& props) = 0;
+    virtual void destroyRenderPass(RenderPass& renderPass)                    = 0;
 };
 
 }  // namespace sl
