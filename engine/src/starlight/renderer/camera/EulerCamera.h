@@ -7,10 +7,12 @@
 namespace sl {
 
 class EulerCamera : public Camera {
-   public:
+public:
     struct Properties {
         Vec3f target;
         float radius;
+        u32 viewportWidth;
+        u32 viewportHeight;
     };
 
     explicit EulerCamera(const Properties& props);
@@ -21,7 +23,9 @@ class EulerCamera : public Camera {
 
     void update(float deltaTime) override;
 
-   private:
+    void onViewportResize(u32 w, u32 h) override;
+
+private:
     void processInput(const float speed);
     void truncateCoefficients();
     void recalculateVectors();
@@ -40,6 +44,9 @@ class EulerCamera : public Camera {
     float m_pitch;
 
     Mat4f m_viewMatrix;
+
+    u32 m_viewportWidth;
+    u32 m_viewportHeight;
 };
 
 }  // namespace sl

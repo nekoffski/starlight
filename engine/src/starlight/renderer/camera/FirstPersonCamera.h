@@ -11,6 +11,8 @@ class FirstPersonCamera : public Camera {
 public:
     struct Properties {
         Vec3f position;
+        u32 viewportWidth;
+        u32 viewportHeight;
     };
 
     explicit FirstPersonCamera(const Properties& props);
@@ -20,6 +22,8 @@ public:
     Vec3f getPosition() const override;
 
     void update(float deltaTime) override;
+
+    void onViewportResize(u32 w, u32 h) override;
 
 private:
     void processInput(const float speed);
@@ -32,6 +36,9 @@ private:
     float m_yaw;
     float m_pitch;
     float m_speed;
+
+    u32 m_viewportWidth;
+    u32 m_viewportHeight;
 };
 
 }  // namespace sl

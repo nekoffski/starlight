@@ -20,21 +20,25 @@ class RendererFrontend {
     };
 
 public:
-    explicit RendererFrontend(RendererBackend* backend);
+    explicit RendererFrontend(RendererBackend* backend, Camera* camera);
     virtual ~RendererFrontend();
 
     FrameStatistics renderFrame(float deltaTime);
 
     void addUIPass(std::function<void()>&& callback);
-    void addMainPass(RenderPacket& renderPacket, const Camera& camera);
+    void addMainPass(RenderPacket& renderPacket);
 
     void setCoreShaders(Shader* uiShader, Shader* materialShader);
     void setRenderMode(RenderMode mode);
+    void setCamera(Camera* camera);
+
+    void onViewportResize(u32 w, u32 h);
 
 private:
     std::vector<RenderPass> m_renderPasses;
 
     RendererBackend* m_backend;
+    Camera* m_camera;
 
     Texture* m_activeTexture;
     Texture* m_texture1;
@@ -47,6 +51,11 @@ private:
     RenderMode m_renderMode;
 
     u64 m_frameNumber;
+    u16 m_framesSinceResize;
+    bool m_resizing;
+
+    u32 m_viewportWidth;
+    u32 m_viewportHeight;
 };
 
 }  // namespace sl

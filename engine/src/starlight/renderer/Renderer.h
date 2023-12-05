@@ -15,7 +15,7 @@ namespace sl {
 
 class Renderer {
 public:
-    explicit Renderer(Window& window, const Config& config);
+    explicit Renderer(Window& window, const Config& config, Camera* camera);
 
     ~Renderer();
 
@@ -25,9 +25,11 @@ public:
     FrameStatistics renderFrame(float deltaTime);
 
     void addUIPass(std::function<void()>&& callback);
-    void addMainPass(RenderPacket& renderPacket, const Camera& camera);
+    void addMainPass(RenderPacket& renderPacket);
 
     void resizeViewport(uint32_t width, uint32_t height);
+
+    void setCamera(Camera*);
 
     ResourcePools* getResourcePools();
 

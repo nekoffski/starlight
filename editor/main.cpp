@@ -133,6 +133,7 @@ void renderUI(float deltaTime, sl::FrameStatistics& stats) {
     ImGui::End();
 }
 
+// TODO: I know that this is a mess, at some point I'll redesign the outer interface
 int main() {
     meshes.reserve(10);
 
@@ -142,16 +143,26 @@ int main() {
 
     bool isRunning = true;
 
-    sl::Renderer renderer(*ctx.getWindow(), *ctx.getConfig());
+    auto window       = ctx.getWindow();
+    const auto [w, h] = window->getSize();
 
     sl::EulerCamera eulerCamera(sl::EulerCamera::Properties{
-      .target = sl::Vec3f{ 0.0f }, .radius = 5.0f });
+      .target         = sl::Vec3f{ 0.0f },
+      .radius         = 5.0f,
+      .viewportWidth  = w,
+      .viewportHeight = h,
+    });
     sl::FirstPersonCamera firstPersonCamera(sl::FirstPersonCamera::Properties{
-      .position = sl::Vec3f{ 0.0f } });
+      .position       = sl::Vec3f{ 0.0f },
+      .viewportWidth  = w,
+      .viewportHeight = h,
+    });
 
     std::string renderMode = "standard";
 
     sl::Camera* currentCamera = &eulerCamera;
+
+    sl::Renderer renderer(*window, *ctx.getConfig(), currentCamera);
 
     auto& eventManager = sl::EventManager::get();
 
@@ -178,10 +189,12 @@ int main() {
             if (key == SL_KEY_6) sl::enableVariableLogging();
             if (key == SL_KEY_4) {
                 currentCamera = &eulerCamera;
+                renderer.setCamera(currentCamera);
                 ctx.getWindow()->showCursor();
             }
             if (key == SL_KEY_3) {
                 currentCamera = &firstPersonCamera;
+                renderer.setCamera(currentCamera);
                 ctx.getWindow()->hideCursor();
             }
             if (key == SL_KEY_U) s_update = !s_update;
@@ -190,6 +203,8 @@ int main() {
 
     const auto onWindowResized = [&](sl::WindowResized* event) {
         renderer.resizeViewport(event->width, event->height);
+        eulerCamera.onViewportResize(event->width, event->height);
+        firstPersonCamera.onViewportResize(event->width, event->height);
     };
 
     eventManager.on<sl::QuitEvent>(onQuit)
@@ -214,7 +229,7 @@ int main() {
         LOG_VAR(deltaTime);
         LOG_VAR(currentCamera->getPosition());
 
-        renderer.addMainPass(packet, *currentCamera);
+        renderer.addMainPass(packet);
         renderer.addUIPass([&]() { renderUI(deltaTime, stats); });
         stats = renderer.renderFrame(deltaTime);
 

@@ -6,14 +6,19 @@
 namespace sl {
 
 EulerCamera::EulerCamera(const Properties& props) :
-    m_target(props.target), m_radius(props.radius), m_pitch(90.0f), m_yaw(90.0f) {
+    m_target(props.target), m_radius(props.radius), m_pitch(90.0f), m_yaw(90.0f),
+    m_viewportWidth(props.viewportWidth), m_viewportHeight(props.viewportHeight) {
     recalculateVectors();
 }
 
 Mat4f EulerCamera::getViewMatrix() const { return m_viewMatrix; }
 
 Mat4f EulerCamera::getProjectionMatrix() const {
-    return glm::perspective(glm::radians(45.0f), 1600.0f / 900.0f, 0.1f, 1000.0f);
+    return glm::perspective(
+      glm::radians(45.0f),
+      static_cast<float>(m_viewportWidth) / static_cast<float>(m_viewportHeight),
+      0.1f, 1000.0f
+    );
 }
 
 Vec3f EulerCamera::getPosition() const { return m_position; }
@@ -25,6 +30,11 @@ void EulerCamera::update(float deltaTime) {
     truncateCoefficients();
     recalculateVectors();
     updateViewMatrix();
+}
+
+void EulerCamera::onViewportResize(u32 w, u32 h) {
+    m_viewportWidth  = w;
+    m_viewportHeight = h;
 }
 
 void EulerCamera::processInput(const float speed) {

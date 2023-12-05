@@ -12,15 +12,33 @@
 
 namespace sl {
 
-RendererFrontend::RendererFrontend(RendererBackend* backend) :
-    m_backend(backend), m_materialShader(nullptr), m_uiShader(nullptr),
-    m_renderMode(RenderMode::standard), m_frameNumber(0ul) {}
+RendererFrontend::RendererFrontend(RendererBackend* backend, Camera* camera) :
+    m_backend(backend), m_camera(camera), m_materialShader(nullptr),
+    m_uiShader(nullptr), m_renderMode(RenderMode::standard), m_frameNumber(0ul),
+    m_framesSinceResize(0u), m_resizing(false) {
+    const auto [w, h] = WindowManager::get().getSize();
+    m_viewportWidth   = w;
+    m_viewportHeight  = h;
+}
 
 RendererFrontend::~RendererFrontend() {}
 
 FrameStatistics RendererFrontend::renderFrame(float deltaTime) {
     m_frameNumber++;
     u64 totalVerticesRendered = 0u;
+
+    if (m_resizing) {
+        static constexpr u16 requiredFramesSinceResize = 30u;
+
+        if (m_framesSinceResize++ >= requiredFramesSinceResize) {
+            m_resizing          = 0;
+            m_framesSinceResize = 0;
+        } else {
+            return FrameStatistics{
+                .renderedVertices = 0, .frameNumber = m_frameNumber
+            };
+        }
+    }
 
     if (m_backend->beginFrame(deltaTime)) {
         for (auto& [renderPassId, renderPassCallback] : m_renderPasses) {
@@ -42,18 +60,16 @@ void RendererFrontend::addUIPass(std::function<void()>&& callback) {
     }));
 }
 
-void RendererFrontend::addMainPass(
-  RenderPacket& renderPacket, const Camera& camera
-) {
+void RendererFrontend::addMainPass(RenderPacket& renderPacket) {
     m_renderPasses.push_back(RenderPass(builtinRenderPassWorld, [&]() {
         glm::vec4 ambientColor(0.3f, 0.3f, 0.3f, 1.0f);
 
         m_materialShader->use();
 
         m_materialShader->setGlobalUniforms([&](Shader::UniformProxy& proxy) {
-            proxy.set("view", camera.getViewMatrix());
-            proxy.set("projection", camera.getProjectionMatrix());
-            proxy.set("viewPosition", camera.getPosition());
+            proxy.set("view", m_camera->getViewMatrix());
+            proxy.set("projection", m_camera->getProjectionMatrix());
+            proxy.set("viewPosition", m_camera->getPosition());
             proxy.set("ambientColor", ambientColor);
             proxy.set("renderMode", static_cast<int>(m_renderMode));
         });
@@ -80,6 +96,13 @@ void RendererFrontend::setCoreShaders(Shader* uiShader, Shader* materialShader) 
 void RendererFrontend::setRenderMode(RenderMode mode) {
     LOG_TRACE("Render mode set to: {}", mode);  // TODO: toString{}
     m_renderMode = mode;
+}
+
+void RendererFrontend::setCamera(Camera* camera) { m_camera = camera; }
+
+void RendererFrontend::onViewportResize(u32 w, u32 h) {
+    m_resizing = true;
+    m_backend->onViewportResize(w, h);
 }
 
 }  // namespace sl
