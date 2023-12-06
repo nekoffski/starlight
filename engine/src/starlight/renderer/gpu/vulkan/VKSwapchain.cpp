@@ -61,8 +61,9 @@ VkExtent2D createSwapchainExtent(
     return swapchainExtent;
 }
 
-std::vector<VKFramebuffer>* VKSwapchain::getFramebuffers() {
-    return &m_framebuffers;
+VKTexture* VKSwapchain::getFramebuffer(u64 id) {
+    ASSERT(id < m_textures.size(), "Invalid framebuffer id - {}", id);
+    return m_textures[id].get();
 }
 
 VKTexture* VKSwapchain::getDepthBuffer() { return m_depthTexture.get(); }

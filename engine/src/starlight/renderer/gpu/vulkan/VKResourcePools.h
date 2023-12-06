@@ -48,7 +48,8 @@ public:
     VKShader* createShader(const Shader::Properties& props) override;
     void destroyShader(Shader& shader) override;
 
-    VKRenderTarget* createRenderTarget(const RenderTarget::Properties& props
+    VKRenderTarget* createRenderTarget(
+      const RenderTarget::Properties& props, RenderPass* renderPass
     ) override;
     void destroyRenderTarget(RenderTarget& renderTarget) override;
 

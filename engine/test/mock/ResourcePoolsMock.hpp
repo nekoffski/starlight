@@ -27,7 +27,8 @@ struct ResourcePoolsMock : public ResourcePools {
     MOCK_METHOD(Shader*, createShader, (const Shader::Properties&));
     MOCK_METHOD(void, destroyShader, (Shader&));
     MOCK_METHOD(
-      RenderTarget*, createRenderTarget, (const RenderTarget::Properties&)
+      RenderTarget*, createRenderTarget,
+      (const RenderTarget::Properties&, RenderPass*)
     );
     MOCK_METHOD(void, destroyRenderTarget, (RenderTarget&));
     MOCK_METHOD(RenderPass*, createRenderPass, (const RenderPass::Properties&));

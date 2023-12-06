@@ -30,8 +30,10 @@ FrameStatistics RendererFrontend::renderFrame(float deltaTime) {
     if (m_resizing) {
         static constexpr u16 requiredFramesSinceResize = 30u;
 
+        LOG_TRACE("Resizing viewport, frame dropped");
+
         if (m_framesSinceResize++ >= requiredFramesSinceResize) {
-            m_resizing          = 0;
+            m_resizing          = false;
             m_framesSinceResize = 0;
         } else {
             return FrameStatistics{

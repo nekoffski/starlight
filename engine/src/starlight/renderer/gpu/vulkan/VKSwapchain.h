@@ -34,7 +34,7 @@ public:
 
     u32 getImageCount() const;
 
-    std::vector<VKFramebuffer>* getFramebuffers();
+    VKTexture* getFramebuffer(u64 id);
     VKTexture* getDepthBuffer();
     VkSurfaceFormatKHR getSurfaceFormat() const;
 
@@ -58,8 +58,6 @@ private:
 
     LocalPtr<VKTexture> m_depthTexture;
     std::vector<LocalPtr<VKTexture>> m_textures;
-
-    std::vector<VKFramebuffer> m_framebuffers;
 
     u32 m_imageCount;
 };

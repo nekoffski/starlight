@@ -5,6 +5,8 @@
 #include <starlight/core/Core.h>
 #include <starlight/core/math/Glm.h>
 
+#include "RenderTarget.h"
+
 #include "fwd.h"
 
 namespace sl {
@@ -22,6 +24,8 @@ public:
         u8 clearFlags;
         bool hasPreviousPass;
         bool hasNextPass;
+
+        std::vector<RenderTarget::Properties> targets;
     };
 
     explicit RenderPass(u32 id, const Properties& props);
@@ -33,15 +37,13 @@ public:
 
     u32 getId() const;
 
-    void regenerateRenderTargets(
-      std::vector<Texture*> attachments, u32 width, u32 height
-    );
+    virtual void regenerateRenderTargets(
+      const std::vector<RenderTarget::Properties>& targets
+    ) = 0;
 
 protected:
     u32 m_id;
     Properties m_props;
-
-    std::vector<RenderTarget*> m_renderTargets;
 };
 
 }  // namespace sl

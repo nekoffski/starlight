@@ -7,6 +7,8 @@
 #include "Vulkan.h"
 #include "fwd.h"
 
+#include "VKRenderTarget.h"
+
 namespace sl::vk {
 
 class VKRenderPass : public RenderPass {
@@ -21,14 +23,17 @@ public:
     };
 
     explicit VKRenderPass(
-      u32 id, const VKContext* context, const VKDevice* device,
-      const VKSwapchain& swapchain, const Properties& properties
+      u32 id, VKContext* context, VKDevice* device, const VKSwapchain& swapchain,
+      const Properties& properties
     );
 
     ~VKRenderPass();
 
-    void begin(VKCommandBuffer& commandBuffer, VkFramebuffer framebuffer);
+    void begin(VKCommandBuffer& commandBuffer, u8 attachmentIndex);
     void end(VKCommandBuffer& commandBuffer);
+
+    void regenerateRenderTargets(const std::vector<RenderTarget::Properties>& targets
+    ) override;
 
     VkRenderPass getHandle();
 
@@ -47,6 +52,8 @@ private:
     uint32_t m_stencil = 0;
 
     State m_state;
+
+    std::vector<VKRenderTarget> m_renderTargets;
 };
 
 }  // namespace sl::vk

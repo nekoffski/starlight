@@ -17,11 +17,4 @@ void RenderPass::setAreaSize(u32 w, u32 h) {
 
 u32 RenderPass::getId() const { return m_id; }
 
-void RenderPass::regenerateRenderTargets(
-  std::vector<Texture*> attachments, u32 width, u32 height
-) {
-    RenderTarget::Properties properties{ attachments, this, width, height };
-    for (auto& renderTarget : m_renderTargets) renderTarget->regenerate(properties);
-}
-
 }  // namespace sl

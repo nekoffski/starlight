@@ -14,7 +14,6 @@ public:
 
     struct Properties {
         std::vector<Texture*> attachments;
-        RenderPass* renderPass;
         u32 width;
         u32 height;
     };

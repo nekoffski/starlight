@@ -57,7 +57,6 @@ public:
 private:
     void createCoreComponents(sl::Window& window, const Config& config);
     void createCommandBuffers();
-    void regenerateFramebuffers();
     void createSemaphoresAndFences();
 
     void freeDataRange(VKBuffer& buffer, uint64_t offset, uint64_t size);
@@ -78,7 +77,7 @@ private:
     VKRenderPass* m_mainRenderPass;
     VKRenderPass* m_uiRenderPass;
 
-    VKRendererContext m_rendererContext;
+    LocalPtr<VKRendererContext> m_rendererContext;
 
     // TODO: consider creating as ptrs to allow mocking
     UniqPtr<VKBuffer> m_objectVertexBuffer;
@@ -86,15 +85,9 @@ private:
 
     static constexpr uint8_t maxFramesInFlight = 2;
 
-    std::vector<VKFramebuffer> m_worldFramebuffers;
+    // std::vector<VKRenderTarget> m_worldRenderTargets;
 
     VkDescriptorPool m_uiPool;
-
-    // resources
-    std::vector<LocalPtr<VKTexture>> m_textures;
-    std::vector<LocalPtr<VKTextureMap>> m_textureMaps;
-    std::vector<LocalPtr<VKGeometry>> m_geometries;
-    std::vector<LocalPtr<VKShader>> m_shaders;
 
     u64 m_renderedVertices;
 

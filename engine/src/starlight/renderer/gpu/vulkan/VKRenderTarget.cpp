@@ -6,12 +6,15 @@
 namespace sl::vk {
 
 VKRenderTarget::VKRenderTarget(
-  u32 id, VKContext& context, VKDevice& device, const Properties& props
+  u32 id, VKContext& context, VKDevice& device, VKRenderPass* renderPass,
+  const Properties& props
 ) :
     RenderTarget(id, props),
-    m_context(context), m_device(device) {
+    m_context(context), m_device(device), m_renderPass(renderPass) {
     regenerate(props);
 }
+
+VKFramebuffer* VKRenderTarget::getFramebuffer() { return m_framebuffer.get(); }
 
 void VKRenderTarget::regenerate(const Properties& properties) {
     if (m_framebuffer) m_framebuffer.clear();
@@ -25,11 +28,10 @@ void VKRenderTarget::regenerate(const Properties& properties) {
         );
     }
 
-    // m_framebuffer.emplace(
-    //   &m_context, &m_device,
-    //   dynamic_cast<VKRenderPass*>(m_props.renderPass)->getHandle(), m_props.width,
-    //   m_props.height, {}
-    // );
+    m_framebuffer.emplace(
+      &m_context, &m_device, m_renderPass->getHandle(), m_props.width,
+      m_props.height, attachmentViews
+    );
 }
 
 }  // namespace sl::vk

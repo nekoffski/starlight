@@ -75,9 +75,11 @@ void VKResourcePools::destroyShader(Shader& shader) {
 }
 
 VKRenderTarget* VKResourcePools::createRenderTarget(
-  const RenderTarget::Properties& props
+  const RenderTarget::Properties& props, RenderPass* renderPass
 ) {
-    return m_renderTargets.create(m_context, m_device, props);
+    return m_renderTargets.create(
+      m_context, m_device, static_cast<VKRenderPass*>(renderPass), props
+    );
 }
 void VKResourcePools::destroyRenderTarget(RenderTarget& renderTarget) {
     m_renderTargets.destroy(renderTarget.getId());

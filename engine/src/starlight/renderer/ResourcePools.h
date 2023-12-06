@@ -36,7 +36,8 @@ struct ResourcePools {
     virtual Shader* createShader(const Shader::Properties& props) = 0;
     virtual void destroyShader(Shader& shader)                    = 0;
 
-    virtual RenderTarget* createRenderTarget(const RenderTarget::Properties& props
+    virtual RenderTarget* createRenderTarget(
+      const RenderTarget::Properties& props, RenderPass* renderPass
     )                                                            = 0;
     virtual void destroyRenderTarget(RenderTarget& renderTarget) = 0;
 

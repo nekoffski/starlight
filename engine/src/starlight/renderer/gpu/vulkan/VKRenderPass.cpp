@@ -4,6 +4,7 @@
 #include "VKCommandBuffer.h"
 #include "VKSwapchain.h"
 #include "VKContext.h"
+#include "VKRenderTarget.h"
 
 namespace sl::vk {
 
@@ -138,8 +139,8 @@ struct RenderPassCreateInfo {
 };
 
 VKRenderPass::VKRenderPass(
-  u32 id, const VKContext* context, const VKDevice* device,
-  const VKSwapchain& swapchain, const Properties& properties
+  u32 id, VKContext* context, VKDevice* device, const VKSwapchain& swapchain,
+  const Properties& properties
 ) :
     RenderPass(id, properties),
     m_context(context), m_device(device) {
@@ -153,6 +154,15 @@ VKRenderPass::VKRenderPass(
       m_device->getLogicalDevice(), &createInfo.handle, m_context->getAllocator(),
       &m_handle
     ));
+
+    if (properties.targets.size() == 0)
+        LOG_WARN("Render pass with no render targets created");
+
+    for (auto& renderTarget : properties.targets) {
+        m_renderTargets.emplace_back(
+          id * 1000, *context, *device, this, renderTarget
+        );
+    }
 }
 
 VKRenderPass::~VKRenderPass() {
@@ -209,9 +219,11 @@ VkRenderPassBeginInfo VKRenderPass::createRenderPassBeginInfo(
     return beginInfo;
 }
 
-void VKRenderPass::begin(VKCommandBuffer& commandBuffer, VkFramebuffer framebuffer) {
+void VKRenderPass::begin(VKCommandBuffer& commandBuffer, u8 attachmentIndex) {
     auto clearValues = createClearValues(m_props.clearFlags);
-    auto beginInfo   = createRenderPassBeginInfo(clearValues, framebuffer);
+    auto beginInfo   = createRenderPassBeginInfo(
+        clearValues, m_renderTargets[attachmentIndex].getFramebuffer()->getHandle()
+      );
 
     vkCmdBeginRenderPass(
       commandBuffer.getHandle(), &beginInfo, VK_SUBPASS_CONTENTS_INLINE
@@ -222,6 +234,17 @@ void VKRenderPass::begin(VKCommandBuffer& commandBuffer, VkFramebuffer framebuff
 void VKRenderPass::end(VKCommandBuffer& commandBuffer) {
     vkCmdEndRenderPass(commandBuffer.getHandle());
     commandBuffer.setState(VKCommandBuffer::State::recording);
+}
+
+void VKRenderPass::regenerateRenderTargets(
+  const std::vector<RenderTarget::Properties>& targets
+) {
+    ASSERT(
+      targets.size() == m_renderTargets.size(),
+      "Properties count doesn't match with render target count"
+    );
+    for (int i = 0; i < targets.size(); ++i)
+        m_renderTargets[i].regenerate(targets[i]);
 }
 
 }  // namespace sl::vk

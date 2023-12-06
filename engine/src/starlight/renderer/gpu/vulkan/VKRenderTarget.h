@@ -12,14 +12,18 @@ namespace sl::vk {
 class VKRenderTarget : public RenderTarget {
 public:
     explicit VKRenderTarget(
-      u32 id, VKContext& context, VKDevice& device, const Properties& props
+      u32 id, VKContext& context, VKDevice& device, VKRenderPass* renderPass,
+      const Properties& props
     );
+
+    VKFramebuffer* getFramebuffer();
 
     void regenerate(const Properties& properties) override;
 
 private:
     VKContext& m_context;
     VKDevice& m_device;
+    VKRenderPass* m_renderPass;
 
     LocalPtr<VKFramebuffer> m_framebuffer;
 };
