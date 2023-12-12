@@ -15,7 +15,6 @@
 #include "starlight/renderer/fwd.h"
 
 #include "GeometryRenderData.h"
-#include "GlobalState.h"
 
 namespace sl {
 
@@ -34,6 +33,8 @@ struct RendererBackend {
 
     virtual bool beginFrame(float deltaTime) = 0;
     virtual bool endFrame(float deltaTime)   = 0;
+
+    // virtual std::vector<RenderPass*> createRenderPasses() = 0;
 
     RenderPassStatistics renderPass(uint8_t id, auto&& callback) {
         if (beginRenderPass(id)) {

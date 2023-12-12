@@ -3,7 +3,7 @@
 #include <functional>
 
 #include "starlight/renderer/camera/Camera.h"
-#include "starlight/renderer/gpu/RendererBackend.h"
+#include "starlight/renderer/RendererBackend.h"
 
 #include "Shader.h"
 

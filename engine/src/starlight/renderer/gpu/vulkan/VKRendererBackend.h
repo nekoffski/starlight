@@ -9,7 +9,7 @@
 #include "starlight/core/fwd.h"
 #include "starlight/core/memory/Memory.hpp"
 #include "starlight/core/window/Window.h"
-#include "starlight/renderer/gpu/RendererBackend.h"
+#include "starlight/renderer/RendererBackend.h"
 
 #include "Vulkan.h"
 #include "fwd.h"

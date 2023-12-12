@@ -2,7 +2,7 @@
 
 #include <span>
 
-#include "gpu/RendererBackend.h"
+#include "RendererBackend.h"
 
 namespace sl {
 
