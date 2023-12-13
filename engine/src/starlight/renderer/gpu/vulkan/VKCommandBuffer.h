@@ -2,29 +2,14 @@
 
 #include "Vulkan.h"
 
+#include "starlight/renderer/CommandBuffer.h"
+
 #include "fwd.h"
 
 namespace sl::vk {
 
-class VKCommandBuffer {
+class VKCommandBuffer : public CommandBuffer {
 public:
-    enum class State : unsigned char {
-        ready,
-        recording,
-        inRenderPass,
-        recordingEnded,
-        submitted,
-        notAllocated
-    };
-
-    struct BeginFlags {
-        bool isSingleUse;
-        bool isRenderpassContinue;
-        bool isSimultaneousUse;
-    };
-
-    enum class Severity : unsigned char { primary, nonPrimary };
-
     explicit VKCommandBuffer(
       const VKDevice* device, VkCommandPool commandPool,
       Severity severity = Severity::primary
@@ -36,8 +21,10 @@ public:
 
     void create(Severity severity);
     void destroy();
-    void begin(const BeginFlags& args);
-    void end();
+
+    void begin(const BeginFlags& args) override;
+    void end() override;
+
     void updateSubmitted();
     void reset();
 

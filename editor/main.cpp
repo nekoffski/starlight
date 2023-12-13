@@ -218,12 +218,22 @@ int main() {
       resourceManager.getMaterialDefaultShader()
     );
 
+    // views:
+    //      need to use kind of RendererBackendProxy instead of RendererContext
+    //      (finally) to get the current commandBuffer
+    //      create views -> shader as input, create render pass internally
+    //      add createPipeline(RenderPass*) to Shader
+    //      shader config doesn't accept the render pass id/name (good!)
+    //      init() on rendererFrontend accepts vector of views
+    //      use those view to render frame
+
     generateMeshes(resourceManager);
     auto packet = getRenderPacket(resourceManager);
 
     sl::FrameStatistics stats;
 
     while (isRunning) {
+        // TODO: accept lambda
         const auto deltaTime = ctx.beginFrame();
 
         LOG_VAR(deltaTime);
@@ -237,7 +247,6 @@ int main() {
 
         currentCamera->update(deltaTime);
         ctx.endFrame();
-
         // break;
     }
 
