@@ -9,7 +9,7 @@
 
 #include <starlight/renderer/Geometry.h>
 #include <starlight/renderer/RenderPacket.h>
-#include <starlight/renderer/Renderer.h>
+#include <starlight/renderer/RendererFrontend.h>
 #include <starlight/renderer/camera/EulerCamera.h>
 #include <starlight/renderer/camera/FirstPersonCamera.h>
 #include <starlight/renderer/Mesh.h>
@@ -162,7 +162,7 @@ int main() {
 
     sl::Camera* currentCamera = &eulerCamera;
 
-    sl::Renderer renderer(*window, *ctx.getConfig(), currentCamera);
+    sl::RendererFrontend rendererFrontend(*window, *ctx.getConfig(), currentCamera);
 
     auto& eventManager = sl::EventManager::get();
 
@@ -175,26 +175,26 @@ int main() {
             if ((key == SL_KEY_ESCAPE || key == SL_KEY_Q)) isRunning = false;
 
             if (key == SL_KEY_0) {
-                renderer.setRenderMode(sl::RenderMode::lights);
+                rendererFrontend.setRenderMode(sl::RenderMode::lights);
                 renderMode = "lights only";
             }
             if (key == SL_KEY_9) {
-                renderer.setRenderMode(sl::RenderMode::normals);
+                rendererFrontend.setRenderMode(sl::RenderMode::normals);
                 renderMode = "normals only";
             }
             if (key == SL_KEY_8) {
-                renderer.setRenderMode(sl::RenderMode::standard);
+                rendererFrontend.setRenderMode(sl::RenderMode::standard);
                 renderMode = "standard";
             }
             if (key == SL_KEY_6) sl::enableVariableLogging();
             if (key == SL_KEY_4) {
                 currentCamera = &eulerCamera;
-                renderer.setCamera(currentCamera);
+                rendererFrontend.setCamera(currentCamera);
                 ctx.getWindow()->showCursor();
             }
             if (key == SL_KEY_3) {
                 currentCamera = &firstPersonCamera;
-                renderer.setCamera(currentCamera);
+                rendererFrontend.setCamera(currentCamera);
                 ctx.getWindow()->hideCursor();
             }
             if (key == SL_KEY_U) s_update = !s_update;
@@ -202,7 +202,7 @@ int main() {
     };
 
     const auto onWindowResized = [&](sl::WindowResized* event) {
-        renderer.resizeViewport(event->width, event->height);
+        rendererFrontend.onViewportResize(event->width, event->height);
         eulerCamera.onViewportResize(event->width, event->height);
         firstPersonCamera.onViewportResize(event->width, event->height);
     };
@@ -211,9 +211,9 @@ int main() {
       .on<sl::KeyEvent>(onKey)
       .on<sl::WindowResized>(onWindowResized);
 
-    sl::ResourceManager resourceManager(*renderer.getResourcePools());
+    sl::ResourceManager resourceManager(*rendererFrontend.getResourcePools());
 
-    renderer.setCoreShaders(
+    rendererFrontend.setCoreShaders(
       resourceManager.getUIDefaultShader(),
       resourceManager.getMaterialDefaultShader()
     );
@@ -229,9 +229,9 @@ int main() {
         LOG_VAR(deltaTime);
         LOG_VAR(currentCamera->getPosition());
 
-        renderer.addMainPass(packet);
-        renderer.addUIPass([&]() { renderUI(deltaTime, stats); });
-        stats = renderer.renderFrame(deltaTime);
+        rendererFrontend.addMainPass(packet);
+        rendererFrontend.addUIPass([&]() { renderUI(deltaTime, stats); });
+        stats = rendererFrontend.renderFrame(deltaTime);
 
         update(packet, deltaTime);
 

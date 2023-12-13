@@ -4,7 +4,6 @@
 
 #include "starlight/core/math/Glm.h"
 #include "starlight/core/memory/Memory.hpp"
-#include "starlight/core/window/WindowManager.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -12,11 +11,14 @@
 
 namespace sl {
 
-RendererFrontend::RendererFrontend(RendererBackend* backend, Camera* camera) :
-    m_backend(backend), m_camera(camera), m_materialShader(nullptr),
-    m_uiShader(nullptr), m_renderMode(RenderMode::standard), m_frameNumber(0ul),
-    m_framesSinceResize(0u), m_resizing(false) {
-    const auto [w, h] = WindowManager::get().getSize();
+RendererFrontend::RendererFrontend(
+  Window& window, const Config& config, Camera* camera
+) :
+    m_backend(window, config),
+    m_camera(camera), m_materialShader(nullptr), m_uiShader(nullptr),
+    m_renderMode(RenderMode::standard), m_frameNumber(0ul), m_framesSinceResize(0u),
+    m_resizing(false) {
+    const auto [w, h] = window.getSize();
     m_viewportWidth   = w;
     m_viewportHeight  = h;
 }
@@ -42,14 +44,15 @@ FrameStatistics RendererFrontend::renderFrame(float deltaTime) {
         }
     }
 
-    if (m_backend->beginFrame(deltaTime)) {
+    if (m_backend.beginFrame(deltaTime)) {
         for (auto& [renderPassId, renderPassCallback] : m_renderPasses) {
             auto renderPassStats =
-              m_backend->renderPass(renderPassId, renderPassCallback);
+              m_backend.renderPass(renderPassId, renderPassCallback);
             totalVerticesRendered += renderPassStats.renderedVertices;
         }
         m_renderPasses.clear();
-        m_backend->endFrame(deltaTime);
+
+        m_backend.endFrame(deltaTime);
     }
     return FrameStatistics{
         .renderedVertices = totalVerticesRendered, .frameNumber = m_frameNumber
@@ -58,7 +61,7 @@ FrameStatistics RendererFrontend::renderFrame(float deltaTime) {
 
 void RendererFrontend::addUIPass(std::function<void()>&& callback) {
     m_renderPasses.push_back(RenderPass(builtinRenderPassUI, [&]() {
-        m_backend->renderUI(std::move(callback));
+        m_backend.renderUI(std::move(callback));
     }));
 }
 
@@ -85,7 +88,7 @@ void RendererFrontend::addMainPass(RenderPacket& renderPacket) {
                 proxy.set("model", geometryRenderData.model);
             });
 
-            m_backend->drawGeometry(geometryRenderData);
+            m_backend.drawGeometry(geometryRenderData);
         }
     }));
 }
@@ -102,9 +105,13 @@ void RendererFrontend::setRenderMode(RenderMode mode) {
 
 void RendererFrontend::setCamera(Camera* camera) { m_camera = camera; }
 
+ResourcePools* RendererFrontend::getResourcePools() {
+    return m_backend.getResourcePools();
+}
+
 void RendererFrontend::onViewportResize(u32 w, u32 h) {
     m_resizing = true;
-    m_backend->onViewportResize(w, h);
+    m_backend.onViewportResize(w, h);
 }
 
 }  // namespace sl

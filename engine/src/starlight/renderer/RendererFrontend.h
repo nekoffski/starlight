@@ -11,6 +11,8 @@
 #include "RenderMode.h"
 #include "FrameStatistics.h"
 
+#include "gpu/Vendor.h"
+
 namespace sl {
 
 class RendererFrontend {
@@ -20,7 +22,7 @@ class RendererFrontend {
     };
 
 public:
-    explicit RendererFrontend(RendererBackend* backend, Camera* camera);
+    explicit RendererFrontend(Window& window, const Config& config, Camera* camera);
     virtual ~RendererFrontend();
 
     FrameStatistics renderFrame(float deltaTime);
@@ -32,12 +34,15 @@ public:
     void setRenderMode(RenderMode mode);
     void setCamera(Camera* camera);
 
+    ResourcePools* getResourcePools();
+
     void onViewportResize(u32 w, u32 h);
 
 private:
+    RendererBackendVendor m_backend;
+
     std::vector<RenderPass> m_renderPasses;
 
-    RendererBackend* m_backend;
     Camera* m_camera;
 
     Texture* m_activeTexture;
