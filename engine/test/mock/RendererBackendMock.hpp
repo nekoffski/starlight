@@ -15,4 +15,5 @@ struct RendererBackendMock : RendererBackend {
     MOCK_METHOD(void, drawGeometry, (const GeometryRenderData&));
     MOCK_METHOD(void, onViewportResize, (uint32_t, uint32_t));
     MOCK_METHOD(ResourcePools*, getResourcePools, ());
+    MOCK_METHOD(RendererBackendProxy*, getProxy, ());
 };

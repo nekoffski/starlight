@@ -6,14 +6,13 @@ namespace sl::vk {
 
 VKResourcePools::VKResourcePools(
   VKContext& context, VKDevice& device, VKBuffer& vertexBuffer,
-  VKBuffer& indexBuffer, VKRendererContext& rendererContext, VKSwapchain& swapchain,
-  VKRendererBackend* backend
+  VKBuffer& indexBuffer, VKSwapchain& swapchain, VKRendererBackend* backend
 ) :
     m_context(context),
     m_device(device), m_vertexBuffer(vertexBuffer), m_indexBuffer(indexBuffer),
-    m_rendererContext(rendererContext), m_swapchain(swapchain), backend(backend),
-    m_textures("Texture", 1024), m_textureMaps("TextureMap", 1024),
-    m_shaders("Shader", 1024), m_geometries("Geometry", vulkanMaxGeometryCount),
+    m_swapchain(swapchain), backend(backend), m_textures("Texture", 1024),
+    m_textureMaps("TextureMap", 1024), m_shaders("Shader", 1024),
+    m_geometries("Geometry", vulkanMaxGeometryCount),
     m_renderTargets("RenderTarget", 64), m_renderPasses("RenderPass", 64) {}
 
 VKGeometry* VKResourcePools::createGeometry(
@@ -66,7 +65,7 @@ VKShader* VKResourcePools::createShader(const Shader::Properties& props) {
     return m_shaders.create(
       &m_device, &m_context,
       backend->getRenderPass(backend->getRenderPassId(props.renderPassName)),
-      m_rendererContext, props
+      *backend->getProxy(), props
     );
 }
 

@@ -9,7 +9,7 @@
 #include "VKBuffer.h"
 #include "VKDevice.h"
 #include "VKPipeline.h"
-#include "VKRendererContext.h"
+#include "VKRendererBackendProxy.h"
 
 #include "starlight/renderer/Shader.h"
 
@@ -70,7 +70,7 @@ class VKShader final : public Shader {
 public:
     explicit VKShader(
       u32 id, VKDevice* device, const VKContext* context, VKRenderPass* renderPass,
-      VKRendererContext& rendererContext, const Shader::Properties& props
+      VKRendererBackendProxy& backendProxy, const Shader::Properties& props
     );
     ~VKShader() override;
 
@@ -113,7 +113,7 @@ private:
     VKDevice* m_device;
     const VKContext* m_context;
     VKRenderPass* m_renderPass;
-    VKRendererContext& m_rendererContext;
+    VKRendererBackendProxy& m_backendProxy;
 
     void* m_mappedUniformBufferBlock;
     Config m_config;

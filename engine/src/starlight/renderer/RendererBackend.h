@@ -13,8 +13,10 @@
 #include "starlight/renderer/Texture.h"
 #include "starlight/renderer/Shader.h"
 #include "starlight/renderer/fwd.h"
+#include "starlight/renderer/CommandBuffer.h"
 
 #include "GeometryRenderData.h"
+#include "RendererBackendProxy.h"
 
 namespace sl {
 
@@ -23,10 +25,6 @@ constexpr int builtinRenderPassWorld = 1;
 constexpr int builtinRenderPassUI    = 2;
 
 struct RendererBackend {
-    struct Proxy {
-        virtual void drawGeometry(const GeometryRenderData& modelMatrix) = 0;
-    };
-
     struct RenderPassStatistics {
         u64 renderedVertices;
     };
@@ -35,7 +33,7 @@ struct RendererBackend {
 
     virtual ~RendererBackend() = default;
 
-    // virtual Proxy* getProxy() = 0;
+    virtual RendererBackendProxy* getProxy() = 0;
 
     virtual bool beginFrame(float deltaTime) = 0;
     virtual bool endFrame(float deltaTime)   = 0;

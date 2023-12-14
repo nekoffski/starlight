@@ -8,7 +8,6 @@
 #include "VKGeometry.h"
 #include "VKContext.h"
 #include "VKDevice.h"
-#include "VKRendererContext.h"
 #include "VKRenderPass.h"
 #include "VKRenderTarget.h"
 #include "VKSwapchain.h"
@@ -21,8 +20,7 @@ class VKResourcePools : public ResourcePools {
 public:
     explicit VKResourcePools(
       VKContext& context, VKDevice& device, VKBuffer& vertexBuffer,
-      VKBuffer& indexBuffer, VKRendererContext& rendererContext,
-      VKSwapchain& swapchain, VKRendererBackend* backend
+      VKBuffer& indexBuffer, VKSwapchain& swapchain, VKRendererBackend* backend
     );
 
     VKGeometry* createGeometry(
@@ -61,7 +59,6 @@ private:
     VKDevice& m_device;
     VKBuffer& m_vertexBuffer;
     VKBuffer& m_indexBuffer;
-    VKRendererContext& m_rendererContext;
     VKSwapchain& m_swapchain;
 
     VKRendererBackend* backend;  // TODO: temporary, remove when render pass creation

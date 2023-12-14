@@ -85,16 +85,15 @@ VKShaderStage::~VKShaderStage() {
 
 VKShader::VKShader(
   u32 id, VKDevice* device, const VKContext* context, VKRenderPass* renderPass,
-  VKRendererContext& rendererContext, const Shader::Properties& props
+  VKRendererBackendProxy& backendProxy, const Shader::Properties& props
 ) :
     Shader(props, id),
     m_device(device), m_context(context), m_renderPass(renderPass),
-    m_rendererContext(rendererContext), m_requiredUboAlignment(0),
-    m_globalUboSize(0), m_globalUboStride(0), m_globalUboOffset(0), m_uboSize(0),
-    m_uboStride(0), m_pushConstantSize(0), m_pushConstantStride(128),
-    m_instanceTextureCount(0), m_boundInstanceId(0), m_boundUboOffset(0),
-    m_pushConstantRangeCount(0), m_attributeStride(0), m_maxDescriptorSetCount(0),
-    m_descriptorSetCount(0) {
+    m_backendProxy(backendProxy), m_requiredUboAlignment(0), m_globalUboSize(0),
+    m_globalUboStride(0), m_globalUboOffset(0), m_uboSize(0), m_uboStride(0),
+    m_pushConstantSize(0), m_pushConstantStride(128), m_instanceTextureCount(0),
+    m_boundInstanceId(0), m_boundUboOffset(0), m_pushConstantRangeCount(0),
+    m_attributeStride(0), m_maxDescriptorSetCount(0), m_descriptorSetCount(0) {
     addAttributes(props.attributes);
     addUniforms(props.uniformProperties, props.defaultTexture);
 
@@ -291,7 +290,7 @@ void VKShader::addUniform(
 
 void VKShader::use() {
     m_pipeline->bind(
-      *m_rendererContext.getCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS
+      *m_backendProxy.getCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS
     );
 }
 
@@ -312,7 +311,7 @@ void VKShader::applyGlobals() {
     bufferInfo.offset = m_globalUboOffset;
     bufferInfo.range  = m_globalUboStride;
 
-    const auto imageIndex = m_rendererContext.getImageIndex();
+    const auto imageIndex = m_backendProxy.getImageIndex();
 
     // Update desriptor sets
     VkWriteDescriptorSet uboWrite = { VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET };
@@ -337,14 +336,14 @@ void VKShader::applyGlobals() {
 
     auto globalDescriptor = &m_globalDescriptorSets[imageIndex];
     vkCmdBindDescriptorSets(
-      m_rendererContext.getCommandBuffer()->getHandle(),
+      m_backendProxy.getCommandBuffer()->getHandle(),
       VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->getLayout(), 0, 1,
       globalDescriptor, 0, 0
     );
 }
 
 void VKShader::applyInstance() {
-    const auto imageIndex = m_rendererContext.getImageIndex();
+    const auto imageIndex = m_backendProxy.getImageIndex();
 
     auto objectState = &m_instanceStates[m_boundInstanceId];
     auto objectDescriptorSet =
@@ -423,7 +422,7 @@ void VKShader::applyInstance() {
         );
     }
     vkCmdBindDescriptorSets(
-      m_rendererContext.getCommandBuffer()->getHandle(),
+      m_backendProxy.getCommandBuffer()->getHandle(),
       VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->getLayout(), 1, 1,
       &objectDescriptorSet, 0, 0
     );
@@ -531,7 +530,7 @@ void VKShader::setUniform(const std::string& name, const void* value) {
     } else {
         if (uniform.scope == Scope::local) {
             vkCmdPushConstants(
-              m_rendererContext.getCommandBuffer()->getHandle(),
+              m_backendProxy.getCommandBuffer()->getHandle(),
               m_pipeline->getLayout(),
               VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
               uniform.offset, uniform.size, value

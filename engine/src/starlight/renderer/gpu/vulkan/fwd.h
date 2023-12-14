@@ -18,8 +18,8 @@ class VKPipeline;
 class VKBuffer;
 class VKTexture;
 class VKTextureLoader;
-class VKRendererContext;
 class VKResourcePools;
 class VKRendererBackend;
+class VKRendererBackendProxy;
 
 }  // namespace sl::vk
