@@ -22,7 +22,6 @@
 #include "VKSemaphore.h"
 #include "VKTexture.h"
 #include "VKBuffer.h"
-#include "VKRendererContext.h"
 #include "VKResourcePools.h"
 #include "VKRendererBackendProxy.h"
 

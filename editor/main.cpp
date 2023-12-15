@@ -219,8 +219,6 @@ int main() {
     );
 
     // views:
-    //      need to use kind of RendererBackendProxy instead of RendererContext
-    //      (finally) to get the current commandBuffer
     //      create views -> shader as input, create render pass internally
     //      add createPipeline(RenderPass*) to Shader
     //      shader config doesn't accept the render pass id/name (good!)
