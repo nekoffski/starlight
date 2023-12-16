@@ -62,11 +62,7 @@ void VKResourcePools::destroyTextureMap(TextureMap& textureMap) {
 }
 
 VKShader* VKResourcePools::createShader(const Shader::Properties& props) {
-    return m_shaders.create(
-      &m_device, &m_context,
-      backend->getRenderPass(backend->getRenderPassId(props.renderPassName)),
-      *backend->getProxy(), props
-    );
+    return m_shaders.create(&m_device, &m_context, *backend->getProxy(), props);
 }
 
 void VKResourcePools::destroyShader(Shader& shader) {

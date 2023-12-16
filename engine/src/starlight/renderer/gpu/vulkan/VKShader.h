@@ -69,7 +69,7 @@ class VKShader final : public Shader {
 
 public:
     explicit VKShader(
-      u32 id, VKDevice* device, const VKContext* context, VKRenderPass* renderPass,
+      u32 id, VKDevice* device, const VKContext* context,
       VKRendererBackendProxy& backendProxy, const Shader::Properties& props
     );
     ~VKShader() override;
@@ -81,6 +81,8 @@ public:
     ) override;
     void releaseInstanceResources(u32 instanceId) override;
     // clang-format on
+
+    void createPipeline(RenderPass* renderPass) override;
 
 private:
     void setUniform(const std::string& uniform, const void* value) override;
@@ -95,7 +97,6 @@ private:
     void processUniforms();
     void createDescriptorPool();
     void createDescriptorSetLayouts();
-    void createPipeline();
     void createUniformBuffer();
 
     void addAttributes(std::span<const Shader::Attribute> attributes);
@@ -112,7 +113,6 @@ private:
 
     VKDevice* m_device;
     const VKContext* m_context;
-    VKRenderPass* m_renderPass;
     VKRendererBackendProxy& m_backendProxy;
 
     void* m_mappedUniformBufferBlock;

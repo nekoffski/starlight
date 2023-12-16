@@ -6,6 +6,7 @@
 #include <starlight/core/math/Glm.h>
 
 #include "RenderTarget.h"
+#include "CommandBuffer.h"
 
 #include "fwd.h"
 
@@ -31,6 +32,14 @@ public:
     explicit RenderPass(u32 id, const Properties& props);
     virtual ~RenderPass() = default;
 
+    template <typename C>
+    requires Callable<C>
+    void run(CommandBuffer& commandBuffer, u8 attachmentIndex, C&& callback) {
+        begin(commandBuffer, attachmentIndex);
+        callback();
+        end(commandBuffer);
+    }
+
     void setClearColor(const Vec4f& color);
     void setArea(const Vec4f& area);
     void setAreaSize(u32 w, u32 h);
@@ -40,6 +49,10 @@ public:
     virtual void regenerateRenderTargets(
       const std::vector<RenderTarget::Properties>& targets
     ) = 0;
+
+private:
+    virtual void begin(CommandBuffer& commandBuffer, u8 attachmentIndex) = 0;
+    virtual void end(CommandBuffer& commandBuffer)                       = 0;
 
 protected:
     u32 m_id;

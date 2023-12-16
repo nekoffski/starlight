@@ -25,39 +25,16 @@ constexpr int builtinRenderPassWorld = 1;
 constexpr int builtinRenderPassUI    = 2;
 
 struct RendererBackend {
-    struct RenderPassStatistics {
-        u64 renderedVertices;
-    };
-
-    enum class BultinRenderPass { world, ui };
-
     virtual ~RendererBackend() = default;
-
-    virtual RendererBackendProxy* getProxy() = 0;
 
     virtual bool beginFrame(float deltaTime) = 0;
     virtual bool endFrame(float deltaTime)   = 0;
 
-    // virtual std::vector<RenderPass*> createRenderPasses() = 0;
-
-    RenderPassStatistics renderPass(uint8_t id, auto&& callback) {
-        if (beginRenderPass(id)) {
-            callback();
-            return RenderPassStatistics{ .renderedVertices = endRenderPass(id) };
-        }
-        return RenderPassStatistics{};
-        // TODO: return null optional
-    }
-
-    virtual bool beginRenderPass(uint8_t id) = 0;
-    virtual u64 endRenderPass(uint8_t id)    = 0;
-
-    virtual void renderUI(std::function<void()>&&) = 0;
-
-    virtual void drawGeometry(const GeometryRenderData& modelMatrix) = 0;
+    virtual void drawGeometry(const Geometry& geometry) = 0;
 
     virtual void onViewportResize(uint32_t width, uint32_t height) = 0;
 
+    virtual RendererBackendProxy* getProxy()  = 0;
     virtual ResourcePools* getResourcePools() = 0;
 };
 

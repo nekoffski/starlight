@@ -94,7 +94,6 @@ std::optional<ShaderConfig> ShaderConfig::load(
                 .name           = getField<std::string>(root, "name"),
                 .useInstances   = getField<bool>(root, "use-instances"),
                 .useLocals      = getField<bool>(root, "use-local"),
-                .renderPassName = getField<std::string>(root, "renderpass"),
                 .attributes     = processAttributes(getArray(root, "attributes")),
                 .stages = processStages(getArray(root, "stages"), shadersPath, fs),
                 .uniformProperties = processUniforms(getArray(root, "uniforms")),

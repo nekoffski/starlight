@@ -15,6 +15,11 @@ ShaderManager::~ShaderManager() { destroyAll(); }
 Shader* ShaderManager::load(const std::string& name) {
     LOG_TRACE("Loading shader: {}", name);
 
+    if (auto shader = acquire(name); shader) {
+        LOG_INFO("Shader '{}' already loaded, returning cached one");
+        return shader;
+    }
+
     auto config = ShaderConfig::load(name, Texture::defaultDiffuse);
     auto shader = m_resourcePools.createShader(config->properties);
 

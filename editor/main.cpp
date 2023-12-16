@@ -19,6 +19,9 @@
 #include <starlight/resource/resources/MeshConfig.h>
 #include <starlight/renderer/ui/UI.hpp>
 
+#include <starlight/renderer/views/UIRenderView.h>
+#include <starlight/renderer/views/WorldRenderView.h>
+
 std::vector<sl::Mesh> meshes;
 
 void generateMeshes(sl::ResourceManager& resourceManager) {
@@ -62,36 +65,9 @@ void generateMeshes(sl::ResourceManager& resourceManager) {
     meshes[2].transform.setParent(&meshes[1].transform);
 }
 
-sl::Geometry* getTestUiGeometry(sl::ResourceManager& resourceManager) {
-    sl::GeometryConfig2D props;
-
-    props.materialName = "Builtin.Material.UI";
-    props.name         = "test_geometry";
-    props.indices      = { 2, 1, 0, 3, 0, 1 };
-
-    constexpr float f = 512.0f;
-
-    props.vertices = {
-        sl::Vertex2{{ 0.0f, 0.0f }, { 0.0f, 1.0f }},
-        sl::Vertex2{ { f, f },      { 1.0f, 0.0f }},
-        sl::Vertex2{ { 0.0f, f },   { 0.0f, 0.0f }},
-        sl::Vertex2{ { f, 0.0f },   { 1.0f, 1.0f }}
-    };
-
-    return resourceManager.loadGeometry(props);
-}
-
 sl::RenderPacket getRenderPacket(sl::ResourceManager& resourceManager) {
-    auto testUiGeometry = getTestUiGeometry(resourceManager);
-
     // test render data
     sl::RenderPacket packet{};
-
-    sl::GeometryRenderData testUiRender;
-    testUiRender.geometry = testUiGeometry;
-    testUiRender.model    = sl::identityMatrix;
-
-    packet.uiGeometries = { testUiRender };
 
     return packet;
 }
@@ -99,7 +75,7 @@ sl::RenderPacket getRenderPacket(sl::ResourceManager& resourceManager) {
 bool s_update = true;
 
 void update(sl::RenderPacket& packet, float dt) {
-    packet.geometries.clear();
+    // packet.geometries.clear();
 
     const auto rotationAxis = sl::Vec3f{ 0.0f, 1.0f, 0.0f };
     const auto angle        = 0.1f * dt;
@@ -110,15 +86,15 @@ void update(sl::RenderPacket& packet, float dt) {
     // meshes[1].transform.rotate(rotationAxis, angle);
     // meshes[2].transform.rotate(rotationAxis, angle);
 
-    for (auto& mesh : meshes) {
-        for (auto& geometry : mesh.geometries) {
-            sl::GeometryRenderData data;
-            data.geometry = geometry;
-            data.model    = mesh.transform.getWorld();
+    // for (auto& mesh : meshes) {
+    //     for (auto& geometry : mesh.geometries) {
+    //         sl::GeometryRenderData data;
+    //         data.geometry = geometry;
+    //         data.model    = mesh.transform.getWorld();
 
-            packet.geometries.push_back(data);
-        }
-    }
+    //         packet.geometries.push_back(data);
+    //     }
+    // }
 }
 
 void renderUI(float deltaTime, sl::FrameStatistics& stats) {
@@ -168,6 +144,16 @@ int main() {
 
     const auto onQuit = [&]([[maybe_unused]] sl::QuitEvent*) { isRunning = false; };
 
+    sl::FrameStatistics stats;
+
+    sl::ResourceManager resourceManager(*rendererFrontend.getResourcePools());
+
+    sl::UIRenderView uiView(currentCamera, [&]() { renderUI(0.0f, stats); });
+
+    sl::WorldRenderView worldView(
+      currentCamera, resourceManager.getMaterialDefaultShader()
+    );
+
     const auto onKey = [&](sl::KeyEvent* event) {
         if (event->action == sl::KeyAction::press) {
             const auto& key = event->key;
@@ -189,12 +175,10 @@ int main() {
             if (key == SL_KEY_6) sl::enableVariableLogging();
             if (key == SL_KEY_4) {
                 currentCamera = &eulerCamera;
-                rendererFrontend.setCamera(currentCamera);
                 ctx.getWindow()->showCursor();
             }
             if (key == SL_KEY_3) {
                 currentCamera = &firstPersonCamera;
-                rendererFrontend.setCamera(currentCamera);
                 ctx.getWindow()->hideCursor();
             }
             if (key == SL_KEY_U) s_update = !s_update;
@@ -211,13 +195,6 @@ int main() {
       .on<sl::KeyEvent>(onKey)
       .on<sl::WindowResized>(onWindowResized);
 
-    sl::ResourceManager resourceManager(*rendererFrontend.getResourcePools());
-
-    rendererFrontend.setCoreShaders(
-      resourceManager.getUIDefaultShader(),
-      resourceManager.getMaterialDefaultShader()
-    );
-
     // views:
     //      create views -> shader as input, create render pass internally
     //      add createPipeline(RenderPass*) to Shader
@@ -228,24 +205,20 @@ int main() {
     generateMeshes(resourceManager);
     auto packet = getRenderPacket(resourceManager);
 
-    sl::FrameStatistics stats;
+    std::vector<sl::RenderView*> views = { &worldView };
+    rendererFrontend.init(views);
 
     while (isRunning) {
-        // TODO: accept lambda
-        const auto deltaTime = ctx.beginFrame();
+        ctx.beginFrame([&](float deltaTime) {
+            LOG_VAR(deltaTime);
+            LOG_VAR(currentCamera->getPosition());
 
-        LOG_VAR(deltaTime);
-        LOG_VAR(currentCamera->getPosition());
+            stats = rendererFrontend.renderFrame(deltaTime, meshes);
 
-        rendererFrontend.addMainPass(packet);
-        rendererFrontend.addUIPass([&]() { renderUI(deltaTime, stats); });
-        stats = rendererFrontend.renderFrame(deltaTime);
+            update(packet, deltaTime);
 
-        update(packet, deltaTime);
-
-        currentCamera->update(deltaTime);
-        ctx.endFrame();
-        // break;
+            currentCamera->update(deltaTime);
+        });
     }
 
     return 0;

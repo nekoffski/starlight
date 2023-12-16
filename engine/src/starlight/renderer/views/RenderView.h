@@ -1,18 +1,34 @@
 #pragma once
 
-#include "RendererBackend.h"
-#include "RenderPass.h"
-#include "Shader.h"
+#include "starlight/renderer/RendererBackendProxy.h"
+#include "starlight/renderer/RenderPass.h"
+#include "starlight/renderer/Shader.h"
+#include "starlight/renderer/camera/Camera.h"
+#include "starlight/renderer/ResourcePools.h"
+#include "starlight/renderer/RenderPacket.h"
 
 namespace sl {
 
 class RenderView {
 public:
-    virtual void init()   = 0;
-    virtual void render() = 0;
+    explicit RenderView(Camera* camera);
+
+    void setCamera(Camera* camera);
+
+    virtual void init(
+      RendererBackendProxy& backendProxy, ResourcePools& resourcePools,
+      u32 viewportWidth, u32 viewportHeight
+    ) = 0;
+    virtual void render(
+      RendererBackendProxy& backendProxy, const RenderPacket& renderPacket
+    ) = 0;
+    virtual void onViewportResize(
+      RendererBackendProxy& backendProxy, u32 w, u32 h
+    ) = 0;
 
 protected:
-    Shader* m_shader;
+    RenderPass* m_renderPass;
+    Camera* m_camera;
 };
 
 }  // namespace sl

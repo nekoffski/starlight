@@ -8,6 +8,7 @@
 #include "event/Event.h"
 #include "utils/TimeManager.h"
 #include "Config.h"
+#include "Core.h"
 
 namespace sl {
 
@@ -19,14 +20,20 @@ class Context {
 public:
     explicit Context(const std::string& applicationName = "starlight");
 
+    template <typename C>
+    requires Callable<C, void, float>
+    void beginFrame(C&& callback) {
+        callback(beginFrame());
+        endFrame();
+    }
+
     Window* getWindow();
-
-    float beginFrame();
-    void endFrame();
-
     Config* getConfig();
 
 private:
+    float beginFrame();
+    void endFrame();
+
     LoggerInitializator m_loggerInitializator;
 
     Config m_config;

@@ -2,13 +2,16 @@
 
 #include <span>
 
-#include "RendererBackend.h"
+#include "Mesh.h"
+#include "RenderMode.h"
 
 namespace sl {
 
 struct RenderPacket {
-    std::vector<GeometryRenderData> geometries;
-    std::vector<GeometryRenderData> uiGeometries;
+    std::span<Mesh> meshes;
+    float deltaTime;
+    RenderMode renderMode;
+    u64 frameNumber;
 };
 
 }  // namespace sl

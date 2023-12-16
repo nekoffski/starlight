@@ -219,21 +219,24 @@ VkRenderPassBeginInfo VKRenderPass::createRenderPassBeginInfo(
     return beginInfo;
 }
 
-void VKRenderPass::begin(VKCommandBuffer& commandBuffer, u8 attachmentIndex) {
+void VKRenderPass::begin(CommandBuffer& commandBuffer, u8 attachmentIndex) {
     auto clearValues = createClearValues(m_props.clearFlags);
     auto beginInfo   = createRenderPassBeginInfo(
         clearValues, m_renderTargets[attachmentIndex].getFramebuffer()->getHandle()
       );
 
+    auto vkBuffer = static_cast<VKCommandBuffer*>(&commandBuffer);  // TODO: ugly
+
     vkCmdBeginRenderPass(
-      commandBuffer.getHandle(), &beginInfo, VK_SUBPASS_CONTENTS_INLINE
+      vkBuffer->getHandle(), &beginInfo, VK_SUBPASS_CONTENTS_INLINE
     );
-    commandBuffer.setState(VKCommandBuffer::State::inRenderPass);
+    vkBuffer->setState(VKCommandBuffer::State::inRenderPass);
 }
 
-void VKRenderPass::end(VKCommandBuffer& commandBuffer) {
-    vkCmdEndRenderPass(commandBuffer.getHandle());
-    commandBuffer.setState(VKCommandBuffer::State::recording);
+void VKRenderPass::end(CommandBuffer& commandBuffer) {
+    auto vkBuffer = static_cast<VKCommandBuffer*>(&commandBuffer);
+    vkCmdEndRenderPass(vkBuffer->getHandle());
+    vkBuffer->setState(VKCommandBuffer::State::recording);
 }
 
 void VKRenderPass::regenerateRenderTargets(

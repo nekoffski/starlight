@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <concepts>
 
 #include <kc/core/ErrorBase.hpp>
 #include <tl/expected.hpp>
@@ -29,5 +30,10 @@ std::string_view removeExtension(std::string_view path);
 template <typename T> T getAlignedValue(T value, T granularity) {
     return (value + granularity - 1) & ~(granularity - 1);
 }
+
+template <typename C, typename R = void, typename... Args>
+concept Callable = requires(C&& callback, Args&&... args) {
+    { callback(std::forward<Args>(args)...) } -> std::same_as<R>;
+};
 
 }  // namespace sl

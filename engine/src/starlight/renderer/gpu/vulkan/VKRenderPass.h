@@ -29,8 +29,8 @@ public:
 
     ~VKRenderPass();
 
-    void begin(VKCommandBuffer& commandBuffer, u8 attachmentIndex);
-    void end(VKCommandBuffer& commandBuffer);
+    void begin(CommandBuffer& commandBuffer, u8 attachmentIndex) override;
+    void end(CommandBuffer& commandBuffer) override;
 
     void regenerateRenderTargets(const std::vector<RenderTarget::Properties>& targets
     ) override;

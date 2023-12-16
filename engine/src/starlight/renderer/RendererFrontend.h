@@ -1,38 +1,31 @@
 #pragma once
 
 #include <functional>
+#include <span>
 
-#include "starlight/renderer/camera/Camera.h"
-#include "starlight/renderer/RendererBackend.h"
-
+#include "camera/Camera.h"
+#include "RendererBackend.h"
 #include "Shader.h"
-
 #include "RenderPacket.h"
 #include "RenderMode.h"
 #include "FrameStatistics.h"
+#include "views/RenderView.h"
 
+#include "Mesh.h"
 #include "gpu/Vendor.h"
 
 namespace sl {
 
 class RendererFrontend {
-    struct RenderPass {
-        u32 id;
-        std::function<void()> callback;
-    };
-
 public:
     explicit RendererFrontend(Window& window, const Config& config, Camera* camera);
     virtual ~RendererFrontend();
 
-    FrameStatistics renderFrame(float deltaTime);
+    void init(std::span<RenderView*> renderViews);
 
-    void addUIPass(std::function<void()>&& callback);
-    void addMainPass(RenderPacket& renderPacket);
+    FrameStatistics renderFrame(float deltaTime, std::span<Mesh> meshes);
 
-    void setCoreShaders(Shader* uiShader, Shader* materialShader);
     void setRenderMode(RenderMode mode);
-    void setCamera(Camera* camera);
 
     ResourcePools* getResourcePools();
 
@@ -41,17 +34,7 @@ public:
 private:
     RendererBackendVendor m_backend;
 
-    std::vector<RenderPass> m_renderPasses;
-
-    Camera* m_camera;
-
-    Texture* m_activeTexture;
-    Texture* m_texture1;
-    Texture* m_texture2;
-    Material* m_material;
-
-    Shader* m_materialShader;
-    Shader* m_uiShader;
+    std::vector<RenderView*> m_renderViews;
 
     RenderMode m_renderMode;
 

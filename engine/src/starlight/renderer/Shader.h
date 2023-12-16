@@ -13,6 +13,7 @@
 #include "starlight/core/Id.hpp"
 #include "starlight/core/Core.h"
 #include "starlight/core/utils/Log.h"
+#include "fwd.h"
 
 #include "Texture.h"
 
@@ -97,7 +98,6 @@ public:
         std::string name;
         bool useInstances;
         bool useLocals;
-        std::string renderPassName;
 
         std::vector<Attribute> attributes;
         std::vector<Stage> stages;
@@ -136,6 +136,8 @@ public:
     ) = 0;
     virtual void releaseInstanceResources(u32 instanceId) = 0;
     // clang-format on
+
+    virtual void createPipeline(RenderPass* renderPass) = 0;
 
     void setGlobalUniforms(UniformCallback&&);
     void setInstanceUniforms(u32 instanceId, UniformCallback&&);

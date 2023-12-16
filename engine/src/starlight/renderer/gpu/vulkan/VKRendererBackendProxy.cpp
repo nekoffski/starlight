@@ -8,8 +8,8 @@ namespace sl::vk {
 VKRendererBackendProxy::VKRendererBackendProxy(VKRendererBackend* backend) :
     m_backend(backend) {}
 
-void VKRendererBackendProxy::drawGeometry(const GeometryRenderData& renderData) {
-    m_backend->drawGeometry(renderData);
+void VKRendererBackendProxy::drawGeometry(const Geometry& geometry) {
+    m_backend->drawGeometry(geometry);
 }
 
 VKCommandBuffer* VKRendererBackendProxy::getCommandBuffer() {
@@ -17,5 +17,13 @@ VKCommandBuffer* VKRendererBackendProxy::getCommandBuffer() {
 }
 
 u32 VKRendererBackendProxy::getImageIndex() { return m_backend->getImageIndex(); }
+
+Texture* VKRendererBackendProxy::getFramebuffer(u64 id) {
+    return m_backend->getFramebuffer(id);
+}
+
+Texture* VKRendererBackendProxy::getDepthBuffer() {
+    return m_backend->getDepthBuffer();
+}
 
 }  // namespace sl::vk

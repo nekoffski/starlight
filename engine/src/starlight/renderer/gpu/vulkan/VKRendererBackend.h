@@ -34,29 +34,18 @@ public:
     explicit VKRendererBackend(sl::Window& window, const Config& config);
     ~VKRendererBackend();
 
-    u32 getRenderPassId(const std::string& renderPass) const;
-
     bool beginFrame(float deltaTime) override;
     bool endFrame(float deltaTime) override;
 
-    bool beginRenderPass(uint8_t id);
-    u64 endRenderPass(uint8_t id);
+    void drawGeometry(const Geometry& geometry) override;
+    void onViewportResize(u32 width, u32 height) override;
 
-    void drawGeometry(const GeometryRenderData& renderData) override;
-
-    void onViewportResize(uint32_t width, uint32_t height) override;
-
-    void renderUI(std::function<void()>&&) override;
-
-    void executeNow(
+    void gpuCall(
       VkQueue queue, std::function<void(VKCommandBuffer& buffer)>&& callback
     );
 
     // resources
     ResourcePools* getResourcePools() override;
-
-    VKRenderPass* getRenderPass(u32 id);
-
     VKRendererBackendProxy* getProxy() override;
 
 private:
@@ -78,6 +67,9 @@ private:
 
     bool wasFramebufferResized();
     VKFence* acquireImageFence();
+
+    Texture* getFramebuffer(u64 id);
+    Texture* getDepthBuffer();
 
     VKRendererBackendProxy m_proxy;
 

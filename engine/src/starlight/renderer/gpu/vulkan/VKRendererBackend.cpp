@@ -96,7 +96,7 @@ void VKRendererBackend::initUI(Window& window) {
 
     ImGui_ImplVulkan_Init(&init_info, m_uiRenderPass->getHandle());
 
-    executeNow(graphicsQueue, [&](VKCommandBuffer& buffer) {
+    gpuCall(graphicsQueue, [&](VKCommandBuffer& buffer) {
         ImGui_ImplVulkan_CreateFontsTexture(buffer.getHandle());
     });
 
@@ -105,7 +105,7 @@ void VKRendererBackend::initUI(Window& window) {
     LOG_TRACE("UI backend initialized successfully");
 }
 
-void VKRendererBackend::executeNow(
+void VKRendererBackend::gpuCall(
   VkQueue queue, std::function<void(VKCommandBuffer& buffer)>&& callback
 ) {
     vkQueueWaitIdle(queue);
@@ -119,22 +119,14 @@ void VKRendererBackend::executeNow(
     m_device->waitIdle();
 }
 
-void VKRendererBackend::renderUI(std::function<void()>&& callback) {
-    ImGui_ImplVulkan_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-    callback();
-    ImGui::Render();
-}
-
 void VKRendererBackend::freeDataRange(
   VKBuffer& buffer, uint64_t offset, uint64_t size
 ) {
     buffer.free(size, offset);
 }
 
-void VKRendererBackend::drawGeometry(const GeometryRenderData& geometryRenderData) {
-    const auto& dataDescription = geometryRenderData.geometry->getDataDescription();
+void VKRendererBackend::drawGeometry(const Geometry& geometry) {
+    const auto& dataDescription = geometry.getDataDescription();
     auto& commandBuffer         = m_commandBuffers[m_imageIndex];
 
     VkDeviceSize offsets[1] = { dataDescription.vertexBufferOffset };
@@ -157,51 +149,6 @@ void VKRendererBackend::drawGeometry(const GeometryRenderData& geometryRenderDat
         vkCmdDraw(commandBuffer.getHandle(), dataDescription.vertexCount, 1, 0, 0);
         m_renderedVertices += dataDescription.vertexCount;
     }
-}
-
-bool VKRendererBackend::beginRenderPass(uint8_t id) {
-    auto& commandBuffer = m_commandBuffers[m_imageIndex];
-
-    VKRenderPass* renderPass = nullptr;
-
-    switch (id) {
-        case builtinRenderPassWorld: {
-            renderPass = m_mainRenderPass;
-            break;
-        }
-
-        case builtinRenderPassUI: {
-            renderPass = m_uiRenderPass;
-            break;
-        }
-    }
-
-    renderPass->begin(commandBuffer, m_imageIndex);
-    m_renderedVertices = 0u;
-    return true;
-}
-
-u64 VKRendererBackend::endRenderPass(uint8_t id) {
-    auto& commandBuffer = m_commandBuffers[m_imageIndex];
-
-    VKRenderPass* renderPass = nullptr;
-
-    switch (id) {
-        case builtinRenderPassWorld: {
-            renderPass = m_mainRenderPass;
-            break;
-        }
-
-        case builtinRenderPassUI: {
-            ImGui_ImplVulkan_RenderDrawData(
-              ImGui::GetDrawData(), commandBuffer.getHandle()
-            );
-            renderPass = m_uiRenderPass;
-            break;
-        }
-    }
-    renderPass->end(commandBuffer);
-    return m_renderedVertices;
 }
 
 void VKRendererBackend::createBuffers() {
@@ -248,43 +195,6 @@ void VKRendererBackend::createCoreComponents(
       *m_context, *m_device, *m_objectVertexBuffer, *m_objectIndexBuffer,
       *m_swapchain, this
     );
-
-    const auto& [width, height] = window.getSize();
-
-    auto backgroundColor = (1.0f / 255.0f) * glm::vec4{ 11, 16, 47, 255 };
-
-    VKRenderPass::Properties renderPassProperties{
-        .area       = glm::vec4{0.0f, 0.0f, width, height},
-        .clearColor = backgroundColor,
-        .clearFlags =
-          (VKRenderPass::clearColorBuffer | VKRenderPass::clearDepthBuffer
-           | VKRenderPass::clearStencilBuffer),
-        .hasPreviousPass = false,
-        .hasNextPass     = true
-    };
-
-    for (int i = 0; i < 3; ++i) {
-        renderPassProperties.targets.push_back(RenderTarget::Properties{
-          {m_swapchain->getFramebuffer(i), m_swapchain->getDepthBuffer()},
-          width,
-          height
-        });
-    }
-
-    m_mainRenderPass = m_resourcePools->createRenderPass(renderPassProperties);
-
-    renderPassProperties.clearColor      = glm::vec4(0.0f);
-    renderPassProperties.clearFlags      = VKRenderPass::clearNone;
-    renderPassProperties.hasPreviousPass = true;
-    renderPassProperties.hasNextPass     = false;
-    renderPassProperties.targets.clear();
-
-    for (int i = 0; i < 3; ++i) {
-        renderPassProperties.targets.push_back(RenderTarget::Properties{
-          { m_swapchain->getFramebuffer(i) }, width, height });
-    }
-
-    m_uiRenderPass = m_resourcePools->createRenderPass(renderPassProperties);
 }
 
 void VKRendererBackend::createSemaphoresAndFences() {
@@ -317,24 +227,6 @@ void VKRendererBackend::onViewportResize(u32 width, u32 height) {
       "Vulkan renderer backend framebuffer resized {}/{}/{}", width, height,
       m_framebufferSizeGeneration
     );
-
-    std::vector<RenderTarget::Properties> renderTargetProps;
-
-    for (int i = 0; i < 3; ++i) {
-        renderTargetProps.push_back(RenderTarget::Properties{
-          {m_swapchain->getFramebuffer(i), m_swapchain->getDepthBuffer()},
-          width,
-          height
-        });
-    }
-    m_mainRenderPass->regenerateRenderTargets(renderTargetProps);
-
-    renderTargetProps.clear();
-    for (int i = 0; i < 3; ++i) {
-        renderTargetProps.push_back(RenderTarget::Properties{
-          { m_swapchain->getFramebuffer(i) }, width, height });
-    }
-    m_uiRenderPass->regenerateRenderTargets(renderTargetProps);
 }
 
 void VKRendererBackend::createCommandBuffers() {
@@ -347,14 +239,6 @@ void VKRendererBackend::createCommandBuffers() {
           VKCommandBuffer::Severity::primary
         );
     }
-}
-
-u32 VKRendererBackend::getRenderPassId(const std::string& renderPass) const {
-    if (renderPass == "Builtin.RenderPass.World")
-        return builtinRenderPassWorld;
-    else if (renderPass == "Builtin.RenderPass.UI")
-        return builtinRenderPassUI;
-    FATAL_ERROR("Could not find render pass: {}", renderPass);
 }
 
 void VKRendererBackend::recreateSwapchain() {
@@ -408,12 +292,12 @@ VKFence* VKRendererBackend::acquireImageFence() {
     return fence;
 }
 
-VKRenderPass* VKRendererBackend::getRenderPass(u32 id) {
-    if (id == builtinRenderPassWorld)
-        return m_mainRenderPass;
-    else if (id == builtinRenderPassUI)
-        return m_uiRenderPass;
-    FATAL_ERROR("Could not find render pass with id {}", id);
+Texture* VKRendererBackend::getFramebuffer(u64 id) {
+    return m_swapchain->getFramebuffer(id);
+}
+
+Texture* VKRendererBackend::getDepthBuffer() {
+    return m_swapchain->getDepthBuffer();
 }
 
 VKRendererBackendProxy* VKRendererBackend::getProxy() { return &m_proxy; }
@@ -460,7 +344,7 @@ bool VKRendererBackend::beginFrame(float deltaTime) {
     auto& commandBuffer = m_commandBuffers[m_imageIndex];
     recordCommands(commandBuffer);
 
-    m_mainRenderPass->setAreaSize(m_framebufferWidth, m_framebufferHeight);
+    // m_mainRenderPass->setAreaSize(m_framebufferWidth, m_framebufferHeight);
 
     return true;
 }

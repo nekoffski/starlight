@@ -84,16 +84,16 @@ VKShaderStage::~VKShaderStage() {
 }
 
 VKShader::VKShader(
-  u32 id, VKDevice* device, const VKContext* context, VKRenderPass* renderPass,
+  u32 id, VKDevice* device, const VKContext* context,
   VKRendererBackendProxy& backendProxy, const Shader::Properties& props
 ) :
     Shader(props, id),
-    m_device(device), m_context(context), m_renderPass(renderPass),
-    m_backendProxy(backendProxy), m_requiredUboAlignment(0), m_globalUboSize(0),
-    m_globalUboStride(0), m_globalUboOffset(0), m_uboSize(0), m_uboStride(0),
-    m_pushConstantSize(0), m_pushConstantStride(128), m_instanceTextureCount(0),
-    m_boundInstanceId(0), m_boundUboOffset(0), m_pushConstantRangeCount(0),
-    m_attributeStride(0), m_maxDescriptorSetCount(0), m_descriptorSetCount(0) {
+    m_device(device), m_context(context), m_backendProxy(backendProxy),
+    m_requiredUboAlignment(0), m_globalUboSize(0), m_globalUboStride(0),
+    m_globalUboOffset(0), m_uboSize(0), m_uboStride(0), m_pushConstantSize(0),
+    m_pushConstantStride(128), m_instanceTextureCount(0), m_boundInstanceId(0),
+    m_boundUboOffset(0), m_pushConstantRangeCount(0), m_attributeStride(0),
+    m_maxDescriptorSetCount(0), m_descriptorSetCount(0) {
     addAttributes(props.attributes);
     addUniforms(props.uniformProperties, props.defaultTexture);
 
@@ -141,8 +141,9 @@ VKShader::VKShader(
     processUniforms();
     createDescriptorPool();
     createDescriptorSetLayouts();
-    createPipeline();
     createUniformBuffer();
+
+    LOG_ERROR("Created shader: {}", static_cast<void*>(this));
 
     LOG_DEBUG(
       "Shader: {}, global ubo size={} offset={}", props.name, m_globalUboSize,
@@ -624,7 +625,7 @@ void VKShader::createDescriptorSetLayouts() {
     }
 }
 
-void VKShader::createPipeline() {
+void VKShader::createPipeline(RenderPass* renderPass) {
     // viewport & scissor
     const auto [w, h] = WindowManager::get().getSize();
 
@@ -662,7 +663,13 @@ void VKShader::createPipeline() {
         m_pushConstantRanges.data() + m_pushConstantRangeCount
     };
 
-    m_pipeline.emplace(m_context, m_device, *m_renderPass, pipelineProps);
+    m_pipeline.emplace(
+      m_context, m_device, *static_cast<VKRenderPass*>(renderPass), pipelineProps
+    );
+    LOG_INFO(
+      "Creating shader's pipeline: {} - {}", static_cast<void*>(m_pipeline.get()),
+      static_cast<void*>(this)
+    );
 }
 
 void VKShader::createUniformBuffer() {

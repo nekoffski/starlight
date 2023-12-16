@@ -7,7 +7,7 @@ ResourceManager::ResourceManager(ResourcePools& resourcePools) :
     m_shaderManager(resourcePools, m_textureManager),
     m_materialManager(m_shaderManager, m_textureManager, resourcePools),
     m_geometryManager(resourcePools, m_materialManager) {
-    m_uiDefaultShader       = loadShader("Builtin.Shader.UI");
+    // m_uiDefaultShader       = loadShader("Builtin.Shader.UI");
     m_materialDefaultShader = loadShader("Builtin.Shader.Material");
 
     m_materialManager.createDefaultMaterial();
