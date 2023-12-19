@@ -14,5 +14,6 @@ class ResourcePools;
 class RenderTarget;
 class RenderPass;
 class Texture;
+class CommandBuffer;
 
 }  // namespace sl

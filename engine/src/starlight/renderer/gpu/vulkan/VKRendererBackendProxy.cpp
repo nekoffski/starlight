@@ -26,4 +26,14 @@ Texture* VKRendererBackendProxy::getDepthBuffer() {
     return m_backend->getDepthBuffer();
 }
 
+void VKRendererBackendProxy::gpuCall(std::function<void(CommandBuffer&)>&& callback
+) {
+    m_backend->gpuCall(std::move(callback));
+}
+
+UniqPtr<UIRenderer> VKRendererBackendProxy::createUIRendererer(RenderPass* renderPass
+) {
+    return m_backend->createUIRendererer(renderPass);
+}
+
 }  // namespace sl::vk

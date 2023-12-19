@@ -16,7 +16,7 @@ Shader* ShaderManager::load(const std::string& name) {
     LOG_TRACE("Loading shader: {}", name);
 
     if (auto shader = acquire(name); shader) {
-        LOG_INFO("Shader '{}' already loaded, returning cached one");
+        LOG_INFO("Shader '{}' already loaded, returning cached one", name);
         return shader;
     }
 

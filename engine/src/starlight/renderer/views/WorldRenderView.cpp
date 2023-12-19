@@ -7,24 +7,27 @@ WorldRenderView::WorldRenderView(Camera* camera, Shader* shader) :
 
 void WorldRenderView::init(
   RendererBackendProxy& backendProxy, ResourcePools& resourcePools,
-  u32 viewportWidth, u32 viewportHeight
+  const InitProperties& initProperties
 ) {
     auto backgroundColor = (1.0f / 255.0f) * glm::vec4{ 11, 16, 47, 255 };
 
+    const auto w = initProperties.viewportWidth;
+    const auto h = initProperties.viewportHeight;
+
     RenderPass::Properties renderPassProperties{
-        .area       = glm::vec4{0.0f, 0.0f, viewportWidth, viewportHeight},
+        .area       = glm::vec4{0.0f, 0.0f, w, h},
         .clearColor = backgroundColor,
         .clearFlags =
           (RenderPass::clearColorBuffer | RenderPass::clearDepthBuffer
            | RenderPass::clearStencilBuffer),
-        .hasPreviousPass = false,
-        .hasNextPass     = false
+        .hasPreviousPass = initProperties.hasPreviousView,
+        .hasNextPass     = initProperties.hasNextView
     };
 
     RenderTarget::Properties renderTargetProperties{
         .attachments = {},
-        .width       = viewportWidth,
-        .height      = viewportHeight,
+        .width       = w,
+        .height      = h,
     };
 
     for (u8 i = 0; i < 3; ++i) {
@@ -92,6 +95,7 @@ void WorldRenderView::onViewportResize(
         renderTargetsProperties.push_back(renderTargetProperties);
     }
     m_renderPass->regenerateRenderTargets(renderTargetsProperties);
+    m_renderPass->setArea(glm::vec4{ 0.0f, 0.0f, w, h });
 }
 
 }  // namespace sl

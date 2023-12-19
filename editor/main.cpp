@@ -99,6 +99,7 @@ void update(sl::RenderPacket& packet, float dt) {
 
 void renderUI(float deltaTime, sl::FrameStatistics& stats) {
     static bool active = true;
+
     ImGui::Begin("Starlight debug", &active, ImGuiWindowFlags_MenuBar);
     ImGui::Text("Frame time: %f", deltaTime);
     ImGui::Text("Frames per second: %d", int(1.0f / deltaTime));
@@ -148,7 +149,9 @@ int main() {
 
     sl::ResourceManager resourceManager(*rendererFrontend.getResourcePools());
 
-    sl::UIRenderView uiView(currentCamera, [&]() { renderUI(0.0f, stats); });
+    sl::UIRenderView uiView(currentCamera, [&](float delta) {
+        renderUI(delta, stats);
+    });
 
     sl::WorldRenderView worldView(
       currentCamera, resourceManager.getMaterialDefaultShader()
@@ -195,17 +198,10 @@ int main() {
       .on<sl::KeyEvent>(onKey)
       .on<sl::WindowResized>(onWindowResized);
 
-    // views:
-    //      create views -> shader as input, create render pass internally
-    //      add createPipeline(RenderPass*) to Shader
-    //      shader config doesn't accept the render pass id/name (good!)
-    //      init() on rendererFrontend accepts vector of views
-    //      use those view to render frame
-
     generateMeshes(resourceManager);
     auto packet = getRenderPacket(resourceManager);
 
-    std::vector<sl::RenderView*> views = { &worldView };
+    std::vector<sl::RenderView*> views = { &worldView, &uiView };
     rendererFrontend.init(views);
 
     while (isRunning) {

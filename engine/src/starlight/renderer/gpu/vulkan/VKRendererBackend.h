@@ -5,6 +5,7 @@
 #include <span>
 #include <vector>
 
+#include "starlight/core/Core.h"
 #include "starlight/core/Config.h"
 #include "starlight/core/fwd.h"
 #include "starlight/core/memory/Memory.hpp"
@@ -24,6 +25,7 @@
 #include "VKBuffer.h"
 #include "VKResourcePools.h"
 #include "VKRendererBackendProxy.h"
+#include "VKUIRenderer.h"
 
 namespace sl::vk {
 
@@ -34,21 +36,29 @@ public:
     explicit VKRendererBackend(sl::Window& window, const Config& config);
     ~VKRendererBackend();
 
+    template <typename C>
+    requires Callable<C> u64 renderFrame(float deltaTime, C&& callback) {
+        if (beginFrame(deltaTime)) {
+            callback();
+            endFrame(deltaTime);
+        }
+        return m_renderedVertices;
+    }
+
     bool beginFrame(float deltaTime) override;
     bool endFrame(float deltaTime) override;
 
     void drawGeometry(const Geometry& geometry) override;
     void onViewportResize(u32 width, u32 height) override;
 
-    void gpuCall(
-      VkQueue queue, std::function<void(VKCommandBuffer& buffer)>&& callback
-    );
-
     // resources
     ResourcePools* getResourcePools() override;
     VKRendererBackendProxy* getProxy() override;
 
 private:
+    UniqPtr<VKUIRenderer> createUIRendererer(RenderPass* renderPass);
+    void gpuCall(std::function<void(CommandBuffer&)>&& callback);
+
     VKCommandBuffer* getCommandBuffer();
     u32 getImageIndex();
 
@@ -60,8 +70,6 @@ private:
 
     void createBuffers();
 
-    void initUI(Window& window);
-
     void recreateSwapchain();
     void recordCommands(VKCommandBuffer& commandBuffer);
 
@@ -71,6 +79,8 @@ private:
     Texture* getFramebuffer(u64 id);
     Texture* getDepthBuffer();
 
+    Window& m_window;
+
     VKRendererBackendProxy m_proxy;
 
     bool m_recreatingSwapchain = false;
@@ -78,9 +88,6 @@ private:
     UniqPtr<VKContext> m_context;
     UniqPtr<VKDevice> m_device;
     UniqPtr<VKSwapchain> m_swapchain;
-
-    VKRenderPass* m_mainRenderPass;
-    VKRenderPass* m_uiRenderPass;
 
     // TODO: consider creating as ptrs to allow mocking
     UniqPtr<VKBuffer> m_objectVertexBuffer;

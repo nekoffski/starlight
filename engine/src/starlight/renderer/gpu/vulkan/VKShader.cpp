@@ -143,8 +143,6 @@ VKShader::VKShader(
     createDescriptorSetLayouts();
     createUniformBuffer();
 
-    LOG_ERROR("Created shader: {}", static_cast<void*>(this));
-
     LOG_DEBUG(
       "Shader: {}, global ubo size={} offset={}", props.name, m_globalUboSize,
       m_globalUboOffset

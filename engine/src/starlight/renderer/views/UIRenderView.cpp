@@ -15,20 +15,23 @@ UIRenderView::UIRenderView(Camera* camera, UICallback&& callback) :
 
 void UIRenderView::init(
   RendererBackendProxy& backendProxy, ResourcePools& resourcePools,
-  u32 viewportWidth, u32 viewportHeight
+  const InitProperties& initProperties
 ) {
+    const auto w = initProperties.viewportWidth;
+    const auto h = initProperties.viewportHeight;
+
     RenderPass::Properties renderPassProperties{
-        .area            = glm::vec4{0.0f, 0.0f, viewportWidth, viewportHeight},
+        .area            = glm::vec4{0.0f, 0.0f, w, h},
         .clearColor      = glm::vec4(0.0f),
         .clearFlags      = RenderPass::clearNone,
-        .hasPreviousPass = true,
-        .hasNextPass     = false
+        .hasPreviousPass = initProperties.hasPreviousView,
+        .hasNextPass     = initProperties.hasNextView
     };
 
     RenderTarget::Properties renderTargetProperties{
         .attachments = {},
-        .width       = viewportWidth,
-        .height      = viewportHeight,
+        .width       = w,
+        .height      = h,
     };
 
     for (u8 i = 0; i < 3; ++i) {
@@ -37,6 +40,7 @@ void UIRenderView::init(
     }
 
     m_renderPass = resourcePools.createRenderPass(renderPassProperties);
+    m_uiRenderer = backendProxy.createUIRendererer(m_renderPass);
 }
 
 void UIRenderView::render(
@@ -44,18 +48,7 @@ void UIRenderView::render(
 ) {
     auto commandBuffer = backendProxy.getCommandBuffer();
     m_renderPass->run(*commandBuffer, backendProxy.getImageIndex(), [&]() {
-        ImGui_ImplVulkan_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        m_uiCallback();
-
-        ImGui::Render();
-
-        ImGui_ImplVulkan_RenderDrawData(
-          ImGui::GetDrawData(),
-          static_cast<vk::VKCommandBuffer*>(commandBuffer)->getHandle()
-        );
+        m_uiRenderer->render(*commandBuffer, m_uiCallback, renderPacket.deltaTime);
     });
 }
 
@@ -77,6 +70,7 @@ void UIRenderView::onViewportResize(
         renderTargetsProperties.push_back(renderTargetProperties);
     }
     m_renderPass->regenerateRenderTargets(renderTargetsProperties);
+    m_renderPass->setArea(glm::vec4{ 0.0f, 0.0f, w, h });
 }
 
 }  // namespace sl

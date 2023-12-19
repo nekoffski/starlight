@@ -11,13 +11,20 @@ namespace sl {
 
 class RenderView {
 public:
+    struct InitProperties {
+        u32 viewportWidth;
+        u32 viewportHeight;
+        bool hasNextView;
+        bool hasPreviousView;
+    };
+
     explicit RenderView(Camera* camera);
 
     void setCamera(Camera* camera);
 
     virtual void init(
       RendererBackendProxy& backendProxy, ResourcePools& resourcePools,
-      u32 viewportWidth, u32 viewportHeight
+      const InitProperties& initProperties
     ) = 0;
     virtual void render(
       RendererBackendProxy& backendProxy, const RenderPacket& renderPacket

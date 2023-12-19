@@ -15,7 +15,6 @@
 #include "starlight/renderer/fwd.h"
 #include "starlight/renderer/CommandBuffer.h"
 
-#include "GeometryRenderData.h"
 #include "RendererBackendProxy.h"
 
 namespace sl {

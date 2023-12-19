@@ -15,7 +15,7 @@ public:
 
     void init(
       RendererBackendProxy& backendProxy, ResourcePools& resourcePools,
-      u32 viewportWidth, u32 viewportHeight
+      const InitProperties& initProperties
     ) override;
 
     void render(RendererBackendProxy& backendProxy, const RenderPacket& renderPacket)

@@ -11,13 +11,10 @@
 #include "VKSwapchain.h"
 #include "VKShader.h"
 
-#include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_vulkan.h>
-
 namespace sl::vk {
 
 VKRendererBackend::VKRendererBackend(Window& window, const Config& config) :
-    m_proxy(this), m_renderedVertices(0u) {
+    m_window(window), m_proxy(this), m_renderedVertices(0u) {
     const auto [w, h] = window.getSize();
 
     m_framebufferWidth  = w;
@@ -26,88 +23,20 @@ VKRendererBackend::VKRendererBackend(Window& window, const Config& config) :
     createCoreComponents(window, config);
     createSemaphoresAndFences();
     createCommandBuffers();
-
-    initUI(window);
 }
 
-VKRendererBackend::~VKRendererBackend() {
-    m_device->waitIdle();
+VKRendererBackend::~VKRendererBackend() { m_device->waitIdle(); }
 
-    if (m_uiPool) {
-        vkDestroyDescriptorPool(
-          m_device->getLogicalDevice(), m_uiPool, m_context->getAllocator()
-        );
-    }
-
-    ImGui_ImplVulkan_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
+UniqPtr<VKUIRenderer> VKRendererBackend::createUIRendererer(RenderPass* renderPass) {
+    return createUniqPtr<VKUIRenderer>(
+      *m_context, *m_device, m_proxy, m_window, renderPass
+    );
 }
 
-void VKRendererBackend::initUI(Window& window) {
-    // GUI: temporary
-    LOG_TRACE("Initializing UI backend");
-    VkDescriptorPoolSize poolSizes[] = {
-        {VK_DESCRIPTOR_TYPE_SAMPLER,                 1000},
-        { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000},
-        { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,          1000},
-        { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,          1000},
-        { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER,   1000},
-        { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER,   1000},
-        { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,         1000},
-        { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,         1000},
-        { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000},
-        { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000},
-        { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,       1000}
-    };
-    VkDescriptorPoolCreateInfo poolInfo = {};
-    poolInfo.sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    poolInfo.flags         = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-    poolInfo.maxSets       = 1000;
-    poolInfo.poolSizeCount = std::size(poolSizes);
-    poolInfo.pPoolSizes    = poolSizes;
-
-    VK_ASSERT(vkCreateDescriptorPool(
-      m_device->getLogicalDevice(), &poolInfo, m_context->getAllocator(), &m_uiPool
-    ));
-
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    (void)io;
-    io.ConfigFlags |=
-      ImGuiConfigFlags_NavEnableKeyboard;                 // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
-    ImGui::StyleColorsDark();
-
-    ImGui_ImplGlfw_InitForVulkan(static_cast<GLFWwindow*>(window.getHandle()), true);
-
-    auto graphicsQueue = m_device->getQueues().graphics;
-
-    ImGui_ImplVulkan_InitInfo init_info = {};
-    init_info.Instance                  = m_context->getInstance();
-    init_info.PhysicalDevice            = m_device->getGPU();
-    init_info.Device                    = m_device->getLogicalDevice();
-    init_info.Queue                     = graphicsQueue;
-    init_info.DescriptorPool            = m_uiPool;
-    init_info.MinImageCount             = 3;
-    init_info.ImageCount                = 3;
-    init_info.MSAASamples               = VK_SAMPLE_COUNT_1_BIT;
-
-    ImGui_ImplVulkan_Init(&init_info, m_uiRenderPass->getHandle());
-
-    gpuCall(graphicsQueue, [&](VKCommandBuffer& buffer) {
-        ImGui_ImplVulkan_CreateFontsTexture(buffer.getHandle());
-    });
-
-    ImGui_ImplVulkan_DestroyFontUploadObjects();
-
-    LOG_TRACE("UI backend initialized successfully");
-}
-
-void VKRendererBackend::gpuCall(
-  VkQueue queue, std::function<void(VKCommandBuffer& buffer)>&& callback
+void VKRendererBackend::gpuCall(std::function<void(CommandBuffer& buffer)>&& callback
 ) {
+    const auto queue = m_device->getQueues().graphics;
+
     vkQueueWaitIdle(queue);
     VKCommandBuffer commandBuffer(
       m_device.get(), m_device->getGraphicsCommandPool(),
@@ -303,6 +232,7 @@ Texture* VKRendererBackend::getDepthBuffer() {
 VKRendererBackendProxy* VKRendererBackend::getProxy() { return &m_proxy; }
 
 bool VKRendererBackend::beginFrame(float deltaTime) {
+    m_renderedVertices       = 0u;
     const auto logicalDevice = m_device->getLogicalDevice();
 
     if (m_recreatingSwapchain) {

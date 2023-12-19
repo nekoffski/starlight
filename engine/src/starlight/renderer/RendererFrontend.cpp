@@ -26,15 +26,25 @@ void RendererFrontend::init(std::span<RenderView*> renderViews) {
 
     auto backendProxy  = m_backend.getProxy();
     auto resourcePools = m_backend.getResourcePools();
-    for (auto& view : m_renderViews)
-        view->init(*backendProxy, *resourcePools, m_viewportWidth, m_viewportHeight);
+
+    const auto viewCount = m_renderViews.size();
+
+    RenderView::InitProperties initProperties{
+        .viewportWidth = m_viewportWidth, .viewportHeight = m_viewportHeight
+    };
+
+    for (u32 i = 0; i < viewCount; ++i) {
+        initProperties.hasPreviousView = (i != 0);
+        initProperties.hasNextView     = (i != viewCount - 1);
+
+        m_renderViews[i]->init(*backendProxy, *resourcePools, initProperties);
+    }
 }
 
 FrameStatistics RendererFrontend::renderFrame(
   float deltaTime, std::span<Mesh> meshes
 ) {
     m_frameNumber++;
-    u64 totalVerticesRendered = 0u;
 
     if (m_resizing) {
         static constexpr u16 requiredFramesSinceResize = 30u;
@@ -51,16 +61,13 @@ FrameStatistics RendererFrontend::renderFrame(
         }
     }
 
-    if (m_backend.beginFrame(deltaTime)) {
+    const auto renderedVertices = m_backend.renderFrame(deltaTime, [&]() {
         RenderPacket renderPacket{ meshes, deltaTime, m_renderMode, m_frameNumber };
 
         auto backendProxy = m_backend.getProxy();
         for (auto& view : m_renderViews) view->render(*backendProxy, renderPacket);
-        m_backend.endFrame(deltaTime);
-    }
-    return FrameStatistics{
-        .renderedVertices = totalVerticesRendered, .frameNumber = m_frameNumber
-    };
+    });
+    return FrameStatistics{ renderedVertices, m_frameNumber };
 }
 
 void RendererFrontend::setRenderMode(RenderMode mode) {

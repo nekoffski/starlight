@@ -18,6 +18,10 @@ public:
     Texture* getFramebuffer(u64 id) override;
     Texture* getDepthBuffer() override;
 
+    void gpuCall(std::function<void(CommandBuffer&)>&&) override;
+
+    UniqPtr<UIRenderer> createUIRendererer(RenderPass* renderPass) override;
+
 private:
     VKRendererBackend* m_backend;
 };
