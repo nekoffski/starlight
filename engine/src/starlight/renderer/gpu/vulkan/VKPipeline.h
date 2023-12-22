@@ -13,7 +13,7 @@
 #include "VKCommandBuffer.h"
 #include "VKRenderPass.h"
 
-#include "starlight/core/math/Vertex3.h"
+#include "starlight/core/math/Vertex.h"
 
 namespace sl::vk {
 

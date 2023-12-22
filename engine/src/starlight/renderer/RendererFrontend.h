@@ -18,7 +18,7 @@ namespace sl {
 
 class RendererFrontend {
 public:
-    explicit RendererFrontend(Window& window, const Config& config, Camera* camera);
+    explicit RendererFrontend(Window& window, const Config& config);
     virtual ~RendererFrontend();
 
     void init(std::span<RenderView*> renderViews);

@@ -8,12 +8,9 @@
 
 namespace sl {
 
-RendererFrontend::RendererFrontend(
-  Window& window, const Config& config, Camera* camera
-) :
-    m_backend(window, config),
-    m_renderMode(RenderMode::standard), m_frameNumber(0ul), m_framesSinceResize(0u),
-    m_resizing(false) {
+RendererFrontend::RendererFrontend(Window& window, const Config& config) :
+    m_backend(window, config), m_renderMode(RenderMode::standard),
+    m_frameNumber(0ul), m_framesSinceResize(0u), m_resizing(false) {
     const auto [w, h] = window.getSize();
     m_viewportWidth   = w;
     m_viewportHeight  = h;

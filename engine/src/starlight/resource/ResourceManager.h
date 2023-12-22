@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include <kc/core/Singleton.hpp>
 
 #include "managers/TextureManager.h"
@@ -10,6 +12,7 @@
 #include "starlight/renderer/Shader.h"
 #include "starlight/renderer/Geometry.h"
 #include "starlight/renderer/Material.h"
+#include "starlight/renderer/Mesh.h"
 
 #include "starlight/renderer/ResourcePools.h"
 
@@ -30,6 +33,8 @@ public:
     Material* loadMaterial(const std::string& name);
     Material* acquireMaterial(const std::string& name);
     Material* getDefaultMaterial();
+
+    std::optional<Mesh> loadMesh(const std::string& path);
 
     void destroyMaterial(const std::string& name);
 

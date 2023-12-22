@@ -1,5 +1,7 @@
 #include "ResourceManager.h"
 
+#include "resources/MeshConfig.h"
+
 namespace sl {
 
 ResourceManager::ResourceManager(ResourcePools& resourcePools) :
@@ -43,6 +45,28 @@ Material* ResourceManager::acquireMaterial(const std::string& name) {
 
 Material* ResourceManager::getDefaultMaterial() {
     return m_materialManager.getDefaultMaterial();
+}
+
+std::optional<Mesh> ResourceManager::loadMesh(const std::string& path) {
+    auto config = MeshConfig::loadOBJ(path);
+
+    if (not config) {
+        LOG_ERROR("Could not load mesh: '{}'", path);
+        return {};
+    }
+
+    for (auto& material : config->materials) loadMaterial(material);
+
+    Mesh mesh;
+    mesh.geometries.reserve(config->geometries.size());
+
+    std::transform(
+      config->geometries.begin(), config->geometries.end(),
+      std::back_inserter(mesh.geometries),
+      [&](GeometryConfig3D& config) -> Geometry* { return loadGeometry(config); }
+    );
+
+    return mesh;
 }
 
 void ResourceManager::destroyMaterial(const std::string& name) {

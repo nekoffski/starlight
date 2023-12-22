@@ -25,6 +25,8 @@
 std::vector<sl::Mesh> meshes;
 
 void generateMeshes(sl::ResourceManager& resourceManager) {
+    // TODO: create some friendly interface for loading a mesh based on geometry or
+    // geometry properties or both
     sl::Mesh cubeMesh1;
     auto props1 = sl::GeometryConfig3D::generateCube(sl::CubeProperties{
       10.0f, 10.0f, 10.0f, 1, 1, "test_cube", "Builtin.Material.Test" });
@@ -50,51 +52,23 @@ void generateMeshes(sl::ResourceManager& resourceManager) {
     // meshes.push_back(cubeMesh3);
 
     // Loaded mesh
-    sl::Mesh mesh;
 
-    // auto config = sl::MeshConfig::loadOBJ("sponza");
-    auto config = sl::MeshConfig::loadOBJ("falcon");
-    for (auto& material : config->materials) resourceManager.loadMaterial(material);
-    for (auto& geometry : config->geometries)
-        mesh.geometries.push_back(resourceManager.loadGeometry(geometry));
-    // mesh.transform.translate(sl::Vec3f{ 0.0, -1.0f, 0.0f }).scale(0.05f);
+    auto mesh = resourceManager.loadMesh("sponza");
+    mesh->transform.translate(sl::Vec3f{ 0.0, -1.0f, 0.0f }).scale(0.05f);
+    meshes.push_back(*mesh);
 
-    meshes.push_back(mesh);
-
-    meshes[1].transform.setParent(&meshes[0].transform);
-    meshes[2].transform.setParent(&meshes[1].transform);
+    // meshes[1].transform.setParent(&meshes[0].transform);
+    // meshes[2].transform.setParent(&meshes[1].transform);
 }
 
-sl::RenderPacket getRenderPacket(sl::ResourceManager& resourceManager) {
-    // test render data
-    sl::RenderPacket packet{};
+bool s_update = false;
 
-    return packet;
-}
-
-bool s_update = true;
-
-void update(sl::RenderPacket& packet, float dt) {
-    // packet.geometries.clear();
-
-    const auto rotationAxis = sl::Vec3f{ 0.0f, 1.0f, 0.0f };
-    const auto angle        = 0.1f * dt;
-
+void update(float dt) {
     if (s_update) {
+        const auto rotationAxis = sl::Vec3f{ 0.0f, 1.0f, 0.0f };
+        const auto angle        = 0.1f * dt;
         meshes[0].transform.rotate(rotationAxis, angle);
     }
-    // meshes[1].transform.rotate(rotationAxis, angle);
-    // meshes[2].transform.rotate(rotationAxis, angle);
-
-    // for (auto& mesh : meshes) {
-    //     for (auto& geometry : mesh.geometries) {
-    //         sl::GeometryRenderData data;
-    //         data.geometry = geometry;
-    //         data.model    = mesh.transform.getWorld();
-
-    //         packet.geometries.push_back(data);
-    //     }
-    // }
 }
 
 void renderUI(float deltaTime, sl::FrameStatistics& stats) {
@@ -106,7 +80,11 @@ void renderUI(float deltaTime, sl::FrameStatistics& stats) {
     ImGui::Text("Frame number: %lu", stats.frameNumber);
     ImGui::Separator();
     ImGui::Text("Rendered vertices: %lu", stats.renderedVertices);
-
+    ImGui::Separator();
+    ImGui::Text("8/9/0 - change render mode");
+    ImGui::Text("6     - dump var logs");
+    ImGui::Text("3/4   - switch camera");
+    ImGui::Text("u     - on/off update");
     ImGui::End();
 }
 
@@ -135,11 +113,9 @@ int main() {
       .viewportHeight = h,
     });
 
-    std::string renderMode = "standard";
-
     sl::Camera* currentCamera = &eulerCamera;
 
-    sl::RendererFrontend rendererFrontend(*window, *ctx.getConfig(), currentCamera);
+    sl::RendererFrontend rendererFrontend(*window, *ctx.getConfig());
 
     auto& eventManager = sl::EventManager::get();
 
@@ -157,6 +133,8 @@ int main() {
       currentCamera, resourceManager.getMaterialDefaultShader()
     );
 
+    std::vector<sl::RenderView*> views = { &worldView, &uiView };
+
     const auto onKey = [&](sl::KeyEvent* event) {
         if (event->action == sl::KeyAction::press) {
             const auto& key = event->key;
@@ -165,24 +143,23 @@ int main() {
 
             if (key == SL_KEY_0) {
                 rendererFrontend.setRenderMode(sl::RenderMode::lights);
-                renderMode = "lights only";
             }
             if (key == SL_KEY_9) {
                 rendererFrontend.setRenderMode(sl::RenderMode::normals);
-                renderMode = "normals only";
             }
             if (key == SL_KEY_8) {
                 rendererFrontend.setRenderMode(sl::RenderMode::standard);
-                renderMode = "standard";
             }
             if (key == SL_KEY_6) sl::enableVariableLogging();
             if (key == SL_KEY_4) {
                 currentCamera = &eulerCamera;
                 ctx.getWindow()->showCursor();
+                for (auto& view : views) view->setCamera(currentCamera);
             }
             if (key == SL_KEY_3) {
                 currentCamera = &firstPersonCamera;
                 ctx.getWindow()->hideCursor();
+                for (auto& view : views) view->setCamera(currentCamera);
             }
             if (key == SL_KEY_U) s_update = !s_update;
         }
@@ -199,9 +176,6 @@ int main() {
       .on<sl::WindowResized>(onWindowResized);
 
     generateMeshes(resourceManager);
-    auto packet = getRenderPacket(resourceManager);
-
-    std::vector<sl::RenderView*> views = { &worldView, &uiView };
     rendererFrontend.init(views);
 
     while (isRunning) {
@@ -211,7 +185,7 @@ int main() {
 
             stats = rendererFrontend.renderFrame(deltaTime, meshes);
 
-            update(packet, deltaTime);
+            update(deltaTime);
 
             currentCamera->update(deltaTime);
         });

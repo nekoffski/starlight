@@ -5,6 +5,8 @@
 
 #include "Material.h"
 
+#include "starlight/core/math/Extent.h"
+
 namespace sl {
 
 class Geometry {
@@ -38,6 +40,7 @@ public:
 
     const DataDescription& getDataDescription() const;
     const Properties& getProperties() const;
+
     u32 getId() const;
 
 protected:

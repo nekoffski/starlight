@@ -5,8 +5,8 @@
 #include <functional>
 
 #include "starlight/core/math/Glm.h"
-#include "starlight/core/math/Vertex2.h"
-#include "starlight/core/math/Vertex3.h"
+#include "starlight/core/math/Vertex.h"
+#include "starlight/core/math/Vertex.h"
 
 #include "starlight/renderer/Geometry.h"
 #include "starlight/renderer/Material.h"
