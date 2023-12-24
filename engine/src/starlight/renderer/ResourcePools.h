@@ -15,11 +15,11 @@ namespace sl {
 struct ResourcePools {
     virtual Geometry* createGeometry(
       const Geometry::Properties& props, const std::span<Vertex3> vertices,
-      const std::span<uint32_t> indices
+      const std::span<uint32_t> indices, const Extent3& extent
     ) = 0;
     virtual Geometry* createGeometry(
       const Geometry::Properties& props, const std::span<Vertex2> vertices,
-      const std::span<uint32_t> indices
+      const std::span<uint32_t> indices, const Extent2& extent
     )                                                = 0;
     virtual void destroyGeometry(Geometry& geometry) = 0;
 

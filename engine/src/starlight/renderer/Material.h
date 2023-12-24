@@ -25,6 +25,7 @@ public:
     explicit Material(const Properties& props, u32 id, Shader& shader);
     ~Material();
 
+    bool isTransparent() const;
     void applyUniforms(u32 frameNumber);
 
     u32 getId() const;

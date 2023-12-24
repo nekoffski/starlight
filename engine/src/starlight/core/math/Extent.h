@@ -12,6 +12,7 @@ concept ExtentType = requires(T lhs, T rhs) {
 };
 
 template <ExtentType T> struct Extent {
+    explicit Extent() : min(0.0f), max(0.0) {}
     explicit Extent(const T& min, const T& max) :
         min(min), max(max), center((min - max) / 2.0f) {}
 
@@ -21,10 +22,16 @@ template <ExtentType T> struct Extent {
 };
 
 struct Extent2 : Extent<Vec2f> {
-    using Extent::Extent;
+    using Extent<Vec2f>::Extent;
 };
+
 struct Extent3 : Extent<Vec3f> {
-    using Extent::Extent;
+    using Extent<Vec3f>::Extent;
+
+    Extent3(const Extent2& oth) :
+        Extent(
+          Vec3f{ oth.min.x, oth.min.y, 0.0f }, Vec3f{ oth.max.x, oth.max.y, 0.0f }
+        ) {}
 };
 
 }  // namespace sl

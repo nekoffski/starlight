@@ -8,12 +8,12 @@ struct ResourcePoolsMock : public ResourcePools {
     MOCK_METHOD(
       Geometry*, createGeometry,
       (const Geometry::Properties&, const std::span<Vertex3>,
-       const std::span<uint32_t>)
+       const std::span<uint32_t>, const Extent3&)
     );
     MOCK_METHOD(
       Geometry*, createGeometry,
       (const Geometry::Properties&, const std::span<Vertex2>,
-       const std::span<uint32_t>)
+       const std::span<uint32_t>, const Extent2&)
     );
     MOCK_METHOD(void, destroyGeometry, (Geometry&));
     MOCK_METHOD(

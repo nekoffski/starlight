@@ -6,7 +6,7 @@ VKGeometry::VKGeometry(
   u32 id, VKDevice* device, VKContext* context, VKBuffer& vertexBuffer,
   VKBuffer& indexBuffer, const Properties& props, const Data& data
 ) :
-    Geometry(props, id),
+    Geometry(props, data, id),
     m_device(device), m_context(context) {
     LOG_TRACE("Creating Geometry");
     LOG_DEBUG(

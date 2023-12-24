@@ -49,15 +49,26 @@ std::optional<STBImageData> STBImageData::load(
         return {};
     }
 
+    bool isTransparent = false;
+
+    if (channels == requiredChannels) {
+        static constexpr u8 opaqueAlpha = 255;
+
+        for (u64 i = 3; i < width * height * channels; i += channels) {
+            const auto alpha = *(pixelsHandle + i);
+            if (alpha != opaqueAlpha) {
+                isTransparent = true;
+                break;
+            }
+        }
+    }
+
     if (channels != requiredChannels) {
         LOG_WARN(
           "Image '{}' has different channels count than required - {} != {}", name,
           requiredChannels, channels
         );
     }
-
-    // todo: implement real check
-    bool isTransparent = true;
 
     STBImageData image(
       pixelsHandle, static_cast<u32>(width), static_cast<u32>(height),

@@ -41,6 +41,13 @@ void WorldRenderView::init(
     m_shader->createPipeline(m_renderPass);
 }
 
+struct GeometryRenderData {
+    Geometry* geometry;
+    Material* material;
+    Mat4f modelMatrix;
+    float cameraDistance;
+};
+
 void WorldRenderView::render(
   RendererBackendProxy& backendProxy, const RenderPacket& renderPacket
 ) {
@@ -49,27 +56,59 @@ void WorldRenderView::render(
       [&]() {
           glm::vec4 ambientColor(0.3f, 0.3f, 0.3f, 1.0f);
 
+          const auto cameraPosition = m_camera->getPosition();
+
           m_shader->use();
           m_shader->setGlobalUniforms([&](Shader::UniformProxy& proxy) {
               proxy.set("view", m_camera->getViewMatrix());
               proxy.set("projection", m_camera->getProjectionMatrix());
-              proxy.set("viewPosition", m_camera->getPosition());
+              proxy.set("viewPosition", cameraPosition);
               proxy.set("ambientColor", ambientColor);
               proxy.set("renderMode", static_cast<int>(renderPacket.renderMode));
           });
 
+          std::vector<GeometryRenderData> geometries;
+          std::vector<GeometryRenderData> transparentGeometries;
+          geometries.reserve(256);
+          transparentGeometries.reserve(128);
+
           for (auto& mesh : renderPacket.meshes) {
+              const auto model = mesh.transform.getWorld();
+              for (const auto& geometry : mesh.geometries) {
+                  // TODO: shouldn't the material be bound to mesh instead of
+                  // geometry?
+                  auto material = geometry->getProperties().material;
+
+                  if (material->isTransparent()) {
+                      auto center         = model * geometry->getExtent().center;
+                      auto cameraDistance = glm::distance2(cameraPosition, center);
+                      transparentGeometries.emplace_back(
+                        geometry, material, model, cameraDistance
+                      );
+                  } else {
+                      geometries.emplace_back(geometry, material, model);
+                  }
+              }
+          }
+
+          std::sort(
+            transparentGeometries.begin(), transparentGeometries.end(),
+            [](auto& lhs, auto& rhs) -> bool {
+                return lhs.cameraDistance < rhs.cameraDistance;
+            }
+          );
+          std::move(
+            transparentGeometries.begin(), transparentGeometries.end(),
+            std::back_inserter(geometries)
+          );
+
+          for (auto& [geometry, material, model, _] : geometries) {
               m_shader->setLocalUniforms([&](Shader::UniformProxy& proxy) {
-                  proxy.set("model", mesh.transform.getWorld());
+                  proxy.set("model", model);
               });
 
-              // TODO: shouldn't the material be bound to mesh instead of geometry?
-              for (const auto& geometry : mesh.geometries) {
-                  auto& material = geometry->getProperties().material;
-                  material->applyUniforms(renderPacket.frameNumber);
-
-                  backendProxy.drawGeometry(*geometry);
-              }
+              material->applyUniforms(renderPacket.frameNumber);
+              backendProxy.drawGeometry(*geometry);
           }
       }
     );

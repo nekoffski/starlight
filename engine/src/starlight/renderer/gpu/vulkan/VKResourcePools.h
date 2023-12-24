@@ -25,11 +25,11 @@ public:
 
     VKGeometry* createGeometry(
       const Geometry::Properties& props, const std::span<Vertex3> vertices,
-      const std::span<uint32_t> indices
+      const std::span<uint32_t> indices, const Extent3& extent
     ) override;
     VKGeometry* createGeometry(
       const Geometry::Properties& props, const std::span<Vertex2> vertices,
-      const std::span<uint32_t> indices
+      const std::span<uint32_t> indices, const Extent2& extent
     ) override;
     void destroyGeometry(Geometry& geometry) override;
 

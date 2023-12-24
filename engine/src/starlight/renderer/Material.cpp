@@ -19,6 +19,10 @@ Material::~Material() {
     m_shader.releaseInstanceResources(m_instanceId);
 }
 
+bool Material::isTransparent() const {
+    return m_props.diffuseMap->getTexture()->getProperties().isTransparent;
+}
+
 void Material::applyUniforms(u32 renderFrameNumber) {
     if (m_renderFrameNumber != renderFrameNumber) {
         m_shader.setInstanceUniforms(m_instanceId, [&](Shader::UniformProxy& proxy) {

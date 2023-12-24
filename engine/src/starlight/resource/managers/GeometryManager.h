@@ -52,7 +52,7 @@ private:
 
         return m_resourcePools.createGeometry(
           Geometry::Properties{ config.name, material }, config.vertices,
-          config.indices
+          config.indices, config.calculateExtent()
         );
     }
 

@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/norm.hpp>
 
 #include <kc/math/Format.h>
 
@@ -24,6 +25,12 @@ using Vec4f = math::vec4;
 using Mat2f = math::mat2;
 using Mat3f = math::mat3;
 using Mat4f = math::mat4;
+
+inline Vec3f operator*(const Mat4f& lhs, const Vec3f& rhs) {
+    return Vec3f{
+        lhs * Vec4f{rhs, 0.0f}
+    };
+}
 
 const Mat4f identityMatrix = Mat4f{ 1.0f };
 

@@ -21,6 +21,7 @@ public:
         u32 vertexCount;
         void* vertexData;
         std::span<uint32_t> indices;
+        Extent3 extent;
     };
 
     // TODO: come up with a better name for that..
@@ -40,15 +41,18 @@ public:
 
     const DataDescription& getDataDescription() const;
     const Properties& getProperties() const;
+    const Extent3& getExtent() const;
 
     u32 getId() const;
 
 protected:
-    explicit Geometry(const Properties& props, u32 id);
+    explicit Geometry(const Properties& props, const Data& data, u32 id);
 
     u32 m_id;
+
     Properties m_props;
     DataDescription m_dataDescription;
+    Extent3 m_extent;
 };
 
 }  // namespace sl

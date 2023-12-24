@@ -45,7 +45,10 @@ void GeometryManager::createDefaultGeometries() {
     constexpr float scale = 10.0f;
 
     const auto create3D = [&]() {
-        std::array<Vertex3, 4> vertices;
+        GeometryConfig3D config;
+
+        auto& vertices = config.vertices;
+        vertices.resize(4);
 
         vertices[0].position           = { -0.5f * scale, -0.5f * scale, 0.0f };
         vertices[0].textureCoordinates = { 0.0f, 0.0f };
@@ -59,18 +62,23 @@ void GeometryManager::createDefaultGeometries() {
         vertices[3].position           = { 0.5f * scale, -0.5f * scale, 0.0f };
         vertices[3].textureCoordinates = { 1.0f, 0.0f };
 
-        std::array<uint32_t, 6> indices = { 0, 1, 2, 0, 3, 1 };
+        config.indices = { 0, 1, 2, 0, 3, 1 };
 
         Geometry::Properties props{
             "default-3d-geometry", m_materialManager.getDefaultMaterial()
         };
-        return m_resourcePools.createGeometry(props, vertices, indices);
+        return m_resourcePools.createGeometry(
+          props, vertices, config.indices, config.calculateExtent()
+        );
     };
     m_defaultGeometry3D = create3D();
 
     // 2D
     const auto create2D = [&]() {
-        std::array<Vertex2, 4> vertices;
+        GeometryConfig2D config;
+
+        auto& vertices = config.vertices;
+        vertices.resize(4);
 
         vertices[0].position           = { -0.5f * scale, -0.5f * scale };
         vertices[0].textureCoordinates = { 0.0f, 0.0f };
@@ -84,12 +92,14 @@ void GeometryManager::createDefaultGeometries() {
         vertices[3].position           = { 0.5f * scale, -0.5f * scale };
         vertices[3].textureCoordinates = { 1.0f, 0.0f };
 
-        std::array<uint32_t, 6> indices = { 2, 1, 0, 3, 0, 1 };
+        config.indices = { 2, 1, 0, 3, 0, 1 };
 
         Geometry::Properties props{
             "default-2d-geometry", m_materialManager.getDefaultMaterial()
         };
-        return m_resourcePools.createGeometry(props, vertices, indices);
+        return m_resourcePools.createGeometry(
+          props, vertices, config.indices, config.calculateExtent()
+        );
     };
     m_defaultGeometry2D = create2D();
 }
