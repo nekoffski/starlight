@@ -57,7 +57,7 @@ struct GeometryConfig3D final : public detail::GeometryConfigBase {
             for (u8 i = 0; i < 3; ++i) {
                 const auto& component = vertex.position[i];
                 if (component < min[i]) min[i] = component;
-                if (component < max[i]) max[i] = component;
+                if (component > max[i]) max[i] = component;
             }
         }
         return Extent3{ min, max };
@@ -78,7 +78,7 @@ struct GeometryConfig2D final : public detail::GeometryConfigBase {
             for (u8 i = 0; i < 2; ++i) {
                 const auto& component = vertex.position[i];
                 if (component < min[i]) min[i] = component;
-                if (component < max[i]) max[i] = component;
+                if (component > max[i]) max[i] = component;
             }
         }
         return Extent2{ min, max };

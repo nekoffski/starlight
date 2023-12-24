@@ -28,7 +28,7 @@ using Mat4f = math::mat4;
 
 inline Vec3f operator*(const Mat4f& lhs, const Vec3f& rhs) {
     return Vec3f{
-        lhs * Vec4f{rhs, 0.0f}
+        lhs * Vec4f{rhs, 1.0f}
     };
 }
 

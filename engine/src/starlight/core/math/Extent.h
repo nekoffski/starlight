@@ -12,7 +12,7 @@ concept ExtentType = requires(T lhs, T rhs) {
 };
 
 template <ExtentType T> struct Extent {
-    explicit Extent() : min(0.0f), max(0.0) {}
+    explicit Extent() : min(0.0f), max(0.0f) {}
     explicit Extent(const T& min, const T& max) :
         min(min), max(max), center((min - max) / 2.0f) {}
 
