@@ -12,6 +12,8 @@
 
 #include <kc/math/Format.h>
 
+#include "starlight/core/Core.h"
+
 namespace sl {
 
 namespace math {
@@ -21,6 +23,15 @@ using namespace glm;
 using Vec2f = math::vec2;
 using Vec3f = math::vec3;
 using Vec4f = math::vec4;
+
+template <typename T> constexpr u8 getVectorComponentCount() {
+    if constexpr (std::is_same_v<T, Vec2f>)
+        return 2u;
+    else if constexpr (std::is_same_v<T, Vec3f>)
+        return 3u;
+    else if constexpr (std::is_same_v<T, Vec4f>)
+        return 4u;
+}
 
 using Mat2f = math::mat2;
 using Mat3f = math::mat3;

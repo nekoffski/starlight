@@ -101,6 +101,7 @@ void WorldRenderView::render(
             transparentGeometries.begin(), transparentGeometries.end(),
             std::back_inserter(geometries)
           );
+          transparentGeometries.clear();
 
           for (auto& [geometry, material, model, _] : geometries) {
               m_shader->setLocalUniforms([&](Shader::UniformProxy& proxy) {

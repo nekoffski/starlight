@@ -32,6 +32,13 @@ struct Extent3 : Extent<Vec3f> {
         Extent(
           Vec3f{ oth.min.x, oth.min.y, 0.0f }, Vec3f{ oth.max.x, oth.max.y, 0.0f }
         ) {}
+
+    operator Extent2() {
+        return Extent2{
+            Vec2f{min.x,  min.y},
+            Vec2f{ max.x, max.y}
+        };
+    }
 };
 
 }  // namespace sl
