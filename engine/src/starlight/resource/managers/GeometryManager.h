@@ -4,8 +4,8 @@
 
 #include "starlight/core/Core.h"
 
-#include "starlight/renderer/Geometry.h"
-#include "starlight/renderer/ResourcePools.h"
+#include "starlight/renderer/gpu/Geometry.h"
+#include "starlight/renderer/gpu/ResourcePools.h"
 
 #include "MaterialManager.h"
 

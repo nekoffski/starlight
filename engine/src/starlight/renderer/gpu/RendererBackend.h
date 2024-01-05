@@ -8,12 +8,12 @@
 #include "starlight/core/math/Vertex.h"
 #include "starlight/core/math/Vertex.h"
 
-#include "starlight/renderer/Geometry.h"
+#include "starlight/renderer/gpu/Geometry.h"
 #include "starlight/renderer/Material.h"
-#include "starlight/renderer/Texture.h"
-#include "starlight/renderer/Shader.h"
+#include "starlight/renderer/gpu/Texture.h"
+#include "starlight/renderer/gpu/Shader.h"
 #include "starlight/renderer/fwd.h"
-#include "starlight/renderer/CommandBuffer.h"
+#include "starlight/renderer/gpu/CommandBuffer.h"
 
 #include "RendererBackendProxy.h"
 

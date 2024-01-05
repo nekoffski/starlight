@@ -6,7 +6,7 @@
 
 #include "starlight/core/memory/Memory.hpp"
 
-#include "ui/UIRenderer.h"
+#include "UIRenderer.h"
 
 namespace sl {
 

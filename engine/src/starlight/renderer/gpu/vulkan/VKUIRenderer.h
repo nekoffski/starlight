@@ -2,7 +2,7 @@
 
 #include "starlight/core/window/Window.h"
 
-#include "starlight/renderer/ui/UIRenderer.h"
+#include "starlight/renderer/gpu/UIRenderer.h"
 
 #include "VKCommandBuffer.h"
 #include "VKRendererBackendProxy.h"

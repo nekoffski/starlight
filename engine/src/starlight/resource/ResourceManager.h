@@ -9,12 +9,12 @@
 #include "managers/GeometryManager.h"
 #include "managers/ShaderManager.h"
 
-#include "starlight/renderer/Shader.h"
-#include "starlight/renderer/Geometry.h"
+#include "starlight/renderer/gpu/Shader.h"
+#include "starlight/renderer/gpu/Geometry.h"
 #include "starlight/renderer/Material.h"
 #include "starlight/renderer/Mesh.h"
 
-#include "starlight/renderer/ResourcePools.h"
+#include "starlight/renderer/gpu/ResourcePools.h"
 
 namespace sl {
 

@@ -6,7 +6,7 @@
 
 #include "starlight/core/Core.h"
 #include "starlight/core/window/WindowManager.h"
-#include "starlight/renderer/Texture.h"
+#include "starlight/renderer/gpu/Texture.h"
 
 #include "VKTexture.h"
 #include "VKPipeline.h"

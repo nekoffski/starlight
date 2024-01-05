@@ -11,7 +11,7 @@
 #include "VKPipeline.h"
 #include "VKRendererBackendProxy.h"
 
-#include "starlight/renderer/Shader.h"
+#include "starlight/renderer/gpu/Shader.h"
 
 namespace sl::vk {
 
@@ -45,8 +45,9 @@ class VKShader final : public Shader {
     static constexpr u32 maxBindings = 2;
 
     struct DescriptorSetConfig {
-        u8 bindingCount = 0;
-        std::array<VkDescriptorSetLayoutBinding, 32> bindings;
+        u8 bindingCount        = 0;
+        u8 samplerBindingIndex = 0;
+        std::array<VkDescriptorSetLayoutBinding, maxBindings> bindings;
     };
 
     struct DescriptorState {
@@ -158,6 +159,12 @@ private:
     u8 m_descriptorSetCount;
     std::array<DescriptorSetConfig, 2> m_descriptorSets;
     std::vector<VkVertexInputAttributeDescription> m_attributeDescriptions;
+
+    u8 m_globalUniformCount          = 0;
+    u8 m_globalUniformSamplerCount   = 0;
+    u8 m_instanceUniformCount        = 0;
+    u8 m_instanceUniformSamplerCount = 0;
+    u8 m_localUniformCount           = 0;
 };
 
 }  // namespace sl::vk

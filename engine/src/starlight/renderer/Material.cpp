@@ -1,7 +1,6 @@
 #include "Material.h"
 
-#include "Shader.h"
-#include "ResourcePools.h"
+#include "gpu/ResourcePools.h"
 
 namespace sl {
 

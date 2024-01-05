@@ -5,8 +5,8 @@
 
 #include "starlight/core/math/Glm.h"
 
-#include "Texture.h"
-#include "Shader.h"
+#include "gpu/Texture.h"
+#include "gpu/Shader.h"
 #include "fwd.h"
 
 namespace sl {

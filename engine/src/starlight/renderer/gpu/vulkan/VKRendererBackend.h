@@ -10,13 +10,13 @@
 #include "starlight/core/fwd.h"
 #include "starlight/core/memory/Memory.hpp"
 #include "starlight/core/window/Window.h"
-#include "starlight/renderer/RendererBackend.h"
-#include "starlight/renderer/RendererBackendProxy.h"
+#include "starlight/renderer/gpu/RendererBackend.h"
+#include "starlight/renderer/gpu/RendererBackendProxy.h"
 
 #include "Vulkan.h"
 #include "fwd.h"
 
-#include "starlight/renderer/Shader.h"
+#include "starlight/renderer/gpu/Shader.h"
 
 #include "VKGeometry.h"
 #include "VKPipeline.h"

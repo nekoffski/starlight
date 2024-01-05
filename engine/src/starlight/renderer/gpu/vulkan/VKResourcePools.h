@@ -1,7 +1,7 @@
 #pragma once
 
-#include "starlight/renderer/ResourcePool.hpp"
-#include "starlight/renderer/ResourcePools.h"
+#include "starlight/renderer/gpu/ResourcePool.hpp"
+#include "starlight/renderer/gpu/ResourcePools.h"
 
 #include "VKTexture.h"
 #include "VKShader.h"

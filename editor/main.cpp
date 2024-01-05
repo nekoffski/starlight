@@ -7,7 +7,7 @@
 #include <starlight/core/utils/Log.h>
 #include <starlight/core/window/Keys.h>
 
-#include <starlight/renderer/Geometry.h>
+#include <starlight/renderer/gpu/Geometry.h>
 #include <starlight/renderer/RenderPacket.h>
 #include <starlight/renderer/RendererFrontend.h>
 #include <starlight/renderer/camera/EulerCamera.h>
@@ -53,8 +53,8 @@ void generateMeshes(sl::ResourceManager& resourceManager) {
 
     // Loaded mesh
 
-    auto mesh = resourceManager.loadMesh("sponza");
-    mesh->transform.translate(sl::Vec3f{ 0.0, -1.0f, 0.0f }).scale(0.05f);
+    auto mesh = resourceManager.loadMesh("falcon");
+    // mesh->transform.translate(sl::Vec3f{ 0.0, -1.0f, 0.0f }).scale(0.05f);
     meshes.push_back(*mesh);
 
     // meshes[1].transform.setParent(&meshes[0].transform);

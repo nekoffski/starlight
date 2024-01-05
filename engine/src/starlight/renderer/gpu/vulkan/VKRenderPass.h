@@ -2,7 +2,7 @@
 
 #include "starlight/core/math/Glm.h"
 
-#include "starlight/renderer/RenderPass.h"
+#include "starlight/renderer/gpu/RenderPass.h"
 
 #include "Vulkan.h"
 #include "fwd.h"

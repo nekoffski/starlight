@@ -3,15 +3,13 @@
 #include <functional>
 #include <span>
 
-#include "camera/Camera.h"
-#include "RendererBackend.h"
-#include "Shader.h"
 #include "RenderPacket.h"
 #include "RenderMode.h"
 #include "FrameStatistics.h"
-#include "views/RenderView.h"
-
 #include "Mesh.h"
+#include "camera/Camera.h"
+#include "views/RenderView.h"
+#include "gpu/RendererBackend.h"
 #include "gpu/Vendor.h"
 
 namespace sl {

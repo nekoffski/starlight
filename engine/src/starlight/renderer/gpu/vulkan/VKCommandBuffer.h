@@ -2,7 +2,7 @@
 
 #include "Vulkan.h"
 
-#include "starlight/renderer/CommandBuffer.h"
+#include "starlight/renderer/gpu/CommandBuffer.h"
 
 #include "fwd.h"
 

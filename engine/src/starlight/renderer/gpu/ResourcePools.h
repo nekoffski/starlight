@@ -2,11 +2,11 @@
 
 #include "starlight/core/math/Vertex.h"
 
-#include "starlight/renderer/Shader.h"
-#include "starlight/renderer/Texture.h"
-#include "starlight/renderer/Geometry.h"
-#include "starlight/renderer/RenderPass.h"
-#include "starlight/renderer/RenderTarget.h"
+#include "starlight/renderer/gpu/Shader.h"
+#include "starlight/renderer/gpu/Texture.h"
+#include "starlight/renderer/gpu/Geometry.h"
+#include "starlight/renderer/gpu/RenderPass.h"
+#include "starlight/renderer/gpu/RenderTarget.h"
 
 #include "starlight/renderer/fwd.h"
 

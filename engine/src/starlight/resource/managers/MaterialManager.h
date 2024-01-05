@@ -6,7 +6,7 @@
 #include "starlight/core/utils/FileSystem.h"
 #include "starlight/core/memory/Memory.hpp"
 #include "starlight/renderer/Material.h"
-#include "starlight/renderer/ResourcePools.h"
+#include "starlight/renderer/gpu/ResourcePools.h"
 
 #include "starlight/resource/resources/MaterialConfig.h"
 

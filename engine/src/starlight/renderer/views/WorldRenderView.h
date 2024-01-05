@@ -4,8 +4,8 @@
 
 #include "RenderView.h"
 
-#include "starlight/renderer/RenderPass.h"
-#include "starlight/renderer/Shader.h"
+#include "starlight/renderer/gpu/RenderPass.h"
+#include "starlight/renderer/gpu/Shader.h"
 
 namespace sl {
 

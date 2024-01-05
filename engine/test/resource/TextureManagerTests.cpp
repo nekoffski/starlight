@@ -1,5 +1,5 @@
 #include <starlight/resource/managers/TextureManager.h>
-#include <starlight/renderer/ResourcePools.h>
+#include <starlight/renderer/gpu/ResourcePools.h>
 
 #include "mock/All.h"
 

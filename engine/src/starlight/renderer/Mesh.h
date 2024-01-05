@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "starlight/core/math/Transform.h"
-#include "Geometry.h"
+#include "gpu/Geometry.h"
 
 namespace sl {
 

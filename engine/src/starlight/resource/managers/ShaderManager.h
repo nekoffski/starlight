@@ -4,8 +4,8 @@
 
 #include <kc/core/Singleton.hpp>
 
-#include "starlight/renderer/Shader.h"
-#include "starlight/renderer/ResourcePools.h"
+#include "starlight/renderer/gpu/Shader.h"
+#include "starlight/renderer/gpu/ResourcePools.h"
 
 #include "starlight/resource/resources/ShaderConfig.h"
 #include "TextureManager.h"

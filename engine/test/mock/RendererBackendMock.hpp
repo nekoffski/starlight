@@ -1,6 +1,6 @@
 #pragma once
 
-#include "starlight/renderer/RendererBackend.h"
+#include "starlight/renderer/gpu/RendererBackend.h"
 
 #include <gmock/gmock.h>
 

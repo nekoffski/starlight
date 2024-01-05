@@ -2,7 +2,7 @@
 
 #include "fwd.h"
 
-#include "starlight/renderer/RendererBackendProxy.h"
+#include "starlight/renderer/gpu/RendererBackendProxy.h"
 #include "VKCommandBuffer.h"
 
 namespace sl::vk {

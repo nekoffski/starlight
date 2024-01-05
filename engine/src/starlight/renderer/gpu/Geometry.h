@@ -3,9 +3,8 @@
 #include <string>
 #include <span>
 
-#include "Material.h"
-
 #include "starlight/core/math/Extent.h"
+#include "starlight/renderer/Material.h"
 
 namespace sl {
 

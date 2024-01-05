@@ -1,6 +1,6 @@
 #pragma once
 
-#include "starlight/renderer/RenderTarget.h"
+#include "starlight/renderer/gpu/RenderTarget.h"
 #include "starlight/core/memory/Memory.hpp"
 
 #include "VKDevice.h"

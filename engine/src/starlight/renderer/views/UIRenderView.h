@@ -6,8 +6,8 @@
 
 #include "RenderView.h"
 
-#include "starlight/renderer/RenderPass.h"
-#include "starlight/renderer/ui/UIRenderer.h"
+#include "starlight/renderer/gpu/RenderPass.h"
+#include "starlight/renderer/gpu/UIRenderer.h"
 
 namespace sl {
 

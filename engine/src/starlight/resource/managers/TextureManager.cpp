@@ -4,8 +4,8 @@
 #include <fmt/core.h>
 
 #include "starlight/core/math/Glm.h"
-#include "starlight/renderer/Texture.h"
-#include "starlight/renderer/ResourcePools.h"
+#include "starlight/renderer/gpu/Texture.h"
+#include "starlight/renderer/gpu/ResourcePools.h"
 #include "starlight/resource/resources/ImageData.h"
 
 namespace sl {

@@ -4,7 +4,7 @@
 
 #include "VKDevice.h"
 #include "VKBuffer.h"
-#include "starlight/renderer/Geometry.h"
+#include "starlight/renderer/gpu/Geometry.h"
 
 namespace sl::vk {
 
