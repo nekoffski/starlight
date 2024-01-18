@@ -97,11 +97,13 @@ std::optional<ShaderConfig> ShaderConfig::load(
                 .attributes     = processAttributes(getArray(root, "attributes")),
                 .stages = processStages(getArray(root, "stages"), shadersPath, fs),
                 .uniformProperties = processUniforms(getArray(root, "uniforms")),
-                .defaultTexture    = defaultTexture
+                .defaultTexture    = defaultTexture,
+                .cullMode = cullModeFromString(getFieldOr<std::string>(root, "cullMode", "back"))
             }
         };
         // clang-format on
-    } catch (kc::json::JsonError& e) {
+    }  // namespace sl
+    catch (kc::json::JsonError& e) {
         LOG_ERROR("Could not parse shader '{}' file: {}", name, e.asString());
     }
     return {};

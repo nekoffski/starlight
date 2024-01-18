@@ -120,7 +120,7 @@ void VKImage::copyFromBuffer(VKBuffer& buffer, VKCommandBuffer& commandBuffer) {
     region.imageSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
     region.imageSubresource.mipLevel       = 0;
     region.imageSubresource.baseArrayLayer = 0;
-    region.imageSubresource.layerCount     = 1;
+    region.imageSubresource.layerCount     = m_props.type == Type::cubemap ? 6 : 1;
 
     region.imageExtent.width  = m_props.width;
     region.imageExtent.height = m_props.height;
@@ -148,7 +148,7 @@ void VKImage::transitionLayout(
     barrier.subresourceRange.baseMipLevel   = 0;
     barrier.subresourceRange.levelCount     = 1;
     barrier.subresourceRange.baseArrayLayer = 0;
-    barrier.subresourceRange.layerCount     = 1;
+    barrier.subresourceRange.layerCount     = m_props.type == Type::cubemap ? 6 : 1;
 
     VkPipelineStageFlags source;
     VkPipelineStageFlags destination;
@@ -186,21 +186,24 @@ void VKImage::transitionLayout(
 }
 
 VkImageCreateInfo createImageCreateInfo(const VKImage::Properties& properties) {
+    bool isCubemap = properties.type == VKImage::Type::cubemap;
+
     VkImageCreateInfo imageCreateInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO };
     imageCreateInfo.imageType         = VK_IMAGE_TYPE_2D;
     imageCreateInfo.extent.width      = properties.width;
     imageCreateInfo.extent.height     = properties.height;
     imageCreateInfo.extent.depth      = 1;  // TODO: Support configurable depth.
     imageCreateInfo.mipLevels         = 4;  // TODO: Support mip mapping
-    imageCreateInfo.arrayLayers = 1;  // TODO: Support number of layers in the image.
-    imageCreateInfo.format      = properties.format;
-    imageCreateInfo.tiling      = properties.tiling;
-    imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    imageCreateInfo.usage         = properties.usage;
+    imageCreateInfo.arrayLayers       = isCubemap ? 6 : 1;
+    imageCreateInfo.format            = properties.format;
+    imageCreateInfo.tiling            = properties.tiling;
+    imageCreateInfo.initialLayout     = VK_IMAGE_LAYOUT_UNDEFINED;
+    imageCreateInfo.usage             = properties.usage;
     imageCreateInfo.samples =
       VK_SAMPLE_COUNT_1_BIT;  // TODO: Configurable sample count.
     imageCreateInfo.sharingMode =
       VK_SHARING_MODE_EXCLUSIVE;  // TODO: Configurable sharing mode.
+    if (isCubemap) imageCreateInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
 
     return imageCreateInfo;
 }
@@ -212,15 +215,18 @@ VkImageViewCreateInfo createViewCreateInfo(
         VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO
     };
 
-    viewCreateInfo.image                       = imageHandle;
-    viewCreateInfo.viewType                    = VK_IMAGE_VIEW_TYPE_2D;
+    bool isCubemap = properties.type == VKImage::Type::cubemap;
+
+    viewCreateInfo.image = imageHandle;
+    viewCreateInfo.viewType =
+      isCubemap ? VK_IMAGE_VIEW_TYPE_CUBE : VK_IMAGE_VIEW_TYPE_2D;
     viewCreateInfo.format                      = properties.format;
     viewCreateInfo.subresourceRange.aspectMask = properties.viewAspectFlags;
 
     viewCreateInfo.subresourceRange.baseMipLevel   = 0;
     viewCreateInfo.subresourceRange.levelCount     = 1;
     viewCreateInfo.subresourceRange.baseArrayLayer = 0;
-    viewCreateInfo.subresourceRange.layerCount     = 1;
+    viewCreateInfo.subresourceRange.layerCount     = isCubemap ? 6 : 1;
 
     return viewCreateInfo;
 }

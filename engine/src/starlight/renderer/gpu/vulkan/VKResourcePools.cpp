@@ -16,8 +16,8 @@ VKResourcePools::VKResourcePools(
     m_renderTargets("RenderTarget", 64), m_renderPasses("RenderPass", 64) {}
 
 VKGeometry* VKResourcePools::createGeometry(
-  const Geometry::Properties& props, const std::span<Vertex3> vertices,
-  const std::span<uint32_t> indices, const Extent3& extent
+  const Geometry::Properties& props, std::span<const Vertex3> vertices,
+  std::span<const u32> indices, const Extent3& extent
 ) {
     Geometry::Data data(
       sizeof(Vertex3), vertices.size(), vertices.data(), indices, extent
@@ -28,8 +28,8 @@ VKGeometry* VKResourcePools::createGeometry(
 }
 
 VKGeometry* VKResourcePools::createGeometry(
-  const Geometry::Properties& props, const std::span<Vertex2> vertices,
-  const std::span<uint32_t> indices, const Extent2& extent
+  const Geometry::Properties& props, std::span<const Vertex2> vertices,
+  std::span<const u32> indices, const Extent2& extent
 ) {
     Geometry::Data data(
       sizeof(Vertex2), vertices.size(), vertices.data(), indices, Extent3{ extent }

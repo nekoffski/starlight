@@ -21,6 +21,7 @@
 
 #include <starlight/renderer/views/UIRenderView.h>
 #include <starlight/renderer/views/WorldRenderView.h>
+#include <starlight/renderer/views/SkyboxRenderView.h>
 
 std::vector<sl::Mesh> meshes;
 
@@ -129,11 +130,16 @@ int main() {
         renderUI(delta, stats);
     });
 
-    sl::WorldRenderView worldView(
-      currentCamera, resourceManager.getMaterialDefaultShader()
-    );
+    auto materialShader = resourceManager.loadShader("Builtin.Shader.Material");
+    sl::WorldRenderView worldView{ currentCamera, materialShader };
 
-    std::vector<sl::RenderView*> views = { &worldView, &uiView };
+    auto skyboxShader = resourceManager.loadShader("Builtin.Shader.Skybox");
+    auto skybox       = resourceManager.loadSkybox("skybox/skybox", *skyboxShader);
+
+    ASSERT(skybox, "Could not load skybox");
+    sl::SkyboxRenderView skyboxView{ currentCamera, skyboxShader, skybox.get() };
+
+    std::vector<sl::RenderView*> views = { &skyboxView, &worldView, &uiView };
 
     const auto onKey = [&](sl::KeyEvent* event) {
         if (event->action == sl::KeyAction::press) {

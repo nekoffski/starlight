@@ -108,37 +108,104 @@ VKShader::VKShader(
 
     static const u32 maxDescriptorAllocateCount = 1024;
 
+    m_globalUniformCount          = 0;
+    m_globalUniformSamplerCount   = 0;
+    m_instanceUniformCount        = 0;
+    m_instanceUniformSamplerCount = 0;
+    m_localUniformCount           = 0;
+
+    for (auto& uniform : m_uniforms | std::views::values) {
+        bool isSampler = uniform.isSampler();
+
+        switch (uniform.scope) {
+            case Scope::global:
+                if (isSampler)
+                    m_globalUniformSamplerCount++;
+                else
+                    m_globalUniformCount++;
+                break;
+            case Scope::instance:
+                if (isSampler)
+                    m_instanceUniformSamplerCount++;
+                else
+                    m_instanceUniformCount++;
+                break;
+            case Scope::local:
+                m_localUniformCount++;
+                break;
+        }
+    }
+
+    LOG_INFO(
+      "Shader resource - global samplers: {}, global uniforms: {}, instance samplers: {}, instance uniforms: {}, local uniforms: {}",
+      m_globalUniformSamplerCount, m_globalUniformCount,
+      m_instanceUniformSamplerCount, m_instanceUniformCount, m_localUniformCount
+    );
+
     m_maxDescriptorSetCount = maxDescriptorAllocateCount;
     m_poolSizes[0] = VkDescriptorPoolSize{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1024 };
     m_poolSizes[1] =
       VkDescriptorPoolSize{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 4096 };
 
-    DescriptorSetConfig globalDescriptorSetConfig;
-    globalDescriptorSetConfig.bindings[bindingIndexUBO] =
-      VkDescriptorSetLayoutBinding{
-          bindingIndexUBO, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1,
-          VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT
-      };
-    globalDescriptorSetConfig.bindingCount++;
-    m_descriptorSets[descSetIndexGlobal] = globalDescriptorSetConfig;
-    m_descriptorSetCount++;
+    if (m_globalUniformCount > 0 || m_globalUniformSamplerCount > 0) {
+        auto& descriptorSetConfig = m_descriptorSets[m_descriptorSetCount];
+        auto& bindingIndex        = descriptorSetConfig.bindingCount;
 
-    if (m_useInstances) {
-        DescriptorSetConfig instanceDescriptorSetConfig;
-        instanceDescriptorSetConfig.bindings[bindingIndexUBO] =
-          VkDescriptorSetLayoutBinding{
-              bindingIndexUBO, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1,
-              VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT
-          };
-        instanceDescriptorSetConfig.bindingCount++;
-        m_descriptorSets[descSetIndexInstance] = instanceDescriptorSetConfig;
+        if (m_globalUniformCount > 0) {
+            descriptorSetConfig.bindings[bindingIndex].binding = bindingIndex;
+            descriptorSetConfig.bindings[bindingIndex].descriptorCount = 1;
+            descriptorSetConfig.bindings[bindingIndex].descriptorType =
+              VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            descriptorSetConfig.bindings[bindingIndex].stageFlags =
+              VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+            bindingIndex++;
+        }
+        if (m_globalUniformSamplerCount > 0) {
+            descriptorSetConfig.bindings[bindingIndex].binding = bindingIndex;
+            descriptorSetConfig.bindings[bindingIndex].descriptorCount =
+              m_globalUniformSamplerCount;
+            descriptorSetConfig.bindings[bindingIndex].descriptorType =
+              VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            descriptorSetConfig.bindings[bindingIndex].stageFlags =
+              VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+            descriptorSetConfig.samplerBindingIndex = bindingIndex;
+            bindingIndex++;
+        }
+
         m_descriptorSetCount++;
     }
+    // TODO: unify
+    if (m_instanceUniformCount > 0 || m_instanceUniformSamplerCount > 0) {
+        auto& descriptorSetConfig = m_descriptorSets[m_descriptorSetCount];
+        auto& bindingIndex        = descriptorSetConfig.bindingCount;
+
+        if (m_instanceUniformCount > 0) {
+            descriptorSetConfig.bindings[bindingIndex].binding = bindingIndex;
+            descriptorSetConfig.bindings[bindingIndex].descriptorCount = 1;
+            descriptorSetConfig.bindings[bindingIndex].descriptorType =
+              VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            descriptorSetConfig.bindings[bindingIndex].stageFlags =
+              VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+            bindingIndex++;
+        }
+        if (m_instanceUniformSamplerCount > 0) {
+            descriptorSetConfig.bindings[bindingIndex].binding = bindingIndex;
+            descriptorSetConfig.bindings[bindingIndex].descriptorCount =
+              m_instanceUniformSamplerCount;
+            descriptorSetConfig.bindings[bindingIndex].descriptorType =
+              VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            descriptorSetConfig.bindings[bindingIndex].stageFlags =
+              VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+            descriptorSetConfig.samplerBindingIndex = bindingIndex;
+            bindingIndex++;
+        }
+        m_descriptorSetCount++;
+    }
+
     m_instanceStates.resize(1024);
 
     createModules(props.stages);
     processAttributes();
-    processUniforms();
     createDescriptorPool();
     createDescriptorSetLayouts();
     createUniformBuffer();
@@ -349,43 +416,45 @@ void VKShader::applyInstance() {
       objectState->descriptorSetState.descriptorSets[imageIndex];
 
     std::array<VkWriteDescriptorSet, 2> descriptorWrites;
+    VkDescriptorBufferInfo bufferInfo;
 
     u32 descriptorCount = 0;
     u32 descriptorIndex = 0;
 
     // 0 - uniform buffer
-    auto& instanceUboGeneration =
-      objectState->descriptorSetState.descriptorStates[descriptorIndex]
-        .generations[imageIndex];
+    if (m_instanceUniformCount > 0) {
+        auto& instanceUboGeneration =
+          objectState->descriptorSetState.descriptorStates[descriptorIndex]
+            .generations[imageIndex];
 
-    VkDescriptorBufferInfo bufferInfo;
-    if (not instanceUboGeneration.hasValue()) {
-        bufferInfo.buffer = m_uniformBuffer->getHandle();
-        bufferInfo.offset = *objectState->offset;
-        bufferInfo.range  = m_uboStride;
+        if (not instanceUboGeneration.hasValue()) {
+            bufferInfo.buffer = m_uniformBuffer->getHandle();
+            bufferInfo.offset = *objectState->offset;
+            bufferInfo.range  = m_uboStride;
 
-        VkWriteDescriptorSet uboDescriptor = {
-            VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET
-        };
-        uboDescriptor.dstSet          = objectDescriptorSet;
-        uboDescriptor.dstBinding      = descriptorIndex;
-        uboDescriptor.descriptorType  = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        uboDescriptor.pBufferInfo     = &bufferInfo;
-        uboDescriptor.descriptorCount = 1;
+            VkWriteDescriptorSet uboDescriptor = {
+                VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET
+            };
+            uboDescriptor.dstSet          = objectDescriptorSet;
+            uboDescriptor.dstBinding      = descriptorIndex;
+            uboDescriptor.descriptorType  = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            uboDescriptor.pBufferInfo     = &bufferInfo;
+            uboDescriptor.descriptorCount = 1;
 
-        descriptorWrites[descriptorCount++] = uboDescriptor;
-        instanceUboGeneration               = 1;
+            descriptorWrites[descriptorCount++] = uboDescriptor;
+            instanceUboGeneration               = 1;
+        }
+        descriptorIndex++;
     }
-    descriptorIndex++;
 
-    // Samplers will always be in the binding. If the binding count is less than 2,
-    // there are no samplers
     std::vector<VkDescriptorImageInfo> imageInfos;
-    if (m_descriptorSets[descSetIndexInstance].bindingCount > 1) {
+    if (m_instanceUniformSamplerCount > 0) {
         // iterate samplers
+        const u8 bindingIndex =
+          *m_descriptorSets[descSetIndexInstance].samplerBindingIndex;
         auto totalSamplerCount =
           m_descriptorSets[descSetIndexInstance]
-            .bindings[bindingIndexSampler]
+            .bindings[bindingIndex]
             .descriptorCount;
         imageInfos.reserve(totalSamplerCount);
         for (int i = 0; i < totalSamplerCount; ++i) {
@@ -440,10 +509,10 @@ u32 VKShader::acquireInstanceResources(const std::vector<TextureMap*>& textureMa
     ASSERT(id.hasValue(), "Coult not acquire new resource id");
 
     auto& instanceState = m_instanceStates[*id];
+    const u8 bindingIndex =
+      *m_descriptorSets[descSetIndexInstance].samplerBindingIndex;
     const auto instanceTextureCount =
-      m_descriptorSets[descSetIndexInstance]
-        .bindings[bindingIndexSampler]
-        .descriptorCount;
+      m_descriptorSets[descSetIndexInstance].bindings[bindingIndex].descriptorCount;
 
     if (textureMaps.size() != m_instanceTextureCount) {
         LOG_WARN(
@@ -461,11 +530,15 @@ u32 VKShader::acquireInstanceResources(const std::vector<TextureMap*>& textureMa
     // todo: should we set all to default?
 
     // allocate space in the UBO - by the stride, not the size
-    instanceState.offset = m_uniformBuffer->allocate(m_uboStride);
-    LOG_INFO(
-      "Shader {} allocated offset={} for instance resources", m_name,
-      instanceState.offset.get()
-    );
+    if (m_uboStride > 0) {
+        instanceState.offset = m_uniformBuffer->allocate(m_uboStride);
+        LOG_INFO(
+          "Shader {} allocated offset={} for instance resources", m_name,
+          instanceState.offset.get()
+        );
+    } else {
+        LOG_INFO("UBO stride equals 0, not allocating memory");
+    }
 
     auto& setState          = instanceState.descriptorSetState;
     const auto bindingCount = m_descriptorSets[descSetIndexInstance].bindingCount;
@@ -509,8 +582,8 @@ void VKShader::releaseInstanceResources(u32 instanceId) {
     instanceState.descriptorSetState.descriptorStates.resize(maxBindings);
     instanceState.instanceTextureMaps.clear();
 
-    m_uniformBuffer->free(m_uboStride, *instanceState.offset);
-
+    if (instanceState.offset.hasValue())
+        m_uniformBuffer->free(m_uboStride, *instanceState.offset);
     instanceState.id.invalidate();
     instanceState.offset.invalidate();
 }
@@ -558,34 +631,6 @@ void VKShader::createModules(std::span<const Stage> stages) {
           m_device, m_context,
           VKShaderStage::Properties{ stageConfig.source, stageConfig.type }
         );
-    }
-}
-
-void VKShader::processUniforms() {
-    for (const auto& uniform : m_uniforms | std::views::values) {
-        if (uniform.isSampler()) {
-            const auto setIndex =
-              (uniform.scope == Scope::global
-                 ? descSetIndexGlobal
-                 : descSetIndexInstance);
-            auto setConfig = &m_descriptorSets[setIndex];
-
-            if (setConfig->bindingCount < 2) {
-                // no binding yet, this is first sampler to be added
-                // create a binding with a single descriptor for this sampler
-                auto& binding           = setConfig->bindings[bindingIndexSampler];
-                binding.binding         = bindingIndexSampler;
-                binding.descriptorCount = 1;
-                binding.descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                binding.stageFlags =
-                  VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-                binding.pImmutableSamplers = nullptr;
-
-                setConfig->bindingCount++;
-            } else {
-                setConfig->bindings[bindingIndexSampler].descriptorCount++;
-            }
-        }
     }
 }
 
@@ -654,6 +699,7 @@ void VKShader::createPipeline(RenderPass* renderPass) {
     pipelineProps.scissor              = scissor;
     pipelineProps.polygonMode          = VK_POLYGON_MODE_FILL;
     pipelineProps.depthTestEnabled     = true;
+    pipelineProps.cullMode             = m_cullMode;
 
     // todo: use vector
     pipelineProps.pushConstantRanges = {
@@ -661,12 +707,9 @@ void VKShader::createPipeline(RenderPass* renderPass) {
         m_pushConstantRanges.data() + m_pushConstantRangeCount
     };
 
+    LOG_INFO("Creating shader's pipeline: {}", static_cast<void*>(this));
     m_pipeline.emplace(
       m_context, m_device, *static_cast<VKRenderPass*>(renderPass), pipelineProps
-    );
-    LOG_INFO(
-      "Creating shader's pipeline: {} - {}", static_cast<void*>(m_pipeline.get()),
-      static_cast<void*>(this)
     );
 }
 
@@ -684,7 +727,8 @@ void VKShader::createUniformBuffer() {
         : 0;
 
     // material max count should be configurable!
-    const u64 totalBufferSize = m_globalUboStride + (m_uboStride * 1024);
+    static constexpr u64 maxMaterials = 1024;
+    const u64 totalBufferSize = m_globalUboStride + (m_uboStride * maxMaterials);
 
     VKBuffer::Properties bufferProps;
     bufferProps.size = totalBufferSize;
@@ -695,10 +739,13 @@ void VKShader::createUniformBuffer() {
       VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
     bufferProps.bindOnCreate = true;
 
-    LOG_TRACE("Creating uniform buffer");
+    LOG_DEBUG(
+      "Creating uniform buffer, globalUboStride={}, uboStride={}, totalSize={}",
+      m_globalUboStride, m_uboStride, totalBufferSize
+    );
     m_uniformBuffer.emplace(m_context, m_device, bufferProps);
 
-    LOG_TRACE("Allocating {}b of memory", m_globalUboStride);
+    LOG_DEBUG("Allocating {}b of memory", m_globalUboStride);
     m_globalUboOffset          = m_uniformBuffer->allocate(m_globalUboStride);
     m_mappedUniformBufferBlock = m_uniformBuffer->lockMemory(0, VK_WHOLE_SIZE, 0);
 

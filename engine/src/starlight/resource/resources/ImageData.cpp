@@ -27,10 +27,10 @@ STBImageData& STBImageData::operator=(STBImageData&& oth) {
 }
 
 std::optional<STBImageData> STBImageData::load(
-  const std::string& name, const std::string& imagesPath
+  const Properties& props, const std::string& imagesPath
 ) {
     static constexpr int requiredChannels = 4;
-    const auto fullPath                   = fmt::format("{}/{}", imagesPath, name);
+    const auto fullPath = fmt::format("{}/{}", imagesPath, props.name);
 
     LOG_TRACE("Loading image: '{}'", fullPath);
 
@@ -38,7 +38,7 @@ std::optional<STBImageData> STBImageData::load(
     int height;
     int channels;
 
-    stbi_set_flip_vertically_on_load(true);
+    stbi_set_flip_vertically_on_load(props.flip);
 
     const auto pixelsHandle =
       stbi_load(fullPath.c_str(), &width, &height, &channels, requiredChannels);
@@ -65,8 +65,8 @@ std::optional<STBImageData> STBImageData::load(
 
     if (channels != requiredChannels) {
         LOG_WARN(
-          "Image '{}' has different channels count than required - {} != {}", name,
-          requiredChannels, channels
+          "Image '{}' has different channels count than required - {} != {}",
+          props.name, requiredChannels, channels
         );
     }
 

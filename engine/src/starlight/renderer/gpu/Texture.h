@@ -10,6 +10,8 @@ namespace sl {
 
 class Texture {
 public:
+    enum class Type : u8 { flat, cubemap };
+
     struct Properties {
         u32 width;
         u32 height;
@@ -17,6 +19,7 @@ public:
         bool isTransparent;
         bool isWritable;
         std::string name;
+        Type type;
     };
 
     virtual ~Texture() = default;
@@ -40,7 +43,7 @@ protected:
 
 class TextureMap {
 public:
-    enum class Use { unknown, diffuseMap, specularMap, normalMap };
+    enum class Use { unknown, diffuseMap, specularMap, normalMap, cubeMap };
     enum class Filter { nearest, linear };
     enum class Repeat { repeat, mirroredRepeat, clampToEdge, clampToBorder };
 

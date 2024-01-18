@@ -24,7 +24,7 @@ public:
     ~GeometryManager();
 
     Geometry* acquire(u32 id);
-    Geometry* load(GeometryConfig auto& props) {
+    Geometry* load(const GeometryConfig auto& props) {
         auto geometry = createGeometry(props);
 
         if (not geometry) {
@@ -45,7 +45,7 @@ public:
 private:
     void createDefaultGeometries();
 
-    Geometry* createGeometry(GeometryConfig auto& config) {
+    Geometry* createGeometry(const GeometryConfig auto& config) {
         auto material =
           m_materialManager.acquire(config.materialName)
             ?: m_materialManager.getDefaultMaterial();

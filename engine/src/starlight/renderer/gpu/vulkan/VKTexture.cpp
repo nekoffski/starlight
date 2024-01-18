@@ -33,10 +33,13 @@ static VkFormat channelsToFormat(u32 channels) {
 }
 
 VKImage::Properties getImageProperties(
-  u32 width, u32 height, VkFormat format = VK_FORMAT_R8G8B8A8_UNORM
+  u32 width, u32 height, Texture::Type textureType,
+  VkFormat format = VK_FORMAT_R8G8B8A8_UNORM
 ) {
     return VKImage::Properties{
-        VK_IMAGE_TYPE_2D,
+        textureType == Texture::Type::cubemap
+          ? VKImage::Type::cubemap
+          : VKImage::Type::flat,
         width,
         height,
         format,
@@ -58,7 +61,7 @@ VKTexture::VKTexture(
     m_image(
       m_device, m_context,
       getImageProperties(
-        props.width, props.height, channelsToFormat(props.channels)
+        props.width, props.height, props.type, channelsToFormat(props.channels)
       ),
       pixels
     ),
@@ -73,7 +76,8 @@ VKTexture::VKTexture(
     Texture(props, id),
     m_context(context), m_device(device),
     m_image(
-      device, context, getImageProperties(props.width, props.height, format), handle
+      device, context,
+      getImageProperties(props.width, props.height, props.type, format), handle
     ),
     m_generation(1u) {
     LOG_TRACE("Texture created: {} from existing VKImage", m_props.name);
@@ -99,9 +103,9 @@ void VKTexture::resize(u32 width, u32 height) {
     m_props.width  = width;
     m_props.height = height;
 
-    m_image.recreate(
-      getImageProperties(width, height, channelsToFormat(m_props.channels))
-    );
+    m_image.recreate(getImageProperties(
+      width, height, m_props.type, channelsToFormat(m_props.channels)
+    ));
 }
 
 void VKTexture::resize(u32 width, u32 height, VkImage handle) {

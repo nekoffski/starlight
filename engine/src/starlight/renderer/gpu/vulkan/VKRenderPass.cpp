@@ -176,7 +176,7 @@ VkRenderPass VKRenderPass::getHandle() { return m_handle; }
 
 std::vector<VkClearValue> VKRenderPass::createClearValues(u8 flags) const {
     std::vector<VkClearValue> clearValues;
-    clearValues.reserve(2);
+    clearValues.resize(2);
 
     if (flags & clearColorBuffer) {
         VkClearValue clearValue;
@@ -186,7 +186,7 @@ std::vector<VkClearValue> VKRenderPass::createClearValues(u8 flags) const {
         clearValue.color.float32[2] = m_props.clearColor.b;
         clearValue.color.float32[3] = m_props.clearColor.a;
 
-        clearValues.push_back(clearValue);
+        clearValues[0] = clearValue;
     }
 
     if (flags & clearDepthBuffer) {
@@ -195,7 +195,7 @@ std::vector<VkClearValue> VKRenderPass::createClearValues(u8 flags) const {
 
         if (flags & clearStencilBuffer) clearValue.depthStencil.stencil = m_stencil;
 
-        clearValues.push_back(clearValue);
+        clearValues[1] = clearValue;
     }
 
     return clearValues;

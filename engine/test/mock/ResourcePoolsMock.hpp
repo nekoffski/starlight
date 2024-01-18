@@ -7,13 +7,13 @@ using namespace sl;
 struct ResourcePoolsMock : public ResourcePools {
     MOCK_METHOD(
       Geometry*, createGeometry,
-      (const Geometry::Properties&, const std::span<Vertex3>,
-       const std::span<uint32_t>, const Extent3&)
+      (const Geometry::Properties&, std::span<const Vertex3>,
+       std::span<const uint32_t>, const Extent3&)
     );
     MOCK_METHOD(
       Geometry*, createGeometry,
-      (const Geometry::Properties&, const std::span<Vertex2>,
-       const std::span<uint32_t>, const Extent2&)
+      (const Geometry::Properties&, std::span<const Vertex2>,
+       std::span<const uint32_t>, const Extent2&)
     );
     MOCK_METHOD(void, destroyGeometry, (Geometry&));
     MOCK_METHOD(

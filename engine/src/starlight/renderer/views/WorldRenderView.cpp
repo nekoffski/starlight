@@ -9,17 +9,20 @@ void WorldRenderView::init(
   RendererBackendProxy& backendProxy, ResourcePools& resourcePools,
   const InitProperties& initProperties
 ) {
+    LOG_TRACE("Initializing WorldRenderView");
     auto backgroundColor = (1.0f / 255.0f) * glm::vec4{ 11, 16, 47, 255 };
 
     const auto w = initProperties.viewportWidth;
     const auto h = initProperties.viewportHeight;
 
+    u8 clearFlags = RenderPass::clearDepthBuffer | RenderPass::clearStencilBuffer;
+    if (not initProperties.hasPreviousView)
+        clearFlags |= RenderPass::clearColorBuffer;
+
     RenderPass::Properties renderPassProperties{
-        .area       = glm::vec4{0.0f, 0.0f, w, h},
-        .clearColor = backgroundColor,
-        .clearFlags =
-          (RenderPass::clearColorBuffer | RenderPass::clearDepthBuffer
-           | RenderPass::clearStencilBuffer),
+        .area            = glm::vec4{0.0f, 0.0f, w, h},
+        .clearColor      = backgroundColor,
+        .clearFlags      = clearFlags,
         .hasPreviousPass = initProperties.hasPreviousView,
         .hasNextPass     = initProperties.hasNextView
     };
@@ -39,6 +42,7 @@ void WorldRenderView::init(
 
     m_renderPass = resourcePools.createRenderPass(renderPassProperties);
     m_shader->createPipeline(m_renderPass);
+    LOG_TRACE("WorldRenderView initialized");
 }
 
 struct GeometryRenderData {

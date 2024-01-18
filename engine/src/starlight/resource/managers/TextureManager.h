@@ -22,6 +22,7 @@ public:
     ~TextureManager();
 
     Texture* load(const std::string& name);
+    Texture* loadCubeTexture(const std::string& name);
     Texture* acquire(const std::string& name) const;
 
     void destroy(const std::string& name);

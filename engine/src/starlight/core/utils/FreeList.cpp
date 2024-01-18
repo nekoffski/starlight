@@ -18,6 +18,11 @@ FreeList::FreeList(u64 size) :
     m_head(&m_nodes[0]) {
     m_head->offset = 0;
     m_head->size   = m_totalSize;
+
+    LOG_TRACE(
+      "Creating free list with {}b capacity, maxEntries={}", m_totalSize,
+      m_maxEntries
+    );
 }
 
 void FreeList::resize(u64 newSize) {
@@ -102,6 +107,8 @@ u64 FreeList::allocateBlock(u64 size) {
                 m_head->invalidate();
                 m_head = node->next;
             }
+
+            return offset;
         } else if (node->size > size) {
             u64 offset = node->offset;
 

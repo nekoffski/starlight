@@ -13,6 +13,7 @@
 #include "starlight/core/Id.hpp"
 #include "starlight/core/Core.h"
 #include "starlight/core/utils/Log.h"
+#include "starlight/renderer/CullMode.h"
 #include "fwd.h"
 
 #include "Texture.h"
@@ -103,6 +104,8 @@ public:
         std::vector<Stage> stages;
         std::vector<Uniform::Properties> uniformProperties;
         Texture* defaultTexture;
+
+        CullMode cullMode;
     };
 
     class UniformProxy {
@@ -155,6 +158,8 @@ protected:
     bool m_useLocals;
 
     UniformProxy m_uniformProxy;
+
+    CullMode m_cullMode;
 
 private:
     virtual void bindGlobals()                                             = 0;

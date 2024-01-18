@@ -1,6 +1,7 @@
 {
   "version": 1.0,
   "name": "Builtin.Shader.Skybox",
+  "cullMode": "front",
   "stages": [
     { "stage": "vertex", "file": "Builtin.Shader.Skybox.vert.spv" },
     { "stage": "fragment", "file": "Builtin.Shader.Skybox.frag.spv" }

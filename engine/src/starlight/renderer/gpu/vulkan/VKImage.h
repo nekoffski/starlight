@@ -16,8 +16,10 @@ namespace sl::vk {
 
 class VKImage {
 public:
+    enum class Type : u8 { flat, cubemap };
+
     struct Properties {
-        VkImageType type;
+        Type type;
         u32 width;
         u32 height;
         VkFormat format;

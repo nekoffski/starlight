@@ -5,14 +5,13 @@
 namespace sl {
 
 ResourceManager::ResourceManager(ResourcePools& resourcePools) :
-    m_textureManager(resourcePools),
+    m_resourcePools(resourcePools), m_textureManager(resourcePools),
     m_shaderManager(resourcePools, m_textureManager),
     m_materialManager(m_shaderManager, m_textureManager, resourcePools),
     m_geometryManager(resourcePools, m_materialManager) {
-    // m_uiDefaultShader       = loadShader("Builtin.Shader.UI");
-    m_materialDefaultShader = loadShader("Builtin.Shader.Material");
-
     m_materialManager.createDefaultMaterial();
+    m_skyboxGeometry = loadGeometry(GeometryConfig3D::generateCube(CubeProperties{
+      10.0f, 10.0f, 10.0f, 1, 1, "Internal.Geometry.SkyboxCube" }));
 }
 
 Shader* ResourceManager::loadShader(const std::string& name) {
@@ -21,6 +20,10 @@ Shader* ResourceManager::loadShader(const std::string& name) {
 
 Texture* ResourceManager::loadTexture(const std::string& name) {
     return m_textureManager.load(name);
+}
+
+Texture* ResourceManager::loadCubeTexture(const std::string& name) {
+    return m_textureManager.loadCubeTexture(name);
 }
 
 Texture* ResourceManager::acquireTexture(const std::string& name) const {
@@ -45,6 +48,15 @@ Material* ResourceManager::acquireMaterial(const std::string& name) {
 
 Material* ResourceManager::getDefaultMaterial() {
     return m_materialManager.getDefaultMaterial();
+}
+
+UniqPtr<Skybox> ResourceManager::loadSkybox(
+  const std::string& name, Shader& skyboxShader
+) {
+    TextureMap::Properties cubeMapProps{ TextureMap::Use::cubeMap };
+    auto cubeTexture = loadCubeTexture(name);
+    auto cubeMap     = m_resourcePools.createTextureMap(cubeMapProps, *cubeTexture);
+    return createUniqPtr<Skybox>(cubeMap, m_skyboxGeometry, skyboxShader);
 }
 
 std::optional<Mesh> ResourceManager::loadMesh(const std::string& path) {

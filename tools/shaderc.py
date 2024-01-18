@@ -63,7 +63,6 @@ if is_directory:
         full_path: str = args.input + "/" + f
         if os.path.isfile(full_path) and is_shader_file(full_path):
             compile_shader(full_path, args.output_dir)
-
 else:
     path = determine_file(args.input)
     if not path:

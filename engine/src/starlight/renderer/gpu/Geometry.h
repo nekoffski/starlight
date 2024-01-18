@@ -18,8 +18,8 @@ public:
     struct Data {
         u32 vertexSize;
         u32 vertexCount;
-        void* vertexData;
-        std::span<uint32_t> indices;
+        const void* vertexData;
+        std::span<const uint32_t> indices;
         Extent3 extent;
     };
 

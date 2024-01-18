@@ -1,6 +1,7 @@
 #include "TextureManager.h"
 
 #include <kc/core/Log.h>
+
 #include <fmt/core.h>
 
 #include "starlight/core/math/Glm.h"
@@ -36,7 +37,9 @@ Texture* TextureManager::load(const std::string& name) {
         return texture->second;
     }
 
-    const auto imageData = STBImageData::load(name);
+    const auto imageData =
+      STBImageData::load(STBImageData::Properties{ .name = name, .flip = true });
+    ASSERT(imageData, "Could not load image: {}", name);
 
     sl::Texture::Properties props{
         .width         = imageData->width,
@@ -44,10 +47,9 @@ Texture* TextureManager::load(const std::string& name) {
         .channels      = imageData->channels,
         .isTransparent = imageData->isTransparent,
         .isWritable    = false,
-        .name          = name
+        .name          = name,
+        .type          = Texture::Type::flat
     };
-
-    ASSERT(imageData, "Could not load image: {}", name);
 
     m_textures[name] = m_resourcePools.createTexture(
       props,
@@ -56,6 +58,79 @@ Texture* TextureManager::load(const std::string& name) {
       )
     );
     return m_textures[name];
+}
+
+Texture* TextureManager::loadCubeTexture(const std::string& name) {
+    // +X, -X, +Y, -Y, +Z, -Z
+
+    LOG_DEBUG("Loading cube map: {}", name);
+    if (auto texture = m_textures.find(name); texture != m_textures.end()) {
+        LOG_INFO(
+          "Texture {} already loaded, returning pointer to the existing one", name
+        );
+        return texture->second;
+    }
+
+    // TODO: assuming jpg for now but implement some enum to make it configurable
+    static std::string extension  = "jpg";
+    static constexpr u8 cubeFaces = 6u;
+
+    std::array<std::string, cubeFaces> texturePaths = {
+        fmt::format("{}_r.{}", name, extension),
+        fmt::format("{}_l.{}", name, extension),
+        fmt::format("{}_u.{}", name, extension),
+        fmt::format("{}_d.{}", name, extension),
+        fmt::format("{}_f.{}", name, extension),
+        fmt::format("{}_b.{}", name, extension)
+    };
+
+    sl::Texture::Properties props{
+        .width         = 0,
+        .height        = 0,
+        .channels      = 0,
+        .isTransparent = false,
+        .isWritable    = false,
+        .name          = name,
+        .type          = Texture::Type::cubemap
+    };
+
+    STBImageData::Properties imageProps;
+    imageProps.flip = false;
+
+    std::vector<u8> buffer;
+
+    for (u8 i = 0u; i < cubeFaces; ++i) {
+        const auto& path = texturePaths[i];
+
+        imageProps.name      = path;
+        const auto imageData = STBImageData::load(imageProps);
+        ASSERT(imageData, "Could not load cube map face: {}", path);
+
+        const auto chunkSize =
+          imageData->width * imageData->height * imageData->channels;
+
+        if (buffer.empty()) {
+            props.width    = imageData->width;
+            props.height   = imageData->height;
+            props.channels = imageData->channels;
+
+            buffer.resize(chunkSize * cubeFaces, 0u);
+        }
+
+        ASSERT(
+          imageData->width == props.width && imageData->height == props.height
+            && imageData->channels == props.channels,
+          "Cube map faces have different size"
+        );
+
+        u64 offset = i * chunkSize;
+        std::memcpy(&buffer[offset], imageData->pixels, chunkSize);
+    }
+
+    m_textures[name] = m_resourcePools.createTexture(props, buffer);
+    return m_textures[name];
+
+    return nullptr;
 }
 
 Texture* TextureManager::acquire(const std::string& name) const {
@@ -89,8 +164,10 @@ void TextureManager::createDefaultTexture() {
         .channels      = 4,
         .isTransparent = false,
         .isWritable    = false,
-        .name          = "DefaultTexture"
+        .name          = "DefaultTexture",
+        .type          = Texture::Type::flat
     };
+
     std::vector<u8> pixels(props.width * props.height * props.channels, 255);
     float scale = 8;
 
@@ -122,7 +199,8 @@ void TextureManager::createDefaultSpecularMap() {
         .channels      = 4,
         .isTransparent = false,
         .isWritable    = false,
-        .name          = defaultSpecularMapName
+        .name          = defaultSpecularMapName,
+        .type          = Texture::Type::flat
     };
     std::vector<u8> pixels(props.width * props.height * props.channels, 0);
     m_textures[defaultSpecularMapName] =
@@ -139,7 +217,8 @@ void TextureManager::createDefaultNormalMap() {
         .channels      = 4,
         .isTransparent = false,
         .isWritable    = false,
-        .name          = defaultNormalMapName
+        .name          = defaultNormalMapName,
+        .type          = Texture::Type::flat
     };
     std::vector<u8> pixels(props.width * props.height * props.channels, 0);
 

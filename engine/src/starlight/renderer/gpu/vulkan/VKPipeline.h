@@ -15,7 +15,11 @@
 
 #include "starlight/core/math/Vertex.h"
 
+#include "starlight/renderer/CullMode.h"
+
 namespace sl::vk {
+
+// TODO: REFACTOR
 
 class VKPipeline {
 public:
@@ -29,6 +33,7 @@ public:
         VkRect2D scissor;
         VkPolygonMode polygonMode;
         bool depthTestEnabled;
+        CullMode cullMode;
     };
 
     explicit VKPipeline(
@@ -51,12 +56,25 @@ public:
             VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO
         };
 
+        static const auto getCullMode = [](CullMode mode) {
+            switch (mode) {
+                case CullMode::none:
+                    return VK_CULL_MODE_NONE;
+                case CullMode::front:
+                    return VK_CULL_MODE_FRONT_BIT;
+                case CullMode::frontAndBack:
+                    return VK_CULL_MODE_FRONT_AND_BACK;
+                case CullMode::back:
+                default:
+                    return VK_CULL_MODE_BACK_BIT;
+            }
+        };
+
         rasterizerCreateInfo.depthClampEnable        = false;
         rasterizerCreateInfo.rasterizerDiscardEnable = false;
         rasterizerCreateInfo.polygonMode             = props.polygonMode;
         rasterizerCreateInfo.lineWidth               = 1.0f;
-        rasterizerCreateInfo.cullMode                = VK_CULL_MODE_BACK_BIT;
-        // rasterizerCreateInfo.cullMode        = VK_CULL_MODE_NONE;
+        rasterizerCreateInfo.cullMode                = getCullMode(props.cullMode);
         rasterizerCreateInfo.frontFace       = VK_FRONT_FACE_COUNTER_CLOCKWISE;
         rasterizerCreateInfo.depthBiasEnable = false;
         rasterizerCreateInfo.depthBiasConstantFactor = 0.0f;

@@ -216,7 +216,7 @@ void VKSwapchain::createImages() {
 
     // Create depth image and its view.
     VKImage::Properties imageProperties{
-        VK_IMAGE_TYPE_2D,
+        VKImage::Type::flat,
         m_swapchainExtent.width,
         m_swapchainExtent.height,
         m_device->getDepthFormat(),

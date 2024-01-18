@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "starlight/core/Id.hpp"
 #include "starlight/core/memory/Memory.hpp"
 
 #include "Vulkan.h"
@@ -45,8 +46,8 @@ class VKShader final : public Shader {
     static constexpr u32 maxBindings = 2;
 
     struct DescriptorSetConfig {
-        u8 bindingCount        = 0;
-        u8 samplerBindingIndex = 0;
+        u8 bindingCount = 0;
+        Id8 samplerBindingIndex;
         std::array<VkDescriptorSetLayoutBinding, maxBindings> bindings;
     };
 
@@ -95,7 +96,6 @@ private:
 
     void createModules(std::span<const Stage> stages);
     void processAttributes();
-    void processUniforms();
     void createDescriptorPool();
     void createDescriptorSetLayouts();
     void createUniformBuffer();
@@ -160,11 +160,11 @@ private:
     std::array<DescriptorSetConfig, 2> m_descriptorSets;
     std::vector<VkVertexInputAttributeDescription> m_attributeDescriptions;
 
-    u8 m_globalUniformCount          = 0;
-    u8 m_globalUniformSamplerCount   = 0;
-    u8 m_instanceUniformCount        = 0;
-    u8 m_instanceUniformSamplerCount = 0;
-    u8 m_localUniformCount           = 0;
+    u8 m_globalUniformCount;
+    u8 m_globalUniformSamplerCount;
+    u8 m_instanceUniformCount;
+    u8 m_instanceUniformSamplerCount;
+    u8 m_localUniformCount;
 };
 
 }  // namespace sl::vk

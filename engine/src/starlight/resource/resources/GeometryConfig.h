@@ -75,7 +75,7 @@ struct GeometryConfig3D final : public detail::GeometryConfigBase {
     static GeometryConfig3D generatePlane(const PlaneProperties& props);
     static GeometryConfig3D generateCube(const CubeProperties& props);
 
-    Extent3 calculateExtent() {
+    Extent3 calculateExtent() const {
         return detail::calculateExtent<Extent3, Vertex3, Vec3f>(vertices);
     }
 
@@ -86,7 +86,7 @@ struct GeometryConfig3D final : public detail::GeometryConfigBase {
 struct GeometryConfig2D final : public detail::GeometryConfigBase {
     std::vector<Vertex2> vertices;
 
-    Extent2 calculateExtent() {
+    Extent2 calculateExtent() const {
         return detail::calculateExtent<Extent2, Vertex2, Vec2f>(vertices);
     }
 };
