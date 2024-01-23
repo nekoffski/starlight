@@ -196,6 +196,5 @@ int main() {
             currentCamera->update(deltaTime);
         });
     }
-
     return 0;
 }

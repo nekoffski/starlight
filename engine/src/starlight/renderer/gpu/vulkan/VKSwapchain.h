@@ -16,10 +16,10 @@ namespace sl::vk {
 
 class VKSwapchain {
 public:
-    explicit VKSwapchain(VKDevice* device, VKContext* context, const Size2u32& size);
+    explicit VKSwapchain(
+      VKDevice* device, VKContext* context, u32 viewportWidth, u32 viewportHeight
+    );
     ~VKSwapchain();
-
-    void changeSize(const Size2u32& size);
 
     std::optional<uint32_t> acquireNextImageIndex(
       Nanoseconds timeout, VkSemaphore imageSemaphore, VkFence fence
@@ -30,7 +30,7 @@ public:
       uint32_t presentImageIndex
     );
 
-    void recreate();
+    void recreate(u32 viewportWidth, u32 viewportHeight);
 
     u32 getImageCount() const;
 
@@ -50,7 +50,8 @@ private:
     VKDevice* m_device;
     VKContext* m_context;
 
-    Size2u32 m_viewportSize;
+    u32 m_viewportWidth;
+    u32 m_viewportHeight;
 
     VkSurfaceFormatKHR m_imageFormat;
     VkSwapchainKHR m_handle;

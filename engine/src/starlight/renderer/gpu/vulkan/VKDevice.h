@@ -73,6 +73,8 @@ public:
     const QueueIndices& getQueueIndices() const;
     const Queues& getQueues();
 
+    SwapchainSupportInfo queryDeviceSwapchainSupport();
+
     u8 getDepthChannelCount() const;
 
     std::optional<int32_t> findMemoryIndex(

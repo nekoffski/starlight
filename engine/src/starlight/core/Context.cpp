@@ -18,6 +18,7 @@ float Context::beginFrame() {
     const auto deltaTime = m_timeManager.getDeltaTime();
 
     m_window.update();
+    m_eventManager.dispatch();
 
     return deltaTime;
 }
@@ -26,7 +27,6 @@ void Context::endFrame() {
     sl::disableVariableLogging();
 
     m_window.swapBuffers();
-    m_eventManager.dispatch();
     m_timeManager.update();
     m_windowManager.update();
 }

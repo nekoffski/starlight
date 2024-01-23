@@ -513,6 +513,12 @@ VkResult VKDevice::waitIdle() { return vkDeviceWaitIdle(m_logicalDevice); }
 
 const VKDevice::Queues& VKDevice::getQueues() { return m_queues; }
 
+VKDevice::SwapchainSupportInfo VKDevice::queryDeviceSwapchainSupport() {
+    return sl::vk::queryDeviceSwapchainSupport(
+      m_physicalDevice, m_context->getSurface()
+    );
+}
+
 u8 VKDevice::getDepthChannelCount() const { return m_depthChannelCount; }
 
 std::optional<int32_t> VKDevice::findMemoryIndex(

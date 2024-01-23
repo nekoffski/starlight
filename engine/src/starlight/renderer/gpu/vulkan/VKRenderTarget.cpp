@@ -17,6 +17,8 @@ VKRenderTarget::VKRenderTarget(
 VKFramebuffer* VKRenderTarget::getFramebuffer() { return m_framebuffer.get(); }
 
 void VKRenderTarget::regenerate(const Properties& properties) {
+    m_props = properties;
+
     if (m_framebuffer) m_framebuffer.clear();
 
     std::vector<VkImageView> attachmentViews;

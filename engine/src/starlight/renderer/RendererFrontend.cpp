@@ -43,10 +43,13 @@ FrameStatistics RendererFrontend::renderFrame(
 ) {
     m_frameNumber++;
 
-    if (m_resizing) {
+    if (m_resizing) [[unlikely]] {
         static constexpr u16 requiredFramesSinceResize = 30u;
 
-        LOG_TRACE("Resizing viewport, frame dropped");
+        LOG_TRACE(
+          "Resizing viewport, frame dropped {}/{}", m_framesSinceResize,
+          requiredFramesSinceResize
+        );
 
         if (m_framesSinceResize++ >= requiredFramesSinceResize) {
             m_resizing          = false;
@@ -78,11 +81,10 @@ ResourcePools* RendererFrontend::getResourcePools() {
 
 void RendererFrontend::onViewportResize(u32 w, u32 h) {
     m_resizing = true;
+    m_backend.onViewportResize(w, h);
 
     auto backendProxy = m_backend.getProxy();
-
     for (auto& view : m_renderViews) view->onViewportResize(*backendProxy, w, h);
-    m_backend.onViewportResize(w, h);
 }
 
 }  // namespace sl

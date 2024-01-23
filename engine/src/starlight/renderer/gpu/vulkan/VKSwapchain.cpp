@@ -10,17 +10,18 @@
 namespace sl::vk {
 
 VKSwapchain::VKSwapchain(
-  VKDevice* device, VKContext* context, const Size2u32& size
+  VKDevice* device, VKContext* context, u32 viewportWidth, u32 viewportHeight
 ) :
     m_device(device),
-    m_context(context), m_viewportSize(size) {
+    m_context(context), m_viewportWidth(viewportWidth),
+    m_viewportHeight(viewportHeight) {
     create();
 }
 
 VkSurfaceFormatKHR pickSurfaceFormat(
   const VKDevice::SwapchainSupportInfo& swapchainSupport
 ) {
-    const auto demandedFormat     = VK_FORMAT_B8G8R8A8_UNORM;
+    const auto demandedFormat     = VK_FORMAT_R8G8B8A8_UNORM;
     const auto demandedColorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
 
     for (const auto& format : swapchainSupport.formats)
@@ -43,13 +44,16 @@ VkPresentModeKHR pickPresentMode(
 }
 
 VkExtent2D createSwapchainExtent(
-  const Size2u32& viewportSize,
+  u32 viewportWidth, u32 viewportHeight,
   const VKDevice::SwapchainSupportInfo& swapchainSupport
 ) {
-    VkExtent2D swapchainExtent = { viewportSize.width, viewportSize.height };
+    VkExtent2D swapchainExtent = { viewportWidth, viewportHeight };
 
-    if (swapchainSupport.capabilities.currentExtent.width != UINT32_MAX)
-        swapchainExtent = swapchainSupport.capabilities.currentExtent;
+    // if (swapchainSupport.capabilities.currentExtent.width != UINT32_MAX) {
+    // LOG_INFO("mamy cie", viewportWidth, viewportHeight);
+
+    // swapchainExtent = swapchainSupport.capabilities.currentExtent;
+    // }
 
     // Clamp to the value allowed by the GPU.bonestent.width, min.width, max.width);
     auto& min = swapchainSupport.capabilities.minImageExtent;
@@ -148,17 +152,18 @@ VkImageViewCreateInfo createImageViewCreateInfo(VkImage image, VkFormat format) 
 }
 
 void VKSwapchain::createSwapchain() {
-    const auto& swapchainSupport = m_device->getSwapchainSupport();
+    auto swapchainSupport = m_device->queryDeviceSwapchainSupport();
 
     m_imageFormat    = pickSurfaceFormat(swapchainSupport);
     auto presentMode = pickPresentMode(swapchainSupport);
 
-    // TODO: what is the point?
-    // device.swapchain_support = queryDeviceSwapchainSupport(device.physicalDevice,
-    // context.surface);
-
-    m_swapchainExtent     = createSwapchainExtent(m_viewportSize, swapchainSupport);
+    m_swapchainExtent =
+      createSwapchainExtent(m_viewportWidth, m_viewportHeight, swapchainSupport);
     auto deviceImageCount = getDeviceImageCount(swapchainSupport);
+
+    LOG_INFO(
+      "Creating swapchain: {}/{}", m_swapchainExtent.width, m_swapchainExtent.height
+    );
 
     auto swapchainCreateInfo = createSwapchainCreateInfo(
       m_device, m_context->getSurface(), deviceImageCount, m_imageFormat,
@@ -240,16 +245,12 @@ void VKSwapchain::create() {
 
 VKSwapchain::~VKSwapchain() { destroy(); }
 
-void VKSwapchain::changeSize(const Size2u32& size) {
-    m_viewportSize = size;
-    // TODO: Consider recreating swapchain here as a trigger
-    //       Investigate if it is required to wait for some VKFence e.g.
-}
-
 void VKSwapchain::destroy() {
     vkDestroySwapchainKHR(
       m_device->getLogicalDevice(), m_handle, m_context->getAllocator()
     );
+    m_textures.clear();
+    m_depthTexture.clear();
     LOG_TRACE("VKSwapchain destroyed");
 }
 
@@ -264,7 +265,8 @@ std::optional<uint32_t> VKSwapchain::acquireNextImageIndex(
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
         // Trigger swapchain recreation, then boot out of the render loop.
-        recreate();
+        // destroy();
+        // create();
         return {};
     } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
         LOG_ERROR("Failed to acquire swapchain image!");
@@ -302,13 +304,19 @@ void VKSwapchain::present(
         result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
         // VKSwapchain is out of date, suboptimal or a framebuffer resize has
         // occurred. Trigger swapchain recreation
-        recreate();
+        // destroy();
+        // create();
     } else if (result != VK_SUCCESS) {
         LOG_ERROR("Failed to present swap chain image!");
     }
 }
 
-void VKSwapchain::recreate() {
+void VKSwapchain::recreate(u32 viewportWidth, u32 viewportHeight) {
+    LOG_INFO("Recreating swapchain: {}/{}", viewportWidth, viewportHeight);
+
+    m_viewportWidth  = viewportWidth;
+    m_viewportHeight = viewportHeight;
+
     destroy();
     create();
 }

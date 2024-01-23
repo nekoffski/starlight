@@ -73,7 +73,6 @@ private:
     void recreateSwapchain();
     void recordCommands(VKCommandBuffer& commandBuffer);
 
-    bool wasFramebufferResized();
     VKFence* acquireImageFence();
 
     Texture* getFramebuffer(u64 id);
@@ -103,10 +102,8 @@ private:
 
     u32 m_maxFramesInFlight;
 
-    u32 m_imageIndex                    = 0;
-    u32 m_framebufferSizeGeneration     = 0;
-    u32 m_lastFramebufferSizeGeneration = 0;
-    u32 m_currentFrame                  = 0;
+    u32 m_imageIndex   = 0;
+    u32 m_currentFrame = 0;
 
     u32 m_framebufferWidth;
     u32 m_framebufferHeight;

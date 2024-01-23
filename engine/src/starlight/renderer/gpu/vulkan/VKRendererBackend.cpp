@@ -111,10 +111,10 @@ u32 VKRendererBackend::getImageIndex() { return m_imageIndex; }
 void VKRendererBackend::createCoreComponents(
   sl::Window& window, const Config& config
 ) {
-    m_context = createUniqPtr<VKContext>(window, config);
-    m_device  = createUniqPtr<VKDevice>(m_context.get());
-    m_swapchain =
-      createUniqPtr<VKSwapchain>(m_device.get(), m_context.get(), window.getSize());
+    m_context          = createUniqPtr<VKContext>(window, config);
+    m_device           = createUniqPtr<VKDevice>(m_context.get());
+    const auto& [w, h] = window.getSize();
+    m_swapchain = createUniqPtr<VKSwapchain>(m_device.get(), m_context.get(), w, h);
 
     m_maxFramesInFlight = m_swapchain->getImageCount();
 
@@ -146,20 +146,25 @@ void VKRendererBackend::createSemaphoresAndFences() {
 }
 
 void VKRendererBackend::onViewportResize(u32 width, u32 height) {
-    m_framebufferWidth  = width;
-    m_framebufferHeight = height;
+    m_framebufferWidth    = width;
+    m_framebufferHeight   = height;
+    m_recreatingSwapchain = true;
+    LOG_TRACE("Vulkan renderer backend framebuffer resized {}/{}", width, height);
 
-    m_lastFramebufferSizeGeneration = m_framebufferSizeGeneration;
-    m_framebufferSizeGeneration++;
+    auto logicalDevice = m_device->getLogicalDevice();
+    if (auto result = vkDeviceWaitIdle(logicalDevice); not isGood(result)) {
+        LOG_ERROR("vkDeviceWaitDile failed: %s", getResultString(result, true));
+        // TODO: handle
+    }
+    m_inFlightFences[m_currentFrame].wait(UINT64_MAX);
+    recreateSwapchain();
 
-    LOG_TRACE(
-      "Vulkan renderer backend framebuffer resized {}/{}/{}", width, height,
-      m_framebufferSizeGeneration
-    );
+    m_recreatingSwapchain = false;
 }
 
 void VKRendererBackend::createCommandBuffers() {
     const auto swapchainImagesCount = m_swapchain->getImageCount();
+    m_commandBuffers.clear();
     LOG_TRACE("Creating {} command buffers", swapchainImagesCount);
     m_commandBuffers.reserve(swapchainImagesCount);
     for (int i = 0; i < swapchainImagesCount; ++i) {
@@ -177,7 +182,8 @@ void VKRendererBackend::recreateSwapchain() {
     }
 
     // TODO: implement case when recreation fails
-    m_swapchain->recreate();
+    m_swapchain->recreate(m_framebufferWidth, m_framebufferHeight);
+    createCommandBuffers();
     LOG_INFO("Resized, booting.");
 }
 
@@ -208,10 +214,6 @@ void VKRendererBackend::recordCommands(VKCommandBuffer& commandBuffer) {
     vkCmdSetScissor(commandBuffer.getHandle(), 0, 1, &scissor);
 }
 
-bool VKRendererBackend::wasFramebufferResized() {
-    return m_framebufferSizeGeneration != m_lastFramebufferSizeGeneration;
-}
-
 VKFence* VKRendererBackend::acquireImageFence() {
     auto& fence = m_imagesInFlight[m_imageIndex];
     if (fence) fence->wait(UINT64_MAX);
@@ -236,21 +238,16 @@ bool VKRendererBackend::beginFrame(float deltaTime) {
     const auto logicalDevice = m_device->getLogicalDevice();
 
     if (m_recreatingSwapchain) {
+        m_recreatingSwapchain = false;
         if (auto result = vkDeviceWaitIdle(logicalDevice); not isGood(result)) {
             LOG_ERROR("vkDeviceWaitDile failed: %s", getResultString(result, true));
             return false;
         }
-
-        LOG_INFO("Recreating swapchain, booting");
         return false;
     }
 
     // Check if the framebuffer has been resized. If so, a new swapchain must be
     // created.
-    if (wasFramebufferResized()) {
-        recreateSwapchain();
-        return false;
-    }
 
     // Wait for the execution of the current frame to complete. The fence being
     // free will allow this one to move on.
