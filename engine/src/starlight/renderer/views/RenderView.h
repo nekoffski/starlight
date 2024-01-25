@@ -6,6 +6,7 @@
 #include "starlight/renderer/camera/Camera.h"
 #include "starlight/renderer/gpu/ResourcePools.h"
 #include "starlight/renderer/RenderPacket.h"
+#include "starlight/renderer/RenderProperties.h"
 
 namespace sl {
 
@@ -27,7 +28,8 @@ public:
       const InitProperties& initProperties
     ) = 0;
     virtual void render(
-      RendererBackendProxy& backendProxy, const RenderPacket& renderPacket
+      RendererBackendProxy& backendProxy, const RenderPacket& packet,
+      const RenderProperties& properties, float deltaTime
     ) = 0;
     virtual void onViewportResize(
       RendererBackendProxy& backendProxy, u32 w, u32 h

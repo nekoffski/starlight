@@ -15,6 +15,8 @@
 
 #include "starlight/resource/ResourceManager.h"
 
+#include "starlight/scene/Scene.h"
+
 class Application {
 public:
     explicit Application(int argc, char** argv);
@@ -37,6 +39,8 @@ private:
     sl::UniqPtr<sl::EulerCamera> m_eulerCamera;
     sl::UniqPtr<sl::FirstPersonCamera> m_firstPersonCamera;
     sl::Camera* m_activeCamera;
+
+    sl::Scene m_scene;
 
     std::vector<sl::RenderView*> m_views;
     std::vector<sl::Mesh> m_meshes;

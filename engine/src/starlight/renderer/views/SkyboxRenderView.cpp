@@ -43,7 +43,9 @@ void SkyboxRenderView::init(
 }
 
 void SkyboxRenderView::render(
-  RendererBackendProxy& backendProxy, const RenderPacket& renderPacket
+  RendererBackendProxy& backendProxy, [[maybe_unused]] const RenderPacket& packet,
+  [[maybe_unused]] const RenderProperties& properties,
+  [[maybe_unused]] float deltaTime
 ) {
     m_renderPass->run(
       *backendProxy.getCommandBuffer(), backendProxy.getImageIndex(),

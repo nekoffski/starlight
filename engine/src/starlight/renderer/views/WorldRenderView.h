@@ -18,8 +18,10 @@ public:
       const InitProperties& initProperties
     ) override;
 
-    void render(RendererBackendProxy& backendProxy, const RenderPacket& renderPacket)
-      override;
+    void render(
+      RendererBackendProxy& backendProxy, const RenderPacket& packet,
+      const RenderProperties& properties, float deltaTime
+    ) override;
     void onViewportResize(RendererBackendProxy& backendProxy, u32 w, u32 h) override;
 
 private:

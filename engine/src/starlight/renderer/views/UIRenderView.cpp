@@ -46,11 +46,12 @@ void UIRenderView::init(
 }
 
 void UIRenderView::render(
-  RendererBackendProxy& backendProxy, const RenderPacket& renderPacket
+  RendererBackendProxy& backendProxy, [[maybe_unused]] const RenderPacket& packet,
+  [[maybe_unused]] const RenderProperties& properties, float deltaTime
 ) {
     auto commandBuffer = backendProxy.getCommandBuffer();
     m_renderPass->run(*commandBuffer, backendProxy.getImageIndex(), [&]() {
-        m_uiRenderer->render(*commandBuffer, m_uiCallback, renderPacket.deltaTime);
+        m_uiRenderer->render(*commandBuffer, m_uiCallback, deltaTime);
     });
 }
 

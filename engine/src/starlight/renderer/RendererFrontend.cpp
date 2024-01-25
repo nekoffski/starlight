@@ -39,7 +39,7 @@ void RendererFrontend::init(std::span<RenderView*> renderViews) {
 }
 
 FrameStatistics RendererFrontend::renderFrame(
-  float deltaTime, std::span<Mesh> meshes
+  float deltaTime, const RenderPacket& packet
 ) {
     m_frameNumber++;
 
@@ -62,10 +62,11 @@ FrameStatistics RendererFrontend::renderFrame(
     }
 
     const auto renderedVertices = m_backend.renderFrame(deltaTime, [&]() {
-        RenderPacket renderPacket{ meshes, deltaTime, m_renderMode, m_frameNumber };
-
+        RenderProperties renderProperties{ m_renderMode, m_frameNumber };
         auto backendProxy = m_backend.getProxy();
-        for (auto& view : m_renderViews) view->render(*backendProxy, renderPacket);
+
+        for (auto& view : m_renderViews)
+            view->render(*backendProxy, packet, renderProperties, deltaTime);
     });
     return FrameStatistics{ renderedVertices, m_frameNumber };
 }

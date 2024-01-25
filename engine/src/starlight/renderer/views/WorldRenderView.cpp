@@ -53,7 +53,8 @@ struct GeometryRenderData {
 };
 
 void WorldRenderView::render(
-  RendererBackendProxy& backendProxy, const RenderPacket& renderPacket
+  RendererBackendProxy& backendProxy, const RenderPacket& packet,
+  const RenderProperties& properties, [[maybe_unused]] float deltaTime
 ) {
     m_renderPass->run(
       *backendProxy.getCommandBuffer(), backendProxy.getImageIndex(),
@@ -68,7 +69,7 @@ void WorldRenderView::render(
               proxy.set("projection", m_camera->getProjectionMatrix());
               proxy.set("viewPosition", cameraPosition);
               proxy.set("ambientColor", ambientColor);
-              proxy.set("renderMode", static_cast<int>(renderPacket.renderMode));
+              proxy.set("renderMode", static_cast<int>(properties.renderMode));
           });
 
           std::vector<GeometryRenderData> geometries;
@@ -76,7 +77,7 @@ void WorldRenderView::render(
           geometries.reserve(256);
           transparentGeometries.reserve(128);
 
-          for (auto& mesh : renderPacket.meshes) {
+          for (auto& mesh : packet.meshes) {
               const auto model = mesh.transform.getWorld();
               for (const auto& geometry : mesh.geometries) {
                   // TODO: shouldn't the material be bound to mesh instead of
@@ -112,7 +113,7 @@ void WorldRenderView::render(
                   proxy.set("model", model);
               });
 
-              material->applyUniforms(renderPacket.frameNumber);
+              material->applyUniforms(properties.frameNumber);
               backendProxy.drawGeometry(*geometry);
           }
       }

@@ -4,10 +4,11 @@
 #include "starlight/core/event/WindowResized.h"
 #include "starlight/core/event/Input.h"
 
-#include <starlight/renderer/views/UIRenderView.h>
-#include <starlight/renderer/views/WorldRenderView.h>
-#include <starlight/renderer/views/SkyboxRenderView.h>
+#include "starlight/renderer/views/UIRenderView.h"
+#include "starlight/renderer/views/WorldRenderView.h"
+#include "starlight/renderer/views/SkyboxRenderView.h"
 #include "starlight/renderer/ui/UI.hpp"
+#include "starlight/renderer/RenderPacket.h"
 
 Application::Application(int argc, char** argv) :
     m_isRunning(false), m_update(false), m_context("Starlight Editor"),
@@ -33,11 +34,11 @@ Application::Application(int argc, char** argv) :
 int Application::run() {
     setupEventHandlers();
 
-    sl::UIRenderView uiView(m_activeCamera, [&](float delta) { renderUI(delta); });
-
     auto mesh = m_resourceManager.loadMesh("falcon");
     // mesh->transform.translate(sl::Vec3f{ 0.0, -1.0f, 0.0f }).scale(0.05f);
     m_meshes.push_back(*mesh);
+
+    sl::UIRenderView uiView(m_activeCamera, [&](float delta) { renderUI(delta); });
 
     auto materialShader = m_resourceManager.loadShader("Builtin.Shader.Material");
     sl::WorldRenderView worldView{ m_activeCamera, materialShader };
@@ -62,7 +63,8 @@ int Application::run() {
             LOG_VAR(deltaTime);
             LOG_VAR(m_activeCamera->getPosition());
 
-            m_frameStatistics = m_renderer.renderFrame(deltaTime, m_meshes);
+            sl::RenderPacket renderPacket{ m_meshes };
+            m_frameStatistics = m_renderer.renderFrame(deltaTime, renderPacket);
 
             if (m_update) updateScene(deltaTime);
             m_activeCamera->update(deltaTime);

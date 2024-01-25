@@ -7,6 +7,7 @@
 #include "RenderMode.h"
 #include "FrameStatistics.h"
 #include "Mesh.h"
+
 #include "camera/Camera.h"
 #include "views/RenderView.h"
 #include "gpu/RendererBackend.h"
@@ -21,7 +22,7 @@ public:
 
     void init(std::span<RenderView*> renderViews);
 
-    FrameStatistics renderFrame(float deltaTime, std::span<Mesh> meshes);
+    FrameStatistics renderFrame(float deltaTime, const RenderPacket& packet);
 
     void setRenderMode(RenderMode mode);
 

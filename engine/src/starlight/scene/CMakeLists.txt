@@ -1,5 +1,5 @@
-set(SL_LIBS spdlog kc fmt starlight-renderer)
-set(SL_TARGET starlight-resource)
+set(SL_LIBS spdlog dl kc fmt starlight-core starlight-renderer)
+set(SL_TARGET starlight-scene)
 file(GLOB_RECURSE SL_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
 add_library(${SL_TARGET} STATIC ${SL_SRC})
