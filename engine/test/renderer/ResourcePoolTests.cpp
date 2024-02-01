@@ -1,7 +1,7 @@
 
 #include <gtest/gtest.h>
 
-#include "starlight/renderer/gpu/ResourcePool.hpp"
+#include "starlight/core/utils/ResourcePool.hpp"
 
 #include "mock/StubResource.h"
 

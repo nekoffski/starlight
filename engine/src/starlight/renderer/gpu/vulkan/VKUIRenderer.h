@@ -20,12 +20,15 @@ public:
 
     ~VKUIRenderer() override;
 
+    void reloadFontTextures() override;
+
 private:
     void begin(CommandBuffer& commandBuffer) override;
     void end(CommandBuffer& commandBuffer) override;
 
     VKContext& m_context;
     VKDevice& m_device;
+    RendererBackendProxy& m_backendProxy;
 
     VkDescriptorPool m_uiPool;
 

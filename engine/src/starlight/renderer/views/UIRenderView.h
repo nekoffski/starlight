@@ -13,9 +13,15 @@ namespace sl {
 
 class UIRenderView : public RenderView {
 public:
+    struct Properties {
+        std::vector<Font::Properties> fonts;
+    };
+
     using UICallback = std::function<void(float)>;
 
-    explicit UIRenderView(Camera* camera, UICallback&& callback);
+    explicit UIRenderView(
+      Camera* camera, const Properties& props, UICallback&& callback
+    );
 
     void init(
       RendererBackendProxy& backendProxy, ResourcePools& resourcePools,
@@ -30,8 +36,11 @@ public:
     void onViewportResize(RendererBackendProxy& backendProxy, u32 w, u32 h) override;
 
 private:
+    Properties m_props;
     UICallback m_uiCallback;
     UniqPtr<UIRenderer> m_uiRenderer;
+
+    std::vector<Font*> m_fonts;
 };
 
 }  // namespace sl

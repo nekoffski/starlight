@@ -18,7 +18,7 @@ VKUIRenderer::VKUIRenderer(
   Window& window, RenderPass* renderPass
 ) :
     m_context(context),
-    m_device(device) {
+    m_device(device), m_backendProxy(backendProxy) {
     ASSERT(not s_hasInstance, "Only single instance of UI renderer is allowed");
     s_hasInstance = true;
 
@@ -72,14 +72,12 @@ VKUIRenderer::VKUIRenderer(
     auto renderPassHandle = static_cast<VKRenderPass*>(renderPass)->getHandle();
     ImGui_ImplVulkan_Init(&initInfo, renderPassHandle);
 
-    backendProxy.gpuCall([&](CommandBuffer& buffer) {
-        auto bufferHandle = static_cast<VKCommandBuffer*>(&buffer)->getHandle();
-        ImGui_ImplVulkan_CreateFontsTexture(bufferHandle);
-    });
+    reloadFontTextures();
 
-    ImGui_ImplVulkan_DestroyFontUploadObjects();
     LOG_TRACE("UI backend initialized successfully");
 }
+
+void VKUIRenderer::reloadFontTextures() { ImGui_ImplVulkan_CreateFontsTexture(); }
 
 VKUIRenderer::~VKUIRenderer() {
     m_device.waitIdle();

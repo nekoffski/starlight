@@ -1,8 +1,6 @@
 #include "UIRenderView.h"
 
-#include "starlight/renderer/ui/UI.hpp"
-
-// TEMP: hide
+#include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_vulkan.h>
 
@@ -10,8 +8,11 @@
 
 namespace sl {
 
-UIRenderView::UIRenderView(Camera* camera, UICallback&& callback) :
-    RenderView(camera), m_uiCallback(std::move(callback)) {}
+UIRenderView::UIRenderView(
+  Camera* camera, const Properties& props, UICallback&& callback
+) :
+    RenderView(camera),
+    m_props(props), m_uiCallback(std::move(callback)) {}
 
 void UIRenderView::init(
   RendererBackendProxy& backendProxy, ResourcePools& resourcePools,
@@ -42,6 +43,12 @@ void UIRenderView::init(
 
     m_renderPass = resourcePools.createRenderPass(renderPassProperties);
     m_uiRenderer = backendProxy.createUIRendererer(m_renderPass);
+
+    m_uiRenderer->setStyle();
+
+    for (const auto& fontProperties : m_props.fonts)
+        m_fonts.push_back(m_uiRenderer->addFont(fontProperties));
+
     LOG_TRACE("UIRenderView initialized");
 }
 

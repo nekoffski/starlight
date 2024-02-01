@@ -7,8 +7,10 @@
 #include "starlight/renderer/views/UIRenderView.h"
 #include "starlight/renderer/views/WorldRenderView.h"
 #include "starlight/renderer/views/SkyboxRenderView.h"
-#include "starlight/renderer/ui/UI.hpp"
 #include "starlight/renderer/RenderPacket.h"
+
+#include "starlight/ui/UI.hpp"
+#include "starlight/ui/fonts/FontAwesome.h"
 
 Application::Application(int argc, char** argv) :
     m_isRunning(false), m_update(false), m_context("Starlight Editor"),
@@ -38,7 +40,24 @@ int Application::run() {
     // mesh->transform.translate(sl::Vec3f{ 0.0, -1.0f, 0.0f }).scale(0.05f);
     m_meshes.push_back(*mesh);
 
-    sl::UIRenderView uiView(m_activeCamera, [&](float delta) { renderUI(delta); });
+    sl::Font::SubfontProperties icons{
+        "/home/nek0/kapik/projects/starlight/assets/fonts/fa-solid-900.ttf",
+        ICON_MIN_FA, ICON_MAX_FA
+    };
+    sl::Font::Properties font{
+        .name = "main-font",
+        .path =
+          "/home/nek0/kapik/projects/starlight/assets/fonts/Roboto-Regular.ttf",
+        .size     = 15,
+        .subfonts = { icons }
+    };
+
+    sl::UIRenderView::Properties uiProperties;
+    uiProperties.fonts = { font };
+
+    sl::UIRenderView uiView(m_activeCamera, uiProperties, [&](float delta) {
+        renderUI(delta);
+    });
 
     auto materialShader = m_resourceManager.loadShader("Builtin.Shader.Material");
     sl::WorldRenderView worldView{ m_activeCamera, materialShader };
@@ -120,7 +139,7 @@ void Application::setupEventHandlers() {
 void Application::renderUI(float delta) {
     static bool active = true;
 
-    ImGui::Begin("Starlight debug", &active, ImGuiWindowFlags_MenuBar);
+    ImGui::Begin("Starlight", &active, ImGuiWindowFlags_MenuBar);
     ImGui::Text("Frame time: %f", delta);
     ImGui::Text("Frames per second: %d", int(1.0f / delta));
     ImGui::Text("Frame number: %lu", m_frameStatistics.frameNumber);

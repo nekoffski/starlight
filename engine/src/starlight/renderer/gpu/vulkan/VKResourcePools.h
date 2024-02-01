@@ -1,6 +1,6 @@
 #pragma once
 
-#include "starlight/renderer/gpu/ResourcePool.hpp"
+#include "starlight/core/utils/ResourcePool.hpp"
 #include "starlight/renderer/gpu/ResourcePools.h"
 
 #include "VKTexture.h"
