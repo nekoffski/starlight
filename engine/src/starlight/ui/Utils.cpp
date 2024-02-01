@@ -2,9 +2,9 @@
 
 #include <imgui.h>
 
-namespace sl {
+namespace sl::ui {
 
 void pushFont(Font* font) { ImGui::PushFont(font->handle); }
 void popFont() { ImGui::PopFont(); }
 
-}  // namespace sl
+}  // namespace sl::ui

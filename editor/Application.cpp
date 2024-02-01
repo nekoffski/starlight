@@ -137,20 +137,57 @@ void Application::setupEventHandlers() {
 }
 
 void Application::renderUI(float delta) {
-    static bool active = true;
+    float menuHeight = 0.0f;
 
-    ImGui::Begin("Starlight", &active, ImGuiWindowFlags_MenuBar);
-    ImGui::Text("Frame time: %f", delta);
-    ImGui::Text("Frames per second: %d", int(1.0f / delta));
-    ImGui::Text("Frame number: %lu", m_frameStatistics.frameNumber);
-    ImGui::Separator();
-    ImGui::Text("Rendered vertices: %lu", m_frameStatistics.renderedVertices);
-    ImGui::Separator();
-    ImGui::Text("8/9/0 - change render mode");
-    ImGui::Text("6     - dump var logs");
-    ImGui::Text("3/4   - switch camera");
-    ImGui::Text("u     - on/off update");
-    ImGui::End();
+    if (ImGui::BeginMainMenuBar()) {
+        menuHeight = ImGui::GetWindowSize().y;
+
+        if (ImGui::BeginMenu("File")) {
+            if (ImGui::MenuItem("Create")) {
+            }
+            if (ImGui::MenuItem("Open", "Ctrl+O")) {
+            }
+            if (ImGui::MenuItem("Save", "Ctrl+S")) {
+            }
+            if (ImGui::MenuItem("Save as..")) {
+            }
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Help")) {
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+    }
+
+    const auto [w, h] = m_window->getSize();
+
+    float heightLeft = h - menuHeight;
+    sl::ui::PanelCombo::Properties leftComboProperties{
+        .position = {0,         menuHeight},
+          .size = { 0.2f * w, heightLeft}
+    };
+    sl::ui::PanelCombo leftCombo{ "left-combo", leftComboProperties };
+
+    leftCombo
+      .addPanel(
+        "Statistics",
+        [&]() {
+            ImGui::Text("Frame time: %f", delta);
+            ImGui::Text("Frames per second: %d", int(1.0f / delta));
+            ImGui::Text("Frame number: %lu", m_frameStatistics.frameNumber);
+            ImGui::Separator();
+            ImGui::Text(
+              "Rendered vertices: %lu", m_frameStatistics.renderedVertices
+            );
+            ImGui::Separator();
+            ImGui::Text("8/9/0 - change render mode");
+            ImGui::Text("6     - dump var logs");
+            ImGui::Text("3/4   - switch camera");
+            ImGui::Text("u     - on/off update");
+        }
+      )
+      .addPanel("Scene", []() { ImGui::Text("Just a placeholder for now"); });
+    leftCombo.render();
 }
 
 void Application::updateScene(float delta) {
