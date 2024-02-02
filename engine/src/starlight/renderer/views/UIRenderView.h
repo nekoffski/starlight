@@ -17,7 +17,7 @@ public:
         std::vector<Font::Properties> fonts;
     };
 
-    using UICallback = std::function<void(float)>;
+    using UICallback = std::function<void()>;
 
     explicit UIRenderView(
       Camera* camera, const Properties& props, UICallback&& callback

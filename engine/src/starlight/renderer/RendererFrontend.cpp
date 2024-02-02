@@ -10,7 +10,7 @@ namespace sl {
 
 RendererFrontend::RendererFrontend(Window& window, const Config& config) :
     m_backend(window, config), m_renderMode(RenderMode::standard),
-    m_frameNumber(0ul), m_framesSinceResize(0u), m_resizing(false) {
+    m_framesSinceResize(0u), m_resizing(false) {
     const auto [w, h] = window.getSize();
     m_viewportWidth   = w;
     m_viewportHeight  = h;
@@ -38,10 +38,11 @@ void RendererFrontend::init(std::span<RenderView*> renderViews) {
     }
 }
 
-FrameStatistics RendererFrontend::renderFrame(
-  float deltaTime, const RenderPacket& packet
-) {
-    m_frameNumber++;
+FrameStatistics RendererFrontend::getFrameStatistics() { return m_frameStatistics; }
+
+void RendererFrontend::renderFrame(float deltaTime, const RenderPacket& packet) {
+    m_frameStatistics.frameNumber++;
+    m_frameStatistics.deltaTime = deltaTime;
 
     if (m_resizing) [[unlikely]] {
         static constexpr u16 requiredFramesSinceResize = 30u;
@@ -55,20 +56,19 @@ FrameStatistics RendererFrontend::renderFrame(
             m_resizing          = false;
             m_framesSinceResize = 0;
         } else {
-            return FrameStatistics{
-                .renderedVertices = 0, .frameNumber = m_frameNumber
-            };
+            m_frameStatistics.renderedVertices = 0;
         }
     }
 
-    const auto renderedVertices = m_backend.renderFrame(deltaTime, [&]() {
-        RenderProperties renderProperties{ m_renderMode, m_frameNumber };
+    m_frameStatistics.renderedVertices = m_backend.renderFrame(deltaTime, [&]() {
+        RenderProperties renderProperties{
+            m_renderMode, m_frameStatistics.frameNumber
+        };
         auto backendProxy = m_backend.getProxy();
 
         for (auto& view : m_renderViews)
             view->render(*backendProxy, packet, renderProperties, deltaTime);
     });
-    return FrameStatistics{ renderedVertices, m_frameNumber };
 }
 
 void RendererFrontend::setRenderMode(RenderMode mode) {

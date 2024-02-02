@@ -22,7 +22,9 @@ public:
 
     void init(std::span<RenderView*> renderViews);
 
-    FrameStatistics renderFrame(float deltaTime, const RenderPacket& packet);
+    FrameStatistics getFrameStatistics();
+
+    void renderFrame(float deltaTime, const RenderPacket& packet);
 
     void setRenderMode(RenderMode mode);
 
@@ -31,13 +33,13 @@ public:
     void onViewportResize(u32 w, u32 h);
 
 private:
+    FrameStatistics m_frameStatistics;
     RendererBackendVendor m_backend;
 
     std::vector<RenderView*> m_renderViews;
 
     RenderMode m_renderMode;
 
-    u64 m_frameNumber;
     u16 m_framesSinceResize;
     bool m_resizing;
 

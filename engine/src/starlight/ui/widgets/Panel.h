@@ -1,11 +1,6 @@
 #pragma once
 
-#include <string>
-
-#include "starlight/core/Core.h"
-#include "starlight/core/math/Glm.h"
-
-#include "Widget.h"
+#include "starlight/ui/Widget.h"
 
 namespace sl::ui {
 
@@ -32,7 +27,11 @@ private:
 
 class PanelCombo : public Widget {
 public:
-    using Properties = Panel::Properties;
+    struct Properties {
+        Vec2f position;
+        Vec2f size;
+        bool alignWithMainMenuBar;
+    };
 
     explicit PanelCombo(const std::string& name, const Properties& props);
 
@@ -49,6 +48,8 @@ private:
     std::vector<Panel> m_panels;
     Properties m_props;
     std::string m_name;
+
+    bool m_dirty;
 };
 
 }  // namespace sl::ui

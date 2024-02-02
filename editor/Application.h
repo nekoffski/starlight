@@ -17,6 +17,8 @@
 
 #include "starlight/scene/Scene.h"
 
+#include "UI.h"
+
 class Application {
 public:
     explicit Application(int argc, char** argv);
@@ -25,7 +27,6 @@ public:
 
 private:
     void setupEventHandlers();
-    void renderUI(float delta);
     void updateScene(float delta);
 
     bool m_isRunning;
@@ -35,6 +36,8 @@ private:
     sl::Window* m_window;
     sl::RendererFrontend m_renderer;
     sl::ResourceManager m_resourceManager;
+
+    UI m_ui;
 
     sl::UniqPtr<sl::EulerCamera> m_eulerCamera;
     sl::UniqPtr<sl::FirstPersonCamera> m_firstPersonCamera;

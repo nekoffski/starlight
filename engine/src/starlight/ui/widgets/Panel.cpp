@@ -2,6 +2,8 @@
 
 #include <imgui.h>
 
+#include "starlight/ui/Utils.h"
+
 namespace sl::ui {
 
 Panel::Panel(const std::string& name, const Properties& props, Callback&& callback) :
@@ -21,39 +23,48 @@ void Panel::setSize(const Vec2f& size) { m_props.size = size; }
 void Panel::setPosition(const Vec2f& position) { m_props.position = position; }
 
 PanelCombo::PanelCombo(const std::string& name, const Properties& props) :
-    m_name(name), m_props(props) {}
+    m_name(name), m_props(props), m_dirty(true) {}
 
 void PanelCombo::render() {
-    for (auto& panel : m_panels) panel.render();
+    if (m_dirty) rebuildPanels();
+
+    namedScope(m_name, [&]() {
+        for (auto& panel : m_panels) panel.render();
+    });
 }
 
 PanelCombo& PanelCombo::addPanel(const std::string& name, Callback&& callback) {
-    m_panels.emplace_back(name, m_props, std::move(callback));
-    rebuildPanels();
+    m_panels.emplace_back(name, Panel::Properties{}, std::move(callback));
     return *this;
 }
 
-void PanelCombo::setSize(const Vec2f& size) {
-    m_props.size = size;
-    rebuildPanels();
-}
-void PanelCombo::setPosition(const Vec2f& position) {
-    m_props.position = position;
-    rebuildPanels();
-}
+void PanelCombo::setSize(const Vec2f& size) { m_props.size = size; }
+void PanelCombo::setPosition(const Vec2f& position) { m_props.position = position; }
 
 void PanelCombo::rebuildPanels() {
-    const auto panelCount   = m_panels.size();
-    const float panelHeight = m_props.size.y / panelCount;
+    const auto panelCount = m_panels.size();
+
+    auto comboHeight           = m_props.size.y;
+    auto comboVerticalPosition = m_props.position.y;
+
+    if (m_props.alignWithMainMenuBar) {
+        auto frameHeight = getFrameHeight();
+        comboHeight -= frameHeight;
+        comboVerticalPosition += frameHeight;
+    }
+
+    const float panelHeight = comboHeight / panelCount;
 
     for (int i = 0; i < panelCount; ++i) {
         auto panel = &m_panels[i];
 
         panel->setPosition(
-          { m_props.position.x, m_props.position.y + i * panelHeight }
+          { m_props.position.x, comboVerticalPosition + i * panelHeight }
         );
         panel->setSize({ m_props.size.x, panelHeight });
     }
+
+    m_dirty = false;
 }
 
 }  // namespace sl::ui

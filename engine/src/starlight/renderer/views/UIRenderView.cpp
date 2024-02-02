@@ -58,7 +58,7 @@ void UIRenderView::render(
 ) {
     auto commandBuffer = backendProxy.getCommandBuffer();
     m_renderPass->run(*commandBuffer, backendProxy.getImageIndex(), [&]() {
-        m_uiRenderer->render(*commandBuffer, m_uiCallback, deltaTime);
+        m_uiRenderer->render(*commandBuffer, m_uiCallback);
     });
 }
 
