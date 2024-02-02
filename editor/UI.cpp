@@ -1,9 +1,11 @@
 #include "UI.h"
 
+#include "starlight/ui/fonts/FontAwesome.h"
+
 static constexpr float leftComboWidthFactor = 0.15f;
 
-UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer) :
-    m_width(w), m_height(h),
+UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer, sl::Scene* scene) :
+    m_width(w), m_height(h), m_scene(scene),
     m_leftCombo(
       "left-combo",
       sl::ui::PanelCombo::Properties{
@@ -11,17 +13,27 @@ UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer) :
         .size                 = { leftComboWidthFactor * w, h},
         .alignWithMainMenuBar = true,
 }
-    ) {
+    ),
+    m_rightCombo(
+      "right-combo",
+      sl::ui::PanelCombo::Properties{
+        .position             = { w * (1.0f - leftComboWidthFactor), 0 },
+        .size                 = { leftComboWidthFactor * w, h },
+        .alignWithMainMenuBar = true,
+      }
+    ),
+    m_shouldExit(false) {
     m_mainMenu.addMenu("File")
       .addItem("Create", []() {})
       .addItem("Open", "Ctrl+O", []() {})
       .addItem("Save", "Ctrl+S", []() {})
-      .addItem("Save as", []() {});
+      .addItem("Save as", []() {})
+      .addItem("Quit", [&]() { m_shouldExit = true; });
     m_mainMenu.addMenu("Help");
 
     m_leftCombo
       .addPanel(
-        "Statistics",
+        ICON_FA_CHART_LINE "  Statistics",
         [&]() {
             const auto [renderedVertices, frameNumber, delta] =
               renderer.getFrameStatistics();
@@ -38,10 +50,25 @@ UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer) :
             sl::ui::text("u     - on/off update");
         }
       )
-      .addPanel("Scene", []() { sl::ui::text("Just a placeholder for now"); });
+      .addPanel(ICON_FA_PROJECT_DIAGRAM "  Scene", [&]() {
+          m_scene->forEachEntity(
+            [&](const std::string& name, sl::Entity* entity) -> void {
+                sl::ui::text(fmt::format("{}  {}", ICON_FA_CUBE, name));
+            }
+          );
+      });
+
+    m_rightCombo.addPanel(ICON_FA_EYE "  Inspector", [&]() {
+        sl::ui::text("No entity selected");
+    });
 }
+
+void UI::setScene(sl::Scene* scene) { m_scene = scene; }
 
 void UI::render() {
     m_mainMenu.render();
     m_leftCombo.render();
+    m_rightCombo.render();
 }
+
+bool UI::shouldExit() const { return m_shouldExit; }

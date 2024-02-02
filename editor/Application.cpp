@@ -19,7 +19,7 @@ Application::Application(int argc, char** argv) :
     m_ui(
       m_window->getSize().width,
       m_window->getSize().height,  // TODO: no comment required
-      m_renderer
+      m_renderer, &m_scene
     ) {
     const auto& [w, h] = m_window->getSize();
 
@@ -80,7 +80,10 @@ int Application::run() {
     m_isRunning = true;
     m_renderer.init(m_views);
 
-    while (m_isRunning) {
+    auto entity1 = m_scene.addEntity("My-Entity");
+    auto entity2 = m_scene.addEntity();
+
+    while (m_isRunning && not m_ui.shouldExit()) {
         m_context.beginFrame([&](float deltaTime) {
             LOG_VAR(deltaTime);
             LOG_VAR(m_activeCamera->getPosition());

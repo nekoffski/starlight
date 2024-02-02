@@ -68,12 +68,13 @@ Font* UIRenderer::addFont(const Font::Properties& props) {
 
             ImFontConfig config;
             config.MergeMode        = true;
-            config.GlyphMinAdvanceX = 11.0f;
+            config.GlyphMinAdvanceX = 12.0f;
             config.GlyphMaxAdvanceX = 15.0f;
+            config.GlyphOffset.y    = 1.0f;
 
             ASSERT(
               imguiFonts->AddFontFromFileTTF(
-                subfont.path.c_str(), props.size, &config,
+                subfont.path.c_str(), props.size - 2.0f, &config,
                 font.mergedFontsRanges.back().data()
               ),
               "Could not merge font: '{}'", subfont.path
