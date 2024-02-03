@@ -12,6 +12,8 @@
 #include "starlight/ui/UI.h"
 #include "starlight/ui/fonts/FontAwesome.h"
 
+#include "starlight/scene/components/MeshComponent.h"
+
 Application::Application(int argc, char** argv) :
     m_isRunning(false), m_update(false), m_context("Starlight Editor"),
     m_window(m_context.getWindow()), m_renderer(*m_window, *m_context.getConfig()),
@@ -82,6 +84,8 @@ int Application::run() {
 
     auto entity1 = m_scene.addEntity("My-Entity");
     auto entity2 = m_scene.addEntity();
+
+    entity1->addComponent<sl::MeshComponent>();
 
     while (m_isRunning && not m_ui.shouldExit()) {
         m_context.beginFrame([&](float deltaTime) {

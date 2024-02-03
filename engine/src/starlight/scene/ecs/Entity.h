@@ -4,19 +4,38 @@
 
 #include "starlight/core/Core.h"
 
+#include "ComponentContainerMap.h"
+
 namespace sl {
 
 class Entity {
 public:
-    explicit Entity(u64 id, const std::string& name) : m_id(id), m_name(name) {}
-    explicit Entity(u64 id) : Entity(id, fmt::format("Entity_{}", id)) {}
+    template <typename T> bool hasComponent() {
+        return m_componentContainerMap.hasComponent<T>(m_id);
+    }
 
-    const u64 getId() const { return m_id; }
-    const std::string& getName() const { return m_name; }
+    template <typename T, typename... Args> T* addComponent(Args&&... args) {
+        return m_componentContainerMap.addComponent<T>(
+          m_id, std::forward<Args>(args)...
+        );
+    }
+
+    template <typename T> T* getComponent() {
+        return m_componentContainerMap.getComponent<T>(m_id);
+    }
+
+    explicit Entity(
+      u64 id, const std::string& name, ComponentContainerMap& componentContainerMap
+    );
+    explicit Entity(u64 id, ComponentContainerMap& componentContainerMap);
+
+    const u64 getId() const;
+    const std::string& getName() const;
 
 private:
     u64 m_id;
     std::string m_name;
+    ComponentContainerMap& m_componentContainerMap;
 };
 
 }  // namespace sl

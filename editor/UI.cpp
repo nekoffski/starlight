@@ -1,8 +1,13 @@
 #include "UI.h"
 
+#include "starlight/core/utils/Log.h"
 #include "starlight/ui/fonts/FontAwesome.h"
 
+#include "starlight/scene/components/MeshComponent.h"
+
 static constexpr float leftComboWidthFactor = 0.15f;
+static const sl::Vec3f selectedColor        = { 0.1f, 0.7f, 0.1f };
+static const sl::Vec3f defaultColor         = { 1.0f, 1.0f, 1.0f };
 
 UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer, sl::Scene* scene) :
     m_width(w), m_height(h), m_scene(scene),
@@ -37,7 +42,6 @@ UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer, sl::Scene* scene) :
         [&]() {
             const auto [renderedVertices, frameNumber, delta] =
               renderer.getFrameStatistics();
-
             sl::ui::text("Frame time: {}", delta);
             sl::ui::text("Frames per second: {}", int(1.0f / delta));
             sl::ui::text("Frame number: {}", frameNumber);
@@ -53,13 +57,32 @@ UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer, sl::Scene* scene) :
       .addPanel(ICON_FA_PROJECT_DIAGRAM "  Scene", [&]() {
           m_scene->forEachEntity(
             [&](const std::string& name, sl::Entity* entity) -> void {
-                sl::ui::text(fmt::format("{}  {}", ICON_FA_CUBE, name));
+                const auto entityId = entity->getId();
+                const auto color =
+                  m_selectedEntityId && m_selectedEntityId == entityId
+                    ? selectedColor
+                    : defaultColor;
+
+                sl::ui::withColor(color, [&]() {
+                    if (sl::ui::text(fmt::format("{}  {}", ICON_FA_CUBE, name)))
+                        m_selectedEntityId = entityId;
+                });
             }
           );
       });
 
     m_rightCombo.addPanel(ICON_FA_EYE "  Inspector", [&]() {
-        sl::ui::text("No entity selected");
+        if (m_selectedEntityId) {
+            auto entity = m_scene->getEntity(*m_selectedEntityId);
+            sl::ui::text("Entity: {}/{}", entity->getId(), entity->getName());
+            sl::ui::separator();
+
+            if (entity->hasComponent<sl::MeshComponent>()) {
+                sl::ui::text("Mesh component");
+            }
+        } else {
+            sl::ui::text("No entity selected");
+        }
     });
 }
 

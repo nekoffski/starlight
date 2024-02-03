@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include "starlight/core/Core.h"
 #include "starlight/ui/UI.h"
 
@@ -27,6 +29,8 @@ private:
     sl::ui::MainMenuBar m_mainMenu;
     sl::ui::PanelCombo m_leftCombo;
     sl::ui::PanelCombo m_rightCombo;
+
+    std::optional<sl::u64> m_selectedEntityId;
 
     bool m_shouldExit;
 };

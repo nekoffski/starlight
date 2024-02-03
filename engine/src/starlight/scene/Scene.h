@@ -7,6 +7,7 @@
 #include "starlight/renderer/RenderPacket.h"
 
 #include "ecs/Entity.h"
+#include "ecs/ComponentContainerMap.h"
 
 namespace sl {
 
@@ -14,16 +15,13 @@ class Scene {
 public:
     static inline constexpr u32 defaultMaxEntities = 1024;
 
-    explicit Scene(u32 maxEntities = defaultMaxEntities) :
-        m_entities("Entities", maxEntities) {}
+    explicit Scene(u32 maxEntities = defaultMaxEntities);
 
-    Entity* addEntity(const std::string& name) {
-        return storeEntity(m_entities.create(name));
-    }
-    Entity* addEntity() { return storeEntity(m_entities.create()); }
+    Entity* addEntity(const std::string& name);
+    Entity* addEntity();
 
-    Entity* getEntity(const std::string& name) { return m_entitiesByName[name]; }
-    Entity* getEntity(u64 id) { return &m_entities.get(id); }
+    Entity* getEntity(const std::string& name);
+    Entity* getEntity(u64 id);
 
     RenderPacket getRenderPacket();
 
@@ -34,14 +32,13 @@ public:
     }
 
 private:
-    Entity* storeEntity(Entity* entity) {
-        m_entitiesByName[entity->getName()] = entity;
-        return entity;
-    }
+    Entity* storeEntity(Entity* entity);
 
     ResourcePool<Entity> m_entities;
     // TODO: implement FlatMap
     std::map<std::string, Entity*> m_entitiesByName;
+
+    ComponentContainerMap m_componentMap;
 };
 
 }  // namespace sl
