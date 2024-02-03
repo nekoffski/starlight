@@ -19,6 +19,14 @@ void namedScope(const std::string& name, Callback&& callback) {
     ImGui::PopID();
 }
 
+void treeNode(const std::string& name, Callback&& callback) {
+    ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+    if (ImGui::TreeNode(name.c_str())) {
+        callback();
+        ImGui::TreePop();
+    }
+}
+
 void separator() { ImGui::Separator(); }
 
 float getFrameHeight() { return ImGui::GetFrameHeight(); }

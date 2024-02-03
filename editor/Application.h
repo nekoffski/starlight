@@ -27,7 +27,6 @@ public:
 
 private:
     void setupEventHandlers();
-    void updateScene(float delta);
 
     bool m_isRunning;
     bool m_update;
@@ -46,7 +45,6 @@ private:
     sl::Scene m_scene;
 
     std::vector<sl::RenderView*> m_views;
-    std::vector<sl::Mesh> m_meshes;
 
     sl::FrameStatistics m_frameStatistics;
 };

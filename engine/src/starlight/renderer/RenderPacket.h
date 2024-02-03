@@ -7,7 +7,7 @@
 namespace sl {
 
 struct RenderPacket {
-    std::span<Mesh> meshes;
+    std::vector<Mesh*> meshes;
 };
 
 }  // namespace sl

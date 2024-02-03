@@ -19,13 +19,19 @@ public:
         m_buffer(typeid(T).name(), defaultMaxComponents) {}
 
     template <typename... Args> T* addComponent(u64 id, Args&&... args) {
-        auto component = m_buffer.create(std::forward<Args>(args)...);
+        auto component = m_buffer.create(id, std::forward<Args>(args)...);
         m_view[id]     = component;
         return component;
     }
 
     template <typename... Args> T* getComponent(u64 id) {
         return m_view[id];  // TODO: error checking
+    }
+
+    template <typename Callback>
+    requires Callable<Callback, void, T*>
+    void forEach(Callback&& callback) {
+        for (auto& component : m_view | std::views::values) callback(component);
     }
 
     bool hasComponent(u64 id) override { return m_view.contains(id); }

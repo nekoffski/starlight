@@ -43,10 +43,6 @@ Application::Application(int argc, char** argv) :
 int Application::run() {
     setupEventHandlers();
 
-    auto mesh = m_resourceManager.loadMesh("falcon");
-    // mesh->transform.translate(sl::Vec3f{ 0.0, -1.0f, 0.0f }).scale(0.05f);
-    m_meshes.push_back(*mesh);
-
     sl::Font::SubfontProperties icons{
         "/home/nek0/kapik/projects/starlight/assets/fonts/fa-solid-900.ttf",
         ICON_MIN_FA, ICON_MAX_FA
@@ -85,17 +81,17 @@ int Application::run() {
     auto entity1 = m_scene.addEntity("My-Entity");
     auto entity2 = m_scene.addEntity();
 
-    entity1->addComponent<sl::MeshComponent>();
+    auto mesh = m_resourceManager.loadMesh("falcon");
+    entity1->addComponent<sl::MeshComponent>(&(*mesh));
 
     while (m_isRunning && not m_ui.shouldExit()) {
         m_context.beginFrame([&](float deltaTime) {
             LOG_VAR(deltaTime);
             LOG_VAR(m_activeCamera->getPosition());
 
-            sl::RenderPacket renderPacket{ m_meshes };
+            auto renderPacket = m_scene.getRenderPacket();
             m_renderer.renderFrame(deltaTime, renderPacket);
 
-            if (m_update) updateScene(deltaTime);
             m_activeCamera->update(deltaTime);
         });
     }
@@ -143,10 +139,4 @@ void Application::setupEventHandlers() {
       .on<sl::QuitEvent>(onQuit)
       .on<sl::KeyEvent>(onKey)
       .on<sl::WindowResized>(onWindowResized);
-}
-
-void Application::updateScene(float delta) {
-    const auto rotationAxis = sl::Vec3f{ 0.0f, 1.0f, 0.0f };
-    const auto angle        = 0.1f * delta;
-    m_meshes[0].transform.rotate(rotationAxis, angle);
 }

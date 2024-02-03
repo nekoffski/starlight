@@ -38,37 +38,48 @@ UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer, sl::Scene* scene) :
 
     m_leftCombo
       .addPanel(
-        ICON_FA_CHART_LINE "  Statistics",
+        ICON_FA_CITY "  Scene",
         [&]() {
-            const auto [renderedVertices, frameNumber, delta] =
-              renderer.getFrameStatistics();
-            sl::ui::text("Frame time: {}", delta);
-            sl::ui::text("Frames per second: {}", int(1.0f / delta));
-            sl::ui::text("Frame number: {}", frameNumber);
+            sl::ui::treeNode(ICON_FA_PROJECT_DIAGRAM "  Scene graph", [&]() {
+                m_scene->forEachEntity(
+                  [&](const std::string& name, sl::Entity* entity) -> void {
+                      const auto entityId = entity->getId();
+                      const auto color =
+                        m_selectedEntityId && m_selectedEntityId == entityId
+                          ? selectedColor
+                          : defaultColor;
+
+                      sl::ui::withColor(color, [&]() {
+                          if (sl::ui::text(fmt::format("{}  {}", ICON_FA_CUBE, name)
+                              ))
+                              m_selectedEntityId = entityId;
+                      });
+                  }
+                );
+            });
             sl::ui::separator();
-            sl::ui::text("Rendered vertices: {}", renderedVertices);
+            sl::ui::treeNode(ICON_FA_CLOUD "  Skybox", [&]() {
+
+            });
             sl::ui::separator();
-            sl::ui::text("8/9/0 - change render mode");
-            sl::ui::text("6     - dump var logs");
-            sl::ui::text("3/4   - switch camera");
-            sl::ui::text("u     - on/off update");
+            sl::ui::treeNode(ICON_FA_VIDEO "  Camera", [&]() {
+
+            });
         }
       )
-      .addPanel(ICON_FA_PROJECT_DIAGRAM "  Scene", [&]() {
-          m_scene->forEachEntity(
-            [&](const std::string& name, sl::Entity* entity) -> void {
-                const auto entityId = entity->getId();
-                const auto color =
-                  m_selectedEntityId && m_selectedEntityId == entityId
-                    ? selectedColor
-                    : defaultColor;
-
-                sl::ui::withColor(color, [&]() {
-                    if (sl::ui::text(fmt::format("{}  {}", ICON_FA_CUBE, name)))
-                        m_selectedEntityId = entityId;
-                });
-            }
-          );
+      .addPanel(ICON_FA_CHART_LINE "  Statistics", [&]() {
+          const auto [renderedVertices, frameNumber, delta] =
+            renderer.getFrameStatistics();
+          sl::ui::text("Frame time: {}", delta);
+          sl::ui::text("Frames per second: {}", int(1.0f / delta));
+          sl::ui::text("Frame number: {}", frameNumber);
+          sl::ui::separator();
+          sl::ui::text("Rendered vertices: {}", renderedVertices);
+          sl::ui::separator();
+          sl::ui::text("8/9/0 - change render mode");
+          sl::ui::text("6     - dump var logs");
+          sl::ui::text("3/4   - switch camera");
+          sl::ui::text("u     - on/off update");
       });
 
     m_rightCombo.addPanel(ICON_FA_EYE "  Inspector", [&]() {
@@ -78,7 +89,15 @@ UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer, sl::Scene* scene) :
             sl::ui::separator();
 
             if (entity->hasComponent<sl::MeshComponent>()) {
-                sl::ui::text("Mesh component");
+                auto component = entity->getComponent<sl::MeshComponent>();
+                sl::ui::treeNode(ICON_FA_PLANE "  MeshComponent", [&]() {
+                    sl::ui::text("Component id: {}", component->id);
+                    sl::ui::text("Geometries");
+                    for (auto& geometry : component->mesh->geometries) {
+                        auto properties = geometry->getProperties();
+                        sl::ui::text("{}", properties.name);
+                    }
+                });
             }
         } else {
             sl::ui::text("No entity selected");
