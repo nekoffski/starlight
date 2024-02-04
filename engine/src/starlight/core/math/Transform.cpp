@@ -2,6 +2,8 @@
 
 namespace sl {
 
+Transform::Transform() : Transform(Vec3f{ 0.0f }, Vec3f{ 1.0f }, identityMatrix) {}
+
 Transform::Transform(
   const Vec3f& position, const Vec3f& scale, const Mat4f& rotation
 ) :
@@ -29,11 +31,11 @@ Transform Transform::fromRotation(const Mat4f& rotation) {
     return Transform(Vec3f{ 0.0f }, Vec3f{ 1.0f }, rotation);
 }
 
-Vec3f Transform::getPosition() const { return m_position; }
+Vec3f& Transform::getPosition() { return m_position; }
 
-Vec3f Transform::getScale() const { return m_scale; }
+Vec3f& Transform::getScale() { return m_scale; }
 
-Mat4f Transform::getRotation() const { return m_rotation; }
+Mat4f& Transform::getRotation() { return m_rotation; }
 
 Transform& Transform::translate(const Vec3f& position) {
     m_position += position;
@@ -92,6 +94,8 @@ Mat4f Transform::getWorld() {
     if (m_parent) model = m_parent->getWorld() * model;
     return model;
 }
+
+void Transform::setAsDirty() { m_updated = true; }
 
 void Transform::calculateModelMatrix() {
     m_model = glm::scale(glm::translate(m_rotation, m_position), m_scale);

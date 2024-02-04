@@ -13,6 +13,7 @@
 #include "starlight/ui/fonts/FontAwesome.h"
 
 #include "starlight/scene/components/MeshComponent.h"
+#include "starlight/scene/components/TransformComponent.h"
 
 Application::Application(int argc, char** argv) :
     m_isRunning(false), m_update(false), m_context("Starlight Editor"),
@@ -83,6 +84,7 @@ int Application::run() {
 
     auto mesh = m_resourceManager.loadMesh("falcon");
     entity1->addComponent<sl::MeshComponent>(&(*mesh));
+    entity1->addComponent<sl::TransformComponent>();
 
     while (m_isRunning && not m_ui.shouldExit()) {
         m_context.beginFrame([&](float deltaTime) {

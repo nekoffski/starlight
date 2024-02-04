@@ -4,6 +4,7 @@
 #include "starlight/ui/fonts/FontAwesome.h"
 
 #include "starlight/scene/components/MeshComponent.h"
+#include "starlight/scene/components/TransformComponent.h"
 
 static constexpr float leftComboWidthFactor = 0.15f;
 static const sl::Vec3f selectedColor        = { 0.1f, 0.7f, 0.1f };
@@ -90,13 +91,34 @@ UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer, sl::Scene* scene) :
 
             if (entity->hasComponent<sl::MeshComponent>()) {
                 auto component = entity->getComponent<sl::MeshComponent>();
-                sl::ui::treeNode(ICON_FA_PLANE "  MeshComponent", [&]() {
-                    sl::ui::text("Component id: {}", component->id);
+                sl::ui::treeNode(ICON_FA_PLANE "  Mesh", [&]() {
                     sl::ui::text("Geometries");
                     for (auto& geometry : component->mesh->geometries) {
                         auto properties = geometry->getProperties();
                         sl::ui::text("{}", properties.name);
                     }
+                });
+            }
+            sl::ui::separator();
+            if (entity->hasComponent<sl::TransformComponent>()) {
+                auto component = entity->getComponent<sl::TransformComponent>();
+                sl::ui::treeNode(ICON_FA_STREET_VIEW "  Transform", [&]() {
+                    auto& transform = component->transform;
+                    auto& position  = transform.getPosition();
+                    auto& scale     = transform.getScale();
+
+                    bool updated = false;
+
+                    sl::ui::text("Translation");
+                    updated |= sl::ui::slider(
+                      "##Translation", position, { .min = -25.0, .max = 25.0f }
+                    );
+
+                    sl::ui::text("Scale");
+                    updated |=
+                      sl::ui::slider("##Scale", scale, { .min = 0.0, .max = 5.0f });
+
+                    if (updated) transform.setAsDirty();
                 });
             }
         } else {

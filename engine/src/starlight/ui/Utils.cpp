@@ -27,7 +27,12 @@ void treeNode(const std::string& name, Callback&& callback) {
     }
 }
 
+bool slider(const std::string& name, Vec3f& data, const Interval<float>& range) {
+    return ImGui::SliderFloat3(name.c_str(), &data[0], range.min, range.max);
+}
+
 void separator() { ImGui::Separator(); }
+void lineBreak() { ImGui::NewLine(); }
 
 float getFrameHeight() { return ImGui::GetFrameHeight(); }
 

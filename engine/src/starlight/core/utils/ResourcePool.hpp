@@ -42,8 +42,7 @@ public:
 
     void destroy(u64 id) { m_buffer[id].clear(); }
 
-    // TODO: return pointer instead?
-    T& get(u64 id) { return *m_buffer.at(id); }
+    T* get(u64 id) { return m_buffer.at(id).get(); }
     u64 getSize() const { return m_size; }
 
     const std::string getResourceName() const { return m_resourceName; }

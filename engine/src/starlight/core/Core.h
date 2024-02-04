@@ -23,6 +23,15 @@ struct Range {
     static Range aligned(u64 offset, u64 size, u64 granularity);
 };
 
+template <typename T> struct Interval {
+    T min;
+    T max;
+};
+
+using Intervalf   = Interval<float>;
+using Intervalu32 = Interval<u32>;
+using Intervalu64 = Interval<u64>;
+
 template <typename T> using Expected = tl::expected<T, SLError>;
 
 std::string_view removeExtension(std::string_view path);

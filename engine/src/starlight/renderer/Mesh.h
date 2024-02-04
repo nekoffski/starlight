@@ -8,8 +8,12 @@
 namespace sl {
 
 struct Mesh {
+    explicit Mesh();
+
+    Mat4f getModelMatrix();
+
     std::vector<Geometry*> geometries;
-    Transform transform;
+    Transform* transform;
 };
 
 }  // namespace sl

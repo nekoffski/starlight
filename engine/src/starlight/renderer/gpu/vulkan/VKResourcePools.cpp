@@ -57,7 +57,7 @@ VKTextureMap* VKResourcePools::createTextureMap(
   const TextureMap::Properties& props, Texture& texture
 ) {
     return m_textureMaps.create(
-      m_context, m_device, props, m_textures.get(texture.getId())
+      m_context, m_device, props, *m_textures.get(texture.getId())
     );
 }
 

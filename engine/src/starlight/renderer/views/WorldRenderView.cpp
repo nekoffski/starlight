@@ -78,11 +78,11 @@ void WorldRenderView::render(
           transparentGeometries.reserve(128);
 
           for (auto& mesh : packet.meshes) {
-              const auto model = mesh->transform.getWorld();
               for (const auto& geometry : mesh->geometries) {
                   // TODO: shouldn't the material be bound to mesh instead of
                   // geometry?
-                  auto material = geometry->getProperties().material;
+                  const auto& model = mesh->getModelMatrix();
+                  auto material     = geometry->getProperties().material;
 
                   if (material->isTransparent()) {
                       auto center         = model * geometry->getExtent().center;

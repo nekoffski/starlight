@@ -6,8 +6,10 @@ namespace sl {
 
 class Transform {
 public:
+    Transform();
+
     explicit Transform(
-      const Vec3f& position = Vec3f{ 0.0f }, const Vec3f& scale = Vec3f{ 1.0f },
+      const Vec3f& position, const Vec3f& scale = Vec3f{ 1.0f },
       const Mat4f& rotation = identityMatrix
     );
 
@@ -19,9 +21,9 @@ public:
     static Transform fromRotation(const Mat4f& rotation);
     static Transform fromRotation(const Vec3f& axis, const float angle);
 
-    Vec3f getPosition() const;
-    Vec3f getScale() const;
-    Mat4f getRotation() const;
+    Vec3f& getPosition();
+    Vec3f& getScale();
+    Mat4f& getRotation();
 
     Transform& scale(float scale);
     Transform& scale(const Vec3f& scale);
@@ -35,6 +37,8 @@ public:
 
     Mat4f getModel();
     Mat4f getWorld();
+
+    void setAsDirty();
 
 private:
     void calculateModelMatrix();

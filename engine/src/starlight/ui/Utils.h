@@ -32,6 +32,9 @@ bool text(const std::string& formatString, Args&&... args) {
     return ImGui::IsItemClicked();
 }
 
+bool slider(const std::string& name, Vec3f& data, const Interval<float>& range);
+
+void lineBreak();
 void separator();
 
 float getFrameHeight();

@@ -41,9 +41,9 @@ TEST_F(
   ResourcePoolTests, givenResourcePool_whenGettingAdding_shouldReturnCorrectObject
 ) {
     auto itemPointer = pool.create(x, y);
-    auto& item       = pool.get(itemPointer->id);
+    auto item        = pool.get(itemPointer->id);
 
-    EXPECT_EQ(itemPointer, &item);
+    EXPECT_EQ(itemPointer, item);
 }
 
 TEST_F(ResourcePoolTests, givenResourcePool_whenDestroyingItem_shouldDestroy) {
