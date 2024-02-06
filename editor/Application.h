@@ -17,7 +17,7 @@
 
 #include "starlight/scene/Scene.h"
 
-#include "UI.h"
+#include "ui/UI.h"
 
 class Application {
 public:

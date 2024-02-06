@@ -27,7 +27,7 @@ RenderPacket Scene::getRenderPacket() {
           auto mesh   = component->mesh;
           auto entity = m_entities.get(component->entityId);
           if (entity->hasComponent<TransformComponent>()) {
-              // TODO: consider bounding it once on adding Transform/Mesh components
+              // TODO: consider binding it once on adding Transform/Mesh components
               auto& transform =
                 entity->getComponent<TransformComponent>()->transform;
               mesh->transform = &transform;

@@ -31,11 +31,11 @@ Transform Transform::fromRotation(const Mat4f& rotation) {
     return Transform(Vec3f{ 0.0f }, Vec3f{ 1.0f }, rotation);
 }
 
-Vec3f& Transform::getPosition() { return m_position; }
+Vec3f Transform::getPosition() const { return m_position; }
 
-Vec3f& Transform::getScale() { return m_scale; }
+Vec3f Transform::getScale() const { return m_scale; }
 
-Mat4f& Transform::getRotation() { return m_rotation; }
+Mat4f Transform::getRotation() const { return m_rotation; }
 
 Transform& Transform::translate(const Vec3f& position) {
     m_position += position;
@@ -98,7 +98,8 @@ Mat4f Transform::getWorld() {
 void Transform::setAsDirty() { m_updated = true; }
 
 void Transform::calculateModelMatrix() {
-    m_model = glm::scale(glm::translate(m_rotation, m_position), m_scale);
+    m_model =
+      glm::scale(m_rotation * glm::translate(m_rotation, m_position), m_scale);
 }
 
 }  // namespace sl

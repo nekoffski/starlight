@@ -27,8 +27,10 @@ void treeNode(const std::string& name, Callback&& callback) {
     }
 }
 
-bool slider(const std::string& name, Vec3f& data, const Interval<float>& range) {
-    return ImGui::SliderFloat3(name.c_str(), &data[0], range.min, range.max);
+bool slider(const std::string& name, Vec3f& data, const StepInterval<float>& range) {
+    return ImGui::DragFloat3(
+      name.c_str(), &data[0], range.step, range.min, range.max
+    );
 }
 
 void separator() { ImGui::Separator(); }

@@ -28,6 +28,12 @@ template <typename T> struct Interval {
     T max;
 };
 
+template <typename T> struct StepInterval {
+    T min;
+    T max;
+    T step;
+};
+
 using Intervalf   = Interval<float>;
 using Intervalu32 = Interval<u32>;
 using Intervalu64 = Interval<u64>;

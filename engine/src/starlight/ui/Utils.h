@@ -32,7 +32,7 @@ bool text(const std::string& formatString, Args&&... args) {
     return ImGui::IsItemClicked();
 }
 
-bool slider(const std::string& name, Vec3f& data, const Interval<float>& range);
+bool slider(const std::string& name, Vec3f& data, const StepInterval<float>& range);
 
 void lineBreak();
 void separator();

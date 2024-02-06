@@ -21,9 +21,9 @@ public:
     static Transform fromRotation(const Mat4f& rotation);
     static Transform fromRotation(const Vec3f& axis, const float angle);
 
-    Vec3f& getPosition();
-    Vec3f& getScale();
-    Mat4f& getRotation();
+    Vec3f getPosition() const;
+    Vec3f getScale() const;
+    Mat4f getRotation() const;
 
     Transform& scale(float scale);
     Transform& scale(const Vec3f& scale);

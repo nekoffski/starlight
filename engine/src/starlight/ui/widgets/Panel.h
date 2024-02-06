@@ -1,10 +1,10 @@
 #pragma once
 
-#include "starlight/ui/Widget.h"
+#include "starlight/ui/Core.h"
 
 namespace sl::ui {
 
-class Panel : public Widget {
+class Panel {
 public:
     struct Properties {
         Vec2f position;
@@ -14,7 +14,7 @@ public:
     explicit Panel(
       const std::string& name, const Properties& props, Callback&& callback
     );
-    void render() override;
+    void render();
 
     void setSize(const Vec2f& size);
     void setPosition(const Vec2f& position);
@@ -25,7 +25,7 @@ private:
     Callback m_callback;
 };
 
-class PanelCombo : public Widget {
+class PanelCombo {
 public:
     struct Properties {
         Vec2f position;
@@ -35,7 +35,7 @@ public:
 
     explicit PanelCombo(const std::string& name, const Properties& props);
 
-    void render() override;
+    void render();
 
     PanelCombo& addPanel(const std::string& name, Callback&& callback);
 

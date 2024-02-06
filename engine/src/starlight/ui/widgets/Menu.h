@@ -3,12 +3,12 @@
 #include <optional>
 #include <vector>
 
-#include "starlight/ui/Widget.h"
+#include "starlight/ui/Core.h"
 #include "starlight/core/utils/Log.h"
 
 namespace sl::ui {
 
-class Menu : public Widget {
+class Menu {
 public:
     struct Item {
         std::string name;
@@ -22,7 +22,7 @@ public:
     Menu& addItem(
       const std::string& name, const std::string& shortcut, Callback&& callback
     );
-    void render() override;
+    void render();
 
     const std::string& getName() const;
 
@@ -31,12 +31,12 @@ private:
     std::vector<Item> m_items;
 };
 
-class MainMenuBar : public Widget {
+class MainMenuBar {
 public:
     explicit MainMenuBar();
 
     Menu& addMenu(const std::string& name);
-    void render() override;
+    void render();
 
 private:
     inline static bool sCreated = false;

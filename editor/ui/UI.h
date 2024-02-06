@@ -9,6 +9,12 @@
 
 #include "starlight/scene/Scene.h"
 
+#include "ScenePanel.h"
+#include "InspectorPanel.h"
+#include "ResourcesPanel.h"
+
+#include "UIState.h"
+
 class UI {
 public:
     explicit UI(
@@ -27,10 +33,16 @@ private:
     sl::Scene* m_scene;
 
     sl::ui::MainMenuBar m_mainMenu;
+
     sl::ui::PanelCombo m_leftCombo;
     sl::ui::PanelCombo m_rightCombo;
+    sl::ui::PanelCombo m_bottomCombo;
 
-    std::optional<sl::u64> m_selectedEntityId;
+    UIState m_state;
+
+    ScenePanel m_scenePanel;
+    InspectorPanel m_inspectorPanel;
+    ResourcesPanel m_resourcesPanel;
 
     bool m_shouldExit;
 };

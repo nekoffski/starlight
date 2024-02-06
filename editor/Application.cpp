@@ -65,7 +65,7 @@ int Application::run() {
     sl::WorldRenderView worldView{ m_activeCamera, materialShader };
 
     auto skyboxShader = m_resourceManager.loadShader("Builtin.Shader.Skybox");
-    auto skybox       = m_resourceManager.loadSkybox("skybox/skybox", *skyboxShader);
+    auto skybox = m_resourceManager.loadSkybox("skybox2/skybox", *skyboxShader);
 
     ASSERT(skybox, "Could not load skybox");
     sl::SkyboxRenderView skyboxView{ m_activeCamera, skyboxShader, skybox.get() };
