@@ -2,15 +2,15 @@
 
 #include "starlight/core/Core.h"
 
-#include "starlight/renderer/Mesh.h"
+#include "starlight/renderer/Model.h"
 
 namespace sl {
 
-struct MeshComponent {
+struct ModelComponent {
     u64 id;
     u64 entityId;
 
-    Mesh* mesh;
+    Model* model;
 };
 
 }  // namespace sl

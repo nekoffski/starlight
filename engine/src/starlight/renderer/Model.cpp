@@ -1,10 +1,10 @@
-#include "Mesh.h"
+#include "Model.h"
 
 namespace sl {
 
-Mesh::Mesh() : transform(nullptr) {}
+Model::Model() : transform(nullptr) {}
 
-Mat4f Mesh::getModelMatrix() {
+Mat4f Model::getModelMatrix() {
     return transform ? transform->getWorld() : identityMatrix;
 }
 

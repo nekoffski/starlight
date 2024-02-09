@@ -1,12 +1,12 @@
 #include "Scene.h"
 
-#include "components/MeshComponent.h"
+#include "components/ModelComponent.h"
 #include "components/TransformComponent.h"
 
 namespace sl {
 
 Scene::Scene(u32 maxEntities) : m_entities("Entities", maxEntities) {
-    m_componentMap.registerContainer<MeshComponent>();
+    m_componentMap.registerContainer<ModelComponent>();
     m_componentMap.registerContainer<TransformComponent>();
 }
 
@@ -20,19 +20,19 @@ Entity* Scene::getEntity(u64 id) { return m_entities.get(id); }
 
 RenderPacket Scene::getRenderPacket() {
     RenderPacket packet{};
-    packet.meshes.reserve(128);
+    packet.models.reserve(128);
 
-    m_componentMap.getComponents<MeshComponent>()->forEach(
-      [&](MeshComponent* component) -> void {
-          auto mesh   = component->mesh;
+    m_componentMap.getComponents<ModelComponent>()->forEach(
+      [&](ModelComponent* component) -> void {
+          auto model  = component->model;
           auto entity = m_entities.get(component->entityId);
           if (entity->hasComponent<TransformComponent>()) {
-              // TODO: consider binding it once on adding Transform/Mesh components
+              // TODO: consider binding it once on adding Transform/Model components
               auto& transform =
                 entity->getComponent<TransformComponent>()->transform;
-              mesh->transform = &transform;
+              model->transform = &transform;
           }
-          packet.meshes.push_back(mesh);
+          packet.models.push_back(model);
       }
     );
     return packet;

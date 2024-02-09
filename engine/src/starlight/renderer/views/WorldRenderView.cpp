@@ -77,21 +77,21 @@ void WorldRenderView::render(
           geometries.reserve(256);
           transparentGeometries.reserve(128);
 
-          for (auto& mesh : packet.meshes) {
-              for (const auto& geometry : mesh->geometries) {
-                  // TODO: shouldn't the material be bound to mesh instead of
+          for (auto& model : packet.models) {
+              for (const auto& geometry : model->geometries) {
+                  // TODO: shouldn't the material be bound to model instead of
                   // geometry?
-                  const auto& model = mesh->getModelMatrix();
-                  auto material     = geometry->getProperties().material;
+                  const auto& modelMatrix = model->getModelMatrix();
+                  auto material           = geometry->getProperties().material;
 
                   if (material->isTransparent()) {
-                      auto center         = model * geometry->getExtent().center;
+                      auto center = modelMatrix * geometry->getExtent().center;
                       auto cameraDistance = glm::distance2(cameraPosition, center);
                       transparentGeometries.emplace_back(
-                        geometry, material, model, cameraDistance
+                        geometry, material, modelMatrix, cameraDistance
                       );
                   } else {
-                      geometries.emplace_back(geometry, material, model);
+                      geometries.emplace_back(geometry, material, modelMatrix);
                   }
               }
           }

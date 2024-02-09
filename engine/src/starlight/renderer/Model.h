@@ -7,8 +7,8 @@
 
 namespace sl {
 
-struct Mesh {
-    explicit Mesh();
+struct Model {
+    explicit Model();
 
     Mat4f getModelMatrix();
 

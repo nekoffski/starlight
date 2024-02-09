@@ -12,7 +12,7 @@
 #include "starlight/renderer/gpu/Shader.h"
 #include "starlight/renderer/gpu/Geometry.h"
 #include "starlight/renderer/Material.h"
-#include "starlight/renderer/Mesh.h"
+#include "starlight/renderer/Model.h"
 #include "starlight/renderer/Skybox.h"
 
 #include "starlight/renderer/gpu/ResourcePools.h"
@@ -39,7 +39,7 @@ public:
     Material* getDefaultMaterial();
 
     UniqPtr<Skybox> loadSkybox(const std::string& path, Shader& skyboxShader);
-    std::optional<Mesh> loadMesh(const std::string& path);
+    std::optional<Model> loadModel(const std::string& path);
 
     void destroyMaterial(const std::string& name);
 

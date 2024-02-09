@@ -6,7 +6,7 @@
 #include "RenderPacket.h"
 #include "RenderMode.h"
 #include "FrameStatistics.h"
-#include "Mesh.h"
+#include "Model.h"
 
 #include "camera/Camera.h"
 #include "views/RenderView.h"

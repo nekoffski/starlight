@@ -11,7 +11,6 @@
 #include "starlight/renderer/camera/FirstPersonCamera.h"
 #include "starlight/renderer/RendererFrontend.h"
 #include "starlight/renderer/views/RenderView.h"
-#include "starlight/renderer/Mesh.h"
 
 #include "starlight/resource/ResourceManager.h"
 

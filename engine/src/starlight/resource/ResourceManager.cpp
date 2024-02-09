@@ -1,6 +1,6 @@
 #include "ResourceManager.h"
 
-#include "resources/MeshConfig.h"
+#include "resources/ModelConfig.h"
 
 namespace sl {
 
@@ -63,26 +63,26 @@ UniqPtr<Skybox> ResourceManager::loadSkybox(
     return createUniqPtr<Skybox>(cubeMap, m_skyboxGeometry, skyboxShader);
 }
 
-std::optional<Mesh> ResourceManager::loadMesh(const std::string& path) {
-    auto config = MeshConfig::loadOBJ(path);
+std::optional<Model> ResourceManager::loadModel(const std::string& path) {
+    auto config = ModelConfig::loadOBJ(path);
 
     if (not config) {
-        LOG_ERROR("Could not load mesh: '{}'", path);
+        LOG_ERROR("Could not load model: '{}'", path);
         return {};
     }
 
     for (auto& material : config->materials) loadMaterial(material);
 
-    Mesh mesh;
-    mesh.geometries.reserve(config->geometries.size());
+    Model model;
+    model.geometries.reserve(config->geometries.size());
 
     std::transform(
       config->geometries.begin(), config->geometries.end(),
-      std::back_inserter(mesh.geometries),
+      std::back_inserter(model.geometries),
       [&](GeometryConfig3D& config) -> Geometry* { return loadGeometry(config); }
     );
 
-    return mesh;
+    return model;
 }
 
 void ResourceManager::destroyMaterial(const std::string& name) {

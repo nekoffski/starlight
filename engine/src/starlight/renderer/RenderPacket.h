@@ -2,12 +2,12 @@
 
 #include <span>
 
-#include "Mesh.h"
+#include "Model.h"
 
 namespace sl {
 
 struct RenderPacket {
-    std::vector<Mesh*> meshes;
+    std::vector<Model*> models;
 };
 
 }  // namespace sl

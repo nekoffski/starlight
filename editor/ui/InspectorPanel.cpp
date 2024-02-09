@@ -40,11 +40,11 @@ void InspectorPanel::renderEntityUI(sl::u64 entityId) {
     sl::ui::text("Entity: {}/{}", entity->getId(), entity->getName());
     sl::ui::separator();
 
-    if (entity->hasComponent<sl::MeshComponent>()) {
-        auto component = entity->getComponent<sl::MeshComponent>();
+    if (entity->hasComponent<sl::ModelComponent>()) {
+        auto component = entity->getComponent<sl::ModelComponent>();
         sl::ui::treeNode(ICON_FA_PLANE "  Mesh", [&]() {
             sl::ui::text("Geometries");
-            for (auto& geometry : component->mesh->geometries) {
+            for (auto& geometry : component->model->geometries) {
                 auto properties = geometry->getProperties();
                 sl::ui::text("{}", properties.name);
             }

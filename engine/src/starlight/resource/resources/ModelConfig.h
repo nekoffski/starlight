@@ -10,11 +10,11 @@
 
 namespace sl {
 
-struct MeshConfig {
+struct ModelConfig {
     inline static const std::string baseModelsPath =
       SL_ASSETS_PATH + std::string("/models");
 
-    static std::optional<MeshConfig> loadOBJ(
+    static std::optional<ModelConfig> loadOBJ(
       const std::string& name, const std::string& modelsPath = baseModelsPath,
       const FileSystem& fs = fileSystem
     );
