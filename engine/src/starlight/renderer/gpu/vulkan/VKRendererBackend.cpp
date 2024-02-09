@@ -54,8 +54,8 @@ void VKRendererBackend::freeDataRange(
     buffer.free(size, offset);
 }
 
-void VKRendererBackend::drawGeometry(const Geometry& geometry) {
-    const auto& dataDescription = geometry.getDataDescription();
+void VKRendererBackend::drawMesh(const Mesh& mesh) {
+    const auto& dataDescription = mesh.getDataDescription();
     auto& commandBuffer         = m_commandBuffers[m_imageIndex];
 
     VkDeviceSize offsets[1] = { dataDescription.vertexBufferOffset };

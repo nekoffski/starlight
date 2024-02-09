@@ -3,7 +3,7 @@
 namespace sl {
 
 class CommandBuffer;
-class Geometry;
+class Mesh;
 class RendererBackend;
 class RendererBackendProxy;
 class RenderPass;

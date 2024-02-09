@@ -8,7 +8,7 @@
 #include "starlight/core/math/Vertex.h"
 #include "starlight/core/math/Vertex.h"
 
-#include "starlight/renderer/gpu/Geometry.h"
+#include "starlight/renderer/gpu/Mesh.h"
 #include "starlight/renderer/Material.h"
 #include "starlight/renderer/gpu/Texture.h"
 #include "starlight/renderer/gpu/Shader.h"
@@ -29,7 +29,7 @@ struct RendererBackend {
     virtual bool beginFrame(float deltaTime) = 0;
     virtual bool endFrame(float deltaTime)   = 0;
 
-    virtual void drawGeometry(const Geometry& geometry) = 0;
+    virtual void drawMesh(const Mesh& mesh) = 0;
 
     virtual void onViewportResize(uint32_t width, uint32_t height) = 0;
 

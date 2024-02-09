@@ -1,16 +1,16 @@
-#include "VKGeometry.h"
+#include "VKMesh.h"
 
 namespace sl::vk {
 
-VKGeometry::VKGeometry(
+VKMesh::VKMesh(
   u32 id, VKDevice* device, VKContext* context, VKBuffer& vertexBuffer,
   VKBuffer& indexBuffer, const Properties& props, const Data& data
 ) :
-    Geometry(props, data, id),
+    Mesh(props, data, id),
     m_device(device), m_context(context) {
-    LOG_TRACE("Creating Geometry");
+    LOG_TRACE("Creating Mesh");
     LOG_DEBUG(
-      "Geometry data vertexSize={}, vertexCount={}, "
+      "Mesh data vertexSize={}, vertexCount={}, "
       "indicesCount={}, vertexDataPtr={}",
       data.vertexSize, data.vertexCount, data.indices.size(), data.vertexData
     );
@@ -23,16 +23,16 @@ VKGeometry::VKGeometry(
     m_dataDescription.indexBufferOffset  = 0;
 
     upload(vertexBuffer, indexBuffer, data);
-    LOG_TRACE("Geometry created");
+    LOG_TRACE("Mesh created");
 }
 
-VKGeometry::~VKGeometry() {
-    LOG_TRACE("Destroying geometry");
+VKMesh::~VKMesh() {
+    LOG_TRACE("Destroying mesh");
     // TODO: fill
     m_device->waitIdle();
 }
 
-u64 VKGeometry::uploadDataRange(
+u64 VKMesh::uploadDataRange(
   VkCommandPool pool, VkFence fence, VkQueue queue, VKBuffer& outBuffer, u64 size,
   const void* data
 ) {
@@ -55,7 +55,7 @@ u64 VKGeometry::uploadDataRange(
     return offset;
 }
 
-void VKGeometry::upload(
+void VKMesh::upload(
   VKBuffer& vertexBuffer, VKBuffer& indexBuffer, const Data& data
 ) {
     auto pool  = m_device->getGraphicsCommandPool();

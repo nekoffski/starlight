@@ -8,10 +8,10 @@ ResourceManager::ResourceManager(ResourcePools& resourcePools) :
     m_resourcePools(resourcePools), m_textureManager(resourcePools),
     m_shaderManager(resourcePools, m_textureManager),
     m_materialManager(m_shaderManager, m_textureManager, resourcePools),
-    m_geometryManager(resourcePools, m_materialManager) {
+    m_meshManager(resourcePools, m_materialManager) {
     m_materialManager.createDefaultMaterial();
-    m_skyboxGeometry = loadGeometry(GeometryConfig3D::generateCube(CubeProperties{
-      10.0f, 10.0f, 10.0f, 1, 1, "Internal.Geometry.SkyboxCube" }));
+    m_skyboxMesh = loadMesh(MeshConfig3D::generateCube(CubeProperties{
+      10.0f, 10.0f, 10.0f, 1, 1, "Internal.Mesh.SkyboxCube" }));
 }
 
 Shader* ResourceManager::loadShader(const std::string& name) {
@@ -60,7 +60,7 @@ UniqPtr<Skybox> ResourceManager::loadSkybox(
     TextureMap::Properties cubeMapProps{ TextureMap::Use::cubeMap };
     auto cubeTexture = loadCubeTexture(name);
     auto cubeMap     = m_resourcePools.createTextureMap(cubeMapProps, *cubeTexture);
-    return createUniqPtr<Skybox>(cubeMap, m_skyboxGeometry, skyboxShader);
+    return createUniqPtr<Skybox>(cubeMap, m_skyboxMesh, skyboxShader);
 }
 
 std::optional<Model> ResourceManager::loadModel(const std::string& path) {
@@ -74,12 +74,11 @@ std::optional<Model> ResourceManager::loadModel(const std::string& path) {
     for (auto& material : config->materials) loadMaterial(material);
 
     Model model;
-    model.geometries.reserve(config->geometries.size());
+    model.meshes.reserve(config->meshes.size());
 
     std::transform(
-      config->geometries.begin(), config->geometries.end(),
-      std::back_inserter(model.geometries),
-      [&](GeometryConfig3D& config) -> Geometry* { return loadGeometry(config); }
+      config->meshes.begin(), config->meshes.end(), std::back_inserter(model.meshes),
+      [&](MeshConfig3D& config) -> Mesh* { return loadMesh(config); }
     );
 
     return model;
@@ -89,18 +88,12 @@ void ResourceManager::destroyMaterial(const std::string& name) {
     m_materialManager.destroy(name);
 }
 
-Geometry* ResourceManager::acquireGeometry(uint32_t id) {
-    return m_geometryManager.acquire(id);
-}
+Mesh* ResourceManager::acquireMesh(uint32_t id) { return m_meshManager.acquire(id); }
 
-void ResourceManager::destroyGeometry(uint32_t id) { m_geometryManager.destroy(id); }
+void ResourceManager::destroyMesh(uint32_t id) { m_meshManager.destroy(id); }
 
-Geometry* ResourceManager::getDefaultGeometry3D() {
-    return m_geometryManager.getDefault3D();
-}
+Mesh* ResourceManager::getDefaultMesh3D() { return m_meshManager.getDefault3D(); }
 
-Geometry* ResourceManager::getDefaultGeometry2D() {
-    return m_geometryManager.getDefault2D();
-}
+Mesh* ResourceManager::getDefaultMesh2D() { return m_meshManager.getDefault2D(); }
 
 }  // namespace sl

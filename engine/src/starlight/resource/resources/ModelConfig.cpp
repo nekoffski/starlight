@@ -140,7 +140,7 @@ void ModelProcessor::processNode(const aiNode* node) {
       "Processing assimp nod;, meshes={}, children={}", node->mNumMeshes,
       node->mNumChildren
     );
-    m_config.geometries.reserve(node->mNumMeshes);
+    m_config.meshes.reserve(node->mNumMeshes);
     for (int i = 0; i < node->mNumMeshes; ++i)
         processModel(m_root->mMeshes[node->mMeshes[i]], i);
     for (int i = 0; i < node->mNumChildren; ++i) processNode(node->mChildren[i]);
@@ -160,7 +160,7 @@ void ModelProcessor::processModel(const aiMesh* model, int index) {
       model->mNumVertices, model->mNumFaces, hasNormals, hasTangents, materialName
     );
 
-    GeometryConfig3D config;
+    MeshConfig3D config;
     config.vertices.reserve(model->mNumVertices);
     config.materialName = materialName;
     config.name         = fmt::format("{}_mesh_{}", m_name, index);
@@ -172,7 +172,7 @@ void ModelProcessor::processModel(const aiMesh* model, int index) {
     if (not hasNormals) config.generateNormals();
     if (not hasTangents) config.generateTangents();
 
-    m_config.geometries.push_back(std::move(config));
+    m_config.meshes.push_back(std::move(config));
 }
 
 void ModelProcessor::processMaterial(aiMaterial* material) {

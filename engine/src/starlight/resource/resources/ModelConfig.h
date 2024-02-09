@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "starlight/core/utils/FileSystem.h"
-#include "GeometryConfig.h"
+#include "MeshConfig.h"
 #include "MaterialConfig.h"
 
 namespace sl {
@@ -20,7 +20,7 @@ struct ModelConfig {
     );
 
     std::vector<MaterialConfig> materials;
-    std::vector<GeometryConfig3D> geometries;
+    std::vector<MeshConfig3D> meshes;
 };
 
 }  // namespace sl

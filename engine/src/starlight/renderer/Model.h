@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "starlight/core/math/Transform.h"
-#include "gpu/Geometry.h"
+#include "gpu/Mesh.h"
 
 namespace sl {
 
@@ -12,7 +12,7 @@ struct Model {
 
     Mat4f getModelMatrix();
 
-    std::vector<Geometry*> geometries;
+    std::vector<Mesh*> meshes;
     Transform* transform;
 };
 

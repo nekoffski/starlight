@@ -1,8 +1,8 @@
-#include "GeometryManager.h"
+#include "MeshManager.h"
 
 namespace sl {
 
-GeometryManager::GeometryManager(
+MeshManager::MeshManager(
   ResourcePools& resourcePools, MaterialManager& materialManager
 ) :
     m_resourcePools(resourcePools),
@@ -10,42 +10,39 @@ GeometryManager::GeometryManager(
     createDefaultGeometries();
 }
 
-GeometryManager::~GeometryManager() { destroyAll(); }
+MeshManager::~MeshManager() { destroyAll(); }
 
-Geometry* GeometryManager::acquire(u32 id) {
-    if (auto geometry = m_geometries.find(id); geometry != m_geometries.end())
-        return geometry->second;
-    LOG_WARN("Geometry with id='{}' not found", id);
+Mesh* MeshManager::acquire(u32 id) {
+    if (auto mesh = m_meshes.find(id); mesh != m_meshes.end()) return mesh->second;
+    LOG_WARN("Mesh with id='{}' not found", id);
     return nullptr;
 }
 
-void GeometryManager::destroy(uint32_t id) {
-    if (auto geometry = m_geometries.find(id); geometry == m_geometries.end()) {
-        LOG_WARN(
-          "Trying to destroy geometry '{}' that couldn't be found", geometry->first
-        );
+void MeshManager::destroy(uint32_t id) {
+    if (auto mesh = m_meshes.find(id); mesh == m_meshes.end()) {
+        LOG_WARN("Trying to destroy mesh '{}' that couldn't be found", mesh->first);
         return;
     } else {
-        m_resourcePools.destroyGeometry(*geometry->second);
+        m_resourcePools.destroyMesh(*mesh->second);
     }
 }
 
-void GeometryManager::destroyAll() {
-    LOG_TRACE("Destroying all geometries");
-    for (auto& geometry : m_geometries | std::views::values)
-        m_resourcePools.destroyGeometry(*geometry);
-    m_geometries.clear();
+void MeshManager::destroyAll() {
+    LOG_TRACE("Destroying all meshes");
+    for (auto& mesh : m_meshes | std::views::values)
+        m_resourcePools.destroyMesh(*mesh);
+    m_meshes.clear();
 }
 
-Geometry* GeometryManager::getDefault3D() { return m_defaultGeometry3D; }
-Geometry* GeometryManager::getDefault2D() { return m_defaultGeometry2D; }
+Mesh* MeshManager::getDefault3D() { return m_defaultMesh3D; }
+Mesh* MeshManager::getDefault2D() { return m_defaultMesh2D; }
 
-void GeometryManager::createDefaultGeometries() {
+void MeshManager::createDefaultGeometries() {
     // 3D
     constexpr float scale = 10.0f;
 
     const auto create3D = [&]() {
-        GeometryConfig3D config;
+        MeshConfig3D config;
 
         auto& vertices = config.vertices;
         vertices.resize(4);
@@ -64,18 +61,18 @@ void GeometryManager::createDefaultGeometries() {
 
         config.indices = { 0, 1, 2, 0, 3, 1 };
 
-        Geometry::Properties props{
-            "default-3d-geometry", m_materialManager.getDefaultMaterial()
+        Mesh::Properties props{
+            "default-3d-mesh", m_materialManager.getDefaultMaterial()
         };
-        return m_resourcePools.createGeometry(
+        return m_resourcePools.createMesh(
           props, vertices, config.indices, config.calculateExtent()
         );
     };
-    m_defaultGeometry3D = create3D();
+    m_defaultMesh3D = create3D();
 
     // 2D
     const auto create2D = [&]() {
-        GeometryConfig2D config;
+        MeshConfig2D config;
 
         auto& vertices = config.vertices;
         vertices.resize(4);
@@ -94,14 +91,14 @@ void GeometryManager::createDefaultGeometries() {
 
         config.indices = { 2, 1, 0, 3, 0, 1 };
 
-        Geometry::Properties props{
-            "default-2d-geometry", m_materialManager.getDefaultMaterial()
+        Mesh::Properties props{
+            "default-2d-mesh", m_materialManager.getDefaultMaterial()
         };
-        return m_resourcePools.createGeometry(
+        return m_resourcePools.createMesh(
           props, vertices, config.indices, config.calculateExtent()
         );
     };
-    m_defaultGeometry2D = create2D();
+    m_defaultMesh2D = create2D();
 }
 
 }  // namespace sl

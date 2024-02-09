@@ -66,7 +66,7 @@ void SkyboxRenderView::render(
                 proxy.set("cubeTexture", m_skybox->cubeMap);
             }
           );
-          backendProxy.drawGeometry(*m_skybox->geometry);
+          backendProxy.drawMesh(*m_skybox->mesh);
       }
     );
 }

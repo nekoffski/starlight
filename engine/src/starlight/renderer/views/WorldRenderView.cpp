@@ -45,8 +45,8 @@ void WorldRenderView::init(
     LOG_TRACE("WorldRenderView initialized");
 }
 
-struct GeometryRenderData {
-    Geometry* geometry;
+struct MeshRenderData {
+    Mesh* mesh;
     Material* material;
     Mat4f modelMatrix;
     float cameraDistance;
@@ -72,26 +72,26 @@ void WorldRenderView::render(
               proxy.set("renderMode", static_cast<int>(properties.renderMode));
           });
 
-          std::vector<GeometryRenderData> geometries;
-          std::vector<GeometryRenderData> transparentGeometries;
-          geometries.reserve(256);
+          std::vector<MeshRenderData> meshes;
+          std::vector<MeshRenderData> transparentGeometries;
+          meshes.reserve(256);
           transparentGeometries.reserve(128);
 
           for (auto& model : packet.models) {
-              for (const auto& geometry : model->geometries) {
+              for (const auto& mesh : model->meshes) {
                   // TODO: shouldn't the material be bound to model instead of
-                  // geometry?
+                  // mesh?
                   const auto& modelMatrix = model->getModelMatrix();
-                  auto material           = geometry->getProperties().material;
+                  auto material           = mesh->getProperties().material;
 
                   if (material->isTransparent()) {
-                      auto center = modelMatrix * geometry->getExtent().center;
+                      auto center         = modelMatrix * mesh->getExtent().center;
                       auto cameraDistance = glm::distance2(cameraPosition, center);
                       transparentGeometries.emplace_back(
-                        geometry, material, modelMatrix, cameraDistance
+                        mesh, material, modelMatrix, cameraDistance
                       );
                   } else {
-                      geometries.emplace_back(geometry, material, modelMatrix);
+                      meshes.emplace_back(mesh, material, modelMatrix);
                   }
               }
           }
@@ -104,17 +104,17 @@ void WorldRenderView::render(
           );
           std::move(
             transparentGeometries.begin(), transparentGeometries.end(),
-            std::back_inserter(geometries)
+            std::back_inserter(meshes)
           );
           transparentGeometries.clear();
 
-          for (auto& [geometry, material, model, _] : geometries) {
+          for (auto& [mesh, material, model, _] : meshes) {
               m_shader->setLocalUniforms([&](Shader::UniformProxy& proxy) {
                   proxy.set("model", model);
               });
 
               material->applyUniforms(properties.frameNumber);
-              backendProxy.drawGeometry(*geometry);
+              backendProxy.drawMesh(*mesh);
           }
       }
     );

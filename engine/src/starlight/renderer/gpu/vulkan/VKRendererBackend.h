@@ -18,7 +18,7 @@
 
 #include "starlight/renderer/gpu/Shader.h"
 
-#include "VKGeometry.h"
+#include "VKMesh.h"
 #include "VKPipeline.h"
 #include "VKSemaphore.h"
 #include "VKTexture.h"
@@ -48,7 +48,7 @@ public:
     bool beginFrame(float deltaTime) override;
     bool endFrame(float deltaTime) override;
 
-    void drawGeometry(const Geometry& geometry) override;
+    void drawMesh(const Mesh& mesh) override;
     void onViewportResize(u32 width, u32 height) override;
 
     // resources

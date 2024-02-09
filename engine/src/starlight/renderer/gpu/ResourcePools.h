@@ -4,7 +4,7 @@
 
 #include "starlight/renderer/gpu/Shader.h"
 #include "starlight/renderer/gpu/Texture.h"
-#include "starlight/renderer/gpu/Geometry.h"
+#include "starlight/renderer/gpu/Mesh.h"
 #include "starlight/renderer/gpu/RenderPass.h"
 #include "starlight/renderer/gpu/RenderTarget.h"
 
@@ -13,15 +13,15 @@
 namespace sl {
 
 struct ResourcePools {
-    virtual Geometry* createGeometry(
-      const Geometry::Properties& props, std::span<const Vertex3> vertices,
+    virtual Mesh* createMesh(
+      const Mesh::Properties& props, std::span<const Vertex3> vertices,
       std::span<const uint32_t> indices, const Extent3& extent
     ) = 0;
-    virtual Geometry* createGeometry(
-      const Geometry::Properties& props, std::span<const Vertex2> vertices,
+    virtual Mesh* createMesh(
+      const Mesh::Properties& props, std::span<const Vertex2> vertices,
       std::span<const uint32_t> indices, const Extent2& extent
-    )                                                = 0;
-    virtual void destroyGeometry(Geometry& geometry) = 0;
+    )                                    = 0;
+    virtual void destroyMesh(Mesh& mesh) = 0;
 
     virtual Texture* createTexture(
       const Texture::Properties& props, const std::span<u8> pixels

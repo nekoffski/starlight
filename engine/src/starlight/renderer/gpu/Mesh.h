@@ -8,7 +8,7 @@
 
 namespace sl {
 
-class Geometry {
+class Mesh {
 public:
     struct Properties {
         std::string name;
@@ -36,7 +36,7 @@ public:
         u32 verticesTotalSize() const { return vertexCount * vertexElementSize; }
     };
 
-    virtual ~Geometry() = default;
+    virtual ~Mesh() = default;
 
     const DataDescription& getDataDescription() const;
     const Properties& getProperties() const;
@@ -45,7 +45,7 @@ public:
     u32 getId() const;
 
 protected:
-    explicit Geometry(const Properties& props, const Data& data, u32 id);
+    explicit Mesh(const Properties& props, const Data& data, u32 id);
 
     u32 m_id;
 

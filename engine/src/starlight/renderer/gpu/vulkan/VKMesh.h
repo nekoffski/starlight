@@ -4,21 +4,21 @@
 
 #include "VKDevice.h"
 #include "VKBuffer.h"
-#include "starlight/renderer/gpu/Geometry.h"
+#include "starlight/renderer/gpu/Mesh.h"
 
 namespace sl::vk {
 
-static constexpr int vulkanMaxGeometryCount = 4096;
+static constexpr int vulkanMaxMeshCount = 4096;
 
-class VKGeometry : public Geometry {
+class VKMesh : public Mesh {
 public:
     struct BufferData {};
 
-    explicit VKGeometry(
+    explicit VKMesh(
       u32 id, VKDevice* device, VKContext* context, VKBuffer& vertexBuffer,
       VKBuffer& indexBuffer, const Properties& props, const Data& data
     );
-    ~VKGeometry();
+    ~VKMesh();
 
 private:
     void upload(VKBuffer& vertexBuffer, VKBuffer& indexBuffer, const Data& data);

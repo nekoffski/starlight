@@ -13,7 +13,7 @@
 namespace sl {
 namespace detail {
 
-struct GeometryConfigBase {
+struct MeshConfigBase {
     std::string name;
     std::string materialName;
     std::vector<u32> indices;
@@ -69,11 +69,11 @@ struct CubeProperties {
     std::string_view materialName;
 };
 
-struct GeometryConfig3D final : public detail::GeometryConfigBase {
+struct MeshConfig3D final : public detail::MeshConfigBase {
     std::vector<Vertex3> vertices;
 
-    static GeometryConfig3D generatePlane(const PlaneProperties& props);
-    static GeometryConfig3D generateCube(const CubeProperties& props);
+    static MeshConfig3D generatePlane(const PlaneProperties& props);
+    static MeshConfig3D generateCube(const CubeProperties& props);
 
     Extent3 calculateExtent() const {
         return detail::calculateExtent<Extent3, Vertex3, Vec3f>(vertices);
@@ -83,7 +83,7 @@ struct GeometryConfig3D final : public detail::GeometryConfigBase {
     void generateNormals();
 };
 
-struct GeometryConfig2D final : public detail::GeometryConfigBase {
+struct MeshConfig2D final : public detail::MeshConfigBase {
     std::vector<Vertex2> vertices;
 
     Extent2 calculateExtent() const {
@@ -92,7 +92,6 @@ struct GeometryConfig2D final : public detail::GeometryConfigBase {
 };
 
 template <typename T>
-concept GeometryConfig =
-  kc::core::is_one_of2_v<T, GeometryConfig3D, GeometryConfig2D>;
+concept MeshConfig = kc::core::is_one_of2_v<T, MeshConfig3D, MeshConfig2D>;
 
 }  // namespace sl

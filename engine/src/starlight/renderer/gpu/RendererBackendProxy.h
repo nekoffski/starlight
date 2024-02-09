@@ -2,7 +2,7 @@
 
 #include "CommandBuffer.h"
 #include "Texture.h"
-#include "Geometry.h"
+#include "Mesh.h"
 
 #include "starlight/core/memory/Memory.hpp"
 
@@ -11,7 +11,7 @@
 namespace sl {
 
 struct RendererBackendProxy {
-    virtual void drawGeometry(const Geometry& geometry)                    = 0;
+    virtual void drawMesh(const Mesh& mesh)                                = 0;
     virtual CommandBuffer* getCommandBuffer()                              = 0;
     virtual u32 getImageIndex()                                            = 0;
     virtual Texture* getFramebuffer(u64 id)                                = 0;

@@ -1,11 +1,11 @@
-#include "GeometryConfig.h"
+#include "MeshConfig.h"
 
 #include "starlight/core/math/Geometry.h"
 
 namespace sl {
 
-GeometryConfig3D GeometryConfig3D::generatePlane(const PlaneProperties& props) {
-    GeometryConfig3D out;
+MeshConfig3D MeshConfig3D::generatePlane(const PlaneProperties& props) {
+    MeshConfig3D out;
 
     const auto vertexCount = props.xSegments * props.ySegments * 4;
     const auto indexCount  = props.xSegments * props.ySegments * 6;
@@ -65,7 +65,7 @@ GeometryConfig3D GeometryConfig3D::generatePlane(const PlaneProperties& props) {
     return out;
 }
 
-GeometryConfig3D GeometryConfig3D::generateCube(const CubeProperties& props) {
+MeshConfig3D MeshConfig3D::generateCube(const CubeProperties& props) {
     const auto& [width, height, depth, xTile, yTile, name, materialName] = props;
 
     ASSERT(
@@ -73,7 +73,7 @@ GeometryConfig3D GeometryConfig3D::generateCube(const CubeProperties& props) {
       "Invalid properties for cube, dimensions must be greater than 0"
     );
 
-    GeometryConfig3D out;
+    MeshConfig3D out;
 
     const auto vertexCount = 4 * 6;
     const auto indexCount  = 6 * 6;
@@ -197,12 +197,8 @@ GeometryConfig3D GeometryConfig3D::generateCube(const CubeProperties& props) {
     return out;
 }
 
-void GeometryConfig3D::generateTangents() {
-    sl::generateTangents(vertices, indices);
-}
+void MeshConfig3D::generateTangents() { sl::generateTangents(vertices, indices); }
 
-void GeometryConfig3D::generateNormals() {
-    sl::generateFaceNormals(vertices, indices);
-}
+void MeshConfig3D::generateNormals() { sl::generateFaceNormals(vertices, indices); }
 
 }  // namespace sl

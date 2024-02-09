@@ -6,11 +6,11 @@
 
 #include "managers/TextureManager.h"
 #include "managers/MaterialManager.h"
-#include "managers/GeometryManager.h"
+#include "managers/MeshManager.h"
 #include "managers/ShaderManager.h"
 
 #include "starlight/renderer/gpu/Shader.h"
-#include "starlight/renderer/gpu/Geometry.h"
+#include "starlight/renderer/gpu/Mesh.h"
 #include "starlight/renderer/Material.h"
 #include "starlight/renderer/Model.h"
 #include "starlight/renderer/Skybox.h"
@@ -43,15 +43,15 @@ public:
 
     void destroyMaterial(const std::string& name);
 
-    Geometry* loadGeometry(const GeometryConfig auto& props) {
-        return m_geometryManager.load(props);
+    Mesh* loadMesh(const MeshConfig auto& props) {
+        return m_meshManager.load(props);
     }
-    Geometry* acquireGeometry(uint32_t id);
+    Mesh* acquireMesh(uint32_t id);
 
-    void destroyGeometry(uint32_t id);
+    void destroyMesh(uint32_t id);
 
-    Geometry* getDefaultGeometry3D();
-    Geometry* getDefaultGeometry2D();
+    Mesh* getDefaultMesh3D();
+    Mesh* getDefaultMesh2D();
 
     template <typename Callback>
     requires Callable<Callback, void, std::string, const Texture*>
@@ -65,9 +65,9 @@ private:
     TextureManager m_textureManager;
     ShaderManager m_shaderManager;
     MaterialManager m_materialManager;
-    GeometryManager m_geometryManager;
+    MeshManager m_meshManager;
 
-    Geometry* m_skyboxGeometry;
+    Mesh* m_skyboxMesh;
 };
 
 }  // namespace sl

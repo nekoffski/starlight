@@ -12,36 +12,34 @@ VKResourcePools::VKResourcePools(
     m_device(device), m_vertexBuffer(vertexBuffer), m_indexBuffer(indexBuffer),
     m_swapchain(swapchain), backend(backend), m_textures("Texture", 1024),
     m_textureMaps("TextureMap", 1024), m_shaders("Shader", 1024),
-    m_geometries("Geometry", vulkanMaxGeometryCount),
-    m_renderTargets("RenderTarget", 64), m_renderPasses("RenderPass", 64) {}
+    m_meshes("Mesh", vulkanMaxMeshCount), m_renderTargets("RenderTarget", 64),
+    m_renderPasses("RenderPass", 64) {}
 
-VKGeometry* VKResourcePools::createGeometry(
-  const Geometry::Properties& props, std::span<const Vertex3> vertices,
+VKMesh* VKResourcePools::createMesh(
+  const Mesh::Properties& props, std::span<const Vertex3> vertices,
   std::span<const u32> indices, const Extent3& extent
 ) {
-    Geometry::Data data(
+    Mesh::Data data(
       sizeof(Vertex3), vertices.size(), vertices.data(), indices, extent
     );
-    return m_geometries.create(
+    return m_meshes.create(
       &m_device, &m_context, m_vertexBuffer, m_indexBuffer, props, data
     );
 }
 
-VKGeometry* VKResourcePools::createGeometry(
-  const Geometry::Properties& props, std::span<const Vertex2> vertices,
+VKMesh* VKResourcePools::createMesh(
+  const Mesh::Properties& props, std::span<const Vertex2> vertices,
   std::span<const u32> indices, const Extent2& extent
 ) {
-    Geometry::Data data(
+    Mesh::Data data(
       sizeof(Vertex2), vertices.size(), vertices.data(), indices, Extent3{ extent }
     );
-    return m_geometries.create(
+    return m_meshes.create(
       &m_device, &m_context, m_vertexBuffer, m_indexBuffer, props, data
     );
 }
 
-void VKResourcePools::destroyGeometry(Geometry& geometry) {
-    m_geometries.destroy(geometry.getId());
-}
+void VKResourcePools::destroyMesh(Mesh& mesh) { m_meshes.destroy(mesh.getId()); }
 
 VKTexture* VKResourcePools::createTexture(
   const Texture::Properties& props, const std::span<u8> pixels

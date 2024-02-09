@@ -8,8 +8,8 @@ namespace sl::vk {
 VKRendererBackendProxy::VKRendererBackendProxy(VKRendererBackend* backend) :
     m_backend(backend) {}
 
-void VKRendererBackendProxy::drawGeometry(const Geometry& geometry) {
-    m_backend->drawGeometry(geometry);
+void VKRendererBackendProxy::drawMesh(const Mesh& mesh) {
+    m_backend->drawMesh(mesh);
 }
 
 VKCommandBuffer* VKRendererBackendProxy::getCommandBuffer() {
