@@ -36,6 +36,10 @@ bool slider(const std::string& name, Vec3f& data, const StepInterval<float>& ran
 void separator() { ImGui::Separator(); }
 void lineBreak() { ImGui::NewLine(); }
 
+bool button(const std::string& text, const Vec2f& size) {
+    return ImGui::Button(text.c_str(), { size.x, size.y });
+}
+
 float getFrameHeight() { return ImGui::GetFrameHeight(); }
 
 void withColor(const Vec3f& color, Callback&& callback) {

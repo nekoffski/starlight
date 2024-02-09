@@ -12,8 +12,9 @@
 #include "ScenePanel.h"
 #include "InspectorPanel.h"
 #include "ResourcesPanel.h"
+#include "Console.h"
 
-#include "UIState.h"
+#include "Core.h"
 
 class UI {
 public:
@@ -31,6 +32,9 @@ private:
     sl::u64 m_height;
 
     sl::Scene* m_scene;
+
+    Console m_console;
+    Logger* m_logger;
 
     sl::ui::MainMenuBar m_mainMenu;
 

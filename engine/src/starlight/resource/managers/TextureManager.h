@@ -24,6 +24,13 @@ public:
     Texture* load(const std::string& name);
     Texture* loadCubeTexture(const std::string& name);
     Texture* acquire(const std::string& name) const;
+    Texture* acquire(u64 id) const;
+
+    template <typename Callback>
+    requires Callable<Callback, void, std::string, const Texture*>
+    void forEach(Callback&& callback) {
+        for (const auto [name, texture] : m_textures) callback(name, texture);
+    }
 
     void destroy(const std::string& name);
     void destroyAll();
@@ -37,6 +44,7 @@ private:
     ResourcePools& m_resourcePools;
 
     std::unordered_map<std::string, Texture*> m_textures;
+    std::unordered_map<u64, Texture*> m_texturesById;
 
     Texture* m_defaultTexture;
     Texture* m_defaultNormalMap;

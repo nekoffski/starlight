@@ -34,6 +34,8 @@ bool text(const std::string& formatString, Args&&... args) {
 
 bool slider(const std::string& name, Vec3f& data, const StepInterval<float>& range);
 
+bool button(const std::string& text, const Vec2f& size = { 0.0f, 0.0f });
+
 void lineBreak();
 void separator();
 

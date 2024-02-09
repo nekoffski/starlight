@@ -29,6 +29,7 @@ public:
     Texture* loadCubeTexture(const std::string& name);
 
     Texture* acquireTexture(const std::string& name) const;
+    Texture* acquireTexture(u64 id) const;
 
     void destroyTexture(const std::string& name);
 
@@ -51,6 +52,12 @@ public:
 
     Geometry* getDefaultGeometry3D();
     Geometry* getDefaultGeometry2D();
+
+    template <typename Callback>
+    requires Callable<Callback, void, std::string, const Texture*>
+    void forEachTexture(Callback&& callback) {
+        m_textureManager.forEach(std::forward<Callback>(callback));
+    }
 
 private:
     ResourcePools& m_resourcePools;

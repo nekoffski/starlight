@@ -53,15 +53,28 @@ void PanelCombo::rebuildPanels() {
         comboVerticalPosition += frameHeight;
     }
 
-    const float panelHeight = comboHeight / panelCount;
+    // TODO: unify
+    if (m_props.orientation == Orientation::vertical) {
+        const float panelHeight = comboHeight / panelCount;
 
-    for (int i = 0; i < panelCount; ++i) {
-        auto panel = &m_panels[i];
+        for (int i = 0; i < panelCount; ++i) {
+            auto panel = &m_panels[i];
 
-        panel->setPosition(
-          { m_props.position.x, comboVerticalPosition + i * panelHeight }
-        );
-        panel->setSize({ m_props.size.x, panelHeight });
+            panel->setPosition(
+              { m_props.position.x, comboVerticalPosition + i * panelHeight }
+            );
+            panel->setSize({ m_props.size.x, panelHeight });
+        }
+    } else {
+        const float panelWidth = m_props.size.x / panelCount;
+        for (int i = 0; i < panelCount; ++i) {
+            auto panel = &m_panels[i];
+
+            panel->setPosition(
+              { m_props.position.x + i * panelWidth, m_props.position.y }
+            );
+            panel->setSize({ panelWidth, m_props.size.y });
+        }
     }
 
     m_dirty = false;

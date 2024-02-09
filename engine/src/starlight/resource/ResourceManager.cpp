@@ -30,6 +30,10 @@ Texture* ResourceManager::acquireTexture(const std::string& name) const {
     return m_textureManager.acquire(name);
 }
 
+Texture* ResourceManager::acquireTexture(u64 id) const {
+    return m_textureManager.acquire(id);
+}
+
 void ResourceManager::destroyTexture(const std::string& name) {
     m_textureManager.destroy(name);
 }

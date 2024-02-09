@@ -9,13 +9,14 @@
 #include "starlight/scene/components/TransformComponent.h"
 
 UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer, sl::Scene* scene) :
-    m_width(w), m_height(h), m_scene(scene),
+    m_width(w), m_height(h), m_scene(scene), m_logger(m_console.getLogger()),
     m_leftCombo(
       "left-combo",
       sl::ui::PanelCombo::Properties{
         .position             = {0,                         0},
         .size                 = { leftComboWidthFactor * w, h},
         .alignWithMainMenuBar = true,
+        .orientation          = sl::ui::PanelCombo::Orientation::vertical
 }
     ),
     m_rightCombo(
@@ -24,7 +25,7 @@ UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer, sl::Scene* scene) :
         .position             = { w * (1.0f - leftComboWidthFactor), 0 },
         .size                 = { leftComboWidthFactor * w, h },
         .alignWithMainMenuBar = true,
-      }
+        .orientation          = sl::ui::PanelCombo::Orientation::vertical }
     ),
     m_bottomCombo(
       "bottom-combo",
@@ -32,10 +33,12 @@ UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer, sl::Scene* scene) :
         .position             = { leftComboWidthFactor * w, (1.0f - 0.25f) * h },
         .size                 = { (1.0f - leftComboWidthFactor * 2) * w, h * 0.25f },
         .alignWithMainMenuBar = true,
-      }
+        .orientation          = sl::ui::PanelCombo::Orientation::horizontal }
+
     ),
-    m_scenePanel(m_scene, &m_state), m_inspectorPanel(m_scene, &m_state),
-    m_resourcesPanel(&m_state), m_shouldExit(false) {
+    m_scenePanel(m_scene, &m_state, m_logger),
+    m_inspectorPanel(m_scene, &m_state, m_logger),
+    m_resourcesPanel(&m_state, m_logger), m_shouldExit(false) {
     m_mainMenu.addMenu("File")
       .addItem("Create", []() {})
       .addItem("Open", "Ctrl+O", []() {})
@@ -44,9 +47,9 @@ UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer, sl::Scene* scene) :
       .addItem("Quit", [&]() { m_shouldExit = true; });
     m_mainMenu.addMenu("Help");
 
-    m_bottomCombo.addPanel(ICON_FA_FILE "  Resources", [&]() {
-        m_resourcesPanel.render();
-    });
+    m_bottomCombo
+      .addPanel(ICON_FA_FILE "  Resources", [&]() { m_resourcesPanel.render(); })
+      .addPanel(ICON_FA_TERMINAL "  Console", [&]() { m_console.render(); });
 
     m_leftCombo.addPanel(ICON_FA_CITY "  Scene", [&]() { m_scenePanel.render(); })
       .addPanel(ICON_FA_CHART_LINE "  Statistics", [&]() {
@@ -67,6 +70,8 @@ UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer, sl::Scene* scene) :
     m_rightCombo.addPanel(ICON_FA_EYE "  Inspector", [&]() {
         m_inspectorPanel.render();
     });
+
+    m_logger->debug("UI initialized");
 }
 
 void UI::setScene(sl::Scene* scene) { m_scene = scene; }

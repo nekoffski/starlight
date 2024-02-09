@@ -1,9 +1,10 @@
 #include "InspectorPanel.h"
 
 #include "starlight/scene/components/All.h"
+#include "starlight/resource/ResourceManager.h"
 
-InspectorPanel::InspectorPanel(sl::Scene* scene, UIState* state) :
-    m_scene(scene), m_state(state), m_menu("Inspector"),
+InspectorPanel::InspectorPanel(sl::Scene* scene, UIState* state, Logger* logger) :
+    m_scene(scene), m_state(state), m_logger(logger), m_menu("Inspector"),
     m_translationSlider("Translation", { .min = -15.0, .max = 15.0f, .step = 0.1f }),
     m_scaleSlider(
       "Scale", { .min = 0.0, .max = 5.0f, .step = 0.1f }, sl::Vec3f{ 1.0f }
@@ -21,7 +22,15 @@ InspectorPanel::InspectorPanel(sl::Scene* scene, UIState* state) :
                 sl::ui::text("No entity selected");
         }
       )
-      .addTab(ICON_FA_FILE "  Resource", [&]() { renderResourceUI(); });
+      .addTab(ICON_FA_FILE "  Resource", [&]() {
+          if (m_state->selectedResourceId) {
+              renderResourceUI(
+                *m_state->selectedResourceId, *m_state->selectedResourceType
+              );
+          } else {
+              sl::ui::text("No resource selected");
+          }
+      });
 }
 
 void InspectorPanel::render() { m_menu.render(); }
@@ -66,4 +75,24 @@ void InspectorPanel::renderEntityUI(sl::u64 entityId) {
     }
 }
 
-void InspectorPanel::renderResourceUI() {}
+void InspectorPanel::renderResourceUI(sl::u64 resourceId, ResourceType type) {
+    auto resourceManager = sl::ResourceManager::getPtr();
+
+    switch (type) {
+        case ResourceType::texture:
+            return renderTextureUI(resourceManager->acquireTexture(resourceId));
+    }
+}
+
+void InspectorPanel::renderTextureUI(sl::Texture* texture) {
+    sl::ui::namedScope("texture-resource-panel", [&]() {
+        const auto props = texture->getProperties();
+        sl::ui::text("Texture");
+        sl::ui::separator();
+        sl::ui::text("{}", props.name);
+        sl::ui::text("Size: {}x{}", props.width, props.height);
+        sl::ui::text("Channels: {}", props.channels);
+        sl::ui::text("Transparent: {}", props.isTransparent);
+        sl::ui::text("Writable: {}", props.isWritable);
+    });
+}

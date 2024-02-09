@@ -27,10 +27,13 @@ private:
 
 class PanelCombo {
 public:
+    enum class Orientation { horizontal, vertical };
+
     struct Properties {
         Vec2f position;
         Vec2f size;
         bool alignWithMainMenuBar;
+        Orientation orientation;
     };
 
     explicit PanelCombo(const std::string& name, const Properties& props);

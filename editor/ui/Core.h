@@ -7,8 +7,14 @@
 
 #include "starlight/ui/UI.h"
 
+enum class ResourceType { mesh = 0, texture, shader };
+
+std::string resouceTypeToString(ResourceType type);
+
 struct UIState {
     std::optional<sl::u64> selectedEntityId;
+    std::optional<sl::u64> selectedResourceId;
+    std::optional<ResourceType> selectedResourceType;
 };
 
 static constexpr float leftComboWidthFactor = 0.15f;

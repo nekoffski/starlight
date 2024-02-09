@@ -18,6 +18,6 @@ void TimeManager::update() {
 
 float TimeManager::getFps() const { return 1.0f / m_deltaTime; }
 
-const TimeManager::Clock& TimeManager::getClock() { return m_clock; }
+TimeManager::Clock* TimeManager::getClock() { return &m_clock; }
 
 }  // namespace sl

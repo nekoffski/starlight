@@ -12,8 +12,10 @@ void UIRenderer::setStyle() {
     // light style from Pacôme Danhiez (user itamago)
     // https://github.com/ocornut/imgui/pull/511#issuecomment-175719267 style.Alpha =
     // 0.85f;
-    style.WindowRounding      = 0.0f;
-    style.FrameRounding       = 0.0f;
+    style.WindowRounding           = 0.0f;
+    style.FrameRounding            = 0.0f;
+    style.WindowMenuButtonPosition = ImGuiDir_None;
+
     auto& colors              = ImGui::GetStyle().Colors;
     colors[ImGuiCol_WindowBg] = ImVec4{ 0.1f, 0.105f, 0.11f, 1.0f };
 

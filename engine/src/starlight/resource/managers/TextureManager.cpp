@@ -57,7 +57,10 @@ Texture* TextureManager::load(const std::string& name) {
         imageData->pixels, imageData->width * imageData->height * imageData->channels
       )
     );
-    return m_textures[name];
+    auto texture                     = m_textures[name];
+    m_texturesById[texture->getId()] = texture;
+
+    return texture;
 }
 
 Texture* TextureManager::loadCubeTexture(const std::string& name) {
@@ -127,18 +130,27 @@ Texture* TextureManager::loadCubeTexture(const std::string& name) {
         std::memcpy(&buffer[offset], imageData->pixels, chunkSize);
     }
 
-    m_textures[name] = m_resourcePools.createTexture(props, buffer);
-    return m_textures[name];
+    m_textures[name]                 = m_resourcePools.createTexture(props, buffer);
+    auto texture                     = m_textures[name];
+    m_texturesById[texture->getId()] = texture;
 
-    return nullptr;
+    return texture;
 }
 
 Texture* TextureManager::acquire(const std::string& name) const {
-    LOG_DEBUG("Acquiring texture '{}'", name);
     if (auto texture = m_textures.find(name); texture != m_textures.end()) {
         return texture->second;
     } else {
         LOG_WARN("Texture {} not found", name);
+        return nullptr;
+    }
+}
+
+Texture* TextureManager::acquire(u64 id) const {
+    if (auto texture = m_texturesById.find(id); texture != m_texturesById.end()) {
+        return texture->second;
+    } else {
+        LOG_WARN("Texture with id={} not found", id);
         return nullptr;
     }
 }

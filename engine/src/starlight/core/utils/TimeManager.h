@@ -14,7 +14,7 @@ namespace sl {
 class TimeManager : public kc::core::Singleton<TimeManager> {
     using Clock = kc::core::Clock;
 
-   public:
+public:
     explicit TimeManager();
 
     float getFps() const;
@@ -22,9 +22,9 @@ class TimeManager : public kc::core::Singleton<TimeManager> {
 
     void update();
 
-    const Clock& getClock();
+    Clock* getClock();
 
-   private:
+private:
     Clock m_clock;
     Clock::TimePoint m_lastTimestamp;
 
