@@ -19,7 +19,6 @@ public:
 
 private:
     void destroyInternals(Shader* resource) override;
-    std::string getResourceName() const override;
 
     ResourcePools& m_resourcePools;
     TextureManager& m_textureManager;

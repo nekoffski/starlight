@@ -10,7 +10,7 @@
 #include "ResourceManager.hpp"
 #include "MaterialManager.h"
 
-#include "starlight/resource/resources/MeshConfig.h"
+#include "starlight/resource/configs/MeshConfig.h"
 
 namespace sl {
 
@@ -22,7 +22,7 @@ public:
     ~MeshManager() override;
 
     Mesh* load(const MeshConfig auto& props) {
-        if (auto mesh = createMesh(props); not mesh) [[likely]] {
+        if (auto mesh = createMesh(props); mesh) [[likely]] {
             return storeResource(props.name, mesh->getId(), mesh);
         } else {
             LOG_ERROR("Could not create mesh");
@@ -35,7 +35,6 @@ public:
 
 private:
     void destroyInternals(Mesh* resource) override;
-    std::string getResourceName() const override;
 
     void createDefaultGeometries();
 

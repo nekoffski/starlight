@@ -16,6 +16,8 @@ private:
     ShaderManager m_shaderManager;
     MaterialManager m_materialManager;
     MeshManager m_meshManager;
+    SkyboxManager m_skyboxManager;
+    ModelManager m_modelManager;
 };
 
 }  // namespace sl

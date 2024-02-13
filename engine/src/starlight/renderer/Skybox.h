@@ -8,17 +8,25 @@ namespace sl {
 
 class Skybox {
 public:
-    explicit Skybox(TextureMap* cubeMap, Mesh* mesh, Shader& shader);
+    explicit Skybox(u64 id, TextureMap& cubeMap, Mesh& mesh, Shader& shader);
     ~Skybox();
 
     Skybox(Skybox& oth)            = delete;
     Skybox& operator=(Skybox& oth) = delete;
 
-    TextureMap* cubeMap;
-    Mesh* mesh;
-    const u32 instanceId;
+    u64 getId() const;
+    TextureMap* getCubeMap();
+    Mesh* getMesh();
+    u32 getInstanceId() const;
 
 private:
+    u64 m_id;
+
+    TextureMap& m_cubeMap;
+    Mesh& m_mesh;
+
+    u32 m_instanceId;
+
     Shader& m_shader;
 };
 

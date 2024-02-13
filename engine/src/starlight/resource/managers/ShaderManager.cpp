@@ -2,15 +2,15 @@
 
 #include "starlight/core/utils/Log.h"
 
-#include "starlight/resource/resources/ShaderConfig.h"
+#include "starlight/resource/configs/ShaderConfig.h"
 
 namespace sl {
 
 ShaderManager::ShaderManager(
   ResourcePools& resourcePools, TextureManager& textureManager
 ) :
-    m_resourcePools(resourcePools),
-    m_textureManager(textureManager) {}
+    ResourceManager("Shader"),
+    m_resourcePools(resourcePools), m_textureManager(textureManager) {}
 
 ShaderManager::~ShaderManager() {
     forEach([&]([[maybe_unused]] u64, Shader* shader) {
@@ -39,7 +39,5 @@ Shader* ShaderManager::load(const std::string& name) {
 void ShaderManager::destroyInternals(Shader* shader) {
     m_resourcePools.destroyShader(*shader);
 }
-
-std::string ShaderManager::getResourceName() const { return "Shader"; }
 
 }  // namespace sl

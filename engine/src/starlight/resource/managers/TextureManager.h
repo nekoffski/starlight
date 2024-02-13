@@ -28,7 +28,6 @@ public:
 
 private:
     void destroyInternals(Texture* resource) override;
-    std::string getResourceName() const override;
 
     void createDefaultTextureMap();
     void createDefaultTexture();

@@ -78,7 +78,7 @@ void WorldRenderView::render(
           transparentGeometries.reserve(128);
 
           for (auto& model : packet.models) {
-              for (const auto& mesh : model->meshes) {
+              for (const auto& mesh : model->getMeshes()) {
                   // TODO: shouldn't the material be bound to model instead of
                   // mesh?
                   const auto& modelMatrix = model->getModelMatrix();

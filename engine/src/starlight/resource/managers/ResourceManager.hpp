@@ -11,6 +11,9 @@ namespace sl {
 template <typename Resource, typename Manager>
 class ResourceManager : public kc::core::Singleton<Manager> {
 public:
+    explicit ResourceManager(const std::string& resourceName) :
+        m_resourceName(resourceName) {}
+
     virtual ~ResourceManager() {
         m_idByName.clear();
         m_nameById.clear();
@@ -37,16 +40,18 @@ public:
     Resource* acquire(u64 id) {
         if (auto it = m_resourceById.find(id); it != m_resourceById.end())
             return it->second;
-        LOG_WARN("{} with id={} not found", getResourceName(), id);
+        LOG_WARN("{} with id={} not found", m_resourceName, id);
         return nullptr;
     }
 
     Resource* acquire(const std::string& name) {
         if (auto it = m_resourceByName.find(name); it != m_resourceByName.end())
             return it->second;
-        LOG_WARN("{} with name='{}' not found", getResourceName(), name);
+        LOG_WARN("{} with name='{}' not found", m_resourceName, name);
         return nullptr;
     }
+
+    void destroy(Resource* resource) { destroy(resource->getId()); }
 
     void destroy(u64 id) {
         if (auto it = m_resourceById.find(id); it != m_resourceById.end()) {
@@ -54,8 +59,8 @@ public:
             clearMapEntries(id);
         } else {
             LOG_WARN(
-              "Tried to destroy '{}' with id={} which is not stored",
-              getResourceName(), id
+              "Tried to destroy '{}' with id={} which is not stored", m_resourceName,
+              id
             );
         }
     }
@@ -67,7 +72,7 @@ public:
         } else {
             LOG_WARN(
               "Tried to destroy '{}' with name='{}' which is not stored",
-              getResourceName(), name
+              m_resourceName, name
             );
         }
     }
@@ -86,6 +91,8 @@ protected:
     }
 
     Resource* storeResource(const std::string& name, u64 id, Resource* resource) {
+        LOG_TRACE("Storing '{}': name='{}', id={}", m_resourceName, name, id);
+
         m_idByName[name]       = id;
         m_nameById[id]         = name;
         m_resourceById[id]     = resource;
@@ -95,9 +102,10 @@ protected:
     }
 
     virtual void destroyInternals(Resource* resource) = 0;
-    virtual std::string getResourceName() const       = 0;
 
 private:
+    std::string m_resourceName;
+
     std::unordered_map<u64, Resource*> m_resourceById;
     std::unordered_map<std::string, Resource*> m_resourceByName;
     std::unordered_map<std::string, u64> m_idByName;

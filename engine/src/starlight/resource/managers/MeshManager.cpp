@@ -5,8 +5,8 @@ namespace sl {
 MeshManager::MeshManager(
   ResourcePools& resourcePools, MaterialManager& materialManager
 ) :
-    m_resourcePools(resourcePools),
-    m_materialManager(materialManager) {
+    ResourceManager("Mesh"),
+    m_resourcePools(resourcePools), m_materialManager(materialManager) {
     createDefaultGeometries();
 }
 
@@ -20,8 +20,6 @@ Mesh* MeshManager::getDefault3D() { return m_defaultMesh3D; }
 Mesh* MeshManager::getDefault2D() { return m_defaultMesh2D; }
 
 void MeshManager::destroyInternals(Mesh* mesh) {}
-
-std::string MeshManager::getResourceName() const { return "Mesh"; }
 
 void MeshManager::createDefaultGeometries() {
     // 3D

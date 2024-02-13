@@ -9,7 +9,7 @@
 #include "starlight/renderer/Material.h"
 #include "starlight/renderer/gpu/ResourcePools.h"
 
-#include "starlight/resource/resources/MaterialConfig.h"
+#include "starlight/resource/configs/MaterialConfig.h"
 
 #include "ResourceManager.hpp"
 #include "ShaderManager.h"
@@ -34,7 +34,6 @@ public:
 
 private:
     void destroyInternals(Material* resource) override;
-    std::string getResourceName() const override;
 
     ShaderManager& m_shaderManager;
     TextureManager& m_textureManager;

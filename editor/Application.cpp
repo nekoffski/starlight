@@ -66,14 +66,13 @@ int Application::run() {
     auto materialShader = sl::ShaderManager::get().load("Builtin.Shader.Material");
     sl::WorldRenderView worldView{ m_activeCamera, materialShader };
 
-    // auto skyboxShader = sl::ShaderManager::get().load(("Builtin.Shader.Skybox");
-    // auto skybox = sl::TextureManager::get().loadCubeTexture("skybox2/skybox",
-    // *skyboxShader);
+    auto skyboxShader = sl::ShaderManager::get().load("Builtin.Shader.Skybox");
+    auto skybox = sl::SkyboxManager::get().load("skybox2/skybox", *skyboxShader);
 
-    // ASSERT(skybox, "Could not load skybox");
-    // sl::SkyboxRenderView skyboxView{ m_activeCamera, skyboxShader, skybox.get() };
+    ASSERT(skybox, "Could not load skybox");
+    sl::SkyboxRenderView skyboxView{ m_activeCamera, skyboxShader, skybox };
 
-    // m_views.push_back(&skyboxView);
+    m_views.push_back(&skyboxView);
     m_views.push_back(&worldView);
     m_views.push_back(&uiView);
 
@@ -85,8 +84,9 @@ int Application::run() {
     auto entity1 = m_scene.addEntity("My-Entity");
     auto entity2 = m_scene.addEntity();
 
-    // auto mesh = m_resourceManager.loadModel("falcon");
-    // entity1->addComponent<sl::ModelComponent>(&(*mesh));
+    auto model = sl::ModelManager::get().load("falcon");
+
+    entity1->addComponent<sl::ModelComponent>(model);
     entity1->addComponent<sl::TransformComponent>();
 
     while (m_isRunning && not m_ui.shouldExit()) {

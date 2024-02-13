@@ -30,7 +30,7 @@ RenderPacket Scene::getRenderPacket() {
               // TODO: consider binding it once on adding Transform/Model components
               auto& transform =
                 entity->getComponent<TransformComponent>()->transform;
-              model->transform = &transform;
+              model->setTransform(&transform);
           }
           packet.models.push_back(model);
       }

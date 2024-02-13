@@ -61,12 +61,12 @@ void SkyboxRenderView::render(
               proxy.set("projection", m_camera->getProjectionMatrix());
           });
           m_shader->setInstanceUniforms(
-            m_skybox->instanceId,
+            m_skybox->getInstanceId(),
             [&](Shader::UniformProxy& proxy) {
-                proxy.set("cubeTexture", m_skybox->cubeMap);
+                proxy.set("cubeTexture", m_skybox->getCubeMap());
             }
           );
-          backendProxy.drawMesh(*m_skybox->mesh);
+          backendProxy.drawMesh(*m_skybox->getMesh());
       }
     );
 }

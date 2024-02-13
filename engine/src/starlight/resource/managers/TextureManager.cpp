@@ -7,14 +7,14 @@
 #include "starlight/core/math/Glm.h"
 #include "starlight/renderer/gpu/Texture.h"
 #include "starlight/renderer/gpu/ResourcePools.h"
-#include "starlight/resource/resources/ImageData.h"
+#include "starlight/resource/configs/ImageData.h"
 
 namespace sl {
 
 TextureManager::TextureManager(ResourcePools& resourcePools) :
-    m_resourcePools(resourcePools), m_defaultTexture(nullptr),
-    m_defaultNormalMap(nullptr), m_defaultSpecularMap(nullptr) {
-    LOG_TRACE("Creating TextureManager");
+    ResourceManager("Texture"), m_resourcePools(resourcePools),
+    m_defaultTexture(nullptr), m_defaultNormalMap(nullptr),
+    m_defaultSpecularMap(nullptr) {
     createDefaultTexture();
     createDefaultNormalMap();
     createDefaultSpecularMap();
@@ -134,8 +134,6 @@ void TextureManager::destroyInternals(Texture* texture) {
     m_resourcePools.destroyTexture(*texture);
 }
 
-std::string TextureManager::getResourceName() const { return "Texture"; }
-
 static void setColor(uint32_t i, const Vec4f& color, std::vector<u8>& pixels) {
     pixels[i]     = color.x;
     pixels[i + 1] = color.y;
@@ -157,7 +155,7 @@ void TextureManager::createDefaultTexture() {
         .channels      = 4,
         .isTransparent = false,
         .isWritable    = false,
-        .name          = "DefaultTexture",
+        .name          = defaultTextureName,
         .type          = Texture::Type::flat
     };
 

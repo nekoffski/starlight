@@ -12,9 +12,11 @@ MaterialManager::MaterialManager(
   ShaderManager& shaderManager, TextureManager& textureManager,
   ResourcePools& resourcePools
 ) :
-    m_shaderManager(shaderManager),
-    m_textureManager(textureManager), m_resourcePools(resourcePools),
-    m_materials("Material", maxMaterials) {}
+    ResourceManager("Material"),
+    m_shaderManager(shaderManager), m_textureManager(textureManager),
+    m_resourcePools(resourcePools), m_materials("Material", maxMaterials) {
+    createDefaultMaterial();
+}
 
 MaterialManager::~MaterialManager() {
     forEach([&](u64 id, [[maybe_unused]] Material*) { m_materials.destroy(id); });
@@ -116,8 +118,7 @@ Material* MaterialManager::load(const MaterialConfig& config) {
 
 void MaterialManager::destroyInternals(Material* material) {
     material->destroyTextureMaps(m_resourcePools);
+    m_materials.destroy(material->getId());
 }
-
-std::string MaterialManager::getResourceName() const { return "Material"; }
 
 }  // namespace sl
