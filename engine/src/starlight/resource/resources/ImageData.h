@@ -5,7 +5,6 @@
 
 #include <starlight/core/Core.h>
 #include "starlight/core/memory/Memory.hpp"
-#include "starlight/resource/fwd.h"
 
 namespace sl {
 

@@ -13,13 +13,12 @@ MaterialManager::MaterialManager(
   ResourcePools& resourcePools
 ) :
     m_shaderManager(shaderManager),
-    m_textureManager(textureManager), m_resourcePools(resourcePools) {
-    static constexpr u32 maxMaterials = 1024;
-    LOG_DEBUG("Max materials={}", maxMaterials);
-    m_materials.resize(maxMaterials);
-}
+    m_textureManager(textureManager), m_resourcePools(resourcePools),
+    m_materials("Material", maxMaterials) {}
 
-MaterialManager::~MaterialManager() { destroyAll(); }
+MaterialManager::~MaterialManager() {
+    forEach([&](u64 id, [[maybe_unused]] Material*) { m_materials.destroy(id); });
+}
 
 Material* MaterialManager::getDefaultMaterial() { return m_defaultMaterial; }
 
@@ -41,19 +40,20 @@ void MaterialManager::createDefaultMaterial() {
     );
     props.shininess = 32.0f;
 
+    auto shader   = m_shaderManager.load("Builtin.Shader.Material");
+    auto material = m_materials.create(props, *shader);
     m_defaultMaterial =
-      create(props, *m_shaderManager.load("Builtin.Shader.Material"));
+      storeResource(material->getName(), material->getId(), material);
 }
 
 Material* MaterialManager::load(const std::string& name) {
     LOG_TRACE("Loading material '{}'", name);
 
-    if (auto material = m_materialsLUT.find(name);
-        material != m_materialsLUT.end()) {
+    if (auto material = acquire(name); material) {
         LOG_INFO(
           "Material '{}' already stored, returning pointer to the existing one", name
         );
-        return material->second;
+        return material;
     }
 
     LOG_TRACE("Found material file, will try to process");
@@ -110,63 +110,14 @@ Material* MaterialManager::load(const MaterialConfig& config) {
       shader, "Could not find shader: {} for material: {}", config.shaderName,
       config.name
     );
-    return create(props, *shader);
+    auto material = m_materials.create(props, *shader);
+    return storeResource(props.name, material->getId(), material);
 }
 
-Material* MaterialManager::acquire(const std::string& name) {
-    LOG_TRACE("Acquiring material '{}'", name);
-    if (auto material = m_materialsLUT.find(name);
-        material != m_materialsLUT.end()) {
-        return material->second;
-    } else {
-        LOG_WARN("Material {} not found", name);
-        return load(name);
-    }
+void MaterialManager::destroyInternals(Material* material) {
+    material->destroyTextureMaps(m_resourcePools);
 }
 
-void MaterialManager::destroy(const std::string& name) {
-    LOG_TRACE("Destroying material '{}'", name);
-    // TODO: should we also destroy texture?
-    if (auto material = m_materialsLUT.find(name); material != m_materialsLUT.end())
-      [[likely]] {
-        // TODO: I really don't like this idea, come up with RAII solution
-        material->second->destroyTextureMaps(m_resourcePools);
-        auto id = material->second->getId();
-
-        m_materials[id].clear();
-        m_materialsLUT.erase(material);
-    } else {
-        LOG_WARN("Attempt to destroy not existing material - {}, will ignore", name);
-    }
-}
-
-void MaterialManager::destroyAll() {
-    m_materialsLUT.clear();
-    m_materials.clear();
-    m_defaultMaterial = nullptr;
-}
-
-Material* MaterialManager::create(
-  const Material::Properties& props, Shader& shader
-) {
-    const auto id = findSlot();
-    m_materials[id].emplace(props, id, shader);
-    auto material              = m_materials[id].get();
-    m_materialsLUT[props.name] = material;
-    return material;
-}
-
-int MaterialManager::findSlot() const {
-    LOG_DEBUG("Looking for free material slot");
-    for (int i = 0; i < m_materials.size(); ++i) {
-        if (not m_materials[i]) {
-            LOG_DEBUG("Found slot: {}", i);
-            return i;
-        }
-    }
-    // TODO: it's not critical error..
-    FATAL_ERROR("Could not find free material slot, consider changing configuration"
-    );
-}
+std::string MaterialManager::getResourceName() const { return "Material"; }
 
 }  // namespace sl

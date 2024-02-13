@@ -8,9 +8,11 @@
 #include "starlight/core/memory/Memory.hpp"
 #include "starlight/renderer/fwd.h"
 
+#include "ResourceManager.hpp"
+
 namespace sl {
 
-class TextureManager {
+class TextureManager : public ResourceManager<Texture, TextureManager> {
 public:
     inline static const std::string defaultNormalMapName =
       "Internal.Texture.DefaultNormalMap";
@@ -23,28 +25,17 @@ public:
 
     Texture* load(const std::string& name);
     Texture* loadCubeTexture(const std::string& name);
-    Texture* acquire(const std::string& name) const;
-    Texture* acquire(u64 id) const;
-
-    template <typename Callback>
-    requires Callable<Callback, void, std::string, const Texture*>
-    void forEach(Callback&& callback) {
-        for (const auto [name, texture] : m_textures) callback(name, texture);
-    }
-
-    void destroy(const std::string& name);
-    void destroyAll();
 
 private:
+    void destroyInternals(Texture* resource) override;
+    std::string getResourceName() const override;
+
     void createDefaultTextureMap();
     void createDefaultTexture();
     void createDefaultSpecularMap();
     void createDefaultNormalMap();
 
     ResourcePools& m_resourcePools;
-
-    std::unordered_map<std::string, Texture*> m_textures;
-    std::unordered_map<u64, Texture*> m_texturesById;
 
     Texture* m_defaultTexture;
     Texture* m_defaultNormalMap;

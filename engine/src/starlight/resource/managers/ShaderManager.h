@@ -1,35 +1,28 @@
 #pragma once
 
-#include <vector>
-
-#include <kc/core/Singleton.hpp>
-
 #include "starlight/renderer/gpu/Shader.h"
 #include "starlight/renderer/gpu/ResourcePools.h"
 
-#include "starlight/resource/resources/ShaderConfig.h"
+#include "ResourceManager.hpp"
 #include "TextureManager.h"
 
 namespace sl {
 
-class ShaderManager {
+class ShaderManager : public ResourceManager<Shader, ShaderManager> {
 public:
     explicit ShaderManager(
-      ResourcePools& resourcePools, const TextureManager& textureManager
+      ResourcePools& resourcePools, TextureManager& textureManager
     );
-    ~ShaderManager();
+    ~ShaderManager() override;
 
     Shader* load(const std::string& name);
-    Shader* acquire(const std::string& name);
-
-    void destroy(const std::string& name);
-    void destroyAll();
 
 private:
-    ResourcePools& m_resourcePools;
-    const TextureManager& m_textureManager;
+    void destroyInternals(Shader* resource) override;
+    std::string getResourceName() const override;
 
-    std::unordered_map<std::string, Shader*> m_shaders;
+    ResourcePools& m_resourcePools;
+    TextureManager& m_textureManager;
 };
 
 }  // namespace sl

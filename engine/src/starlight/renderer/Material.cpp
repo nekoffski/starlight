@@ -4,8 +4,8 @@
 
 namespace sl {
 
-Material::Material(const Properties& props, u32 id, Shader& shader) :
-    m_props(props), m_id(id), m_shader(shader), m_renderFrameNumber(0) {
+Material::Material(u64 id, const Properties& props, Shader& shader) :
+    m_id(id), m_props(props), m_shader(shader), m_renderFrameNumber(0) {
     LOG_TRACE("Creating Material: {}", m_props.name);
     m_instanceId = shader.acquireInstanceResources(
       { m_props.diffuseMap, m_props.specularMap, m_props.normalMap }
@@ -22,7 +22,7 @@ bool Material::isTransparent() const {
     return m_props.diffuseMap->getTexture()->getProperties().isTransparent;
 }
 
-void Material::applyUniforms(u32 renderFrameNumber) {
+void Material::applyUniforms(u64 renderFrameNumber) {
     if (m_renderFrameNumber != renderFrameNumber) {
         m_shader.setInstanceUniforms(m_instanceId, [&](Shader::UniformProxy& proxy) {
             proxy.set("diffuseColor", m_props.diffuseColor);
@@ -35,7 +35,7 @@ void Material::applyUniforms(u32 renderFrameNumber) {
     }
 }
 
-u32 Material::getId() const { return m_id; }
+u64 Material::getId() const { return m_id; }
 
 const std::string& Material::getName() const { return m_props.name; }
 

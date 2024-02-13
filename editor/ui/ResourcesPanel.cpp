@@ -1,6 +1,6 @@
 #include "ResourcesPanel.h"
 
-#include "starlight/resource/ResourceManager.h"
+#include "starlight/resource/All.h"
 
 ResourcesPanel::ResourcesPanel(UIState* state, Logger* logger) :
     m_state(state), m_logger(logger), m_resourcesTab("Resources") {
@@ -8,7 +8,7 @@ ResourcesPanel::ResourcesPanel(UIState* state, Logger* logger) :
       .addTab(
         ICON_FA_IMAGE "  Textures",
         [&]() {
-            sl::ResourceManager::get().forEachTexture(
+            sl::TextureManager::get().forEach(
               [&](const std::string& name, const sl::Texture* texture) {
                   auto& selectedResourceId = m_state->selectedResourceId;
 

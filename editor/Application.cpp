@@ -15,10 +15,12 @@
 #include "starlight/scene/components/ModelComponent.h"
 #include "starlight/scene/components/TransformComponent.h"
 
+#include "starlight/resource/All.h"
+
 Application::Application(int argc, char** argv) :
     m_isRunning(false), m_update(false), m_context("Starlight Editor"),
     m_window(m_context.getWindow()), m_renderer(*m_window, *m_context.getConfig()),
-    m_resourceManager(*m_renderer.getResourcePools()), m_activeCamera(nullptr),
+    m_resourceContext(*m_renderer.getResourcePools()), m_activeCamera(nullptr),
     m_ui(
       m_window->getSize().width,
       m_window->getSize().height,  // TODO: no comment required
@@ -61,16 +63,17 @@ int Application::run() {
 
     sl::UIRenderView uiView(m_activeCamera, uiProperties, [&]() { m_ui.render(); });
 
-    auto materialShader = m_resourceManager.loadShader("Builtin.Shader.Material");
+    auto materialShader = sl::ShaderManager::get().load("Builtin.Shader.Material");
     sl::WorldRenderView worldView{ m_activeCamera, materialShader };
 
-    auto skyboxShader = m_resourceManager.loadShader("Builtin.Shader.Skybox");
-    auto skybox = m_resourceManager.loadSkybox("skybox2/skybox", *skyboxShader);
+    // auto skyboxShader = sl::ShaderManager::get().load(("Builtin.Shader.Skybox");
+    // auto skybox = sl::TextureManager::get().loadCubeTexture("skybox2/skybox",
+    // *skyboxShader);
 
-    ASSERT(skybox, "Could not load skybox");
-    sl::SkyboxRenderView skyboxView{ m_activeCamera, skyboxShader, skybox.get() };
+    // ASSERT(skybox, "Could not load skybox");
+    // sl::SkyboxRenderView skyboxView{ m_activeCamera, skyboxShader, skybox.get() };
 
-    m_views.push_back(&skyboxView);
+    // m_views.push_back(&skyboxView);
     m_views.push_back(&worldView);
     m_views.push_back(&uiView);
 
@@ -82,8 +85,8 @@ int Application::run() {
     auto entity1 = m_scene.addEntity("My-Entity");
     auto entity2 = m_scene.addEntity();
 
-    auto mesh = m_resourceManager.loadModel("falcon");
-    entity1->addComponent<sl::ModelComponent>(&(*mesh));
+    // auto mesh = m_resourceManager.loadModel("falcon");
+    // entity1->addComponent<sl::ModelComponent>(&(*mesh));
     entity1->addComponent<sl::TransformComponent>();
 
     while (m_isRunning && not m_ui.shouldExit()) {

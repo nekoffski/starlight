@@ -1,7 +1,7 @@
 #include "InspectorPanel.h"
 
 #include "starlight/scene/components/All.h"
-#include "starlight/resource/ResourceManager.h"
+#include "starlight/resource/All.h"
 
 InspectorPanel::InspectorPanel(sl::Scene* scene, UIState* state, Logger* logger) :
     m_scene(scene), m_state(state), m_logger(logger), m_menu("Inspector"),
@@ -42,10 +42,10 @@ void InspectorPanel::renderEntityUI(sl::u64 entityId) {
 
     if (entity->hasComponent<sl::ModelComponent>()) {
         auto component = entity->getComponent<sl::ModelComponent>();
-        sl::ui::treeNode(ICON_FA_PLANE "  Mesh", [&]() {
-            sl::ui::text("Geometries");
-            for (auto& geometry : component->model->meshes) {
-                auto properties = geometry->getProperties();
+        sl::ui::treeNode(ICON_FA_PLANE "  Model", [&]() {
+            sl::ui::text("Meshes");
+            for (auto& mesh : component->model->meshes) {
+                auto properties = mesh->getProperties();
                 sl::ui::text("{}", properties.name);
             }
         });
@@ -76,11 +76,9 @@ void InspectorPanel::renderEntityUI(sl::u64 entityId) {
 }
 
 void InspectorPanel::renderResourceUI(sl::u64 resourceId, ResourceType type) {
-    auto resourceManager = sl::ResourceManager::getPtr();
-
     switch (type) {
         case ResourceType::texture:
-            return renderTextureUI(resourceManager->acquireTexture(resourceId));
+            return renderTextureUI(sl::TextureManager::get().acquire(resourceId));
     }
 }
 

@@ -22,24 +22,25 @@ public:
         std::string name;
     };
 
-    explicit Material(const Properties& props, u32 id, Shader& shader);
+    explicit Material(u64 id, const Properties& props, Shader& shader);
     ~Material();
 
     bool isTransparent() const;
-    void applyUniforms(u32 frameNumber);
+    void applyUniforms(u64 frameNumber);
 
-    u32 getId() const;
+    u64 getId() const;
     const std::string& getName() const;
 
     void destroyTextureMaps(ResourcePools& resourcePools);
 
 private:
+    u64 m_id;
+
     Properties m_props;
     Shader& m_shader;
 
-    u32 m_id;
-    u32 m_renderFrameNumber;
-    u32 m_instanceId;
+    u64 m_renderFrameNumber;
+    u64 m_instanceId;
 };
 
 }  // namespace sl

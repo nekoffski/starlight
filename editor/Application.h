@@ -12,7 +12,7 @@
 #include "starlight/renderer/RendererFrontend.h"
 #include "starlight/renderer/views/RenderView.h"
 
-#include "starlight/resource/ResourceManager.h"
+#include "starlight/resource/ResourceContext.h"
 
 #include "starlight/scene/Scene.h"
 
@@ -33,7 +33,7 @@ private:
     sl::Context m_context;
     sl::Window* m_window;
     sl::RendererFrontend m_renderer;
-    sl::ResourceManager m_resourceManager;
+    sl::ResourceContext m_resourceContext;
 
     UI m_ui;
 

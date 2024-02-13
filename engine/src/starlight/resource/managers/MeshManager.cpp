@@ -10,32 +10,18 @@ MeshManager::MeshManager(
     createDefaultGeometries();
 }
 
-MeshManager::~MeshManager() { destroyAll(); }
-
-Mesh* MeshManager::acquire(u32 id) {
-    if (auto mesh = m_meshes.find(id); mesh != m_meshes.end()) return mesh->second;
-    LOG_WARN("Mesh with id='{}' not found", id);
-    return nullptr;
-}
-
-void MeshManager::destroy(uint32_t id) {
-    if (auto mesh = m_meshes.find(id); mesh == m_meshes.end()) {
-        LOG_WARN("Trying to destroy mesh '{}' that couldn't be found", mesh->first);
-        return;
-    } else {
-        m_resourcePools.destroyMesh(*mesh->second);
-    }
-}
-
-void MeshManager::destroyAll() {
-    LOG_TRACE("Destroying all meshes");
-    for (auto& mesh : m_meshes | std::views::values)
+MeshManager::~MeshManager() {
+    forEach([&]([[maybe_unused]] u64, Mesh* mesh) {
         m_resourcePools.destroyMesh(*mesh);
-    m_meshes.clear();
+    });
 }
 
 Mesh* MeshManager::getDefault3D() { return m_defaultMesh3D; }
 Mesh* MeshManager::getDefault2D() { return m_defaultMesh2D; }
+
+void MeshManager::destroyInternals(Mesh* mesh) {}
+
+std::string MeshManager::getResourceName() const { return "Mesh"; }
 
 void MeshManager::createDefaultGeometries() {
     // 3D

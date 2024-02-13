@@ -22,19 +22,19 @@ TextureManager::TextureManager(ResourcePools& resourcePools) :
 }
 
 TextureManager::~TextureManager() {
-    LOG_TRACE("Destroying TextureManager");
-    m_resourcePools.destroyTextureMap(*TextureMap::defaultMap);
-    destroyAll();
+    forEach([&]([[maybe_unused]] u64, Texture* texture) {
+        m_resourcePools.destroyTexture(*texture);
+    });
 }
 
 Texture* TextureManager::load(const std::string& name) {
     LOG_DEBUG("Loading texture '{}'", name);
 
-    if (auto texture = m_textures.find(name); texture != m_textures.end()) {
+    if (auto texture = acquire(name); texture) {
         LOG_INFO(
           "Texture {} already loaded, returning pointer to the existing one", name
         );
-        return texture->second;
+        return texture;
     }
 
     const auto imageData =
@@ -51,27 +51,23 @@ Texture* TextureManager::load(const std::string& name) {
         .type          = Texture::Type::flat
     };
 
-    m_textures[name] = m_resourcePools.createTexture(
+    auto texture = m_resourcePools.createTexture(
       props,
       std::span<u8>(
         imageData->pixels, imageData->width * imageData->height * imageData->channels
       )
     );
-    auto texture                     = m_textures[name];
-    m_texturesById[texture->getId()] = texture;
-
-    return texture;
+    return storeResource(props.name, texture->getId(), texture);
 }
 
 Texture* TextureManager::loadCubeTexture(const std::string& name) {
     // +X, -X, +Y, -Y, +Z, -Z
-
     LOG_DEBUG("Loading cube map: {}", name);
-    if (auto texture = m_textures.find(name); texture != m_textures.end()) {
+    if (auto texture = acquire(name); texture) {
         LOG_INFO(
           "Texture {} already loaded, returning pointer to the existing one", name
         );
-        return texture->second;
+        return texture;
     }
 
     // TODO: assuming jpg for now but implement some enum to make it configurable
@@ -130,30 +126,15 @@ Texture* TextureManager::loadCubeTexture(const std::string& name) {
         std::memcpy(&buffer[offset], imageData->pixels, chunkSize);
     }
 
-    m_textures[name]                 = m_resourcePools.createTexture(props, buffer);
-    auto texture                     = m_textures[name];
-    m_texturesById[texture->getId()] = texture;
-
-    return texture;
+    auto texture = m_resourcePools.createTexture(props, buffer);
+    return storeResource(props.name, texture->getId(), texture);
 }
 
-Texture* TextureManager::acquire(const std::string& name) const {
-    if (auto texture = m_textures.find(name); texture != m_textures.end()) {
-        return texture->second;
-    } else {
-        LOG_WARN("Texture {} not found", name);
-        return nullptr;
-    }
+void TextureManager::destroyInternals(Texture* texture) {
+    m_resourcePools.destroyTexture(*texture);
 }
 
-Texture* TextureManager::acquire(u64 id) const {
-    if (auto texture = m_texturesById.find(id); texture != m_texturesById.end()) {
-        return texture->second;
-    } else {
-        LOG_WARN("Texture with id={} not found", id);
-        return nullptr;
-    }
-}
+std::string TextureManager::getResourceName() const { return "Texture"; }
 
 static void setColor(uint32_t i, const Vec4f& color, std::vector<u8>& pixels) {
     pixels[i]     = color.x;
@@ -198,8 +179,8 @@ void TextureManager::createDefaultTexture() {
           pixels
         );
     }
-    m_textures[defaultTextureName] = m_resourcePools.createTexture(props, pixels);
-    Texture::defaultDiffuse        = m_textures[defaultTextureName];
+    auto texture            = m_resourcePools.createTexture(props, pixels);
+    Texture::defaultDiffuse = storeResource(props.name, texture->getId(), texture);
     LOG_TRACE("Default texture created");
 }
 
@@ -215,9 +196,8 @@ void TextureManager::createDefaultSpecularMap() {
         .type          = Texture::Type::flat
     };
     std::vector<u8> pixels(props.width * props.height * props.channels, 0);
-    m_textures[defaultSpecularMapName] =
-      m_resourcePools.createTexture(props, pixels);
-    Texture::defaultSpecular = m_textures[defaultSpecularMapName];
+    auto texture             = m_resourcePools.createTexture(props, pixels);
+    Texture::defaultSpecular = storeResource(props.name, texture->getId(), texture);
     LOG_TRACE("Default specular map created");
 }
 
@@ -238,27 +218,9 @@ void TextureManager::createDefaultNormalMap() {
     for (int i = 0; i < pixels.size(); i += props.channels)
         setColor(i, zAxis, pixels);
 
-    m_textures[defaultNormalMapName] = m_resourcePools.createTexture(props, pixels);
-    Texture::defaultNormal           = m_textures[defaultNormalMapName];
+    auto texture           = m_resourcePools.createTexture(props, pixels);
+    Texture::defaultNormal = storeResource(props.name, texture->getId(), texture);
     LOG_TRACE("Default specular normal map created");
-}
-
-void TextureManager::destroy(const std::string& name) {
-    LOG_DEBUG("Destroying texture '{}'", name);
-    if (auto texture = m_textures.find(name); texture != m_textures.end())
-      [[likely]] {
-        m_resourcePools.destroyTexture(*texture->second);
-        m_textures.erase(texture);
-    } else {
-        LOG_WARN("Attempt to destroy not existing texture - {}, will ignore", name);
-    }
-}
-
-void TextureManager::destroyAll() {
-    LOG_DEBUG("Destroying all textures");
-    for (auto& texture : m_textures | std::views::values)
-        m_resourcePools.destroyTexture(*texture);
-    m_textures.clear();
 }
 
 }  // namespace sl

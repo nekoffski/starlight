@@ -2,15 +2,21 @@
 
 #include "starlight/core/utils/Log.h"
 
+#include "starlight/resource/resources/ShaderConfig.h"
+
 namespace sl {
 
 ShaderManager::ShaderManager(
-  ResourcePools& resourcePools, const TextureManager& textureManager
+  ResourcePools& resourcePools, TextureManager& textureManager
 ) :
     m_resourcePools(resourcePools),
     m_textureManager(textureManager) {}
 
-ShaderManager::~ShaderManager() { destroyAll(); }
+ShaderManager::~ShaderManager() {
+    forEach([&]([[maybe_unused]] u64, Shader* shader) {
+        m_resourcePools.destroyShader(*shader);
+    });
+}
 
 Shader* ShaderManager::load(const std::string& name) {
     LOG_TRACE("Loading shader: {}", name);
@@ -27,32 +33,13 @@ Shader* ShaderManager::load(const std::string& name) {
         LOG_ERROR("Could not create shader '{}'", name);
         return nullptr;
     }
-
-    m_shaders[name] = shader;
-    return shader;
+    return storeResource(name, shader->getId(), shader);
 }
 
-Shader* ShaderManager::acquire(const std::string& name) {
-    if (auto shader = m_shaders.find(name); shader != m_shaders.end())
-        return shader->second;
-    LOG_WARN("Shader with name='{}' not found", name);
-    return nullptr;
+void ShaderManager::destroyInternals(Shader* shader) {
+    m_resourcePools.destroyShader(*shader);
 }
 
-void ShaderManager::destroy(const std::string& name) {
-    if (auto shader = m_shaders.find(name); shader == m_shaders.end()) {
-        LOG_WARN("Trying to destroy shader '{}' that couldn't be found", name);
-        return;
-    } else {
-        m_resourcePools.destroyShader(*shader->second);
-    }
-}
-
-void ShaderManager::destroyAll() {
-    LOG_TRACE("Destroying all shaders");
-    for (auto& shader : m_shaders | std::views::values)
-        m_resourcePools.destroyShader(*shader);
-    m_shaders.clear();
-}
+std::string ShaderManager::getResourceName() const { return "Shader"; }
 
 }  // namespace sl
