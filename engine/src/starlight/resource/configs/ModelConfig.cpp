@@ -137,7 +137,7 @@ std::vector<u32> ModelProcessor::processIndices(const aiMesh* model) {
 
 void ModelProcessor::processNode(const aiNode* node) {
     LOG_DEBUG(
-      "Processing assimp nod;, meshes={}, children={}", node->mNumMeshes,
+      "Processing assimp node, meshes={}, children={}", node->mNumMeshes,
       node->mNumChildren
     );
     m_config.meshes.reserve(node->mNumMeshes);
@@ -180,6 +180,8 @@ void ModelProcessor::processMaterial(aiMaterial* material) {
     LOG_DEBUG(
       "Processing material: {}, properties={}", name, material->mNumProperties
     );
+    for (int i = 0; i < material->mNumProperties; ++i)
+        LOG_TRACE("\t{}", toString(material->mProperties[i]->mKey));
 
     auto config = MaterialConfig::createDefault(name);
 
@@ -196,7 +198,7 @@ void ModelProcessor::processMaterial(aiMaterial* material) {
         );
     }
 
-    float shininess;
+    float shininess = 0.0f;
     if (material->Get(AI_MATKEY_SHININESS, shininess) == AI_SUCCESS) {
         config.shininess = shininess;
         LOG_DEBUG("\tShininess={}", config.shininess);
@@ -205,33 +207,54 @@ void ModelProcessor::processMaterial(aiMaterial* material) {
     }
 
     aiString str;
-    if (material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0), str) == AI_SUCCESS) {
-        config.diffuseMap = toString(str);
-        LOG_DEBUG("\tDiffuse map='{}'", config.diffuseMap);
+
+    if (auto textureCount = material->GetTextureCount(aiTextureType_DIFFUSE);
+        textureCount > 0) {
+        LOG_TRACE("\t{} diffuse textures", textureCount);
+        if (material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0), str) == AI_SUCCESS) {
+            config.diffuseMap = toString(str);
+            LOG_DEBUG("\tDiffuse map='{}'", config.diffuseMap);
+        } else {
+            LOG_WARN(
+              "\tCould not load diffuse map, setting default='{}'", config.diffuseMap
+            );
+        }
     } else {
-        LOG_WARN(
-          "\tCould not load diffuse map, setting default='{}'", config.diffuseMap
+        LOG_TRACE("\tNo diffuse textures, setting default='{}'", config.diffuseMap);
+    }
+
+    if (auto textureCount = material->GetTextureCount(aiTextureType_SPECULAR);
+        textureCount > 0) {
+        LOG_TRACE("\t{} specular textures", textureCount);
+        if (material->Get(AI_MATKEY_TEXTURE(aiTextureType_SPECULAR, 0), str) == AI_SUCCESS) {
+            config.specularMap = toString(str);
+            LOG_DEBUG("\tSpecular map='{}'", config.specularMap);
+        } else {
+            LOG_WARN(
+              "\tCould not load specular map, setting default='{}'",
+              config.specularMap
+            );
+        }
+    } else {
+        LOG_TRACE(
+          "\tNo specular textures, setting default='{}'", config.specularMap
         );
     }
 
-    if (material->Get(AI_MATKEY_TEXTURE(aiTextureType_SPECULAR, 0), str) == AI_SUCCESS) {
-        config.specularMap = toString(str);
-        LOG_DEBUG("\tSpecular map='{}'", config.specularMap);
+    if (auto textureCount = material->GetTextureCount(aiTextureType_HEIGHT);
+        textureCount > 0) {
+        LOG_TRACE("\t{} height maps", textureCount);
+        if (material->Get(AI_MATKEY_TEXTURE(aiTextureType_HEIGHT, 0), str) == AI_SUCCESS) {
+            config.normalMap = toString(str);
+            LOG_DEBUG("\tNormal map='{}'", config.normalMap);
+        } else {
+            LOG_WARN(
+              "\tCould not load normal map, setting default='{}'", config.normalMap
+            );
+        }
     } else {
-        LOG_WARN(
-          "\tCould not load specular map, setting default='{}'", config.specularMap
-        );
+        LOG_TRACE("\tNo height maps, setting default='{}'", config.normalMap);
     }
-
-    if (material->Get(AI_MATKEY_TEXTURE(aiTextureType_HEIGHT, 0), str) == AI_SUCCESS) {
-        config.normalMap = toString(str);
-        LOG_DEBUG("\tNormal map='{}'", config.normalMap);
-    } else {
-        LOG_WARN(
-          "\tCould not load normal map, setting default='{}'", config.normalMap
-        );
-    }
-
     m_config.materials.push_back(config);
 }
 

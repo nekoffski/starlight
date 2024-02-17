@@ -12,6 +12,8 @@ const int diffuseMap  = 0;
 const int specularMap = 1;
 const int normalMap   = 2;
 
+const float epsilon = 0.00001;
+
 layout (set = 1, binding = 1) uniform sampler2D textures[3];
 
 layout (location = 0) flat in int renderMode; // flat indicates that it's not gonna be interpolated between vertices
@@ -60,7 +62,7 @@ vec4 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir
     float diffuseFactor = max(dot(normal, -light.direction), 0.0);
 
     vec3 halfDirection = normalize(viewDirection - light.direction);
-    float specularFactor = pow(max(dot(halfDirection, normal), 0.0), localUBO.shininess);
+    float specularFactor = pow(max(dot(halfDirection, normal), epsilon), localUBO.shininess);
 
     vec4 diffuseTextureSample = texture(textures[diffuseMap], dto.textureCoordinates);
     vec4 specularTextureSample = vec4(texture(
@@ -83,7 +85,7 @@ vec4 calculatePointLight(PointLight light, vec3 normal, vec3 fragmentPosition, v
     float diff = max(dot(normal, lightDirection), 0.0);
 
     vec3 reflectDirection = reflect(-lightDirection, normal);
-    float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), localUBO.shininess);
+    float spec = pow(max(dot(viewDirection, reflectDirection), epsilon), localUBO.shininess);
 
     float d = length(light.position - fragmentPosition);
     float attenuation = 1.0 / (light.c + light.b * d + light.a * (d * d));

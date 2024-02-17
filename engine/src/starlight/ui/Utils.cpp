@@ -19,10 +19,10 @@ void namedScope(const std::string& name, Callback&& callback) {
     ImGui::PopID();
 }
 
-void treeNode(const std::string& name, Callback&& callback) {
+void treeNode(const std::string& name, std::function<void(bool)>&& callback) {
     ImGui::SetNextItemOpen(true, ImGuiCond_Once);
     if (ImGui::TreeNode(name.c_str())) {
-        callback();
+        callback(ImGui::IsItemClicked());
         ImGui::TreePop();
     }
 }

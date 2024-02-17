@@ -22,7 +22,7 @@ void withColor(const Vec3f& color, Callback&& callback);
 
 void namedScope(const std::string& name, Callback&& callback);
 
-void treeNode(const std::string& name, Callback&& callback);
+void treeNode(const std::string& name, std::function<void(bool)>&& callback);
 
 template <typename... Args>
 bool text(const std::string& formatString, Args&&... args) {

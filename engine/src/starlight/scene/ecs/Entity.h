@@ -21,7 +21,9 @@ public:
     }
 
     template <typename T> T* getComponent() {
-        return m_componentContainerMap.getComponent<T>(m_id);
+        return m_componentContainerMap.hasComponent<T>(m_id)
+                 ? m_componentContainerMap.getComponent<T>(m_id)
+                 : nullptr;
     }
 
     explicit Entity(

@@ -84,7 +84,8 @@ int Application::run() {
     auto entity1 = m_scene.addEntity("My-Entity");
     auto entity2 = m_scene.addEntity();
 
-    auto model = sl::ModelManager::get().load("falcon");
+    auto model1 = sl::ModelManager::get().load("falcon");
+    auto model  = sl::ModelManager::get().load("tower");
 
     entity1->addComponent<sl::ModelComponent>(model);
     entity1->addComponent<sl::TransformComponent>();

@@ -42,7 +42,7 @@ void InspectorPanel::renderEntityUI(sl::u64 entityId) {
 
     if (entity->hasComponent<sl::ModelComponent>()) {
         auto component = entity->getComponent<sl::ModelComponent>();
-        sl::ui::treeNode(ICON_FA_PLANE "  Model", [&]() {
+        sl::ui::treeNode(ICON_FA_PLANE "  Model", [&]([[maybe_unused]] bool) {
             sl::ui::text("Meshes");
             for (auto& mesh : component->model->getMeshes()) {
                 auto properties = mesh->getProperties();
@@ -54,23 +54,26 @@ void InspectorPanel::renderEntityUI(sl::u64 entityId) {
 
     if (entity->hasComponent<sl::TransformComponent>()) {
         auto component = entity->getComponent<sl::TransformComponent>();
-        sl::ui::treeNode(ICON_FA_STREET_VIEW "  Transform", [&]() {
-            auto& transform = component->transform;
+        sl::ui::treeNode(
+          ICON_FA_STREET_VIEW "  Transform",
+          [&]([[maybe_unused]] bool) {
+              auto& transform = component->transform;
 
-            sl::ui::namedScope("transform-component-ui", [&]() {
-                m_translationSlider.render([&](const sl::Vec3f& data) {
-                    transform.setPosition(data);
-                });
+              sl::ui::namedScope("transform-component-ui", [&]() {
+                  m_translationSlider.render([&](const sl::Vec3f& data) {
+                      transform.setPosition(data);
+                  });
 
-                m_scaleSlider.render([&](const sl::Vec3f& data) {
-                    transform.setScale(data);
-                });
+                  m_scaleSlider.render([&](const sl::Vec3f& data) {
+                      transform.setScale(data);
+                  });
 
-                m_orientationSlider.render([&](const sl::Vec3f& data) {
-                    transform.setRotation(sl::math::orientate4(data));
-                });
-            });
-        });
+                  m_orientationSlider.render([&](const sl::Vec3f& data) {
+                      transform.setRotation(sl::math::orientate4(data));
+                  });
+              });
+          }
+        );
         sl::ui::separator();
     }
 }
