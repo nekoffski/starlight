@@ -12,7 +12,6 @@ class Mesh {
 public:
     struct Properties {
         std::string name;
-        Material* material;
     };
 
     struct Data {

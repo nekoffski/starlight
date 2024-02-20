@@ -37,7 +37,8 @@ UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer, sl::Scene* scene) :
 
     ),
     m_scenePanel(m_scene, &m_state, m_logger),
-    m_inspectorPanel(m_scene, &m_state, m_logger),
+    m_resourceInspectorPanel(m_scene, &m_state, m_logger),
+    m_entityInspectorPanel(m_scene, &m_state, m_logger),
     m_resourcesPanel(&m_state, m_logger), m_shouldExit(false) {
     m_mainMenu.addMenu("File")
       .addItem("Create", []() {})
@@ -67,9 +68,13 @@ UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer, sl::Scene* scene) :
           sl::ui::text("u     - on/off update");
       });
 
-    m_rightCombo.addPanel(ICON_FA_EYE "  Inspector", [&]() {
-        m_inspectorPanel.render();
-    });
+    m_rightCombo
+      .addPanel(
+        ICON_FA_CUBE "  Entity Inspector", [&]() { m_entityInspectorPanel.render(); }
+      )
+      .addPanel(ICON_FA_FILE "  Resource Inspector", [&]() {
+          m_resourceInspectorPanel.render();
+      });
 
     m_logger->debug("UI initialized");
 }

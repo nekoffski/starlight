@@ -39,13 +39,14 @@ ScenePanel::ScenePanel(sl::Scene* scene, UIState* state, Logger* logger) :
                             if (auto modelComponent =
                                   entity->getComponent<sl::ModelComponent>();
                                 modelComponent) {
-                                for (auto& mesh :
-                                     modelComponent->model->getMeshes()) {
-                                    sl::ui::text(
-                                      "\t\t\t{}  {}", ICON_FA_PROJECT_DIAGRAM,
-                                      mesh->getProperties().name
-                                    );
-                                }
+                                modelComponent->model->forEachMesh(
+                                  [&](sl::Mesh* mesh) {
+                                      sl::ui::text(
+                                        "\t\t\t{}  {}", ICON_FA_PROJECT_DIAGRAM,
+                                        mesh->getProperties().name
+                                      );
+                                  }
+                                );
                             }
                         });
                     }

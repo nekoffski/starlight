@@ -15,7 +15,6 @@ namespace detail {
 
 struct MeshConfigBase {
     std::string name;
-    std::string materialName;
     std::vector<u32> indices;
 };
 

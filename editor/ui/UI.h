@@ -10,7 +10,8 @@
 #include "starlight/scene/Scene.h"
 
 #include "ScenePanel.h"
-#include "InspectorPanel.h"
+#include "EntityInspectorPanel.h"
+#include "ResourceInspectorPanel.h"
 #include "ResourcesPanel.h"
 #include "Console.h"
 
@@ -45,7 +46,8 @@ private:
     UIState m_state;
 
     ScenePanel m_scenePanel;
-    InspectorPanel m_inspectorPanel;
+    ResourceInspectorPanel m_resourceInspectorPanel;
+    EntityInspectorPanel m_entityInspectorPanel;
     ResourcesPanel m_resourcesPanel;
 
     bool m_shouldExit;

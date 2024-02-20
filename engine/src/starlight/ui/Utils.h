@@ -36,6 +36,8 @@ bool slider(const std::string& name, Vec3f& data, const StepInterval<float>& ran
 
 bool button(const std::string& text, const Vec2f& size = { 0.0f, 0.0f });
 
+void closeCurrentPopup();
+void sameLine();
 void lineBreak();
 void separator();
 

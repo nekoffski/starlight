@@ -162,8 +162,9 @@ void ModelProcessor::processModel(const aiMesh* model, int index) {
 
     MeshConfig3D config;
     config.vertices.reserve(model->mNumVertices);
-    config.materialName = materialName;
-    config.name         = fmt::format("{}_mesh_{}", m_name, index);
+    config.name = fmt::format("{}_mesh_{}", m_name, index);
+
+    m_config.meshToMaterial[config.name] = materialName;
 
     for (int i = 0; i < model->mNumVertices; ++i)
         config.vertices.push_back(processVertex(model, i, hasNormals, hasTangents));

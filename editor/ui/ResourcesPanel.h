@@ -10,8 +10,11 @@ public:
     void render();
 
 private:
+    void renderLoadPopup();
+
     UIState* m_state;
     Logger* m_logger;
 
     sl::ui::TabMenu m_resourcesTab;
+    sl::ui::Popup m_loadPopup;
 };

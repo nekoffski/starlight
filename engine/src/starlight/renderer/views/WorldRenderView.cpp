@@ -78,22 +78,24 @@ void WorldRenderView::render(
           transparentGeometries.reserve(128);
 
           for (auto& model : packet.models) {
-              for (const auto& mesh : model->getMeshes()) {
-                  // TODO: shouldn't the material be bound to model instead of
-                  // mesh?
-                  const auto& modelMatrix = model->getModelMatrix();
-                  auto material           = mesh->getProperties().material;
+              const auto& modelMatrix = model->getModelMatrix();
 
-                  if (material->isTransparent()) {
-                      auto center         = modelMatrix * mesh->getExtent().center;
-                      auto cameraDistance = glm::distance2(cameraPosition, center);
-                      transparentGeometries.emplace_back(
-                        mesh, material, modelMatrix, cameraDistance
-                      );
-                  } else {
-                      meshes.emplace_back(mesh, material, modelMatrix);
-                  }
-              }
+              model->forEachMaterial(
+                [&](Material* material, std::span<Mesh*> modelMeshes) {
+                    for (auto& mesh : modelMeshes) {
+                        if (material->isTransparent()) {
+                            auto center = modelMatrix * mesh->getExtent().center;
+                            auto cameraDistance =
+                              glm::distance2(cameraPosition, center);
+                            transparentGeometries.emplace_back(
+                              mesh, material, modelMatrix, cameraDistance
+                            );
+                        } else {
+                            meshes.emplace_back(mesh, material, modelMatrix);
+                        }
+                    }
+                }
+              );
           }
 
           std::sort(

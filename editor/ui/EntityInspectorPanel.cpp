@@ -1,41 +1,29 @@
-#include "InspectorPanel.h"
+#include "EntityInspectorPanel.h"
 
 #include "starlight/scene/components/All.h"
 #include "starlight/resource/All.h"
 
-InspectorPanel::InspectorPanel(sl::Scene* scene, UIState* state, Logger* logger) :
-    m_scene(scene), m_state(state), m_logger(logger), m_menu("Inspector"),
+EntityInspectorPanel::EntityInspectorPanel(
+  sl::Scene* scene, UIState* state, Logger* logger
+) :
+    m_scene(scene),
+    m_state(state), m_logger(logger),
     m_translationSlider("Translation", { .min = -15.0, .max = 15.0f, .step = 0.1f }),
     m_scaleSlider(
       "Scale", { .min = 0.0, .max = 5.0f, .step = 0.1f }, sl::Vec3f{ 1.0f }
     ),
     m_orientationSlider(
       "Orientation", { .min = -3.14, .max = 3.14, .step = 0.01f }
-    ) {
-    m_menu
-      .addTab(
-        ICON_FA_CUBE "  Entity",
-        [&]() {
-            if (m_state->selectedEntityId)
-                renderEntityUI(*m_state->selectedEntityId);
-            else
-                sl::ui::text("No entity selected");
-        }
-      )
-      .addTab(ICON_FA_FILE "  Resource", [&]() {
-          if (m_state->selectedResourceId) {
-              renderResourceUI(
-                *m_state->selectedResourceId, *m_state->selectedResourceType
-              );
-          } else {
-              sl::ui::text("No resource selected");
-          }
-      });
+    ) {}
+
+void EntityInspectorPanel::render() {
+    if (m_state->selectedEntityId)
+        renderEntityUI(*m_state->selectedEntityId);
+    else
+        sl::ui::text("No entity selected");
 }
 
-void InspectorPanel::render() { m_menu.render(); }
-
-void InspectorPanel::renderEntityUI(sl::u64 entityId) {
+void EntityInspectorPanel::renderEntityUI(sl::u64 entityId) {
     auto entity = m_scene->getEntity(entityId);
     sl::ui::text("Entity: {}/{}", entity->getId(), entity->getName());
     sl::ui::separator();
@@ -44,10 +32,10 @@ void InspectorPanel::renderEntityUI(sl::u64 entityId) {
         auto component = entity->getComponent<sl::ModelComponent>();
         sl::ui::treeNode(ICON_FA_PLANE "  Model", [&]([[maybe_unused]] bool) {
             sl::ui::text("Meshes");
-            for (auto& mesh : component->model->getMeshes()) {
+            component->model->forEachMesh([&](sl::Mesh* mesh) {
                 auto properties = mesh->getProperties();
                 sl::ui::text("{}", properties.name);
-            }
+            });
         });
         sl::ui::separator();
     }
@@ -58,7 +46,6 @@ void InspectorPanel::renderEntityUI(sl::u64 entityId) {
           ICON_FA_STREET_VIEW "  Transform",
           [&]([[maybe_unused]] bool) {
               auto& transform = component->transform;
-
               sl::ui::namedScope("transform-component-ui", [&]() {
                   m_translationSlider.render([&](const sl::Vec3f& data) {
                       transform.setPosition(data);
@@ -76,24 +63,4 @@ void InspectorPanel::renderEntityUI(sl::u64 entityId) {
         );
         sl::ui::separator();
     }
-}
-
-void InspectorPanel::renderResourceUI(sl::u64 resourceId, ResourceType type) {
-    switch (type) {
-        case ResourceType::texture:
-            return renderTextureUI(sl::TextureManager::get().acquire(resourceId));
-    }
-}
-
-void InspectorPanel::renderTextureUI(sl::Texture* texture) {
-    sl::ui::namedScope("texture-resource-panel", [&]() {
-        const auto props = texture->getProperties();
-        sl::ui::text("Texture");
-        sl::ui::separator();
-        sl::ui::text("{}", props.name);
-        sl::ui::text("Size: {}x{}", props.width, props.height);
-        sl::ui::text("Channels: {}", props.channels);
-        sl::ui::text("Transparent: {}", props.isTransparent);
-        sl::ui::text("Writable: {}", props.isWritable);
-    });
 }

@@ -3,6 +3,7 @@
 #include <string>
 #include <optional>
 #include <vector>
+#include <unordered_map>
 
 #include "starlight/core/utils/FileSystem.h"
 #include "MeshConfig.h"
@@ -21,6 +22,8 @@ struct ModelConfig {
 
     std::vector<MaterialConfig> materials;
     std::vector<MeshConfig3D> meshes;
+
+    std::unordered_map<std::string, std::string> meshToMaterial;
 };
 
 }  // namespace sl

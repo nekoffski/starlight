@@ -39,11 +39,8 @@ private:
     void createDefaultGeometries();
 
     Mesh* createMesh(const MeshConfig auto& config) {
-        auto material =
-          m_materialManager.acquire(config.materialName)
-            ?: m_materialManager.getDefaultMaterial();
         return m_resourcePools.createMesh(
-          Mesh::Properties{ config.name, material }, config.vertices, config.indices,
+          Mesh::Properties{ config.name }, config.vertices, config.indices,
           config.calculateExtent()
         );
     }

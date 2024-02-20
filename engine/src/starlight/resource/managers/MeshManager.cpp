@@ -45,9 +45,7 @@ void MeshManager::createDefaultGeometries() {
 
         config.indices = { 0, 1, 2, 0, 3, 1 };
 
-        Mesh::Properties props{
-            "default-3d-mesh", m_materialManager.getDefaultMaterial()
-        };
+        Mesh::Properties props{ "default-3d-mesh" };
         return m_resourcePools.createMesh(
           props, vertices, config.indices, config.calculateExtent()
         );
@@ -75,9 +73,7 @@ void MeshManager::createDefaultGeometries() {
 
         config.indices = { 2, 1, 0, 3, 0, 1 };
 
-        Mesh::Properties props{
-            "default-2d-mesh", m_materialManager.getDefaultMaterial()
-        };
+        Mesh::Properties props{ "default-2d-mesh" };
         return m_resourcePools.createMesh(
           props, vertices, config.indices, config.calculateExtent()
         );

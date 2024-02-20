@@ -59,8 +59,7 @@ MeshConfig3D MeshConfig3D::generatePlane(const PlaneProperties& props) {
             out.indices[iOffset + 5] = vOffset + 1;
         }
     }
-    out.name         = props.name;
-    out.materialName = props.materialName;
+    out.name = props.name;
 
     return out;
 }
@@ -192,8 +191,7 @@ MeshConfig3D MeshConfig3D::generateCube(const CubeProperties& props) {
         }
     }
 
-    out.name         = name;
-    out.materialName = materialName;
+    out.name = name;
     return out;
 }
 

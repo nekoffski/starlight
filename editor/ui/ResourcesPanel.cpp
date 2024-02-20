@@ -3,7 +3,8 @@
 #include "starlight/resource/All.h"
 
 ResourcesPanel::ResourcesPanel(UIState* state, Logger* logger) :
-    m_state(state), m_logger(logger), m_resourcesTab("Resources") {
+    m_state(state), m_logger(logger), m_resourcesTab("Resources"),
+    m_loadPopup("load-popup", [&]() { renderLoadPopup(); }) {
     m_resourcesTab
       .addTab(
         ICON_FA_IMAGE "  Textures",
@@ -31,8 +32,16 @@ ResourcesPanel::ResourcesPanel(UIState* state, Logger* logger) :
             );
         }
       )
-      .addTab(ICON_FA_PLANE "  Meshes", [&]() {})
+      .addTab(ICON_FA_PLANE "  Models", [&]() {})
       .addTab(ICON_FA_SUN "  Shaders", [&]() {});
 }
 
-void ResourcesPanel::render() { m_resourcesTab.render(); }
+void ResourcesPanel::render() {
+    if (sl::ui::button("Add")) m_loadPopup.open();
+
+    sl::ui::sameLine();
+    m_resourcesTab.render();
+    m_loadPopup.render();
+}
+
+void ResourcesPanel::renderLoadPopup() { sl::ui::text("Hello world!"); }

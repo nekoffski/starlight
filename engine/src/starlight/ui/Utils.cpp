@@ -33,6 +33,8 @@ bool slider(const std::string& name, Vec3f& data, const StepInterval<float>& ran
     );
 }
 
+void closeCurrentPopup() { ImGui::CloseCurrentPopup(); }
+void sameLine() { ImGui::SameLine(); }
 void separator() { ImGui::Separator(); }
 void lineBreak() { ImGui::NewLine(); }
 
