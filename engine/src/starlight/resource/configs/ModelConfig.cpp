@@ -164,8 +164,6 @@ void ModelProcessor::processModel(const aiMesh* model, int index) {
     config.vertices.reserve(model->mNumVertices);
     config.name = fmt::format("{}_mesh_{}", m_name, index);
 
-    m_config.meshToMaterial[config.name] = materialName;
-
     for (int i = 0; i < model->mNumVertices; ++i)
         config.vertices.push_back(processVertex(model, i, hasNormals, hasTangents));
     config.indices = processIndices(model);
@@ -173,7 +171,7 @@ void ModelProcessor::processModel(const aiMesh* model, int index) {
     if (not hasNormals) config.generateNormals();
     if (not hasTangents) config.generateTangents();
 
-    m_config.meshes.push_back(std::move(config));
+    m_config.meshes[materialName].push_back(std::move(config));
 }
 
 void ModelProcessor::processMaterial(aiMaterial* material) {

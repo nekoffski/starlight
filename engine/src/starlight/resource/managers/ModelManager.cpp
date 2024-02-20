@@ -27,22 +27,18 @@ Model* ModelManager::load(const std::string& name) {
 
     auto model = m_models.create();
 
-    for (auto& material : config->materials) m_materialManager.load(material);
-
-    for (const auto& meshConfig : config->meshes) {
-        auto mesh = m_meshManager.load(meshConfig);
-        auto material =
-          m_materialManager.acquire(config->meshToMaterial[meshConfig.name]);
-        model->addMesh(material, mesh);
+    for (const auto& materialConfig : config->materials) {
+        auto material = m_materialManager.load(materialConfig);
+        for (auto& meshConfig : config->meshes[material->getName()]) {
+            auto mesh = m_meshManager.load(meshConfig);
+            model->addMesh(material, mesh);
+        }
     }
-
     return storeResource(name, model->getId(), model);
 }
 
 void ModelManager::destroyInternals(Model* model) {
-    model->forEachMaterial([&]([[maybe_unused]] Material*, std::span<Mesh*> meshes) {
-        for (auto& mesh : meshes) m_meshManager.destroy(mesh);
-    });
+    model->forEachMesh([&](Mesh* mesh) { m_meshManager.destroy(mesh); });
 }
 
 }  // namespace sl

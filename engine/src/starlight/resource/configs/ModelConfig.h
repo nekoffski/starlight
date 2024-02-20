@@ -21,9 +21,7 @@ struct ModelConfig {
     );
 
     std::vector<MaterialConfig> materials;
-    std::vector<MeshConfig3D> meshes;
-
-    std::unordered_map<std::string, std::string> meshToMaterial;
+    std::unordered_map<std::string, std::vector<MeshConfig3D>> meshes;
 };
 
 }  // namespace sl
