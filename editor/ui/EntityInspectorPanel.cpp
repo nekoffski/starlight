@@ -12,9 +12,8 @@ EntityInspectorPanel::EntityInspectorPanel(
     m_scaleSlider(
       "Scale", { .min = 0.0, .max = 5.0f, .step = 0.1f }, sl::Vec3f{ 1.0f }
     ),
-    m_orientationSlider(
-      "Orientation", { .min = -3.14, .max = 3.14, .step = 0.01f }
-    ) {}
+    m_orientationSlider("Orientation", { .min = -3.14, .max = 3.14, .step = 0.01f }),
+    m_selectedComponentIndex(0) {}
 
 void EntityInspectorPanel::render() {
     if (m_state->selectedEntityId)
@@ -25,18 +24,79 @@ void EntityInspectorPanel::render() {
 
 void EntityInspectorPanel::renderEntityUI(sl::u64 entityId) {
     auto entity = m_scene->getEntity(entityId);
+    auto& data  = m_entitiesData[entity->getId()];
+
     sl::ui::text("Entity: {}/{}", entity->getId(), entity->getName());
     sl::ui::separator();
 
-    if (entity->hasComponent<sl::ModelComponent>()) {
-        auto component = entity->getComponent<sl::ModelComponent>();
-        sl::ui::treeNode(ICON_FA_PLANE "  Model", [&]([[maybe_unused]] bool) {
-            sl::ui::text("Meshes");
-            component->model->forEachMesh([&](sl::Mesh* mesh) {
-                auto properties = mesh->getProperties();
-                sl::ui::text("{}", properties.name);
-            });
-        });
+    std::vector<const char*> components = { "Mesh", "Transform", "Material" };
+
+    if (sl::ui::button("Add")) {
+        if (m_selectedComponentIndex == 0) {
+            entity->addComponent<sl::MeshComponent>();
+        } else if (m_selectedComponentIndex == 1) {
+            entity->addComponent<sl::TransformComponent>();
+        } else if (m_selectedComponentIndex == 2) {
+            entity->addComponent<sl::MaterialComponent>();
+        }
+    }
+
+    sl::ui::sameLine();
+
+    ImGui::Combo(
+      "##combo2", &m_selectedComponentIndex, components.data(), components.size()
+    );
+    sl::ui::separator();
+
+    if (entity->hasComponent<sl::MeshComponent>()) {
+        sl::ui::treeNode(
+          ICON_FA_PROJECT_DIAGRAM "  Mesh",
+          [&]([[maybe_unused]] bool) {
+              auto meshComponent = entity->getComponent<sl::MeshComponent>();
+              auto meshesNames   = sl::MeshManager::get().getNames();
+
+              std::vector<const char*> names = { "None" };
+              for (auto& name : meshesNames) names.push_back(name.c_str());
+
+              if (ImGui::Combo(
+                    "##combo", &data.selectedMeshIndex, names.data(), names.size()
+                  )) {
+                  if (data.selectedMeshIndex != 0) {
+                      const auto meshName = names[data.selectedMeshIndex];
+                      meshComponent->mesh = sl::MeshManager::get().acquire(meshName);
+                  } else {
+                      meshComponent->mesh = nullptr;
+                  }
+              }
+          }
+        );
+        sl::ui::separator();
+    }
+
+    if (entity->hasComponent<sl::MaterialComponent>()) {
+        sl::ui::treeNode(
+          ICON_FA_GLOBE_AMERICAS "  Material",
+          [&]([[maybe_unused]] bool) {
+              auto materialComponent = entity->getComponent<sl::MaterialComponent>();
+              auto materialNames     = sl::MaterialManager::get().getNames();
+
+              std::vector<const char*> names = { "None" };
+              for (auto& name : materialNames) names.push_back(name.c_str());
+
+              if (ImGui::Combo(
+                    "##combo333", &data.selectedMaterialIndex, names.data(),
+                    names.size()
+                  )) {
+                  if (data.selectedMaterialIndex != 0) {
+                      const auto materialName = names[data.selectedMaterialIndex];
+                      materialComponent->material =
+                        sl::MaterialManager::get().acquire(materialName);
+                  } else {
+                      materialComponent->material = nullptr;
+                  }
+              }
+          }
+        );
         sl::ui::separator();
     }
 

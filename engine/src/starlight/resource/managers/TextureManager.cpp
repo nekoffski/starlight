@@ -172,8 +172,8 @@ void TextureManager::createDefaultTexture() {
         setColor(
           i,
           xPattern * yPattern > 0.0f
-            ? Vec4f{ 0.0f }
-            : Vec4f{ 255.0f, 0.0f, 0.0f, 255.0f },
+            ? Vec4f{ 0.0f, 0.0f, 0.0f, 255.0f }
+            : Vec4f{ 255.0f, 255.0f, 255.0f, 255.0f },
           pixels
         );
     }

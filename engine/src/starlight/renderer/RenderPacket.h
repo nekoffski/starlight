@@ -1,13 +1,20 @@
 #pragma once
 
-#include <span>
+#include "starlight/core/math/Glm.h"
 
-#include "Model.h"
+#include "gpu/Mesh.h"
+#include "Material.h"
 
 namespace sl {
 
+struct RenderEntity {
+    Mat4f worldTransform;
+    Mesh* mesh;
+    Material* material;
+};
+
 struct RenderPacket {
-    std::vector<Model*> models;
+    std::vector<RenderEntity> entities;
 };
 
 }  // namespace sl

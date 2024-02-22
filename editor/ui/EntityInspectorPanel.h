@@ -10,6 +10,11 @@
 #include "starlight/renderer/gpu/Texture.h"
 
 class EntityInspectorPanel {
+    struct EntityData {
+        int selectedMeshIndex     = 0;
+        int selectedMaterialIndex = 0;
+    };
+
 public:
     explicit EntityInspectorPanel(sl::Scene* scene, UIState* state, Logger* logger);
 
@@ -28,4 +33,8 @@ private:
     sl::ui::Slider3 m_translationSlider;
     sl::ui::Slider3 m_scaleSlider;
     sl::ui::Slider3 m_orientationSlider;
+
+    int m_selectedComponentIndex;
+
+    std::unordered_map<sl::u64, EntityData> m_entitiesData;
 };

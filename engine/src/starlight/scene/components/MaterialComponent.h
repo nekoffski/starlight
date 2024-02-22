@@ -1,16 +1,15 @@
 #pragma once
 
 #include "starlight/core/Core.h"
-
-#include "starlight/renderer/Model.h"
+#include "starlight/renderer/Material.h"
 
 namespace sl {
 
-struct ModelComponent {
+struct MaterialComponent {
     u64 id;
     u64 entityId;
 
-    Model* model;
+    Material* material = nullptr;
 };
 
 }  // namespace sl

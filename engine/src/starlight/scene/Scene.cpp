@@ -1,13 +1,15 @@
 #include "Scene.h"
 
-#include "components/ModelComponent.h"
-#include "components/TransformComponent.h"
+#include "components/All.h"
+
+#include "starlight/resource/All.h"
 
 namespace sl {
 
 Scene::Scene(u32 maxEntities) : m_entities("Entities", maxEntities) {
-    m_componentMap.registerContainer<ModelComponent>();
+    m_componentMap.registerContainer<MeshComponent>();
     m_componentMap.registerContainer<TransformComponent>();
+    m_componentMap.registerContainer<MaterialComponent>();
 }
 
 Entity* Scene::addEntity(const std::string& name) {
@@ -20,19 +22,27 @@ Entity* Scene::getEntity(u64 id) { return m_entities.get(id); }
 
 RenderPacket Scene::getRenderPacket() {
     RenderPacket packet{};
-    packet.models.reserve(128);
+    packet.entities.reserve(128);
 
-    m_componentMap.getComponents<ModelComponent>()->forEach(
-      [&](ModelComponent* component) -> void {
-          auto model  = component->model;
+    m_componentMap.getComponents<MeshComponent>()->forEach(
+      [&](MeshComponent* component) -> void {
+          if (component->mesh == nullptr) [[unlikely]]
+              return;
+
           auto entity = m_entities.get(component->entityId);
-          if (entity->hasComponent<TransformComponent>()) {
-              // TODO: consider binding it once on adding Transform/Model components
-              auto& transform =
-                entity->getComponent<TransformComponent>()->transform;
-              model->setTransform(&transform);
-          }
-          packet.models.push_back(model);
+
+          auto worldTransform =
+            entity->hasComponent<TransformComponent>()
+              ? entity->getComponent<TransformComponent>()->transform.getModel()
+              : identityMatrix;
+
+          auto materialComponent = entity->getComponent<MaterialComponent>();
+          auto material =
+            (materialComponent && materialComponent->material)
+              ? materialComponent->material
+              : MaterialManager::get().getDefaultMaterial();
+
+          packet.entities.emplace_back(worldTransform, component->mesh, material);
       }
     );
     return packet;

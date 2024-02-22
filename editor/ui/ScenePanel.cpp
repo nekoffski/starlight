@@ -11,6 +11,7 @@ ScenePanel::ScenePanel(sl::Scene* scene, UIState* state, Logger* logger) :
         [&]() {
             if (sl::ui::button("Add Entity")) {
                 m_logger->debug("Adding new entity");
+                m_scene->addEntity();
             }
             sl::ui::separator();
             sl::ui::treeNode(
@@ -35,18 +36,6 @@ ScenePanel::ScenePanel(sl::Scene* scene, UIState* state, Logger* logger) :
                                   "Selected entity with id={}", entityId
                                 );
                                 selectedEntityId = entityId;
-                            }
-                            if (auto modelComponent =
-                                  entity->getComponent<sl::ModelComponent>();
-                                modelComponent) {
-                                modelComponent->model->forEachMesh(
-                                  [&](sl::Mesh* mesh) {
-                                      sl::ui::text(
-                                        "\t\t\t{}  {}", ICON_FA_PROJECT_DIAGRAM,
-                                        mesh->getProperties().name
-                                      );
-                                  }
-                                );
                             }
                         });
                     }

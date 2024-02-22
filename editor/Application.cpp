@@ -12,7 +12,7 @@
 #include "starlight/ui/UI.h"
 #include "starlight/ui/fonts/FontAwesome.h"
 
-#include "starlight/scene/components/ModelComponent.h"
+#include "starlight/scene/components/MeshComponent.h"
 #include "starlight/scene/components/TransformComponent.h"
 
 #include "starlight/resource/All.h"
@@ -87,7 +87,7 @@ int Application::run() {
     auto model1 = sl::ModelManager::get().load("falcon");
     auto model  = sl::ModelManager::get().load("tower");
 
-    entity1->addComponent<sl::ModelComponent>(model);
+    entity1->addComponent<sl::MeshComponent>(nullptr);
     entity1->addComponent<sl::TransformComponent>();
 
     while (m_isRunning && not m_ui.shouldExit()) {

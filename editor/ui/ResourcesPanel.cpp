@@ -33,6 +33,8 @@ ResourcesPanel::ResourcesPanel(UIState* state, Logger* logger) :
         }
       )
       .addTab(ICON_FA_PLANE "  Models", [&]() {})
+      .addTab(ICON_FA_PROJECT_DIAGRAM "  Meshes", [&]() {})
+      .addTab(ICON_FA_GLOBE_AMERICAS "  Materials", [&]() {})
       .addTab(ICON_FA_SUN "  Shaders", [&]() {});
 }
 

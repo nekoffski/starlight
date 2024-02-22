@@ -5,7 +5,7 @@
 
 #include "starlight/ui/fonts/FontAwesome.h"
 
-#include "starlight/scene/components/ModelComponent.h"
+#include "starlight/scene/components/MeshComponent.h"
 #include "starlight/scene/components/TransformComponent.h"
 
 UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer, sl::Scene* scene) :

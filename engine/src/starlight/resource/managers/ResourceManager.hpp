@@ -77,6 +77,10 @@ public:
         }
     }
 
+    std::ranges::view auto getNames() const {
+        return m_resourceByName | std::views::keys;
+    }
+
 protected:
     // TODO: if causes performance issues, optimize
     void clearMapEntries(u64 id) { clearMapEntries(m_nameById[id]); }
