@@ -32,19 +32,35 @@ void EulerCamera::update(float deltaTime) {
     updateViewMatrix();
 }
 
+void EulerCamera::onScroll(float offset) { m_radius -= 2.5f * offset; }
+
 void EulerCamera::onViewportResize(u32 w, u32 h) {
     m_viewportWidth  = w;
     m_viewportHeight = h;
 }
 
 void EulerCamera::processInput(const float speed) {
-    if (WindowManager::get().isKeyPressed(SL_KEY_W)) m_pitch -= speed;
-    if (WindowManager::get().isKeyPressed(SL_KEY_S)) m_pitch += speed;
-    if (WindowManager::get().isKeyPressed(SL_KEY_D)) m_yaw -= speed;
-    if (WindowManager::get().isKeyPressed(SL_KEY_A)) m_yaw += speed;
+    auto windowManager = WindowManager::getPtr();
 
-    if (WindowManager::get().isKeyPressed(SL_KEY_1)) m_radius += speed / 5.0f;
-    if (WindowManager::get().isKeyPressed(SL_KEY_2)) m_radius -= speed / 5.0f;
+    if (windowManager->isKeyPressed(SL_KEY_W)) m_pitch -= speed;
+    if (windowManager->isKeyPressed(SL_KEY_S)) m_pitch += speed;
+    if (windowManager->isKeyPressed(SL_KEY_D)) m_yaw -= speed;
+    if (windowManager->isKeyPressed(SL_KEY_A)) m_yaw += speed;
+
+    if (windowManager->isKeyPressed(SL_KEY_1)) m_radius += speed / 5.0f;
+    if (windowManager->isKeyPressed(SL_KEY_2)) m_radius -= speed / 5.0f;
+
+    if (windowManager->isMouseButtonPressed(SL_MOUSE_BUTTON_2)) {
+        windowManager->hideCursor();
+
+        const float scaledSpeed = speed / 10.0f;
+        const auto delta = scaledSpeed * windowManager->getMousePositionDelta();
+
+        m_pitch -= delta.y;
+        m_yaw += delta.x;
+    } else {
+        windowManager->showCursor();
+    }
 }
 
 void EulerCamera::truncateCoefficients() {

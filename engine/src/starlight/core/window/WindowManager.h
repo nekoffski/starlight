@@ -20,6 +20,7 @@ public:
     void update();
 
     bool isKeyPressed(Window::Key keyCode) const;
+    bool isMouseButtonPressed(Window::Button buttonCode) const;
 
 private:
     void calculateMousePositionDelta();

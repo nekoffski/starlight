@@ -23,6 +23,8 @@ public:
 
     void update(float deltaTime) override;
 
+    void onScroll(float offset);
+
     void onViewportResize(u32 w, u32 h) override;
 
 private:

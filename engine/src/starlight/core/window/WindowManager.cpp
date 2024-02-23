@@ -18,6 +18,10 @@ bool WindowManager::isKeyPressed(Window::Key keyCode) const {
     return m_window->isKeyPressed(keyCode);
 }
 
+bool WindowManager::isMouseButtonPressed(Window::Button buttonCode) const {
+    return m_window->isMouseButtonPressed(buttonCode);
+}
+
 void WindowManager::setCallbacks() {
     m_window->onWindowCloseCallback([]() {
         LOG_INFO("Window closed, emitting event");
@@ -28,6 +32,12 @@ void WindowManager::setCallbacks() {
         KeyEvent event{ action, key };
         LOG_TRACE("Detected key action, emitting event: {}", event);
         EventManager::get().emit<KeyEvent>(event);
+    });
+
+    m_window->onScrollCallback([](float offset) {
+        ScrollEvent event{ offset };
+        LOG_TRACE("Detected scroll, emitting event: {}", event);
+        EventManager::get().emit<ScrollEvent>(event);
     });
 
     m_window->onMouseCallback([](MouseAction action, int button) {

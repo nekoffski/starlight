@@ -13,8 +13,12 @@ struct WindowMock : sl::Window {
     MOCK_METHOD(sl::Size2u32, getSize, (), (const, override));
     MOCK_METHOD(void, onKeyCallback, (OnKeyCallback), (override));
     MOCK_METHOD(void, onMouseCallback, (OnMouseCallback), (override));
+    MOCK_METHOD(void, onScrollCallback, (OnScrollCallback), (override));
     MOCK_METHOD(void, onWindowCloseCallback, (OnWindowCloseCallback), (override));
     MOCK_METHOD(void, onWindowResizeCallback, (OnWindowResizeCallback), (override));
     MOCK_METHOD(sl::Vec2f, getMousePosition, (), (const, override));
     MOCK_METHOD(bool, isKeyPressed, (sl::Window::Key keyCode), (const, override));
+    MOCK_METHOD(
+      bool, isMouseButtonPressed, (sl::Window::Button buttonCode), (const, override)
+    );
 };

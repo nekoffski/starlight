@@ -134,6 +134,10 @@ void Application::setupEventHandlers() {
         }
     };
 
+    const auto onScroll = [&](sl::ScrollEvent* event) {
+        m_eulerCamera->onScroll(event->offset);
+    };
+
     const auto onWindowResized = [&](sl::WindowResized* event) {
         const auto& [w, h] = *event;
         m_renderer.onViewportResize(w, h);
@@ -144,5 +148,6 @@ void Application::setupEventHandlers() {
     sl::EventManager::get()
       .on<sl::QuitEvent>(onQuit)
       .on<sl::KeyEvent>(onKey)
-      .on<sl::WindowResized>(onWindowResized);
+      .on<sl::WindowResized>(onWindowResized)
+      .on<sl::ScrollEvent>(onScroll);
 }

@@ -50,6 +50,10 @@ struct MouseEvent {
     int button;
 };
 
+struct ScrollEvent {
+    float offset;
+};
+
 inline std::string toString(const KeyEvent& event) {
     return fmt::format("KeyEvent[{}/{}]", event.key, event.action);
 }
@@ -58,7 +62,12 @@ inline std::string toString(const MouseEvent& event) {
     return fmt::format("MouseEvent[{}/{}]", event.button, event.action);
 }
 
+inline std::string toString(const ScrollEvent& event) {
+    return fmt::format("ScrollEvent[{}]", event.offset);
+}
+
 TO_STRING_STREAM(KeyEvent);
 TO_STRING_STREAM(MouseEvent);
+TO_STRING_STREAM(ScrollEvent);
 
 }  // namespace sl

@@ -53,6 +53,11 @@ bool Window::isKeyPressed(Window::Key keyCode) const {
     return glfwGetKey(GLFW_WINDOW_PTR(m_windowHandle), keyCode) == GLFW_PRESS;
 }
 
+bool Window::isMouseButtonPressed(Window::Button buttonCode) const {
+    return glfwGetMouseButton(GLFW_WINDOW_PTR(m_windowHandle), buttonCode)
+           == GLFW_PRESS;
+}
+
 void Window::onKeyCallback(OnKeyCallback callback) {
     m_callbacks.onKey = callback;
 
@@ -76,6 +81,17 @@ void Window::onMouseCallback(OnMouseCallback callback) {
     glfwSetMouseButtonCallback(
       GLFW_WINDOW_PTR(m_windowHandle), onMouseButtonCallback
     );
+}
+
+void Window::onScrollCallback(OnScrollCallback callback) {
+    m_callbacks.onScroll = callback;
+
+    static auto onScrollCallback =
+      [](GLFWwindow* window, [[maybe_unused]] double xOffset, double yOffset) {
+          GET_USER_CALLBACKS(window)->onScroll(static_cast<float>(yOffset));
+      };
+
+    glfwSetScrollCallback(GLFW_WINDOW_PTR(m_windowHandle), onScrollCallback);
 }
 
 void Window::onWindowCloseCallback(OnWindowCloseCallback callback) {
