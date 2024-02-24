@@ -18,7 +18,6 @@ TextureManager::TextureManager(ResourcePools& resourcePools) :
     createDefaultTexture();
     createDefaultNormalMap();
     createDefaultSpecularMap();
-    createDefaultTextureMap();
 }
 
 TextureManager::~TextureManager() {
@@ -139,12 +138,6 @@ static void setColor(uint32_t i, const Vec4f& color, std::vector<u8>& pixels) {
     pixels[i + 1] = color.y;
     pixels[i + 2] = color.z;
     pixels[i + 3] = color.w;
-}
-
-void TextureManager::createDefaultTextureMap() {
-    TextureMap::defaultMap = m_resourcePools.createTextureMap(
-      TextureMap::Properties{ TextureMap::Use::diffuseMap }, *Texture::defaultDiffuse
-    );
 }
 
 void TextureManager::createDefaultTexture() {

@@ -11,9 +11,8 @@ VKResourcePools::VKResourcePools(
     m_context(context),
     m_device(device), m_vertexBuffer(vertexBuffer), m_indexBuffer(indexBuffer),
     m_swapchain(swapchain), backend(backend), m_textures("Texture", 1024),
-    m_textureMaps("TextureMap", 1024), m_shaders("Shader", 1024),
-    m_meshes("Mesh", vulkanMaxMeshCount), m_renderTargets("RenderTarget", 64),
-    m_renderPasses("RenderPass", 64) {}
+    m_shaders("Shader", 1024), m_meshes("Mesh", vulkanMaxMeshCount),
+    m_renderTargets("RenderTarget", 64), m_renderPasses("RenderPass", 64) {}
 
 VKMesh* VKResourcePools::createMesh(
   const Mesh::Properties& props, std::span<const Vertex3> vertices,
@@ -49,18 +48,6 @@ VKTexture* VKResourcePools::createTexture(
 
 void VKResourcePools::destroyTexture(Texture& texture) {
     m_textures.destroy(texture.getId());
-}
-
-VKTextureMap* VKResourcePools::createTextureMap(
-  const TextureMap::Properties& props, Texture& texture
-) {
-    return m_textureMaps.create(
-      m_context, m_device, props, *m_textures.get(texture.getId())
-    );
-}
-
-void VKResourcePools::destroyTextureMap(TextureMap& textureMap) {
-    m_textureMaps.destroy(textureMap.getId());
 }
 
 VKShader* VKResourcePools::createShader(const Shader::Properties& props) {

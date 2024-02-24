@@ -274,14 +274,14 @@ void VKShader::addSampler(
     static constexpr int maxInstanceTextures = 128;  // TODO: configurable
 
     if (props.scope == Scope::global) {
-        const auto globalTextureMapCount = m_globalTextureMaps.size();
+        const auto globalTextureCount = m_globalTextures.size();
         ASSERT(
-          globalTextureMapCount + 1 <= maxGlobalTextures,
-          "Shader global texture count {} exceed maximum {}",
-          globalTextureMapCount + 1, globalTextureMapCount
+          globalTextureCount + 1 <= maxGlobalTextures,
+          "Shader global texture count {} exceed maximum {}", globalTextureCount + 1,
+          globalTextureCount
         );
-        location = globalTextureMapCount;
-        m_globalTextureMaps.push_back(TextureMap::defaultMap);
+        location = globalTextureCount;
+        m_globalTextures.push_back(Texture::defaultDiffuse);
     } else {
         ASSERT(
           m_instanceTextureCount + 1 <= maxInstanceTextures,
@@ -458,15 +458,15 @@ void VKShader::applyInstance() {
             .descriptorCount;
         imageInfos.reserve(totalSamplerCount);
         for (int i = 0; i < totalSamplerCount; ++i) {
-            const VKTextureMap* textureMap = static_cast<const VKTextureMap*>(
-              m_instanceStates[m_boundInstanceId].instanceTextureMaps[i]
+            const VKTexture* texture = static_cast<const VKTexture*>(
+              m_instanceStates[m_boundInstanceId].instanceTextures[i]
             );
             ASSERT(
-              textureMap,
+              texture,
               "Could not cast texture to internal type, something went wrong"
             );
             imageInfos.emplace_back(
-              textureMap->getSampler(), textureMap->getImage()->getView(),
+              texture->getSampler(), texture->getImage()->getView(),
               VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
             );
         }
@@ -496,7 +496,7 @@ void VKShader::applyInstance() {
     );
 }
 
-u32 VKShader::acquireInstanceResources(const std::vector<TextureMap*>& textureMaps) {
+u32 VKShader::acquireInstanceResources(const std::vector<Texture*>& textures) {
     Id32 id = 0;
 
     for (int i = 0; i < 1024; ++i) {
@@ -514,17 +514,16 @@ u32 VKShader::acquireInstanceResources(const std::vector<TextureMap*>& textureMa
     const auto instanceTextureCount =
       m_descriptorSets[descSetIndexInstance].bindings[bindingIndex].descriptorCount;
 
-    if (textureMaps.size() != m_instanceTextureCount) {
+    if (textures.size() != m_instanceTextureCount) {
         LOG_WARN(
           "Provided texture map range size doesn't match with instance texture count, ignoring and setting all to default map"
         );
-        instanceState.instanceTextureMaps.resize(
-          m_instanceTextureCount, TextureMap::defaultMap
+        instanceState.instanceTextures.resize(
+          m_instanceTextureCount, Texture::defaultDiffuse
         );
     } else {
-        instanceState.instanceTextureMaps.reserve(m_instanceTextureCount);
-        for (auto& map : textureMaps)
-            instanceState.instanceTextureMaps.push_back(map);
+        instanceState.instanceTextures.reserve(m_instanceTextureCount);
+        for (auto& map : textures) instanceState.instanceTextures.push_back(map);
     }
 
     // todo: should we set all to default?
@@ -580,7 +579,7 @@ void VKShader::releaseInstanceResources(u32 instanceId) {
     // TODO: clear in place instead
     instanceState.descriptorSetState.descriptorStates.clear();
     instanceState.descriptorSetState.descriptorStates.resize(maxBindings);
-    instanceState.instanceTextureMaps.clear();
+    instanceState.instanceTextures.clear();
 
     if (instanceState.offset.hasValue())
         m_uniformBuffer->free(m_uboStride, *instanceState.offset);
@@ -592,12 +591,10 @@ void VKShader::setUniform(const std::string& name, const void* value) {
     auto& uniform = m_uniforms[name];
     if (uniform.isSampler()) {
         if (uniform.scope == Scope::global) {
-            m_globalTextureMaps[uniform.location] =
-              static_cast<const TextureMap*>(value);
+            m_globalTextures[uniform.location] = static_cast<const Texture*>(value);
         } else {
-            m_instanceStates[m_boundInstanceId]
-              .instanceTextureMaps[uniform.location] =
-              static_cast<const TextureMap*>(value);
+            m_instanceStates[m_boundInstanceId].instanceTextures[uniform.location] =
+              static_cast<const Texture*>(value);
         }
     } else {
         if (uniform.scope == Scope::local) {

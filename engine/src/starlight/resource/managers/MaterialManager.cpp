@@ -28,19 +28,10 @@ void MaterialManager::createDefaultMaterial() {
     Material::Properties props;
     props.name         = "Internal.Material.Default";
     props.diffuseColor = Vec4f{ 1.0f };
-    props.diffuseMap   = m_resourcePools.createTextureMap(
-        TextureMap::Properties{ .use = TextureMap::Use::diffuseMap },
-        *Texture::defaultDiffuse
-      );
-    props.normalMap = m_resourcePools.createTextureMap(
-      TextureMap::Properties{ .use = TextureMap::Use::normalMap },
-      *Texture::defaultNormal
-    );
-    props.specularMap = m_resourcePools.createTextureMap(
-      TextureMap::Properties{ .use = TextureMap::Use::specularMap },
-      *Texture::defaultSpecular
-    );
-    props.shininess = 32.0f;
+    props.diffuseMap   = Texture::defaultDiffuse;
+    props.normalMap    = Texture::defaultNormal;
+    props.specularMap  = Texture::defaultSpecular;
+    props.shininess    = 32.0f;
 
     auto shader   = m_shaderManager.load("Builtin.Shader.Material");
     auto material = m_materials.create(props, *shader);
@@ -93,18 +84,11 @@ Material* MaterialManager::load(const MaterialConfig& config) {
     props.diffuseColor = config.diffuseColor;
     props.shininess    = config.shininess;
 
-    props.diffuseMap = m_resourcePools.createTextureMap(
-      TextureMap::Properties{ .use = TextureMap::Use::diffuseMap },
-      *getTexture(config.diffuseMap).value_or(Texture::defaultDiffuse)
-    );
-    props.normalMap = m_resourcePools.createTextureMap(
-      TextureMap::Properties{ .use = TextureMap::Use::normalMap },
-      *getTexture(config.normalMap).value_or(Texture::defaultNormal)
-    );
-    props.specularMap = m_resourcePools.createTextureMap(
-      TextureMap::Properties{ .use = TextureMap::Use::specularMap },
-      *getTexture(config.specularMap).value_or(Texture::defaultSpecular)
-    );
+    props.diffuseMap =
+      getTexture(config.diffuseMap).value_or(Texture::defaultDiffuse);
+    props.normalMap = getTexture(config.normalMap).value_or(Texture::defaultNormal);
+    props.specularMap =
+      getTexture(config.specularMap).value_or(Texture::defaultSpecular);
 
     auto shader = m_shaderManager.load(config.shaderName);
 
@@ -117,7 +101,6 @@ Material* MaterialManager::load(const MaterialConfig& config) {
 }
 
 void MaterialManager::destroyInternals(Material* material) {
-    material->destroyTextureMaps(m_resourcePools);
     m_materials.destroy(material->getId());
 }
 

@@ -28,11 +28,6 @@ struct ResourcePools {
     )                                             = 0;
     virtual void destroyTexture(Texture& texture) = 0;
 
-    virtual TextureMap* createTextureMap(
-      const TextureMap::Properties& props, Texture& texture
-    )                                                      = 0;
-    virtual void destroyTextureMap(TextureMap& textureMap) = 0;
-
     virtual Shader* createShader(const Shader::Properties& props) = 0;
     virtual void destroyShader(Shader& shader)                    = 0;
 

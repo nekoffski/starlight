@@ -66,7 +66,7 @@ class VKShader final : public Shader {
         Id32 id;
         Id64 offset;
         DescriptorSetState descriptorSetState;
-        std::vector<const TextureMap*> instanceTextureMaps;
+        std::vector<const Texture*> instanceTextures;
     };
 
 public:
@@ -79,7 +79,7 @@ public:
     // clang-format off
     void use() override;
     u32 acquireInstanceResources(
-        const std::vector<TextureMap*>& textureMaps
+        const std::vector<Texture*>& textures
     ) override;
     void releaseInstanceResources(u32 instanceId) override;
     // clang-format on
@@ -140,7 +140,7 @@ private:
     u64 m_pushConstantSize;
     u64 m_pushConstantStride;
 
-    std::vector<const TextureMap*> m_globalTextureMaps;
+    std::vector<const Texture*> m_globalTextures;
     u8 m_instanceTextureCount;
 
     u32 m_boundInstanceId;

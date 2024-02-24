@@ -39,39 +39,44 @@ public:
 
     ~VKTexture() override;
 
-    VKImage* getImage();
+    const VKImage* getImage() const;
+    VkSampler getSampler() const;
 
     void resize(u32 width, u32 height, VkImage handle);
-
     void resize(u32 width, u32 height) override;
+
     void write(u32 offset, std::span<u8> pixels) override;
 
 private:
+    void createSampler(const Texture::Properties& props);
+
     const VKContext* m_context;
     VKDevice* m_device;
 
     VKImage m_image;
+    VkSampler m_sampler;
+
     u32 m_generation;
 };
 
-class VKTextureMap : public TextureMap {
-public:
-    explicit VKTextureMap(
-      u32 id, VKContext& context, VKDevice& device, const Properties& props,
-      VKTexture& texture
-    );
-    ~VKTextureMap() override;
-    Texture* getTexture() const override;
+// class VKTextureMap : public TextureMap {
+// public:
+//     explicit VKTextureMap(
+//       u32 id, VKContext& context, VKDevice& device, const Properties& props,
+//       VKTexture& texture
+//     );
+//     ~VKTextureMap() override;
+//     Texture* getTexture() const override;
 
-    const VKImage* getImage() const;
-    VkSampler getSampler() const;
+//     const VKImage* getImage() const;
+//     VkSampler getSampler() const;
 
-private:
-    VKContext& m_context;
-    VKDevice& m_device;
-    VKTexture& m_texture;
+// private:
+//     VKContext& m_context;
+//     VKDevice& m_device;
+//     VKTexture& m_texture;
 
-    VkSampler m_sampler;
-};
+//     VkSampler m_sampler;
+// };
 
 }  // namespace sl::vk

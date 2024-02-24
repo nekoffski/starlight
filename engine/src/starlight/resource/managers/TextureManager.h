@@ -29,7 +29,6 @@ public:
 private:
     void destroyInternals(Texture* resource) override;
 
-    void createDefaultTextureMap();
     void createDefaultTexture();
     void createDefaultSpecularMap();
     void createDefaultNormalMap();

@@ -11,6 +11,9 @@ namespace sl {
 class Texture {
 public:
     enum class Type : u8 { flat, cubemap };
+    enum class Use { unknown, diffuseMap, specularMap, normalMap, cubeMap };
+    enum class Filter { nearest, linear };
+    enum class Repeat { repeat, mirroredRepeat, clampToEdge, clampToBorder };
 
     struct Properties {
         u32 width;
@@ -20,6 +23,12 @@ public:
         bool isWritable;
         std::string name;
         Type type;
+        Use use              = Use::unknown;
+        Filter minifyFilter  = Filter::linear;
+        Filter magnifyFilter = Filter::linear;
+        Repeat uRepeat       = Repeat::repeat;
+        Repeat vRepeat       = Repeat::repeat;
+        Repeat wRepeat       = Repeat::repeat;
     };
 
     virtual ~Texture() = default;
@@ -39,36 +48,6 @@ protected:
 
     Properties m_props;
     u32 m_id;
-};
-
-class TextureMap {
-public:
-    enum class Use { unknown, diffuseMap, specularMap, normalMap, cubeMap };
-    enum class Filter { nearest, linear };
-    enum class Repeat { repeat, mirroredRepeat, clampToEdge, clampToBorder };
-
-    struct Properties {
-        Use use              = Use::unknown;
-        Filter minifyFilter  = Filter::linear;
-        Filter magnifyFilter = Filter::linear;
-        Repeat uRepeat       = Repeat::repeat;
-        Repeat vRepeat       = Repeat::repeat;
-        Repeat wRepeat       = Repeat::repeat;
-    };
-
-    virtual ~TextureMap()               = default;
-    virtual Texture* getTexture() const = 0;
-
-    const Properties& getProperties() const;
-    u64 getId() const;
-
-    inline static TextureMap* defaultMap = nullptr;
-
-protected:
-    explicit TextureMap(const Properties& props, u64 id);
-
-    Properties m_props;
-    u64 m_id;
 };
 
 }  // namespace sl

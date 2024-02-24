@@ -112,7 +112,7 @@ public:
         friend class Shader;
 
     public:
-        void set(const std::string& uniform, TextureMap* value);
+        void set(const std::string& uniform, Texture* value);
         void set(const std::string& uniform, const GlmCompatible auto& value) {
             m_shader.setUniform(uniform, glm::value_ptr(value));
         }
@@ -135,7 +135,7 @@ public:
     // clang-format off
     virtual void use() = 0;
     virtual u32 acquireInstanceResources(
-        const std::vector<TextureMap*>& textureMaps
+        const std::vector<Texture*>& textures
     ) = 0;
     virtual void releaseInstanceResources(u32 instanceId) = 0;
     // clang-format on

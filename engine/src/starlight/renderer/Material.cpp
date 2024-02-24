@@ -19,7 +19,7 @@ Material::~Material() {
 }
 
 bool Material::isTransparent() const {
-    return m_props.diffuseMap->getTexture()->getProperties().isTransparent;
+    return m_props.diffuseMap->getProperties().isTransparent;
 }
 
 void Material::applyUniforms(u64 renderFrameNumber) {
@@ -38,11 +38,5 @@ void Material::applyUniforms(u64 renderFrameNumber) {
 u64 Material::getId() const { return m_id; }
 
 const std::string& Material::getName() const { return m_props.name; }
-
-void Material::destroyTextureMaps(ResourcePools& resourcePools) {
-    resourcePools.destroyTextureMap(*m_props.diffuseMap);
-    resourcePools.destroyTextureMap(*m_props.specularMap);
-    resourcePools.destroyTextureMap(*m_props.normalMap);
-}
 
 }  // namespace sl

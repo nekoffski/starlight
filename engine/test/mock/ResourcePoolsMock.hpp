@@ -20,10 +20,6 @@ struct ResourcePoolsMock : public ResourcePools {
       Texture*, createTexture, (const Texture::Properties&, const std::span<u8>)
     );
     MOCK_METHOD(void, destroyTexture, (Texture&));
-    MOCK_METHOD(
-      TextureMap*, createTextureMap, (const TextureMap::Properties&, Texture&)
-    );
-    MOCK_METHOD(void, destroyTextureMap, (TextureMap&));
     MOCK_METHOD(Shader*, createShader, (const Shader::Properties&));
     MOCK_METHOD(void, destroyShader, (Shader&));
     MOCK_METHOD(

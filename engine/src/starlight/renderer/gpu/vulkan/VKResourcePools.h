@@ -38,11 +38,6 @@ public:
     ) override;
     void destroyTexture(Texture& texture) override;
 
-    VKTextureMap* createTextureMap(
-      const TextureMap::Properties& props, Texture& texture
-    ) override;
-    void destroyTextureMap(TextureMap& textureMap) override;
-
     VKShader* createShader(const Shader::Properties& props) override;
     void destroyShader(Shader& shader) override;
 
@@ -66,7 +61,6 @@ private:
                                  // this for render pass id
 
     ResourcePool<VKTexture> m_textures;
-    ResourcePool<VKTextureMap> m_textureMaps;
     ResourcePool<VKShader> m_shaders;
     ResourcePool<VKMesh> m_meshes;
     ResourcePool<VKRenderTarget> m_renderTargets;

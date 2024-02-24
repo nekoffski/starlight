@@ -194,7 +194,7 @@ Shader::Shader(const Properties& props, u32 id) :
     m_useLocals(props.useLocals), m_uniformProxy(*this), m_cullMode(props.cullMode) {
 }
 
-void Shader::UniformProxy::set(const std::string& uniform, TextureMap* value) {
+void Shader::UniformProxy::set(const std::string& uniform, Texture* value) {
     m_shader.setUniform(uniform, static_cast<void*>(value));
 }
 

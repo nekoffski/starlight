@@ -15,9 +15,9 @@ class Material {
 public:
     struct Properties {
         Vec4f diffuseColor;
-        TextureMap* diffuseMap;
-        TextureMap* specularMap;
-        TextureMap* normalMap;
+        Texture* diffuseMap;
+        Texture* specularMap;
+        Texture* normalMap;
         float shininess;
         std::string name;
     };
@@ -30,8 +30,6 @@ public:
 
     u64 getId() const;
     const std::string& getName() const;
-
-    void destroyTextureMaps(ResourcePools& resourcePools);
 
 private:
     u64 m_id;

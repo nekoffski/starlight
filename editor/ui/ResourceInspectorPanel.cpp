@@ -3,6 +3,8 @@
 #include "starlight/scene/components/All.h"
 #include "starlight/resource/All.h"
 
+#include "backends/imgui_impl_vulkan.h"
+
 ResourceInspectorPanel::ResourceInspectorPanel(
   sl::Scene* scene, UIState* state, Logger* logger
 ) :
@@ -38,6 +40,8 @@ void ResourceInspectorPanel::renderTextureUI(sl::Texture* texture) {
         sl::ui::text("Channels: {}", props.channels);
         sl::ui::text("Transparent: {}", props.isTransparent);
         sl::ui::text("Writable: {}", props.isWritable);
+
+        // auto imageHandle = ImGui::
 
         // ImGui::Image()
     });
