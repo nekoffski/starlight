@@ -5,6 +5,8 @@
 
 #include "backends/imgui_impl_vulkan.h"
 
+#include "starlight/renderer/gpu/vulkan/VKTexture.h"
+
 ResourceInspectorPanel::ResourceInspectorPanel(
   sl::Scene* scene, UIState* state, Logger* logger
 ) :
@@ -41,8 +43,9 @@ void ResourceInspectorPanel::renderTextureUI(sl::Texture* texture) {
         sl::ui::text("Transparent: {}", props.isTransparent);
         sl::ui::text("Writable: {}", props.isWritable);
 
-        // auto imageHandle = ImGui::
-
-        // ImGui::Image()
+        const auto x = ImGui::GetWindowWidth();
+        m_state->getOrCreateImageHandle(texture)->show(
+          { x, x }, { 0, 0 }, { 1.0f, 1.0f }
+        );
     });
 }

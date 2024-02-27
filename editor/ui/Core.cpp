@@ -11,3 +11,13 @@ std::string resouceTypeToString(ResourceType type) {
     }
     return "Unknown";
 }
+
+sl::ui::ImageHandle* UIState::getOrCreateImageHandle(sl::Texture* texture) {
+    auto id     = texture->getId();
+    auto record = imageHandles.find(id);
+
+    if (record != imageHandles.end()) return record->second.get();
+
+    imageHandles[id] = sl::ui::ImageHandle::createHandle(texture);
+    return imageHandles.at(id).get();
+}

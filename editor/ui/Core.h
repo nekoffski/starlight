@@ -15,6 +15,9 @@ struct UIState {
     std::optional<sl::u64> selectedEntityId;
     std::optional<sl::u64> selectedResourceId;
     std::optional<ResourceType> selectedResourceType;
+    std::unordered_map<sl::u64, std::unique_ptr<sl::ui::ImageHandle>> imageHandles;
+
+    sl::ui::ImageHandle* getOrCreateImageHandle(sl::Texture* texture);
 };
 
 static constexpr float leftComboWidthFactor = 0.15f;

@@ -11,3 +11,4 @@
 #include "widgets/Slider.h"
 #include "widgets/TabMenu.h"
 #include "widgets/Popup.h"
+#include "widgets/Image.h"
