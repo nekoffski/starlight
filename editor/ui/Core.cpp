@@ -1,6 +1,6 @@
 #include "Core.h"
 
-std::string resouceTypeToString(ResourceType type) {
+std::string resourceTypeToString(ResourceType type) {
     switch (type) {
         case ResourceType::mesh:
             return "Mesh";

@@ -21,6 +21,14 @@
     { "type": "vec3", "scope": "global", "name": "viewPosition" },
     { "type": "i32", "scope": "global", "name": "renderMode" },
     { "type": "vec4", "scope": "global", "name": "ambientColor" },
+    {
+      "type": "custom",
+      "scope": "global",
+      "name": "pointLights",
+      "size": 48,
+      "elements": 5
+    },
+    { "type": "i32", "scope": "global", "name": "pointLightCount" },
     { "type": "vec4", "scope": "instance", "name": "diffuseColor" },
     { "type": "samp", "scope": "instance", "name": "diffuseTexture" },
     { "type": "samp", "scope": "instance", "name": "specularTexture" },

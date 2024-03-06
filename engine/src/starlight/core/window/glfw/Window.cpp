@@ -43,7 +43,7 @@ Window::Window() {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
     m_windowHandle =
-      glfwCreateWindow(1600, 900, "starlight-engine", nullptr, nullptr);
+      glfwCreateWindow(1920, 1080, "starlight-engine", nullptr, nullptr);
 
     glfwMakeContextCurrent(GLFW_WINDOW_PTR(m_windowHandle));
     glfwSetWindowUserPointer(GLFW_WINDOW_PTR(m_windowHandle), &m_callbacks);

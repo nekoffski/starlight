@@ -30,6 +30,7 @@ public:
 
     u64 getId() const;
     const std::string& getName() const;
+    const Properties& getProperties() const;
 
 private:
     u64 m_id;

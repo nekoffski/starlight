@@ -110,18 +110,19 @@ bool Shader::Uniform::isSampler() const { return type == Type::sampler; }
 Shader::Uniform::Type Shader::Uniform::typeFromString(const std::string& name) {
     static const std::unordered_map<std::string_view, Shader::Uniform::Type>
       nameToType{
-          {"f32",   Shader::Uniform::Type::float32  },
-          { "vec2", Shader::Uniform::Type::float32_2},
-          { "vec3", Shader::Uniform::Type::float32_3},
-          { "vec4", Shader::Uniform::Type::float32_4},
-          { "u8",   Shader::Uniform::Type::uint8    },
-          { "u16",  Shader::Uniform::Type::uint16   },
-          { "u32",  Shader::Uniform::Type::uint32   },
-          { "i8",   Shader::Uniform::Type::int8     },
-          { "i16",  Shader::Uniform::Type::int16    },
-          { "i32",  Shader::Uniform::Type::int32    },
-          { "mat4", Shader::Uniform::Type::mat4     },
-          { "samp", Shader::Uniform::Type::sampler  },
+          {"f32",     Shader::Uniform::Type::float32  },
+          { "vec2",   Shader::Uniform::Type::float32_2},
+          { "vec3",   Shader::Uniform::Type::float32_3},
+          { "vec4",   Shader::Uniform::Type::float32_4},
+          { "u8",     Shader::Uniform::Type::uint8    },
+          { "u16",    Shader::Uniform::Type::uint16   },
+          { "u32",    Shader::Uniform::Type::uint32   },
+          { "i8",     Shader::Uniform::Type::int8     },
+          { "i16",    Shader::Uniform::Type::int16    },
+          { "i32",    Shader::Uniform::Type::int32    },
+          { "mat4",   Shader::Uniform::Type::mat4     },
+          { "samp",   Shader::Uniform::Type::sampler  },
+          { "custom", Shader::Uniform::Type::custom   }
     };
     const auto record = nameToType.find(name);
     ASSERT(record != nameToType.end(), "Invalid type Uniform name: {}", name);
@@ -130,18 +131,19 @@ Shader::Uniform::Type Shader::Uniform::typeFromString(const std::string& name) {
 
 std::string Shader::Uniform::typeToString(Type type) {
     static const std::unordered_map<Shader::Uniform::Type, std::string> typeToName{
-        {Shader::Uniform::Type::float32,    "f32" },
-        { Shader::Uniform::Type::float32_2, "vec2"},
-        { Shader::Uniform::Type::float32_3, "vec3"},
-        { Shader::Uniform::Type::float32_4, "vec4"},
-        { Shader::Uniform::Type::uint8,     "u8"  },
-        { Shader::Uniform::Type::uint16,    "u16" },
-        { Shader::Uniform::Type::uint32,    "u32" },
-        { Shader::Uniform::Type::int8,      "i8"  },
-        { Shader::Uniform::Type::int16,     "i16" },
-        { Shader::Uniform::Type::int32,     "i32" },
-        { Shader::Uniform::Type::mat4,      "mat4"},
-        { Shader::Uniform::Type::sampler,   "samp"},
+        {Shader::Uniform::Type::float32,    "f32"   },
+        { Shader::Uniform::Type::float32_2, "vec2"  },
+        { Shader::Uniform::Type::float32_3, "vec3"  },
+        { Shader::Uniform::Type::float32_4, "vec4"  },
+        { Shader::Uniform::Type::uint8,     "u8"    },
+        { Shader::Uniform::Type::uint16,    "u16"   },
+        { Shader::Uniform::Type::uint32,    "u32"   },
+        { Shader::Uniform::Type::int8,      "i8"    },
+        { Shader::Uniform::Type::int16,     "i16"   },
+        { Shader::Uniform::Type::int32,     "i32"   },
+        { Shader::Uniform::Type::mat4,      "mat4"  },
+        { Shader::Uniform::Type::sampler,   "samp"  },
+        { Shader::Uniform::Type::custom,    "custom"},
     };
     const auto record = typeToName.find(type);
     ASSERT(record != typeToName.end(), "Invalid Uniform type: {}", type);
@@ -162,6 +164,7 @@ u32 Shader::Uniform::getTypeSize(Type type) {
         { Shader::Uniform::Type::int32,     4 },
         { Shader::Uniform::Type::mat4,      64},
         { Shader::Uniform::Type::sampler,   0 },
+        { Shader::Uniform::Type::custom,    0 }
     };
     const auto record = typeToSize.find(type);
     ASSERT(record != typeToSize.end(), "Invalid Uniform type: {}", type);
@@ -194,8 +197,8 @@ Shader::Shader(const Properties& props, u32 id) :
     m_useLocals(props.useLocals), m_uniformProxy(*this), m_cullMode(props.cullMode) {
 }
 
-void Shader::UniformProxy::set(const std::string& uniform, Texture* value) {
-    m_shader.setUniform(uniform, static_cast<void*>(value));
+void Shader::UniformProxy::set(const std::string& uniform, const Texture* value) {
+    m_shader.setSampler(uniform, value);
 }
 
 Shader::UniformProxy::UniformProxy(Shader& shader) : m_shader(shader) {}

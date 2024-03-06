@@ -6,8 +6,8 @@ namespace sl {
 
 struct Config {
     struct Window {
-        const int width        = 1600;
-        const int height       = 900;
+        const int width        = 1920;
+        const int height       = 1080;
         const std::string name = "Starlight";
     } window;
 

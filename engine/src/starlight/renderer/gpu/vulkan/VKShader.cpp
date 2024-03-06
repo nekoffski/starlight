@@ -587,37 +587,28 @@ void VKShader::releaseInstanceResources(u32 instanceId) {
     instanceState.offset.invalidate();
 }
 
-void VKShader::setUniform(const std::string& name, const void* value) {
-    auto& uniform = m_uniforms[name];
-    if (uniform.isSampler()) {
-        if (uniform.scope == Scope::global) {
-            m_globalTextures[uniform.location] = static_cast<const Texture*>(value);
-        } else {
-            m_instanceStates[m_boundInstanceId].instanceTextures[uniform.location] =
-              static_cast<const Texture*>(value);
-        }
+void VKShader::setSampler(const std::string& name, const Texture* value) {
+    if (auto& uniform = m_uniforms[name]; uniform.scope == Scope::global) {
+        m_globalTextures[uniform.location] = value;
     } else {
-        if (uniform.scope == Scope::local) {
-            vkCmdPushConstants(
-              m_backendProxy.getCommandBuffer()->getHandle(),
-              m_pipeline->getLayout(),
-              VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-              uniform.offset, uniform.size, value
-            );
-        } else {
-            const auto offset = m_boundUboOffset + uniform.offset;
-            void* address     = static_cast<void*>(
-              static_cast<char*>(m_mappedUniformBufferBlock) + offset
-            );
-            if (false) {
-                LOG_TRACE(
-                  "Setting uniform {}/{} offset={}, totalOffset={}",
-                  uniform.typeToString(uniform.type), uniform.size, uniform.offset,
-                  offset
-                );
-            }
-            std::memcpy(address, value, uniform.size);
-        }
+        m_instanceStates[m_boundInstanceId].instanceTextures[uniform.location] =
+          value;
+    }
+}
+
+void VKShader::setUniform(const std::string& name, const void* value) {
+    if (auto& uniform = m_uniforms[name]; uniform.scope == Scope::local) {
+        vkCmdPushConstants(
+          m_backendProxy.getCommandBuffer()->getHandle(), m_pipeline->getLayout(),
+          VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, uniform.offset,
+          uniform.size, value
+        );
+    } else {
+        const auto offset = m_boundUboOffset + uniform.offset;
+        void* address     = static_cast<void*>(
+          static_cast<char*>(m_mappedUniformBufferBlock) + offset
+        );
+        std::memcpy(address, value, uniform.size);
     }
 }
 

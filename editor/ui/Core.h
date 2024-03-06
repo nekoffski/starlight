@@ -7,9 +7,9 @@
 
 #include "starlight/ui/UI.h"
 
-enum class ResourceType { mesh = 0, texture, shader };
+enum class ResourceType { mesh = 0, texture, shader, material };
 
-std::string resouceTypeToString(ResourceType type);
+std::string resourceTypeToString(ResourceType type);
 
 struct UIState {
     std::optional<sl::u64> selectedEntityId;

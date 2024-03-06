@@ -52,6 +52,22 @@ struct MeshRenderData {
     float cameraDistance;
 };
 
+struct PointLight {
+    Vec4f position;
+    Vec4f color;
+
+    // attenuation factors - ax^2 + bx + c
+    float c;
+    float b;
+    float a;
+    float padding;
+};
+
+PointLight pointLights[2] = {
+    {Vec4f(-5.5, 0.0, -5.5, 0.0f), Vec4f(0.0, 1.0, 0.0, 1.0), 0.1, 0.35, 0.0},
+    { Vec4f(5.5, 0.0, -5.5, 0.0f), Vec4f(1.0, 0.0, 0.0, 1.0), 0.1, 0.35, 0.0}
+};
+
 void WorldRenderView::render(
   RendererBackendProxy& backendProxy, const RenderPacket& packet,
   const RenderProperties& properties, [[maybe_unused]] float deltaTime
@@ -70,6 +86,8 @@ void WorldRenderView::render(
               proxy.set("viewPosition", cameraPosition);
               proxy.set("ambientColor", ambientColor);
               proxy.set("renderMode", static_cast<int>(properties.renderMode));
+              proxy.set("pointLights", pointLights);
+              proxy.set("pointLightCount", 2);
           });
 
           std::vector<MeshRenderData> meshes;

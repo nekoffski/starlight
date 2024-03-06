@@ -87,7 +87,9 @@ public:
     void createPipeline(RenderPass* renderPass) override;
 
 private:
+    void setSampler(const std::string& uniform, const Texture* value) override;
     void setUniform(const std::string& uniform, const void* value) override;
+
     void bindInstance(u32 instanceId) override;
 
     void bindGlobals() override;

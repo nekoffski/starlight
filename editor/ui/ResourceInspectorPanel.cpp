@@ -29,6 +29,10 @@ void ResourceInspectorPanel::renderResourceUI(
     switch (type) {
         case ResourceType::texture:
             return renderTextureUI(sl::TextureManager::get().acquire(resourceId));
+        case ResourceType::mesh:
+            return renderMeshUI(sl::MeshManager::get().acquire(resourceId));
+        case ResourceType::material:
+            return renderMaterialUI(sl::MaterialManager::get().acquire(resourceId));
     }
 }
 
@@ -49,3 +53,28 @@ void ResourceInspectorPanel::renderTextureUI(sl::Texture* texture) {
         );
     });
 }
+
+void ResourceInspectorPanel::renderMaterialUI(sl::Material* material) {
+    sl::ui::namedScope("material-resource-panel", [&]() {
+        const auto props = material->getProperties();
+        sl::ui::text("Material");
+        sl::ui::separator();
+        sl::ui::text("{}", props.name);
+
+        const auto x = ImGui::GetWindowWidth();
+
+        sl::ui::text("Diffuse map");
+        m_state->getOrCreateImageHandle(props.diffuseMap)
+          ->show({ x, x }, { 0, 0 }, { 1.0f, 1.0f });
+
+        sl::ui::text("Specular map");
+        m_state->getOrCreateImageHandle(props.specularMap)
+          ->show({ x, x }, { 0, 0 }, { 1.0f, 1.0f });
+
+        sl::ui::text("Normal map");
+        m_state->getOrCreateImageHandle(props.normalMap)
+          ->show({ x, x }, { 0, 0 }, { 1.0f, 1.0f });
+    });
+}
+
+void ResourceInspectorPanel::renderMeshUI(sl::Mesh* mesh) {}

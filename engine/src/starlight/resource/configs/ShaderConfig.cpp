@@ -60,10 +60,23 @@ std::vector<Shader::Uniform::Properties> processUniforms(const kc::json::Node& r
     std::vector<Shader::Uniform::Properties> uniforms;
     uniforms.reserve(root.size());
 
+    static auto getSize =
+      [](const kc::json::Node& uniform, Shader::Uniform::Type type) -> u64 {
+        if (type == Shader::Uniform::Type::custom) {
+            auto size         = getField<unsigned int>(uniform, "size");
+            auto elementCount = getField<unsigned int>(uniform, "elements");
+
+            return size * elementCount;
+        } else {
+            return Shader::Uniform::getTypeSize(type);
+        }
+    };
+
     for (auto& uniform : root) {
         const auto type =
           Shader::Uniform::typeFromString(getField<std::string>(uniform, "type"));
-        const auto size  = Shader::Uniform::getTypeSize(type);
+
+        const auto size  = getSize(uniform, type);
         const auto name  = getField<std::string>(uniform, "name");
         const auto scope = getField<std::string>(uniform, "scope");
 
@@ -102,8 +115,7 @@ std::optional<ShaderConfig> ShaderConfig::load(
             }
         };
         // clang-format on
-    }  // namespace sl
-    catch (kc::json::JsonError& e) {
+    } catch (kc::json::JsonError& e) {
         LOG_ERROR("Could not parse shader '{}' file: {}", name, e.asString());
     }
     return {};

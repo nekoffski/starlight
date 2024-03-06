@@ -39,4 +39,6 @@ u64 Material::getId() const { return m_id; }
 
 const std::string& Material::getName() const { return m_props.name; }
 
+const Material::Properties& Material::getProperties() const { return m_props; }
+
 }  // namespace sl
