@@ -5,11 +5,12 @@
 #include <concepts>
 
 #include <kc/core/ErrorBase.hpp>
+
 #include <tl/expected.hpp>
 
 namespace sl {
 
-DEFINE_ERROR(SLError);
+DEFINE_ERROR(Error);
 
 using u64 = uint64_t;
 using u32 = uint32_t;
@@ -38,7 +39,8 @@ using Intervalf   = Interval<float>;
 using Intervalu32 = Interval<u32>;
 using Intervalu64 = Interval<u64>;
 
-template <typename T> using Expected = tl::expected<T, SLError>;
+template <typename T> using Expected = tl::expected<T, Error>;
+using Unexpected                     = tl::unexpected<Error>;
 
 std::string_view removeExtension(std::string_view path);
 
