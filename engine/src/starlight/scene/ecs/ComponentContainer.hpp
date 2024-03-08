@@ -1,16 +1,19 @@
 #pragma once
 
+#include <unordered_map>
+
 #include "starlight/core/utils/ResourcePool.hpp"
 #include "starlight/core/Core.h"
 
-#include <unordered_map>
+#include "starlight/scene/components/Component.h"
 
 namespace sl {
 
 static constexpr u64 defaultMaxComponents = 512;
 
 struct ComponentContainerBase {
-    virtual bool hasComponent(u64 id) = 0;
+    virtual bool hasComponent(u64 entityId)       = 0;
+    virtual Component* getComponent(u64 entityId) = 0;
 };
 
 template <typename T> class ComponentContainer : public ComponentContainerBase {
@@ -18,14 +21,14 @@ public:
     explicit ComponentContainer() :
         m_buffer(typeid(T).name(), defaultMaxComponents) {}
 
-    template <typename... Args> T* addComponent(u64 id, Args&&... args) {
-        auto component = m_buffer.create(id, std::forward<Args>(args)...);
-        m_view[id]     = component;
+    template <typename... Args> T* addComponent(u64 entityId, Args&&... args) {
+        auto component   = m_buffer.create(entityId, std::forward<Args>(args)...);
+        m_view[entityId] = component;
         return component;
     }
 
-    template <typename... Args> T* getComponent(u64 id) {
-        return m_view[id];  // TODO: error checking
+    T* getComponent(u64 entityId) override {
+        return m_view[entityId];  // TODO: error checking
     }
 
     template <typename Callback>
@@ -34,7 +37,7 @@ public:
         for (auto& component : m_view | std::views::values) callback(component);
     }
 
-    bool hasComponent(u64 id) override { return m_view.contains(id); }
+    bool hasComponent(u64 entityId) override { return m_view.contains(entityId); }
 
 private:
     ResourcePool<T> m_buffer;

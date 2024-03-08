@@ -7,7 +7,7 @@
 #include "starlight/renderer/RenderPacket.h"
 
 #include "ecs/Entity.h"
-#include "ecs/ComponentContainerMap.h"
+#include "ecs/ComponentContainerMap.hpp"
 
 namespace sl {
 

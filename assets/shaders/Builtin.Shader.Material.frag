@@ -6,11 +6,7 @@ layout (location = 0) out vec4 outColor;
 struct PointLight {
     vec4 position;
     vec4 color;
-    // attenuation factors - ax^2 + bx + c
-    float c; 
-    float b; 
-    float a; 
-    float padding;
+    vec4 attenuation;
 };
 
 
@@ -93,7 +89,7 @@ vec4 calculatePointLight(PointLight light, vec3 normal, vec3 fragmentPosition, v
     float spec = pow(max(dot(viewDirection, reflectDirection), epsilon), localUBO.shininess);
 
     float d = length(light.position.xyz - fragmentPosition);
-    float attenuation = 1.0 / (light.c + light.b * d + light.a * (d * d));
+    float attenuation = 1.0 / (light.attenuation.z + light.attenuation.y * d + light.attenuation.x * (d * d));
 
     vec4 ambient = dto.ambient;
     vec4 diffuse = light.color * diff;

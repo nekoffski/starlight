@@ -30,7 +30,9 @@ void EntityInspectorPanel::renderEntityUI(sl::u64 entityId) {
         sl::ui::text("Entity: {}/{}", entity->getId(), entity->getName());
         sl::ui::separator();
 
-        std::vector<const char*> components = { "Mesh", "Transform", "Material" };
+        std::vector<const char*> components = {
+            "Mesh", "Transform", "Material", "Point light"
+        };
 
         if (sl::ui::button("Add")) {
             if (m_selectedComponentIndex == 0) {
@@ -39,6 +41,8 @@ void EntityInspectorPanel::renderEntityUI(sl::u64 entityId) {
                 entity->addComponent<sl::TransformComponent>();
             } else if (m_selectedComponentIndex == 2) {
                 entity->addComponent<sl::MaterialComponent>();
+            } else if (m_selectedComponentIndex == 3) {
+                entity->addComponent<sl::PointLightComponent>();
             }
         }
 
@@ -123,6 +127,20 @@ void EntityInspectorPanel::renderEntityUI(sl::u64 entityId) {
                       m_orientationSlider.render([&](const sl::Vec3f& data) {
                           transform.setRotation(sl::math::orientate4(data));
                       });
+                  });
+              }
+            );
+            sl::ui::separator();
+        }
+
+        if (entity->hasComponent<sl::PointLightComponent>()) {
+            auto component = entity->getComponent<sl::PointLightComponent>();
+            sl::ui::treeNode(
+              ICON_FA_LIGHTBULB "  Point Light",
+              [&]([[maybe_unused]] bool) {
+                  sl::ui::namedScope("point-light-component-ui", [&]() {
+                      ImGui::ColorPicker3("Color", (float*)&component->light.color);
+                      //   ImGui::Sli
                   });
               }
             );

@@ -17,6 +17,8 @@
 
 #include "starlight/resource/All.h"
 
+#include "Events.h"
+
 Application::Application(int argc, char** argv) :
     m_isRunning(false), m_update(false), m_context("Starlight Editor"),
     m_window(m_context.getWindow()), m_renderer(*m_window, *m_context.getConfig()),
@@ -25,7 +27,8 @@ Application::Application(int argc, char** argv) :
       m_window->getSize().width,
       m_window->getSize().height,  // TODO: no comment required
       m_renderer, &m_scene
-    ) {
+    ),
+    m_logger(m_ui.getLogger()), m_sceneSerializer(m_fileSystem) {
     const auto& [w, h] = m_window->getSize();
 
     m_eulerCamera = sl::createUniqPtr<sl::EulerCamera>(sl::EulerCamera::Properties{
@@ -145,9 +148,20 @@ void Application::setupEventHandlers() {
         m_firstPersonCamera->onViewportResize(w, h);
     };
 
+    const auto onSceneLoaded = [&](SceneLoaded* event) {
+        m_logger->info("Loading scene: {}", event->path);
+    };
+
+    const auto onSceneSaved = [&](SceneSaved* event) {
+        m_logger->info("Saving scene: {}", event->path);
+        m_sceneSerializer.serialize(m_scene, event->path);
+    };
+
     sl::EventManager::get()
       .on<sl::QuitEvent>(onQuit)
       .on<sl::KeyEvent>(onKey)
       .on<sl::WindowResized>(onWindowResized)
-      .on<sl::ScrollEvent>(onScroll);
+      .on<sl::ScrollEvent>(onScroll)
+      .on<SceneLoaded>(onSceneLoaded)
+      .on<SceneSaved>(onSceneSaved);
 }

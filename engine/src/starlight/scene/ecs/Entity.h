@@ -4,7 +4,7 @@
 
 #include "starlight/core/Core.h"
 
-#include "ComponentContainerMap.h"
+#include "ComponentContainerMap.hpp"
 
 namespace sl {
 
@@ -17,6 +17,14 @@ public:
     template <typename T, typename... Args> T* addComponent(Args&&... args) {
         return m_componentContainerMap.addComponent<T>(
           m_id, std::forward<Args>(args)...
+        );
+    }
+
+    template <typename Callback>
+    requires Callable<Callback, void, const Component*>
+    void forEachComponent(Callback&& callback) {
+        m_componentContainerMap.forEachEntityComponent(
+          m_id, std::forward<Callback>(callback)
         );
     }
 

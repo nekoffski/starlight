@@ -31,24 +31,22 @@ void MeshManager::createDefaultGeometries() {
         auto& vertices = config.vertices;
         vertices.resize(4);
 
-        vertices[0].position           = { -0.5f * scale, -0.5f * scale, 0.0f };
+        vertices[0].position           = { -0.5f * scale, 0.0f, -0.5f * scale };
         vertices[0].textureCoordinates = { 0.0f, 0.0f };
 
-        vertices[1].position           = { 0.5f * scale, 0.5f * scale, 0.0f };
+        vertices[1].position           = { 0.5f * scale, 0.0f, 0.5f * scale };
         vertices[1].textureCoordinates = { 1.0f, 1.0f };
 
-        vertices[2].position           = { -0.5f * scale, 0.5f * scale, 0.0f };
+        vertices[2].position           = { -0.5f * scale, 0.0f, 0.5f * scale };
         vertices[2].textureCoordinates = { 0.0f, 1.0f };
 
-        vertices[3].position           = { 0.5f * scale, -0.5f * scale, 0.0f };
+        vertices[3].position           = { 0.5f * scale, 0.0f, -0.5f * scale };
         vertices[3].textureCoordinates = { 1.0f, 0.0f };
 
-        config.indices = { 0, 1, 2, 0, 3, 1 };
+        config.indices = { 2, 1, 0, 1, 3, 0 };
+        config.name    = "3d-plane";
 
-        Mesh::Properties props{ "default-3d-mesh" };
-        return m_resourcePools.createMesh(
-          props, vertices, config.indices, config.calculateExtent()
-        );
+        return load(config);
     };
     m_defaultMesh3D = create3D();
 
@@ -72,11 +70,9 @@ void MeshManager::createDefaultGeometries() {
         vertices[3].textureCoordinates = { 1.0f, 0.0f };
 
         config.indices = { 2, 1, 0, 3, 0, 1 };
+        config.name    = "2d-plane";
 
-        Mesh::Properties props{ "default-2d-mesh" };
-        return m_resourcePools.createMesh(
-          props, vertices, config.indices, config.calculateExtent()
-        );
+        return load(config);
     };
     m_defaultMesh2D = create2D();
 }

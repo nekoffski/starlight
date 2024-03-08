@@ -7,9 +7,11 @@
 namespace sl {
 
 Scene::Scene(u32 maxEntities) : m_entities("Entities", maxEntities) {
+    // TODO: there is no need for that
     m_componentMap.registerContainer<MeshComponent>();
     m_componentMap.registerContainer<TransformComponent>();
     m_componentMap.registerContainer<MaterialComponent>();
+    m_componentMap.registerContainer<PointLightComponent>();
 }
 
 Entity* Scene::addEntity(const std::string& name) {
@@ -45,6 +47,25 @@ RenderPacket Scene::getRenderPacket() {
           packet.entities.emplace_back(worldTransform, component->mesh, material);
       }
     );
+
+    // TODO:
+    //  - get component count
+    //  - for each should provide entity as well
+    m_componentMap.getComponents<PointLightComponent>()->forEach(
+      [&](PointLightComponent* component) -> void {
+          auto light  = component->light;
+          auto entity = m_entities.get(component->entityId);
+
+          auto worldTransform =
+            entity->hasComponent<TransformComponent>()
+              ? entity->getComponent<TransformComponent>()->transform.getModel()
+              : identityMatrix;
+
+          light.position = worldTransform * light.position;
+          packet.pointLights.push_back(light);
+      }
+    );
+
     return packet;
 }
 

@@ -6,6 +6,7 @@
 #include "starlight/core/memory/Memory.hpp"
 #include "starlight/core/window/Window.h"
 #include "starlight/core/Context.h"
+#include "starlight/core/utils/FileSystem.h"
 
 #include "starlight/renderer/camera/EulerCamera.h"
 #include "starlight/renderer/camera/FirstPersonCamera.h"
@@ -15,6 +16,8 @@
 #include "starlight/resource/ResourceContext.h"
 
 #include "starlight/scene/Scene.h"
+#include "starlight/scene/SceneSerializer.h"
+#include "starlight/scene/SceneDeserializer.h"
 
 #include "ui/UI.h"
 
@@ -36,14 +39,17 @@ private:
     sl::ResourceContext m_resourceContext;
 
     UI m_ui;
+    Logger* m_logger;
 
     sl::UniqPtr<sl::EulerCamera> m_eulerCamera;
     sl::UniqPtr<sl::FirstPersonCamera> m_firstPersonCamera;
     sl::Camera* m_activeCamera;
 
+    sl::FileSystem m_fileSystem;
+
     sl::Scene m_scene;
+    sl::SceneSerializer m_sceneSerializer;
 
     std::vector<sl::RenderView*> m_views;
-
     sl::FrameStatistics m_frameStatistics;
 };

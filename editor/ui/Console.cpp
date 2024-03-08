@@ -15,10 +15,19 @@ Logger* Console::getLogger() { return &m_logger; }
 
 Logger::Logger(std::string& buffer) : m_buffer(buffer) {}
 
-void Logger::writeLog(const std::string& severity, const std::string& message) {
+void Logger::writeLog(Severity severity, const std::string& message) {
     auto clock     = sl::TimeManager::get().getClock();
     auto timestamp = clock->getTimeString("%Y-%m-%d %H:%M:%S");
     // TODO: append in some more performance-friendly way
-    m_buffer =
-      fmt::format("{} - [{}]: {}\n{}", timestamp, severity, message, m_buffer);
+
+    auto fullMessage = fmt::format(
+      "{} - [{}]: {}", timestamp,
+      severity == Severity::debug ? "dbg"
+      : severity == Severity::info
+        ? "inf"
+        : "wrn",
+      message
+    );
+
+    m_buffer = fmt::format("{}\n{}", fullMessage, m_buffer);
 }

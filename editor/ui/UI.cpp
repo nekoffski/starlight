@@ -2,11 +2,14 @@
 
 #include "starlight/core/utils/Log.h"
 #include "starlight/core/math/Glm.h"
+#include "starlight/core/event/Event.h"
 
 #include "starlight/ui/fonts/FontAwesome.h"
 
 #include "starlight/scene/components/MeshComponent.h"
 #include "starlight/scene/components/TransformComponent.h"
+
+#include "Events.h"
 
 UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer, sl::Scene* scene) :
     m_width(w), m_height(h), m_scene(scene), m_logger(m_console.getLogger()),
@@ -41,10 +44,12 @@ UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer, sl::Scene* scene) :
     m_entityInspectorPanel(m_scene, &m_state, m_logger),
     m_resourcesPanel(&m_state, m_logger), m_shouldExit(false) {
     m_mainMenu.addMenu("File")
-      .addItem("Create", []() {})
-      .addItem("Open", "Ctrl+O", []() {})
+      .addItem("New", []() {})
+      .addItem("Load", "Ctrl+O", []() {})
       .addItem("Save", "Ctrl+S", []() {})
-      .addItem("Save as", []() {})
+      .addItem(
+        "Save as", []() { sl::EventManager::get().emit<SceneSaved>("scene.json"); }
+      )
       .addItem("Quit", [&]() { m_shouldExit = true; });
     m_mainMenu.addMenu("Help");
 
@@ -89,3 +94,5 @@ void UI::render() {
 }
 
 bool UI::shouldExit() const { return m_shouldExit; }
+
+Logger* UI::getLogger() { return m_logger; }

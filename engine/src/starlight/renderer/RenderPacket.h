@@ -3,7 +3,9 @@
 #include "starlight/core/math/Glm.h"
 
 #include "gpu/Mesh.h"
+
 #include "Material.h"
+#include "PointLight.h"
 
 namespace sl {
 
@@ -15,6 +17,7 @@ struct RenderEntity {
 
 struct RenderPacket {
     std::vector<RenderEntity> entities;
+    std::vector<PointLight> pointLights;
 };
 
 }  // namespace sl

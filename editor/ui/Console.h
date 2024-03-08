@@ -4,22 +4,37 @@
 
 #include <fmt/core.h>
 
+#include "starlight/core/utils/Log.h"
+
 class Logger {
+    enum class Severity { info, debug, warning };
+
 public:
     explicit Logger(std::string& buffer);
 
     template <typename... Args>
     void info(const std::string& format, Args&&... args) {
-        writeLog("inf", fmt::format(format, std::forward<Args>(args)...));
+        const auto message = fmt::format(format, std::forward<Args>(args)...);
+        LOG_INFO("{}", message);
+        writeLog(Severity::info, message);
     }
 
     template <typename... Args>
     void debug(const std::string& format, Args&&... args) {
-        writeLog("dbg", fmt::format(format, std::forward<Args>(args)...));
+        const auto message = fmt::format(format, std::forward<Args>(args)...);
+        LOG_DEBUG("{}", message);
+        writeLog(Severity::debug, message);
+    }
+
+    template <typename... Args>
+    void warning(const std::string& format, Args&&... args) {
+        const auto message = fmt::format(format, std::forward<Args>(args)...);
+        LOG_WARN("{}", message);
+        writeLog(Severity::warning, message);
     }
 
 private:
-    void writeLog(const std::string& severity, const std::string& message);
+    void writeLog(Severity severity, const std::string& message);
 
     std::string& m_buffer;
 };

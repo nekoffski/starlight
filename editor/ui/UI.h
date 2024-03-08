@@ -28,6 +28,8 @@ public:
     void render();
     bool shouldExit() const;
 
+    Logger* getLogger();
+
 private:
     sl::u64 m_width;
     sl::u64 m_height;
