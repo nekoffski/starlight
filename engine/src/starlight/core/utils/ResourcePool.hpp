@@ -40,6 +40,11 @@ public:
         return nullptr;
     }
 
+    void clear() {
+        m_buffer.clear();
+        m_buffer.resize(m_size);
+    }
+
     void destroy(u64 id) { m_buffer[id].clear(); }
 
     T* get(u64 id) { return m_buffer.at(id).get(); }

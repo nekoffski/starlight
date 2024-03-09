@@ -28,8 +28,14 @@ Application::Application(int argc, char** argv) :
       m_window->getSize().height,  // TODO: no comment required
       m_renderer, &m_scene
     ),
-    m_logger(m_ui.getLogger()), m_sceneSerializer(m_fileSystem) {
+    m_logger(m_ui.getLogger()), m_sceneSerializer(m_fileSystem),
+    m_sceneDeserializer(m_fileSystem) {
     const auto& [w, h] = m_window->getSize();
+
+    sl::ModelManager::get().load("falcon");
+    sl::ModelManager::get().load("tower");
+
+    if (argc == 2) m_sceneDeserializer.deserialize(m_scene, argv[1]);
 
     m_eulerCamera = sl::createUniqPtr<sl::EulerCamera>(sl::EulerCamera::Properties{
       .target         = sl::Vec3f{ 0.0f },
@@ -83,15 +89,6 @@ int Application::run() {
 
     m_isRunning = true;
     m_renderer.init(m_views);
-
-    auto entity1 = m_scene.addEntity("My-Entity");
-    auto entity2 = m_scene.addEntity();
-
-    auto model1 = sl::ModelManager::get().load("falcon");
-    auto model  = sl::ModelManager::get().load("tower");
-
-    entity1->addComponent<sl::MeshComponent>(nullptr);
-    entity1->addComponent<sl::TransformComponent>();
 
     while (m_isRunning && not m_ui.shouldExit()) {
         m_context.beginFrame([&](float deltaTime) {
@@ -150,6 +147,7 @@ void Application::setupEventHandlers() {
 
     const auto onSceneLoaded = [&](SceneLoaded* event) {
         m_logger->info("Loading scene: {}", event->path);
+        m_sceneDeserializer.deserialize(m_scene, event->path);
     };
 
     const auto onSceneSaved = [&](SceneSaved* event) {

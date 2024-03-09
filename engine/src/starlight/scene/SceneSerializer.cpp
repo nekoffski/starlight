@@ -29,9 +29,10 @@ kc::json::Node SceneSerializer::processEntities(Scene& scene) const {
     scene.forEachEntity([&](const std::string& name, Entity* entity) -> void {
         kc::json::Node entityNode;
         entityNode["name"] = name;
+        auto& components   = entityNode["components"];
 
         entity->forEachComponent([&](const Component* component) {
-            entityNode["components"].append(component->serialize());
+            components.append(component->serialize());
         });
 
         root.append(entityNode);

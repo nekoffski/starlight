@@ -57,7 +57,8 @@ VKUIRenderer::VKUIRenderer(
 
     ImGui_ImplGlfw_InitForVulkan(static_cast<GLFWwindow*>(window.getHandle()), true);
 
-    auto graphicsQueue = m_device.getQueues().graphics;
+    auto graphicsQueue    = m_device.getQueues().graphics;
+    auto renderPassHandle = static_cast<VKRenderPass*>(renderPass)->getHandle();
 
     ImGui_ImplVulkan_InitInfo initInfo = {};
     initInfo.Instance                  = m_context.getInstance();
@@ -68,9 +69,9 @@ VKUIRenderer::VKUIRenderer(
     initInfo.MinImageCount             = 3;
     initInfo.ImageCount                = 3;
     initInfo.MSAASamples               = VK_SAMPLE_COUNT_1_BIT;
+    initInfo.RenderPass                = renderPassHandle;
 
-    auto renderPassHandle = static_cast<VKRenderPass*>(renderPass)->getHandle();
-    ImGui_ImplVulkan_Init(&initInfo, renderPassHandle);
+    ImGui_ImplVulkan_Init(&initInfo);
 
     reloadFontTextures();
 

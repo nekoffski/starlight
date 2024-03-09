@@ -45,7 +45,10 @@ UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer, sl::Scene* scene) :
     m_resourcesPanel(&m_state, m_logger), m_shouldExit(false) {
     m_mainMenu.addMenu("File")
       .addItem("New", []() {})
-      .addItem("Load", "Ctrl+O", []() {})
+      .addItem(
+        "Load", "Ctrl+O",
+        []() { sl::EventManager::get().emit<SceneLoaded>("scene.json"); }
+      )
       .addItem("Save", "Ctrl+S", []() {})
       .addItem(
         "Save as", []() { sl::EventManager::get().emit<SceneSaved>("scene.json"); }

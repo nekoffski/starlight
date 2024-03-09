@@ -25,6 +25,8 @@ public:
 
     RenderPacket getRenderPacket();
 
+    void clear();
+
     template <typename Callback>
     requires Callable<Callback, void, std::string, Entity*>
     void forEachEntity(Callback&& callback) {

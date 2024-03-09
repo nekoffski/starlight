@@ -12,6 +12,7 @@ namespace sl {
 static constexpr u64 defaultMaxComponents = 512;
 
 struct ComponentContainerBase {
+    virtual void clear()                          = 0;
     virtual bool hasComponent(u64 entityId)       = 0;
     virtual Component* getComponent(u64 entityId) = 0;
 };
@@ -38,6 +39,11 @@ public:
     }
 
     bool hasComponent(u64 entityId) override { return m_view.contains(entityId); }
+
+    void clear() override {
+        m_buffer.clear();
+        m_view.clear();
+    }
 
 private:
     ResourcePool<T> m_buffer;

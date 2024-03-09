@@ -69,6 +69,12 @@ RenderPacket Scene::getRenderPacket() {
     return packet;
 }
 
+void Scene::clear() {
+    m_entities.clear();
+    m_entitiesByName.clear();
+    m_componentMap.clear();
+}
+
 Entity* Scene::storeEntity(Entity* entity) {
     m_entitiesByName[entity->getName()] = entity;
     return entity;

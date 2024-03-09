@@ -49,6 +49,7 @@ private:
 
     sl::Scene m_scene;
     sl::SceneSerializer m_sceneSerializer;
+    sl::SceneDeserializer m_sceneDeserializer;
 
     std::vector<sl::RenderView*> m_views;
     sl::FrameStatistics m_frameStatistics;

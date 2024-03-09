@@ -19,6 +19,11 @@ public:
         return m_componentContainers[typeid(T)]->hasComponent(entityId);
     }
 
+    void clear() {
+        for (auto& componentMap : m_componentContainers | std::views::values)
+            componentMap->clear();
+    }
+
     template <typename Callback>
     requires Callable<Callback, void, const Component*>
     void forEachEntityComponent(u64 entityId, Callback&& callback) const {
