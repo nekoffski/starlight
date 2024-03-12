@@ -194,8 +194,8 @@ const std::string& Shader::getName() const { return m_name; }
 
 Shader::Shader(const Properties& props, u32 id) :
     m_name(props.name), m_id(id), m_useInstances(props.useInstances),
-    m_useLocals(props.useLocals), m_uniformProxy(*this), m_cullMode(props.cullMode) {
-}
+    m_useLocals(props.useLocals), m_uniformProxy(*this), m_cullMode(props.cullMode),
+    m_polygonMode(props.polygonMode) {}
 
 void Shader::UniformProxy::set(const std::string& uniform, const Texture* value) {
     m_shader.setSampler(uniform, value);

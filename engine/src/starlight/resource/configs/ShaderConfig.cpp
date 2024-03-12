@@ -111,7 +111,8 @@ std::optional<ShaderConfig> ShaderConfig::load(
                 .stages = processStages(getArray(root, "stages"), shadersPath, fs),
                 .uniformProperties = processUniforms(getArray(root, "uniforms")),
                 .defaultTexture    = defaultTexture,
-                .cullMode = cullModeFromString(getFieldOr<std::string>(root, "cullMode", "back"))
+                .cullMode = cullModeFromString(getFieldOr<std::string>(root, "cullMode", "back")),
+                .polygonMode = polygonModeFromString(getFieldOr<std::string>(root, "polygonMode", "fill"))
             }
         };
         // clang-format on

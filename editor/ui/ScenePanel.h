@@ -15,6 +15,9 @@ public:
     void render();
 
 private:
+    void renderSceneGraph();
+    void renderSceneSettings();
+
     sl::Scene* m_scene;
     UIState* m_state;
     Logger* m_logger;

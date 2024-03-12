@@ -49,8 +49,12 @@ Application::Application(int argc, char** argv) :
         .viewportWidth  = w,
         .viewportHeight = h,
       });
-    m_activeCamera          = m_eulerCamera.get();
-    m_ui.getState()->camera = m_activeCamera;
+    m_activeCamera = m_eulerCamera.get();
+
+    calculateViewport();
+
+    m_ui.getState()->camera   = m_activeCamera;
+    m_ui.getState()->viewport = &m_viewport;
 }
 
 int Application::run() {
@@ -83,8 +87,8 @@ int Application::run() {
     sl::SkyboxRenderView skyboxView{ m_activeCamera, skyboxShader, skybox };
 
     m_views.push_back(&skyboxView);
-    m_views.push_back(&uiView);
     m_views.push_back(&worldView);
+    m_views.push_back(&uiView);
 
     LOG_INFO("Starlight Editor starting");
 
@@ -97,7 +101,7 @@ int Application::run() {
             LOG_VAR(m_activeCamera->getPosition());
 
             auto renderPacket     = m_scene.getRenderPacket();
-            renderPacket.viewport = calculateViewport();
+            renderPacket.viewport = m_viewport;
 
             m_renderer.renderFrame(deltaTime, renderPacket);
 
@@ -148,6 +152,8 @@ void Application::setupEventHandlers() {
         m_renderer.onViewportResize(w, h);
         m_eulerCamera->onViewportResize(w, h);
         m_firstPersonCamera->onViewportResize(w, h);
+
+        calculateViewport();
     };
 
     const auto onSceneLoaded = [&](SceneLoaded* event) {
@@ -169,13 +175,11 @@ void Application::setupEventHandlers() {
       .on<SceneSaved>(onSceneSaved);
 }
 
-sl::Viewport Application::calculateViewport() const {
+void Application::calculateViewport() {
     const auto [w, h] = m_window->getSize();
 
-    return sl::Viewport{
-        .x      = panelWidthFactor * w,
-        .y      = 0.25f * h,
-        .width  = (1.0f - 2.0f * panelWidthFactor) * w,
-        .height = (0.75f) * h
-    };
+    m_viewport.x      = panelWidthFactor * w;
+    m_viewport.y      = 0.25f * h;
+    m_viewport.width  = (1.0f - 2.0f * panelWidthFactor) * w;
+    m_viewport.height = (0.75f) * h;
 }

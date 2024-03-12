@@ -5,6 +5,9 @@
 #include <imgui.h>
 #include <fmt/core.h>
 
+#include "starlight/renderer/Viewport.h"
+#include "starlight/renderer/camera/Camera.h"
+
 #include "starlight/core/math/Glm.h"
 #include "starlight/renderer/gpu/UIRenderer.h"
 
@@ -12,6 +15,8 @@ namespace sl::ui {
 
 using Callback = std::function<void()>;  // TODO: measure if it causes bottlenecks ->
                                          // if yes implement lightweight wrapper
+
+void checkbox(const std::string& label, bool& value);
 
 void pushFont(Font*);
 void popFont();

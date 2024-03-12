@@ -5,6 +5,7 @@
 #include "starlight/core/Core.h"
 #include "starlight/core/math/Glm.h"
 #include "starlight/renderer/camera/Camera.h"
+#include "starlight/renderer/Viewport.h"
 #include "starlight/ui/UI.h"
 
 enum class ResourceType { mesh = 0, texture, shader, material };
@@ -18,6 +19,10 @@ struct UIState {
     std::unordered_map<sl::u64, std::unique_ptr<sl::ui::ImageHandle>> imageHandles;
 
     sl::Camera* camera;
+    sl::Viewport* viewport;
+
+    bool showGrid  = true;
+    float gridSize = 25.0f;
 
     sl::ui::ImageHandle* getOrCreateImageHandle(sl::Texture* texture);
 };

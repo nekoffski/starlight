@@ -135,8 +135,9 @@ public:
         // Dynamic state
         const uint32_t dynamic_state_count                 = 3;
         VkDynamicState dynamic_states[dynamic_state_count] = {
-            VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR,
-            VK_DYNAMIC_STATE_LINE_WIDTH
+            VK_DYNAMIC_STATE_VIEWPORT,
+            VK_DYNAMIC_STATE_SCISSOR,
+            VK_DYNAMIC_STATE_LINE_WIDTH,
         };
 
         VkPipelineDynamicStateCreateInfo dynamic_state_create_info = {

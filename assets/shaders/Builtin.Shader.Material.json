@@ -2,6 +2,7 @@
   "version": 1.0,
   "name": "Builtin.Shader.Material",
   "cullMode": "back",
+  "polygonMode": "fill",
   "stages": [
     { "stage": "vertex", "file": "Builtin.Shader.Material.vert.spv" },
     { "stage": "fragment", "file": "Builtin.Shader.Material.frag.spv" }

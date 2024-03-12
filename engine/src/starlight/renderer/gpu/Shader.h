@@ -14,6 +14,7 @@
 #include "starlight/core/Core.h"
 #include "starlight/core/utils/Log.h"
 #include "starlight/renderer/CullMode.h"
+#include "starlight/renderer/PolygonMode.h"
 #include "fwd.h"
 
 #include "Texture.h"
@@ -106,6 +107,7 @@ public:
         Texture* defaultTexture;
 
         CullMode cullMode;
+        PolygonMode polygonMode;
     };
 
     class UniformProxy {
@@ -163,6 +165,7 @@ protected:
     UniformProxy m_uniformProxy;
 
     CullMode m_cullMode;
+    PolygonMode m_polygonMode;
 
 private:
     virtual void bindGlobals()                = 0;

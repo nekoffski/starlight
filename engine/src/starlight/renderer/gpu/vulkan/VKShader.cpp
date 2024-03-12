@@ -656,6 +656,12 @@ void VKShader::createDescriptorSetLayouts() {
     }
 }
 
+static std::unordered_map<PolygonMode, VkPolygonMode> vkPolygonModes = {
+    {PolygonMode::fill,   VK_POLYGON_MODE_FILL },
+    { PolygonMode::line,  VK_POLYGON_MODE_LINE },
+    { PolygonMode::point, VK_POLYGON_MODE_POINT},
+};
+
 void VKShader::createPipeline(RenderPass* renderPass) {
     // viewport & scissor
     const auto [w, h] = WindowManager::get().getSize();
@@ -685,7 +691,7 @@ void VKShader::createPipeline(RenderPass* renderPass) {
     pipelineProps.stages               = stageCreateInfos;
     pipelineProps.viewport             = viewport;
     pipelineProps.scissor              = scissor;
-    pipelineProps.polygonMode          = VK_POLYGON_MODE_FILL;
+    pipelineProps.polygonMode          = vkPolygonModes.at(m_polygonMode);
     pipelineProps.depthTestEnabled     = true;
     pipelineProps.cullMode             = m_cullMode;
 

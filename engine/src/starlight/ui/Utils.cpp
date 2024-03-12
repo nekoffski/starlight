@@ -7,9 +7,9 @@
 
 namespace sl::ui {
 
-// auto foo() {
-//     ImGui::PushTex
-// }
+void checkbox(const std::string& label, bool& value) {
+    ImGui::Checkbox(label.c_str(), &value);
+}
 
 void pushFont(Font* font) { ImGui::PushFont(font->handle); }
 void popFont() { ImGui::PopFont(); }
