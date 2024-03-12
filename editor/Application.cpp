@@ -49,7 +49,8 @@ Application::Application(int argc, char** argv) :
         .viewportWidth  = w,
         .viewportHeight = h,
       });
-    m_activeCamera = m_eulerCamera.get();
+    m_activeCamera          = m_eulerCamera.get();
+    m_ui.getState()->camera = m_activeCamera;
 }
 
 int Application::run() {
@@ -82,8 +83,8 @@ int Application::run() {
     sl::SkyboxRenderView skyboxView{ m_activeCamera, skyboxShader, skybox };
 
     m_views.push_back(&skyboxView);
-    m_views.push_back(&worldView);
     m_views.push_back(&uiView);
+    m_views.push_back(&worldView);
 
     LOG_INFO("Starlight Editor starting");
 
@@ -95,7 +96,9 @@ int Application::run() {
             LOG_VAR(deltaTime);
             LOG_VAR(m_activeCamera->getPosition());
 
-            auto renderPacket = m_scene.getRenderPacket();
+            auto renderPacket     = m_scene.getRenderPacket();
+            renderPacket.viewport = calculateViewport();
+
             m_renderer.renderFrame(deltaTime, renderPacket);
 
             m_activeCamera->update(deltaTime);
@@ -121,12 +124,14 @@ void Application::setupEventHandlers() {
             if (key == SL_KEY_8) m_renderer.setRenderMode(sl::RenderMode::standard);
             if (key == SL_KEY_6) sl::enableVariableLogging();
             if (key == SL_KEY_4) {
-                m_activeCamera = m_eulerCamera.get();
+                m_activeCamera          = m_eulerCamera.get();
+                m_ui.getState()->camera = m_activeCamera;
                 m_window->showCursor();
                 for (auto& view : m_views) view->setCamera(m_activeCamera);
             }
             if (key == SL_KEY_3) {
-                m_activeCamera = m_firstPersonCamera.get();
+                m_activeCamera          = m_firstPersonCamera.get();
+                m_ui.getState()->camera = m_activeCamera;
                 m_window->hideCursor();
                 for (auto& view : m_views) view->setCamera(m_activeCamera);
             }
@@ -162,4 +167,15 @@ void Application::setupEventHandlers() {
       .on<sl::ScrollEvent>(onScroll)
       .on<SceneLoaded>(onSceneLoaded)
       .on<SceneSaved>(onSceneSaved);
+}
+
+sl::Viewport Application::calculateViewport() const {
+    const auto [w, h] = m_window->getSize();
+
+    return sl::Viewport{
+        .x      = panelWidthFactor * w,
+        .y      = 0.25f * h,
+        .width  = (1.0f - 2.0f * panelWidthFactor) * w,
+        .height = (0.75f) * h
+    };
 }

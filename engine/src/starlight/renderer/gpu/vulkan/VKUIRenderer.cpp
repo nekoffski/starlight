@@ -3,6 +3,7 @@
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_vulkan.h>
 #include <imgui.h>
+#include <ImGuizmo.h>
 
 #include "starlight/core/utils/Log.h"
 
@@ -98,6 +99,7 @@ void VKUIRenderer::begin([[maybe_unused]] CommandBuffer& commandBuffer) {
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+    ImGuizmo::BeginFrame();
 }
 
 void VKUIRenderer::end(CommandBuffer& commandBuffer) {
@@ -105,6 +107,7 @@ void VKUIRenderer::end(CommandBuffer& commandBuffer) {
     auto bufferHandle =
       static_cast<vk::VKCommandBuffer*>(&commandBuffer)->getHandle();
     ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), bufferHandle);
+    ImGui::EndFrame();
 }
 
 }  // namespace sl::vk

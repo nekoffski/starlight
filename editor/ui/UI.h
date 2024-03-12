@@ -28,6 +28,7 @@ public:
     void render();
     bool shouldExit() const;
 
+    UIState* getState();
     Logger* getLogger();
 
 private:

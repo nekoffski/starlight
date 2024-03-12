@@ -36,24 +36,21 @@ public:
     explicit VKRendererBackend(sl::Window& window, const Config& config);
     ~VKRendererBackend();
 
-    template <typename C>
-    requires Callable<C> u64 renderFrame(float deltaTime, C&& callback) {
-        if (beginFrame(deltaTime)) {
-            callback();
-            endFrame(deltaTime);
-        }
-        return m_renderedVertices;
-    }
-
     bool beginFrame(float deltaTime) override;
     bool endFrame(float deltaTime) override;
 
     void drawMesh(const Mesh& mesh) override;
     void onViewportResize(u32 width, u32 height) override;
 
+    u64 getRenderedVertexCount() const override;
+    void setViewport(const Viewport& viewport);
+
     // resources
     ResourcePools* getResourcePools() override;
     VKRendererBackendProxy* getProxy() override;
+
+    void setViewport(VKCommandBuffer& commandBuffer, const Viewport& viewport);
+    void setScissors(VKCommandBuffer& commandBuffer);
 
 private:
     UniqPtr<VKUIRenderer> createUIRendererer(RenderPass* renderPass);
@@ -71,7 +68,6 @@ private:
     void createBuffers();
 
     void recreateSwapchain();
-    void recordCommands(VKCommandBuffer& commandBuffer);
 
     VKFence* acquireImageFence();
 

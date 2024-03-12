@@ -26,6 +26,10 @@ Texture* VKRendererBackendProxy::getDepthBuffer() {
     return m_backend->getDepthBuffer();
 }
 
+void VKRendererBackendProxy::setViewport(const Viewport& viewport) {
+    m_backend->setViewport(viewport);
+}
+
 void VKRendererBackendProxy::gpuCall(std::function<void(CommandBuffer&)>&& callback
 ) {
     m_backend->gpuCall(std::move(callback));

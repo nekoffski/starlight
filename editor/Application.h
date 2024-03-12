@@ -30,6 +30,8 @@ public:
 private:
     void setupEventHandlers();
 
+    sl::Viewport calculateViewport() const;
+
     bool m_isRunning;
     bool m_update;
 

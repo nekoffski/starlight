@@ -56,6 +56,7 @@ void WorldRenderView::render(
   RendererBackendProxy& backendProxy, const RenderPacket& packet,
   const RenderProperties& properties, [[maybe_unused]] float deltaTime
 ) {
+    backendProxy.setViewport(packet.viewport);
     m_renderPass->run(
       *backendProxy.getCommandBuffer(), backendProxy.getImageIndex(),
       [&]() {

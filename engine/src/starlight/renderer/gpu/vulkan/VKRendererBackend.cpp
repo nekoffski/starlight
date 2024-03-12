@@ -162,6 +162,12 @@ void VKRendererBackend::onViewportResize(u32 width, u32 height) {
     m_recreatingSwapchain = false;
 }
 
+u64 VKRendererBackend::getRenderedVertexCount() const { return m_renderedVertices; }
+
+void VKRendererBackend::setViewport(const Viewport& viewport) {
+    setViewport(m_commandBuffers[m_imageIndex], viewport);
+}
+
 void VKRendererBackend::createCommandBuffers() {
     const auto swapchainImagesCount = m_swapchain->getImageCount();
     m_commandBuffers.clear();
@@ -187,33 +193,6 @@ void VKRendererBackend::recreateSwapchain() {
     LOG_INFO("Resized, booting.");
 }
 
-void VKRendererBackend::recordCommands(VKCommandBuffer& commandBuffer) {
-    commandBuffer.reset();
-    commandBuffer.begin(VKCommandBuffer::BeginFlags{
-      .isSingleUse          = false,
-      .isRenderpassContinue = false,
-      .isSimultaneousUse    = false,
-    });
-
-    // Dynamic state
-    VkViewport viewport;
-    viewport.x        = 0.0f;
-    viewport.y        = (float)m_framebufferHeight;
-    viewport.width    = (float)m_framebufferWidth;
-    viewport.height   = -(float)m_framebufferHeight;
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
-
-    // Scissor
-    VkRect2D scissor;
-    scissor.offset.x = scissor.offset.y = 0;
-    scissor.extent.width                = m_framebufferWidth;
-    scissor.extent.height               = m_framebufferHeight;
-
-    vkCmdSetViewport(commandBuffer.getHandle(), 0, 1, &viewport);
-    vkCmdSetScissor(commandBuffer.getHandle(), 0, 1, &scissor);
-}
-
 VKFence* VKRendererBackend::acquireImageFence() {
     auto& fence = m_imagesInFlight[m_imageIndex];
     if (fence) fence->wait(UINT64_MAX);
@@ -232,6 +211,29 @@ Texture* VKRendererBackend::getDepthBuffer() {
 }
 
 VKRendererBackendProxy* VKRendererBackend::getProxy() { return &m_proxy; }
+
+void VKRendererBackend::setViewport(
+  VKCommandBuffer& commandBuffer, const Viewport& viewport
+) {
+    VkViewport vkViewport;
+    vkViewport.x        = viewport.x;
+    vkViewport.y        = viewport.height;
+    vkViewport.width    = viewport.width;
+    vkViewport.height   = -viewport.height;
+    vkViewport.minDepth = 0.0f;
+    vkViewport.maxDepth = 1.0f;
+
+    vkCmdSetViewport(commandBuffer.getHandle(), 0, 1, &vkViewport);
+}
+
+void VKRendererBackend::setScissors(VKCommandBuffer& commandBuffer) {
+    VkRect2D scissor;
+    scissor.offset.x = scissor.offset.y = 0;
+    scissor.extent.width                = m_framebufferWidth;
+    scissor.extent.height               = m_framebufferHeight;
+
+    vkCmdSetScissor(commandBuffer.getHandle(), 0, 1, &scissor);
+}
 
 bool VKRendererBackend::beginFrame(float deltaTime) {
     m_renderedVertices       = 0u;
@@ -269,9 +271,24 @@ bool VKRendererBackend::beginFrame(float deltaTime) {
 
     // Begin recording commands.
     auto& commandBuffer = m_commandBuffers[m_imageIndex];
-    recordCommands(commandBuffer);
 
-    // m_mainRenderPass->setAreaSize(m_framebufferWidth, m_framebufferHeight);
+    commandBuffer.reset();
+    commandBuffer.begin(VKCommandBuffer::BeginFlags{
+      .isSingleUse          = false,
+      .isRenderpassContinue = false,
+      .isSimultaneousUse    = false,
+    });
+
+    setViewport(
+      commandBuffer,
+      Viewport{
+        0.0f,
+        0.0f,
+        static_cast<float>(m_framebufferWidth),
+        static_cast<float>(m_framebufferHeight),
+      }
+    );
+    setScissors(commandBuffer);
 
     return true;
 }

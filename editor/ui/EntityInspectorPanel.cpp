@@ -3,6 +3,8 @@
 #include "starlight/scene/components/All.h"
 #include "starlight/resource/All.h"
 
+#include <ImGuizmo.h>
+
 EntityInspectorPanel::EntityInspectorPanel(
   sl::Scene* scene, UIState* state, Logger* logger
 ) :
@@ -25,6 +27,17 @@ void EntityInspectorPanel::render() {
 void EntityInspectorPanel::renderEntityUI(sl::u64 entityId) {
     auto entity = m_scene->getEntity(entityId);
     auto& data  = m_entitiesData[entity->getId()];
+
+    auto view       = m_state->camera->getViewMatrix();
+    auto projection = m_state->camera->getProjectionMatrix();
+
+    ImGuiIO& io = ImGui::GetIO();
+    ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+
+    ImGuizmo::DrawGrid(
+      glm::value_ptr(view), glm::value_ptr(projection),
+      glm::value_ptr(sl::identityMatrix), 100.f
+    );
 
     sl::ui::namedScope(fmt::format("Entity_{}", entity->getId()), [&]() {
         sl::ui::text("Entity: {}/{}", entity->getId(), entity->getName());

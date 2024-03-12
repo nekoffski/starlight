@@ -16,8 +16,8 @@ UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer, sl::Scene* scene) :
     m_leftCombo(
       "left-combo",
       sl::ui::PanelCombo::Properties{
-        .position             = {0,                         0},
-        .size                 = { leftComboWidthFactor * w, h},
+        .position             = {0,                     0},
+        .size                 = { panelWidthFactor * w, h},
         .alignWithMainMenuBar = true,
         .orientation          = sl::ui::PanelCombo::Orientation::vertical
 }
@@ -25,16 +25,16 @@ UI::UI(sl::u64 w, sl::u64 h, sl::RendererFrontend& renderer, sl::Scene* scene) :
     m_rightCombo(
       "right-combo",
       sl::ui::PanelCombo::Properties{
-        .position             = { w * (1.0f - leftComboWidthFactor), 0 },
-        .size                 = { leftComboWidthFactor * w, h },
+        .position             = { w * (1.0f - panelWidthFactor), 0 },
+        .size                 = { panelWidthFactor * w, h },
         .alignWithMainMenuBar = true,
         .orientation          = sl::ui::PanelCombo::Orientation::vertical }
     ),
     m_bottomCombo(
       "bottom-combo",
       sl::ui::PanelCombo::Properties{
-        .position             = { leftComboWidthFactor * w, (1.0f - 0.25f) * h },
-        .size                 = { (1.0f - leftComboWidthFactor * 2) * w, h * 0.25f },
+        .position             = { panelWidthFactor * w, (1.0f - 0.25f) * h },
+        .size                 = { (1.0f - panelWidthFactor * 2) * w, h * 0.25f },
         .alignWithMainMenuBar = true,
         .orientation          = sl::ui::PanelCombo::Orientation::horizontal }
 
@@ -97,5 +97,7 @@ void UI::render() {
 }
 
 bool UI::shouldExit() const { return m_shouldExit; }
+
+UIState* UI::getState() { return &m_state; }
 
 Logger* UI::getLogger() { return m_logger; }

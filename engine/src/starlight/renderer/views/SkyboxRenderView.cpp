@@ -47,6 +47,7 @@ void SkyboxRenderView::render(
   [[maybe_unused]] const RenderProperties& properties,
   [[maybe_unused]] float deltaTime
 ) {
+    backendProxy.setViewport(packet.viewport);
     m_renderPass->run(
       *backendProxy.getCommandBuffer(), backendProxy.getImageIndex(),
       [&]() {
