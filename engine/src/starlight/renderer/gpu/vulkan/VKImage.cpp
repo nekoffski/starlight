@@ -1,5 +1,6 @@
 #include "VKImage.h"
 
+#include "VKContext.h"
 #include "VKDevice.h"
 
 namespace sl::vk {

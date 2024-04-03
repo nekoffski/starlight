@@ -32,15 +32,61 @@ VkInstanceCreateInfo createInstanceCreateInfo(
 }  // namespace
 
 VKContext::VKContext(sl::Window& window, const Config& config) :
-    m_allocator(nullptr), m_instance(nullptr)
-#ifdef NV_VK_DEBUG
-    ,
-    m_debugMessenger(nullptr)
-#endif
-    ,
-    m_surface(nullptr) {
+    m_config(config), m_allocator(nullptr),
+    m_instance(
+      [&]() { return createInstance(); },
+      [&](VkInstance& instance) {
+          if (instance) vkDestroyInstance(instance, m_allocator);
+      }
+    ),
+#ifdef STARLIGHT_VK_DEBUG
+    m_debugMessenger(
+      [&]() { return createDebugMessenger(); },
+      [&](VkDebugUtilsMessengerEXT& messenger) {
+          if (messenger) {
+              static const auto debugDestructorFunctionName =
+                "vkDestroyDebugUtilsMessengerEXT";
 
-    auto applicationInfo    = createApplicationInfo(config);
+              auto destructor =
+                reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
+                  vkGetInstanceProcAddr(
+                    m_instance.get(), debugDestructorFunctionName
+                  )
+                );
+              destructor(m_instance.get(), messenger, m_allocator);
+          }
+      }
+    ),
+#endif
+    m_surface(
+      [&]() {
+          return glfw::createVulkanSurface(
+            m_instance.get(), window.getHandle(), m_allocator
+          );
+      },
+      [&](VkSurfaceKHR& surface) {
+          if (surface) vkDestroySurfaceKHR(m_instance.get(), surface, m_allocator);
+      }
+    ),
+    m_device(m_allocator, m_instance.get(), m_surface.get()) {
+}
+
+VKContext::~VKContext() {}
+
+VkAllocationCallbacks* VKContext::getAllocator() const { return m_allocator; }
+
+VkInstance VKContext::getInstance() const { return m_instance.get(); }
+
+VkSurfaceKHR VKContext::getSurface() const { return m_surface.get(); }
+
+VKDevice* VKContext::getDevice() { return &m_device; }
+
+VkDevice VKContext::getLogicalDevice() { return m_device.getLogicalDevice(); }
+
+VkInstance VKContext::createInstance() {
+    VkInstance instance;
+
+    auto applicationInfo    = createApplicationInfo(m_config);
     auto requiredExtensions = getRequiredExtensions();
 
     LOG_INFO("Vulkan extensions to enable:");
@@ -56,57 +102,35 @@ VKContext::VKContext(sl::Window& window, const Config& config) :
     auto instanceCreateInfo =
       createInstanceCreateInfo(applicationInfo, requiredExtensions, layers);
 
-    VK_ASSERT(vkCreateInstance(&instanceCreateInfo, m_allocator, &m_instance));
+    VK_ASSERT(vkCreateInstance(&instanceCreateInfo, m_allocator, &instance));
     LOG_INFO("Vulkan Instance initialized");
 
-#ifdef NV_VK_DEBUG
+    return instance;
+}
+
+VkDebugUtilsMessengerEXT VKContext::createDebugMessenger() {
+    VkDebugUtilsMessengerEXT debugMessenger = nullptr;
+
+#ifdef STARLIGHT_VK_DEBUG
     static const auto debugFactoryFunctionName = "vkCreateDebugUtilsMessengerEXT";
 
     auto debugCreateInfo = createDebugMessengerCreateInfo();
     auto factory         = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
-      vkGetInstanceProcAddr(m_instance, debugFactoryFunctionName)
+      vkGetInstanceProcAddr(m_instance.get(), debugFactoryFunctionName)
     );
 
     ASSERT(factory, "Failed to create debug messenger factory");
-    VK_ASSERT(factory(m_instance, &debugCreateInfo, m_allocator, &m_debugMessenger));
+    VK_ASSERT(
+      factory(m_instance.get(), &debugCreateInfo, m_allocator, &debugMessenger)
+    );
 
     LOG_INFO("Created Vulkan Debug Messenger");
 #endif
 
-    glfw::createVulkanSurface(
-      m_instance, window.getHandle(), m_allocator, &m_surface
-    );
-
-    LOG_INFO("Vulkan Surface created");
-    LOG_INFO("Vulkan VKContext created");
+    return debugMessenger;
 }
-
-VKContext::~VKContext() {
-    if (m_surface) vkDestroySurfaceKHR(m_instance, m_surface, m_allocator);
-
-#ifdef NV_VK_DEBUG
-    if (m_debugMessenger) {
-        static const auto debugDestructorFunctionName =
-          "vkDestroyDebugUtilsMessengerEXT";
-
-        auto destructor = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
-          vkGetInstanceProcAddr(m_instance, debugDestructorFunctionName)
-        );
-        destructor(m_instance, m_debugMessenger, m_allocator);
-    }
-#endif
-
-    if (m_instance) vkDestroyInstance(m_instance, m_allocator);
-}
-
-VkAllocationCallbacks* VKContext::getAllocator() const { return m_allocator; }
-
-VkInstance VKContext::getInstance() const { return m_instance; }
-
-VkSurfaceKHR VKContext::getSurface() const { return m_surface; }
 
 namespace {
-
 VKAPI_ATTR VkBool32 VKAPI_CALL debugMessengerCallback(
   VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
   [[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT messageTypes,
@@ -144,7 +168,7 @@ std::vector<const char*> getRequiredExtensions() {
     const auto platformRequiredExtensions = glfw::getRequiredExtensions();
 
     std::vector<const char*> requiredExtensions = {
-#ifdef NV_VK_DEBUG
+#ifdef STARLIGHT_VK_DEBUG
         VK_EXT_DEBUG_UTILS_EXTENSION_NAME
 #endif
     };
@@ -161,7 +185,7 @@ std::vector<const char*> getLayers() {
     std::vector<const char*> layers;
 
     // validation layers
-#ifdef NV_VK_DEBUG
+#ifdef STARLIGHT_VK_DEBUG
     // get the list of available validation layers
     auto layersAvailable = ::vk::enumerateInstanceLayerProperties();
 

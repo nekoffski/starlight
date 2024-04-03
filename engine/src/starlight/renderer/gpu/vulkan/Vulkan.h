@@ -19,7 +19,7 @@ std::string getResultString(VkResult result, bool extended);
 
 bool isGood(VkResult);
 
-using VkAllocator = VkAllocationCallbacks*;
+using Allocator   = VkAllocationCallbacks;
 using Nanoseconds = uint64_t;
 
 }  // namespace sl::vk

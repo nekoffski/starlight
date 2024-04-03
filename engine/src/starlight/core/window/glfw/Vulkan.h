@@ -9,8 +9,8 @@
 
 namespace sl::glfw {
 
-void createVulkanSurface(
-    VkInstance instance, void* windowHandle, VkAllocationCallbacks* allocator, VkSurfaceKHR* surface
+VkSurfaceKHR createVulkanSurface(
+  VkInstance instance, void* windowHandle, VkAllocationCallbacks* allocator
 );
 
 std::vector<const char*> getRequiredExtensions();

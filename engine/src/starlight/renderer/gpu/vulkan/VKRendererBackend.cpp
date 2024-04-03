@@ -14,7 +14,8 @@
 namespace sl::vk {
 
 VKRendererBackend::VKRendererBackend(Window& window, const Config& config) :
-    m_window(window), m_proxy(this), m_renderedVertices(0u) {
+    m_window(window), m_proxy(this), m_renderedVertices(0u),
+    m_context(window, config) {
     const auto [w, h] = window.getSize();
 
     m_framebufferWidth  = w;
@@ -25,27 +26,28 @@ VKRendererBackend::VKRendererBackend(Window& window, const Config& config) :
     createCommandBuffers();
 }
 
-VKRendererBackend::~VKRendererBackend() { m_device->waitIdle(); }
+VKRendererBackend::~VKRendererBackend() { m_context.getDevice()->waitIdle(); }
 
 UniqPtr<VKUIRenderer> VKRendererBackend::createUIRendererer(RenderPass* renderPass) {
     return createUniqPtr<VKUIRenderer>(
-      *m_context, *m_device, m_proxy, m_window, renderPass
+      m_context, *m_context.getDevice(), m_proxy, m_window, renderPass
     );
 }
 
 void VKRendererBackend::gpuCall(std::function<void(CommandBuffer& buffer)>&& callback
 ) {
-    const auto queue = m_device->getQueues().graphics;
+    auto device      = m_context.getDevice();
+    const auto queue = device->getQueues().graphics;
 
     vkQueueWaitIdle(queue);
     VKCommandBuffer commandBuffer(
-      m_device.get(), m_device->getGraphicsCommandPool(),
+      m_context.getDevice(), device->getGraphicsCommandPool(),
       VKCommandBuffer::Severity::primary
     );
     commandBuffer.createAndBeginSingleUse();
     callback(commandBuffer);
     commandBuffer.endSingleUse(queue);
-    m_device->waitIdle();
+    device->waitIdle();
 }
 
 void VKRendererBackend::freeDataRange(
@@ -84,7 +86,7 @@ void VKRendererBackend::createBuffers() {
     LOG_DEBUG("Creating buffers");
 
     m_objectVertexBuffer = createUniqPtr<VKBuffer>(
-      m_context.get(), m_device.get(),
+      &m_context, m_context.getDevice(),
       VKBuffer::Properties{
         sizeof(Vertex3) * 1024 * 1024, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
         VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT
@@ -93,7 +95,7 @@ void VKRendererBackend::createBuffers() {
     );
 
     m_objectIndexBuffer = createUniqPtr<VKBuffer>(
-      m_context.get(), m_device.get(),
+      &m_context, m_context.getDevice(),
       VKBuffer::Properties{
         sizeof(u32) * 1024 * 1024, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
         VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT
@@ -111,17 +113,16 @@ u32 VKRendererBackend::getImageIndex() { return m_imageIndex; }
 void VKRendererBackend::createCoreComponents(
   sl::Window& window, const Config& config
 ) {
-    m_context          = createUniqPtr<VKContext>(window, config);
-    m_device           = createUniqPtr<VKDevice>(m_context.get());
     const auto& [w, h] = window.getSize();
-    m_swapchain = createUniqPtr<VKSwapchain>(m_device.get(), m_context.get(), w, h);
+    m_swapchain =
+      createUniqPtr<VKSwapchain>(m_context.getDevice(), &m_context, w, h);
 
     m_maxFramesInFlight = m_swapchain->getImageCount();
 
     createBuffers();
 
     m_resourcePools.emplace(
-      *m_context, *m_device, *m_objectVertexBuffer, *m_objectIndexBuffer,
+      m_context, *m_context.getDevice(), *m_objectVertexBuffer, *m_objectIndexBuffer,
       *m_swapchain, this
     );
 }
@@ -133,14 +134,13 @@ void VKRendererBackend::createSemaphoresAndFences() {
     m_imagesInFlight.resize(m_maxFramesInFlight);
     m_inFlightFences.reserve(m_maxFramesInFlight);
 
-    auto contextPointer = m_context.get();
-    auto devicePointer  = m_device.get();
+    auto devicePointer = m_context.getDevice();
 
     for (int i = 0; i < m_maxFramesInFlight; ++i) {
-        m_imageAvailableSemaphores.emplace_back(contextPointer, devicePointer);
-        m_queueCompleteSemaphores.emplace_back(contextPointer, devicePointer);
+        m_imageAvailableSemaphores.emplace_back(&m_context, devicePointer);
+        m_queueCompleteSemaphores.emplace_back(&m_context, devicePointer);
         m_inFlightFences.emplace_back(
-          contextPointer, devicePointer, VKFence::State::signaled
+          &m_context, devicePointer, VKFence::State::signaled
         );
     }
 }
@@ -151,11 +151,7 @@ void VKRendererBackend::onViewportResize(u32 width, u32 height) {
     m_recreatingSwapchain = true;
     LOG_TRACE("Vulkan renderer backend framebuffer resized {}/{}", width, height);
 
-    auto logicalDevice = m_device->getLogicalDevice();
-    if (auto result = vkDeviceWaitIdle(logicalDevice); not isGood(result)) {
-        LOG_ERROR("vkDeviceWaitDile failed: %s", getResultString(result, true));
-        // TODO: handle
-    }
+    m_context.getDevice()->waitIdle();
     m_inFlightFences[m_currentFrame].wait(UINT64_MAX);
     recreateSwapchain();
 
@@ -169,23 +165,22 @@ void VKRendererBackend::setViewport(const Viewport& viewport) {
 }
 
 void VKRendererBackend::createCommandBuffers() {
+    auto device = m_context.getDevice();
+
     const auto swapchainImagesCount = m_swapchain->getImageCount();
     m_commandBuffers.clear();
     LOG_TRACE("Creating {} command buffers", swapchainImagesCount);
     m_commandBuffers.reserve(swapchainImagesCount);
     for (int i = 0; i < swapchainImagesCount; ++i) {
         m_commandBuffers.emplace_back(
-          m_device.get(), m_device->getGraphicsCommandPool(),
+          m_context.getDevice(), device->getGraphicsCommandPool(),
           VKCommandBuffer::Severity::primary
         );
     }
 }
 
 void VKRendererBackend::recreateSwapchain() {
-    if (auto result = m_device->waitIdle(); not isGood(result)) {
-        LOG_ERROR("vkDeviceWaitIdle (2) failed: {}", getResultString(result, true));
-        return;
-    }
+    m_context.getDevice()->waitIdle();
 
     // TODO: implement case when recreation fails
     m_swapchain->recreate(m_framebufferWidth, m_framebufferHeight);
@@ -237,7 +232,7 @@ void VKRendererBackend::setScissors(VKCommandBuffer& commandBuffer) {
 
 bool VKRendererBackend::beginFrame(float deltaTime) {
     m_renderedVertices       = 0u;
-    const auto logicalDevice = m_device->getLogicalDevice();
+    const auto logicalDevice = m_context.getLogicalDevice();
 
     if (m_recreatingSwapchain) {
         m_recreatingSwapchain = false;
@@ -294,7 +289,7 @@ bool VKRendererBackend::beginFrame(float deltaTime) {
 }
 
 bool VKRendererBackend::endFrame(float deltaTime) {
-    const auto logicalDevice = m_device->getLogicalDevice();
+    const auto logicalDevice = m_context.getLogicalDevice();
     auto& commandBuffer      = m_commandBuffers[m_imageIndex];
 
     commandBuffer.end();
@@ -336,7 +331,7 @@ bool VKRendererBackend::endFrame(float deltaTime) {
     };
     submit_info.pWaitDstStageMask = flags;
 
-    const auto& deviceQueues = m_device->getQueues();
+    const auto& deviceQueues = m_context.getDevice()->getQueues();
 
     VkResult result =
       vkQueueSubmit(deviceQueues.graphics, 1, &submit_info, fence->getHandle());

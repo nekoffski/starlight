@@ -6,8 +6,6 @@
 
 #include "starlight/core/Core.h"
 
-#include "VKContext.h"
-
 namespace sl::vk {
 
 class VKDevice {
@@ -60,8 +58,12 @@ public:
         VkQueue transfer;
     };
 
-    explicit VKDevice(VKContext* context);
+    explicit VKDevice(
+      Allocator* allocator, VkInstance instance, VkSurfaceKHR surface
+    );
     ~VKDevice();
+
+    void destroy();
 
     VkDevice getLogicalDevice() const;
     VkPhysicalDevice getGPU() const;
@@ -87,7 +89,7 @@ public:
 
     bool supportsDeviceLocalHostVisible() const;
 
-    VkResult waitIdle();
+    void waitIdle();
 
 private:
     void createCommandPool();
@@ -102,7 +104,9 @@ private:
 
     std::vector<uint32_t> prepareQueuesIndices();
 
-    VKContext* m_context;
+    Allocator* m_allocator;
+    VkInstance m_instance;
+    VkSurfaceKHR m_surface;
 
     VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
     VkDevice m_logicalDevice          = VK_NULL_HANDLE;
