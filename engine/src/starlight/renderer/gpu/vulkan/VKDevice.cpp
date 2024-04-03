@@ -4,8 +4,9 @@
 
 namespace sl::vk {
 
-VKDevice::VKDevice(VKContext* context) :
-    m_context(context), m_supportsDeviceLocalHostVisible(false) {
+VKDevice::VKDevice(Allocator* allocator, VkInstance instance, VkSurfaceKHR surface) :
+    m_allocator(allocator), m_instance(instance), m_surface(surface),
+    m_supportsDeviceLocalHostVisible(false) {
     pickPhysicalDevice();
     createLogicalDevice();
     assignQueues();
@@ -14,12 +15,12 @@ VKDevice::VKDevice(VKContext* context) :
 }
 
 VKDevice::~VKDevice() {
-    auto allocator = m_context->getAllocator();
-
     if (m_graphicsCommandPool)
-        vkDestroyCommandPool(m_logicalDevice, m_graphicsCommandPool, allocator);
-    if (m_logicalDevice) vkDestroyDevice(m_logicalDevice, allocator);
+        vkDestroyCommandPool(m_logicalDevice, m_graphicsCommandPool, m_allocator);
+    if (m_logicalDevice) vkDestroyDevice(m_logicalDevice, m_allocator);
 }
+
+void VKDevice::destroy() {}
 
 VkDevice VKDevice::getLogicalDevice() const { return m_logicalDevice; }
 
@@ -357,15 +358,13 @@ void VKDevice::storeDevice(
 }
 
 void VKDevice::pickPhysicalDevice() {
-    auto instance     = m_context->getInstance();
-    auto surface      = m_context->getSurface();
     auto requirements = createDeviceRequirements();
 
-    for (auto device : getPhysicalDevices(instance)) {
+    for (auto device : getPhysicalDevices(m_instance)) {
         auto properties = getDeviceProperties(device);
 
         auto deviceInfo = isPhysicalDeviceSuitable(
-          device, surface, properties.device, properties.features, requirements
+          device, m_surface, properties.device, properties.features, requirements
         );
 
         if (deviceInfo) {
@@ -469,8 +468,7 @@ void VKDevice::createLogicalDevice() {
 
     // Create the device.
     VK_ASSERT(vkCreateDevice(
-      m_physicalDevice, &deviceCreateInfo.vulkanHandle, m_context->getAllocator(),
-      &m_logicalDevice
+      m_physicalDevice, &deviceCreateInfo.vulkanHandle, m_allocator, &m_logicalDevice
     ));
 
     LOG_INFO("Logical device created.");
@@ -496,8 +494,7 @@ void VKDevice::createCommandPool() {
     poolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
     VK_ASSERT(vkCreateCommandPool(
-      m_logicalDevice, &poolCreateInfo, m_context->getAllocator(),
-      &m_graphicsCommandPool
+      m_logicalDevice, &poolCreateInfo, m_allocator, &m_graphicsCommandPool
     ));
 }
 
@@ -509,14 +506,17 @@ bool VKDevice::supportsDeviceLocalHostVisible() const {
     return m_supportsDeviceLocalHostVisible;
 }
 
-VkResult VKDevice::waitIdle() { return vkDeviceWaitIdle(m_logicalDevice); }
+void VKDevice::waitIdle() {
+    const auto result = vkDeviceWaitIdle(m_logicalDevice);
+    ASSERT(
+      isGood(result), "vkDeviceWaitDile failed: {}", getResultString(result, true)
+    );
+}
 
 const VKDevice::Queues& VKDevice::getQueues() { return m_queues; }
 
 VKDevice::SwapchainSupportInfo VKDevice::queryDeviceSwapchainSupport() {
-    return sl::vk::queryDeviceSwapchainSupport(
-      m_physicalDevice, m_context->getSurface()
-    );
+    return sl::vk::queryDeviceSwapchainSupport(m_physicalDevice, m_surface);
 }
 
 u8 VKDevice::getDepthChannelCount() const { return m_depthChannelCount; }

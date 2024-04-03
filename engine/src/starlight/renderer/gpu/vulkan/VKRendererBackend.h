@@ -77,18 +77,16 @@ private:
     Window& m_window;
 
     VKRendererBackendProxy m_proxy;
-
     bool m_recreatingSwapchain = false;
 
-    UniqPtr<VKContext> m_context;
-    UniqPtr<VKDevice> m_device;
+    // vulkan
+    VKContext m_context;
+
     UniqPtr<VKSwapchain> m_swapchain;
 
     // TODO: consider creating as ptrs to allow mocking
     UniqPtr<VKBuffer> m_objectVertexBuffer;
     UniqPtr<VKBuffer> m_objectIndexBuffer;
-
-    // std::vector<VKRenderTarget> m_worldRenderTargets;
 
     VkDescriptorPool m_uiPool;
 

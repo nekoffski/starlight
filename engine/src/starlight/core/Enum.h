@@ -1,0 +1,18 @@
+#pragma once
+
+#include <concepts>
+
+namespace sl {
+
+template <typename T>
+requires(std::is_enum_v<T>&& requires(T e) { enableBitOperations(e); }
+) constexpr auto
+  operator|(const T lhs, const T rhs) {
+    using underlying = std::underlying_type_t<T>;
+
+    return static_cast<T>(
+      static_cast<underlying>(lhs) | static_cast<underlying>(rhs)
+    );
+}
+
+}  // namespace sl
