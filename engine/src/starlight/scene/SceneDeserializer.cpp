@@ -56,16 +56,17 @@ void SceneDeserializer::parseScene(Scene& scene, const kc::json::Node& root) con
                 const auto componentName =
                   getField<std::string>(componentDefinition, "component");
 
-                if (auto deserializer = m_componentDeserializers.find(componentName);
-                    deserializer == m_componentDeserializers.end()) {
+                if (const auto deserializer =
+                      m_componentDeserializers.find(componentName);
+                    deserializer != m_componentDeserializers.end()) {
+                    LOG_TRACE("Deserializing '{}'", componentName);
+                    deserializer->second(entity, componentDefinition);
+                } else {
                     LOG_WARN(
                       "Could not find deserializer for '{}', scene config file is either "
                       "corrupted or the component hasn't been registered",
                       componentName
                     );
-                } else {
-                    LOG_TRACE("Deserializing '{}'", componentName);
-                    deserializer->second(entity, componentDefinition);
                 }
             }
         }

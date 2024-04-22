@@ -13,6 +13,8 @@
 namespace sl {
 
 struct ResourcePools {
+    virtual ~ResourcePools() = default;
+
     virtual Mesh* createMesh(
       const Mesh::Properties& props, std::span<const Vertex3> vertices,
       std::span<const uint32_t> indices, const Extent3& extent
@@ -20,7 +22,8 @@ struct ResourcePools {
     virtual Mesh* createMesh(
       const Mesh::Properties& props, std::span<const Vertex2> vertices,
       std::span<const uint32_t> indices, const Extent2& extent
-    )                                    = 0;
+    ) = 0;
+
     virtual void destroyMesh(Mesh& mesh) = 0;
 
     virtual Texture* createTexture(

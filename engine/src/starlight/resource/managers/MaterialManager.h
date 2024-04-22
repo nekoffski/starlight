@@ -24,7 +24,7 @@ public:
       ShaderManager& shaderManager, TextureManager& textureManager,
       ResourcePools& resourcePools
     );
-    ~MaterialManager() override;
+    ~MaterialManager();
 
     Material* load(const std::string& name);
     Material* load(const MaterialConfig& config);

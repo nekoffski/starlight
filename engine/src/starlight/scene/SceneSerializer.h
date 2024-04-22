@@ -17,7 +17,7 @@ public:
 
 private:
     std::string parseScene(Scene& scene) const;
-    void save(const std::string& buffer, const std::string path) const;
+    void save(const std::string& buffer, const std::string& outputPath) const;
 
     kc::json::Node processEntities(Scene& scene) const;
     kc::json::Node processResources(Scene& scene) const;

@@ -74,7 +74,7 @@ VKUIRenderer::VKUIRenderer(
 
     ImGui_ImplVulkan_Init(&initInfo);
 
-    reloadFontTextures();
+    VKUIRenderer::reloadFontTextures();
 
     LOG_TRACE("UI backend initialized successfully");
 }

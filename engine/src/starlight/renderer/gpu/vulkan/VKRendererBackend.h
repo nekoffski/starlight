@@ -21,6 +21,8 @@
 #include "VKMesh.h"
 #include "VKPipeline.h"
 #include "VKSemaphore.h"
+#include "VKPhysicalDevice.h"
+#include "VKLogicalDevice.h"
 #include "VKTexture.h"
 #include "VKBuffer.h"
 #include "VKResourcePools.h"
@@ -29,12 +31,17 @@
 
 namespace sl::vk {
 
-class VKRendererBackend final : public RendererBackend {
+class VKRendererBackend : public RendererBackend {
     friend class VKRendererBackendProxy;
 
 public:
     explicit VKRendererBackend(sl::Window& window, const Config& config);
     ~VKRendererBackend();
+
+    VKRendererBackend(const VKRendererBackend&)            = delete;
+    VKRendererBackend& operator=(const VKRendererBackend&) = delete;
+    VKRendererBackend(VKRendererBackend&&)                 = delete;
+    VKRendererBackend& operator=(VKRendererBackend&&)      = delete;
 
     bool beginFrame(float deltaTime) override;
     bool endFrame(float deltaTime) override;
@@ -74,15 +81,17 @@ private:
     Texture* getFramebuffer(u64 id);
     Texture* getDepthBuffer();
 
+    bool m_recreatingSwapchain;
+
     Window& m_window;
 
-    VKRendererBackendProxy m_proxy;
-    bool m_recreatingSwapchain = false;
-
-    // vulkan
     VKContext m_context;
+    VKPhysicalDevice m_physicalDevice;
+    VKLogicalDevice m_logicalDevice;
 
     UniqPtr<VKSwapchain> m_swapchain;
+
+    // vulkan
 
     // TODO: consider creating as ptrs to allow mocking
     UniqPtr<VKBuffer> m_objectVertexBuffer;
@@ -93,6 +102,8 @@ private:
     u64 m_renderedVertices;
 
     LocalPtr<VKResourcePools> m_resourcePools;
+
+    VKRendererBackendProxy m_proxy;
 
     u32 m_maxFramesInFlight;
 

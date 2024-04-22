@@ -94,101 +94,99 @@ MeshConfig3D MeshConfig3D::generateCube(const CubeProperties& props) {
     float max_uvx    = xTile;
     float max_uvy    = yTile;
 
-    {
-        // Front face
-        out.vertices[(0 * 4) + 0].position           = Vec3f{ min_x, min_y, max_z };
-        out.vertices[(0 * 4) + 1].position           = Vec3f{ max_x, max_y, max_z };
-        out.vertices[(0 * 4) + 2].position           = Vec3f{ min_x, max_y, max_z };
-        out.vertices[(0 * 4) + 3].position           = Vec3f{ max_x, min_y, max_z };
-        out.vertices[(0 * 4) + 0].textureCoordinates = Vec2f{ min_uvx, min_uvy };
-        out.vertices[(0 * 4) + 1].textureCoordinates = Vec2f{ max_uvx, max_uvy };
-        out.vertices[(0 * 4) + 2].textureCoordinates = Vec2f{ min_uvx, max_uvy };
-        out.vertices[(0 * 4) + 3].textureCoordinates = Vec2f{ max_uvx, min_uvy };
-        out.vertices[(0 * 4) + 0].normal             = Vec3f{ 0.0f, 0.0f, 1.0f };
-        out.vertices[(0 * 4) + 1].normal             = Vec3f{ 0.0f, 0.0f, 1.0f };
-        out.vertices[(0 * 4) + 2].normal             = Vec3f{ 0.0f, 0.0f, 1.0f };
-        out.vertices[(0 * 4) + 3].normal             = Vec3f{ 0.0f, 0.0f, 1.0f };
+    // Front face
+    out.vertices[(0 * 4) + 0].position           = Vec3f{ min_x, min_y, max_z };
+    out.vertices[(0 * 4) + 1].position           = Vec3f{ max_x, max_y, max_z };
+    out.vertices[(0 * 4) + 2].position           = Vec3f{ min_x, max_y, max_z };
+    out.vertices[(0 * 4) + 3].position           = Vec3f{ max_x, min_y, max_z };
+    out.vertices[(0 * 4) + 0].textureCoordinates = Vec2f{ min_uvx, min_uvy };
+    out.vertices[(0 * 4) + 1].textureCoordinates = Vec2f{ max_uvx, max_uvy };
+    out.vertices[(0 * 4) + 2].textureCoordinates = Vec2f{ min_uvx, max_uvy };
+    out.vertices[(0 * 4) + 3].textureCoordinates = Vec2f{ max_uvx, min_uvy };
+    out.vertices[(0 * 4) + 0].normal             = Vec3f{ 0.0f, 0.0f, 1.0f };
+    out.vertices[(0 * 4) + 1].normal             = Vec3f{ 0.0f, 0.0f, 1.0f };
+    out.vertices[(0 * 4) + 2].normal             = Vec3f{ 0.0f, 0.0f, 1.0f };
+    out.vertices[(0 * 4) + 3].normal             = Vec3f{ 0.0f, 0.0f, 1.0f };
 
-        // Back face
-        out.vertices[(1 * 4) + 0].position           = Vec3f{ max_x, min_y, min_z };
-        out.vertices[(1 * 4) + 1].position           = Vec3f{ min_x, max_y, min_z };
-        out.vertices[(1 * 4) + 2].position           = Vec3f{ max_x, max_y, min_z };
-        out.vertices[(1 * 4) + 3].position           = Vec3f{ min_x, min_y, min_z };
-        out.vertices[(1 * 4) + 0].textureCoordinates = Vec2f{ min_uvx, min_uvy };
-        out.vertices[(1 * 4) + 1].textureCoordinates = Vec2f{ max_uvx, max_uvy };
-        out.vertices[(1 * 4) + 2].textureCoordinates = Vec2f{ min_uvx, max_uvy };
-        out.vertices[(1 * 4) + 3].textureCoordinates = Vec2f{ max_uvx, min_uvy };
-        out.vertices[(1 * 4) + 0].normal             = Vec3f{ 0.0f, 0.0f, -1.0f };
-        out.vertices[(1 * 4) + 1].normal             = Vec3f{ 0.0f, 0.0f, -1.0f };
-        out.vertices[(1 * 4) + 2].normal             = Vec3f{ 0.0f, 0.0f, -1.0f };
-        out.vertices[(1 * 4) + 3].normal             = Vec3f{ 0.0f, 0.0f, -1.0f };
+    // Back face
+    out.vertices[(1 * 4) + 0].position           = Vec3f{ max_x, min_y, min_z };
+    out.vertices[(1 * 4) + 1].position           = Vec3f{ min_x, max_y, min_z };
+    out.vertices[(1 * 4) + 2].position           = Vec3f{ max_x, max_y, min_z };
+    out.vertices[(1 * 4) + 3].position           = Vec3f{ min_x, min_y, min_z };
+    out.vertices[(1 * 4) + 0].textureCoordinates = Vec2f{ min_uvx, min_uvy };
+    out.vertices[(1 * 4) + 1].textureCoordinates = Vec2f{ max_uvx, max_uvy };
+    out.vertices[(1 * 4) + 2].textureCoordinates = Vec2f{ min_uvx, max_uvy };
+    out.vertices[(1 * 4) + 3].textureCoordinates = Vec2f{ max_uvx, min_uvy };
+    out.vertices[(1 * 4) + 0].normal             = Vec3f{ 0.0f, 0.0f, -1.0f };
+    out.vertices[(1 * 4) + 1].normal             = Vec3f{ 0.0f, 0.0f, -1.0f };
+    out.vertices[(1 * 4) + 2].normal             = Vec3f{ 0.0f, 0.0f, -1.0f };
+    out.vertices[(1 * 4) + 3].normal             = Vec3f{ 0.0f, 0.0f, -1.0f };
 
-        // Left
-        out.vertices[(2 * 4) + 0].position           = Vec3f{ min_x, min_y, min_z };
-        out.vertices[(2 * 4) + 1].position           = Vec3f{ min_x, max_y, max_z };
-        out.vertices[(2 * 4) + 2].position           = Vec3f{ min_x, max_y, min_z };
-        out.vertices[(2 * 4) + 3].position           = Vec3f{ min_x, min_y, max_z };
-        out.vertices[(2 * 4) + 0].textureCoordinates = Vec2f{ min_uvx, min_uvy };
-        out.vertices[(2 * 4) + 1].textureCoordinates = Vec2f{ max_uvx, max_uvy };
-        out.vertices[(2 * 4) + 2].textureCoordinates = Vec2f{ min_uvx, max_uvy };
-        out.vertices[(2 * 4) + 3].textureCoordinates = Vec2f{ max_uvx, min_uvy };
-        out.vertices[(2 * 4) + 0].normal             = Vec3f{ -1.0f, 0.0f, 0.0f };
-        out.vertices[(2 * 4) + 1].normal             = Vec3f{ -1.0f, 0.0f, 0.0f };
-        out.vertices[(2 * 4) + 2].normal             = Vec3f{ -1.0f, 0.0f, 0.0f };
-        out.vertices[(2 * 4) + 3].normal             = Vec3f{ -1.0f, 0.0f, 0.0f };
+    // Left
+    out.vertices[(2 * 4) + 0].position           = Vec3f{ min_x, min_y, min_z };
+    out.vertices[(2 * 4) + 1].position           = Vec3f{ min_x, max_y, max_z };
+    out.vertices[(2 * 4) + 2].position           = Vec3f{ min_x, max_y, min_z };
+    out.vertices[(2 * 4) + 3].position           = Vec3f{ min_x, min_y, max_z };
+    out.vertices[(2 * 4) + 0].textureCoordinates = Vec2f{ min_uvx, min_uvy };
+    out.vertices[(2 * 4) + 1].textureCoordinates = Vec2f{ max_uvx, max_uvy };
+    out.vertices[(2 * 4) + 2].textureCoordinates = Vec2f{ min_uvx, max_uvy };
+    out.vertices[(2 * 4) + 3].textureCoordinates = Vec2f{ max_uvx, min_uvy };
+    out.vertices[(2 * 4) + 0].normal             = Vec3f{ -1.0f, 0.0f, 0.0f };
+    out.vertices[(2 * 4) + 1].normal             = Vec3f{ -1.0f, 0.0f, 0.0f };
+    out.vertices[(2 * 4) + 2].normal             = Vec3f{ -1.0f, 0.0f, 0.0f };
+    out.vertices[(2 * 4) + 3].normal             = Vec3f{ -1.0f, 0.0f, 0.0f };
 
-        // Right face
-        out.vertices[(3 * 4) + 0].position           = Vec3f{ max_x, min_y, max_z };
-        out.vertices[(3 * 4) + 1].position           = Vec3f{ max_x, max_y, min_z };
-        out.vertices[(3 * 4) + 2].position           = Vec3f{ max_x, max_y, max_z };
-        out.vertices[(3 * 4) + 3].position           = Vec3f{ max_x, min_y, min_z };
-        out.vertices[(3 * 4) + 0].textureCoordinates = Vec2f{ min_uvx, min_uvy };
-        out.vertices[(3 * 4) + 1].textureCoordinates = Vec2f{ max_uvx, max_uvy };
-        out.vertices[(3 * 4) + 2].textureCoordinates = Vec2f{ min_uvx, max_uvy };
-        out.vertices[(3 * 4) + 3].textureCoordinates = Vec2f{ max_uvx, min_uvy };
-        out.vertices[(3 * 4) + 0].normal             = Vec3f{ 1.0f, 0.0f, 0.0f };
-        out.vertices[(3 * 4) + 1].normal             = Vec3f{ 1.0f, 0.0f, 0.0f };
-        out.vertices[(3 * 4) + 2].normal             = Vec3f{ 1.0f, 0.0f, 0.0f };
-        out.vertices[(3 * 4) + 3].normal             = Vec3f{ 1.0f, 0.0f, 0.0f };
+    // Right face
+    out.vertices[(3 * 4) + 0].position           = Vec3f{ max_x, min_y, max_z };
+    out.vertices[(3 * 4) + 1].position           = Vec3f{ max_x, max_y, min_z };
+    out.vertices[(3 * 4) + 2].position           = Vec3f{ max_x, max_y, max_z };
+    out.vertices[(3 * 4) + 3].position           = Vec3f{ max_x, min_y, min_z };
+    out.vertices[(3 * 4) + 0].textureCoordinates = Vec2f{ min_uvx, min_uvy };
+    out.vertices[(3 * 4) + 1].textureCoordinates = Vec2f{ max_uvx, max_uvy };
+    out.vertices[(3 * 4) + 2].textureCoordinates = Vec2f{ min_uvx, max_uvy };
+    out.vertices[(3 * 4) + 3].textureCoordinates = Vec2f{ max_uvx, min_uvy };
+    out.vertices[(3 * 4) + 0].normal             = Vec3f{ 1.0f, 0.0f, 0.0f };
+    out.vertices[(3 * 4) + 1].normal             = Vec3f{ 1.0f, 0.0f, 0.0f };
+    out.vertices[(3 * 4) + 2].normal             = Vec3f{ 1.0f, 0.0f, 0.0f };
+    out.vertices[(3 * 4) + 3].normal             = Vec3f{ 1.0f, 0.0f, 0.0f };
 
-        // Bottom face
-        out.vertices[(4 * 4) + 0].position           = Vec3f{ max_x, min_y, max_z };
-        out.vertices[(4 * 4) + 1].position           = Vec3f{ min_x, min_y, min_z };
-        out.vertices[(4 * 4) + 2].position           = Vec3f{ max_x, min_y, min_z };
-        out.vertices[(4 * 4) + 3].position           = Vec3f{ min_x, min_y, max_z };
-        out.vertices[(4 * 4) + 0].textureCoordinates = Vec2f{ min_uvx, min_uvy };
-        out.vertices[(4 * 4) + 1].textureCoordinates = Vec2f{ max_uvx, max_uvy };
-        out.vertices[(4 * 4) + 2].textureCoordinates = Vec2f{ min_uvx, max_uvy };
-        out.vertices[(4 * 4) + 3].textureCoordinates = Vec2f{ max_uvx, min_uvy };
-        out.vertices[(4 * 4) + 0].normal             = Vec3f{ 0.0f, -1.0f, 0.0f };
-        out.vertices[(4 * 4) + 1].normal             = Vec3f{ 0.0f, -1.0f, 0.0f };
-        out.vertices[(4 * 4) + 2].normal             = Vec3f{ 0.0f, -1.0f, 0.0f };
-        out.vertices[(4 * 4) + 3].normal             = Vec3f{ 0.0f, -1.0f, 0.0f };
+    // Bottom face
+    out.vertices[(4 * 4) + 0].position           = Vec3f{ max_x, min_y, max_z };
+    out.vertices[(4 * 4) + 1].position           = Vec3f{ min_x, min_y, min_z };
+    out.vertices[(4 * 4) + 2].position           = Vec3f{ max_x, min_y, min_z };
+    out.vertices[(4 * 4) + 3].position           = Vec3f{ min_x, min_y, max_z };
+    out.vertices[(4 * 4) + 0].textureCoordinates = Vec2f{ min_uvx, min_uvy };
+    out.vertices[(4 * 4) + 1].textureCoordinates = Vec2f{ max_uvx, max_uvy };
+    out.vertices[(4 * 4) + 2].textureCoordinates = Vec2f{ min_uvx, max_uvy };
+    out.vertices[(4 * 4) + 3].textureCoordinates = Vec2f{ max_uvx, min_uvy };
+    out.vertices[(4 * 4) + 0].normal             = Vec3f{ 0.0f, -1.0f, 0.0f };
+    out.vertices[(4 * 4) + 1].normal             = Vec3f{ 0.0f, -1.0f, 0.0f };
+    out.vertices[(4 * 4) + 2].normal             = Vec3f{ 0.0f, -1.0f, 0.0f };
+    out.vertices[(4 * 4) + 3].normal             = Vec3f{ 0.0f, -1.0f, 0.0f };
 
-        // Top face
-        out.vertices[(5 * 4) + 0].position           = Vec3f{ min_x, max_y, max_z };
-        out.vertices[(5 * 4) + 1].position           = Vec3f{ max_x, max_y, min_z };
-        out.vertices[(5 * 4) + 2].position           = Vec3f{ min_x, max_y, min_z };
-        out.vertices[(5 * 4) + 3].position           = Vec3f{ max_x, max_y, max_z };
-        out.vertices[(5 * 4) + 0].textureCoordinates = Vec2f{ min_uvx, min_uvy };
-        out.vertices[(5 * 4) + 1].textureCoordinates = Vec2f{ max_uvx, max_uvy };
-        out.vertices[(5 * 4) + 2].textureCoordinates = Vec2f{ min_uvx, max_uvy };
-        out.vertices[(5 * 4) + 3].textureCoordinates = Vec2f{ max_uvx, min_uvy };
-        out.vertices[(5 * 4) + 0].normal             = Vec3f{ 0.0f, 1.0f, 0.0f };
-        out.vertices[(5 * 4) + 1].normal             = Vec3f{ 0.0f, 1.0f, 0.0f };
-        out.vertices[(5 * 4) + 2].normal             = Vec3f{ 0.0f, 1.0f, 0.0f };
-        out.vertices[(5 * 4) + 3].normal             = Vec3f{ 0.0f, 1.0f, 0.0f };
+    // Top face
+    out.vertices[(5 * 4) + 0].position           = Vec3f{ min_x, max_y, max_z };
+    out.vertices[(5 * 4) + 1].position           = Vec3f{ max_x, max_y, min_z };
+    out.vertices[(5 * 4) + 2].position           = Vec3f{ min_x, max_y, min_z };
+    out.vertices[(5 * 4) + 3].position           = Vec3f{ max_x, max_y, max_z };
+    out.vertices[(5 * 4) + 0].textureCoordinates = Vec2f{ min_uvx, min_uvy };
+    out.vertices[(5 * 4) + 1].textureCoordinates = Vec2f{ max_uvx, max_uvy };
+    out.vertices[(5 * 4) + 2].textureCoordinates = Vec2f{ min_uvx, max_uvy };
+    out.vertices[(5 * 4) + 3].textureCoordinates = Vec2f{ max_uvx, min_uvy };
+    out.vertices[(5 * 4) + 0].normal             = Vec3f{ 0.0f, 1.0f, 0.0f };
+    out.vertices[(5 * 4) + 1].normal             = Vec3f{ 0.0f, 1.0f, 0.0f };
+    out.vertices[(5 * 4) + 2].normal             = Vec3f{ 0.0f, 1.0f, 0.0f };
+    out.vertices[(5 * 4) + 3].normal             = Vec3f{ 0.0f, 1.0f, 0.0f };
 
-        for (u32 i = 0; i < 6; ++i) {
-            u32 v_offset              = i * 4;
-            u32 i_offset              = i * 6;
-            out.indices[i_offset + 0] = v_offset + 0;
-            out.indices[i_offset + 1] = v_offset + 1;
-            out.indices[i_offset + 2] = v_offset + 2;
-            out.indices[i_offset + 3] = v_offset + 0;
-            out.indices[i_offset + 4] = v_offset + 3;
-            out.indices[i_offset + 5] = v_offset + 1;
-        }
+    for (u32 i = 0; i < 6; ++i) {
+        u32 v_offset              = i * 4;
+        u32 i_offset              = i * 6;
+        out.indices[i_offset + 0] = v_offset + 0;
+        out.indices[i_offset + 1] = v_offset + 1;
+        out.indices[i_offset + 2] = v_offset + 2;
+        out.indices[i_offset + 3] = v_offset + 0;
+        out.indices[i_offset + 4] = v_offset + 3;
+        out.indices[i_offset + 5] = v_offset + 1;
     }
 
     out.name = name;

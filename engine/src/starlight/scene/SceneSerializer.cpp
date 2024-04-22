@@ -18,7 +18,7 @@ std::string SceneSerializer::parseScene(Scene& scene) const {
     return kc::json::toString(root);
 }
 
-void SceneSerializer::save(const std::string& buffer, const std::string outputPath)
+void SceneSerializer::save(const std::string& buffer, const std::string& outputPath)
   const {
     m_fileSystem.writeFile(outputPath, buffer, FileSystem::WritePolicy::override);
 }

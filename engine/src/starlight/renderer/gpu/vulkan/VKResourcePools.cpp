@@ -12,7 +12,9 @@ VKResourcePools::VKResourcePools(
     m_device(device), m_vertexBuffer(vertexBuffer), m_indexBuffer(indexBuffer),
     m_swapchain(swapchain), backend(backend), m_textures("Texture", 1024),
     m_shaders("Shader", 1024), m_meshes("Mesh", vulkanMaxMeshCount),
-    m_renderTargets("RenderTarget", 64), m_renderPasses("RenderPass", 64) {}
+    m_renderTargets("RenderTarget", 64), m_renderPasses("RenderPass", 64) {
+    LOG_TRACE("VKResourcePools created");
+}
 
 VKMesh* VKResourcePools::createMesh(
   const Mesh::Properties& props, std::span<const Vertex3> vertices,
