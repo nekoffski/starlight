@@ -2,7 +2,6 @@
 #include "VKContext.h"
 #include <kc/core/Utils.hpp>
 
-// // TODO: make it more generic
 #include "starlight/core/window/glfw/Vulkan.h"
 #include "starlight/core/window/Window.h"
 
@@ -69,9 +68,11 @@ VKContext::VKContext(sl::Window& window, const Config& config) :
       }
     ),
     m_device(m_allocator, m_instance.get(), m_surface.get()) {
+
+    LOG_TRACE("VKContext created");
 }
 
-VKContext::~VKContext() {}
+VKContext::~VKContext() { LOG_TRACE("VKContext destroyed"); }
 
 VkAllocationCallbacks* VKContext::getAllocator() const { return m_allocator; }
 
@@ -80,8 +81,6 @@ VkInstance VKContext::getInstance() const { return m_instance.get(); }
 VkSurfaceKHR VKContext::getSurface() const { return m_surface.get(); }
 
 VKDevice* VKContext::getDevice() { return &m_device; }
-
-VkDevice VKContext::getLogicalDevice() { return m_device.getLogicalDevice(); }
 
 VkInstance VKContext::createInstance() {
     VkInstance instance;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <functional>
 #include <span>
 
@@ -18,7 +19,6 @@ namespace sl {
 class RendererFrontend {
 public:
     explicit RendererFrontend(Window& window, const Config& config);
-    virtual ~RendererFrontend();
 
     void init(std::span<RenderView*> renderViews);
 
@@ -33,15 +33,15 @@ public:
     void onViewportResize(u32 w, u32 h);
 
 private:
-    FrameStatistics m_frameStatistics;
-    RendererBackendVendor m_backend;
+    vk::VKRendererBackend m_backend;
 
     std::vector<RenderView*> m_renderViews;
 
     RenderMode m_renderMode;
-
     u16 m_framesSinceResize;
     bool m_resizing;
+
+    FrameStatistics m_frameStatistics;
 
     u32 m_viewportWidth;
     u32 m_viewportHeight;

@@ -13,7 +13,7 @@ public:
     explicit ShaderManager(
       ResourcePools& resourcePools, TextureManager& textureManager
     );
-    ~ShaderManager() override;
+    ~ShaderManager();
 
     Shader* load(const std::string& name);
 

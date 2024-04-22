@@ -21,7 +21,7 @@ public:
       ResourcePools& resourcePools, MaterialManager& materialManager,
       MeshManager& meshManager
     );
-    ~ModelManager() override;
+    ~ModelManager();
 
     Model* load(const std::string& name);
 

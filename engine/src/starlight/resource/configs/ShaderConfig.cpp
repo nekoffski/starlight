@@ -10,7 +10,7 @@
 namespace sl {
 
 static std::optional<std::string> getShaderSource(
-  const std::string shadersPath, const std::string& name, const FileSystem& fs
+  const std::string& shadersPath, const std::string& name, const FileSystem& fs
 ) {
     const auto fullPath = fmt::format("{}/{}", shadersPath, name);
 

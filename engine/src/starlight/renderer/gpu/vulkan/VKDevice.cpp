@@ -162,12 +162,10 @@ std::optional<VKDevice::DeviceInfo> isPhysicalDeviceSuitable(
             }
         }
 
-        // Present queue?
         VkBool32 supportsPresent = false;
         VK_ASSERT(
           vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &supportsPresent)
         );
-
         if (supportsPresent) result.queue.present = i;
     };
 
@@ -190,6 +188,8 @@ std::optional<VKDevice::DeviceInfo> isPhysicalDeviceSuitable(
     LOG_TRACE("Compute Family Index:  {}", result.queue.compute);
 
     // Query swapchain support.
+
+    // ---
     auto swapchainSupport = queryDeviceSwapchainSupport(device, surface);
 
     if (swapchainSupport.formats.size() < 1 || swapchainSupport.presentModes.size() < 1) {
@@ -198,6 +198,8 @@ std::optional<VKDevice::DeviceInfo> isPhysicalDeviceSuitable(
     }
 
     result.swapchainSupport = swapchainSupport;
+
+    // --
 
     // VKDevice extensions.
     if (requirements.deviceExtensionsNames.empty()) return result;

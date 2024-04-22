@@ -14,13 +14,6 @@ public:
     explicit ResourceManager(const std::string& resourceName) :
         m_resourceName(resourceName) {}
 
-    virtual ~ResourceManager() {
-        m_idByName.clear();
-        m_nameById.clear();
-        m_resourceById.clear();
-        m_resourceByName.clear();
-    }
-
     template <typename Callback>
     requires Callable<Callback, void, std::string, Resource*>
     void forEach(Callback&& callback) {
@@ -83,15 +76,23 @@ public:
 
 protected:
     // TODO: if causes performance issues, optimize
-    void clearMapEntries(u64 id) { clearMapEntries(m_nameById[id]); }
+    void clearMapEntries(u64 id) {
+        if (const auto name = m_nameById.find(id); name != m_nameById.end())
+            clearMapEntries(name->second);
+        else
+            LOG_WARN("Could not find '{}' with id '{}'", m_resourceName, id);
+    }
 
     void clearMapEntries(const std::string& name) {
-        const auto id = m_idByName[name];
-
-        m_resourceById.erase(id);
         m_resourceByName.erase(name);
-        m_nameById.erase(id);
         m_idByName.erase(name);
+
+        if (const auto id = m_idByName.find(name); id != m_idByName.end()) {
+            m_resourceById.erase(id->second);
+            m_nameById.erase(id->second);
+        } else {
+            LOG_WARN("Could not find '{}' with name '{}'", m_resourceName, name);
+        }
     }
 
     Resource* storeResource(const std::string& name, u64 id, Resource* resource) {

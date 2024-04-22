@@ -13,9 +13,21 @@
 
 namespace sl::vk {
 
+// TODO: load from config
+
+std::vector<const char*> extensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+
+VKPhysicalDevice::Requirements physicalDeviceRequirements{
+    .supportedQueues           = Queue::graphics | Queue::present | Queue::transfer,
+    .isDiscreteGPU             = true,
+    .supportsSamplerAnisotropy = true,
+    .extensions                = extensions,
+};
+
 VKRendererBackend::VKRendererBackend(Window& window, const Config& config) :
-    m_window(window), m_proxy(this), m_renderedVertices(0u),
-    m_context(window, config) {
+    m_recreatingSwapchain(false), m_window(window), m_context(window, config),
+    m_physicalDevice(m_context, physicalDeviceRequirements),
+    m_logicalDevice(m_physicalDevice), m_renderedVertices(0u), m_proxy(this) {
     const auto [w, h] = window.getSize();
 
     m_framebufferWidth  = w;
@@ -34,6 +46,7 @@ UniqPtr<VKUIRenderer> VKRendererBackend::createUIRendererer(RenderPass* renderPa
     );
 }
 
+// TODO: remove
 void VKRendererBackend::gpuCall(std::function<void(CommandBuffer& buffer)>&& callback
 ) {
     auto device      = m_context.getDevice();
@@ -232,7 +245,7 @@ void VKRendererBackend::setScissors(VKCommandBuffer& commandBuffer) {
 
 bool VKRendererBackend::beginFrame(float deltaTime) {
     m_renderedVertices       = 0u;
-    const auto logicalDevice = m_context.getLogicalDevice();
+    const auto logicalDevice = m_context.getDevice()->getLogicalDevice();
 
     if (m_recreatingSwapchain) {
         m_recreatingSwapchain = false;
@@ -289,15 +302,15 @@ bool VKRendererBackend::beginFrame(float deltaTime) {
 }
 
 bool VKRendererBackend::endFrame(float deltaTime) {
-    const auto logicalDevice = m_context.getLogicalDevice();
+    const auto logicalDevice = m_context.getDevice()->getLogicalDevice();
     auto& commandBuffer      = m_commandBuffers[m_imageIndex];
 
     commandBuffer.end();
 
     // Make sure the previous frame is not using this image (i.e. its fence is
-    // being waited on) if (context.images_in_flight[context.image_index] !=
-    // VK_NULL_HANDLE) {  // was frame vulkan_fence_wait(&context,
-    // context.images_in_flight[context.image_index], UINT64_MAX);
+    // being waited on) if (m_context.images_in_flight[m_context.image_index] !=
+    // VK_NULL_HANDLE) {  // was frame vulkan_fence_wait(&m_context,
+    // m_context.images_in_flight[m_context.image_index], UINT64_MAX);
     // }
     auto fence = acquireImageFence();
 

@@ -12,6 +12,8 @@ namespace sl {
 static constexpr u64 defaultMaxComponents = 512;
 
 struct ComponentContainerBase {
+    virtual ~ComponentContainerBase() = default;
+
     virtual void clear()                          = 0;
     virtual bool hasComponent(u64 entityId)       = 0;
     virtual Component* getComponent(u64 entityId) = 0;

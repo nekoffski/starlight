@@ -21,7 +21,7 @@ public:
       ResourcePools& resourcePools, TextureManager& textureManager,
       MeshManager& meshManager
     );
-    ~SkyboxManager() override;
+    ~SkyboxManager();
 
     Skybox* load(const std::string& name, Shader& skyboxShader);
 

@@ -1,5 +1,7 @@
 #include "SkyboxRenderView.h"
 
+#include "starlight/renderer/gpu/vulkan/VKResourcePools.h"
+
 namespace sl {
 
 SkyboxRenderView::SkyboxRenderView(
@@ -37,7 +39,11 @@ void SkyboxRenderView::init(
         renderPassProperties.targets.push_back(renderTargetProperties);
     }
 
-    m_renderPass = resourcePools.createRenderPass(renderPassProperties);
+    auto resourceP = dynamic_cast<vk::VKResourcePools*>(&resourcePools);
+
+    ASSERT(resourceP, "Could not cast?");
+
+    m_renderPass = resourceP->createRenderPass(renderPassProperties);
     m_shader->createPipeline(m_renderPass);
     LOG_TRACE("SkyboxRenderView initialized");
 }

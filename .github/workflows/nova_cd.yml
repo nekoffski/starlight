@@ -37,7 +37,7 @@ jobs:
           pushd cov_build && make test && popd
       - name: Generate unit tests coverage
         run: |
-          ./bin/generate_ut_cov.sh
+          ./bin/generate-ut-cov.sh
       - name: Send raport to Codecov
         uses: codecov/codecov-action@v1
         with:

@@ -16,14 +16,11 @@ RendererFrontend::RendererFrontend(Window& window, const Config& config) :
     m_viewportHeight  = h;
 }
 
-RendererFrontend::~RendererFrontend() {}
-
 void RendererFrontend::init(std::span<RenderView*> renderViews) {
     m_renderViews.assign(renderViews.begin(), renderViews.end());
 
-    auto backendProxy  = m_backend.getProxy();
-    auto resourcePools = m_backend.getResourcePools();
-
+    auto backendProxy    = m_backend.getProxy();
+    auto resourcePools   = m_backend.getResourcePools();
     const auto viewCount = m_renderViews.size();
 
     RenderView::InitProperties initProperties{
@@ -33,7 +30,6 @@ void RendererFrontend::init(std::span<RenderView*> renderViews) {
     for (u32 i = 0; i < viewCount; ++i) {
         initProperties.hasPreviousView = (i != 0);
         initProperties.hasNextView     = (i != viewCount - 1);
-
         m_renderViews[i]->init(*backendProxy, *resourcePools, initProperties);
     }
 }

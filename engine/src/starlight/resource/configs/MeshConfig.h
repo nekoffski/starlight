@@ -29,8 +29,8 @@ concept VectorType = kc::core::is_one_of2_v<T, Vec2f, Vec3f>;
 
 template <ExtentType Extent, VertexType Vertex, VectorType Vector>
 Extent calculateExtent(const std::vector<Vertex>& vertices) {
-    Vector min;
-    Vector max;
+    Vector min{ 0.0f };
+    Vector max{ 0.0f };
 
     const auto components = getVectorComponentCount<Vector>();
 

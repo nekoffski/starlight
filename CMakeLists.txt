@@ -2,7 +2,12 @@ cmake_minimum_required(VERSION 3.10)
 project(starlight)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_BUILD_TYPE Debug) 
+# set(CMAKE_BUILD_TYPE RelWithDebInfo)
 set(SL_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/engine/src)
+
+set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
 
 add_definitions(-DDEV_MODE=1)
 add_definitions(-DUSE_GLFW=1)

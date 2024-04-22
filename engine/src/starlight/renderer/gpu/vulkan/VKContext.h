@@ -19,7 +19,6 @@ public:
     VkInstance getInstance() const;
     VkSurfaceKHR getSurface() const;
     VKDevice* getDevice();
-    VkDevice getLogicalDevice();
 
 private:
     VkInstance createInstance();
@@ -28,12 +27,10 @@ private:
     Config m_config;
 
     Allocator* m_allocator;
+
     RAIIWrapper<VkInstance> m_instance;
     RAIIWrapper<VkSurfaceKHR> m_surface;
-
-#ifdef STARLIGHT_VK_DEBUG
     RAIIWrapper<VkDebugUtilsMessengerEXT> m_debugMessenger;
-#endif
 
     VKDevice m_device;
 };

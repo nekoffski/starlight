@@ -11,7 +11,7 @@ VKRenderTarget::VKRenderTarget(
 ) :
     RenderTarget(id, props),
     m_context(context), m_device(device), m_renderPass(renderPass) {
-    regenerate(props);
+    VKRenderTarget::regenerate(props);
 }
 
 VKFramebuffer* VKRenderTarget::getFramebuffer() { return m_framebuffer.get(); }

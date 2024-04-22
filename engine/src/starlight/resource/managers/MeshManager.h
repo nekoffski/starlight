@@ -19,7 +19,7 @@ public:
     explicit MeshManager(
       ResourcePools& resourcePools, MaterialManager& materialManager
     );
-    ~MeshManager() override;
+    ~MeshManager();
 
     Mesh* load(const MeshConfig auto& props) {
         if (auto mesh = createMesh(props); mesh) [[likely]] {

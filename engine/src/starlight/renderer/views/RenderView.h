@@ -20,6 +20,7 @@ public:
     };
 
     explicit RenderView(Camera* camera);
+    virtual ~RenderView() = default;
 
     void setCamera(Camera* camera);
 
