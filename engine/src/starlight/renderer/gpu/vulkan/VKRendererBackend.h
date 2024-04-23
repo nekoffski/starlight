@@ -28,10 +28,11 @@
 #include "VKResourcePools.h"
 #include "VKRendererBackendProxy.h"
 #include "VKUIRenderer.h"
+#include "VKBackendAccessor.h"
 
 namespace sl::vk {
 
-class VKRendererBackend : public RendererBackend {
+class VKRendererBackend : public RendererBackend, public VKBackendAccesor {
     friend class VKRendererBackendProxy;
 
 public:
@@ -42,6 +43,12 @@ public:
     VKRendererBackend& operator=(const VKRendererBackend&) = delete;
     VKRendererBackend(VKRendererBackend&&)                 = delete;
     VKRendererBackend& operator=(VKRendererBackend&&)      = delete;
+
+    // backend accessor
+    VKContext* getContext() override;
+    VKLogicalDevice* getLogicalDevice() override;
+
+    // renderer backend
 
     bool beginFrame(float deltaTime) override;
     bool endFrame(float deltaTime) override;
@@ -69,11 +76,8 @@ private:
     void createCoreComponents(sl::Window& window, const Config& config);
     void createCommandBuffers();
     void createSemaphoresAndFences();
-
     void freeDataRange(VKBuffer& buffer, uint64_t offset, uint64_t size);
-
     void createBuffers();
-
     void recreateSwapchain();
 
     VKFence* acquireImageFence();

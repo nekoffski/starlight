@@ -18,7 +18,6 @@ public:
     VkAllocationCallbacks* getAllocator() const;  // TODO: not const!
     VkInstance getInstance() const;
     VkSurfaceKHR getSurface() const;
-    VKDevice* getDevice();
 
 private:
     VkInstance createInstance();
@@ -27,12 +26,9 @@ private:
     Config m_config;
 
     Allocator* m_allocator;
-
     RAIIWrapper<VkInstance> m_instance;
     RAIIWrapper<VkSurfaceKHR> m_surface;
     RAIIWrapper<VkDebugUtilsMessengerEXT> m_debugMessenger;
-
-    VKDevice m_device;
 };
 
 }  // namespace sl::vk
