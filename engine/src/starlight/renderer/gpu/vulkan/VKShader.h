@@ -24,7 +24,7 @@ public:
     };
 
     explicit VKShaderStage(
-      VKDevice* device, const VKContext* context, const Properties& properties
+      VKBackendAccessor& backendAccesor, const Properties& properties
     );
 
     VkPipelineShaderStageCreateInfo getStageCreateInfo() const {
@@ -71,7 +71,7 @@ class VKShader final : public Shader {
 
 public:
     explicit VKShader(
-      u32 id, VKDevice* device, const VKContext* context,
+      u32 id, VKBackendAccessor& backendAccesor,
       VKRendererBackendProxy& backendProxy, const Shader::Properties& props
     );
     ~VKShader() override;

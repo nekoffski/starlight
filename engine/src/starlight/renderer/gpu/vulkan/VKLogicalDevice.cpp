@@ -52,6 +52,10 @@ std::optional<int32_t> VKLogicalDevice::findMemoryIndex(
     return {};
 }
 
+const VKPhysicalDevice::QueueIndices& VKLogicalDevice::getQueueIndices() const {
+    return m_physicalDevice.getDeviceInfo().queueIndices;
+}
+
 void VKLogicalDevice::waitIdle() {
     const auto result = vkDeviceWaitIdle(m_handle);
     ASSERT(

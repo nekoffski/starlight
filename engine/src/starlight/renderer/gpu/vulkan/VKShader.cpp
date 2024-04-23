@@ -55,7 +55,7 @@ VkShaderStageFlagBits getStageFlagBits(Shader::Stage::Type type) {
 }
 
 VKShaderStage::VKShaderStage(
-  VKDevice* device, const VKContext* context, const Properties& props
+  VKBackendAccessor& backendAccesor, const Properties& props
 ) :
     m_device(device),
     m_context(context), m_handle(VK_NULL_HANDLE) {
@@ -84,8 +84,8 @@ VKShaderStage::~VKShaderStage() {
 }
 
 VKShader::VKShader(
-  u32 id, VKDevice* device, const VKContext* context,
-  VKRendererBackendProxy& backendProxy, const Shader::Properties& props
+  u32 id, VKBackendAccessor& backendAccesor, VKRendererBackendProxy& backendProxy,
+  const Shader::Properties& props
 ) :
     Shader(props, id),
     m_device(device), m_context(context), m_backendProxy(backendProxy),

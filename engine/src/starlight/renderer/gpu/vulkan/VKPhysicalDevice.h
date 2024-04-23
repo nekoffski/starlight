@@ -29,6 +29,7 @@ class VKPhysicalDevice {
         VkPhysicalDeviceMemoryProperties memory;
     };
 
+public:
     struct QueueIndices {
         int32_t graphics = -1;
         int32_t present  = -1;
@@ -36,7 +37,6 @@ class VKPhysicalDevice {
         int32_t compute  = -1;
     };
 
-public:
     struct SwapchainSupportInfo {
         VkSurfaceCapabilitiesKHR capabilities;
         std::vector<VkSurfaceFormatKHR> formats;

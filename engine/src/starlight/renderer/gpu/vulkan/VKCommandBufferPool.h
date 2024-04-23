@@ -2,8 +2,9 @@
 
 #include <vector>
 
-#include "VKDevice.h"
 #include "VKCommandBuffer.h"
+#include "VKBackendAccessor.h"
+#include "VKLogicalDevice.h"
 
 #include "starlight/renderer/gpu/CommandBufferPool.h"
 
@@ -11,8 +12,9 @@ namespace sl::vk {
 
 class VKCommandBufferPool : public CommandBufferPool {
 public:
-    explicit VKCommandBufferPool(const VKDevice& device, u64 size) :
-        m_device(device), m_frameImageIndex(0u), m_size(size) {
+    explicit VKCommandBufferPool(VKBackendAccessor& backendAccessor, u64 size) :
+        m_device(*backendAccessor.getLogicalDevice()), m_frameImageIndex(0u),
+        m_size(size) {
         create();
     }
 
@@ -65,7 +67,7 @@ private:
         }
     }
 
-    const VKDevice& m_device;
+    VKLogicalDevice& m_device;
 
     u32 m_frameImageIndex;
     u64 m_size;

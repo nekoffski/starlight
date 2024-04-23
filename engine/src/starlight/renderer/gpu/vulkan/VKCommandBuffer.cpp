@@ -6,7 +6,12 @@
 namespace sl::vk {
 
 VKCommandBuffer::VKCommandBuffer(
-  const VKDevice* device, VkCommandPool commandPool, Severity severity
+  VKBackendAccessor& backendAccessor, VkCommandPool commandPool, Severity severity
+) :
+    VKCommandBuffer(*backendAccessor.getLogicalDevice(), commandPool, severity) {}
+
+VKCommandBuffer::VKCommandBuffer(
+  VKLogicalDevice& device, VkCommandPool commandPool, Severity severity
 ) :
     m_device(device),
     m_commandPool(commandPool) {
@@ -37,9 +42,9 @@ void VKCommandBuffer::create(Severity severity) {
     m_state = State::notAllocated;
 
     auto allocateInfo = createAllocateInfo(severity);
-    VK_ASSERT(vkAllocateCommandBuffers(
-      m_device->getLogicalDevice(), &allocateInfo, &m_handle
-    ));
+    VK_ASSERT(
+      vkAllocateCommandBuffers(m_device.getHandle(), &allocateInfo, &m_handle)
+    );
 
     m_state = State::ready;
 }
@@ -48,9 +53,7 @@ void VKCommandBuffer::destroy() {
     LOG_TRACE("Destroying command buffer");
 
     if (m_handle) {
-        vkFreeCommandBuffers(
-          m_device->getLogicalDevice(), m_commandPool, 1, &m_handle
-        );
+        vkFreeCommandBuffers(m_device.getHandle(), m_commandPool, 1, &m_handle);
         m_handle = VK_NULL_HANDLE;
     }
     m_state = State::notAllocated;

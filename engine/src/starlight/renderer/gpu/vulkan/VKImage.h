@@ -8,6 +8,9 @@
 #include "Vulkan.h"
 #include "fwd.h"
 
+#include "VKPhysicalDevice.h"
+#include "VKContext.h"
+#include "VKBackendAccessor.h"
 #include "VKBuffer.h"
 #include "VKCommandBuffer.h"
 #include "VKDevice.h"
@@ -32,15 +35,14 @@ public:
     };
 
     explicit VKImage(
-      VKDevice* device, const VKContext* context, const Properties& properties
+      VKBackendAccessor& backendAccesor, const Properties& properties
     );
     explicit VKImage(
-      VKDevice* device, const VKContext* context, const Properties& properties,
+      VKBackendAccessor& backendAccesor, const Properties& properties,
       const std::span<u8> pixels
     );
     explicit VKImage(
-      VKDevice* device, const VKContext* context, const Properties& properties,
-      VkImage handle
+      VKBackendAccessor& backendAccesor, const Properties& properties, VkImage handle
     );
 
     ~VKImage();
@@ -80,8 +82,9 @@ private:
 
     Properties m_props;
 
-    VKDevice* m_device;
-    const VKContext* m_context;
+    VKBackendAccessor& m_backendAccesor;
+    VKContext& m_context;
+    VKLogicalDevice& m_device;
 
     // sometimes we want to just wrap an image owned by the swapchain
     bool m_destroyImage;

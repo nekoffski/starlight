@@ -6,40 +6,43 @@
 namespace sl::vk {
 
 VKImage::VKImage(
-  VKDevice* device, const VKContext* context, const VKImage::Properties& properties
+  VKBackendAccessor& backendAccesor, const VKImage::Properties& properties
 ) :
-    m_device(device),
-    m_context(context), m_props(properties), m_handle(VK_NULL_HANDLE),
-    m_memory(VK_NULL_HANDLE), m_view(VK_NULL_HANDLE), m_destroyImage(true) {
+    m_backendAccesor(backendAccesor),
+    m_context(*backendAccesor.getContext()),
+    m_device(*backendAccesor.getLogicalDevice()), m_props(properties),
+    m_handle(VK_NULL_HANDLE), m_memory(VK_NULL_HANDLE), m_view(VK_NULL_HANDLE),
+    m_destroyImage(true) {
     create();
 }
 
 VKImage::VKImage(
-  VKDevice* device, const VKContext* context, const Properties& properties,
+  VKBackendAccessor& backendAccesor, const Properties& properties,
   const std::span<u8> pixels
 ) :
-    VKImage(device, context, properties) {
+    VKImage(backendAccesor, properties) {
     write(0, pixels);
 }
 
 VKImage::VKImage(
-  VKDevice* device, const VKContext* context, const Properties& properties,
-  VkImage handle
+  VKBackendAccessor& backendAccesor, const Properties& properties, VkImage handle
 ) :
-    m_device(device),
-    m_context(context), m_props(properties), m_handle(handle),
-    m_memory(VK_NULL_HANDLE), m_view(VK_NULL_HANDLE), m_destroyImage(false) {
+    m_backendAccesor(backendAccesor),
+    m_context(*backendAccesor.getContext()),
+    m_device(*backendAccesor.getLogicalDevice()), m_props(properties),
+    m_handle(handle), m_memory(VK_NULL_HANDLE), m_view(VK_NULL_HANDLE),
+    m_destroyImage(false) {
     if (m_props.createView) createView();
 }
 
 void VKImage::destroy() {
-    auto logicalDevice = m_device->getLogicalDevice();
-    auto allocator     = m_context->getAllocator();
+    auto logicalDeviceHandle = m_device.getHandle();
+    auto allocator           = m_context.getAllocator();
 
-    if (m_view) vkDestroyImageView(logicalDevice, m_view, allocator);
-    if (m_memory) vkFreeMemory(logicalDevice, m_memory, allocator);
+    if (m_view) vkDestroyImageView(logicalDeviceHandle, m_view, allocator);
+    if (m_memory) vkFreeMemory(logicalDeviceHandle, m_memory, allocator);
     if (m_handle && m_destroyImage)
-        vkDestroyImage(logicalDevice, m_handle, allocator);
+        vkDestroyImage(logicalDeviceHandle, m_handle, allocator);
     LOG_TRACE("VKImage destroyed");
 }
 
@@ -85,14 +88,12 @@ void VKImage::write(u32 offset, std::span<u8> pixels) {
         .useFreeList         = false
     };
 
-    VKBuffer stagingBuffer(m_context, m_device, stagingBufferProperties);
+    VKBuffer stagingBuffer(m_backendAccesor, stagingBufferProperties);
 
     stagingBuffer.loadData(0, imageSize, 0, pixels.data());
 
-    VKCommandBuffer tempCommandBuffer{
-        m_device, m_device->getGraphicsCommandPool()
-    };
-    VkQueue graphicsQueue = m_device->getQueues().graphics;
+    VKCommandBuffer tempCommandBuffer{ m_device, m_device.getGraphicsCommandPool() };
+    VkQueue graphicsQueue = m_device.getQueues().graphics;
 
     tempCommandBuffer.createAndBeginSingleUse();
 
@@ -137,7 +138,7 @@ void VKImage::transitionLayout(
   VKCommandBuffer& commandBuffer, VkFormat format, VkImageLayout oldLayout,
   VkImageLayout newLayout
 ) {
-    auto queueFamilyIndex = m_device->getQueueIndices().graphics;
+    auto queueFamilyIndex = m_device.getQueueIndices().graphics;
 
     VkImageMemoryBarrier barrier        = { VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER };
     barrier.oldLayout                   = oldLayout;
@@ -258,18 +259,17 @@ void VKImage::createImage(
 ) {
     auto imageCreateInfo = createImageCreateInfo(m_props);
     VK_ASSERT(vkCreateImage(
-      m_device->getLogicalDevice(), &imageCreateInfo, m_context->getAllocator(),
-      &m_handle
+      m_device.getHandle(), &imageCreateInfo, m_context.getAllocator(), &m_handle
     ));
     m_destroyImage = true;
     LOG_TRACE("VKImage created");
 }
 
 void VKImage::allocateAndBindMemory() {
-    auto logicalDevice      = m_device->getLogicalDevice();
-    auto memoryRequirements = getMemoryRequirements(logicalDevice, m_handle);
+    auto logicalDeviceHandle = m_device.getHandle();
+    auto memoryRequirements  = getMemoryRequirements(logicalDeviceHandle, m_handle);
 
-    auto memoryType = m_device->findMemoryIndex(
+    auto memoryType = m_device.findMemoryIndex(
       memoryRequirements.memoryTypeBits, m_props.memoryFlags
     );
 
@@ -279,10 +279,10 @@ void VKImage::allocateAndBindMemory() {
     auto memoryAllocateInfo =
       createMemoryAllocateInfo(memoryRequirements, memoryType.value_or(-1));
     VK_ASSERT(vkAllocateMemory(
-      logicalDevice, &memoryAllocateInfo, m_context->getAllocator(), &m_memory
+      logicalDeviceHandle, &memoryAllocateInfo, m_context.getAllocator(), &m_memory
     ));
 
-    VK_ASSERT(vkBindImageMemory(logicalDevice, m_handle, m_memory, 0));
+    VK_ASSERT(vkBindImageMemory(logicalDeviceHandle, m_handle, m_memory, 0));
 }
 
 void VKImage::createView(
@@ -290,8 +290,7 @@ void VKImage::createView(
 ) {
     auto viewCreateInfo = createViewCreateInfo(m_props, m_handle);
     VK_ASSERT(vkCreateImageView(
-      m_device->getLogicalDevice(), &viewCreateInfo, m_context->getAllocator(),
-      &m_view
+      m_device.getHandle(), &viewCreateInfo, m_context.getAllocator(), &m_view
     ));
 }
 
