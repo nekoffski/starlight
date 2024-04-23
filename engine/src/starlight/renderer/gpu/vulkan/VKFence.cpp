@@ -16,24 +16,20 @@ VkFenceCreateInfo createFenceCreateInfo(VKFence::State state) {
     return fenceCreateInfo;
 }
 
-VKFence::VKFence(const VKContext* context, const VKDevice* device, State state) :
-    m_context(context), m_device(device), m_state(state) {
+VKFence::VKFence(VKBackendAccessor& backendAccessor, State state) :
+    m_context(*backendAccessor.getContext()),
+    m_device(*backendAccessor.getLogicalDevice()), m_state(state) {
     auto fenceCreateInfo = createFenceCreateInfo(state);
 
     VK_ASSERT(vkCreateFence(
-      m_device->getLogicalDevice(), &fenceCreateInfo, m_context->getAllocator(),
-      &m_handle
+      m_device.getHandle(), &fenceCreateInfo, m_context.getAllocator(), &m_handle
     ));
 }
 
 VKFence::~VKFence() {
-    vkWaitForFences(m_device->getLogicalDevice(), 1, &m_handle, true, UINT64_MAX);
-
-    if (m_handle) {
-        vkDestroyFence(
-          m_device->getLogicalDevice(), m_handle, m_context->getAllocator()
-        );
-    }
+    vkWaitForFences(m_device.getHandle(), 1, &m_handle, true, UINT64_MAX);
+    if (m_handle)
+        vkDestroyFence(m_device.getHandle(), m_handle, m_context.getAllocator());
 }
 
 VkFence VKFence::getHandle() { return m_handle; }
@@ -66,7 +62,7 @@ bool VKFence::wait(Nanoseconds timeout) {
     if (m_state == State::signaled) return true;
 
     const auto result =
-      vkWaitForFences(m_device->getLogicalDevice(), 1, &m_handle, true, timeout);
+      vkWaitForFences(m_device.getHandle(), 1, &m_handle, true, timeout);
 
     if (result == VK_SUCCESS) {
         m_state = State::signaled;
@@ -79,7 +75,7 @@ bool VKFence::wait(Nanoseconds timeout) {
 
 void VKFence::reset() {
     if (m_state == State::signaled) {
-        VK_ASSERT(vkResetFences(m_device->getLogicalDevice(), 1, &m_handle));
+        VK_ASSERT(vkResetFences(m_device.getHandle(), 1, &m_handle));
         m_state = State::notSignaled;
     }
 }

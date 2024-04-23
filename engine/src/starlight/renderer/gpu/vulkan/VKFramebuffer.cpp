@@ -25,23 +25,23 @@ VkFramebufferCreateInfo createFramebufferCreateInfo(
 VkFramebuffer VKFramebuffer::getHandle() { return m_handle; }
 
 VKFramebuffer::VKFramebuffer(
-  const VKContext* context, const VKDevice* device, VkRenderPass renderPass,
-  u32 width, u32 height, const std::vector<VkImageView>& attachments
+  VKBackendAccessor& backendAccessor, VkRenderPass renderPass, u32 width, u32 height,
+  const std::vector<VkImageView>& attachments
 ) :
-    m_context(context),
-    m_device(device), m_attachments(attachments) {
+    m_context(*backendAccessor.getContext()),
+    m_device(*backendAccessor.getLogicalDevice()), m_attachments(attachments) {
     const auto createInfo =
       createFramebufferCreateInfo(m_attachments, renderPass, width, height);
 
     VK_ASSERT(vkCreateFramebuffer(
-      m_device->getLogicalDevice(), &createInfo, m_context->getAllocator(), &m_handle
+      m_device.getHandle(), &createInfo, m_context.getAllocator(), &m_handle
     ));
 }
 
 VKFramebuffer::~VKFramebuffer() {
     if (m_handle) {
         vkDestroyFramebuffer(
-          m_device->getLogicalDevice(), m_handle, m_context->getAllocator()
+          m_device.getHandle(), m_handle, m_context.getAllocator()
         );
     }
 }

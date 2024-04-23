@@ -25,6 +25,8 @@ public:
       u32 typeFilter, u32 propertyFlags
     ) const;
 
+    const VKPhysicalDevice::QueueIndices& getQueueIndices() const;
+
     VkDevice getHandle();
 
     void waitIdle();

@@ -2,6 +2,9 @@
 
 #include <span>
 
+#include "VKPhysicalDevice.h"
+#include "VKContext.h"
+#include "VKBackendAccessor.h"
 #include "VKDevice.h"
 #include "VKBuffer.h"
 #include "starlight/renderer/gpu/Mesh.h"
@@ -15,7 +18,7 @@ public:
     struct BufferData {};
 
     explicit VKMesh(
-      u32 id, VKDevice* device, VKContext* context, VKBuffer& vertexBuffer,
+      u32 id, VKBackendAccessor& backendAccessor, VKBuffer& vertexBuffer,
       VKBuffer& indexBuffer, const Properties& props, const Data& data
     );
     ~VKMesh();
@@ -28,8 +31,9 @@ private:
       u64 size, const void* data
     );
 
-    VKDevice* m_device;
-    VKContext* m_context;
+    VKBackendAccessor& m_backendAccessor;
+    VKContext& m_context;
+    VKLogicalDevice& m_device;
 };
 
 }  // namespace sl::vk

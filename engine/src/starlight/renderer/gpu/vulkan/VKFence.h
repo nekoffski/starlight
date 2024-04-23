@@ -3,13 +3,17 @@
 #include "Vulkan.h"
 #include "fwd.h"
 
+#include "VKPhysicalDevice.h"
+#include "VKContext.h"
+#include "VKBackendAccessor.h"
+
 namespace sl::vk {
 
 class VKFence {
 public:
     enum class State : unsigned char { signaled, notSignaled };
 
-    explicit VKFence(const VKContext* context, const VKDevice* device, State state);
+    explicit VKFence(VKBackendAccessor& backendAccessor, State state);
     ~VKFence();
 
     bool wait(Nanoseconds timeout);
@@ -20,8 +24,8 @@ public:
 private:
     VkFence m_handle;
 
-    const VKContext* m_context;
-    const VKDevice* m_device;
+    VKContext& m_context;
+    VKLogicalDevice& m_device;
 
     State m_state;
 };
