@@ -35,6 +35,30 @@ VkCommandPool VKLogicalDevice::getGraphicsCommandPool() {
 
 VkDevice VKLogicalDevice::getHandle() { return m_handle; }
 
+std::optional<int32_t> VKLogicalDevice::findMemoryIndex(
+  u32 typeFilter, u32 propertyFlags
+) const {
+    const auto memoryProperties = m_physicalDevice.getDeviceProperties().memory;
+
+    for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; ++i) {
+        bool isSuitable =
+          (typeFilter & (1 << i))
+          && (memoryProperties.memoryTypes[i].propertyFlags & propertyFlags
+             ) == propertyFlags;
+        if (isSuitable) return i;
+    }
+
+    LOG_WARN("Unable to find suitable memory type!");
+    return {};
+}
+
+void VKLogicalDevice::waitIdle() {
+    const auto result = vkDeviceWaitIdle(m_handle);
+    ASSERT(
+      isGood(result), "vkDeviceWaitDile failed: {}", getResultString(result, true)
+    );
+}
+
 void VKLogicalDevice::createLogicalDeviceInstance() {
     auto queueIndices = m_physicalDevice.getDeviceInfo().queueIndices;
 

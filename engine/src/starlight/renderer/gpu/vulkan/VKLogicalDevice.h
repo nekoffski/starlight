@@ -21,7 +21,13 @@ public:
     u8 getDepthChannelCount() const;
     VkCommandPool getGraphicsCommandPool();
 
+    std::optional<int32_t> VKLogicalDevice::findMemoryIndex(
+      u32 typeFilter, u32 propertyFlags
+    ) const;
+
     VkDevice getHandle();
+
+    void waitIdle();
 
 private:
     void createLogicalDeviceInstance();

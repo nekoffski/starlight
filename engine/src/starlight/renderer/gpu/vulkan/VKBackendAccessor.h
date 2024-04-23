@@ -5,7 +5,7 @@
 
 namespace sl::vk {
 
-struct VKBackendAccesor {
+struct VKBackendAccessor {
     virtual VKContext* getContext()             = 0;
     virtual VKLogicalDevice* getLogicalDevice() = 0;
 };
