@@ -4,7 +4,8 @@ namespace sl::vk {
 
 class VKContext;
 class VKCommandBuffer;
-class VKDevice;
+class VKPhysicalDevice;
+class VKLogicalDevice;
 class VKFence;
 class VKSemaphore;
 class VKImage;

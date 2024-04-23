@@ -9,25 +9,25 @@
 namespace sl::vk {
 
 VKBuffer::VKBuffer(
-  const VKContext* context, const VKDevice* device, const VKBuffer::Properties& props
+  VKBackendAccessor& backendAccessor, const VKBuffer::Properties& props
 ) :
-    m_context(context),
-    m_device(device), m_totalSize(props.size), m_usageFlags(props.usageFlags),
-    m_memoryPropertyFlags(props.memoryPropertyFlags),
+    m_context(*backendAccessor.getContext()),
+    m_device(*backendAccessor.getLogicalDevice()), m_totalSize(props.size),
+    m_usageFlags(props.usageFlags), m_memoryPropertyFlags(props.memoryPropertyFlags),
     m_useFreeList(props.useFreeList) {
     if (m_useFreeList) m_bufferFreeList.emplace(props.size);
 
-    auto logicalDevice = m_device->getLogicalDevice();
-    auto allocator     = m_context->getAllocator();
+    auto allocator = m_context.getAllocator();
 
     auto bufferCreateInfo = createBufferCreateInfo();
 
-    VK_ASSERT(vkCreateBuffer(logicalDevice, &bufferCreateInfo, allocator, &m_handle)
+    VK_ASSERT(
+      vkCreateBuffer(m_device.getHandle(), &bufferCreateInfo, allocator, &m_handle)
     );
 
     const auto memoryRequirements = getMemoryRequirements(m_handle);
 
-    const auto memoryIndex = m_device->findMemoryIndex(
+    const auto memoryIndex = m_device.findMemoryIndex(
       memoryRequirements.memoryTypeBits, m_memoryPropertyFlags
     );
 
@@ -37,7 +37,9 @@ VKBuffer::VKBuffer(
 
     const auto allocateInfo = createMemoryAllocateInfo(memoryRequirements);
 
-    VK_ASSERT(vkAllocateMemory(logicalDevice, &allocateInfo, allocator, &m_memory));
+    VK_ASSERT(
+      vkAllocateMemory(m_device.getHandle(), &allocateInfo, allocator, &m_memory)
+    );
 
     if (props.bindOnCreate) {
         static constexpr uint64_t zeroOffset = 0;
@@ -82,9 +84,7 @@ VkMemoryAllocateInfo VKBuffer::createMemoryAllocateInfo(
 
 VkMemoryRequirements VKBuffer::getMemoryRequirements(VkBuffer buffer) const {
     VkMemoryRequirements memoryRequirements;
-    vkGetBufferMemoryRequirements(
-      m_device->getLogicalDevice(), buffer, &memoryRequirements
-    );
+    vkGetBufferMemoryRequirements(m_device.getHandle(), buffer, &memoryRequirements);
 
     return memoryRequirements;
 }
@@ -99,17 +99,15 @@ VkBufferCreateInfo VKBuffer::createBufferCreateInfo() const {
 }
 
 void VKBuffer::destroy() {
-    auto logicalDevice = m_device->getLogicalDevice();
-    auto allocator     = m_context->getAllocator();
+    auto logicalDeviceHandle = m_device.getHandle();
+    auto allocator           = m_context.getAllocator();
 
-    if (m_memory) vkFreeMemory(logicalDevice, m_memory, allocator);
-    if (m_handle) vkDestroyBuffer(logicalDevice, m_handle, allocator);
+    if (m_memory) vkFreeMemory(logicalDeviceHandle, m_memory, allocator);
+    if (m_handle) vkDestroyBuffer(logicalDeviceHandle, m_handle, allocator);
 }
 
 void VKBuffer::bind(uint64_t offset) {
-    VK_ASSERT(
-      vkBindBufferMemory(m_device->getLogicalDevice(), m_handle, m_memory, offset)
-    );
+    VK_ASSERT(vkBindBufferMemory(m_device.getHandle(), m_handle, m_memory, offset));
 }
 
 bool VKBuffer::resize(uint64_t size, VkQueue queue, VkCommandPool pool) {
@@ -122,11 +120,13 @@ bool VKBuffer::resize(uint64_t size, VkQueue queue, VkCommandPool pool) {
 
     auto bufferCreateInfo = createBufferCreateInfo();
 
-    auto logicalDevice = m_device->getLogicalDevice();
-    auto allocator     = m_context->getAllocator();
+    auto logicalDeviceHandle = m_device.getHandle();
+    auto allocator           = m_context.getAllocator();
 
     VkBuffer buffer;
-    VK_ASSERT(vkCreateBuffer(logicalDevice, &bufferCreateInfo, allocator, &buffer));
+    VK_ASSERT(
+      vkCreateBuffer(logicalDeviceHandle, &bufferCreateInfo, allocator, &buffer)
+    );
 
     auto memoryRequirements = getMemoryRequirements(buffer
     );  // TODO: pass VkBuffer here!
@@ -136,15 +136,17 @@ bool VKBuffer::resize(uint64_t size, VkQueue queue, VkCommandPool pool) {
     // Allocate the memory.
     VkDeviceMemory memory;
 
-    VK_ASSERT(vkAllocateMemory(logicalDevice, &allocateInfo, allocator, &memory));
-    VK_ASSERT(vkBindBufferMemory(logicalDevice, buffer, memory, 0));
+    VK_ASSERT(
+      vkAllocateMemory(logicalDeviceHandle, &allocateInfo, allocator, &memory)
+    );
+    VK_ASSERT(vkBindBufferMemory(logicalDeviceHandle, buffer, memory, 0));
 
     copyTo(
       pool, nullptr, queue, buffer,
       VkBufferCopy{ .srcOffset = 0, .dstOffset = 0, .size = m_totalSize }
     );
 
-    vkDeviceWaitIdle(logicalDevice);
+    m_device.waitIdle();
 
     destroy();
     m_totalSize = size;
@@ -158,25 +160,22 @@ void* VKBuffer::lockMemory(
   uint64_t offset, uint64_t size, VkMemoryPropertyFlags flags
 ) {
     void* data;
-    VK_ASSERT(
-      vkMapMemory(m_device->getLogicalDevice(), m_memory, offset, size, flags, &data)
+    VK_ASSERT(vkMapMemory(m_device.getHandle(), m_memory, offset, size, flags, &data)
     );
 
     return data;
 }
 
-void VKBuffer::unlockMemory() {
-    vkUnmapMemory(m_device->getLogicalDevice(), m_memory);
-}
+void VKBuffer::unlockMemory() { vkUnmapMemory(m_device.getHandle(), m_memory); }
 
 void VKBuffer::loadData(
   uint64_t offset, uint64_t size, VkMemoryPropertyFlags flags, const void* data
 ) {
     void* buffer;
 
-    VK_ASSERT(vkMapMemory(
-      m_device->getLogicalDevice(), m_memory, offset, size, flags, &buffer
-    ));
+    VK_ASSERT(
+      vkMapMemory(m_device.getHandle(), m_memory, offset, size, flags, &buffer)
+    );
 
     std::memcpy(buffer, data, size);
 

@@ -7,6 +7,10 @@
 #include "starlight/core/memory/Memory.hpp"
 #include "starlight/core/utils/FreeList.h"
 
+#include "VKBackendAccessor.h"
+#include "VKLogicalDevice.h"
+#include "VKContext.h"
+
 #include "Vulkan.h"
 #include "fwd.h"
 
@@ -23,9 +27,7 @@ public:
         bool useFreeList = true;
     };
 
-    explicit VKBuffer(
-      const VKContext* context, const VKDevice* device, const Properties& props
-    );
+    explicit VKBuffer(VKBackendAccessor& backendAccessor, const Properties& props);
     ~VKBuffer();
 
     VkBuffer getHandle() const { return m_handle; }
@@ -61,8 +63,8 @@ private:
       VkMemoryRequirements memoryRequirements
     ) const;
 
-    const VKContext* m_context;
-    const VKDevice* m_device;
+    VKContext& m_context;
+    VKLogicalDevice& m_device;
 
     uint64_t m_totalSize;
 
