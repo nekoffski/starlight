@@ -26,6 +26,7 @@ VKPhysicalDevice::VKPhysicalDevice(
     for (const auto& physicalDevice : getPhysicalDevices()) {
         auto properties = DeviceProperties::fetch(physicalDevice);
 
+        LOG_INFO("Checking device: '{}'.", properties.core.deviceName);
         if (const auto deviceInfo =
               isPhysicalDeviceSuitable(physicalDevice, properties);
             deviceInfo) {
@@ -228,7 +229,7 @@ std::optional<VKPhysicalDevice::DeviceInfo>
 
     const auto queueIndices = findQueueIndices(device);
 
-    if (queueIndices) {
+    if (not queueIndices) {
         LOG_INFO("Could not satisfy queues requirements, skipping device");
         return {};
     }
@@ -274,7 +275,7 @@ static void showDeviceType(const VkPhysicalDeviceProperties& properties) {
             LOG_INFO("GPU type is Integrated");
             break;
         case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:
-            LOG_INFO("GPU type is Descrete");
+            LOG_INFO("GPU type is Discrete");
             break;
         case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU:
             LOG_INFO("GPU type is Virtual");

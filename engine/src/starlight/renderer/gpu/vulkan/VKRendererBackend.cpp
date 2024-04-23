@@ -27,7 +27,8 @@ VKPhysicalDevice::Requirements physicalDeviceRequirements{
 VKRendererBackend::VKRendererBackend(Window& window, const Config& config) :
     m_recreatingSwapchain(false), m_window(window), m_context(window, config),
     m_physicalDevice(m_context, physicalDeviceRequirements),
-    m_logicalDevice(m_physicalDevice), m_renderedVertices(0u), m_proxy(this) {
+    m_logicalDevice(m_context, m_physicalDevice), m_renderedVertices(0u),
+    m_proxy(this) {
     const auto [w, h] = window.getSize();
 
     m_framebufferWidth  = w;
@@ -242,6 +243,10 @@ void VKRendererBackend::setScissors(VKCommandBuffer& commandBuffer) {
 
     vkCmdSetScissor(commandBuffer.getHandle(), 0, 1, &scissor);
 }
+
+VKContext* VKRendererBackend::getContext() { return &m_context; }
+
+VKLogicalDevice* VKRendererBackend::getLogicalDevice() { return &m_logicalDevice; }
 
 bool VKRendererBackend::beginFrame(float deltaTime) {
     m_renderedVertices       = 0u;

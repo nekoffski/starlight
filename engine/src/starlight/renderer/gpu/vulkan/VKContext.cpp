@@ -66,9 +66,7 @@ VKContext::VKContext(sl::Window& window, const Config& config) :
       [&](VkSurfaceKHR& surface) {
           if (surface) vkDestroySurfaceKHR(m_instance.get(), surface, m_allocator);
       }
-    ),
-    m_device(m_allocator, m_instance.get(), m_surface.get()) {
-
+    ) {
     LOG_TRACE("VKContext created");
 }
 
@@ -79,8 +77,6 @@ VkAllocationCallbacks* VKContext::getAllocator() const { return m_allocator; }
 VkInstance VKContext::getInstance() const { return m_instance.get(); }
 
 VkSurfaceKHR VKContext::getSurface() const { return m_surface.get(); }
-
-VKDevice* VKContext::getDevice() { return &m_device; }
 
 VkInstance VKContext::createInstance() {
     VkInstance instance;
