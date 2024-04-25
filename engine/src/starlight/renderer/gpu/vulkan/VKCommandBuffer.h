@@ -4,7 +4,6 @@
 
 #include "starlight/renderer/gpu/CommandBuffer.h"
 
-#include "VKBackendAccessor.h"
 #include "VKLogicalDevice.h"
 #include "fwd.h"
 
@@ -14,11 +13,6 @@ class VKCommandBuffer : public CommandBuffer {
 public:
     explicit VKCommandBuffer(
       VKLogicalDevice& device, VkCommandPool commandPool,
-      Severity severity = Severity::primary
-    );
-
-    explicit VKCommandBuffer(
-      VKBackendAccessor& backendAccessor, VkCommandPool commandPool,
       Severity severity = Severity::primary
     );
 

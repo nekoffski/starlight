@@ -3,9 +3,8 @@
 #include "Vulkan.h"
 #include "fwd.h"
 
-#include "VKPhysicalDevice.h"
+#include "VKLogicalDevice.h"
 #include "VKContext.h"
-#include "VKBackendAccessor.h"
 
 namespace sl::vk {
 
@@ -13,7 +12,7 @@ class VKFence {
 public:
     enum class State : unsigned char { signaled, notSignaled };
 
-    explicit VKFence(VKBackendAccessor& backendAccessor, State state);
+    explicit VKFence(VKContext& context, VKLogicalDevice& device, State state);
     ~VKFence();
 
     bool wait(Nanoseconds timeout);

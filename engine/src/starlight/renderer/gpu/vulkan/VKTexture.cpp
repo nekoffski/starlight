@@ -91,14 +91,13 @@ VKImage::Properties getImageProperties(
 }  // namespace
 
 VKTexture::VKTexture(
-  u32 id, VKBackendAccessor& backendAccessor, const Properties& props,
+  u32 id, VKContext& context, VKLogicalDevice& device, const Properties& props,
   const std::span<u8> pixels
 ) :
     Texture(props, id),
-    m_context(*backendAccessor.getContext()),
-    m_device(*backendAccessor.getLogicalDevice()),
+    m_context(context), m_device(device),
     m_image(
-      backendAccessor,
+      m_context, m_device,
       getImageProperties(
         props.width, props.height, props.type, channelsToFormat(props.channels)
       ),
@@ -110,14 +109,13 @@ VKTexture::VKTexture(
 }
 
 VKTexture::VKTexture(
-  u32 id, VKBackendAccessor& backendAccessor, const Properties& props,
+  u32 id, VKContext& context, VKLogicalDevice& device, const Properties& props,
   VkImage handle, VkFormat format
 ) :
     Texture(props, id),
-    m_context(*backendAccessor.getContext()),
-    m_device(*backendAccessor.getLogicalDevice()),
+    m_context(context), m_device(device),
     m_image(
-      backendAccessor,
+      m_context, m_device,
       getImageProperties(props.width, props.height, props.type, format), handle
     ),
     m_generation(1u) {
@@ -126,7 +124,8 @@ VKTexture::VKTexture(
 }
 
 VKTexture::VKTexture(
-  u32 id, VKBackendAccessor& backendAccessor, const VKImage::Properties& props
+  u32 id, VKContext& context, VKLogicalDevice& device,
+  const VKImage::Properties& props
 ) :
     Texture(
       Properties(
@@ -134,8 +133,7 @@ VKTexture::VKTexture(
       ),
       id
     ),
-    m_context(*backendAccessor.getContext()),
-    m_device(*backendAccessor.getLogicalDevice()), m_image(backendAccessor, props) {
+    m_context(context), m_device(device), m_image(m_context, m_device, props) {
     createSampler(m_props);
 }
 

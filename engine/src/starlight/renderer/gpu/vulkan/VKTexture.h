@@ -16,7 +16,7 @@
 #include "VKContext.h"
 #include "VKPhysicalDevice.h"
 #include "VKContext.h"
-#include "VKBackendAccessor.h"
+
 #include "VKCommandBuffer.h"
 
 namespace sl::vk {
@@ -24,18 +24,19 @@ namespace sl::vk {
 class VKTexture : public Texture {
 public:
     explicit VKTexture(
-      u32 id, VKBackendAccessor& backendAccessor, const Properties& props,
+      u32 id, VKContext& context, VKLogicalDevice& device, const Properties& props,
       const std::span<u8> pixels
     );
 
     // TODO: consider splitting those classes somehow
     explicit VKTexture(
-      u32 id, VKBackendAccessor& backendAccessor, const Properties& props,
+      u32 id, VKContext& context, VKLogicalDevice& device, const Properties& props,
       VkImage handle, VkFormat format
     );
 
     explicit VKTexture(
-      u32 id, VKBackendAccessor& backendAccessor, const VKImage::Properties& props
+      u32 id, VKContext& context, VKLogicalDevice& device,
+      const VKImage::Properties& props
     );
 
     ~VKTexture() override;

@@ -10,7 +10,6 @@
 
 #include "VKPhysicalDevice.h"
 #include "VKContext.h"
-#include "VKBackendAccessor.h"
 #include "VKBuffer.h"
 #include "VKCommandBuffer.h"
 
@@ -34,14 +33,15 @@ public:
     };
 
     explicit VKImage(
-      VKBackendAccessor& backendAccesor, const Properties& properties
+      VKContext& context, VKLogicalDevice&, const Properties& properties
     );
     explicit VKImage(
-      VKBackendAccessor& backendAccesor, const Properties& properties,
+      VKContext& context, VKLogicalDevice&, const Properties& properties,
       const std::span<u8> pixels
     );
     explicit VKImage(
-      VKBackendAccessor& backendAccesor, const Properties& properties, VkImage handle
+      VKContext& context, VKLogicalDevice&, const Properties& properties,
+      VkImage handle
     );
 
     ~VKImage();
@@ -81,7 +81,6 @@ private:
 
     Properties m_props;
 
-    VKBackendAccessor& m_backendAccesor;
     VKContext& m_context;
     VKLogicalDevice& m_device;
 

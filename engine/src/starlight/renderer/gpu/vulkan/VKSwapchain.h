@@ -9,7 +9,7 @@
 
 #include "VKPhysicalDevice.h"
 #include "VKContext.h"
-#include "VKBackendAccessor.h"
+
 #include "Vulkan.h"
 #include "VKTexture.h"
 
@@ -20,7 +20,8 @@ namespace sl::vk {
 class VKSwapchain {
 public:
     explicit VKSwapchain(
-      VKBackendAccessor& backendAccessor, u32 viewportWidth, u32 viewportHeight
+      VKContext& context, VKLogicalDevice& device, u32 viewportWidth,
+      u32 viewportHeight
     );
     ~VKSwapchain();
 
@@ -50,7 +51,6 @@ private:
     void createSwapchain();
     void createImages();
 
-    VKBackendAccessor& m_backendAccessor;
     VKContext& m_context;
     VKLogicalDevice& m_device;
 

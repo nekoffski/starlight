@@ -5,7 +5,6 @@
 
 #include "VKPhysicalDevice.h"
 #include "VKContext.h"
-#include "VKBackendAccessor.h"
 
 #include "VKContext.h"
 #include "VKFramebuffer.h"
@@ -15,7 +14,7 @@ namespace sl::vk {
 class VKRenderTarget : public RenderTarget {
 public:
     explicit VKRenderTarget(
-      u32 id, VKBackendAccessor& backendAccessor, VKRenderPass* renderPass,
+      u32 id, VKContext& context, VKLogicalDevice& device, VKRenderPass* renderPass,
       const Properties& props
     );
 
@@ -24,7 +23,6 @@ public:
     void regenerate(const Properties& properties) override;
 
 private:
-    VKBackendAccessor& m_backendAccessor;
     VKContext& m_context;
     VKLogicalDevice& m_device;
 

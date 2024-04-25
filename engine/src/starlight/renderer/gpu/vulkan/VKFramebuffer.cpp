@@ -24,11 +24,11 @@ VkFramebufferCreateInfo createFramebufferCreateInfo(
 VkFramebuffer VKFramebuffer::getHandle() { return m_handle; }
 
 VKFramebuffer::VKFramebuffer(
-  VKBackendAccessor& backendAccessor, VkRenderPass renderPass, u32 width, u32 height,
-  const std::vector<VkImageView>& attachments
+  VKContext& context, VKLogicalDevice& device, VkRenderPass renderPass, u32 width,
+  u32 height, const std::vector<VkImageView>& attachments
 ) :
-    m_context(*backendAccessor.getContext()),
-    m_device(*backendAccessor.getLogicalDevice()), m_attachments(attachments) {
+    m_context(context),
+    m_device(device), m_attachments(attachments) {
     const auto createInfo =
       createFramebufferCreateInfo(m_attachments, renderPass, width, height);
 

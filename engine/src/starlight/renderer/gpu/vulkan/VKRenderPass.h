@@ -6,7 +6,7 @@
 
 #include "VKPhysicalDevice.h"
 #include "VKContext.h"
-#include "VKBackendAccessor.h"
+
 #include "Vulkan.h"
 #include "fwd.h"
 
@@ -26,8 +26,8 @@ public:
     };
 
     explicit VKRenderPass(
-      u32 id, VKBackendAccessor& backendAccessor, const VKSwapchain& swapchain,
-      const Properties& properties
+      u32 id, VKContext& context, VKLogicalDevice& device,
+      const VKSwapchain& swapchain, const Properties& properties
     );
 
     ~VKRenderPass();

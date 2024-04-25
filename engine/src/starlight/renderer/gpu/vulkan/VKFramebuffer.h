@@ -5,9 +5,9 @@
 #include "starlight/core/Core.h"
 #include "starlight/core/math/Size.hpp"
 
-#include "VKPhysicalDevice.h"
+#include "VKLogicalDevice.h"
 #include "VKContext.h"
-#include "VKBackendAccessor.h"
+
 #include "Vulkan.h"
 #include "fwd.h"
 
@@ -16,8 +16,8 @@ namespace sl::vk {
 class VKFramebuffer {
 public:
     explicit VKFramebuffer(
-      VKBackendAccessor& backendAccessor, VkRenderPass renderPass, u32 width,
-      u32 height, const std::vector<VkImageView>& attachments
+      VKContext& context, VKLogicalDevice& device, VkRenderPass renderPass,
+      u32 width, u32 height, const std::vector<VkImageView>& attachments
     );
 
     VkFramebuffer getHandle();

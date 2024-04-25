@@ -15,9 +15,8 @@ VkFenceCreateInfo createFenceCreateInfo(VKFence::State state) {
     return fenceCreateInfo;
 }
 
-VKFence::VKFence(VKBackendAccessor& backendAccessor, State state) :
-    m_context(*backendAccessor.getContext()),
-    m_device(*backendAccessor.getLogicalDevice()), m_state(state) {
+VKFence::VKFence(VKContext& context, VKLogicalDevice& device, State state) :
+    m_context(context), m_device(device), m_state(state) {
     auto fenceCreateInfo = createFenceCreateInfo(state);
 
     VK_ASSERT(vkCreateFence(

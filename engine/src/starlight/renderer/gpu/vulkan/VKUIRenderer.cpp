@@ -14,11 +14,12 @@
 namespace sl::vk {
 
 VKUIRenderer::VKUIRenderer(
-  VKBackendAccessor& backendAccessor, RendererBackendProxy& backendProxy,
-  Window& window, RenderPass* renderPass
+  VKContext& context, VKPhysicalDevice& physicalDevice, VKLogicalDevice& device,
+  RendererBackendProxy& backendProxy, Window& window, RenderPass* renderPass
 ) :
-    m_context(*backendAccessor.getContext()),
-    m_device(*backendAccessor.getLogicalDevice()), m_backendProxy(backendProxy) {
+    m_context(context),
+    m_physicalDevice(physicalDevice), m_device(device),
+    m_backendProxy(backendProxy) {
     ASSERT(not s_hasInstance, "Only single instance of UI renderer is allowed");
     s_hasInstance = true;
 
@@ -62,14 +63,14 @@ VKUIRenderer::VKUIRenderer(
 
     ImGui_ImplVulkan_InitInfo initInfo = {};
     initInfo.Instance                  = m_context.getInstance();
-    initInfo.PhysicalDevice = backendAccessor.getPhysicalDevice()->getHandle();
-    initInfo.Device         = m_device.getHandle();
-    initInfo.Queue          = graphicsQueue;
-    initInfo.DescriptorPool = m_uiPool;
-    initInfo.MinImageCount  = 3;
-    initInfo.ImageCount     = 3;
-    initInfo.MSAASamples    = VK_SAMPLE_COUNT_1_BIT;
-    initInfo.RenderPass     = renderPassHandle;
+    initInfo.PhysicalDevice            = m_physicalDevice.getHandle();
+    initInfo.Device                    = m_device.getHandle();
+    initInfo.Queue                     = graphicsQueue;
+    initInfo.DescriptorPool            = m_uiPool;
+    initInfo.MinImageCount             = 3;
+    initInfo.ImageCount                = 3;
+    initInfo.MSAASamples               = VK_SAMPLE_COUNT_1_BIT;
+    initInfo.RenderPass                = renderPassHandle;
 
     ImGui_ImplVulkan_Init(&initInfo);
 

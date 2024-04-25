@@ -7,7 +7,6 @@
 #include "starlight/core/memory/Memory.hpp"
 #include "starlight/core/utils/FreeList.h"
 
-#include "VKBackendAccessor.h"
 #include "VKLogicalDevice.h"
 #include "VKContext.h"
 
@@ -27,7 +26,9 @@ public:
         bool useFreeList = true;
     };
 
-    explicit VKBuffer(VKBackendAccessor& backendAccessor, const Properties& props);
+    explicit VKBuffer(
+      VKContext& context, VKLogicalDevice& device, const Properties& props
+    );
     ~VKBuffer();
 
     VkBuffer getHandle() const { return m_handle; }

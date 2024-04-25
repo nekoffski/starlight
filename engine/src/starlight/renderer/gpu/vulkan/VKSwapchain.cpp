@@ -9,11 +9,10 @@
 namespace sl::vk {
 
 VKSwapchain::VKSwapchain(
-  VKBackendAccessor& backendAccessor, u32 viewportWidth, u32 viewportHeight
+  VKContext& context, VKLogicalDevice& device, u32 viewportWidth, u32 viewportHeight
 ) :
-    m_backendAccessor(backendAccessor),
-    m_context(*backendAccessor.getContext()),
-    m_device(*backendAccessor.getLogicalDevice()), m_viewportWidth(viewportWidth),
+    m_context(context),
+    m_device(device), m_viewportWidth(viewportWidth),
     m_viewportHeight(viewportHeight) {
     create();
 }
@@ -208,7 +207,7 @@ void VKSwapchain::createImages() {
             props.name = fmt::format("SL_InternalSwapchainTexture_{}", i);
 
             m_textures[i].emplace(
-              static_cast<u32>(i + 2048), m_backendAccessor, props,
+              static_cast<u32>(i + 2048), m_context, m_device, props,
               swapchainImageHandle, m_imageFormat.format
             );
         }
@@ -236,7 +235,7 @@ void VKSwapchain::createImages() {
     };
 
     // TODO: those internal ids should be removed or stored somewhere
-    m_depthTexture.emplace(10000u, m_backendAccessor, imageProperties);
+    m_depthTexture.emplace(10000u, m_context, m_device, imageProperties);
 }
 
 void VKSwapchain::create() {

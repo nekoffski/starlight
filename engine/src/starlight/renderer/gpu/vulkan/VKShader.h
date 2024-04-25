@@ -10,7 +10,6 @@
 #include "VKBuffer.h"
 #include "VKPhysicalDevice.h"
 #include "VKContext.h"
-#include "VKBackendAccessor.h"
 #include "VKPipeline.h"
 #include "VKRendererBackendProxy.h"
 
@@ -26,7 +25,7 @@ public:
     };
 
     explicit VKShaderStage(
-      VKBackendAccessor& backendAccesor, const Properties& properties
+      VKContext& context, VKLogicalDevice&, const Properties& properties
     );
 
     VkPipelineShaderStageCreateInfo getStageCreateInfo() const {
@@ -73,7 +72,7 @@ class VKShader final : public Shader {
 
 public:
     explicit VKShader(
-      u32 id, VKBackendAccessor& backendAccesor,
+      u32 id, VKContext& context, VKLogicalDevice&,
       VKRendererBackendProxy& backendProxy, const Shader::Properties& props
     );
     ~VKShader() override;
@@ -116,7 +115,6 @@ private:
       const Shader::Uniform::Properties& props, Texture* defaultTexture
     );
 
-    VKBackendAccessor& m_backendAccesor;
     VKContext& m_context;
     VKLogicalDevice& m_device;
     VKRendererBackendProxy& m_backendProxy;

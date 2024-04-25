@@ -10,7 +10,7 @@
 
 #include "VKPhysicalDevice.h"
 #include "VKContext.h"
-#include "VKBackendAccessor.h"
+
 #include "VKContext.h"
 #include "VKCommandBuffer.h"
 #include "VKRenderPass.h"
@@ -39,10 +39,11 @@ public:
     };
 
     explicit VKPipeline(
-      VKBackendAccessor& backendAccessor, VKRenderPass& renderPass, Properties props
+      VKContext& context, VKLogicalDevice& device, VKRenderPass& renderPass,
+      Properties props
     ) :
-        m_context(*backendAccessor.getContext()),
-        m_device(*backendAccessor.getLogicalDevice()) {
+        m_context(context),
+        m_device(device) {
         VkPipelineViewportStateCreateInfo viewportState = {
             VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO
         };

@@ -5,32 +5,29 @@
 namespace sl::vk {
 
 VKImage::VKImage(
-  VKBackendAccessor& backendAccesor, const VKImage::Properties& properties
+  VKContext& context, VKLogicalDevice& device, const VKImage::Properties& properties
 ) :
-    m_backendAccesor(backendAccesor),
-    m_context(*backendAccesor.getContext()),
-    m_device(*backendAccesor.getLogicalDevice()), m_props(properties),
-    m_handle(VK_NULL_HANDLE), m_memory(VK_NULL_HANDLE), m_view(VK_NULL_HANDLE),
-    m_destroyImage(true) {
+    m_context(context),
+    m_device(device), m_props(properties), m_handle(VK_NULL_HANDLE),
+    m_memory(VK_NULL_HANDLE), m_view(VK_NULL_HANDLE), m_destroyImage(true) {
     create();
 }
 
 VKImage::VKImage(
-  VKBackendAccessor& backendAccesor, const Properties& properties,
+  VKContext& context, VKLogicalDevice& device, const Properties& properties,
   const std::span<u8> pixels
 ) :
-    VKImage(backendAccesor, properties) {
+    VKImage(context, device, properties) {
     write(0, pixels);
 }
 
 VKImage::VKImage(
-  VKBackendAccessor& backendAccesor, const Properties& properties, VkImage handle
+  VKContext& context, VKLogicalDevice& device, const Properties& properties,
+  VkImage handle
 ) :
-    m_backendAccesor(backendAccesor),
-    m_context(*backendAccesor.getContext()),
-    m_device(*backendAccesor.getLogicalDevice()), m_props(properties),
-    m_handle(handle), m_memory(VK_NULL_HANDLE), m_view(VK_NULL_HANDLE),
-    m_destroyImage(false) {
+    m_context(context),
+    m_device(device), m_props(properties), m_handle(handle),
+    m_memory(VK_NULL_HANDLE), m_view(VK_NULL_HANDLE), m_destroyImage(false) {
     if (m_props.createView) createView();
 }
 
@@ -87,7 +84,7 @@ void VKImage::write(u32 offset, std::span<u8> pixels) {
         .useFreeList         = false
     };
 
-    VKBuffer stagingBuffer(m_backendAccesor, stagingBufferProperties);
+    VKBuffer stagingBuffer(m_context, m_device, stagingBufferProperties);
 
     stagingBuffer.loadData(0, imageSize, 0, pixels.data());
 

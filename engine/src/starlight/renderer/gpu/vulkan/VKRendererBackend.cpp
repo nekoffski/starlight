@@ -41,7 +41,9 @@ VKRendererBackend::VKRendererBackend(Window& window, const Config& config) :
 VKRendererBackend::~VKRendererBackend() { m_logicalDevice.waitIdle(); }
 
 UniqPtr<VKUIRenderer> VKRendererBackend::createUIRendererer(RenderPass* renderPass) {
-    return createUniqPtr<VKUIRenderer>(*this, m_proxy, m_window, renderPass);
+    return createUniqPtr<VKUIRenderer>(
+      m_context, m_physicalDevice, m_logicalDevice, m_proxy, m_window, renderPass
+    );
 }
 
 // TODO: remove
@@ -51,7 +53,7 @@ void VKRendererBackend::gpuCall(std::function<void(CommandBuffer& buffer)>&& cal
 
     vkQueueWaitIdle(queue);
     VKCommandBuffer commandBuffer(
-      *this, m_logicalDevice.getGraphicsCommandPool(),
+      m_logicalDevice, m_logicalDevice.getGraphicsCommandPool(),
       VKCommandBuffer::Severity::primary
     );
     commandBuffer.createAndBeginSingleUse();
@@ -96,7 +98,7 @@ void VKRendererBackend::createBuffers() {
     LOG_DEBUG("Creating buffers");
 
     m_objectVertexBuffer = createUniqPtr<VKBuffer>(
-      *this,
+      m_context, m_logicalDevice,
       VKBuffer::Properties{
         sizeof(Vertex3) * 1024 * 1024, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
         VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT
@@ -105,7 +107,7 @@ void VKRendererBackend::createBuffers() {
     );
 
     m_objectIndexBuffer = createUniqPtr<VKBuffer>(
-      *this,
+      m_context, m_logicalDevice,
       VKBuffer::Properties{
         sizeof(u32) * 1024 * 1024, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
         VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT
@@ -123,14 +125,15 @@ u32 VKRendererBackend::getImageIndex() { return m_imageIndex; }
 void VKRendererBackend::createCoreComponents(
   sl::Window& window, const Config& config
 ) {
-    const auto& [w, h]  = window.getSize();
-    m_swapchain         = createUniqPtr<VKSwapchain>(*this, w, h);
+    const auto& [w, h] = window.getSize();
+    m_swapchain = createUniqPtr<VKSwapchain>(m_context, m_logicalDevice, w, h);
     m_maxFramesInFlight = m_swapchain->getImageCount();
 
     createBuffers();
 
     m_resourcePools.emplace(
-      *this, *m_objectVertexBuffer, *m_objectIndexBuffer, *m_swapchain, this
+      m_context, m_logicalDevice, *m_objectVertexBuffer, *m_objectIndexBuffer,
+      *m_swapchain, this
     );
 }
 
@@ -142,9 +145,11 @@ void VKRendererBackend::createSemaphoresAndFences() {
     m_inFlightFences.reserve(m_maxFramesInFlight);
 
     for (int i = 0; i < m_maxFramesInFlight; ++i) {
-        m_imageAvailableSemaphores.emplace_back(*this);
-        m_queueCompleteSemaphores.emplace_back(*this);
-        m_inFlightFences.emplace_back(*this, VKFence::State::signaled);
+        m_imageAvailableSemaphores.emplace_back(m_context, m_logicalDevice);
+        m_queueCompleteSemaphores.emplace_back(m_context, m_logicalDevice);
+        m_inFlightFences.emplace_back(
+          m_context, m_logicalDevice, VKFence::State::signaled
+        );
     }
 }
 
@@ -176,7 +181,7 @@ void VKRendererBackend::createCommandBuffers() {
     m_commandBuffers.reserve(swapchainImagesCount);
     for (int i = 0; i < swapchainImagesCount; ++i) {
         m_commandBuffers.emplace_back(
-          *this, graphicsCommandPool, VKCommandBuffer::Severity::primary
+          m_logicalDevice, graphicsCommandPool, VKCommandBuffer::Severity::primary
         );
     }
 }
@@ -230,14 +235,6 @@ void VKRendererBackend::setScissors(VKCommandBuffer& commandBuffer) {
     scissor.extent.height               = m_framebufferHeight;
 
     vkCmdSetScissor(commandBuffer.getHandle(), 0, 1, &scissor);
-}
-
-VKContext* VKRendererBackend::getContext() { return &m_context; }
-
-VKLogicalDevice* VKRendererBackend::getLogicalDevice() { return &m_logicalDevice; }
-
-VKPhysicalDevice* VKRendererBackend::getPhysicalDevice() {
-    return &m_physicalDevice;
 }
 
 bool VKRendererBackend::beginFrame(float deltaTime) {

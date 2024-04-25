@@ -9,7 +9,7 @@
 #include "VKContext.h"
 #include "VKPhysicalDevice.h"
 #include "VKContext.h"
-#include "VKBackendAccessor.h"
+
 #include "VKRenderPass.h"
 #include "VKRenderTarget.h"
 #include "VKSwapchain.h"
@@ -21,7 +21,7 @@ namespace sl::vk {
 class VKResourcePools : public ResourcePools {
 public:
     explicit VKResourcePools(
-      VKBackendAccessor& backendAccessor, VKBuffer& vertexBuffer,
+      VKContext& context, VKLogicalDevice& device, VKBuffer& vertexBuffer,
       VKBuffer& indexBuffer, VKSwapchain& swapchain, VKRendererBackend* backend
     );
 
@@ -52,7 +52,6 @@ public:
     void destroyRenderPass(RenderPass& renderPass) override;
 
 private:
-    VKBackendAccessor& m_backendAccessor;
     VKContext& m_context;
     VKLogicalDevice& m_device;
     VKBuffer& m_vertexBuffer;

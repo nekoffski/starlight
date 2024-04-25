@@ -3,12 +3,11 @@
 namespace sl::vk {
 
 VKMesh::VKMesh(
-  u32 id, VKBackendAccessor& backendAccessor, VKBuffer& vertexBuffer,
+  u32 id, VKContext& context, VKLogicalDevice& device, VKBuffer& vertexBuffer,
   VKBuffer& indexBuffer, const Properties& props, const Data& data
 ) :
     Mesh(props, data, id),
-    m_backendAccessor(backendAccessor), m_context(*backendAccessor.getContext()),
-    m_device(*backendAccessor.getLogicalDevice()) {
+    m_context(context), m_device(device) {
     LOG_TRACE("Creating Mesh");
     LOG_DEBUG(
       "Mesh data vertexSize={}, vertexCount={}, "
@@ -42,7 +41,7 @@ u64 VKMesh::uploadDataRange(
     VkMemoryPropertyFlags flags =
       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
     VKBuffer stagingBuffer(
-      m_backendAccessor,
+      m_context, m_device,
       VKBuffer::Properties{ size, flags, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, true }
     );
 

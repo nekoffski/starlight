@@ -138,12 +138,11 @@ struct RenderPassCreateInfo {
 };
 
 VKRenderPass::VKRenderPass(
-  u32 id, VKBackendAccessor& backendAccessor, const VKSwapchain& swapchain,
+  u32 id, VKContext& context, VKLogicalDevice& device, const VKSwapchain& swapchain,
   const Properties& properties
 ) :
     RenderPass(id, properties),
-    m_context(*backendAccessor.getContext()),
-    m_device(*backendAccessor.getLogicalDevice()) {
+    m_context(context), m_device(device) {
     LOG_TRACE("Creating VKRenderPass instance");
 
     RenderPassCreateInfo createInfo(
@@ -158,7 +157,9 @@ VKRenderPass::VKRenderPass(
         LOG_WARN("Render pass with no render targets created");
 
     for (auto& renderTarget : properties.targets) {
-        m_renderTargets.emplace_back(id * 1000, backendAccessor, this, renderTarget);
+        m_renderTargets.emplace_back(
+          id * 1000, m_context, m_device, this, renderTarget
+        );
     }
 }
 

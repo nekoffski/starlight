@@ -8,11 +8,11 @@
 namespace sl::vk {
 
 VKBuffer::VKBuffer(
-  VKBackendAccessor& backendAccessor, const VKBuffer::Properties& props
+  VKContext& context, VKLogicalDevice& device, const VKBuffer::Properties& props
 ) :
-    m_context(*backendAccessor.getContext()),
-    m_device(*backendAccessor.getLogicalDevice()), m_totalSize(props.size),
-    m_usageFlags(props.usageFlags), m_memoryPropertyFlags(props.memoryPropertyFlags),
+    m_context(context),
+    m_device(device), m_totalSize(props.size), m_usageFlags(props.usageFlags),
+    m_memoryPropertyFlags(props.memoryPropertyFlags),
     m_useFreeList(props.useFreeList) {
     if (m_useFreeList) m_bufferFreeList.emplace(props.size);
 

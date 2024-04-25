@@ -5,11 +5,6 @@
 namespace sl::vk {
 
 VKCommandBuffer::VKCommandBuffer(
-  VKBackendAccessor& backendAccessor, VkCommandPool commandPool, Severity severity
-) :
-    VKCommandBuffer(*backendAccessor.getLogicalDevice(), commandPool, severity) {}
-
-VKCommandBuffer::VKCommandBuffer(
   VKLogicalDevice& device, VkCommandPool commandPool, Severity severity
 ) :
     m_device(device),

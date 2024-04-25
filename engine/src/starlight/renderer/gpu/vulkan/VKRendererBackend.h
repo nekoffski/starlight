@@ -28,11 +28,10 @@
 #include "VKResourcePools.h"
 #include "VKRendererBackendProxy.h"
 #include "VKUIRenderer.h"
-#include "VKBackendAccessor.h"
 
 namespace sl::vk {
 
-class VKRendererBackend : public RendererBackend, public VKBackendAccessor {
+class VKRendererBackend : public RendererBackend {
     friend class VKRendererBackendProxy;
 
 public:
@@ -43,11 +42,6 @@ public:
     VKRendererBackend& operator=(const VKRendererBackend&) = delete;
     VKRendererBackend(VKRendererBackend&&)                 = delete;
     VKRendererBackend& operator=(VKRendererBackend&&)      = delete;
-
-    // backend accessor
-    VKContext* getContext() override;
-    VKLogicalDevice* getLogicalDevice() override;
-    VKPhysicalDevice* getPhysicalDevice() override;
 
     // renderer backend
 

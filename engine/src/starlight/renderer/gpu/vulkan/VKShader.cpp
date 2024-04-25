@@ -55,11 +55,11 @@ VkShaderStageFlagBits getStageFlagBits(Shader::Stage::Type type) {
 }
 
 VKShaderStage::VKShaderStage(
-  VKBackendAccessor& backendAccesor, const Properties& props
+  VKContext& context, VKLogicalDevice& device, const Properties& props
 ) :
 
-    m_context(*backendAccesor.getContext()),
-    m_device(*backendAccesor.getLogicalDevice()), m_handle(VK_NULL_HANDLE) {
+    m_context(context),
+    m_device(device), m_handle(VK_NULL_HANDLE) {
     m_moduleCreateInfo          = { VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO };
     m_moduleCreateInfo.codeSize = props.source.size();
     m_moduleCreateInfo.pCode    = (uint32_t*)(props.source.data());
@@ -84,12 +84,11 @@ VKShaderStage::~VKShaderStage() {
 }
 
 VKShader::VKShader(
-  u32 id, VKBackendAccessor& backendAccesor, VKRendererBackendProxy& backendProxy,
-  const Shader::Properties& props
+  u32 id, VKContext& context, VKLogicalDevice& device,
+  VKRendererBackendProxy& backendProxy, const Shader::Properties& props
 ) :
     Shader(props, id),
-    m_backendAccesor(backendAccesor), m_context(*backendAccesor.getContext()),
-    m_device(*backendAccesor.getLogicalDevice()), m_backendProxy(backendProxy),
+    m_context(context), m_device(device), m_backendProxy(backendProxy),
     m_requiredUboAlignment(0), m_globalUboSize(0), m_globalUboStride(0),
     m_globalUboOffset(0), m_uboSize(0), m_uboStride(0), m_pushConstantSize(0),
     m_pushConstantStride(128), m_instanceTextureCount(0), m_boundInstanceId(0),
@@ -615,7 +614,7 @@ void VKShader::createModules(std::span<const Stage> stages) {
     m_stages.reserve(stages.size());
     for (const auto& stageConfig : stages) {
         m_stages.emplace_back(
-          m_backendAccesor,
+          m_context, m_device,
           VKShaderStage::Properties{ stageConfig.source, stageConfig.type }
         );
     }
@@ -701,7 +700,7 @@ void VKShader::createPipeline(RenderPass* renderPass) {
 
     LOG_INFO("Creating shader's pipeline: {}", static_cast<void*>(this));
     m_pipeline.emplace(
-      m_backendAccesor, *static_cast<VKRenderPass*>(renderPass), pipelineProps
+      m_context, m_device, *static_cast<VKRenderPass*>(renderPass), pipelineProps
     );
 }
 
@@ -735,7 +734,7 @@ void VKShader::createUniformBuffer() {
       "Creating uniform buffer, globalUboStride={}, uboStride={}, totalSize={}",
       m_globalUboStride, m_uboStride, totalBufferSize
     );
-    m_uniformBuffer.emplace(m_backendAccesor, bufferProps);
+    m_uniformBuffer.emplace(m_context, m_device, bufferProps);
 
     LOG_DEBUG("Allocating {}b of memory", m_globalUboStride);
     m_globalUboOffset          = m_uniformBuffer->allocate(m_globalUboStride);

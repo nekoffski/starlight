@@ -5,16 +5,14 @@
 namespace sl::vk {
 
 VKResourcePools::VKResourcePools(
-  VKBackendAccessor& backendAccessor, VKBuffer& vertexBuffer, VKBuffer& indexBuffer,
-  VKSwapchain& swapchain, VKRendererBackend* backend
+  VKContext& context, VKLogicalDevice& device, VKBuffer& vertexBuffer,
+  VKBuffer& indexBuffer, VKSwapchain& swapchain, VKRendererBackend* backend
 ) :
-    m_backendAccessor(backendAccessor),
-    m_context(*backendAccessor.getContext()),
-    m_device(*backendAccessor.getLogicalDevice()), m_vertexBuffer(vertexBuffer),
-    m_indexBuffer(indexBuffer), m_swapchain(swapchain), backend(backend),
-    m_textures("Texture", 1024), m_shaders("Shader", 1024),
-    m_meshes("Mesh", vulkanMaxMeshCount), m_renderTargets("RenderTarget", 64),
-    m_renderPasses("RenderPass", 64) {
+    m_context(context),
+    m_device(device), m_vertexBuffer(vertexBuffer), m_indexBuffer(indexBuffer),
+    m_swapchain(swapchain), backend(backend), m_textures("Texture", 1024),
+    m_shaders("Shader", 1024), m_meshes("Mesh", vulkanMaxMeshCount),
+    m_renderTargets("RenderTarget", 64), m_renderPasses("RenderPass", 64) {
     LOG_TRACE("VKResourcePools created");
 }
 
@@ -26,7 +24,7 @@ VKMesh* VKResourcePools::createMesh(
       sizeof(Vertex3), vertices.size(), vertices.data(), indices, extent
     );
     return m_meshes.create(
-      m_backendAccessor, m_vertexBuffer, m_indexBuffer, props, data
+      m_context, m_device, m_vertexBuffer, m_indexBuffer, props, data
     );
 }
 
@@ -38,7 +36,7 @@ VKMesh* VKResourcePools::createMesh(
       sizeof(Vertex2), vertices.size(), vertices.data(), indices, Extent3{ extent }
     );
     return m_meshes.create(
-      m_backendAccessor, m_vertexBuffer, m_indexBuffer, props, data
+      m_context, m_device, m_vertexBuffer, m_indexBuffer, props, data
     );
 }
 
@@ -47,7 +45,7 @@ void VKResourcePools::destroyMesh(Mesh& mesh) { m_meshes.destroy(mesh.getId()); 
 VKTexture* VKResourcePools::createTexture(
   const Texture::Properties& props, const std::span<u8> pixels
 ) {
-    return m_textures.create(m_backendAccessor, props, pixels);
+    return m_textures.create(m_context, m_device, props, pixels);
 }
 
 void VKResourcePools::destroyTexture(Texture& texture) {
@@ -55,7 +53,7 @@ void VKResourcePools::destroyTexture(Texture& texture) {
 }
 
 VKShader* VKResourcePools::createShader(const Shader::Properties& props) {
-    return m_shaders.create(m_backendAccessor, *backend->getProxy(), props);
+    return m_shaders.create(m_context, m_device, *backend->getProxy(), props);
 }
 
 void VKResourcePools::destroyShader(Shader& shader) {
@@ -66,7 +64,7 @@ VKRenderTarget* VKResourcePools::createRenderTarget(
   const RenderTarget::Properties& props, RenderPass* renderPass
 ) {
     return m_renderTargets.create(
-      m_backendAccessor, static_cast<VKRenderPass*>(renderPass), props
+      m_context, m_device, static_cast<VKRenderPass*>(renderPass), props
     );
 }
 void VKResourcePools::destroyRenderTarget(RenderTarget& renderTarget) {
@@ -75,7 +73,7 @@ void VKResourcePools::destroyRenderTarget(RenderTarget& renderTarget) {
 
 VKRenderPass* VKResourcePools::createRenderPass(const RenderPass::Properties& props
 ) {
-    return m_renderPasses.create(m_backendAccessor, m_swapchain, props);
+    return m_renderPasses.create(m_context, m_device, m_swapchain, props);
 }
 
 void VKResourcePools::destroyRenderPass(RenderPass& renderPass) {
