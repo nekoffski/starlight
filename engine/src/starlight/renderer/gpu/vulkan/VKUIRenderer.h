@@ -4,6 +4,9 @@
 
 #include "starlight/renderer/gpu/UIRenderer.h"
 
+#include "VKPhysicalDevice.h"
+#include "VKContext.h"
+#include "VKBackendAccessor.h"
 #include "VKCommandBuffer.h"
 #include "VKRendererBackendProxy.h"
 #include "Vulkan.h"
@@ -14,7 +17,7 @@ namespace sl::vk {
 class VKUIRenderer : public UIRenderer {
 public:
     explicit VKUIRenderer(
-      VKContext& context, VKDevice& device, RendererBackendProxy& backendProxy,
+      VKBackendAccessor& backendAccessor, RendererBackendProxy& backendProxy,
       Window& window, RenderPass* renderPass
     );
 
@@ -27,7 +30,8 @@ private:
     void end(CommandBuffer& commandBuffer) override;
 
     VKContext& m_context;
-    VKDevice& m_device;
+    VKLogicalDevice& m_device;
+
     RendererBackendProxy& m_backendProxy;
 
     VkDescriptorPool m_uiPool;

@@ -21,6 +21,7 @@ enum class Queue : uint16_t {
 constexpr void enableBitOperations(Queue);
 
 class VKPhysicalDevice {
+public:
     struct DeviceProperties {
         static DeviceProperties fetch(VkPhysicalDevice device);
 
@@ -29,7 +30,6 @@ class VKPhysicalDevice {
         VkPhysicalDeviceMemoryProperties memory;
     };
 
-public:
     struct QueueIndices {
         int32_t graphics = -1;
         int32_t present  = -1;

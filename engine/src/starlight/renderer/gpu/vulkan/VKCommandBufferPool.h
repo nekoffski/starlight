@@ -62,7 +62,7 @@ private:
 
         for (int i = 0; i < m_size; ++i) {
             m_commandBuffers.emplace_back(
-              &m_device, m_device.getGraphicsCommandPool()
+              m_device, m_device.getGraphicsCommandPool()
             );
         }
     }

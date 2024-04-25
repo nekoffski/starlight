@@ -10,16 +10,17 @@
 namespace sl::vk {
 
 VKSwapchain::VKSwapchain(
-  VKDevice* device, VKContext* context, u32 viewportWidth, u32 viewportHeight
+  VKBackendAccessor& backendAccessor, u32 viewportWidth, u32 viewportHeight
 ) :
-    m_device(device),
-    m_context(context), m_viewportWidth(viewportWidth),
+    m_backendAccessor(backendAccessor),
+    m_context(*backendAccessor.getContext()),
+    m_device(*backendAccessor.getLogicalDevice()), m_viewportWidth(viewportWidth),
     m_viewportHeight(viewportHeight) {
     create();
 }
 
 VkSurfaceFormatKHR pickSurfaceFormat(
-  const VKDevice::SwapchainSupportInfo& swapchainSupport
+  const VKPhysicalDevice::SwapchainSupportInfo& swapchainSupport
 ) {
     const auto demandedFormat     = VK_FORMAT_R8G8B8A8_UNORM;
     const auto demandedColorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
@@ -32,7 +33,7 @@ VkSurfaceFormatKHR pickSurfaceFormat(
 }
 
 VkPresentModeKHR pickPresentMode(
-  const VKDevice::SwapchainSupportInfo& swapchainSupport
+  const VKPhysicalDevice::SwapchainSupportInfo& swapchainSupport
 ) {
     const auto defaultPresentMode  = VK_PRESENT_MODE_FIFO_KHR;
     const auto demandedPresentMode = VK_PRESENT_MODE_MAILBOX_KHR;
@@ -45,7 +46,7 @@ VkPresentModeKHR pickPresentMode(
 
 VkExtent2D createSwapchainExtent(
   u32 viewportWidth, u32 viewportHeight,
-  const VKDevice::SwapchainSupportInfo& swapchainSupport
+  const VKPhysicalDevice::SwapchainSupportInfo& swapchainSupport
 ) {
     VkExtent2D swapchainExtent = { viewportWidth, viewportHeight };
 
@@ -72,7 +73,8 @@ VKTexture* VKSwapchain::getFramebuffer(u64 id) {
 
 VKTexture* VKSwapchain::getDepthBuffer() { return m_depthTexture.get(); }
 
-uint32_t getDeviceImageCount(const VKDevice::SwapchainSupportInfo& swapchainSupport
+uint32_t getDeviceImageCount(
+  const VKPhysicalDevice::SwapchainSupportInfo& swapchainSupport
 ) {
     uint32_t imageCount = swapchainSupport.capabilities.minImageCount + 1;
 
@@ -94,7 +96,7 @@ struct SwapchainCreateInfo {
 };
 
 SwapchainCreateInfo createSwapchainCreateInfo(
-  VKDevice* device, VkSurfaceKHR surface, uint32_t imageCount,
+  VKLogicalDevice& device, VkSurfaceKHR surface, uint32_t imageCount,
   VkSurfaceFormatKHR imageFormat, VkExtent2D extent, VkPresentModeKHR presentMode
 ) {
     SwapchainCreateInfo createInfo;
@@ -109,7 +111,7 @@ SwapchainCreateInfo createSwapchainCreateInfo(
     handle.imageArrayLayers = 1;
     handle.imageUsage       = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-    const auto& queueIndices = device->getQueueIndices();
+    const auto& queueIndices = device.getQueueIndices();
 
     createInfo.queueFamilyIndices = {
         static_cast<uint32_t>(queueIndices.graphics),
@@ -127,8 +129,7 @@ SwapchainCreateInfo createSwapchainCreateInfo(
         handle.pQueueFamilyIndices   = 0;
     }
 
-    handle.preTransform =
-      device->getSwapchainSupport().capabilities.currentTransform;
+    handle.preTransform = device.getSwapchainSupport().capabilities.currentTransform;
     handle.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
     handle.presentMode    = presentMode;
     handle.clipped        = VK_TRUE;
@@ -152,7 +153,7 @@ VkImageViewCreateInfo createImageViewCreateInfo(VkImage image, VkFormat format) 
 }
 
 void VKSwapchain::createSwapchain() {
-    auto swapchainSupport = m_device->queryDeviceSwapchainSupport();
+    auto swapchainSupport = m_device.getSwapchainSupport();
 
     m_imageFormat    = pickSurfaceFormat(swapchainSupport);
     auto presentMode = pickPresentMode(swapchainSupport);
@@ -166,28 +167,30 @@ void VKSwapchain::createSwapchain() {
     );
 
     auto swapchainCreateInfo = createSwapchainCreateInfo(
-      m_device, m_context->getSurface(), deviceImageCount, m_imageFormat,
+      m_device, m_context.getSurface(), deviceImageCount, m_imageFormat,
       m_swapchainExtent, presentMode
     );
 
     VK_ASSERT(vkCreateSwapchainKHR(
-      m_device->getLogicalDevice(), &swapchainCreateInfo.handle,
-      m_context->getAllocator(), &m_handle
+      m_device.getHandle(), &swapchainCreateInfo.handle, m_context.getAllocator(),
+      &m_handle
     ));
 }
 
 void VKSwapchain::createImages() {
-    const auto logicalDevice = m_device->getLogicalDevice();
-    const auto allocator     = m_context->getAllocator();
+    const auto logicalDeviceHandle = m_device.getHandle();
+    const auto allocator           = m_context.getAllocator();
 
-    VK_ASSERT(vkGetSwapchainImagesKHR(logicalDevice, m_handle, &m_imageCount, 0));
+    VK_ASSERT(
+      vkGetSwapchainImagesKHR(logicalDeviceHandle, m_handle, &m_imageCount, 0)
+    );
 
     ASSERT(m_imageCount > 0, "swapchainImageCount==0 for vulkan swapchain");
 
     std::array<VkImage, 16> swapchainImages = { 0 };
 
     VK_ASSERT(vkGetSwapchainImagesKHR(
-      logicalDevice, m_handle, &m_imageCount, swapchainImages.data()
+      logicalDeviceHandle, m_handle, &m_imageCount, swapchainImages.data()
     ));
 
     if (m_textures.size() != m_imageCount) {
@@ -206,7 +209,7 @@ void VKSwapchain::createImages() {
             props.name = fmt::format("SL_InternalSwapchainTexture_{}", i);
 
             m_textures[i].emplace(
-              static_cast<u32>(i + 2048), m_context, m_device, props,
+              static_cast<u32>(i + 2048), m_backendAccessor, props,
               swapchainImageHandle, m_imageFormat.format
             );
         }
@@ -224,17 +227,17 @@ void VKSwapchain::createImages() {
         VKImage::Type::flat,
         m_swapchainExtent.width,
         m_swapchainExtent.height,
-        m_device->getDepthFormat(),
+        m_device.getDepthFormat(),
         VK_IMAGE_TILING_OPTIMAL,
         VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
         true,
         VK_IMAGE_ASPECT_DEPTH_BIT,
-        m_device->getDepthChannelCount()
+        m_device.getDepthChannelCount()
     };
 
     // TODO: those internal ids should be removed or stored somewhere
-    m_depthTexture.emplace(10000u, m_context, m_device, imageProperties);
+    m_depthTexture.emplace(10000u, m_backendAccessor, imageProperties);
 }
 
 void VKSwapchain::create() {
@@ -246,9 +249,7 @@ void VKSwapchain::create() {
 VKSwapchain::~VKSwapchain() { destroy(); }
 
 void VKSwapchain::destroy() {
-    vkDestroySwapchainKHR(
-      m_device->getLogicalDevice(), m_handle, m_context->getAllocator()
-    );
+    vkDestroySwapchainKHR(m_device.getHandle(), m_handle, m_context.getAllocator());
     m_textures.clear();
     m_depthTexture.clear();
     LOG_TRACE("VKSwapchain destroyed");
@@ -260,7 +261,7 @@ std::optional<uint32_t> VKSwapchain::acquireNextImageIndex(
     uint32_t index;
 
     VkResult result = vkAcquireNextImageKHR(
-      m_device->getLogicalDevice(), m_handle, timeout, imageSemaphore, fence, &index
+      m_device.getHandle(), m_handle, timeout, imageSemaphore, fence, &index
     );
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR) {

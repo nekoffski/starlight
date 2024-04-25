@@ -6,11 +6,12 @@
 namespace sl::vk {
 
 VKRenderTarget::VKRenderTarget(
-  u32 id, VKContext& context, VKDevice& device, VKRenderPass* renderPass,
+  u32 id, VKBackendAccessor& backendAccessor, VKRenderPass* renderPass,
   const Properties& props
 ) :
     RenderTarget(id, props),
-    m_context(context), m_device(device), m_renderPass(renderPass) {
+    m_backendAccessor(backendAccessor), m_context(*backendAccessor.getContext()),
+    m_device(*backendAccessor.getLogicalDevice()), m_renderPass(renderPass) {
     VKRenderTarget::regenerate(props);
 }
 
@@ -31,8 +32,8 @@ void VKRenderTarget::regenerate(const Properties& properties) {
     }
 
     m_framebuffer.emplace(
-      &m_context, &m_device, m_renderPass->getHandle(), m_props.width,
-      m_props.height, attachmentViews
+      m_backendAccessor, m_renderPass->getHandle(), m_props.width, m_props.height,
+      attachmentViews
     );
 }
 

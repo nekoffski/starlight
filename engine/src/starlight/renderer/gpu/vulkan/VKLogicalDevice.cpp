@@ -33,6 +33,18 @@ VkCommandPool VKLogicalDevice::getGraphicsCommandPool() {
     return m_graphicsCommandPool;
 }
 
+VKPhysicalDevice::SwapchainSupportInfo VKLogicalDevice::getSwapchainSupport() const {
+    return m_physicalDevice.getDeviceInfo().swapchainSupport;
+}
+
+VKPhysicalDevice::DeviceProperties VKLogicalDevice::getDeviceProperties() const {
+    return m_physicalDevice.getDeviceProperties();
+}
+
+bool VKLogicalDevice::supportsDeviceLocalHostVisibleMemory() const {
+    return m_physicalDevice.getDeviceInfo().supportsDeviceLocalHostVisibleMemory;
+}
+
 VkDevice VKLogicalDevice::getHandle() { return m_handle; }
 
 std::optional<int32_t> VKLogicalDevice::findMemoryIndex(
@@ -86,6 +98,8 @@ void VKLogicalDevice::createLogicalDeviceInstance() {
     queueCreateInfos.reserve(queueCount);
 
     for (const auto index : indices) {
+        LOG_TRACE("Adding queue family index: {}", index);
+
         queueProrities.push_back(1.0f);
         VkDeviceQueueCreateInfo info;
         info.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;

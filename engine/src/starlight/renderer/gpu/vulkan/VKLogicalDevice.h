@@ -21,9 +21,11 @@ public:
     u8 getDepthChannelCount() const;
     VkCommandPool getGraphicsCommandPool();
 
-    std::optional<int32_t> VKLogicalDevice::findMemoryIndex(
-      u32 typeFilter, u32 propertyFlags
-    ) const;
+    VKPhysicalDevice::SwapchainSupportInfo getSwapchainSupport() const;
+    VKPhysicalDevice::DeviceProperties getDeviceProperties() const;
+    bool supportsDeviceLocalHostVisibleMemory() const;
+
+    std::optional<int32_t> findMemoryIndex(u32 typeFilter, u32 propertyFlags) const;
 
     const VKPhysicalDevice::QueueIndices& getQueueIndices() const;
 

@@ -92,13 +92,14 @@ VKImage::Properties getImageProperties(
 }  // namespace
 
 VKTexture::VKTexture(
-  u32 id, const VKContext* context, VKDevice* device, const Properties& props,
+  u32 id, VKBackendAccessor& backendAccessor, const Properties& props,
   const std::span<u8> pixels
 ) :
     Texture(props, id),
-    m_context(context), m_device(device),
+    m_context(*backendAccessor.getContext()),
+    m_device(*backendAccessor.getLogicalDevice()),
     m_image(
-      m_device, m_context,
+      backendAccessor,
       getImageProperties(
         props.width, props.height, props.type, channelsToFormat(props.channels)
       ),
@@ -110,13 +111,14 @@ VKTexture::VKTexture(
 }
 
 VKTexture::VKTexture(
-  u32 id, const VKContext* context, VKDevice* device, const Properties& props,
+  u32 id, VKBackendAccessor& backendAccessor, const Properties& props,
   VkImage handle, VkFormat format
 ) :
     Texture(props, id),
-    m_context(context), m_device(device),
+    m_context(*backendAccessor.getContext()),
+    m_device(*backendAccessor.getLogicalDevice()),
     m_image(
-      device, context,
+      backendAccessor,
       getImageProperties(props.width, props.height, props.type, format), handle
     ),
     m_generation(1u) {
@@ -125,8 +127,7 @@ VKTexture::VKTexture(
 }
 
 VKTexture::VKTexture(
-  u32 id, const VKContext* context, VKDevice* device,
-  const VKImage::Properties& props
+  u32 id, VKBackendAccessor& backendAccessor, const VKImage::Properties& props
 ) :
     Texture(
       Properties(
@@ -134,15 +135,16 @@ VKTexture::VKTexture(
       ),
       id
     ),
-    m_context(context), m_device(device), m_image(m_device, m_context, props) {
+    m_context(*backendAccessor.getContext()),
+    m_device(*backendAccessor.getLogicalDevice()), m_image(backendAccessor, props) {
     createSampler(m_props);
 }
 
 VKTexture::~VKTexture() {
-    const auto logicalDevice = m_device->getLogicalDevice();
+    const auto logicalDeviceHandle = m_device.getHandle();
 
-    vkDeviceWaitIdle(logicalDevice);
-    vkDestroySampler(logicalDevice, m_sampler, m_context->getAllocator());
+    vkDeviceWaitIdle(logicalDeviceHandle);
+    vkDestroySampler(logicalDeviceHandle, m_sampler, m_context.getAllocator());
     LOG_TRACE("Texture destroyed: {}", m_props.name);
 }
 
@@ -178,8 +180,7 @@ void VKTexture::write(u32 offset, std::span<u8> pixels) {
 void VKTexture::createSampler(const Texture::Properties& props) {
     const auto samplerInfo = createSamplerCreateInfo(props);
     VK_ASSERT(vkCreateSampler(
-      m_device->getLogicalDevice(), &samplerInfo, m_context->getAllocator(),
-      &m_sampler
+      m_device.getHandle(), &samplerInfo, m_context.getAllocator(), &m_sampler
     ));
 }
 

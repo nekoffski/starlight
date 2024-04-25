@@ -234,6 +234,7 @@ std::optional<VKPhysicalDevice::DeviceInfo>
         return {};
     }
     logQueueIndices(*queueIndices);
+    result.queueIndices = *queueIndices;
 
     if (const auto swapchainSupport = queryDeviceSwapchainSupport(device);
         swapchainSupport.formats.empty() || swapchainSupport.presentModes.empty()) {

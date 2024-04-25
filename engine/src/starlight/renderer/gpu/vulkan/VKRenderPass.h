@@ -4,6 +4,9 @@
 
 #include "starlight/renderer/gpu/RenderPass.h"
 
+#include "VKPhysicalDevice.h"
+#include "VKContext.h"
+#include "VKBackendAccessor.h"
 #include "Vulkan.h"
 #include "fwd.h"
 
@@ -23,7 +26,7 @@ public:
     };
 
     explicit VKRenderPass(
-      u32 id, VKContext* context, VKDevice* device, const VKSwapchain& swapchain,
+      u32 id, VKBackendAccessor& backendAccessor, const VKSwapchain& swapchain,
       const Properties& properties
     );
 
@@ -44,8 +47,8 @@ private:
       const std::vector<VkClearValue>& clearValues, VkFramebuffer framebuffer
     ) const;
 
-    const VKContext* m_context;
-    const VKDevice* m_device;
+    VKContext& m_context;
+    VKLogicalDevice& m_device;
 
     VkRenderPass m_handle;
     float m_depth      = 1.0f;

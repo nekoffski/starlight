@@ -8,7 +8,9 @@
 
 #include "Vulkan.h"
 
-#include "VKDevice.h"
+#include "VKPhysicalDevice.h"
+#include "VKContext.h"
+#include "VKBackendAccessor.h"
 #include "VKContext.h"
 #include "VKCommandBuffer.h"
 #include "VKRenderPass.h"
@@ -37,11 +39,10 @@ public:
     };
 
     explicit VKPipeline(
-      const VKContext* context, const VKDevice* device, VKRenderPass& renderPass,
-      Properties props
+      VKBackendAccessor& backendAccessor, VKRenderPass& renderPass, Properties props
     ) :
-        m_context(context),
-        m_device(device) {
+        m_context(*backendAccessor.getContext()),
+        m_device(*backendAccessor.getLogicalDevice()) {
         VkPipelineViewportStateCreateInfo viewportState = {
             VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO
         };
@@ -234,8 +235,8 @@ public:
         for (int i = 0; i < pipeline_layout_create_info.setLayoutCount; ++i) {
         }
 
-        auto logicalDevice = device->getLogicalDevice();
-        auto allocator     = context->getAllocator();
+        auto logicalDevice = m_device.getHandle();
+        auto allocator     = m_context.getAllocator();
 
         // Create the pipeline layout.
         VK_ASSERT(vkCreatePipelineLayout(
@@ -274,12 +275,13 @@ public:
     }
 
     ~VKPipeline() {
-        auto logicalDevice = m_device->getLogicalDevice();
-        auto allocator     = m_context->getAllocator();
+        auto logicalDeviceHandle = m_device.getHandle();
+        auto allocator           = m_context.getAllocator();
 
-        if (m_handle) vkDestroyPipeline(logicalDevice, m_handle, allocator);
+        if (m_handle) vkDestroyPipeline(logicalDeviceHandle, m_handle, allocator);
 
-        if (m_layout) vkDestroyPipelineLayout(logicalDevice, m_layout, allocator);
+        if (m_layout)
+            vkDestroyPipelineLayout(logicalDeviceHandle, m_layout, allocator);
     }
 
     void bind(VKCommandBuffer& commandBuffer, VkPipelineBindPoint bindPoint) {
@@ -289,8 +291,8 @@ public:
     VkPipelineLayout getLayout() const { return m_layout; }
 
 private:
-    const VKContext* m_context;
-    const VKDevice* m_device;
+    VKContext& m_context;
+    VKLogicalDevice& m_device;
 
     VkPipeline m_handle = VK_NULL_HANDLE;
     VkPipelineLayout m_layout;

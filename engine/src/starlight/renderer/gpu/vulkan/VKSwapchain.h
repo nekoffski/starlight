@@ -7,6 +7,9 @@
 
 #include "starlight/core/math/Size.hpp"
 
+#include "VKPhysicalDevice.h"
+#include "VKContext.h"
+#include "VKBackendAccessor.h"
 #include "Vulkan.h"
 #include "VKTexture.h"
 
@@ -17,7 +20,7 @@ namespace sl::vk {
 class VKSwapchain {
 public:
     explicit VKSwapchain(
-      VKDevice* device, VKContext* context, u32 viewportWidth, u32 viewportHeight
+      VKBackendAccessor& backendAccessor, u32 viewportWidth, u32 viewportHeight
     );
     ~VKSwapchain();
 
@@ -47,8 +50,9 @@ private:
     void createSwapchain();
     void createImages();
 
-    VKDevice* m_device;
-    VKContext* m_context;
+    VKBackendAccessor& m_backendAccessor;
+    VKContext& m_context;
+    VKLogicalDevice& m_device;
 
     u32 m_viewportWidth;
     u32 m_viewportHeight;
