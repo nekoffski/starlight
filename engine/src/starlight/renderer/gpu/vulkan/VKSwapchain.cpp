@@ -3,7 +3,6 @@
 #include <kc/core/Log.h>
 #include <kc/core/Utils.hpp>
 
-#include "VKDevice.h"
 #include "VKImage.h"
 #include "VKFramebuffer.h"
 

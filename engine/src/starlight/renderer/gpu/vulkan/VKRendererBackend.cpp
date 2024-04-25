@@ -3,7 +3,6 @@
 #include "VKBuffer.h"
 #include "VKCommandBuffer.h"
 #include "VKContext.h"
-#include "VKDevice.h"
 #include "VKFence.h"
 #include "VKFramebuffer.h"
 #include "VKImage.h"

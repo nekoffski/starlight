@@ -1,6 +1,5 @@
 #include "VKFence.h"
 
-#include "VKDevice.h"
 #include "VKContext.h"
 
 #include "starlight/core/window/Window.h"

@@ -12,7 +12,6 @@
 #include "VKImage.h"
 #include "VKBuffer.h"
 #include "VKContext.h"
-#include "VKDevice.h"
 #include "VKCommandBuffer.h"
 
 namespace sl::vk {

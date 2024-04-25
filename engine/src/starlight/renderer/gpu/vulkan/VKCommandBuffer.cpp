@@ -1,6 +1,5 @@
 #include "VKCommandBuffer.h"
 
-#include "VKDevice.h"
 #include "VKContext.h"
 
 namespace sl::vk {

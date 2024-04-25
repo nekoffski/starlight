@@ -1,6 +1,5 @@
 #include "VKRenderPass.h"
 
-#include "VKDevice.h"
 #include "VKCommandBuffer.h"
 #include "VKSwapchain.h"
 #include "VKContext.h"

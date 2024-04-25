@@ -2,7 +2,6 @@
 
 #include <kc/core/Log.h>
 
-#include "VKDevice.h"
 #include "VKContext.h"
 #include "VKCommandBuffer.h"
 

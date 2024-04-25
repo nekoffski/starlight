@@ -8,7 +8,6 @@
 #include "starlight/core/utils/Log.h"
 
 #include "Vulkan.h"
-#include "VKDevice.h"
 #include "VKContext.h"
 #include "VKRenderPass.h"
 

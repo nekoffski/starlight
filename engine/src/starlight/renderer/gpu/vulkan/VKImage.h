@@ -13,7 +13,6 @@
 #include "VKBackendAccessor.h"
 #include "VKBuffer.h"
 #include "VKCommandBuffer.h"
-#include "VKDevice.h"
 
 namespace sl::vk {
 

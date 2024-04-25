@@ -6,8 +6,6 @@
 #include "starlight/core/Config.h"
 #include "starlight/core/utils/RAIIWrapper.hpp"
 
-#include "VKDevice.h"
-
 namespace sl::vk {
 
 struct VKContext {
