@@ -2,21 +2,25 @@
 
 #include "Vulkan.h"
 
+#include "VKPhysicalDevice.h"
+#include "VKContext.h"
+#include "VKBackendAccessor.h"
+
 #include "fwd.h"
 
 namespace sl::vk {
 
 class VKSemaphore {
 public:
-    explicit VKSemaphore(const VKContext* context, const VKDevice* device);
+    explicit VKSemaphore(VKBackendAccessor& backendAccssor);
     ~VKSemaphore();
 
     VkSemaphore getHandle() const;
     VkSemaphore* getHandlePointer();
 
 private:
-    const VKContext* m_context;
-    const VKDevice* m_device;
+    VKContext& m_context;
+    VKLogicalDevice& m_device;
 
     VkSemaphore m_handle;
 };

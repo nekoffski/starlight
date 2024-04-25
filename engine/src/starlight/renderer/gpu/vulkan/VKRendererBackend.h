@@ -32,7 +32,7 @@
 
 namespace sl::vk {
 
-class VKRendererBackend : public RendererBackend, public VKBackendAccesor {
+class VKRendererBackend : public RendererBackend, public VKBackendAccessor {
     friend class VKRendererBackendProxy;
 
 public:
@@ -47,6 +47,7 @@ public:
     // backend accessor
     VKContext* getContext() override;
     VKLogicalDevice* getLogicalDevice() override;
+    VKPhysicalDevice* getPhysicalDevice() override;
 
     // renderer backend
 

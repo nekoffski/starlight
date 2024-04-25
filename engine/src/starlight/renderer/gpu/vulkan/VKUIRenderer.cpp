@@ -15,11 +15,11 @@
 namespace sl::vk {
 
 VKUIRenderer::VKUIRenderer(
-  VKContext& context, VKDevice& device, RendererBackendProxy& backendProxy,
+  VKBackendAccessor& backendAccessor, RendererBackendProxy& backendProxy,
   Window& window, RenderPass* renderPass
 ) :
-    m_context(context),
-    m_device(device), m_backendProxy(backendProxy) {
+    m_context(*backendAccessor.getContext()),
+    m_device(*backendAccessor.getLogicalDevice()), m_backendProxy(backendProxy) {
     ASSERT(not s_hasInstance, "Only single instance of UI renderer is allowed");
     s_hasInstance = true;
 
@@ -44,7 +44,7 @@ VKUIRenderer::VKUIRenderer(
     poolInfo.pPoolSizes    = poolSizes;
 
     VK_ASSERT(vkCreateDescriptorPool(
-      m_device.getLogicalDevice(), &poolInfo, m_context.getAllocator(), &m_uiPool
+      m_device.getHandle(), &poolInfo, m_context.getAllocator(), &m_uiPool
     ));
 
     IMGUI_CHECKVERSION();
@@ -63,14 +63,14 @@ VKUIRenderer::VKUIRenderer(
 
     ImGui_ImplVulkan_InitInfo initInfo = {};
     initInfo.Instance                  = m_context.getInstance();
-    initInfo.PhysicalDevice            = m_device.getGPU();
-    initInfo.Device                    = m_device.getLogicalDevice();
-    initInfo.Queue                     = graphicsQueue;
-    initInfo.DescriptorPool            = m_uiPool;
-    initInfo.MinImageCount             = 3;
-    initInfo.ImageCount                = 3;
-    initInfo.MSAASamples               = VK_SAMPLE_COUNT_1_BIT;
-    initInfo.RenderPass                = renderPassHandle;
+    initInfo.PhysicalDevice = backendAccessor.getPhysicalDevice()->getHandle();
+    initInfo.Device         = m_device.getHandle();
+    initInfo.Queue          = graphicsQueue;
+    initInfo.DescriptorPool = m_uiPool;
+    initInfo.MinImageCount  = 3;
+    initInfo.ImageCount     = 3;
+    initInfo.MSAASamples    = VK_SAMPLE_COUNT_1_BIT;
+    initInfo.RenderPass     = renderPassHandle;
 
     ImGui_ImplVulkan_Init(&initInfo);
 
@@ -86,7 +86,7 @@ VKUIRenderer::~VKUIRenderer() {
 
     if (m_uiPool) {
         vkDestroyDescriptorPool(
-          m_device.getLogicalDevice(), m_uiPool, m_context.getAllocator()
+          m_device.getHandle(), m_uiPool, m_context.getAllocator()
         );
     }
 

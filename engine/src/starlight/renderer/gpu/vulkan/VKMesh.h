@@ -5,7 +5,6 @@
 #include "VKPhysicalDevice.h"
 #include "VKContext.h"
 #include "VKBackendAccessor.h"
-#include "VKDevice.h"
 #include "VKBuffer.h"
 #include "starlight/renderer/gpu/Mesh.h"
 

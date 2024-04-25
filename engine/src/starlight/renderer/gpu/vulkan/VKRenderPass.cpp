@@ -139,36 +139,34 @@ struct RenderPassCreateInfo {
 };
 
 VKRenderPass::VKRenderPass(
-  u32 id, VKContext* context, VKDevice* device, const VKSwapchain& swapchain,
+  u32 id, VKBackendAccessor& backendAccessor, const VKSwapchain& swapchain,
   const Properties& properties
 ) :
     RenderPass(id, properties),
-    m_context(context), m_device(device) {
+    m_context(*backendAccessor.getContext()),
+    m_device(*backendAccessor.getLogicalDevice()) {
     LOG_TRACE("Creating VKRenderPass instance");
 
     RenderPassCreateInfo createInfo(
-      m_device->getDepthFormat(), swapchain.getSurfaceFormat(), properties
+      m_device.getDepthFormat(), swapchain.getSurfaceFormat(), properties
     );
 
     VK_ASSERT(vkCreateRenderPass(
-      m_device->getLogicalDevice(), &createInfo.handle, m_context->getAllocator(),
-      &m_handle
+      m_device.getHandle(), &createInfo.handle, m_context.getAllocator(), &m_handle
     ));
 
     if (properties.targets.size() == 0)
         LOG_WARN("Render pass with no render targets created");
 
     for (auto& renderTarget : properties.targets) {
-        m_renderTargets.emplace_back(
-          id * 1000, *context, *device, this, renderTarget
-        );
+        m_renderTargets.emplace_back(id * 1000, backendAccessor, this, renderTarget);
     }
 }
 
 VKRenderPass::~VKRenderPass() {
     if (m_handle)
         vkDestroyRenderPass(
-          m_device->getLogicalDevice(), m_handle, m_context->getAllocator()
+          m_device.getHandle(), m_handle, m_context.getAllocator()
         );
 }
 

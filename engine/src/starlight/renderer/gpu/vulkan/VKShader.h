@@ -8,7 +8,9 @@
 #include "Vulkan.h"
 #include "VKRenderPass.h"
 #include "VKBuffer.h"
-#include "VKDevice.h"
+#include "VKPhysicalDevice.h"
+#include "VKContext.h"
+#include "VKBackendAccessor.h"
 #include "VKPipeline.h"
 #include "VKRendererBackendProxy.h"
 
@@ -34,8 +36,8 @@ public:
     ~VKShaderStage();
 
 private:
-    VKDevice* m_device;
-    const VKContext* m_context;
+    VKContext& m_context;
+    VKLogicalDevice& m_device;
 
     VkShaderModuleCreateInfo m_moduleCreateInfo;
     VkPipelineShaderStageCreateInfo m_stageCreateInfo;
@@ -114,8 +116,9 @@ private:
       const Shader::Uniform::Properties& props, Texture* defaultTexture
     );
 
-    VKDevice* m_device;
-    const VKContext* m_context;
+    VKBackendAccessor& m_backendAccesor;
+    VKContext& m_context;
+    VKLogicalDevice& m_device;
     VKRendererBackendProxy& m_backendProxy;
 
     void* m_mappedUniformBufferBlock;

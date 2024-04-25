@@ -1,5 +1,7 @@
 #include "ResourcesPanel.h"
 
+#include <thread>
+
 #include "starlight/resource/All.h"
 
 template <typename Resource, typename Manager>

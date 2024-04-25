@@ -57,15 +57,15 @@ VkShaderStageFlagBits getStageFlagBits(Shader::Stage::Type type) {
 VKShaderStage::VKShaderStage(
   VKBackendAccessor& backendAccesor, const Properties& props
 ) :
-    m_device(device),
-    m_context(context), m_handle(VK_NULL_HANDLE) {
+
+    m_context(*backendAccesor.getContext()),
+    m_device(*backendAccesor.getLogicalDevice()), m_handle(VK_NULL_HANDLE) {
     m_moduleCreateInfo          = { VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO };
     m_moduleCreateInfo.codeSize = props.source.size();
     m_moduleCreateInfo.pCode    = (uint32_t*)(props.source.data());
 
     VK_ASSERT(vkCreateShaderModule(
-      device->getLogicalDevice(), &m_moduleCreateInfo, context->getAllocator(),
-      &m_handle
+      m_device.getHandle(), &m_moduleCreateInfo, m_context.getAllocator(), &m_handle
     ));
 
     LOG_DEBUG("Shader module created");
@@ -79,7 +79,7 @@ VKShaderStage::VKShaderStage(
 VKShaderStage::~VKShaderStage() {
     if (m_handle)
         vkDestroyShaderModule(
-          m_device->getLogicalDevice(), m_handle, m_context->getAllocator()
+          m_device.getHandle(), m_handle, m_context.getAllocator()
         );
 }
 
@@ -88,7 +88,8 @@ VKShader::VKShader(
   const Shader::Properties& props
 ) :
     Shader(props, id),
-    m_device(device), m_context(context), m_backendProxy(backendProxy),
+    m_backendAccesor(backendAccesor), m_context(*backendAccesor.getContext()),
+    m_device(*backendAccesor.getLogicalDevice()), m_backendProxy(backendProxy),
     m_requiredUboAlignment(0), m_globalUboSize(0), m_globalUboStride(0),
     m_globalUboOffset(0), m_uboSize(0), m_uboStride(0), m_pushConstantSize(0),
     m_pushConstantStride(128), m_instanceTextureCount(0), m_boundInstanceId(0),
@@ -217,8 +218,8 @@ VKShader::VKShader(
 }
 
 VKShader::~VKShader() {
-    const auto allocator     = m_context->getAllocator();
-    const auto logicalDevice = m_device->getLogicalDevice();
+    const auto allocator     = m_context.getAllocator();
+    const auto logicalDevice = m_device.getHandle();
 
     for (int i = 0; i < m_descriptorSetCount; ++i) {
         if (m_descriptorSetLayouts[i]) {
@@ -396,8 +397,7 @@ void VKShader::applyGlobals() {
     ASSERT(globalSetBindingCount <= 1, "Global image samplers not supported yet");
 
     vkUpdateDescriptorSets(
-      m_device->getLogicalDevice(), globalSetBindingCount, descriptorWrites.data(),
-      0, 0
+      m_device.getHandle(), globalSetBindingCount, descriptorWrites.data(), 0, 0
     );
 
     auto globalDescriptor = &m_globalDescriptorSets[imageIndex];
@@ -485,8 +485,7 @@ void VKShader::applyInstance() {
 
     if (descriptorCount > 0) {
         vkUpdateDescriptorSets(
-          m_device->getLogicalDevice(), descriptorCount, descriptorWrites.data(), 0,
-          0
+          m_device.getHandle(), descriptorCount, descriptorWrites.data(), 0, 0
         );
     }
     vkCmdBindDescriptorSets(
@@ -558,7 +557,7 @@ u32 VKShader::acquireInstanceResources(const std::vector<Texture*>& textures) {
     allocateInfo.pSetLayouts        = layouts.data();
 
     VK_ASSERT(vkAllocateDescriptorSets(
-      m_device->getLogicalDevice(), &allocateInfo,
+      m_device.getHandle(), &allocateInfo,
       instanceState.descriptorSetState.descriptorSets.data()
     ));
 
@@ -566,7 +565,7 @@ u32 VKShader::acquireInstanceResources(const std::vector<Texture*>& textures) {
 }
 
 void VKShader::releaseInstanceResources(u32 instanceId) {
-    const auto logicalDevice = m_device->getLogicalDevice();
+    const auto logicalDevice = m_device.getHandle();
     vkDeviceWaitIdle(logicalDevice);
 
     auto& instanceState = m_instanceStates[instanceId];
@@ -616,7 +615,7 @@ void VKShader::createModules(std::span<const Stage> stages) {
     m_stages.reserve(stages.size());
     for (const auto& stageConfig : stages) {
         m_stages.emplace_back(
-          m_device, m_context,
+          m_backendAccesor,
           VKShaderStage::Properties{ stageConfig.source, stageConfig.type }
         );
     }
@@ -632,8 +631,7 @@ void VKShader::createDescriptorPool() {
     poolInfo.flags         = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
     VK_ASSERT(vkCreateDescriptorPool(
-      m_device->getLogicalDevice(), &poolInfo, m_context->getAllocator(),
-      &m_descriptorPool
+      m_device.getHandle(), &poolInfo, m_context.getAllocator(), &m_descriptorPool
     ));
 }
 
@@ -650,7 +648,7 @@ void VKShader::createDescriptorSetLayouts() {
         info.pBindings    = m_descriptorSets[i].bindings.data();
 
         VK_ASSERT(vkCreateDescriptorSetLayout(
-          m_device->getLogicalDevice(), &info, m_context->getAllocator(),
+          m_device.getHandle(), &info, m_context.getAllocator(),
           &m_descriptorSetLayouts[i]
         ));
     }
@@ -703,20 +701,20 @@ void VKShader::createPipeline(RenderPass* renderPass) {
 
     LOG_INFO("Creating shader's pipeline: {}", static_cast<void*>(this));
     m_pipeline.emplace(
-      m_context, m_device, *static_cast<VKRenderPass*>(renderPass), pipelineProps
+      m_backendAccesor, *static_cast<VKRenderPass*>(renderPass), pipelineProps
     );
 }
 
 void VKShader::createUniformBuffer() {
     m_requiredUboAlignment =
-      m_device->getProperties().limits.minUniformBufferOffsetAlignment;
+      m_device.getDeviceProperties().core.limits.minUniformBufferOffsetAlignment;
     m_globalUboStride = getAlignedValue(m_globalUboSize, m_requiredUboAlignment);
     m_uboStride       = getAlignedValue(m_uboSize, m_requiredUboAlignment);
 
     LOG_INFO("Minimal uniform buffer offset alignment={}", m_requiredUboAlignment);
 
     const u32 deviceLocalBits =
-      m_device->supportsDeviceLocalHostVisible()
+      m_device.supportsDeviceLocalHostVisibleMemory()
         ? VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
         : 0;
 
@@ -737,7 +735,7 @@ void VKShader::createUniformBuffer() {
       "Creating uniform buffer, globalUboStride={}, uboStride={}, totalSize={}",
       m_globalUboStride, m_uboStride, totalBufferSize
     );
-    m_uniformBuffer.emplace(m_context, m_device, bufferProps);
+    m_uniformBuffer.emplace(m_backendAccesor, bufferProps);
 
     LOG_DEBUG("Allocating {}b of memory", m_globalUboStride);
     m_globalUboOffset          = m_uniformBuffer->allocate(m_globalUboStride);
@@ -756,7 +754,7 @@ void VKShader::createUniformBuffer() {
     allocateInfo.pSetLayouts        = globalLayouts.data();
 
     VK_ASSERT(vkAllocateDescriptorSets(
-      m_device->getLogicalDevice(), &allocateInfo, m_globalDescriptorSets.data()
+      m_device.getHandle(), &allocateInfo, m_globalDescriptorSets.data()
     ));
 }
 

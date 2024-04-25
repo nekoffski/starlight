@@ -3,7 +3,10 @@
 #include "starlight/renderer/gpu/RenderTarget.h"
 #include "starlight/core/memory/Memory.hpp"
 
-#include "VKDevice.h"
+#include "VKPhysicalDevice.h"
+#include "VKContext.h"
+#include "VKBackendAccessor.h"
+
 #include "VKContext.h"
 #include "VKFramebuffer.h"
 
@@ -12,7 +15,7 @@ namespace sl::vk {
 class VKRenderTarget : public RenderTarget {
 public:
     explicit VKRenderTarget(
-      u32 id, VKContext& context, VKDevice& device, VKRenderPass* renderPass,
+      u32 id, VKBackendAccessor& backendAccessor, VKRenderPass* renderPass,
       const Properties& props
     );
 
@@ -21,8 +24,10 @@ public:
     void regenerate(const Properties& properties) override;
 
 private:
+    VKBackendAccessor& m_backendAccessor;
     VKContext& m_context;
-    VKDevice& m_device;
+    VKLogicalDevice& m_device;
+
     VKRenderPass* m_renderPass;
 
     LocalPtr<VKFramebuffer> m_framebuffer;
