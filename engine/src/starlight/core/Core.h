@@ -12,6 +12,10 @@ namespace sl {
 
 DEFINE_ERROR(Error);
 
+#define NO_COPY(Class)                 \
+    Class(Class&)            = delete; \
+    Class& operator=(Class&) = delete;
+
 using u64 = uint64_t;
 using u32 = uint32_t;
 using u16 = uint16_t;

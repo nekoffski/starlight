@@ -1,6 +1,6 @@
 #include "SceneDeserializer.h"
 
-#include "starlight/core/utils/Log.h"
+#include "starlight/core/Log.h"
 
 #include "components/All.h"
 

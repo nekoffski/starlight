@@ -1,6 +1,6 @@
 #include "MaterialConfig.h"
 
-#include "starlight/core/utils/Json.hpp"
+#include "starlight/core/Json.hpp"
 
 namespace sl {
 

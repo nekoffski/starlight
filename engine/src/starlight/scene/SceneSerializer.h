@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "starlight/core/utils/FileSystem.h"
-#include "starlight/core/utils/Json.hpp"
+#include "starlight/core/FileSystem.h"
+#include "starlight/core/Json.hpp"
 
 #include "Scene.h"
 

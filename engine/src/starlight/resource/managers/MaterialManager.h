@@ -3,8 +3,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "starlight/core/utils/ResourcePool.hpp"
-#include "starlight/core/utils/FileSystem.h"
+#include "starlight/core/ResourcePool.hpp"
+#include "starlight/core/FileSystem.h"
 #include "starlight/core/memory/Memory.hpp"
 #include "starlight/renderer/Material.h"
 #include "starlight/renderer/gpu/ResourcePools.h"

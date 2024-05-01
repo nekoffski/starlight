@@ -6,7 +6,7 @@
 #include "window/Vendor.h"
 
 #include "event/Event.h"
-#include "utils/TimeManager.h"
+#include "TimeManager.h"
 #include "Config.h"
 #include "Core.h"
 
@@ -16,6 +16,8 @@ class Context {
     struct LoggerInitializator {
         explicit LoggerInitializator(const std::string& applicationName);
     };
+
+    NO_COPY(Context);
 
 public:
     explicit Context(const std::string& applicationName = "starlight");
@@ -27,8 +29,8 @@ public:
         endFrame();
     }
 
-    Window* getWindow();
-    Config* getConfig();
+    Window& getWindow();
+    Config& getConfig();
 
 private:
     float beginFrame();

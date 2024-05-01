@@ -8,10 +8,10 @@
 
 namespace sl {
 
-RendererFrontend::RendererFrontend(Window& window, const Config& config) :
-    m_backend(window, config), m_renderMode(RenderMode::standard),
-    m_framesSinceResize(0u), m_resizing(false) {
-    const auto [w, h] = window.getSize();
+RendererFrontend::RendererFrontend(Context& context) :
+    m_backend(context.getWindow(), context.getConfig()),
+    m_renderMode(RenderMode::standard), m_framesSinceResize(0u), m_resizing(false) {
+    const auto [w, h] = context.getWindow().getSize();
     m_viewportWidth   = w;
     m_viewportHeight  = h;
 }

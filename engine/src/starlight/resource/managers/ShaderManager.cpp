@@ -1,6 +1,6 @@
 #include "ShaderManager.h"
 
-#include "starlight/core/utils/Log.h"
+#include "starlight/core/Log.h"
 
 #include "starlight/resource/configs/ShaderConfig.h"
 

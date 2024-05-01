@@ -4,7 +4,7 @@
 
 #include "starlight/core/fwd.h"
 #include "starlight/core/Config.h"
-#include "starlight/core/utils/RAIIWrapper.hpp"
+#include "starlight/core/RAIIWrapper.hpp"
 
 namespace sl::vk {
 

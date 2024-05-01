@@ -4,7 +4,7 @@
 #include <string>
 
 #include "starlight/core/math/Glm.h"
-#include "starlight/core/utils/FileSystem.h"
+#include "starlight/core/FileSystem.h"
 
 #include "starlight/renderer/Material.h"
 

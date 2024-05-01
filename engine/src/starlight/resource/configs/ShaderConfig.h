@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "starlight/core/Core.h"
-#include "starlight/core/utils/FileSystem.h"
+#include "starlight/core/FileSystem.h"
 #include "starlight/renderer/gpu/Shader.h"
 
 namespace sl {

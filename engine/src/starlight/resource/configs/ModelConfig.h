@@ -5,7 +5,7 @@
 #include <vector>
 #include <unordered_map>
 
-#include "starlight/core/utils/FileSystem.h"
+#include "starlight/core/FileSystem.h"
 #include "MeshConfig.h"
 #include "MaterialConfig.h"
 

@@ -4,7 +4,7 @@
 #include <cstdint>
 
 #include <starlight/core/Core.h>
-#include <starlight/core/utils/Log.h>
+#include <starlight/core/Log.h>
 
 namespace sl {
 

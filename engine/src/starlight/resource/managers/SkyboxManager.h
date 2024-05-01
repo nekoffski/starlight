@@ -3,7 +3,7 @@
 #pragma once
 
 #include "starlight/core/Core.h"
-#include "starlight/core/utils/ResourcePool.hpp"
+#include "starlight/core/ResourcePool.hpp"
 
 #include "starlight/renderer/Skybox.h"
 

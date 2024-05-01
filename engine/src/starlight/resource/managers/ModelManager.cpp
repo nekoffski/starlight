@@ -1,6 +1,6 @@
 #include "ModelManager.h"
 
-#include "starlight/core/utils/Log.h"
+#include "starlight/core/Log.h"
 #include "starlight/resource/configs/ModelConfig.h"
 
 namespace sl {

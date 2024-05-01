@@ -1,6 +1,6 @@
 #include "UIRenderer.h"
 
-#include "starlight/core/utils/Log.h"
+#include "starlight/core/Log.h"
 
 #include <imgui.h>
 

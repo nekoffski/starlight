@@ -4,6 +4,8 @@
 #include <functional>
 #include <span>
 
+#include "starlight/core/Context.h"
+
 #include "RenderPacket.h"
 #include "RenderMode.h"
 #include "FrameStatistics.h"
@@ -17,8 +19,10 @@
 namespace sl {
 
 class RendererFrontend {
+    NO_COPY(RendererFrontend);
+
 public:
-    explicit RendererFrontend(Window& window, const Config& config);
+    explicit RendererFrontend(Context& context);
 
     void init(std::span<RenderView*> renderViews);
 
@@ -33,7 +37,7 @@ public:
     void onViewportResize(u32 w, u32 h);
 
 private:
-    vk::VKRendererBackend m_backend;
+    RendererBackendVendor m_backend;
 
     std::vector<RenderView*> m_renderViews;
 

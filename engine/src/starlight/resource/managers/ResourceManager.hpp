@@ -4,7 +4,7 @@
 
 #include <kc/core/Singleton.hpp>
 
-#include "starlight/core/utils/Log.h"
+#include "starlight/core/Log.h"
 
 namespace sl {
 

@@ -1,6 +1,6 @@
 #include "Console.h"
 
-#include "starlight/core/utils/TimeManager.h"
+#include "starlight/core/TimeManager.h"
 #include "starlight/ui/UI.h"
 
 Console::Console() : m_logger(m_buffer) {}

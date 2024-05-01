@@ -28,7 +28,6 @@ public:
     void invalidate() { m_value = invalidId; }
 
     bool hasValue() const { return m_value != invalidId; }
-    // operator T() const { return m_value; }
 
 private:
     T m_value;

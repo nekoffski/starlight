@@ -12,7 +12,7 @@
 #include "starlight/core/math/Glm.h"
 #include "starlight/core/Id.hpp"
 #include "starlight/core/Core.h"
-#include "starlight/core/utils/Log.h"
+#include "starlight/core/Log.h"
 #include "starlight/renderer/CullMode.h"
 #include "starlight/renderer/PolygonMode.h"
 #include "fwd.h"

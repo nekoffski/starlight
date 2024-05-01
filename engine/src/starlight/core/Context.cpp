@@ -1,6 +1,6 @@
 #include "Context.h"
 
-#include "utils/Log.h"
+#include "Log.h"
 
 namespace sl {
 
@@ -11,8 +11,6 @@ Context::LoggerInitializator::LoggerInitializator(const std::string& application
 
 Context::Context(const std::string& applicationName) :
     m_loggerInitializator(applicationName), m_windowManager(&m_window) {}
-
-Window* Context::getWindow() { return &m_window; }
 
 float Context::beginFrame() {
     const auto deltaTime = m_timeManager.getDeltaTime();
@@ -31,6 +29,7 @@ void Context::endFrame() {
     m_windowManager.update();
 }
 
-Config* Context::getConfig() { return &m_config; }
+Config& Context::getConfig() { return m_config; }
+Window& Context::getWindow() { return m_window; }
 
 }  // namespace sl

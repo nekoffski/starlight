@@ -7,7 +7,7 @@
 #include "starlight/core/Core.h"
 #include "starlight/core/memory/Memory.hpp"
 #include "starlight/core/math/Vertex.h"
-#include "starlight/core/utils/Log.h"
+#include "starlight/core/Log.h"
 
 namespace sl {
 

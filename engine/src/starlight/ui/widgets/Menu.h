@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "starlight/ui/Core.h"
-#include "starlight/core/utils/Log.h"
+#include "starlight/core/Log.h"
 
 namespace sl::ui {
 

@@ -1,6 +1,6 @@
 #include "UI.h"
 
-#include "starlight/core/utils/Log.h"
+#include "starlight/core/Log.h"
 #include "starlight/core/math/Glm.h"
 #include "starlight/core/event/Event.h"
 

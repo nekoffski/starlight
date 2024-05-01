@@ -4,7 +4,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "starlight/core/utils/Log.h"
+#include "starlight/core/Log.h"
 
 #include "starlight/resource/managers/MaterialManager.h"
 

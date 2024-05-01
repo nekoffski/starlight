@@ -2,7 +2,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "starlight/core/utils/Log.h"
+#include "starlight/core/Log.h"
 #include "starlight/core/window/Keys.h"
 
 namespace sl {

@@ -21,16 +21,16 @@
 
 Application::Application(int argc, char** argv) :
     m_isRunning(false), m_update(false), m_context("Starlight Editor"),
-    m_window(m_context.getWindow()), m_renderer(*m_window, *m_context.getConfig()),
+    m_window(m_context.getWindow()), m_renderer(m_context),
     m_resourceContext(*m_renderer.getResourcePools()), m_activeCamera(nullptr),
     m_ui(
-      m_window->getSize().width,
-      m_window->getSize().height,  // TODO: no comment required
+      m_window.getSize().width,
+      m_window.getSize().height,  // TODO: no comment required
       m_renderer, &m_scene
     ),
     m_logger(m_ui.getLogger()), m_sceneSerializer(m_fileSystem),
     m_sceneDeserializer(m_fileSystem) {
-    const auto& [w, h] = m_window->getSize();
+    const auto& [w, h] = m_window.getSize();
 
     sl::ModelManager::get().load("falcon");
     sl::ModelManager::get().load("tower");
@@ -130,13 +130,13 @@ void Application::setupEventHandlers() {
             if (key == SL_KEY_4) {
                 m_activeCamera          = m_eulerCamera.get();
                 m_ui.getState()->camera = m_activeCamera;
-                m_window->showCursor();
+                m_window.showCursor();
                 for (auto& view : m_views) view->setCamera(m_activeCamera);
             }
             if (key == SL_KEY_3) {
                 m_activeCamera          = m_firstPersonCamera.get();
                 m_ui.getState()->camera = m_activeCamera;
-                m_window->hideCursor();
+                m_window.hideCursor();
                 for (auto& view : m_views) view->setCamera(m_activeCamera);
             }
             if (key == SL_KEY_U) m_update = !m_update;
@@ -176,7 +176,7 @@ void Application::setupEventHandlers() {
 }
 
 void Application::calculateViewport() {
-    const auto [w, h] = m_window->getSize();
+    const auto [w, h] = m_window.getSize();
 
     m_viewport.x      = panelWidthFactor * w;
     m_viewport.y      = 0.25f * h;

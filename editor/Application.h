@@ -6,7 +6,7 @@
 #include "starlight/core/memory/Memory.hpp"
 #include "starlight/core/window/Window.h"
 #include "starlight/core/Context.h"
-#include "starlight/core/utils/FileSystem.h"
+#include "starlight/core/FileSystem.h"
 
 #include "starlight/renderer/camera/EulerCamera.h"
 #include "starlight/renderer/camera/FirstPersonCamera.h"
@@ -37,7 +37,7 @@ private:
     bool m_update;
 
     sl::Context m_context;
-    sl::Window* m_window;
+    sl::Window& m_window;
     sl::RendererFrontend m_renderer;
     sl::ResourceContext m_resourceContext;
 

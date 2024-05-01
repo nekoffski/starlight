@@ -3,7 +3,7 @@
 #include <span>
 #include <vector>
 
-#include "starlight/core/utils/Log.h"
+#include "starlight/core/Log.h"
 #include "starlight/core/Core.h"
 
 #include "Vulkan.h"
