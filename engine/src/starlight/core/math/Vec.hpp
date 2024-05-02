@@ -9,11 +9,11 @@ namespace sl {
 
 namespace detail {
 
-template <typename T> struct Vec2 {
-    explicit Vec2(T x = 0, T y = 0) : x(x), y(y), w(this->x), h(this->y) {}
-    Vec2(const Vec2& oth) : Vec2(oth.x, oth.y) {}
+template <typename T> struct Vec2Base {
+    explicit Vec2Base(T x = 0, T y = 0) : x(x), y(y), w(this->x), h(this->y) {}
+    Vec2Base(const Vec2Base& oth) : Vec2Base(oth.x, oth.y) {}
 
-    Vec2& operator=(const Vec2& oth) {
+    Vec2Base& operator=(const Vec2Base& oth) {
         x = oth.x;
         y = oth.y;
         return *this;
@@ -26,12 +26,12 @@ template <typename T> struct Vec2 {
     T& h;
 };
 
-template <typename T> struct Vec3 {
-    explicit Vec3(T x = 0, T y = 0, T z = 0) :
+template <typename T> struct Vec3Base {
+    explicit Vec3Base(T x = 0, T y = 0, T z = 0) :
         x(x), y(y), z(z), w(this->x), h(this->y), d(this->z) {}
-    Vec3(const Vec3& oth) : Vec3(oth.x, oth.y, oth.z) {}
+    Vec3Base(const Vec3Base& oth) : Vec3Base(oth.x, oth.y, oth.z) {}
 
-    Vec3& operator=(const Vec3& oth) {
+    Vec3Base& operator=(const Vec3Base& oth) {
         x = oth.x;
         y = oth.y;
         z = oth.z;
@@ -47,11 +47,11 @@ template <typename T> struct Vec3 {
     T& d;
 };
 
-template <typename T> struct Vec4 {
-    explicit Vec4(T x = 0, T y = 0, T z = 0, T w = 0) : x(x), y(y), z(z), w(w) {}
-    Vec4(const Vec4& oth) : Vec4(oth.x, oth.y, oth.z, oth.w) {}
+template <typename T> struct Vec4Base {
+    explicit Vec4Base(T x = 0, T y = 0, T z = 0, T w = 0) : x(x), y(y), z(z), w(w) {}
+    Vec4Base(const Vec4Base& oth) : Vec4Base(oth.x, oth.y, oth.z, oth.w) {}
 
-    Vec4& operator=(const Vec4& oth) {
+    Vec4Base& operator=(const Vec4Base& oth) {
         x = oth.x;
         y = oth.y;
         z = oth.z;
@@ -74,13 +74,13 @@ template <> struct Mat3Picker<f32> { using Type = math::mat3; };
 template <typename T> struct Mat4Picker {};
 template <> struct Mat4Picker<f32> { using Type = math::mat4; };
 
-template <typename T> struct Vec2Picker { using Type = Vec2<T>; };
+template <typename T> struct Vec2Picker { using Type = Vec2Base<T>; };
 template <> struct Vec2Picker<f32> { using Type = math::vec2; };
 
-template <typename T> struct Vec3Picker { using Type = Vec3<T>; };
+template <typename T> struct Vec3Picker { using Type = Vec3Base<T>; };
 template <> struct Vec3Picker<f32> { using Type = math::vec3; };
 
-template <typename T> struct Vec4Picker { using Type = Vec4<T>; };
+template <typename T> struct Vec4Picker { using Type = Vec4Base<T>; };
 template <> struct Vec4Picker<f32> { using Type = math::vec4; };
 
 }  // namespace detail
