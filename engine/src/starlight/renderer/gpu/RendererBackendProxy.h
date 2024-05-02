@@ -4,8 +4,8 @@
 #include "Texture.h"
 #include "Mesh.h"
 
+#include "starlight/core/math/Core.h"
 #include "starlight/core/memory/Memory.hpp"
-#include "starlight/renderer/Viewport.h"
 
 #include "UIRenderer.h"
 
@@ -19,7 +19,7 @@ struct RendererBackendProxy {
     virtual Texture* getDepthBuffer()                                      = 0;
     virtual void gpuCall(std::function<void(CommandBuffer&)>&&)            = 0;
     virtual UniqPtr<UIRenderer> createUIRendererer(RenderPass* renderPass) = 0;
-    virtual void setViewport(const Viewport& viewport)                     = 0;
+    virtual void setViewport(const Rect2<u32>& viewport)                   = 0;
 };
 
 }  // namespace sl

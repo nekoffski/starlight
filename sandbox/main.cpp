@@ -43,7 +43,7 @@ int main() {
 
     sl::RenderPacket renderPacket;
 
-    renderPacket.viewport = sl::Viewport{
+    renderPacket.viewport = sl::Rect2<sl::u32>{
         sl::Vec2<sl::u32>{0u, 0u},
         viewportSize
     };

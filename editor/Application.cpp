@@ -174,8 +174,8 @@ void Application::setupEventHandlers() {
 void Application::calculateViewport() {
     const auto size = m_window.getFramebufferSize();
 
-    m_viewport.position.x = panelWidthFactor * size.w;
-    m_viewport.position.y = 0.25f * size.h;
-    m_viewport.size.w     = (1.0f - 2.0f * panelWidthFactor) * size.w;
-    m_viewport.size.h     = (0.75f) * size.h;
+    m_viewport.offset.x = panelWidthFactor * size.w;
+    m_viewport.offset.y = 0.25f * size.h;
+    m_viewport.size.w   = (1.0f - 2.0f * panelWidthFactor) * size.w;
+    m_viewport.size.h   = (0.75f) * size.h;
 }

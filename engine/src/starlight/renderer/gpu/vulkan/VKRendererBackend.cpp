@@ -173,7 +173,7 @@ void VKRendererBackend::onViewportResize(const Vec2<u32>& viewportSize) {
 
 u64 VKRendererBackend::getRenderedVertexCount() const { return m_renderedVertices; }
 
-void VKRendererBackend::setViewport(const Viewport& viewport) {
+void VKRendererBackend::setViewport(const Rect2<u32>& viewport) {
     setViewport(m_commandBuffers[m_imageIndex], viewport);
 }
 
@@ -220,10 +220,10 @@ Texture* VKRendererBackend::getDepthBuffer() {
 VKRendererBackendProxy* VKRendererBackend::getProxy() { return &m_proxy; }
 
 void VKRendererBackend::setViewport(
-  VKCommandBuffer& commandBuffer, const Viewport& viewport
+  VKCommandBuffer& commandBuffer, const Rect2<u32>& viewport
 ) {
     VkViewport vkViewport;
-    vkViewport.x        = static_cast<float>(viewport.position.x);
+    vkViewport.x        = static_cast<float>(viewport.offset.x);
     vkViewport.y        = static_cast<float>(viewport.size.h);
     vkViewport.width    = static_cast<float>(viewport.size.w);
     vkViewport.height   = -static_cast<float>(viewport.size.h);
@@ -288,7 +288,7 @@ bool VKRendererBackend::beginFrame(float deltaTime) {
 
     setViewport(
       commandBuffer,
-      Viewport{
+      Rect2<u32>{
         Vec2<u32>{0u,                  0u                 },
         Vec2<u32>{ m_framebufferWidth, m_framebufferHeight},
     }

@@ -5,7 +5,6 @@
 #include <imgui.h>
 #include <fmt/core.h>
 
-#include "starlight/renderer/Viewport.h"
 #include "starlight/renderer/camera/Camera.h"
 
 #include "starlight/core/math/Core.h"

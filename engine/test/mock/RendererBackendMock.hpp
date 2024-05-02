@@ -8,7 +8,7 @@ using namespace sl;
 
 struct RendererBackendMock : RendererBackend {
     MOCK_METHOD(bool, beginFrame, (float));
-    MOCK_METHOD(void, setViewport, (const Viewport&));
+    MOCK_METHOD(void, setViewport, (const Rect2<u32>&));
     MOCK_METHOD(bool, endFrame, (float));
     MOCK_METHOD(void, drawMesh, (const Mesh&));
     MOCK_METHOD(void, onViewportResize, (const sl::Vec2<sl::u32>&));

@@ -26,7 +26,7 @@ Texture* VKRendererBackendProxy::getDepthBuffer() {
     return m_backend->getDepthBuffer();
 }
 
-void VKRendererBackendProxy::setViewport(const Viewport& viewport) {
+void VKRendererBackendProxy::setViewport(const Rect2<u32>& viewport) {
     m_backend->setViewport(viewport);
 }
 

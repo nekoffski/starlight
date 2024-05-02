@@ -3,7 +3,7 @@
 #include <string>
 #include <span>
 
-#include "starlight/core/math/Extent.h"
+#include "starlight/core/math/Extent.hpp"
 #include "starlight/renderer/Material.h"
 
 namespace sl {

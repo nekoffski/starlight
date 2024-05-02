@@ -52,13 +52,13 @@ public:
     void onViewportResize(const Vec2<u32>& viewportSize) override;
 
     u64 getRenderedVertexCount() const override;
-    void setViewport(const Viewport& viewport);
+    void setViewport(const Rect2<u32>& viewport);
 
     // resources
     ResourcePools* getResourcePools() override;
     VKRendererBackendProxy* getProxy() override;
 
-    void setViewport(VKCommandBuffer& commandBuffer, const Viewport& viewport);
+    void setViewport(VKCommandBuffer& commandBuffer, const Rect2<u32>& viewport);
     void setScissors(VKCommandBuffer& commandBuffer);
 
 private:

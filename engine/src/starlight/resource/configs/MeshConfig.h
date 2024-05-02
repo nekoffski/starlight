@@ -8,7 +8,7 @@
 
 #include "starlight/core/math/Vertex.h"
 #include "starlight/core/Core.h"
-#include "starlight/core/math/Extent.h"
+#include "starlight/core/math/Extent.hpp"
 
 namespace sl {
 namespace detail {

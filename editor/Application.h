@@ -31,7 +31,7 @@ private:
     void setupEventHandlers();
     void calculateViewport();
 
-    sl::Viewport m_viewport;
+    sl::Rect2<sl::u32> m_viewport;
 
     bool m_isRunning;
     bool m_update;

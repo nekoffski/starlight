@@ -6,7 +6,6 @@
 
 #include "Material.h"
 #include "PointLight.h"
-#include "Viewport.h"
 
 namespace sl {
 
@@ -19,7 +18,7 @@ struct RenderEntity {
 struct RenderPacket {
     std::vector<RenderEntity> entities;
     std::vector<PointLight> pointLights;
-    Viewport viewport;
+    Rect2<u32> viewport;
 };
 
 }  // namespace sl

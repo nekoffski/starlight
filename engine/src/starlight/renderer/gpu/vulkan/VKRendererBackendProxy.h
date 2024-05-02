@@ -18,7 +18,7 @@ public:
     Texture* getFramebuffer(u64 id) override;
     Texture* getDepthBuffer() override;
 
-    void setViewport(const Viewport& viewport) override;
+    void setViewport(const Rect2<u32>& viewport) override;
 
     void gpuCall(std::function<void(CommandBuffer&)>&&) override;
 

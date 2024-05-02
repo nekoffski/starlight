@@ -10,12 +10,10 @@
 
 #include "starlight/renderer/fwd.h"
 #include "starlight/renderer/Material.h"
-#include "starlight/renderer/Viewport.h"
 #include "starlight/renderer/gpu/Mesh.h"
 #include "starlight/renderer/gpu/Texture.h"
 #include "starlight/renderer/gpu/Shader.h"
 #include "starlight/renderer/gpu/CommandBuffer.h"
-#include "starlight/renderer/Viewport.h"
 
 #include "RendererBackendProxy.h"
 
@@ -33,7 +31,7 @@ struct RendererBackend {
         return getRenderedVertexCount();
     }
 
-    virtual void setViewport(const Viewport& viewport) = 0;
+    virtual void setViewport(const Rect2<u32>& viewport) = 0;
 
     virtual u64 getRenderedVertexCount() const = 0;
     virtual bool beginFrame(float deltaTime)   = 0;
