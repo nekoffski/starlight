@@ -22,13 +22,13 @@ int main() {
     sl::Context context;
     sl::RendererFrontend renderer{ context };
 
-    auto& window = context.getWindow();
+    auto& window            = context.getWindow();
+    const auto viewportSize = window.getFramebufferSize();
 
     sl::EulerCamera camera(sl::EulerCamera::Properties{
-      .target         = sl::Vec3f{ 0.0f },
-      .radius         = 5.0f,
-      .viewportWidth  = window.getSize().width,
-      .viewportHeight = window.getSize().height,
+      .target       = sl::Vec3f{ 0.0f },
+      .radius       = 5.0f,
+      .viewportSize = viewportSize,
     });
 
     sl::ResourceContext resourceContext{ *renderer.getResourcePools() };
@@ -43,8 +43,9 @@ int main() {
 
     sl::RenderPacket renderPacket;
 
-    renderPacket.viewport = {
-        0.0f, 0.0f, float(window.getSize().width), float(window.getSize().height)
+    renderPacket.viewport = sl::Viewport{
+        sl::Vec2u32{0u, 0u},
+        viewportSize
     };
 
     while (isRunning) {

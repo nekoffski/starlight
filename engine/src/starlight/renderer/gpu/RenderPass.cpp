@@ -8,12 +8,9 @@ RenderPass::RenderPass(u32 id, const Properties& props) : m_id(id), m_props(prop
 
 void RenderPass::setClearColor(const Vec4f& color) { m_props.clearColor = color; }
 
-void RenderPass::setArea(const Vec4f& area) { m_props.area = area; }
+void RenderPass::setRect(const Rect2u32& extent) { m_props.rect = extent; }
 
-void RenderPass::setAreaSize(u32 w, u32 h) {
-    m_props.area.z = w;
-    m_props.area.w = h;
-}
+void RenderPass::setRectSize(const Vec2u32& size) { m_props.rect.size = size; }
 
 u32 RenderPass::getId() const { return m_id; }
 

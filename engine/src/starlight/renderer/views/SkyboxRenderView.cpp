@@ -17,21 +17,16 @@ void SkyboxRenderView::init(
     LOG_TRACE("Initializing SkyboxRenderView");
     auto backgroundColor = (1.0f / 255.0f) * glm::vec4{ 11, 16, 47, 255 };
 
-    const auto w = initProperties.viewportWidth;
-    const auto h = initProperties.viewportHeight;
-
     RenderPass::Properties renderPassProperties{
-        .area            = glm::vec4{0.0f, 0.0f, w, h},
-        .clearColor      = backgroundColor,
-        .clearFlags      = RenderPass::clearColorBuffer,
+        .rect       = Rect2u32{Vec2u32{ 0u, 0u }, initProperties.viewportSize},
+        .clearColor = backgroundColor,
+        .clearFlags = RenderPass::clearColorBuffer,
         .hasPreviousPass = initProperties.hasPreviousView,
         .hasNextPass     = initProperties.hasNextView
     };
 
     RenderTarget::Properties renderTargetProperties{
-        .attachments = {},
-        .width       = w,
-        .height      = h,
+        .attachments = {}, .size = initProperties.viewportSize
     };
 
     for (u8 i = 0; i < 3; ++i) {
@@ -39,11 +34,7 @@ void SkyboxRenderView::init(
         renderPassProperties.targets.push_back(renderTargetProperties);
     }
 
-    auto resourceP = dynamic_cast<vk::VKResourcePools*>(&resourcePools);
-
-    ASSERT(resourceP, "Could not cast?");
-
-    m_renderPass = resourceP->createRenderPass(renderPassProperties);
+    m_renderPass = resourcePools.createRenderPass(renderPassProperties);
     m_shader->createPipeline(m_renderPass);
     LOG_TRACE("SkyboxRenderView initialized");
 }
@@ -79,16 +70,14 @@ void SkyboxRenderView::render(
 }
 
 void SkyboxRenderView::onViewportResize(
-  RendererBackendProxy& backendProxy, u32 w, u32 h
+  RendererBackendProxy& backendProxy, Vec2u32 viewportSize
 ) {
     // TODO: make it generic
     std::vector<RenderTarget::Properties> renderTargetsProperties;
     renderTargetsProperties.reserve(3);
 
     RenderTarget::Properties renderTargetProperties{
-        .attachments = {},
-        .width       = w,
-        .height      = h,
+        .attachments = {}, .size = viewportSize
     };
 
     for (u8 i = 0; i < 3; ++i) {
@@ -96,7 +85,7 @@ void SkyboxRenderView::onViewportResize(
         renderTargetsProperties.push_back(renderTargetProperties);
     }
     m_renderPass->regenerateRenderTargets(renderTargetsProperties);
-    m_renderPass->setArea(glm::vec4{ 0.0f, 0.0f, w, h });
+    m_renderPass->setRectSize(viewportSize);
 }
 
 }  // namespace sl

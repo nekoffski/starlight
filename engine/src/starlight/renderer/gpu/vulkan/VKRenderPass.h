@@ -1,6 +1,6 @@
 #pragma once
 
-#include "starlight/core/math/Glm.h"
+#include "starlight/core/math/Core.h"
 
 #include "starlight/renderer/gpu/RenderPass.h"
 

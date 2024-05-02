@@ -2,7 +2,7 @@
 
 #include "Camera.h"
 
-#include "starlight/core/math/Glm.h"
+#include "starlight/core/math/Core.h"
 
 namespace sl {
 
@@ -11,8 +11,7 @@ public:
     struct Properties {
         Vec3f target;
         float radius;
-        u32 viewportWidth;
-        u32 viewportHeight;
+        Vec2u32 viewportSize;
     };
 
     explicit EulerCamera(const Properties& props);
@@ -25,7 +24,7 @@ public:
 
     void onScroll(float offset);
 
-    void onViewportResize(u32 w, u32 h) override;
+    void onViewportResize(Vec2u32 viewportSize) override;
 
 private:
     void processInput(const float speed);
@@ -46,9 +45,7 @@ private:
     float m_pitch;
 
     Mat4f m_viewMatrix;
-
-    u32 m_viewportWidth;
-    u32 m_viewportHeight;
+    Vec2u32 m_viewportSize;
 };
 
 }  // namespace sl

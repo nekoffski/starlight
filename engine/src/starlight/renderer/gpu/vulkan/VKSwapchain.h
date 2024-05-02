@@ -5,8 +5,6 @@
 #include <optional>
 #include <memory>
 
-#include "starlight/core/math/Size.hpp"
-
 #include "VKPhysicalDevice.h"
 #include "VKContext.h"
 

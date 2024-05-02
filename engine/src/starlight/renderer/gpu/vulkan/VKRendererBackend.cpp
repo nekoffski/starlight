@@ -28,10 +28,10 @@ VKRendererBackend::VKRendererBackend(Window& window, const Config& config) :
     m_physicalDevice(m_context, physicalDeviceRequirements),
     m_logicalDevice(m_context, m_physicalDevice), m_renderedVertices(0u),
     m_proxy(this) {
-    const auto [w, h] = window.getSize();
+    auto size = window.getFramebufferSize();
 
-    m_framebufferWidth  = w;
-    m_framebufferHeight = h;
+    m_framebufferWidth  = size.w;
+    m_framebufferHeight = size.h;
 
     createCoreComponents(window, config);
     createSemaphoresAndFences();
@@ -125,8 +125,10 @@ u32 VKRendererBackend::getImageIndex() { return m_imageIndex; }
 void VKRendererBackend::createCoreComponents(
   sl::Window& window, const Config& config
 ) {
-    const auto& [w, h] = window.getSize();
-    m_swapchain = createUniqPtr<VKSwapchain>(m_context, m_logicalDevice, w, h);
+    m_swapchain = createUniqPtr<VKSwapchain>(
+      m_context, m_logicalDevice, window.getFramebufferWidth(),
+      window.getFramebufferHeight()
+    );
     m_maxFramesInFlight = m_swapchain->getImageCount();
 
     createBuffers();
@@ -153,11 +155,14 @@ void VKRendererBackend::createSemaphoresAndFences() {
     }
 }
 
-void VKRendererBackend::onViewportResize(u32 width, u32 height) {
-    m_framebufferWidth    = width;
-    m_framebufferHeight   = height;
+void VKRendererBackend::onViewportResize(const Vec2u32& viewportSize) {
+    m_framebufferWidth    = viewportSize.w;
+    m_framebufferHeight   = viewportSize.h;
     m_recreatingSwapchain = true;
-    LOG_TRACE("Vulkan renderer backend framebuffer resized {}/{}", width, height);
+    LOG_TRACE(
+      "Vulkan renderer backend framebuffer resized {}/{}", m_framebufferWidth,
+      m_framebufferHeight
+    );
 
     m_logicalDevice.waitIdle();
     m_inFlightFences[m_currentFrame].wait(UINT64_MAX);
@@ -218,10 +223,10 @@ void VKRendererBackend::setViewport(
   VKCommandBuffer& commandBuffer, const Viewport& viewport
 ) {
     VkViewport vkViewport;
-    vkViewport.x        = viewport.x;
-    vkViewport.y        = viewport.height;
-    vkViewport.width    = viewport.width;
-    vkViewport.height   = -viewport.height;
+    vkViewport.x        = static_cast<float>(viewport.position.x);
+    vkViewport.y        = static_cast<float>(viewport.size.h);
+    vkViewport.width    = static_cast<float>(viewport.size.w);
+    vkViewport.height   = -static_cast<float>(viewport.size.h);
     vkViewport.minDepth = 0.0f;
     vkViewport.maxDepth = 1.0f;
 
@@ -284,11 +289,9 @@ bool VKRendererBackend::beginFrame(float deltaTime) {
     setViewport(
       commandBuffer,
       Viewport{
-        0.0f,
-        0.0f,
-        static_cast<float>(m_framebufferWidth),
-        static_cast<float>(m_framebufferHeight),
-      }
+        Vec2u32{0u,                  0u                 },
+        Vec2u32{ m_framebufferWidth, m_framebufferHeight},
+    }
     );
     setScissors(commandBuffer);
 

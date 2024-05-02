@@ -112,7 +112,7 @@ void Window::onWindowResizeCallback(OnWindowResizeCallback callback) {
     static auto onWindowResizeCallback =
       [](GLFWwindow* window, int width, int height) {
           GET_USER_CALLBACKS(window)->onWindowResize(
-            static_cast<uint32_t>(width), static_cast<uint32_t>(height)
+            static_cast<float>(width), static_cast<float>(height)
           );
       };
 
@@ -139,17 +139,22 @@ void Window::swapBuffers() { glfwSwapBuffers(GLFW_WINDOW_PTR(m_windowHandle)); }
 
 std::string_view Window::getVendor() const { return "GLFW3"; }
 
-Size2u32 Window::getSize() const {
+Vec2u32 Window::getFramebufferSize() const {
+    int width, height;
+    glfwGetFramebufferSize(GLFW_WINDOW_PTR(m_windowHandle), &width, &height);
+
+    return Vec2u32{ static_cast<u32>(width), static_cast<u32>(height) };
+}
+
+Vec2u32 Window::getSize() const {
     int width, height;
     glfwGetWindowSize(GLFW_WINDOW_PTR(m_windowHandle), &width, &height);
 
-    return Size2u32{ static_cast<uint32_t>(width), static_cast<uint32_t>(height) };
+    return Vec2u32{ static_cast<u32>(width), static_cast<u32>(height) };
 }
 
 Vec2f Window::getMousePosition() const {
-    double x;
-    double y;
-
+    double x, y;
     glfwGetCursorPos(GLFW_WINDOW_PTR(m_windowHandle), &x, &y);
 
     return Vec2f{ x, y };

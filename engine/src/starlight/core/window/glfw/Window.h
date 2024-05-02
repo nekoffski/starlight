@@ -1,6 +1,7 @@
 #pragma once
 
 #include "starlight/core/window/Window.h"
+#include "starlight/core/math/Core.h"
 
 namespace sl::glfw {
 
@@ -20,7 +21,9 @@ public:
     void hideCursor() override;
 
     std::string_view getVendor() const override;
-    Size2u32 getSize() const override;
+
+    Vec2u32 getFramebufferSize() const override;
+    Vec2u32 getSize() const override;
     Vec2f getMousePosition() const override;
 
     bool isKeyPressed(Window::Key keyCode) const override;

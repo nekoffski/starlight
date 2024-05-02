@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include <starlight/core/Core.h>
-#include <starlight/core/math/Glm.h>
+#include "starlight/core/Core.h"
+#include "starlight/core/math/Core.h"
 
 #include "RenderTarget.h"
 #include "CommandBuffer.h"
@@ -20,7 +20,7 @@ public:
     static constexpr u8 clearStencilBuffer = 0x4;
 
     struct Properties {
-        Vec4f area;
+        Rect2u32 rect;
         Vec4f clearColor;
         u8 clearFlags;
         bool hasPreviousPass;
@@ -41,8 +41,8 @@ public:
     }
 
     void setClearColor(const Vec4f& color);
-    void setArea(const Vec4f& area);
-    void setAreaSize(u32 w, u32 h);
+    void setRect(const Rect2u32& extent);
+    void setRectSize(const Vec2u32& size);
 
     u32 getId() const;
 

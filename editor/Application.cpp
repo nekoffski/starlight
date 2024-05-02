@@ -24,13 +24,13 @@ Application::Application(int argc, char** argv) :
     m_window(m_context.getWindow()), m_renderer(m_context),
     m_resourceContext(*m_renderer.getResourcePools()), m_activeCamera(nullptr),
     m_ui(
-      m_window.getSize().width,
-      m_window.getSize().height,  // TODO: no comment required
+      m_window.getSize().w,
+      m_window.getSize().h,  // TODO: no comment required
       m_renderer, &m_scene
     ),
     m_logger(m_ui.getLogger()), m_sceneSerializer(m_fileSystem),
     m_sceneDeserializer(m_fileSystem) {
-    const auto& [w, h] = m_window.getSize();
+    const auto framebufferSize = m_window.getFramebufferSize();
 
     sl::ModelManager::get().load("falcon");
     sl::ModelManager::get().load("tower");
@@ -38,17 +38,12 @@ Application::Application(int argc, char** argv) :
     if (argc == 2) m_sceneDeserializer.deserialize(m_scene, argv[1]);
 
     m_eulerCamera = sl::createUniqPtr<sl::EulerCamera>(sl::EulerCamera::Properties{
-      .target         = sl::Vec3f{ 0.0f },
-      .radius         = 5.0f,
-      .viewportWidth  = w,
-      .viewportHeight = h,
-    });
+      .target = sl::Vec3f{ 0.0f }, .radius = 5.0f, .viewportSize = framebufferSize }
+    );
     m_firstPersonCamera =
       sl::createUniqPtr<sl::FirstPersonCamera>(sl::FirstPersonCamera::Properties{
-        .position       = sl::Vec3f{ 0.0f },
-        .viewportWidth  = w,
-        .viewportHeight = h,
-      });
+        .position = sl::Vec3f{ 0.0f }, .viewportSize = framebufferSize });
+
     m_activeCamera = m_eulerCamera.get();
 
     calculateViewport();
@@ -148,10 +143,10 @@ void Application::setupEventHandlers() {
     };
 
     const auto onWindowResized = [&](sl::WindowResized* event) {
-        const auto& [w, h] = *event;
-        m_renderer.onViewportResize(w, h);
-        m_eulerCamera->onViewportResize(w, h);
-        m_firstPersonCamera->onViewportResize(w, h);
+        sl::Vec2u32 viewportSize{ event->width, event->height };
+        m_renderer.onViewportResize(viewportSize);
+        m_eulerCamera->onViewportResize(viewportSize);
+        m_firstPersonCamera->onViewportResize(viewportSize);
 
         calculateViewport();
     };
@@ -176,10 +171,10 @@ void Application::setupEventHandlers() {
 }
 
 void Application::calculateViewport() {
-    const auto [w, h] = m_window.getSize();
+    const auto size = m_window.getFramebufferSize();
 
-    m_viewport.x      = panelWidthFactor * w;
-    m_viewport.y      = 0.25f * h;
-    m_viewport.width  = (1.0f - 2.0f * panelWidthFactor) * w;
-    m_viewport.height = (0.75f) * h;
+    m_viewport.position.x = panelWidthFactor * size.w;
+    m_viewport.position.y = 0.25f * size.h;
+    m_viewport.size.w     = (1.0f - 2.0f * panelWidthFactor) * size.w;
+    m_viewport.size.h     = (0.75f) * size.h;
 }

@@ -1,6 +1,6 @@
 #include "RendererFrontend.h"
 
-#include "starlight/core/math/Glm.h"
+#include "starlight/core/math/Core.h"
 #include "starlight/core/memory/Memory.hpp"
 
 #include "RenderPacket.h"
@@ -10,11 +10,8 @@ namespace sl {
 
 RendererFrontend::RendererFrontend(Context& context) :
     m_backend(context.getWindow(), context.getConfig()),
-    m_renderMode(RenderMode::standard), m_framesSinceResize(0u), m_resizing(false) {
-    const auto [w, h] = context.getWindow().getSize();
-    m_viewportWidth   = w;
-    m_viewportHeight  = h;
-}
+    m_renderMode(RenderMode::standard), m_framesSinceResize(0u), m_resizing(false),
+    m_viewportSize(context.getWindow().getFramebufferSize()) {}
 
 void RendererFrontend::init(std::span<RenderView*> renderViews) {
     m_renderViews.assign(renderViews.begin(), renderViews.end());
@@ -23,9 +20,7 @@ void RendererFrontend::init(std::span<RenderView*> renderViews) {
     auto resourcePools   = m_backend.getResourcePools();
     const auto viewCount = m_renderViews.size();
 
-    RenderView::InitProperties initProperties{
-        .viewportWidth = m_viewportWidth, .viewportHeight = m_viewportHeight
-    };
+    RenderView::InitProperties initProperties{ .viewportSize = m_viewportSize };
 
     for (u32 i = 0; i < viewCount; ++i) {
         initProperties.hasPreviousView = (i != 0);
@@ -76,12 +71,13 @@ ResourcePools* RendererFrontend::getResourcePools() {
     return m_backend.getResourcePools();
 }
 
-void RendererFrontend::onViewportResize(u32 w, u32 h) {
+void RendererFrontend::onViewportResize(Vec2u32 viewportSize) {
     m_resizing = true;
-    m_backend.onViewportResize(w, h);
+    m_backend.onViewportResize(viewportSize);
 
     auto backendProxy = m_backend.getProxy();
-    for (auto& view : m_renderViews) view->onViewportResize(*backendProxy, w, h);
+    for (auto& view : m_renderViews)
+        view->onViewportResize(*backendProxy, viewportSize);
 }
 
 }  // namespace sl

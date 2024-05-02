@@ -2,9 +2,7 @@
 
 #include <string_view>
 
-#include "starlight/core/math/Size.hpp"
-#include "starlight/core/math/Glm.h"
-
+#include "starlight/core/math/Core.h"
 #include "starlight/core/event/Input.h"
 
 namespace sl {
@@ -30,8 +28,14 @@ struct Window {
     virtual void showCursor() = 0;
     virtual void hideCursor() = 0;
 
-    virtual Size2u32 getSize() const       = 0;
-    virtual Vec2f getMousePosition() const = 0;
+    u32 getFramebufferWidth() const;
+    u32 getFramebufferHeight() const;
+    u32 getWidth() const;
+    u32 getHeight() const;
+
+    virtual Vec2u32 getFramebufferSize() const = 0;
+    virtual Vec2u32 getSize() const            = 0;
+    virtual Vec2f getMousePosition() const     = 0;
 
     virtual void onKeyCallback(OnKeyCallback)                   = 0;
     virtual void onMouseCallback(OnMouseCallback)               = 0;

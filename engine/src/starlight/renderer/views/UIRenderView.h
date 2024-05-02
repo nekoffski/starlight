@@ -33,7 +33,8 @@ public:
       const RenderProperties& properties, float deltaTime
     ) override;
 
-    void onViewportResize(RendererBackendProxy& backendProxy, u32 w, u32 h) override;
+    void onViewportResize(RendererBackendProxy& backendProxy, Vec2u32 viewportSize)
+      override;
 
 private:
     Properties m_props;

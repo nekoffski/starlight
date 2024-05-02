@@ -661,20 +661,20 @@ static std::unordered_map<PolygonMode, VkPolygonMode> vkPolygonModes = {
 
 void VKShader::createPipeline(RenderPass* renderPass) {
     // viewport & scissor
-    const auto [w, h] = WindowManager::get().getSize();
+    const auto size = WindowManager::get().getSize();
 
     VkViewport viewport;
     viewport.x        = 0.0f;
-    viewport.y        = static_cast<float>(h);
-    viewport.width    = static_cast<float>(w);
-    viewport.height   = -static_cast<float>(h);
+    viewport.y        = static_cast<float>(size.h);
+    viewport.width    = static_cast<float>(size.w);
+    viewport.height   = -static_cast<float>(size.h);
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
     VkRect2D scissor;
     scissor.offset.x = scissor.offset.y = 0;
-    scissor.extent.width                = w;
-    scissor.extent.height               = h;
+    scissor.extent.width                = size.w;
+    scissor.extent.height               = size.h;
 
     std::vector<VkPipelineShaderStageCreateInfo> stageCreateInfos;
     stageCreateInfos.reserve(m_stages.size());

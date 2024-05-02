@@ -9,7 +9,7 @@
 #include <concepts>
 #include <span>
 
-#include "starlight/core/math/Glm.h"
+#include "starlight/core/math/Core.h"
 #include "starlight/core/Id.hpp"
 #include "starlight/core/Core.h"
 #include "starlight/core/Log.h"

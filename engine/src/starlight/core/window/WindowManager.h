@@ -2,6 +2,7 @@
 
 #include <kc/core/Singleton.hpp>
 
+#include "starlight/core/math/Core.h"
 #include "Window.h"
 
 namespace sl {
@@ -10,7 +11,8 @@ class WindowManager : public kc::core::Singleton<WindowManager> {
 public:
     explicit WindowManager(Window* window);
 
-    Size2u32 getSize() const;
+    Vec2u32 getSize() const;
+    Vec2u32 getFramebufferSize() const;
     Vec2f getMousePosition() const;
     Vec2f getMousePositionDelta() const;
 

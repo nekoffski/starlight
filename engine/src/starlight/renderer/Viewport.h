@@ -1,12 +1,12 @@
 #pragma once
 
+#include "starlight/core/math/Core.h"
+
 namespace sl {
 
 struct Viewport {
-    float x;
-    float y;
-    float width;
-    float height;
+    Vec2u32 position;
+    Vec2u32 size;
 };
 
 }  // namespace sl

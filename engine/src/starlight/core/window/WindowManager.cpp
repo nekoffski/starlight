@@ -53,7 +53,11 @@ void WindowManager::setCallbacks() {
     });
 }
 
-Size2u32 WindowManager::getSize() const { return m_window->getSize(); }
+Vec2u32 WindowManager::getSize() const { return m_window->getSize(); }
+
+Vec2u32 WindowManager::getFramebufferSize() const {
+    return m_window->getFramebufferSize();
+}
 
 Vec2f WindowManager::getMousePosition() const {
     return m_window->getMousePosition();

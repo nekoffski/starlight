@@ -3,8 +3,6 @@
 #include <optional>
 #include <span>
 
-#include "starlight/core/math/Size.hpp"
-
 #include "Vulkan.h"
 #include "fwd.h"
 

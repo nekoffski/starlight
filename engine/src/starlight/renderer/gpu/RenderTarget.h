@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "starlight/core/Core.h"
+#include "starlight/core/math/Core.h"
 
 #include "fwd.h"
 
@@ -14,8 +15,7 @@ public:
 
     struct Properties {
         std::vector<Texture*> attachments;
-        u32 width;
-        u32 height;
+        Vec2u32 size;
     };
 
     explicit RenderTarget(u32 id, const Properties& props);

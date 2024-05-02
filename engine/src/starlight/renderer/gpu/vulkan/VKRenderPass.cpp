@@ -205,10 +205,10 @@ VkRenderPassBeginInfo VKRenderPass::createRenderPassBeginInfo(
     VkRenderPassBeginInfo beginInfo   = { VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO };
     beginInfo.renderPass              = m_handle;
     beginInfo.framebuffer             = framebuffer;
-    beginInfo.renderArea.offset.x     = m_props.area.x;
-    beginInfo.renderArea.offset.y     = m_props.area.y;
-    beginInfo.renderArea.extent.width = m_props.area.z;
-    beginInfo.renderArea.extent.height = m_props.area.w;
+    beginInfo.renderArea.offset.x     = m_props.rect.offset.x;
+    beginInfo.renderArea.offset.y     = m_props.rect.offset.y;
+    beginInfo.renderArea.extent.width = m_props.rect.size.w;
+    beginInfo.renderArea.extent.height = m_props.rect.size.h;
 
     beginInfo.clearValueCount = clearValues.size();
     beginInfo.pClearValues =

@@ -3,7 +3,7 @@
 #include <optional>
 #include <string>
 
-#include "starlight/core/math/Glm.h"
+#include "starlight/core/math/Core.h"
 
 #include "gpu/Texture.h"
 #include "gpu/Shader.h"

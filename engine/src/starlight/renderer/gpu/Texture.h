@@ -4,7 +4,6 @@
 
 #include "starlight/core/Core.h"
 #include "starlight/core/memory/Memory.hpp"
-#include "starlight/core/math/Size.hpp"
 
 namespace sl {
 

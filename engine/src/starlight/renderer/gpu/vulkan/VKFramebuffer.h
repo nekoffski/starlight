@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "starlight/core/Core.h"
-#include "starlight/core/math/Size.hpp"
 
 #include "VKLogicalDevice.h"
 #include "VKContext.h"

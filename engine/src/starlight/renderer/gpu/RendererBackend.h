@@ -4,7 +4,7 @@
 #include <span>
 #include <functional>
 
-#include "starlight/core/math/Glm.h"
+#include "starlight/core/math/Core.h"
 #include "starlight/core/math/Vertex.h"
 #include "starlight/core/math/Vertex.h"
 
@@ -41,7 +41,7 @@ struct RendererBackend {
 
     virtual void drawMesh(const Mesh& mesh) = 0;
 
-    virtual void onViewportResize(uint32_t width, uint32_t height) = 0;
+    virtual void onViewportResize(const Vec2u32& viewportSize) = 0;
 
     virtual RendererBackendProxy* getProxy()  = 0;
     virtual ResourcePools* getResourcePools() = 0;

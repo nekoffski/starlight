@@ -19,21 +19,17 @@ void UIRenderView::init(
   const InitProperties& initProperties
 ) {
     LOG_TRACE("Initializing UIRenderView");
-    const auto w = initProperties.viewportWidth;
-    const auto h = initProperties.viewportHeight;
 
     RenderPass::Properties renderPassProperties{
-        .area            = glm::vec4{0.0f, 0.0f, w, h},
-        .clearColor      = glm::vec4(0.0f),
-        .clearFlags      = RenderPass::clearNone,
+        .rect       = Rect2u32{Vec2u32{ 0u, 0u }, initProperties.viewportSize},
+        .clearColor = glm::vec4(0.0f),
+        .clearFlags = RenderPass::clearNone,
         .hasPreviousPass = initProperties.hasPreviousView,
         .hasNextPass     = initProperties.hasNextView
     };
 
     RenderTarget::Properties renderTargetProperties{
-        .attachments = {},
-        .width       = w,
-        .height      = h,
+        .attachments = {}, .size = initProperties.viewportSize
     };
 
     for (u8 i = 0; i < 3; ++i) {
@@ -63,16 +59,14 @@ void UIRenderView::render(
 }
 
 void UIRenderView::onViewportResize(
-  RendererBackendProxy& backendProxy, u32 w, u32 h
+  RendererBackendProxy& backendProxy, Vec2u32 viewportSize
 ) {
     // TODO: get swapchain images count from backend
     std::vector<RenderTarget::Properties> renderTargetsProperties;
     renderTargetsProperties.reserve(3);
 
     RenderTarget::Properties renderTargetProperties{
-        .attachments = {},
-        .width       = w,
-        .height      = h,
+        .attachments = {}, .size = viewportSize
     };
 
     for (u8 i = 0; i < 3; ++i) {
@@ -80,7 +74,7 @@ void UIRenderView::onViewportResize(
         renderTargetsProperties.push_back(renderTargetProperties);
     }
     m_renderPass->regenerateRenderTargets(renderTargetsProperties);
-    m_renderPass->setArea(glm::vec4{ 0.0f, 0.0f, w, h });
+    m_renderPass->setRectSize(viewportSize);
 }
 
 }  // namespace sl

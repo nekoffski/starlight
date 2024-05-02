@@ -4,7 +4,7 @@
 
 #include <fmt/core.h>
 
-#include "starlight/core/math/Glm.h"
+#include "starlight/core/math/Core.h"
 #include "starlight/renderer/gpu/Texture.h"
 #include "starlight/renderer/gpu/ResourcePools.h"
 #include "starlight/resource/configs/ImageData.h"

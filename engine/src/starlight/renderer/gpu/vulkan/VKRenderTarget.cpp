@@ -31,7 +31,7 @@ void VKRenderTarget::regenerate(const Properties& properties) {
     }
 
     m_framebuffer.emplace(
-      m_context, m_device, m_renderPass->getHandle(), m_props.width, m_props.height,
+      m_context, m_device, m_renderPass->getHandle(), m_props.size.x, m_props.size.y,
       attachmentViews
     );
 }

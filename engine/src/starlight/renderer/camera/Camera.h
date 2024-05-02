@@ -1,7 +1,7 @@
 #pragma once
 
 #include "starlight/core/Core.h"
-#include "starlight/core/math/Glm.h"
+#include "starlight/core/math/Core.h"
 
 namespace sl {
 
@@ -11,7 +11,7 @@ struct Camera {
     virtual Mat4f getProjectionMatrix() const = 0;
     virtual Vec3f getPosition() const         = 0;
 
-    virtual void onViewportResize(u32 w, u32 h) = 0;
+    virtual void onViewportResize(Vec2u32) = 0;
 
     virtual void update(float deltaTime) = 0;
 };

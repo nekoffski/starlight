@@ -12,25 +12,20 @@ void WorldRenderView::init(
     LOG_TRACE("Initializing WorldRenderView");
     auto backgroundColor = (1.0f / 255.0f) * glm::vec4{ 11, 16, 47, 255 };
 
-    const auto w = initProperties.viewportWidth;
-    const auto h = initProperties.viewportHeight;
-
     u8 clearFlags = RenderPass::clearDepthBuffer | RenderPass::clearStencilBuffer;
     if (not initProperties.hasPreviousView)
         clearFlags |= RenderPass::clearColorBuffer;
 
     RenderPass::Properties renderPassProperties{
-        .area            = glm::vec4{0.0f, 0.0f, w, h},
-        .clearColor      = backgroundColor,
-        .clearFlags      = clearFlags,
+        .rect       = Rect2u32{Vec2u32{ 0u, 0u }, initProperties.viewportSize},
+        .clearColor = backgroundColor,
+        .clearFlags = clearFlags,
         .hasPreviousPass = initProperties.hasPreviousView,
         .hasNextPass     = initProperties.hasNextView
     };
 
     RenderTarget::Properties renderTargetProperties{
-        .attachments = {},
-        .width       = w,
-        .height      = h,
+        .attachments = {}, .size = initProperties.viewportSize
     };
 
     for (u8 i = 0; i < 3; ++i) {
@@ -121,16 +116,14 @@ void WorldRenderView::render(
 }
 
 void WorldRenderView::onViewportResize(
-  RendererBackendProxy& backendProxy, u32 w, u32 h
+  RendererBackendProxy& backendProxy, Vec2u32 viewportSize
 ) {
     // TODO: get swapchain images count from backend
     std::vector<RenderTarget::Properties> renderTargetsProperties;
     renderTargetsProperties.reserve(3);
 
     RenderTarget::Properties renderTargetProperties{
-        .attachments = {},
-        .width       = w,
-        .height      = h,
+        .attachments = {}, .size = viewportSize
     };
 
     for (u8 i = 0; i < 3; ++i) {
@@ -140,7 +133,7 @@ void WorldRenderView::onViewportResize(
         renderTargetsProperties.push_back(renderTargetProperties);
     }
     m_renderPass->regenerateRenderTargets(renderTargetsProperties);
-    m_renderPass->setArea(glm::vec4{ 0.0f, 0.0f, w, h });
+    m_renderPass->setRectSize(viewportSize);
 }
 
 }  // namespace sl

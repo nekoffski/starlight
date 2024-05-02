@@ -10,7 +10,7 @@ namespace sl {
 FirstPersonCamera::FirstPersonCamera(const Properties& props) :
     m_position(props.position), m_front(0.0f, 0.0f, 1.0f), m_up(0.0f, 1.0f, 0.0f),
     m_right(1.0f, 0.0f, 0.0f), m_yaw(0.0f), m_pitch(0.0f), m_speed(10.0f),
-    m_viewportWidth(props.viewportWidth), m_viewportHeight(props.viewportHeight) {}
+    m_viewportSize(props.viewportSize) {}
 
 Mat4f FirstPersonCamera::getViewMatrix() const {
     return glm::lookAt(m_position, m_position + m_front, worldUp);
@@ -20,7 +20,7 @@ Mat4f FirstPersonCamera::getProjectionMatrix() const {
     // TODO: make it configurable
     return glm::perspective(
       glm::radians(45.0f),
-      static_cast<float>(m_viewportWidth) / static_cast<float>(m_viewportHeight),
+      static_cast<float>(m_viewportSize.w) / static_cast<float>(m_viewportSize.h),
       0.1f, 1000.0f
     );
 }
@@ -39,9 +39,8 @@ void FirstPersonCamera::update(float deltaTime) {
     m_up    = glm::normalize(glm::cross(m_right, m_front));
 }
 
-void FirstPersonCamera::onViewportResize(u32 w, u32 h) {
-    m_viewportWidth  = w;
-    m_viewportHeight = h;
+void FirstPersonCamera::onViewportResize(Vec2u32 viewportSize) {
+    m_viewportSize = viewportSize;
 }
 
 void FirstPersonCamera::processInput(const float speed) {
