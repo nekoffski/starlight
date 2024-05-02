@@ -13,7 +13,7 @@ namespace sl {
 class RenderView {
 public:
     struct InitProperties {
-        Vec2u32 viewportSize;
+        Vec2<u32> viewportSize;
         bool hasNextView;
         bool hasPreviousView;
     };
@@ -32,7 +32,7 @@ public:
       const RenderProperties& properties, float deltaTime
     ) = 0;
     virtual void onViewportResize(
-      RendererBackendProxy& backendProxy, Vec2u32 viewportSize
+      RendererBackendProxy& backendProxy, Vec2<u32> viewportSize
     ) = 0;
 
 protected:

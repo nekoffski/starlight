@@ -49,7 +49,7 @@ public:
     bool endFrame(float deltaTime) override;
 
     void drawMesh(const Mesh& mesh) override;
-    void onViewportResize(const Vec2u32& viewportSize) override;
+    void onViewportResize(const Vec2<u32>& viewportSize) override;
 
     u64 getRenderedVertexCount() const override;
     void setViewport(const Viewport& viewport);

@@ -17,7 +17,7 @@ void WorldRenderView::init(
         clearFlags |= RenderPass::clearColorBuffer;
 
     RenderPass::Properties renderPassProperties{
-        .rect       = Rect2u32{Vec2u32{ 0u, 0u }, initProperties.viewportSize},
+        .rect       = Rect2u32{Vec2<u32>{ 0u, 0u }, initProperties.viewportSize},
         .clearColor = backgroundColor,
         .clearFlags = clearFlags,
         .hasPreviousPass = initProperties.hasPreviousView,
@@ -43,7 +43,7 @@ void WorldRenderView::init(
 struct MeshRenderData {
     Mesh* mesh;
     Material* material;
-    Mat4f modelMatrix;
+    Mat4<f32> modelMatrix;
     float cameraDistance;
 };
 
@@ -116,7 +116,7 @@ void WorldRenderView::render(
 }
 
 void WorldRenderView::onViewportResize(
-  RendererBackendProxy& backendProxy, Vec2u32 viewportSize
+  RendererBackendProxy& backendProxy, Vec2<u32> viewportSize
 ) {
     // TODO: get swapchain images count from backend
     std::vector<RenderTarget::Properties> renderTargetsProperties;

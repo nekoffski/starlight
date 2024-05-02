@@ -18,7 +18,7 @@ void SkyboxRenderView::init(
     auto backgroundColor = (1.0f / 255.0f) * glm::vec4{ 11, 16, 47, 255 };
 
     RenderPass::Properties renderPassProperties{
-        .rect       = Rect2u32{Vec2u32{ 0u, 0u }, initProperties.viewportSize},
+        .rect       = Rect2u32{Vec2<u32>{ 0u, 0u }, initProperties.viewportSize},
         .clearColor = backgroundColor,
         .clearFlags = RenderPass::clearColorBuffer,
         .hasPreviousPass = initProperties.hasPreviousView,
@@ -70,7 +70,7 @@ void SkyboxRenderView::render(
 }
 
 void SkyboxRenderView::onViewportResize(
-  RendererBackendProxy& backendProxy, Vec2u32 viewportSize
+  RendererBackendProxy& backendProxy, Vec2<u32> viewportSize
 ) {
     // TODO: make it generic
     std::vector<RenderTarget::Properties> renderTargetsProperties;

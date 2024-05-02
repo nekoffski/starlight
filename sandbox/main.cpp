@@ -26,7 +26,7 @@ int main() {
     const auto viewportSize = window.getFramebufferSize();
 
     sl::EulerCamera camera(sl::EulerCamera::Properties{
-      .target       = sl::Vec3f{ 0.0f },
+      .target       = sl::Vec3<sl::f32>{ 0.0f },
       .radius       = 5.0f,
       .viewportSize = viewportSize,
     });
@@ -44,7 +44,7 @@ int main() {
     sl::RenderPacket renderPacket;
 
     renderPacket.viewport = sl::Viewport{
-        sl::Vec2u32{0u, 0u},
+        sl::Vec2<sl::u32>{0u, 0u},
         viewportSize
     };
 

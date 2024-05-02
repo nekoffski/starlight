@@ -35,8 +35,8 @@ private:
     ModelConfig m_config;
 
     int m_verticesWithoutUV;
-    Vec3f m_currentMax;
-    Vec3f m_currentMin;
+    Vec3<f32> m_currentMax;
+    Vec3<f32> m_currentMin;
 };
 
 }  // namespace

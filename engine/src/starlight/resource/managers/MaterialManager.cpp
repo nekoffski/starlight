@@ -27,7 +27,7 @@ Material* MaterialManager::getDefaultMaterial() { return m_defaultMaterial; }
 void MaterialManager::createDefaultMaterial() {
     Material::Properties props;
     props.name         = "Internal.Material.Default";
-    props.diffuseColor = Vec4f{ 1.0f };
+    props.diffuseColor = Vec4<f32>{ 1.0f };
     props.diffuseMap   = Texture::defaultDiffuse;
     props.normalMap    = Texture::defaultNormal;
     props.specularMap  = Texture::defaultSpecular;

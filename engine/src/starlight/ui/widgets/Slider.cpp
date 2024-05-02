@@ -6,7 +6,7 @@ namespace sl::ui {
 
 Slider3::Slider3(
   const std::string& name, const StepInterval<float>& range,
-  const Vec3f& initialValue
+  const Vec3<f32>& initialValue
 ) :
     m_name(name),
     m_id(fmt::format("##{}", name)), m_data(initialValue), m_range(range) {}

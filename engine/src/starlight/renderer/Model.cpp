@@ -11,7 +11,7 @@ void Model::addMesh(Material* material, Mesh* mesh) {
     m_materialIdToMeshes[materialId].push_back(mesh);
 }
 
-Mat4f Model::getModelMatrix() {
+Mat4<f32> Model::getModelMatrix() {
     return m_transform ? m_transform->getWorld() : identityMatrix;
 }
 

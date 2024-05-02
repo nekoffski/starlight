@@ -33,7 +33,7 @@ public:
     void setRenderMode(RenderMode mode);
 
     ResourcePools* getResourcePools();
-    void onViewportResize(Vec2u32 viewportSize);
+    void onViewportResize(Vec2<u32> viewportSize);
 
 private:
     RendererBackendVendor m_backend;
@@ -45,7 +45,7 @@ private:
     bool m_resizing;
 
     FrameStatistics m_frameStatistics;
-    Vec2u32 m_viewportSize;
+    Vec2<u32> m_viewportSize;
 };
 
 }  // namespace sl

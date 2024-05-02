@@ -71,7 +71,7 @@ ResourcePools* RendererFrontend::getResourcePools() {
     return m_backend.getResourcePools();
 }
 
-void RendererFrontend::onViewportResize(Vec2u32 viewportSize) {
+void RendererFrontend::onViewportResize(Vec2<u32> viewportSize) {
     m_resizing = true;
     m_backend.onViewportResize(viewportSize);
 

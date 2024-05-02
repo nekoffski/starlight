@@ -133,7 +133,7 @@ void TextureManager::destroyInternals(Texture* texture) {
     m_resourcePools.destroyTexture(*texture);
 }
 
-static void setColor(uint32_t i, const Vec4f& color, std::vector<u8>& pixels) {
+static void setColor(uint32_t i, const Vec4<f32>& color, std::vector<u8>& pixels) {
     pixels[i]     = color.x;
     pixels[i + 1] = color.y;
     pixels[i + 2] = color.z;
@@ -165,8 +165,8 @@ void TextureManager::createDefaultTexture() {
         setColor(
           i,
           xPattern * yPattern > 0.0f
-            ? Vec4f{ 0.0f, 0.0f, 0.0f, 255.0f }
-            : Vec4f{ 255.0f, 255.0f, 255.0f, 255.0f },
+            ? Vec4<f32>{ 0.0f, 0.0f, 0.0f, 255.0f }
+            : Vec4<f32>{ 255.0f, 255.0f, 255.0f, 255.0f },
           pixels
         );
     }
@@ -205,7 +205,7 @@ void TextureManager::createDefaultNormalMap() {
     };
     std::vector<u8> pixels(props.width * props.height * props.channels, 0);
 
-    Vec4f zAxis{ 0.0f, 0.0f, 255.0f, 255.0f };
+    Vec4<f32> zAxis{ 0.0f, 0.0f, 255.0f, 255.0f };
     for (int i = 0; i < pixels.size(); i += props.channels)
         setColor(i, zAxis, pixels);
 

@@ -25,12 +25,12 @@ template <typename T>
 concept VertexType = kc::core::is_one_of2_v<T, Vertex2, Vertex3>;
 
 template <typename T>
-concept VectorType = kc::core::is_one_of2_v<T, Vec2f, Vec3f>;
+concept VectorType = kc::core::is_one_of2_v<T, math::vec2, math::vec3>;
 
 template <ExtentType Extent, VertexType Vertex, VectorType Vector>
 Extent calculateExtent(const std::vector<Vertex>& vertices) {
-    Vector min{ 0.0f };
-    Vector max{ 0.0f };
+    Vector min(0.0f);
+    Vector max(0.0f);
 
     const auto components = getVectorComponentCount<Vector>();
 
@@ -42,7 +42,7 @@ Extent calculateExtent(const std::vector<Vertex>& vertices) {
         }
     }
 
-    return Extent{ min, max };
+    return Extent(min, max);
 }
 
 }  // namespace detail
@@ -75,7 +75,7 @@ struct MeshConfig3D final : public detail::MeshConfigBase {
     static MeshConfig3D generateCube(const CubeProperties& props);
 
     Extent3 calculateExtent() const {
-        return detail::calculateExtent<Extent3, Vertex3, Vec3f>(vertices);
+        return detail::calculateExtent<Extent3, Vertex3, math::vec3>(vertices);
     }
 
     void generateTangents();
@@ -86,7 +86,7 @@ struct MeshConfig2D final : public detail::MeshConfigBase {
     std::vector<Vertex2> vertices;
 
     Extent2 calculateExtent() const {
-        return detail::calculateExtent<Extent2, Vertex2, Vec2f>(vertices);
+        return detail::calculateExtent<Extent2, Vertex2, math::vec2>(vertices);
     }
 };
 

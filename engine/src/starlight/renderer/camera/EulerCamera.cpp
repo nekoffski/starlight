@@ -11,9 +11,9 @@ EulerCamera::EulerCamera(const Properties& props) :
     recalculateVectors();
 }
 
-Mat4f EulerCamera::getViewMatrix() const { return m_viewMatrix; }
+Mat4<f32> EulerCamera::getViewMatrix() const { return m_viewMatrix; }
 
-Mat4f EulerCamera::getProjectionMatrix() const {
+Mat4<f32> EulerCamera::getProjectionMatrix() const {
     return glm::perspective(
       glm::radians(45.0f),
       static_cast<float>(m_viewportSize.w) / static_cast<float>(m_viewportSize.h),
@@ -21,7 +21,7 @@ Mat4f EulerCamera::getProjectionMatrix() const {
     );
 }
 
-Vec3f EulerCamera::getPosition() const { return m_position; }
+Vec3<f32> EulerCamera::getPosition() const { return m_position; }
 
 void EulerCamera::update(float deltaTime) {
     static constexpr float speed = 150.0f;
@@ -34,7 +34,7 @@ void EulerCamera::update(float deltaTime) {
 
 void EulerCamera::onScroll(float offset) { m_radius -= 2.5f * offset; }
 
-void EulerCamera::onViewportResize(Vec2u32 viewportSize) {
+void EulerCamera::onViewportResize(Vec2<u32> viewportSize) {
     m_viewportSize = viewportSize;
 }
 
@@ -76,13 +76,13 @@ void EulerCamera::truncateCoefficients() {
 }
 
 void EulerCamera::recalculateVectors() {
-    const static Vec3f worldUp = Vec3f{ 0.0f, 1.0f, 0.0f };
+    const static Vec3<f32> worldUp = Vec3<f32>{ 0.0f, 1.0f, 0.0f };
 
     const auto pitchRadians = glm::radians(m_pitch);
     const auto yawRadians   = glm::radians(m_yaw);
 
     // clang-format off
-    m_position = m_radius * Vec3f {
+    m_position = m_radius * Vec3<f32> {
         std::sin(pitchRadians) * std::cos(yawRadians),
         std::cos(pitchRadians),
         std::sin(pitchRadians) * std::sin(yawRadians)

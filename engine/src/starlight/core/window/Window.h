@@ -33,9 +33,9 @@ struct Window {
     u32 getWidth() const;
     u32 getHeight() const;
 
-    virtual Vec2u32 getFramebufferSize() const = 0;
-    virtual Vec2u32 getSize() const            = 0;
-    virtual Vec2f getMousePosition() const     = 0;
+    virtual Vec2<u32> getFramebufferSize() const = 0;
+    virtual Vec2<u32> getSize() const            = 0;
+    virtual Vec2<f32> getMousePosition() const   = 0;
 
     virtual void onKeyCallback(OnKeyCallback)                   = 0;
     virtual void onMouseCallback(OnMouseCallback)               = 0;

@@ -19,8 +19,8 @@ void Panel::render() {
     }
 }
 
-void Panel::setSize(const Vec2f& size) { m_props.size = size; }
-void Panel::setPosition(const Vec2f& position) { m_props.position = position; }
+void Panel::setSize(const Vec2<f32>& size) { m_props.size = size; }
+void Panel::setPosition(const Vec2<f32>& position) { m_props.position = position; }
 
 PanelCombo::PanelCombo(const std::string& name, const Properties& props) :
     m_name(name), m_props(props), m_dirty(true) {}
@@ -38,8 +38,10 @@ PanelCombo& PanelCombo::addPanel(const std::string& name, Callback&& callback) {
     return *this;
 }
 
-void PanelCombo::setSize(const Vec2f& size) { m_props.size = size; }
-void PanelCombo::setPosition(const Vec2f& position) { m_props.position = position; }
+void PanelCombo::setSize(const Vec2<f32>& size) { m_props.size = size; }
+void PanelCombo::setPosition(const Vec2<f32>& position) {
+    m_props.position = position;
+}
 
 void PanelCombo::rebuildPanels() {
     const auto panelCount = m_panels.size();

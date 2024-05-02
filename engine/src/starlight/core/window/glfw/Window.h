@@ -22,9 +22,9 @@ public:
 
     std::string_view getVendor() const override;
 
-    Vec2u32 getFramebufferSize() const override;
-    Vec2u32 getSize() const override;
-    Vec2f getMousePosition() const override;
+    Vec2<u32> getFramebufferSize() const override;
+    Vec2<u32> getSize() const override;
+    Vec2<f32> getMousePosition() const override;
 
     bool isKeyPressed(Window::Key keyCode) const override;
     bool isMouseButtonPressed(Window::Button buttonCode) const override;

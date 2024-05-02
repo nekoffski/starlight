@@ -56,7 +56,7 @@ void generateTangents(std::span<Vertex3> vertices, const std::span<u32> indices)
 
         LOG_TRACE("fc={}", fc);
 
-        auto tangent = Vec3f(
+        auto tangent = Vec3<f32>(
           deltaUV2.y * edge1.x - deltaUV1.y * edge2.x,
           deltaUV2.y * edge1.y - deltaUV1.y * edge2.y,
           deltaUV2.y * edge1.z - deltaUV1.y * edge2.z
@@ -65,7 +65,7 @@ void generateTangents(std::span<Vertex3> vertices, const std::span<u32> indices)
 
         float handedness =
           (deltaUV1.y * deltaUV2.x - deltaUV2.y * deltaUV1.x) < 0.0f ? -1.0f : 1.0f;
-        auto hTangent = Vec4f(tangent, handedness);
+        auto hTangent = Vec4<f32>(tangent, handedness);
 
         v0.tangent = hTangent;
         v1.tangent = hTangent;

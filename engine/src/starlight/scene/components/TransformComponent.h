@@ -12,8 +12,8 @@ namespace sl {
 struct TransformComponent : Component {
     explicit TransformComponent(u64 id, u64 entityId);
     explicit TransformComponent(
-      u64 id, u64 entityId, const Vec3f& position, const Vec3f& scale,
-      const Mat4f& rotation
+      u64 id, u64 entityId, const Vec3<f32>& position, const Vec3<f32>& scale,
+      const Mat4<f32>& rotation
     );
 
     kc::json::Node serialize() const override;

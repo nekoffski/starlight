@@ -3,7 +3,7 @@
 #include <optional>
 
 #include "starlight/core/Core.h"
-#include "starlight/core/math/Glm.h"
+#include "starlight/core/math/Core.h"
 #include "starlight/renderer/camera/Camera.h"
 #include "starlight/renderer/Viewport.h"
 #include "starlight/ui/UI.h"
@@ -29,5 +29,5 @@ struct UIState {
 
 static constexpr float panelWidthFactor = 0.15f;
 
-static const sl::Vec3f selectedColor = { 0.1f, 0.7f, 0.1f };
-static const sl::Vec3f defaultColor  = { 1.0f, 1.0f, 1.0f };
+static const sl::Vec3<sl::f32> selectedColor = { 0.1f, 0.7f, 0.1f };
+static const sl::Vec3<sl::f32> defaultColor  = { 1.0f, 1.0f, 1.0f };

@@ -53,17 +53,19 @@ void WindowManager::setCallbacks() {
     });
 }
 
-Vec2u32 WindowManager::getSize() const { return m_window->getSize(); }
+Vec2<u32> WindowManager::getSize() const { return m_window->getSize(); }
 
-Vec2u32 WindowManager::getFramebufferSize() const {
+Vec2<u32> WindowManager::getFramebufferSize() const {
     return m_window->getFramebufferSize();
 }
 
-Vec2f WindowManager::getMousePosition() const {
+Vec2<f32> WindowManager::getMousePosition() const {
     return m_window->getMousePosition();
 }
 
-Vec2f WindowManager::getMousePositionDelta() const { return m_mousePositionDelta; }
+Vec2<f32> WindowManager::getMousePositionDelta() const {
+    return m_mousePositionDelta;
+}
 
 void WindowManager::hideCursor() { m_window->hideCursor(); }
 

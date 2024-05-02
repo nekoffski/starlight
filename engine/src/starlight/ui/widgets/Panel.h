@@ -7,8 +7,8 @@ namespace sl::ui {
 class Panel {
 public:
     struct Properties {
-        Vec2f position;
-        Vec2f size;
+        Vec2<f32> position;
+        Vec2<f32> size;
     };
 
     explicit Panel(
@@ -16,8 +16,8 @@ public:
     );
     void render();
 
-    void setSize(const Vec2f& size);
-    void setPosition(const Vec2f& position);
+    void setSize(const Vec2<f32>& size);
+    void setPosition(const Vec2<f32>& position);
 
 private:
     std::string m_name;
@@ -30,8 +30,8 @@ public:
     enum class Orientation { horizontal, vertical };
 
     struct Properties {
-        Vec2f position;
-        Vec2f size;
+        Vec2<f32> position;
+        Vec2<f32> size;
         bool alignWithMainMenuBar;
         Orientation orientation;
     };
@@ -42,8 +42,8 @@ public:
 
     PanelCombo& addPanel(const std::string& name, Callback&& callback);
 
-    void setSize(const Vec2f& size);
-    void setPosition(const Vec2f& position);
+    void setSize(const Vec2<f32>& size);
+    void setPosition(const Vec2<f32>& position);
 
 private:
     void rebuildPanels();

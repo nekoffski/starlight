@@ -11,7 +11,7 @@
 namespace sl {
 
 struct RenderEntity {
-    Mat4f worldTransform;
+    Mat4<f32> worldTransform;
     Mesh* mesh;
     Material* material;
 };

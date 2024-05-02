@@ -8,8 +8,8 @@ TransformComponent::TransformComponent(u64 id, u64 entityId) :
     Component(id, entityId) {}
 
 TransformComponent::TransformComponent(
-  u64 id, u64 entityId, const Vec3f& position, const Vec3f& scale,
-  const Mat4f& rotation
+  u64 id, u64 entityId, const Vec3<f32>& position, const Vec3<f32>& scale,
+  const Mat4<f32>& rotation
 ) :
     Component(id, entityId),
     transform(position, scale, rotation) {}
@@ -27,9 +27,9 @@ kc::json::Node TransformComponent::serialize() const {
 }
 
 void TransformComponent::deserialize(Entity* entity, const kc::json::Node& root) {
-    const auto position = getField<Vec3f>(root, "position");
-    const auto scale    = getField<Vec3f>(root, "scale");
-    const auto rotation = getField<Mat4f>(root, "rotation");
+    const auto position = getField<Vec3<f32>>(root, "position");
+    const auto scale    = getField<Vec3<f32>>(root, "scale");
+    const auto rotation = getField<Mat4<f32>>(root, "rotation");
 
     entity->addComponent<TransformComponent>(position, scale, rotation);
 }

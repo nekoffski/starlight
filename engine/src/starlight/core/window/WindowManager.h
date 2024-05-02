@@ -11,10 +11,10 @@ class WindowManager : public kc::core::Singleton<WindowManager> {
 public:
     explicit WindowManager(Window* window);
 
-    Vec2u32 getSize() const;
-    Vec2u32 getFramebufferSize() const;
-    Vec2f getMousePosition() const;
-    Vec2f getMousePositionDelta() const;
+    Vec2<u32> getSize() const;
+    Vec2<u32> getFramebufferSize() const;
+    Vec2<f32> getMousePosition() const;
+    Vec2<f32> getMousePositionDelta() const;
 
     void showCursor();
     void hideCursor();
@@ -31,8 +31,8 @@ private:
 
     Window* m_window;
 
-    Vec2f m_previousMousePosition;
-    Vec2f m_mousePositionDelta;
+    Vec2<f32> m_previousMousePosition;
+    Vec2<f32> m_mousePositionDelta;
 };
 
 }  // namespace sl

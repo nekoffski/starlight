@@ -139,25 +139,25 @@ void Window::swapBuffers() { glfwSwapBuffers(GLFW_WINDOW_PTR(m_windowHandle)); }
 
 std::string_view Window::getVendor() const { return "GLFW3"; }
 
-Vec2u32 Window::getFramebufferSize() const {
+Vec2<u32> Window::getFramebufferSize() const {
     int width, height;
     glfwGetFramebufferSize(GLFW_WINDOW_PTR(m_windowHandle), &width, &height);
 
-    return Vec2u32{ static_cast<u32>(width), static_cast<u32>(height) };
+    return Vec2<u32>{ static_cast<u32>(width), static_cast<u32>(height) };
 }
 
-Vec2u32 Window::getSize() const {
+Vec2<u32> Window::getSize() const {
     int width, height;
     glfwGetWindowSize(GLFW_WINDOW_PTR(m_windowHandle), &width, &height);
 
-    return Vec2u32{ static_cast<u32>(width), static_cast<u32>(height) };
+    return Vec2<u32>{ static_cast<u32>(width), static_cast<u32>(height) };
 }
 
-Vec2f Window::getMousePosition() const {
+Vec2<f32> Window::getMousePosition() const {
     double x, y;
     glfwGetCursorPos(GLFW_WINDOW_PTR(m_windowHandle), &x, &y);
 
-    return Vec2f{ x, y };
+    return Vec2<f32>{ x, y };
 }
 
 void* Window::getHandle() { return m_windowHandle; }

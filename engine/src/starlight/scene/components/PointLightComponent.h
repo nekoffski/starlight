@@ -12,8 +12,8 @@ namespace sl {
 struct PointLightComponent : Component {
     explicit PointLightComponent(u64 id, u64 entityId);
     explicit PointLightComponent(
-      u64 id, u64 entityId, const Vec4f& position, const Vec4f& color,
-      const Vec4f& attenuation
+      u64 id, u64 entityId, const Vec4<f32>& position, const Vec4<f32>& color,
+      const Vec4<f32>& attenuation
     );
 
     kc::json::Node serialize() const override;

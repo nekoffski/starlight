@@ -155,7 +155,7 @@ void VKRendererBackend::createSemaphoresAndFences() {
     }
 }
 
-void VKRendererBackend::onViewportResize(const Vec2u32& viewportSize) {
+void VKRendererBackend::onViewportResize(const Vec2<u32>& viewportSize) {
     m_framebufferWidth    = viewportSize.w;
     m_framebufferHeight   = viewportSize.h;
     m_recreatingSwapchain = true;
@@ -289,8 +289,8 @@ bool VKRendererBackend::beginFrame(float deltaTime) {
     setViewport(
       commandBuffer,
       Viewport{
-        Vec2u32{0u,                  0u                 },
-        Vec2u32{ m_framebufferWidth, m_framebufferHeight},
+        Vec2<u32>{0u,                  0u                 },
+        Vec2<u32>{ m_framebufferWidth, m_framebufferHeight},
     }
     );
     setScissors(commandBuffer);

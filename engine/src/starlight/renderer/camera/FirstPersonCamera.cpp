@@ -12,11 +12,11 @@ FirstPersonCamera::FirstPersonCamera(const Properties& props) :
     m_right(1.0f, 0.0f, 0.0f), m_yaw(0.0f), m_pitch(0.0f), m_speed(10.0f),
     m_viewportSize(props.viewportSize) {}
 
-Mat4f FirstPersonCamera::getViewMatrix() const {
+Mat4<f32> FirstPersonCamera::getViewMatrix() const {
     return glm::lookAt(m_position, m_position + m_front, worldUp);
 }
 
-Mat4f FirstPersonCamera::getProjectionMatrix() const {
+Mat4<f32> FirstPersonCamera::getProjectionMatrix() const {
     // TODO: make it configurable
     return glm::perspective(
       glm::radians(45.0f),
@@ -25,12 +25,12 @@ Mat4f FirstPersonCamera::getProjectionMatrix() const {
     );
 }
 
-Vec3f FirstPersonCamera::getPosition() const { return m_position; }
+Vec3<f32> FirstPersonCamera::getPosition() const { return m_position; }
 
 void FirstPersonCamera::update(float deltaTime) {
     processInput(m_speed * deltaTime);
 
-    m_front = glm::normalize(Vec3f(
+    m_front = glm::normalize(Vec3<f32>(
       std::cos(m_yaw) * std::cos(m_pitch), std::sin(m_pitch),
       std::sin(m_yaw) * std::cos(m_pitch)
     ));
@@ -39,7 +39,7 @@ void FirstPersonCamera::update(float deltaTime) {
     m_up    = glm::normalize(glm::cross(m_right, m_front));
 }
 
-void FirstPersonCamera::onViewportResize(Vec2u32 viewportSize) {
+void FirstPersonCamera::onViewportResize(Vec2<u32> viewportSize) {
     m_viewportSize = viewportSize;
 }
 

@@ -9,7 +9,8 @@ class VulkanImageHandle : public ImageHandle {
 public:
     explicit VulkanImageHandle(Texture* texture);
 
-    void show(const Vec2f& size, const Vec2f& minUV, const Vec2f& maxUV) override;
+    void show(const Vec2<f32>& size, const Vec2<f32>& minUV, const Vec2<f32>& maxUV)
+      override;
 
 private:
     VkDescriptorSet createDescriptorSet(Texture* texture);
@@ -24,7 +25,7 @@ VulkanImageHandle::VulkanImageHandle(Texture* texture) :
     m_descriptorSet(createDescriptorSet(texture)) {}
 
 void VulkanImageHandle::show(
-  const Vec2f& size, const Vec2f& minUV, const Vec2f& maxUV
+  const Vec2<f32>& size, const Vec2<f32>& minUV, const Vec2<f32>& maxUV
 ) {
     ImGui::Image(
       m_descriptorSet, { size.x, size.y }, { minUV.x, minUV.y }, { maxUV.x, maxUV.y }

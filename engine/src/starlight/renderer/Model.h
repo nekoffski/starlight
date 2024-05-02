@@ -14,7 +14,7 @@ public:
 
     void addMesh(Material* material, Mesh* mesh);
 
-    Mat4f getModelMatrix();
+    Mat4<f32> getModelMatrix();
     u64 getId() const;
 
     template <typename Callback>

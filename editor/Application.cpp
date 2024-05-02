@@ -38,11 +38,12 @@ Application::Application(int argc, char** argv) :
     if (argc == 2) m_sceneDeserializer.deserialize(m_scene, argv[1]);
 
     m_eulerCamera = sl::createUniqPtr<sl::EulerCamera>(sl::EulerCamera::Properties{
-      .target = sl::Vec3f{ 0.0f }, .radius = 5.0f, .viewportSize = framebufferSize }
-    );
+      .target       = sl::Vec3<sl::f32>{ 0.0f },
+      .radius       = 5.0f,
+      .viewportSize = framebufferSize });
     m_firstPersonCamera =
       sl::createUniqPtr<sl::FirstPersonCamera>(sl::FirstPersonCamera::Properties{
-        .position = sl::Vec3f{ 0.0f }, .viewportSize = framebufferSize });
+        .position = sl::Vec3<sl::f32>{ 0.0f }, .viewportSize = framebufferSize });
 
     m_activeCamera = m_eulerCamera.get();
 
@@ -143,7 +144,7 @@ void Application::setupEventHandlers() {
     };
 
     const auto onWindowResized = [&](sl::WindowResized* event) {
-        sl::Vec2u32 viewportSize{ event->width, event->height };
+        sl::Vec2<sl::u32> viewportSize{ event->width, event->height };
         m_renderer.onViewportResize(viewportSize);
         m_eulerCamera->onViewportResize(viewportSize);
         m_firstPersonCamera->onViewportResize(viewportSize);

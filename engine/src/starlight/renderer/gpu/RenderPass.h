@@ -21,7 +21,7 @@ public:
 
     struct Properties {
         Rect2u32 rect;
-        Vec4f clearColor;
+        Vec4<f32> clearColor;
         u8 clearFlags;
         bool hasPreviousPass;
         bool hasNextPass;
@@ -40,9 +40,9 @@ public:
         end(commandBuffer);
     }
 
-    void setClearColor(const Vec4f& color);
+    void setClearColor(const Vec4<f32>& color);
     void setRect(const Rect2u32& extent);
-    void setRectSize(const Vec2u32& size);
+    void setRectSize(const Vec2<u32>& size);
 
     u32 getId() const;
 

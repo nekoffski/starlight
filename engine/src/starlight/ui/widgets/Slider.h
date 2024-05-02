@@ -5,12 +5,12 @@
 namespace sl::ui {
 
 class Slider3 {
-    using Callback = std::function<void(const Vec3f&)>;
+    using Callback = std::function<void(const Vec3<f32>&)>;
 
 public:
     explicit Slider3(
       const std::string& name, const StepInterval<float>& range,
-      const Vec3f& initialValue = Vec3f{ 0.0 }
+      const Vec3<f32>& initialValue = Vec3<f32>{ 0.0 }
     );
 
     void render(Callback&& callback);
@@ -19,7 +19,7 @@ private:
     std::string m_name;
     std::string m_id;
 
-    Vec3f m_data;
+    Vec3<f32> m_data;
 
     StepInterval<float> m_range;
 };

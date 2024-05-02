@@ -21,7 +21,7 @@ void UIRenderView::init(
     LOG_TRACE("Initializing UIRenderView");
 
     RenderPass::Properties renderPassProperties{
-        .rect       = Rect2u32{Vec2u32{ 0u, 0u }, initProperties.viewportSize},
+        .rect       = Rect2u32{Vec2<u32>{ 0u, 0u }, initProperties.viewportSize},
         .clearColor = glm::vec4(0.0f),
         .clearFlags = RenderPass::clearNone,
         .hasPreviousPass = initProperties.hasPreviousView,
@@ -59,7 +59,7 @@ void UIRenderView::render(
 }
 
 void UIRenderView::onViewportResize(
-  RendererBackendProxy& backendProxy, Vec2u32 viewportSize
+  RendererBackendProxy& backendProxy, Vec2<u32> viewportSize
 ) {
     // TODO: get swapchain images count from backend
     std::vector<RenderTarget::Properties> renderTargetsProperties;

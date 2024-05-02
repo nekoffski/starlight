@@ -14,7 +14,7 @@ namespace sl {
 class Material {
 public:
     struct Properties {
-        Vec4f diffuseColor;
+        Vec4<f32> diffuseColor;
         Texture* diffuseMap;
         Texture* specularMap;
         Texture* normalMap;

@@ -14,7 +14,7 @@ using namespace std::string_literals;
 
 struct MaterialConfig {
     // TODO: pass it from outside
-    inline static auto defaultDiffuseColor = Vec4f{ 1.0f };
+    inline static auto defaultDiffuseColor = Vec4<f32>{ 1.0f };
     inline static auto defaultDiffuseMap   = "Internal.Texture.Default"s;
     inline static auto defaultNormalMap    = "Internal.Texture.DefaultNormalMap"s;
     inline static auto defaultSpecularMap  = "Internal.Texture.DefaultSpecularMap"s;
@@ -33,7 +33,7 @@ struct MaterialConfig {
 
     std::string name;
 
-    Vec4f diffuseColor;
+    Vec4<f32> diffuseColor;
     float shininess;
     std::string diffuseMap;
     std::string specularMap;

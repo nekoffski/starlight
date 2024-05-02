@@ -12,7 +12,7 @@ EntityInspectorPanel::EntityInspectorPanel(
     m_state(state), m_logger(logger),
     m_translationSlider("Translation", { .min = -15.0, .max = 15.0f, .step = 0.1f }),
     m_scaleSlider(
-      "Scale", { .min = 0.0, .max = 5.0f, .step = 0.1f }, sl::Vec3f{ 1.0f }
+      "Scale", { .min = 0.0, .max = 5.0f, .step = 0.1f }, sl::Vec3<sl::f32>{ 1.0f }
     ),
     m_orientationSlider("Orientation", { .min = -3.14, .max = 3.14, .step = 0.01f }),
     m_selectedComponentIndex(0) {}
@@ -118,15 +118,15 @@ void EntityInspectorPanel::renderEntityUI(sl::u64 entityId) {
               [&]([[maybe_unused]] bool) {
                   auto& transform = component->transform;
                   sl::ui::namedScope("transform-component-ui", [&]() {
-                      m_translationSlider.render([&](const sl::Vec3f& data) {
+                      m_translationSlider.render([&](const sl::Vec3<sl::f32>& data) {
                           transform.setPosition(data);
                       });
 
-                      m_scaleSlider.render([&](const sl::Vec3f& data) {
+                      m_scaleSlider.render([&](const sl::Vec3<sl::f32>& data) {
                           transform.setScale(data);
                       });
 
-                      m_orientationSlider.render([&](const sl::Vec3f& data) {
+                      m_orientationSlider.render([&](const sl::Vec3<sl::f32>& data) {
                           transform.setRotation(sl::math::orientate4(data));
                       });
                   });

@@ -41,7 +41,7 @@ struct RendererBackend {
 
     virtual void drawMesh(const Mesh& mesh) = 0;
 
-    virtual void onViewportResize(const Vec2u32& viewportSize) = 0;
+    virtual void onViewportResize(const Vec2<u32>& viewportSize) = 0;
 
     virtual RendererBackendProxy* getProxy()  = 0;
     virtual ResourcePools* getResourcePools() = 0;

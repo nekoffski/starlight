@@ -21,9 +21,9 @@ void checkbox(const std::string& label, bool& value);
 void pushFont(Font*);
 void popFont();
 
-void pushTextColor(const Vec3f& color);
+void pushTextColor(const Vec3<f32>& color);
 void popTextColor(int count = 1);
-void withColor(const Vec3f& color, Callback&& callback);
+void withColor(const Vec3<f32>& color, Callback&& callback);
 
 void namedScope(const std::string& name, Callback&& callback);
 
@@ -37,9 +37,11 @@ bool text(const std::string& formatString, Args&&... args) {
     return ImGui::IsItemClicked();
 }
 
-bool slider(const std::string& name, Vec3f& data, const StepInterval<float>& range);
+bool slider(
+  const std::string& name, Vec3<f32>& data, const StepInterval<float>& range
+);
 
-bool button(const std::string& text, const Vec2f& size = { 0.0f, 0.0f });
+bool button(const std::string& text, const Vec2<f32>& size = { 0.0f, 0.0f });
 
 void closeCurrentPopup();
 void sameLine();

@@ -23,7 +23,7 @@ Entity* Scene::getEntity(const std::string& name) { return m_entitiesByName[name
 Entity* Scene::getEntity(u64 id) { return m_entities.get(id); }
 
 RenderPacket Scene::getRenderPacket() {
-    RenderPacket packet{};
+    RenderPacket packet;
     packet.entities.reserve(128);
 
     m_componentMap.getComponents<MeshComponent>()->forEach(

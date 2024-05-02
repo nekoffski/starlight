@@ -8,8 +8,8 @@ PointLightComponent::PointLightComponent(u64 id, u64 entityId) :
     Component(id, entityId) {}
 
 PointLightComponent::PointLightComponent(
-  u64 id, u64 entityId, const Vec4f& position, const Vec4f& color,
-  const Vec4f& attenuation
+  u64 id, u64 entityId, const Vec4<f32>& position, const Vec4<f32>& color,
+  const Vec4<f32>& attenuation
 ) :
     Component(id, entityId),
     light{ position, color, attenuation } {}
@@ -26,9 +26,9 @@ kc::json::Node PointLightComponent::serialize() const {
 }
 
 void PointLightComponent::deserialize(Entity* entity, const kc::json::Node& root) {
-    const auto position    = getField<Vec4f>(root, "position");
-    const auto color       = getField<Vec4f>(root, "color");
-    const auto attenuation = getField<Vec4f>(root, "attenuation");
+    const auto position    = getField<Vec4<f32>>(root, "position");
+    const auto color       = getField<Vec4<f32>>(root, "color");
+    const auto attenuation = getField<Vec4<f32>>(root, "attenuation");
 
     entity->addComponent<PointLightComponent>(position, color, attenuation);
 }
