@@ -6,74 +6,58 @@
 
 namespace sl {
 
-STBImageData::STBImageData(
-  u8* pixels, u32 width, u32 height, u8 channels, bool isTransparent
-) :
-    ImageData{ pixels, width, height, channels, isTransparent } {}
-
-STBImageData::~STBImageData() {
-    if (pixels) stbi_image_free(pixels);
-}
-
-STBImageData::STBImageData(STBImageData&& oth) {
-    *this      = oth;
-    oth.pixels = nullptr;
-}
-
-STBImageData& STBImageData::operator=(STBImageData&& oth) {
-    *this      = oth;
-    oth.pixels = nullptr;
-    return *this;
-}
-
-std::optional<STBImageData> STBImageData::load(
-  const Properties& props, const std::string& imagesPath
+std::optional<ImageData> ImageData::loadFromFile(
+  std::string_view name, Orientation orientation, std::string_view imagesPath
 ) {
     static constexpr int requiredChannels = 4;
-    const auto fullPath = fmt::format("{}/{}", imagesPath, props.name);
+    const auto path                       = fmt::format("{}/{}", imagesPath, name);
 
-    LOG_TRACE("Loading image: '{}'", fullPath);
+    LOG_TRACE("Loading image: '{}'", path);
 
     int width;
     int height;
     int channels;
 
-    stbi_set_flip_vertically_on_load(props.flip);
+    stbi_set_flip_vertically_on_load(orientation == Orientation::flipped);
 
-    const auto pixelsHandle =
-      stbi_load(fullPath.c_str(), &width, &height, &channels, requiredChannels);
+    const auto pixels =
+      stbi_load(path.data(), &width, &height, &channels, requiredChannels);
 
-    if (not pixelsHandle) {
+    if (not pixels) {
         if (const auto error = stbi_failure_reason(); error)
-            LOG_ERROR("Could not load '{}' - '{}'", fullPath, error);
+            LOG_ERROR("Could not load '{}' - '{}'", path, error);
         return {};
     }
 
+    ON_SCOPE_EXIT { stbi_image_free(pixels); };
     bool isTransparent = false;
 
     if (channels == requiredChannels) {
         static constexpr u8 opaqueAlpha = 255;
 
         for (u64 i = 3; i < width * height * channels; i += channels) {
-            const auto alpha = *(pixelsHandle + i);
+            const auto alpha = *(pixels + i);
             if (alpha != opaqueAlpha) {
                 isTransparent = true;
                 break;
             }
         }
-    }
-
-    if (channels != requiredChannels) {
+    } else {
         LOG_WARN(
-          "Image '{}' has different channels count than required - {} != {}",
-          props.name, requiredChannels, channels
+          "Image '{}' has different channels count than required - {} != {}", path,
+          requiredChannels, channels
         );
     }
 
-    STBImageData image(
-      pixelsHandle, static_cast<u32>(width), static_cast<u32>(height),
-      static_cast<u8>(requiredChannels), isTransparent
-    );
+    ImageData image;
+    image.width    = static_cast<u32>(width);
+    image.height   = static_cast<u32>(height);
+    image.channels = static_cast<u32>(requiredChannels);
+
+    const auto bufferSize = width * height * requiredChannels;
+
+    image.pixels.resize(bufferSize, 0);
+    std::memcpy(image.pixels.data(), pixels, bufferSize);
 
     LOG_TRACE(
       "Image loaded: width={}, height={}, channels={}", image.width, image.height,

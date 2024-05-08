@@ -18,18 +18,16 @@
 
 namespace sl {
 
-class RendererFrontend {
-    NO_COPY(RendererFrontend);
-
+class RendererFrontend : public NonCopyable {
 public:
     explicit RendererFrontend(Context& context);
 
     void init(std::span<RenderView*> renderViews);
 
     FrameStatistics getFrameStatistics();
+    RendererBackend& getRendererBackend();
 
     void renderFrame(float deltaTime, const RenderPacket& packet);
-
     void setRenderMode(RenderMode mode);
 
     ResourcePools* getResourcePools();

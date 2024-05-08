@@ -109,7 +109,7 @@ void VKImage::write(u32 offset, std::span<u8> pixels) {
 
 void VKImage::copyFromBuffer(VKBuffer& buffer, VKCommandBuffer& commandBuffer) {
     VkBufferImageCopy region;
-    zeroMemory(region);
+    std::memset(&region, 0, sizeof(VkBufferImageCopy));
 
     region.bufferOffset      = 0;
     region.bufferRowLength   = 0;
@@ -123,6 +123,8 @@ void VKImage::copyFromBuffer(VKBuffer& buffer, VKCommandBuffer& commandBuffer) {
     region.imageExtent.width  = m_props.width;
     region.imageExtent.height = m_props.height;
     region.imageExtent.depth  = 1;
+
+    LOG_TRACE("vkCmdCopyBufferToImage region: {}/{}", m_props.width, m_props.height);
 
     vkCmdCopyBufferToImage(
       commandBuffer.getHandle(), buffer.getHandle(), m_handle,

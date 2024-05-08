@@ -8,13 +8,17 @@
 #include <functional>
 #include <concepts>
 #include <span>
+#include <string_view>
 
 #include "starlight/core/math/Core.h"
+#include "starlight/core/memory/Memory.hpp"
 #include "starlight/core/Id.hpp"
+#include "starlight/core/FileSystem.h"
 #include "starlight/core/Core.h"
 #include "starlight/core/Log.h"
 #include "starlight/renderer/CullMode.h"
 #include "starlight/renderer/PolygonMode.h"
+#include "starlight/renderer/gpu/RendererBackend.h"
 #include "fwd.h"
 
 #include "Texture.h"
@@ -26,7 +30,10 @@ concept GlmCompatible = requires(T object) {
     { glm::value_ptr(object) } -> std::convertible_to<void*>;
 };
 
-class Shader {
+class Shader : public NonCopyable, public NonMovable {
+    inline static const std::string baseShadersPath =
+      SL_ASSETS_PATH + std::string("/shaders");
+
 public:
     enum class Scope : u8 {
         global   = 0,  // updated once per frame
@@ -37,13 +44,26 @@ public:
     static Scope scopeFromString(const std::string& name);
     static std::string scopeToString(Scope scope);
 
+    static OwningPtr<Shader> create(
+      RendererBackend& renderer, std::string_view name,
+      std::string_view shadersPath = baseShadersPath,
+      const FileSystem& fs         = fileSystem
+    );
+
     struct Attribute {
-        // clang-format off
         enum class Type : u8 {
-            float32, float32_2, float32_3, float32_4, mat4, int8, uint8,
-            int16, uint16, int32, uint32
+            float32,
+            float32_2,
+            float32_3,
+            float32_4,
+            mat4,
+            int8,
+            uint8,
+            int16,
+            uint16,
+            int32,
+            uint32
         };
-        // clang-format on
 
         static Type typeFromString(const std::string& name);
         static std::string typeToString(Type type);
@@ -137,13 +157,9 @@ public:
 
     virtual ~Shader() = default;
 
-    // clang-format off
-    virtual void use() = 0;
-    virtual u32 acquireInstanceResources(
-        const std::vector<Texture*>& textures
-    ) = 0;
-    virtual void releaseInstanceResources(u32 instanceId) = 0;
-    // clang-format on
+    virtual void use()                                                          = 0;
+    virtual u32 acquireInstanceResources(const std::vector<Texture*>& textures) = 0;
+    virtual void releaseInstanceResources(u32 instanceId)                       = 0;
 
     virtual void createPipeline(RenderPass* renderPass) = 0;
 

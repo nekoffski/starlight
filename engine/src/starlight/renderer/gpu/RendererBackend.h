@@ -19,7 +19,7 @@
 
 namespace sl {
 
-struct RendererBackend {
+struct RendererBackend : public NonCopyable, public NonMovable {
     virtual ~RendererBackend() = default;
 
     template <typename C>

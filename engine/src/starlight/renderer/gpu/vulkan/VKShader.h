@@ -4,6 +4,7 @@
 
 #include "starlight/core/Id.hpp"
 #include "starlight/core/memory/Memory.hpp"
+#include "starlight/renderer/gpu/Shader.h"
 
 #include "Vulkan.h"
 #include "VKRenderPass.h"
@@ -12,8 +13,6 @@
 #include "VKContext.h"
 #include "VKPipeline.h"
 #include "VKRendererBackendProxy.h"
-
-#include "starlight/renderer/gpu/Shader.h"
 
 namespace sl::vk {
 
@@ -49,7 +48,7 @@ class VKShader final : public Shader {
     struct DescriptorSetConfig {
         u8 bindingCount = 0;
         Id8 samplerBindingIndex;
-        std::array<VkDescriptorSetLayoutBinding, maxBindings> bindings;
+        std::array<VkDescriptorSetLayoutBinding, maxBindings> bindings = { 0 };
     };
 
     struct DescriptorState {
@@ -72,7 +71,7 @@ class VKShader final : public Shader {
 
 public:
     explicit VKShader(
-      u32 id, VKContext& context, VKLogicalDevice&,
+      u32 id, VKContext& context, VKLogicalDevice& device,
       VKRendererBackendProxy& backendProxy, const Shader::Properties& props
     );
     ~VKShader() override;

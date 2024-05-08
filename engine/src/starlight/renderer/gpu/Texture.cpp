@@ -1,11 +1,165 @@
 #include "Texture.h"
 
+#include <stb.h>
+
 namespace sl {
+
+static std::optional<Texture::Properties> prepareProperties(
+  std::string_view name, Texture::Type textureType, std::string_view texturesPath
+) {
+    sl::Texture::Properties props;
+    props.type = textureType;
+    props.name = name;
+
+    if (textureType == Texture::Type::flat) {
+        LOG_DEBUG("Loading texture '{}'", name);
+
+        if (auto imageData = Texture::ImageData::loadFromFile(name); imageData) {
+            props.width         = imageData->width;
+            props.height        = imageData->height;
+            props.channels      = imageData->channels;
+            props.isTransparent = imageData->isTransparent;
+            props.isWritable    = false;
+            props.name          = std::string{ name };
+        } else {
+            LOG_TRACE("Could not load image");
+            return {};
+        }
+    } else {  // cubemap
+        // +X, -X, +Y, -Y, +Z, -Z
+        LOG_DEBUG("Loading cube map: {}", name);
+
+        // TODO: assuming jpg for now but implement some enum to make it configurable
+        static std::string extension  = "jpg";
+        static constexpr u8 cubeFaces = 6u;
+
+        std::array<std::string, cubeFaces> texturePaths = {
+            fmt::format("{}_r.{}", name, extension),
+            fmt::format("{}_l.{}", name, extension),
+            fmt::format("{}_u.{}", name, extension),
+            fmt::format("{}_d.{}", name, extension),
+            fmt::format("{}_f.{}", name, extension),
+            fmt::format("{}_b.{}", name, extension)
+        };
+
+        props.isTransparent = false;
+        props.isWritable    = false;
+
+        std::vector<u8> buffer;
+
+        for (u8 i = 0u; i < cubeFaces; ++i) {
+            const auto& path = texturePaths[i];
+
+            const auto imageData = Texture::ImageData::loadFromFile(
+              path, Texture::ImageData::Orientation::horizontal
+            );
+
+            if (not imageData) return {};
+
+            const auto chunkSize =
+              imageData->width * imageData->height * imageData->channels;
+
+            if (buffer.empty()) {
+                props.width    = imageData->width;
+                props.height   = imageData->height;
+                props.channels = imageData->channels;
+
+                buffer.resize(chunkSize * cubeFaces, 0u);
+            }
+
+            ASSERT(
+              imageData->width == props.width && imageData->height == props.height
+                && imageData->channels == props.channels,
+              "Cube map faces have different size"
+            );
+
+            u64 offset = i * chunkSize;
+            std::memcpy(&buffer[offset], imageData->pixels.data(), chunkSize);
+        }
+    }
+
+    return props;
+}
+
+OwningPtr<Texture> Texture::create(
+  RendererBackend& renderer, std::string_view name, Type textureType,
+  std::string_view texturesPath
+) {
+    const auto properties = prepareProperties(name, textureType, texturesPath);
+
+    if (not properties) {
+        LOG_WARN("Could not process texture: {}/{}", texturesPath, name);
+        return nullptr;
+    }
+}
 
 const Texture::Properties& Texture::getProperties() const { return m_props; }
 
 const u32 Texture::getId() const { return m_id; }
 
 Texture::Texture(const Properties& props, u32 id) : m_props(props), m_id(id) {}
+
+std::optional<Texture::ImageData> Texture::ImageData::loadFromFile(
+  std::string_view name, Orientation orientation, std::string_view imagesPath
+) {
+    static constexpr int requiredChannels = 4;
+    const auto path                       = fmt::format("{}/{}", imagesPath, name);
+
+    LOG_TRACE("Loading image: '{}'", path);
+
+    int width;
+    int height;
+    int channels;
+
+    stbi_set_flip_vertically_on_load(orientation == Orientation::vertical);
+
+    const auto pixels =
+      stbi_load(path.data(), &width, &height, &channels, requiredChannels);
+
+    if (not pixels) {
+        if (const auto error = stbi_failure_reason(); error)
+            LOG_ERROR("Could not load '{}' - '{}'", path, error);
+        return {};
+    }
+
+    ON_SCOPE_EXIT { stbi_image_free(pixels); };
+    bool isTransparent = false;
+
+    if (channels == 4) {
+        static constexpr u8 opaqueAlpha = 255;
+
+        for (u64 i = 3; i < width * height * channels; i += channels) {
+            const auto alpha = *(pixels + i);
+            if (alpha != opaqueAlpha) {
+                isTransparent = true;
+                break;
+            }
+        }
+    }
+
+    if (channels != requiredChannels) {
+        LOG_WARN(
+          "Image '{}' has different channels count than required - {} != {}", path,
+          requiredChannels, channels
+        );
+    }
+
+    ImageData image;
+    image.width    = static_cast<u32>(width);
+    image.height   = static_cast<u32>(height);
+    image.channels = static_cast<u32>(requiredChannels);
+
+    const auto bufferSize = width * height * requiredChannels;
+
+    image.pixels.resize(bufferSize, 0);
+    std::memcpy(image.pixels.data(), pixels, bufferSize);
+
+    LOG_TRACE(
+      "Image loaded: width={}, height={}, channels={}", image.width, image.height,
+      image.channels
+    );
+
+    return image;
+}
 
 }  // namespace sl

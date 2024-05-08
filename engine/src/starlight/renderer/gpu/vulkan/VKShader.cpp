@@ -8,6 +8,7 @@
 #include "starlight/core/window/WindowManager.h"
 #include "starlight/renderer/gpu/Texture.h"
 
+#include "VKRendererBackend.h"
 #include "VKTexture.h"
 #include "VKPipeline.h"
 
@@ -77,10 +78,11 @@ VKShaderStage::VKShaderStage(
 }
 
 VKShaderStage::~VKShaderStage() {
-    if (m_handle)
+    if (m_handle) {
         vkDestroyShaderModule(
           m_device.getHandle(), m_handle, m_context.getAllocator()
         );
+    }
 }
 
 VKShader::VKShader(
@@ -640,6 +642,7 @@ void VKShader::createDescriptorSetLayouts() {
           "Creating descriptor set layout: {} - bindings: {}", i,
           m_descriptorSets[i].bindingCount
         );
+
         VkDescriptorSetLayoutCreateInfo info = {
             VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO
         };

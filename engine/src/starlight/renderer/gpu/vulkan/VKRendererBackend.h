@@ -38,13 +38,6 @@ public:
     explicit VKRendererBackend(sl::Window& window, const Config& config);
     ~VKRendererBackend();
 
-    VKRendererBackend(const VKRendererBackend&)            = delete;
-    VKRendererBackend& operator=(const VKRendererBackend&) = delete;
-    VKRendererBackend(VKRendererBackend&&)                 = delete;
-    VKRendererBackend& operator=(VKRendererBackend&&)      = delete;
-
-    // renderer backend
-
     bool beginFrame(float deltaTime) override;
     bool endFrame(float deltaTime) override;
 
@@ -57,6 +50,9 @@ public:
     // resources
     ResourcePools* getResourcePools() override;
     VKRendererBackendProxy* getProxy() override;
+
+    VKContext& getContext();
+    VKLogicalDevice& getLogicalDevice();
 
     void setViewport(VKCommandBuffer& commandBuffer, const Rect2<u32>& viewport);
     void setScissors(VKCommandBuffer& commandBuffer);

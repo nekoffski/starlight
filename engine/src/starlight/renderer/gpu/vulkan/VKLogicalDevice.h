@@ -5,7 +5,7 @@
 
 namespace sl::vk {
 
-class VKLogicalDevice {
+class VKLogicalDevice : public NonCopyable, public NonMovable {
 public:
     struct Queues {
         VkQueue graphics;

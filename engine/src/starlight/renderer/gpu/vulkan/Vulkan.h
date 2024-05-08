@@ -13,8 +13,6 @@
 
 namespace sl::vk {
 
-template <typename T> void zeroMemory(T& type) { std::memset(&type, 0, sizeof(T)); }
-
 std::string getResultString(VkResult result, bool extended);
 
 bool isGood(VkResult);

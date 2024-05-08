@@ -36,8 +36,8 @@ Texture* TextureManager::load(const std::string& name) {
         return texture;
     }
 
-    const auto imageData =
-      STBImageData::load(STBImageData::Properties{ .name = name, .flip = true });
+    auto imageData = ImageData::loadFromFile(name);
+
     ASSERT(imageData, "Could not load image: {}", name);
 
     sl::Texture::Properties props{
@@ -50,12 +50,7 @@ Texture* TextureManager::load(const std::string& name) {
         .type          = Texture::Type::flat
     };
 
-    auto texture = m_resourcePools.createTexture(
-      props,
-      std::span<u8>(
-        imageData->pixels, imageData->width * imageData->height * imageData->channels
-      )
-    );
+    auto texture = m_resourcePools.createTexture(props, imageData->pixels);
     return storeResource(props.name, texture->getId(), texture);
 }
 
@@ -92,16 +87,13 @@ Texture* TextureManager::loadCubeTexture(const std::string& name) {
         .type          = Texture::Type::cubemap
     };
 
-    STBImageData::Properties imageProps;
-    imageProps.flip = false;
-
     std::vector<u8> buffer;
 
     for (u8 i = 0u; i < cubeFaces; ++i) {
         const auto& path = texturePaths[i];
 
-        imageProps.name      = path;
-        const auto imageData = STBImageData::load(imageProps);
+        const auto imageData =
+          ImageData::loadFromFile(path, ImageData::Orientation::nonFlipped);
         ASSERT(imageData, "Could not load cube map face: {}", path);
 
         const auto chunkSize =
@@ -122,7 +114,7 @@ Texture* TextureManager::loadCubeTexture(const std::string& name) {
         );
 
         u64 offset = i * chunkSize;
-        std::memcpy(&buffer[offset], imageData->pixels, chunkSize);
+        std::memcpy(&buffer[offset], imageData->pixels.data(), chunkSize);
     }
 
     auto texture = m_resourcePools.createTexture(props, buffer);

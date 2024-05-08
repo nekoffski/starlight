@@ -5,6 +5,7 @@
 #include <concepts>
 
 #include <kc/core/ErrorBase.hpp>
+#include <kc/core/Scope.hpp>
 
 #include <tl/expected.hpp>
 
@@ -12,9 +13,17 @@ namespace sl {
 
 DEFINE_ERROR(Error);
 
-#define NO_COPY(Class)                 \
-    Class(Class&)            = delete; \
-    Class& operator=(Class&) = delete;
+struct NonCopyable {
+    NonCopyable()                         = default;
+    NonCopyable(NonCopyable&&)            = default;
+    NonCopyable& operator=(NonCopyable&&) = default;
+};
+
+struct NonMovable {
+    NonMovable()                             = default;
+    NonMovable(NonMovable const&)            = delete;
+    NonMovable& operator=(NonMovable const&) = delete;
+};
 
 using u64 = uint64_t;
 using u32 = uint32_t;

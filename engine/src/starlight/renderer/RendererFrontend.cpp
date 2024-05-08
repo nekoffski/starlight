@@ -31,6 +31,8 @@ void RendererFrontend::init(std::span<RenderView*> renderViews) {
 
 FrameStatistics RendererFrontend::getFrameStatistics() { return m_frameStatistics; }
 
+RendererBackend& RendererFrontend::getRendererBackend() { return m_backend; }
+
 void RendererFrontend::renderFrame(float deltaTime, const RenderPacket& packet) {
     m_frameStatistics.frameNumber++;
     m_frameStatistics.deltaTime = deltaTime;

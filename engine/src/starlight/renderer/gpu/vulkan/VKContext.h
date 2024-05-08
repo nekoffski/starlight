@@ -3,12 +3,13 @@
 #include "Vulkan.h"
 
 #include "starlight/core/fwd.h"
+#include "starlight/core/Core.h"
 #include "starlight/core/Config.h"
 #include "starlight/core/RAIIWrapper.hpp"
 
 namespace sl::vk {
 
-struct VKContext {
+class VKContext : public NonCopyable, public NonMovable {
 public:
     explicit VKContext(sl::Window& window, const Config& config);
     ~VKContext();

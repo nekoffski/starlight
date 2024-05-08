@@ -12,12 +12,10 @@
 
 namespace sl {
 
-class Context {
+class Context : public NonCopyable {
     struct LoggerInitializator {
         explicit LoggerInitializator(const std::string& applicationName);
     };
-
-    NO_COPY(Context);
 
 public:
     explicit Context(const std::string& applicationName = "starlight");

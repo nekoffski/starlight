@@ -219,6 +219,9 @@ Texture* VKRendererBackend::getDepthBuffer() {
 
 VKRendererBackendProxy* VKRendererBackend::getProxy() { return &m_proxy; }
 
+VKContext& VKRendererBackend::getContext() { return m_context; }
+VKLogicalDevice& VKRendererBackend::getLogicalDevice() { return m_logicalDevice; }
+
 void VKRendererBackend::setViewport(
   VKCommandBuffer& commandBuffer, const Rect2<u32>& viewport
 ) {

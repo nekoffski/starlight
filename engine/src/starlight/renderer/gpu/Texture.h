@@ -4,11 +4,30 @@
 
 #include "starlight/core/Core.h"
 #include "starlight/core/memory/Memory.hpp"
+#include "starlight/renderer/gpu/RendererBackend.h"
 
 namespace sl {
 
-class Texture {
+class Texture : public NonMovable, public NonCopyable {
 public:
+    inline static const std::string baseTexturesPath =
+      SL_ASSETS_PATH + std::string("/textures");
+
+    struct ImageData {
+        enum class Orientation { vertical, horizontal };
+
+        static std::optional<ImageData> loadFromFile(
+          std::string_view path, Orientation orientation = Orientation::vertical,
+          std::string_view imagesPath = baseTexturesPath
+        );
+
+        std::vector<u8> pixels;
+        u32 width;
+        u32 height;
+        u8 channels;
+        bool isTransparent;
+    };
+
     enum class Type : u8 { flat, cubemap };
     enum class Use { unknown, diffuseMap, specularMap, normalMap, cubeMap };
     enum class Filter { nearest, linear };
@@ -29,6 +48,11 @@ public:
         Repeat vRepeat       = Repeat::repeat;
         Repeat wRepeat       = Repeat::repeat;
     };
+
+    OwningPtr<Texture> create(
+      RendererBackend& renderer, std::string_view name, Type textureType,
+      std::string_view texturesPath = baseTexturesPath
+    );
 
     virtual ~Texture() = default;
 

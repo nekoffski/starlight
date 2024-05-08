@@ -14,6 +14,8 @@
 #include "starlight/resource/ResourceContext.h"
 #include "starlight/scene/Scene.h"
 
+#include "starlight/renderer/gpu/Shader.h"
+
 static std::atomic_bool isRunning = true;
 
 int main() {
@@ -32,28 +34,31 @@ int main() {
     });
 
     sl::ResourceContext resourceContext{ *renderer.getResourcePools() };
+    auto& rendererBackend = renderer.getRendererBackend();
 
-    auto skyboxShader = sl::ShaderManager::get().load("Builtin.Shader.Skybox");
-    auto skybox = sl::SkyboxManager::get().load("skybox2/skybox", *skyboxShader);
+    auto skyboxShader = sl::Shader::create(rendererBackend, "Builtin.Shader.Skybox");
 
-    sl::SkyboxRenderView skyboxView{ &camera, skyboxShader, skybox };
-    std::vector<sl::RenderView*> renderViews{ &skyboxView };
+    // auto skyboxShader = sl::ShaderManager::get().load("Builtin.Shader.Skybox");
+    // auto skybox = sl::SkyboxManager::get().load("skybox2/skybox", *skyboxShader);
 
-    renderer.init(renderViews);
+    // sl::SkyboxRenderView skyboxView{ &camera, skyboxShader, skybox };
+    // std::vector<sl::RenderView*> renderViews{ &skyboxView };
 
-    sl::RenderPacket renderPacket;
+    // renderer.init(renderViews);
 
-    renderPacket.viewport = sl::Rect2<sl::u32>{
-        sl::Vec2<sl::u32>{0u, 0u},
-        viewportSize
-    };
+    // sl::RenderPacket renderPacket;
 
-    while (isRunning) {
-        context.beginFrame([&](float deltaTime) {
-            renderer.renderFrame(deltaTime, renderPacket);
-            camera.update(deltaTime);
-        });
-    }
+    // renderPacket.viewport = sl::Rect2<sl::u32>{
+    //     sl::Vec2<sl::u32>{0u, 0u},
+    //     viewportSize
+    // };
+
+    // while (isRunning) {
+    //     context.beginFrame([&](float deltaTime) {
+    //         renderer.renderFrame(deltaTime, renderPacket);
+    //         camera.update(deltaTime);
+    //     });
+    // }
 
     return 0;
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef USE_VK
+#ifdef SL_USE_VK
 
 #include "vulkan/VKRendererBackend.h"
 

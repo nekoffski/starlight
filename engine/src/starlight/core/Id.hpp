@@ -1,10 +1,45 @@
 #pragma once
 
+#include <mutex>
 #include <limits>
-#include <cstdint>
 #include <concepts>
+#include <queue>
+
+#include "starlight/core/Core.h"
 
 namespace sl {
+
+template <typename T, typename Id = u64>
+requires std::is_arithmetic_v<Id>
+class Identificable {
+public:
+    explicit Identificable() : m_id(createId()) {}
+
+    ~Identificable() {
+        std::scoped_lock guard{ s_mutex };
+        s_freeIds.push(m_id);
+    }
+
+    Id getId() const { return m_id; }
+
+private:
+    static Id createId() {
+        std::scoped_lock guard{ s_mutex };
+
+        if (not s_freeIds.empty()) {
+            const auto id = s_freeIds.front().s_freeIds.pop();
+            return id;
+        }
+
+        return s_generator++;
+    }
+
+    const Id m_id;
+
+    inline static Id s_generator = 0;
+    static std::queue<Id> s_freeIds;
+    static std::mutex s_mutex;
+};
 
 template <typename T>
 requires std::is_integral_v<T>
@@ -33,9 +68,9 @@ private:
     T m_value;
 };
 
-using Id8  = Id<uint8_t>;
-using Id16 = Id<uint16_t>;
-using Id32 = Id<uint32_t>;
-using Id64 = Id<uint64_t>;
+using Id8  = Id<u8>;
+using Id16 = Id<u16>;
+using Id32 = Id<u32>;
+using Id64 = Id<u64>;
 
 }  // namespace sl
