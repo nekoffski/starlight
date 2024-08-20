@@ -10,7 +10,10 @@ namespace sl {
 
 class Skybox {
 public:
-    explicit Skybox(u64 id, Texture& cubeMap, Mesh& mesh, Shader& shader);
+    explicit Skybox(
+      ResourceRef<Texture> cubeMap, ResourceRef<Mesh> mesh,
+      ResourceRef<Shader> shader
+    );
     ~Skybox();
 
     Skybox(Skybox& oth)            = delete;
@@ -26,25 +29,22 @@ public:
 private:
     u64 m_id;
 
-    Texture& m_cubeMap;
-    Mesh& m_mesh;
+    ResourceRef<Texture> m_cubeMap;
+    ResourceRef<Mesh> m_mesh;
+    ResourceRef<Shader> m_shader;
 
     u32 m_instanceId;
-
-    Shader& m_shader;
 };
 
 class SkyboxManager
     : public ResourceManager<Skybox>,
       public kc::core::Singleton<SkyboxManager> {
 public:
-    explicit SkyboxManager(RendererBackend& renderer);
+    explicit SkyboxManager();
 
     ResourceRef<Skybox> load(const std::string& name);
 
 private:
-    RendererBackend& m_renderer;
-
     ResourceRef<Mesh> m_cubeMesh;
     ResourceRef<Shader> m_defaultSkyboxShader;
 };

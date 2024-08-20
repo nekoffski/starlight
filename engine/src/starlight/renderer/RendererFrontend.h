@@ -51,6 +51,7 @@ private:
     // manager singletons, we want to expicitly specify order of initialization
     ShaderManager m_shaderManager;
     TextureManager m_textureManager;
+    MeshManager m_meshManager;
     SkyboxManager m_skyboxManager;
 };
 

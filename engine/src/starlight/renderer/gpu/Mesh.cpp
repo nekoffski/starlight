@@ -13,16 +13,23 @@ namespace sl {
 Mesh::Mesh(const Properties& props, const Data& data, u32 id) :
     m_props(props), m_id(id), m_extent(data.extent) {}
 
-ResourceRef<Mesh> Mesh::load(RendererBackend& renderer, const MeshConfig2D& config) {
-    return MeshManager::get().load(renderer, config);
+ResourceRef<Mesh> Mesh::load(const MeshConfig2D& config) {
+    return MeshManager::get().load(config);
 }
 
-ResourceRef<Mesh> Mesh::load(RendererBackend& renderer, const MeshConfig3D& config) {
-    return MeshManager::get().load(renderer, config);
+ResourceRef<Mesh> Mesh::load(const MeshConfig3D& config) {
+    return MeshManager::get().load(config);
 }
 
 ResourceRef<Mesh> Mesh::find(const std::string& name) {
     return MeshManager::get().find(name);
+}
+
+ResourceRef<Mesh> Mesh::getCube() {
+    static CubeProperties properties{
+        10.0f, 10.0f, 10.0f, 1, 1, "Internal.Mesh.SkyboxCube"
+    };
+    return load(MeshConfig3D::generateCube(properties));
 }
 
 const Mesh::BufferDescription& Mesh::getDataDescription() const {
@@ -51,9 +58,9 @@ static OwningPtr<Mesh> createMesh(
 #endif
 }
 
-ResourceRef<Mesh> MeshManager::load(
-  RendererBackend& renderer, const MeshConfig2D& config
-) {
+MeshManager::MeshManager(RendererBackend& renderer) : m_renderer(renderer) {}
+
+ResourceRef<Mesh> MeshManager::load(const MeshConfig2D& config) {
     if (auto resource = find(config.name); resource) return resource;
 
     Mesh::Data data{
@@ -62,12 +69,10 @@ ResourceRef<Mesh> MeshManager::load(
     };
     Mesh::Properties properties{ config.name };
 
-    return store(config.name, createMesh(renderer, data, properties));
+    return store(config.name, createMesh(m_renderer, data, properties));
 }
 
-ResourceRef<Mesh> MeshManager::load(
-  RendererBackend& renderer, const MeshConfig3D& config
-) {
+ResourceRef<Mesh> MeshManager::load(const MeshConfig3D& config) {
     if (auto resource = find(config.name); resource) return resource;
 
     Mesh::Data data{
@@ -76,7 +81,7 @@ ResourceRef<Mesh> MeshManager::load(
     };
     Mesh::Properties properties{ config.name };
 
-    return store(config.name, createMesh(renderer, data, properties));
+    return store(config.name, createMesh(m_renderer, data, properties));
 }
 
 MeshConfig3D MeshConfig3D::generatePlane(const PlaneProperties& props) {

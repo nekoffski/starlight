@@ -121,13 +121,11 @@ public:
 
     virtual ~Mesh() = default;
 
-    static ResourceRef<Mesh> load(
-      RendererBackend& renderer, const MeshConfig2D& config
-    );
-    static ResourceRef<Mesh> load(
-      RendererBackend& renderer, const MeshConfig3D& config
-    );
+    static ResourceRef<Mesh> load(const MeshConfig2D& config);
+    static ResourceRef<Mesh> load(const MeshConfig3D& config);
     static ResourceRef<Mesh> find(const std::string& name);
+
+    static ResourceRef<Mesh> getCube();
 
     const BufferDescription& getDataDescription() const;
     const Properties& getProperties() const;
@@ -145,11 +143,17 @@ protected:
     Extent3 m_extent;
 };
 
-struct MeshManager
+class MeshManager
     : public ResourceManager<Mesh>,
       public kc::core::Singleton<MeshManager> {
-    ResourceRef<Mesh> load(RendererBackend& renderer, const MeshConfig2D& config);
-    ResourceRef<Mesh> load(RendererBackend& renderer, const MeshConfig3D& config);
+public:
+    explicit MeshManager(RendererBackend& renderer);
+
+    ResourceRef<Mesh> load(const MeshConfig2D& config);
+    ResourceRef<Mesh> load(const MeshConfig3D& config);
+
+private:
+    RendererBackend& m_renderer;
 };
 
 }  // namespace sl

@@ -32,8 +32,6 @@ int main() {
 
     auto& rendererBackend = renderer.getRendererBackend();
 
-    // auto skyboxShader = sl::Shader::load(rendererBackend,
-    // "Builtin.Shader.Skybox");
     auto skybox = sl::Skybox::load("skybox2/skybox");
 
     // sl::SkyboxRenderView skyboxView{ &camera, skyboxShader, skybox };
