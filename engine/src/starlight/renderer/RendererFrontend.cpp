@@ -11,7 +11,9 @@ namespace sl {
 RendererFrontend::RendererFrontend(Context& context) :
     m_backend(context.getWindow(), context.getConfig()),
     m_renderMode(RenderMode::standard), m_framesSinceResize(0u), m_resizing(false),
-    m_viewportSize(context.getWindow().getFramebufferSize()) {}
+    m_viewportSize(context.getWindow().getFramebufferSize()),
+    m_shaderManager(m_backend), m_textureManager(m_backend),
+    m_skyboxManager(m_backend) {}
 
 void RendererFrontend::init(std::span<RenderView*> renderViews) {
     m_renderViews.assign(renderViews.begin(), renderViews.end());

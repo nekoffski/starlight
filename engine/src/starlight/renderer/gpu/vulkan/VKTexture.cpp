@@ -92,7 +92,7 @@ VKImage::Properties getImageProperties(
 
 VKTexture::VKTexture(
   u32 id, VKContext& context, VKLogicalDevice& device, const Properties& props,
-  const std::span<u8> pixels
+  std::span<const u8> pixels
 ) :
     Texture(props, id),
     m_context(context), m_device(device),

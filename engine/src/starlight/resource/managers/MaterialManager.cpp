@@ -97,7 +97,7 @@ Material* MaterialManager::load(const MaterialConfig& config) {
       config.name
     );
     auto material = m_materials.create(props, *shader);
-    return storeResource(props.name, material->getId(), material);
+    // return storeResource(props.name, material->getId(), material);
 }
 
 void MaterialManager::destroyInternals(Material* material) {

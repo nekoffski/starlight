@@ -23,6 +23,8 @@
 
 #include "Texture.h"
 
+#include "starlight/renderer/Resource.hpp"
+
 namespace sl {
 
 template <typename T>
@@ -44,11 +46,12 @@ public:
     static Scope scopeFromString(const std::string& name);
     static std::string scopeToString(Scope scope);
 
-    static OwningPtr<Shader> create(
-      RendererBackend& renderer, std::string_view name,
-      std::string_view shadersPath = baseShadersPath,
-      const FileSystem& fs         = fileSystem
+    static ResourceRef<Shader> load(
+      const std::string& name, std::string_view shadersPath = baseShadersPath,
+      const FileSystem& fs = fileSystem
     );
+
+    static ResourceRef<Shader> find(const std::string& name);
 
     struct Attribute {
         enum class Type : u8 {
@@ -191,6 +194,20 @@ private:
 
     virtual void setSampler(const std::string& uniform, const Texture* value) = 0;
     virtual void setUniform(const std::string& uniform, const void* value)    = 0;
+};
+
+class ShaderManager
+    : public ResourceManager<Shader>,
+      public kc::core::Singleton<ShaderManager> {
+public:
+    explicit ShaderManager(RendererBackend& renderer);
+
+    ResourceRef<Shader> load(
+      const std::string& name, std::string_view shadersPath, const FileSystem& fs
+    );
+
+private:
+    RendererBackend& m_renderer;
 };
 
 }  // namespace sl

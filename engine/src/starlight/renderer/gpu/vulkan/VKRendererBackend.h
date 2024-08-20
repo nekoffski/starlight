@@ -51,6 +51,9 @@ public:
     ResourcePools* getResourcePools() override;
     VKRendererBackendProxy* getProxy() override;
 
+    VKBuffer& getIndexBuffer();
+    VKBuffer& getVertexBuffer();
+
     VKContext& getContext();
     VKLogicalDevice& getLogicalDevice();
 

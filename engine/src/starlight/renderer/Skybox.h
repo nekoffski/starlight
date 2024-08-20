@@ -4,6 +4,8 @@
 #include "gpu/Mesh.h"
 #include "gpu/Shader.h"
 
+#include "starlight/renderer/Resource.hpp"
+
 namespace sl {
 
 class Skybox {
@@ -19,6 +21,8 @@ public:
     Mesh* getMesh();
     u32 getInstanceId() const;
 
+    static ResourceRef<Skybox> load(const std::string& name);
+
 private:
     u64 m_id;
 
@@ -28,6 +32,21 @@ private:
     u32 m_instanceId;
 
     Shader& m_shader;
+};
+
+class SkyboxManager
+    : public ResourceManager<Skybox>,
+      public kc::core::Singleton<SkyboxManager> {
+public:
+    explicit SkyboxManager(RendererBackend& renderer);
+
+    ResourceRef<Skybox> load(const std::string& name);
+
+private:
+    RendererBackend& m_renderer;
+
+    ResourceRef<Mesh> m_cubeMesh;
+    ResourceRef<Shader> m_defaultSkyboxShader;
 };
 
 }  // namespace sl

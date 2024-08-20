@@ -15,7 +15,7 @@ VKImage::VKImage(
 
 VKImage::VKImage(
   VKContext& context, VKLogicalDevice& device, const Properties& properties,
-  const std::span<u8> pixels
+  std::span<const u8> pixels
 ) :
     VKImage(context, device, properties) {
     write(0, pixels);
@@ -69,7 +69,7 @@ void VKImage::create() {
 
 VKImage::~VKImage() { destroy(); }
 
-void VKImage::write(u32 offset, std::span<u8> pixels) {
+void VKImage::write(u32 offset, std::span<const u8> pixels) {
     VkDeviceSize imageSize = pixels.size();
 
     VkBufferUsageFlags usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;

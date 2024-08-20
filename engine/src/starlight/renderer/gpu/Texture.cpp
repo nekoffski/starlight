@@ -2,14 +2,26 @@
 
 #include <stb.h>
 
+#ifdef SL_USE_VK
+#include "starlight/renderer/gpu/vulkan/VKTexture.h"
+#include "starlight/renderer/gpu/vulkan/VKRendererBackend.h"
+#endif
+
 namespace sl {
 
-static std::optional<Texture::Properties> prepareProperties(
+struct TextureComponents {
+    Texture::Properties props;
+    std::vector<u8> buffer;
+};
+
+static std::optional<TextureComponents> prepareComponents(
   std::string_view name, Texture::Type textureType, std::string_view texturesPath
 ) {
-    sl::Texture::Properties props;
-    props.type = textureType;
-    props.name = name;
+    TextureComponents args;
+
+    auto& props = args.props;
+    props.type  = textureType;
+    props.name  = name;
 
     if (textureType == Texture::Type::flat) {
         LOG_DEBUG("Loading texture '{}'", name);
@@ -21,6 +33,8 @@ static std::optional<Texture::Properties> prepareProperties(
             props.isTransparent = imageData->isTransparent;
             props.isWritable    = false;
             props.name          = std::string{ name };
+            args.buffer         = imageData->pixels;
+
         } else {
             LOG_TRACE("Could not load image");
             return {};
@@ -75,22 +89,21 @@ static std::optional<Texture::Properties> prepareProperties(
 
             u64 offset = i * chunkSize;
             std::memcpy(&buffer[offset], imageData->pixels.data(), chunkSize);
+
+            args.buffer = std::move(buffer);
         }
     }
-
-    return props;
+    return args;
 }
 
-OwningPtr<Texture> Texture::create(
-  RendererBackend& renderer, std::string_view name, Type textureType,
-  std::string_view texturesPath
+ResourceRef<Texture> Texture::load(
+  const std::string& name, Type textureType, std::string_view texturesPath
 ) {
-    const auto properties = prepareProperties(name, textureType, texturesPath);
+    return TextureManager::get().load(name, textureType, texturesPath);
+}
 
-    if (not properties) {
-        LOG_WARN("Could not process texture: {}/{}", texturesPath, name);
-        return nullptr;
-    }
+ResourceRef<Texture> Texture::find(const std::string& name) {
+    return TextureManager::get().find(name);
 }
 
 const Texture::Properties& Texture::getProperties() const { return m_props; }
@@ -161,5 +174,35 @@ std::optional<Texture::ImageData> Texture::ImageData::loadFromFile(
 
     return image;
 }
+
+ResourceRef<Texture> TextureManager::load(
+  const std::string& name, Texture::Type textureType, std::string_view texturesPath
+) {
+    if (auto resource = find(name); resource) return resource;
+
+    const auto components = prepareComponents(name, textureType, texturesPath);
+
+    if (not components) {
+        LOG_WARN("Could not process texture: {}/{}", texturesPath, name);
+        return nullptr;
+    }
+
+#ifdef SL_USE_VK
+    auto& vkRenderer = static_cast<vk::VKRendererBackend&>(m_renderer);
+
+    return store(
+      name,
+      createOwningPtr<vk::VKTexture>(
+        1u, vkRenderer.getContext(), vkRenderer.getLogicalDevice(),
+        components->props, components->buffer
+      )
+    );
+
+#else
+    FATAL_ERROR("Could not find renderer backend implementation");
+#endif
+}
+
+TextureManager::TextureManager(RendererBackend& renderer) : m_renderer(renderer) {}
 
 }  // namespace sl

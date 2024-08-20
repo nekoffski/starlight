@@ -2,6 +2,8 @@
 
 #include <span>
 
+#include "starlight/renderer/Resource.hpp"
+
 #include "starlight/core/Core.h"
 #include "starlight/core/memory/Memory.hpp"
 #include "starlight/renderer/gpu/RendererBackend.h"
@@ -17,7 +19,7 @@ public:
         enum class Orientation { vertical, horizontal };
 
         static std::optional<ImageData> loadFromFile(
-          std::string_view path, Orientation orientation = Orientation::vertical,
+          std::string_view name, Orientation orientation = Orientation::vertical,
           std::string_view imagesPath = baseTexturesPath
         );
 
@@ -49,10 +51,11 @@ public:
         Repeat wRepeat       = Repeat::repeat;
     };
 
-    OwningPtr<Texture> create(
-      RendererBackend& renderer, std::string_view name, Type textureType,
+    static ResourceRef<Texture> load(
+      const std::string& name, Type textureType,
       std::string_view texturesPath = baseTexturesPath
     );
+    static ResourceRef<Texture> find(const std::string& name);
 
     virtual ~Texture() = default;
 
@@ -71,6 +74,21 @@ protected:
 
     Properties m_props;
     u32 m_id;
+};
+
+class TextureManager
+    : public ResourceManager<Texture>,
+      public kc::core::Singleton<TextureManager> {
+public:
+    explicit TextureManager(RendererBackend& renderer);
+
+    ResourceRef<Texture> load(
+      const std::string& name, Texture::Type textureType,
+      std::string_view texturesPath
+    );
+
+private:
+    RendererBackend& m_renderer;
 };
 
 }  // namespace sl

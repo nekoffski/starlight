@@ -25,7 +25,7 @@ class VKTexture : public Texture {
 public:
     explicit VKTexture(
       u32 id, VKContext& context, VKLogicalDevice& device, const Properties& props,
-      const std::span<u8> pixels
+      std::span<const u8> pixels
     );
 
     // TODO: consider splitting those classes somehow

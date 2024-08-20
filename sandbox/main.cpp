@@ -11,9 +11,6 @@
 #include "starlight/renderer/views/SkyboxRenderView.h"
 #include "starlight/renderer/RendererFrontend.h"
 
-#include "starlight/resource/ResourceContext.h"
-#include "starlight/scene/Scene.h"
-
 #include "starlight/renderer/gpu/Shader.h"
 
 static std::atomic_bool isRunning = true;
@@ -33,13 +30,11 @@ int main() {
       .viewportSize = viewportSize,
     });
 
-    sl::ResourceContext resourceContext{ *renderer.getResourcePools() };
     auto& rendererBackend = renderer.getRendererBackend();
 
-    auto skyboxShader = sl::Shader::create(rendererBackend, "Builtin.Shader.Skybox");
-
-    // auto skyboxShader = sl::ShaderManager::get().load("Builtin.Shader.Skybox");
-    // auto skybox = sl::SkyboxManager::get().load("skybox2/skybox", *skyboxShader);
+    // auto skyboxShader = sl::Shader::load(rendererBackend,
+    // "Builtin.Shader.Skybox");
+    auto skybox = sl::Skybox::load("skybox2/skybox");
 
     // sl::SkyboxRenderView skyboxView{ &camera, skyboxShader, skybox };
     // std::vector<sl::RenderView*> renderViews{ &skyboxView };

@@ -219,6 +219,10 @@ Texture* VKRendererBackend::getDepthBuffer() {
 
 VKRendererBackendProxy* VKRendererBackend::getProxy() { return &m_proxy; }
 
+VKBuffer& VKRendererBackend::getIndexBuffer() { return *m_objectIndexBuffer; }
+
+VKBuffer& VKRendererBackend::getVertexBuffer() { return *m_objectVertexBuffer; }
+
 VKContext& VKRendererBackend::getContext() { return m_context; }
 VKLogicalDevice& VKRendererBackend::getLogicalDevice() { return m_logicalDevice; }
 

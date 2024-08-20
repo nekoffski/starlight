@@ -35,7 +35,7 @@ public:
     );
     explicit VKImage(
       VKContext& context, VKLogicalDevice&, const Properties& properties,
-      const std::span<u8> pixels
+      std::span<const u8> pixels
     );
     explicit VKImage(
       VKContext& context, VKLogicalDevice&, const Properties& properties,
@@ -54,7 +54,7 @@ public:
     VKImage& operator=(VKImage&& oth)      = delete;
     VKImage(VKImage&&)                     = delete;
 
-    void write(u32 offset, std::span<u8> pixels);
+    void write(u32 offset, std::span<const u8> pixels);
 
     VkImageView getView() const;
 

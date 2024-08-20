@@ -1,6 +1,6 @@
 file(GLOB_RECURSE SANDBOX_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 set(SANDBOX_TARGET starlight-sandbox)
-set(SANDBOX_LIBS starlight-core starlight-renderer starlight-scene)
+set(SANDBOX_LIBS starlight-core starlight-renderer)
 
 add_executable(${SANDBOX_TARGET} ${SANDBOX_SRC})
 set_property(TARGET ${SANDBOX_TARGET} PROPERTY CXX_STANDARD 20)

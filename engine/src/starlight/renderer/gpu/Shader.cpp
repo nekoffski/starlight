@@ -152,11 +152,24 @@ std::string Shader::scopeToString(Shader::Scope scope) {
     __builtin_unreachable();
 }
 
-OwningPtr<Shader> Shader::create(
-  RendererBackend& renderer, std::string_view name, std::string_view shadersPath,
-  const FileSystem& fs
+ResourceRef<Shader> Shader::load(
+  const std::string& name, std::string_view shadersPath, const FileSystem& fs
 ) {
-#ifdef SL_USE_VK
+    return sl::ShaderManager::get().load(name, shadersPath, fs);
+}
+
+ResourceRef<Shader> Shader::find(const std::string& name) {
+    return sl::ShaderManager::get().find(name);
+}
+
+ResourceRef<Shader> ShaderManager::load(
+  const std::string& name, std::string_view shadersPath, const FileSystem& fs
+) {
+    if (auto resource = find(name); resource) {
+        LOG_TRACE("Shader '{}' found, returning from cache", name);
+        return resource;
+    }
+
     const auto properties =
       loadPropertiesFromFile(name, Texture::defaultDiffuse, shadersPath, fs);
 
@@ -165,17 +178,21 @@ OwningPtr<Shader> Shader::create(
         return nullptr;
     }
 
-    LOG_WARN("KCZ: {}", Texture::defaultDiffuse->getProperties().name);
+#ifdef SL_USE_VK
+    auto& vkRenderer = static_cast<vk::VKRendererBackend&>(m_renderer);
 
-    auto& vkRenderer = static_cast<vk::VKRendererBackend&>(renderer);
+    LOG_TRACE("Loading shader with vulkan backend");
 
-    return createOwningPtr<vk::VKShader>(
-      1u, vkRenderer.getContext(), vkRenderer.getLogicalDevice(),
-      *vkRenderer.getProxy(), *properties
+    return store(
+      name,
+      createOwningPtr<vk::VKShader>(
+        1u, vkRenderer.getContext(), vkRenderer.getLogicalDevice(),
+        *vkRenderer.getProxy(), *properties
+      )
     );
-
-#endif
+#else
     FATAL_ERROR("Could not find renderer backend implementation");
+#endif
 }
 
 Shader::Attribute::Type Shader::Attribute::typeFromString(const std::string& name) {
@@ -356,5 +373,7 @@ void Shader::UniformProxy::set(const std::string& uniform, const Texture* value)
 }
 
 Shader::UniformProxy::UniformProxy(Shader& shader) : m_shader(shader) {}
+
+ShaderManager::ShaderManager(RendererBackend& renderer) : m_renderer(renderer) {}
 
 }  // namespace sl

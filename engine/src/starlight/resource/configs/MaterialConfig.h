@@ -13,7 +13,6 @@ namespace sl {
 using namespace std::string_literals;
 
 struct MaterialConfig {
-    // TODO: pass it from outside
     inline static auto defaultDiffuseColor = Vec4<f32>{ 1.0f };
     inline static auto defaultDiffuseMap   = "Internal.Texture.Default"s;
     inline static auto defaultNormalMap    = "Internal.Texture.DefaultNormalMap"s;

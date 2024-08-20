@@ -10,11 +10,14 @@
 #include "RenderMode.h"
 #include "FrameStatistics.h"
 #include "Model.h"
+#include "Skybox.h"
 
 #include "camera/Camera.h"
 #include "views/RenderView.h"
 #include "gpu/RendererBackend.h"
 #include "gpu/Vendor.h"
+#include "gpu/Shader.h"
+#include "gpu/Texture.h"
 
 namespace sl {
 
@@ -44,6 +47,11 @@ private:
 
     FrameStatistics m_frameStatistics;
     Vec2<u32> m_viewportSize;
+
+    // manager singletons, we want to expicitly specify order of initialization
+    ShaderManager m_shaderManager;
+    TextureManager m_textureManager;
+    SkyboxManager m_skyboxManager;
 };
 
 }  // namespace sl
