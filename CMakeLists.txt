@@ -40,5 +40,5 @@ endif()
 
 add_subdirectory(3rdparty)
 add_subdirectory(engine)
-add_subdirectory(editor)
+# add_subdirectory(editor)
 add_subdirectory(sandbox)
