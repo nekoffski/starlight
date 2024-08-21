@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include <span>
 
 #include "starlight/core/Core.h"
 #include "starlight/core/Enum.h"
