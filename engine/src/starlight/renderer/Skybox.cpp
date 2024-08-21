@@ -23,6 +23,8 @@ u32 Skybox::getInstanceId() const { return m_instanceId; }
 
 Texture* Skybox::getCubeMap() { return m_cubeMap.get(); }
 
+Shader* Skybox::getShader() { return m_shader.get(); }
+
 SkyboxManager::SkyboxManager() :
     m_cubeMesh(Mesh::getCube()),
     m_defaultSkyboxShader(Shader::load("Builtin.Shader.Skybox")) {}

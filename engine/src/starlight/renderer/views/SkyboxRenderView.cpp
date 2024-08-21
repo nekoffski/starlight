@@ -4,11 +4,8 @@
 
 namespace sl {
 
-SkyboxRenderView::SkyboxRenderView(
-  Camera* camera, Shader* skyboxShader, Skybox* skybox
-) :
-    RenderView(camera),
-    m_shader(skyboxShader), m_skybox(skybox) {}
+SkyboxRenderView::SkyboxRenderView(Camera* camera, Skybox* skybox) :
+    RenderView(camera), m_skybox(skybox) {}
 
 void SkyboxRenderView::init(
   RendererBackendProxy& backendProxy, ResourcePools& resourcePools,
@@ -35,7 +32,7 @@ void SkyboxRenderView::init(
     }
 
     m_renderPass = resourcePools.createRenderPass(renderPassProperties);
-    m_shader->createPipeline(m_renderPass);
+    m_skybox->getShader()->createPipeline(m_renderPass);
     LOG_TRACE("SkyboxRenderView initialized");
 }
 
@@ -48,8 +45,10 @@ void SkyboxRenderView::render(
     m_renderPass->run(
       *backendProxy.getCommandBuffer(), backendProxy.getImageIndex(),
       [&]() {
-          m_shader->use();
-          m_shader->setGlobalUniforms([&](Shader::UniformProxy& proxy) {
+          auto shader = m_skybox->getShader();
+
+          shader->use();
+          shader->setGlobalUniforms([&](Shader::UniformProxy& proxy) {
               auto viewMatrix  = m_camera->getViewMatrix();
               viewMatrix[3][0] = 0.0f;
               viewMatrix[3][1] = 0.0f;
@@ -58,7 +57,7 @@ void SkyboxRenderView::render(
               proxy.set("view", viewMatrix);
               proxy.set("projection", m_camera->getProjectionMatrix());
           });
-          m_shader->setInstanceUniforms(
+          shader->setInstanceUniforms(
             m_skybox->getInstanceId(),
             [&](Shader::UniformProxy& proxy) {
                 proxy.set("cubeTexture", m_skybox->getCubeMap());

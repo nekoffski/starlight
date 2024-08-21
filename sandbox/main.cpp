@@ -34,24 +34,25 @@ int main() {
 
     auto skybox = sl::Skybox::load("skybox2/skybox");
 
-    // sl::SkyboxRenderView skyboxView{ &camera, skyboxShader, skybox };
-    // std::vector<sl::RenderView*> renderViews{ &skyboxView };
+    sl::SkyboxRenderView skyboxView{ &camera, skybox.get() };
+    std::vector<sl::RenderView*> renderViews{ &skyboxView };
 
-    // renderer.init(renderViews);
+    // sus, RendererPipeline instead?
+    renderer.init(renderViews);
 
-    // sl::RenderPacket renderPacket;
+    sl::RenderPacket renderPacket;
 
-    // renderPacket.viewport = sl::Rect2<sl::u32>{
-    //     sl::Vec2<sl::u32>{0u, 0u},
-    //     viewportSize
-    // };
+    renderPacket.viewport = sl::Rect2<sl::u32>{
+        sl::Vec2<sl::u32>{0u, 0u},
+        viewportSize
+    };
 
-    // while (isRunning) {
-    //     context.beginFrame([&](float deltaTime) {
-    //         renderer.renderFrame(deltaTime, renderPacket);
-    //         camera.update(deltaTime);
-    //     });
-    // }
+    while (isRunning) {
+        context.beginFrame([&](float deltaTime) {
+            renderer.renderFrame(deltaTime, renderPacket);
+            camera.update(deltaTime);
+        });
+    }
 
     return 0;
 }

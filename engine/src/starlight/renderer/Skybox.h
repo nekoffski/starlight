@@ -21,6 +21,7 @@ public:
 
     u64 getId() const;
     Texture* getCubeMap();
+    Shader* getShader();
     Mesh* getMesh();
     u32 getInstanceId() const;
 

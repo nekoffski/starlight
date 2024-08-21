@@ -14,7 +14,7 @@ class SkyboxRenderView : public RenderView {
 public:
     using UICallback = std::function<void(float)>;
 
-    explicit SkyboxRenderView(Camera* camera, Shader* skyboxShader, Skybox* skybox);
+    explicit SkyboxRenderView(Camera* camera, Skybox* skybox);
 
     void init(
       RendererBackendProxy& backendProxy, ResourcePools& resourcePools,
@@ -30,7 +30,6 @@ public:
       override;
 
 private:
-    Shader* m_shader;
     Skybox* m_skybox;
 };
 
