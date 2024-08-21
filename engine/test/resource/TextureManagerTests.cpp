@@ -3,27 +3,26 @@
 
 // #include "mock/All.h"
 
-// #include <gtest/gtest.h>
+#include <gtest/gtest.h>
 
-// using namespace testing;
+using namespace testing;
 // using namespace sl;
 // using namespace sl;
 
-// // TODO:: fix
-// struct TextureLoaderTests : public Test {
-//     RendererBackendMock backend;
-//     ResourcePoolsMock resourcePools;
+// TODO:: fix
+struct TextureLoaderTests : public Test {
+    // RendererBackendMock backend;
+    // ResourcePoolsMock resourcePools;
 
-//     // TextureManager textureManager{ resourcePools };
-//     // std::unique_ptr<Texture> texture = std::make_unique<Texture>();
-// };
+    // TextureManager textureManager{ resourcePools };
+    // std::unique_ptr<Texture> texture = std::make_unique<Texture>();
+};
 
-// TEST_F(
-//   TextureLoaderTests,
-//   givenNonExistingTextureName_whenAcquiring_shouldReturnNullptr
-// ) {
-//     // EXPECT_EQ(textureManager.acquire("bleble"), nullptr);
-// }
+TEST_F(
+  TextureLoaderTests, givenNonExistingTextureName_whenAcquiring_shouldReturnNullptr
+) {
+    // EXPECT_EQ(textureManager.acquire("bleble"), nullptr);
+}
 
 // TEST_F(TextureLoaderTests, whenLoadingTexture_shouldLoadAndReturnPointer) {
 //     // auto pointer = texture.get();
