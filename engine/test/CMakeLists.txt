@@ -1,7 +1,7 @@
 
 set(GTEST_LINK gtest gtest_main gmock gmock_main)
 set(MOCK_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR})
-set(SL_LIBS starlight-core starlight-renderer starlight-resource)
+set(SL_LIBS starlight-core starlight-renderer)
 
 include(GoogleTest)
 
