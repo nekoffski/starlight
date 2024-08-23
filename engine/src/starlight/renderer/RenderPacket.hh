@@ -6,6 +6,7 @@
 
 #include "Material.h"
 #include "PointLight.h"
+#include "RenderGraph.h"
 
 namespace sl {
 
