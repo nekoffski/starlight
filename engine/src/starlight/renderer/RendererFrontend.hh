@@ -11,6 +11,7 @@
 #include "FrameStatistics.hh"
 #include "Model.hh"
 #include "Skybox.hh"
+#include "RenderGraph.hh"
 
 #include "camera/Camera.hh"
 #include "views/RenderView.hh"
@@ -25,12 +26,12 @@ class RendererFrontend : public NonCopyable {
 public:
     explicit RendererFrontend(Context& context);
 
-    void init(std::span<RenderView*> renderViews);
-
     FrameStatistics getFrameStatistics();
     RendererBackend& getRendererBackend();
 
-    void renderFrame(float deltaTime, const RenderPacket& packet);
+    void renderFrame(
+      float deltaTime, const RenderPacket& packet, RenderGraph& renderGraph
+    );
     void setRenderMode(RenderMode mode);
 
     ResourcePools* getResourcePools();
@@ -38,8 +39,6 @@ public:
 
 private:
     RendererBackendVendor m_backend;
-
-    std::vector<RenderView*> m_renderViews;
 
     RenderMode m_renderMode;
     u16 m_framesSinceResize;

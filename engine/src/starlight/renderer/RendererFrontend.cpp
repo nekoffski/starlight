@@ -15,27 +15,13 @@ RendererFrontend::RendererFrontend(Context& context) :
     m_shaderManager(m_backend), m_textureManager(m_backend),
     m_meshManager(m_backend) {}
 
-void RendererFrontend::init(std::span<RenderView*> renderViews) {
-    m_renderViews.assign(renderViews.begin(), renderViews.end());
-
-    auto backendProxy    = m_backend.getProxy();
-    auto resourcePools   = m_backend.getResourcePools();
-    const auto viewCount = m_renderViews.size();
-
-    RenderView::InitProperties initProperties{ .viewportSize = m_viewportSize };
-
-    for (u32 i = 0; i < viewCount; ++i) {
-        initProperties.hasPreviousView = (i != 0);
-        initProperties.hasNextView     = (i != viewCount - 1);
-        m_renderViews[i]->init(*backendProxy, *resourcePools, initProperties);
-    }
-}
-
 FrameStatistics RendererFrontend::getFrameStatistics() { return m_frameStatistics; }
 
 RendererBackend& RendererFrontend::getRendererBackend() { return m_backend; }
 
-void RendererFrontend::renderFrame(float deltaTime, const RenderPacket& packet) {
+void RendererFrontend::renderFrame(
+  float deltaTime, const RenderPacket& packet, RenderGraph& renderGraph
+) {
     m_frameStatistics.frameNumber++;
     m_frameStatistics.deltaTime = deltaTime;
 
@@ -61,7 +47,7 @@ void RendererFrontend::renderFrame(float deltaTime, const RenderPacket& packet) 
         };
         auto backendProxy = m_backend.getProxy();
 
-        for (auto& view : m_renderViews)
+        for (auto& view : renderGraph.getViews())
             view->render(*backendProxy, packet, renderProperties, deltaTime);
     });
 }
@@ -76,12 +62,12 @@ ResourcePools* RendererFrontend::getResourcePools() {
 }
 
 void RendererFrontend::onViewportResize(Vec2<u32> viewportSize) {
-    m_resizing = true;
-    m_backend.onViewportResize(viewportSize);
+    // m_resizing = true;
+    // m_backend.onViewportResize(viewportSize);
 
-    auto backendProxy = m_backend.getProxy();
-    for (auto& view : m_renderViews)
-        view->onViewportResize(*backendProxy, viewportSize);
+    // auto backendProxy = m_backend.getProxy();
+    // for (auto& view : m_renderViews)
+    //     view->onViewportResize(*backendProxy, viewportSize);
 }
 
 }  // namespace sl

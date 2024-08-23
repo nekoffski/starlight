@@ -10,7 +10,7 @@
 #include "starlight/renderer/camera/EulerCamera.hh"
 #include "starlight/renderer/views/SkyboxRenderView.hh"
 #include "starlight/renderer/RendererFrontend.hh"
-
+#include "starlight/renderer/RenderGraph.hh"
 #include "starlight/renderer/gpu/Shader.hh"
 
 static std::atomic_bool isRunning = true;
@@ -31,14 +31,12 @@ int main() {
     });
 
     auto& rendererBackend = renderer.getRendererBackend();
+    auto skybox           = sl::Skybox::load("skybox2/skybox");
 
-    auto skybox = sl::Skybox::load("skybox2/skybox");
-
-    sl::SkyboxRenderView skyboxView{ &camera, skybox.get() };
-    std::vector<sl::RenderView*> renderViews{ &skyboxView };
-
-    // sus, RendererPipeline instead?
-    renderer.init(renderViews);
+    auto renderGraph =
+      sl::RenderGraph::Builder{ rendererBackend, viewportSize }
+        .addView<sl::SkyboxRenderView>(&camera, skybox.get())
+        .build();
 
     sl::RenderPacket renderPacket;
 
@@ -49,7 +47,7 @@ int main() {
 
     while (isRunning) {
         context.beginFrame([&](float deltaTime) {
-            renderer.renderFrame(deltaTime, renderPacket);
+            renderer.renderFrame(deltaTime, renderPacket, *renderGraph);
             camera.update(deltaTime);
         });
     }
