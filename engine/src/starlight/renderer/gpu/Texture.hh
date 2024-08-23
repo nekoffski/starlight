@@ -2,11 +2,11 @@
 
 #include <span>
 
-#include "starlight/renderer/Resource.hpp"
+#include "starlight/renderer/Resource.hh"
 
-#include "starlight/core/Core.h"
-#include "starlight/core/memory/Memory.hpp"
-#include "starlight/renderer/gpu/RendererBackend.h"
+#include "starlight/core/Core.hh"
+#include "starlight/core/memory/Memory.hh"
+#include "starlight/renderer/gpu/RendererBackend.hh"
 
 namespace sl {
 

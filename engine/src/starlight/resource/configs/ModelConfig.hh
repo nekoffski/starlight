@@ -5,9 +5,9 @@
 #include <vector>
 #include <unordered_map>
 
-#include "starlight/core/FileSystem.h"
-#include "MeshConfig.h"
-#include "MaterialConfig.h"
+#include "starlight/core/FileSystem.hh"
+#include "MeshConfig.hh"
+#include "MaterialConfig.hh"
 
 namespace sl {
 

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CommandBuffer.h"
-#include "Texture.h"
-#include "Mesh.h"
+#include "CommandBuffer.hh"
+#include "Texture.hh"
+#include "Mesh.hh"
 
-#include "starlight/core/math/Core.h"
-#include "starlight/core/memory/Memory.hpp"
+#include "starlight/core/math/Core.hh"
+#include "starlight/core/memory/Memory.hh"
 
-#include "UIRenderer.h"
+#include "UIRenderer.hh"
 
 namespace sl {
 

@@ -1,7 +1,7 @@
-#include "VKRenderTarget.h"
+#include "VKRenderTarget.hh"
 
-#include "VKRenderPass.h"
-#include "VKTexture.h"
+#include "VKRenderPass.hh"
+#include "VKTexture.hh"
 
 namespace sl::vk {
 

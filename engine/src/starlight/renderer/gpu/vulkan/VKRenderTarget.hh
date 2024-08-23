@@ -1,13 +1,13 @@
 #pragma once
 
-#include "starlight/renderer/gpu/RenderTarget.h"
-#include "starlight/core/memory/Memory.hpp"
+#include "starlight/renderer/gpu/RenderTarget.hh"
+#include "starlight/core/memory/Memory.hh"
 
-#include "VKPhysicalDevice.h"
-#include "VKContext.h"
+#include "VKPhysicalDevice.hh"
+#include "VKContext.hh"
 
-#include "VKContext.h"
-#include "VKFramebuffer.h"
+#include "VKContext.hh"
+#include "VKFramebuffer.hh"
 
 namespace sl::vk {
 

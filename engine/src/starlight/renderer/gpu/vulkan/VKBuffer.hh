@@ -4,14 +4,14 @@
 
 #include <kc/core/Countable.hpp>
 
-#include "starlight/core/memory/Memory.hpp"
-#include "starlight/core/FreeList.h"
+#include "starlight/core/memory/Memory.hh"
+#include "starlight/core/FreeList.hh"
 
-#include "VKLogicalDevice.h"
-#include "VKContext.h"
+#include "VKLogicalDevice.hh"
+#include "VKContext.hh"
 
-#include "Vulkan.h"
-#include "fwd.h"
+#include "Vulkan.hh"
+#include "fwd.hh"
 
 namespace sl::vk {
 

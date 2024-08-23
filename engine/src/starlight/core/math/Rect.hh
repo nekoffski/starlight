@@ -1,7 +1,7 @@
 #pragma once
 
-#include "starlight/core/Core.h"
-#include "Glm.h"
+#include "starlight/core/Core.hh"
+#include "Glm.hh"
 
 namespace sl {
 

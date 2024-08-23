@@ -2,9 +2,9 @@
 
 #include <fmt/core.h>
 
-#include "starlight/core/Core.h"
+#include "starlight/core/Core.hh"
 
-#include "ComponentContainerMap.hpp"
+#include "ComponentContainerMap.hh"
 
 namespace sl {
 

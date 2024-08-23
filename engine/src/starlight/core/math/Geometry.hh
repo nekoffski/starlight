@@ -2,8 +2,8 @@
 
 #include <span>
 
-#include "starlight/core/Core.h"
-#include "Vertex.h"
+#include "starlight/core/Core.hh"
+#include "Vertex.hh"
 
 namespace sl {
 

@@ -5,10 +5,10 @@
 
 #include <kc/core/Meta.hpp>
 
-#include "starlight/core/math/Extent.hpp"
-#include "starlight/core/math/Core.h"
-#include "starlight/renderer/Material.h"
-#include "starlight/renderer/Resource.hpp"
+#include "starlight/core/math/Extent.hh"
+#include "starlight/core/math/Core.hh"
+#include "starlight/renderer/Material.hh"
+#include "starlight/renderer/Resource.hh"
 
 namespace sl {
 namespace detail {

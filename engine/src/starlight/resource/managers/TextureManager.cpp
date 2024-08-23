@@ -1,13 +1,13 @@
-#include "TextureManager.h"
+#include "TextureManager.hh"
 
 #include <kc/core/Log.h>
 
 #include <fmt/core.h>
 
-#include "starlight/core/math/Core.h"
-#include "starlight/renderer/gpu/Texture.h"
-#include "starlight/renderer/gpu/ResourcePools.h"
-#include "starlight/resource/configs/ImageData.h"
+#include "starlight/core/math/Core.hh"
+#include "starlight/renderer/gpu/Texture.hh"
+#include "starlight/renderer/gpu/ResourcePools.hh"
+#include "starlight/resource/configs/ImageData.hh"
 
 namespace sl {
 

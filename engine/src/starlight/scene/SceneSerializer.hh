@@ -2,10 +2,10 @@
 
 #include <string>
 
-#include "starlight/core/FileSystem.h"
-#include "starlight/core/Json.hpp"
+#include "starlight/core/FileSystem.hh"
+#include "starlight/core/Json.hh"
 
-#include "Scene.h"
+#include "Scene.hh"
 
 namespace sl {
 

@@ -1,9 +1,9 @@
 
 #include <gtest/gtest.h>
 
-#include "starlight/core/ResourcePool.hpp"
+#include "starlight/core/ResourcePool.hh"
 
-#include "mock/StubResource.h"
+#include "mock/StubResource.hh"
 
 using namespace sl;
 using namespace testing;

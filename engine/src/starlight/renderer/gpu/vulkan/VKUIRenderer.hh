@@ -1,16 +1,16 @@
 #pragma once
 
-#include "starlight/core/window/Window.h"
+#include "starlight/core/window/Window.hh"
 
-#include "starlight/renderer/gpu/UIRenderer.h"
+#include "starlight/renderer/gpu/UIRenderer.hh"
 
-#include "VKPhysicalDevice.h"
-#include "VKContext.h"
+#include "VKPhysicalDevice.hh"
+#include "VKContext.hh"
 
-#include "VKCommandBuffer.h"
-#include "VKRendererBackendProxy.h"
-#include "Vulkan.h"
-#include "fwd.h"
+#include "VKCommandBuffer.hh"
+#include "VKRendererBackendProxy.hh"
+#include "Vulkan.hh"
+#include "fwd.hh"
 
 namespace sl::vk {
 

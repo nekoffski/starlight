@@ -2,7 +2,7 @@
 
 #ifdef SL_USE_VK
 
-#include "vulkan/VKRendererBackend.h"
+#include "vulkan/VKRendererBackend.hh"
 
 namespace sl {
 using RendererBackendVendor = vk::VKRendererBackend;

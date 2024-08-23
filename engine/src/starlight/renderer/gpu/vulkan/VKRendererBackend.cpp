@@ -1,14 +1,14 @@
-#include "VKRendererBackend.h"
+#include "VKRendererBackend.hh"
 
-#include "VKBuffer.h"
-#include "VKCommandBuffer.h"
-#include "VKContext.h"
-#include "VKFence.h"
-#include "VKFramebuffer.h"
-#include "VKImage.h"
-#include "VKRenderPass.h"
-#include "VKSwapchain.h"
-#include "VKShader.h"
+#include "VKBuffer.hh"
+#include "VKCommandBuffer.hh"
+#include "VKContext.hh"
+#include "VKFence.hh"
+#include "VKFramebuffer.hh"
+#include "VKImage.hh"
+#include "VKRenderPass.hh"
+#include "VKSwapchain.hh"
+#include "VKShader.hh"
 
 namespace sl::vk {
 

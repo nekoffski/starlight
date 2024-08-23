@@ -1,12 +1,12 @@
-#include "ModelConfig.h"
+#include "ModelConfig.hh"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "starlight/core/Log.h"
+#include "starlight/core/Log.hh"
 
-#include "starlight/resource/managers/MaterialManager.h"
+#include "starlight/resource/managers/MaterialManager.hh"
 
 namespace sl {
 

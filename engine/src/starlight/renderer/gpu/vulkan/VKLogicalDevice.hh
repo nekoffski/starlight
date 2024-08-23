@@ -1,7 +1,7 @@
 #pragma once
 
-#include "VKContext.h"
-#include "VKPhysicalDevice.h"
+#include "VKContext.hh"
+#include "VKPhysicalDevice.hh"
 
 namespace sl::vk {
 

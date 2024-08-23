@@ -1,7 +1,7 @@
 #pragma once
 
-#include "starlight/core/Core.h"
-#include "starlight/core/Json.hpp"
+#include "starlight/core/Core.hh"
+#include "starlight/core/Json.hh"
 
 namespace sl {
 

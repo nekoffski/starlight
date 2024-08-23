@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Vulkan.h"
+#include "Vulkan.hh"
 
-#include "starlight/core/fwd.h"
-#include "starlight/core/Core.h"
-#include "starlight/core/Config.h"
-#include "starlight/core/RAIIWrapper.hpp"
+#include "starlight/core/fwd.hh"
+#include "starlight/core/Core.hh"
+#include "starlight/core/Config.hh"
+#include "starlight/core/RAIIWrapper.hh"
 
 namespace sl::vk {
 

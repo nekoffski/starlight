@@ -3,16 +3,16 @@
 #include <unordered_map>
 #include <vector>
 
-#include "starlight/core/ResourcePool.hpp"
-#include "starlight/core/FileSystem.h"
-#include "starlight/core/memory/Memory.hpp"
-#include "starlight/renderer/Material.h"
-#include "starlight/renderer/gpu/ResourcePools.h"
+#include "starlight/core/ResourcePool.hh"
+#include "starlight/core/FileSystem.hh"
+#include "starlight/core/memory/Memory.hh"
+#include "starlight/renderer/Material.hh"
+#include "starlight/renderer/gpu/ResourcePools.hh"
 
-#include "starlight/resource/configs/MaterialConfig.h"
+#include "starlight/resource/configs/MaterialConfig.hh"
 
-#include "ResourceManager.hpp"
-#include "ShaderManager.h"
+#include "ResourceManager.hh"
+#include "ShaderManager.hh"
 
 namespace sl {
 

@@ -1,16 +1,16 @@
-#include "VKShader.h"
+#include "VKShader.hh"
 
 #include <array>
 #include <ranges>
 #include <unordered_map>
 
-#include "starlight/core/Core.h"
-#include "starlight/core/window/WindowManager.h"
-#include "starlight/renderer/gpu/Texture.h"
+#include "starlight/core/Core.hh"
+#include "starlight/core/window/WindowManager.hh"
+#include "starlight/renderer/gpu/Texture.hh"
 
-#include "VKRendererBackend.h"
-#include "VKTexture.h"
-#include "VKPipeline.h"
+#include "VKRendererBackend.hh"
+#include "VKTexture.hh"
+#include "VKPipeline.hh"
 
 namespace sl::vk {
 

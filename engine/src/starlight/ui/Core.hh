@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Utils.h"
+#include "Utils.hh"
 
-#include "starlight/core/Core.h"
-#include "starlight/core/math/Core.h"
+#include "starlight/core/Core.hh"
+#include "starlight/core/math/Core.hh"

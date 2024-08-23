@@ -1,6 +1,6 @@
-#include "VKFramebuffer.h"
+#include "VKFramebuffer.hh"
 
-#include "VKContext.h"
+#include "VKContext.hh"
 
 namespace sl::vk {
 

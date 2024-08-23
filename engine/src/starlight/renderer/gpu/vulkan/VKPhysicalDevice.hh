@@ -4,11 +4,11 @@
 #include <unordered_map>
 #include <span>
 
-#include "starlight/core/Core.h"
-#include "starlight/core/Enum.h"
+#include "starlight/core/Core.hh"
+#include "starlight/core/Enum.hh"
 
-#include "Vulkan.h"
-#include "VKContext.h"
+#include "Vulkan.hh"
+#include "VKContext.hh"
 
 namespace sl::vk {
 

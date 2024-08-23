@@ -1,7 +1,7 @@
 // #include <starlight/resource/managers/TextureManager.h>
 // #include <starlight/renderer/gpu/ResourcePools.h>
 
-// #include "mock/All.h"
+// #include "mock/All.hh"
 
 #include <gtest/gtest.h>
 

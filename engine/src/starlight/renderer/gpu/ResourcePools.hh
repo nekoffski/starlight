@@ -1,14 +1,14 @@
 #pragma once
 
-#include "starlight/core/math/Vertex.h"
+#include "starlight/core/math/Vertex.hh"
 
-#include "starlight/renderer/gpu/Shader.h"
-#include "starlight/renderer/gpu/Texture.h"
-#include "starlight/renderer/gpu/Mesh.h"
-#include "starlight/renderer/gpu/RenderPass.h"
-#include "starlight/renderer/gpu/RenderTarget.h"
+#include "starlight/renderer/gpu/Shader.hh"
+#include "starlight/renderer/gpu/Texture.hh"
+#include "starlight/renderer/gpu/Mesh.hh"
+#include "starlight/renderer/gpu/RenderPass.hh"
+#include "starlight/renderer/gpu/RenderTarget.hh"
 
-#include "starlight/renderer/fwd.h"
+#include "starlight/renderer/fwd.hh"
 
 namespace sl {
 

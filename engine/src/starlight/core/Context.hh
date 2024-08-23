@@ -2,13 +2,13 @@
 
 #include <string>
 
-#include "window/WindowManager.h"
-#include "window/Vendor.h"
+#include "window/WindowManager.hh"
+#include "window/Vendor.hh"
 
-#include "event/Event.h"
-#include "TimeManager.h"
-#include "Config.h"
-#include "Core.h"
+#include "event/Event.hh"
+#include "TimeManager.hh"
+#include "Config.hh"
+#include "Core.hh"
 
 namespace sl {
 

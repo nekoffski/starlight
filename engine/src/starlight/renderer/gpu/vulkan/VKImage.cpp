@@ -1,6 +1,6 @@
-#include "VKImage.h"
+#include "VKImage.hh"
 
-#include "VKContext.h"
+#include "VKContext.hh"
 
 namespace sl::vk {
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "starlight/core/window/Window.h"
+#include "starlight/core/window/Window.hh"
 
 #include <gmock/gmock.h>
 

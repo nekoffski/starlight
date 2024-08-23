@@ -2,17 +2,17 @@
 
 #include <string>
 
-#include "starlight/core/Id.hpp"
-#include "starlight/core/memory/Memory.hpp"
-#include "starlight/renderer/gpu/Shader.h"
+#include "starlight/core/Id.hh"
+#include "starlight/core/memory/Memory.hh"
+#include "starlight/renderer/gpu/Shader.hh"
 
-#include "Vulkan.h"
-#include "VKRenderPass.h"
-#include "VKBuffer.h"
-#include "VKPhysicalDevice.h"
-#include "VKContext.h"
-#include "VKPipeline.h"
-#include "VKRendererBackendProxy.h"
+#include "Vulkan.hh"
+#include "VKRenderPass.hh"
+#include "VKBuffer.hh"
+#include "VKPhysicalDevice.hh"
+#include "VKContext.hh"
+#include "VKPipeline.hh"
+#include "VKRendererBackendProxy.hh"
 
 namespace sl::vk {
 

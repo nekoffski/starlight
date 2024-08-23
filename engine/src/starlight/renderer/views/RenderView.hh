@@ -1,12 +1,12 @@
 #pragma once
 
-#include "starlight/renderer/gpu/RendererBackendProxy.h"
-#include "starlight/renderer/gpu/RenderPass.h"
-#include "starlight/renderer/gpu/Shader.h"
-#include "starlight/renderer/camera/Camera.h"
-#include "starlight/renderer/gpu/ResourcePools.h"
-#include "starlight/renderer/RenderPacket.h"
-#include "starlight/renderer/RenderProperties.h"
+#include "starlight/renderer/gpu/RendererBackendProxy.hh"
+#include "starlight/renderer/gpu/RenderPass.hh"
+#include "starlight/renderer/gpu/Shader.hh"
+#include "starlight/renderer/camera/Camera.hh"
+#include "starlight/renderer/gpu/ResourcePools.hh"
+#include "starlight/renderer/RenderPacket.hh"
+#include "starlight/renderer/RenderProperties.hh"
 
 namespace sl {
 

@@ -3,10 +3,10 @@
 #include <unordered_map>
 #include <typeindex>
 
-#include "starlight/core/memory/Memory.hpp"
+#include "starlight/core/memory/Memory.hh"
 
-#include "starlight/scene/components/Component.h"
-#include "ComponentContainer.hpp"
+#include "starlight/scene/components/Component.hh"
+#include "ComponentContainer.hh"
 
 namespace sl {
 

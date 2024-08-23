@@ -1,7 +1,7 @@
-#include "MaterialComponent.h"
+#include "MaterialComponent.hh"
 
-#include "starlight/scene/ecs/Entity.h"
-#include "starlight/resource/managers/MaterialManager.h"
+#include "starlight/scene/ecs/Entity.hh"
+#include "starlight/resource/managers/MaterialManager.hh"
 
 namespace sl {
 

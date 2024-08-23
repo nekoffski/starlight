@@ -1,10 +1,10 @@
-#include "VKSwapchain.h"
+#include "VKSwapchain.hh"
 
 #include <kc/core/Log.h>
 #include <kc/core/Utils.hpp>
 
-#include "VKImage.h"
-#include "VKFramebuffer.h"
+#include "VKImage.hh"
+#include "VKFramebuffer.hh"
 
 namespace sl::vk {
 

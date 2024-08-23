@@ -5,29 +5,29 @@
 #include <span>
 #include <vector>
 
-#include "starlight/core/Core.h"
-#include "starlight/core/Config.h"
-#include "starlight/core/fwd.h"
-#include "starlight/core/memory/Memory.hpp"
-#include "starlight/core/window/Window.h"
-#include "starlight/renderer/gpu/RendererBackend.h"
-#include "starlight/renderer/gpu/RendererBackendProxy.h"
+#include "starlight/core/Core.hh"
+#include "starlight/core/Config.hh"
+#include "starlight/core/fwd.hh"
+#include "starlight/core/memory/Memory.hh"
+#include "starlight/core/window/Window.hh"
+#include "starlight/renderer/gpu/RendererBackend.hh"
+#include "starlight/renderer/gpu/RendererBackendProxy.hh"
 
-#include "Vulkan.h"
-#include "fwd.h"
+#include "Vulkan.hh"
+#include "fwd.hh"
 
-#include "starlight/renderer/gpu/Shader.h"
+#include "starlight/renderer/gpu/Shader.hh"
 
-#include "VKMesh.h"
-#include "VKPipeline.h"
-#include "VKSemaphore.h"
-#include "VKPhysicalDevice.h"
-#include "VKLogicalDevice.h"
-#include "VKTexture.h"
-#include "VKBuffer.h"
-#include "VKResourcePools.h"
-#include "VKRendererBackendProxy.h"
-#include "VKUIRenderer.h"
+#include "VKMesh.hh"
+#include "VKPipeline.hh"
+#include "VKSemaphore.hh"
+#include "VKPhysicalDevice.hh"
+#include "VKLogicalDevice.hh"
+#include "VKTexture.hh"
+#include "VKBuffer.hh"
+#include "VKResourcePools.hh"
+#include "VKRendererBackendProxy.hh"
+#include "VKUIRenderer.hh"
 
 namespace sl::vk {
 

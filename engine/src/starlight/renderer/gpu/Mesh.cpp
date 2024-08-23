@@ -1,11 +1,11 @@
-#include "Mesh.h"
+#include "Mesh.hh"
 
-#include "starlight/core/math/Geometry.h"
-#include "starlight/core/math/Vertex.h"
+#include "starlight/core/math/Geometry.hh"
+#include "starlight/core/math/Vertex.hh"
 
 #ifdef SL_USE_VK
-#include "starlight/renderer/gpu/vulkan/VKMesh.h"
-#include "starlight/renderer/gpu/vulkan/VKRendererBackend.h"
+#include "starlight/renderer/gpu/vulkan/VKMesh.hh"
+#include "starlight/renderer/gpu/vulkan/VKRendererBackend.hh"
 #endif
 
 namespace sl {

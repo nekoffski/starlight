@@ -1,9 +1,9 @@
-#include "VKBuffer.h"
+#include "VKBuffer.hh"
 
 #include <kc/core/Log.h>
 
-#include "VKContext.h"
-#include "VKCommandBuffer.h"
+#include "VKContext.hh"
+#include "VKCommandBuffer.hh"
 
 namespace sl::vk {
 

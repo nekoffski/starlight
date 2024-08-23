@@ -3,12 +3,12 @@
 #include <optional>
 #include <string>
 
-#include "starlight/renderer/Resource.hpp"
-#include "starlight/core/math/Core.h"
+#include "starlight/renderer/Resource.hh"
+#include "starlight/core/math/Core.hh"
 
-#include "gpu/Texture.h"
-#include "gpu/Shader.h"
-#include "fwd.h"
+#include "gpu/Texture.hh"
+#include "gpu/Shader.hh"
+#include "fwd.hh"
 
 namespace sl {
 

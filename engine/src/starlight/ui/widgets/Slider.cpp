@@ -1,6 +1,6 @@
-#include "Slider.h"
+#include "Slider.hh"
 
-#include "starlight/ui/Utils.h"
+#include "starlight/ui/Utils.hh"
 
 namespace sl::ui {
 

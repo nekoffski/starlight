@@ -1,17 +1,17 @@
-#include "Shader.h"
+#include "Shader.hh"
 
-#include "starlight/core/Log.h"
+#include "starlight/core/Log.hh"
 
 #include <numeric>
 #include <concepts>
 
 #include <fmt/core.h>
 
-#include "starlight/core/Json.hpp"
+#include "starlight/core/Json.hh"
 
 #ifdef SL_USE_VK
-#include "starlight/renderer/gpu/vulkan/VKShader.h"
-#include "starlight/renderer/gpu/vulkan/VKRendererBackend.h"
+#include "starlight/renderer/gpu/vulkan/VKShader.hh"
+#include "starlight/renderer/gpu/vulkan/VKRendererBackend.hh"
 #endif
 
 namespace sl {
@@ -174,7 +174,7 @@ ResourceRef<Shader> ShaderManager::load(
       loadPropertiesFromFile(name, Texture::defaultDiffuse, shadersPath, fs);
 
     if (not properties) {
-        LOG_WARN("Could not load properties from '{}/{}' path", shadersPath, name);
+        LOG_WARN("Could not load properties from '{}/{}' pa.hh", shadersPath, name);
         return nullptr;
     }
 

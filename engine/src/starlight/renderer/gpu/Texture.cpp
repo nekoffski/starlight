@@ -1,10 +1,10 @@
-#include "Texture.h"
+#include "Texture.hh"
 
 #include <stb.h>
 
 #ifdef SL_USE_VK
-#include "starlight/renderer/gpu/vulkan/VKTexture.h"
-#include "starlight/renderer/gpu/vulkan/VKRendererBackend.h"
+#include "starlight/renderer/gpu/vulkan/VKTexture.hh"
+#include "starlight/renderer/gpu/vulkan/VKRendererBackend.hh"
 #endif
 
 namespace sl {

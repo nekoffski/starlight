@@ -1,6 +1,6 @@
-#include "Context.h"
+#include "Context.hh"
 
-#include "Log.h"
+#include "Log.hh"
 
 namespace sl {
 

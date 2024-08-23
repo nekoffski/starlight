@@ -1,8 +1,8 @@
-#include "ShaderManager.h"
+#include "ShaderManager.hh"
 
-#include "starlight/core/Log.h"
+#include "starlight/core/Log.hh"
 
-#include "starlight/resource/configs/ShaderConfig.h"
+#include "starlight/resource/configs/ShaderConfig.hh"
 
 namespace sl {
 

@@ -1,11 +1,11 @@
-#include "WindowManager.h"
+#include "WindowManager.hh"
 
 #include <kc/core/Log.h>
 
-#include "starlight/core/event/Event.h"
-#include "starlight/core/event/Quit.h"
-#include "starlight/core/event/Input.h"
-#include "starlight/core/event/WindowResized.h"
+#include "starlight/core/event/Event.hh"
+#include "starlight/core/event/Quit.hh"
+#include "starlight/core/event/Input.hh"
+#include "starlight/core/event/WindowResized.hh"
 
 namespace sl {
 

@@ -1,8 +1,8 @@
-#include "Material.h"
+#include "Material.hh"
 
-#include "starlight/core/Json.hpp"
+#include "starlight/core/Json.hh"
 
-#include "gpu/ResourcePools.h"
+#include "gpu/ResourcePools.hh"
 
 namespace sl {
 

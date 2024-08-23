@@ -1,8 +1,8 @@
-#include "Panel.h"
+#include "Panel.hh"
 
 #include <imgui.h>
 
-#include "starlight/ui/Utils.h"
+#include "starlight/ui/Utils.hh"
 
 namespace sl::ui {
 

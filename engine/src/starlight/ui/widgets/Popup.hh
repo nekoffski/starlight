@@ -3,8 +3,8 @@
 #include <optional>
 #include <vector>
 
-#include "starlight/ui/Core.h"
-#include "starlight/core/Log.h"
+#include "starlight/ui/Core.hh"
+#include "starlight/core/Log.hh"
 
 namespace sl::ui {
 

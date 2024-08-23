@@ -1,6 +1,6 @@
-#include "PointLightComponent.h"
+#include "PointLightComponent.hh"
 
-#include "starlight/scene/ecs/Entity.h"
+#include "starlight/scene/ecs/Entity.hh"
 
 namespace sl {
 

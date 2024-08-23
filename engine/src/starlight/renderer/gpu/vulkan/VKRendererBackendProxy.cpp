@@ -1,7 +1,7 @@
-#include "VKRendererBackendProxy.h"
+#include "VKRendererBackendProxy.hh"
 
-#include "VKRendererBackend.h"
-#include "VKCommandBuffer.h"
+#include "VKRendererBackend.hh"
+#include "VKCommandBuffer.hh"
 
 namespace sl::vk {
 

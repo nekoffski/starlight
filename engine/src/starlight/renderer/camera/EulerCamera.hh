@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Camera.h"
+#include "Camera.hh"
 
-#include "starlight/core/math/Core.h"
+#include "starlight/core/math/Core.hh"
 
 namespace sl {
 

@@ -1,9 +1,9 @@
-#include "FirstPersonCamera.h"
+#include "FirstPersonCamera.hh"
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "starlight/core/Log.h"
-#include "starlight/core/window/Keys.h"
+#include "starlight/core/Log.hh"
+#include "starlight/core/window/Keys.hh"
 
 namespace sl {
 

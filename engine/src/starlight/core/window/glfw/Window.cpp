@@ -1,9 +1,9 @@
-#include "Window.h"
+#include "Window.hh"
 
 #include <GLFW/glfw3.h>
 
-#include "starlight/core/Log.h"
-#include "starlight/core/event/Input.h"
+#include "starlight/core/Log.hh"
+#include "starlight/core/event/Input.hh"
 
 namespace sl::glfw {
 

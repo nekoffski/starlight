@@ -1,8 +1,8 @@
-#include "VKFence.h"
+#include "VKFence.hh"
 
-#include "VKContext.h"
+#include "VKContext.hh"
 
-#include "starlight/core/window/Window.h"
+#include "starlight/core/window/Window.hh"
 
 namespace sl::vk {
 

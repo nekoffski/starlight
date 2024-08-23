@@ -7,17 +7,17 @@
 
 #include <kc/core/Log.h>
 
-#include "starlight/core/memory/Memory.hpp"
-#include "starlight/renderer/gpu/Texture.h"
+#include "starlight/core/memory/Memory.hh"
+#include "starlight/renderer/gpu/Texture.hh"
 
-#include "Vulkan.h"
-#include "VKImage.h"
-#include "VKBuffer.h"
-#include "VKContext.h"
-#include "VKPhysicalDevice.h"
-#include "VKContext.h"
+#include "Vulkan.hh"
+#include "VKImage.hh"
+#include "VKBuffer.hh"
+#include "VKContext.hh"
+#include "VKPhysicalDevice.hh"
+#include "VKContext.hh"
 
-#include "VKCommandBuffer.h"
+#include "VKCommandBuffer.hh"
 
 namespace sl::vk {
 

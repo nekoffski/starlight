@@ -3,8 +3,8 @@
 #include <vector>
 #include <cstdint>
 
-#include <starlight/core/Core.h>
-#include <starlight/core/Log.h>
+#include "starlight/core/Core.hh"
+#include "starlight/core/Log.hh"
 
 namespace sl {
 

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "fwd.h"
+#include "fwd.hh"
 
-#include "starlight/renderer/gpu/RendererBackendProxy.h"
-#include "VKCommandBuffer.h"
+#include "starlight/renderer/gpu/RendererBackendProxy.hh"
+#include "VKCommandBuffer.hh"
 
 namespace sl::vk {
 

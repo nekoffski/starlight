@@ -1,6 +1,6 @@
-#include "VKSemaphore.h"
+#include "VKSemaphore.hh"
 
-#include "VKContext.h"
+#include "VKContext.hh"
 
 namespace sl::vk {
 

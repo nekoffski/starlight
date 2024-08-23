@@ -1,6 +1,6 @@
-#include "VKResourcePools.h"
+#include "VKResourcePools.hh"
 
-#include "VKRendererBackend.h"
+#include "VKRendererBackend.hh"
 
 namespace sl::vk {
 
@@ -11,7 +11,7 @@ VKResourcePools::VKResourcePools(
     m_context(context),
     m_device(device), m_vertexBuffer(vertexBuffer), m_indexBuffer(indexBuffer),
     m_swapchain(swapchain), backend(backend), m_textures("Texture", 1024),
-    m_shaders("Shader", 1024), m_meshes("Mesh", vulkanMaxMeshCount),
+    m_shaders("Shader", 1024), m_meshes("Me.hh", vulkanMaxMeshCount),
     m_renderTargets("RenderTarget", 64), m_renderPasses("RenderPass", 64) {
     LOG_TRACE("VKResourcePools created");
 }

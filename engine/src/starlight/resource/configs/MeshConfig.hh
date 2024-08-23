@@ -6,9 +6,9 @@
 
 #include <kc/core/Meta.hpp>
 
-#include "starlight/core/math/Vertex.h"
-#include "starlight/core/Core.h"
-#include "starlight/core/math/Extent.hpp"
+#include "starlight/core/math/Vertex.hh"
+#include "starlight/core/Core.hh"
+#include "starlight/core/math/Extent.hh"
 
 namespace sl {
 namespace detail {

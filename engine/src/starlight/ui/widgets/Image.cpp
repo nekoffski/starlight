@@ -1,7 +1,7 @@
-#include "Image.h"
+#include "Image.hh"
 
-#include "backends/imgui_impl_vulkan.h"
-#include "starlight/renderer/gpu/vulkan/VKTexture.h"
+#include "backends/imgui_impl_vulkan.hh"
+#include "starlight/renderer/gpu/vulkan/VKTexture.hh"
 
 namespace sl::ui {
 

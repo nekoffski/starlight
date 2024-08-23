@@ -2,10 +2,10 @@
 
 #include <vector>
 
-#include "VKCommandBuffer.h"
-#include "VKLogicalDevice.h"
+#include "VKCommandBuffer.hh"
+#include "VKLogicalDevice.hh"
 
-#include "starlight/renderer/gpu/CommandBufferPool.h"
+#include "starlight/renderer/gpu/CommandBufferPool.hh"
 
 namespace sl::vk {
 

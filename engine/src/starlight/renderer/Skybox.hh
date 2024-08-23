@@ -1,10 +1,10 @@
 #pragma once
 
-#include "gpu/Texture.h"
-#include "gpu/Mesh.h"
-#include "gpu/Shader.h"
+#include "gpu/Texture.hh"
+#include "gpu/Mesh.hh"
+#include "gpu/Shader.hh"
 
-#include "starlight/renderer/Resource.hpp"
+#include "starlight/renderer/Resource.hh"
 
 namespace sl {
 

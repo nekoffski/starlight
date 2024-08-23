@@ -4,10 +4,10 @@
 #include <string>
 #include <concepts>
 
-#include "starlight/core/Core.h"
-#include "starlight/core/memory/Memory.hpp"
-#include "starlight/core/math/Vertex.h"
-#include "starlight/core/Log.h"
+#include "starlight/core/Core.hh"
+#include "starlight/core/memory/Memory.hh"
+#include "starlight/core/math/Vertex.hh"
+#include "starlight/core/Log.hh"
 
 namespace sl {
 

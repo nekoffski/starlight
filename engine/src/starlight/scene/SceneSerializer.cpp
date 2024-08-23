@@ -1,4 +1,4 @@
-#include "SceneSerializer.h"
+#include "SceneSerializer.hh"
 
 namespace sl {
 

@@ -1,7 +1,7 @@
-#include "EulerCamera.h"
+#include "EulerCamera.hh"
 
-#include "starlight/core/window/WindowManager.h"
-#include "starlight/core/window/Keys.h"
+#include "starlight/core/window/WindowManager.hh"
+#include "starlight/core/window/Keys.hh"
 
 namespace sl {
 

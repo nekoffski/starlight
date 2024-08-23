@@ -3,21 +3,21 @@
 #include <span>
 #include <vector>
 
-#include "starlight/core/Log.h"
-#include "starlight/core/Core.h"
+#include "starlight/core/Log.hh"
+#include "starlight/core/Core.hh"
 
-#include "Vulkan.h"
+#include "Vulkan.hh"
 
-#include "VKPhysicalDevice.h"
-#include "VKContext.h"
+#include "VKPhysicalDevice.hh"
+#include "VKContext.hh"
 
-#include "VKContext.h"
-#include "VKCommandBuffer.h"
-#include "VKRenderPass.h"
+#include "VKContext.hh"
+#include "VKCommandBuffer.hh"
+#include "VKRenderPass.hh"
 
-#include "starlight/core/math/Vertex.h"
+#include "starlight/core/math/Vertex.hh"
 
-#include "starlight/renderer/CullMode.h"
+#include "starlight/renderer/CullMode.hh"
 
 namespace sl::vk {
 

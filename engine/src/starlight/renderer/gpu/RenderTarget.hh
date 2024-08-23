@@ -2,10 +2,10 @@
 
 #include <vector>
 
-#include "starlight/core/Core.h"
-#include "starlight/core/math/Core.h"
+#include "starlight/core/Core.hh"
+#include "starlight/core/math/Core.hh"
 
-#include "fwd.h"
+#include "fwd.hh"
 
 namespace sl {
 

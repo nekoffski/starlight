@@ -1,4 +1,4 @@
-#include "VKMesh.h"
+#include "VKMesh.hh"
 
 namespace sl::vk {
 
@@ -8,7 +8,7 @@ VKMesh::VKMesh(
 ) :
     Mesh(props, data, id),
     m_context(context), m_device(device) {
-    LOG_TRACE("Creating Mesh");
+    LOG_TRACE("Creating Me.hh");
     LOG_DEBUG(
       "Mesh data vertexSize={}, vertexCount={}, "
       "indicesCount={}, vertexDataPtr={}",
@@ -27,7 +27,7 @@ VKMesh::VKMesh(
 }
 
 VKMesh::~VKMesh() {
-    LOG_TRACE("Destroying mesh");
+    LOG_TRACE("Destroying me.hh");
     m_device.waitIdle();
 }
 

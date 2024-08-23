@@ -2,10 +2,10 @@
 
 #include <functional>
 
-#include "RenderView.h"
+#include "RenderView.hh"
 
-#include "starlight/renderer/gpu/RenderPass.h"
-#include "starlight/renderer/gpu/Shader.h"
+#include "starlight/renderer/gpu/RenderPass.hh"
+#include "starlight/renderer/gpu/Shader.hh"
 
 namespace sl {
 

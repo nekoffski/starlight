@@ -1,4 +1,4 @@
-#include "starlight/renderer/gpu/ResourcePools.h"
+#include "starlight/renderer/gpu/ResourcePools.hh"
 
 #include <gmock/gmock.h>
 

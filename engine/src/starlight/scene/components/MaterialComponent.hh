@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Component.h"
+#include "Component.hh"
 
-#include "starlight/core/Core.h"
-#include "starlight/renderer/Material.h"
+#include "starlight/core/Core.hh"
+#include "starlight/renderer/Material.hh"
 
-#include "starlight/scene/fwd.h"
+#include "starlight/scene/fwd.hh"
 
 namespace sl {
 

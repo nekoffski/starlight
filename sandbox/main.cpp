@@ -2,16 +2,16 @@
 
 #include <csignal>
 
-#include "starlight/core/Core.h"
-#include "starlight/core/window/Window.h"
-#include "starlight/core/Context.h"
+#include "starlight/core/Core.hh"
+#include "starlight/core/window/Window.hh"
+#include "starlight/core/Context.hh"
 
-#include "starlight/renderer/views/WorldRenderView.h"
-#include "starlight/renderer/camera/EulerCamera.h"
-#include "starlight/renderer/views/SkyboxRenderView.h"
-#include "starlight/renderer/RendererFrontend.h"
+#include "starlight/renderer/views/WorldRenderView.hh"
+#include "starlight/renderer/camera/EulerCamera.hh"
+#include "starlight/renderer/views/SkyboxRenderView.hh"
+#include "starlight/renderer/RendererFrontend.hh"
 
-#include "starlight/renderer/gpu/Shader.h"
+#include "starlight/renderer/gpu/Shader.hh"
 
 static std::atomic_bool isRunning = true;
 

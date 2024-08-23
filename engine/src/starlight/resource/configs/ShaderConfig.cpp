@@ -1,11 +1,11 @@
-#include "ShaderConfig.h"
+#include "ShaderConfig.hh"
 
 #include <numeric>
 #include <concepts>
 
 #include <fmt/core.h>
 
-#include "starlight/core/Json.hpp"
+#include "starlight/core/Json.hh"
 
 namespace sl {
 

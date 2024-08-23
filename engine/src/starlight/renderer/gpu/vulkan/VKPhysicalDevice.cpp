@@ -1,4 +1,4 @@
-#include "VKPhysicalDevice.h"
+#include "VKPhysicalDevice.hh"
 
 #include <kc/core/Utils.hpp>
 

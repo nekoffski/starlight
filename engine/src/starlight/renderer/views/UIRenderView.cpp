@@ -1,10 +1,10 @@
-#include "UIRenderView.h"
+#include "UIRenderView.hh"
 
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_vulkan.h>
 
-#include "starlight/renderer/gpu/vulkan/VKCommandBuffer.h"
+#include "starlight/renderer/gpu/vulkan/VKCommandBuffer.hh"
 
 namespace sl {
 

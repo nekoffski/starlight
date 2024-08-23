@@ -1,4 +1,4 @@
-#include "Menu.h"
+#include "Menu.hh"
 
 namespace sl::ui {
 

@@ -3,13 +3,13 @@
 #include <optional>
 #include <span>
 
-#include "Vulkan.h"
-#include "fwd.h"
+#include "Vulkan.hh"
+#include "fwd.hh"
 
-#include "VKPhysicalDevice.h"
-#include "VKContext.h"
-#include "VKBuffer.h"
-#include "VKCommandBuffer.h"
+#include "VKPhysicalDevice.hh"
+#include "VKContext.hh"
+#include "VKBuffer.hh"
+#include "VKCommandBuffer.hh"
 
 namespace sl::vk {
 

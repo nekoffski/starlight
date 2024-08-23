@@ -2,10 +2,10 @@
 
 #include <span>
 
-#include "VKPhysicalDevice.h"
-#include "VKContext.h"
-#include "VKBuffer.h"
-#include "starlight/renderer/gpu/Mesh.h"
+#include "VKPhysicalDevice.hh"
+#include "VKContext.hh"
+#include "VKBuffer.hh"
+#include "starlight/renderer/gpu/Mesh.hh"
 
 namespace sl::vk {
 

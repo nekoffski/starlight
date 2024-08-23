@@ -1,12 +1,12 @@
 #pragma once
 
-#include "starlight/core/math/Core.h"
+#include "starlight/core/math/Core.hh"
 
-#include "gpu/Mesh.h"
+#include "gpu/Mesh.hh"
 
-#include "Material.h"
-#include "PointLight.h"
-#include "RenderGraph.h"
+#include "Material.hh"
+#include "PointLight.hh"
+#include "RenderGraph.hh"
 
 namespace sl {
 

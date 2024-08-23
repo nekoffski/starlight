@@ -1,16 +1,16 @@
 #pragma once
 
-#include "starlight/core/math/Core.h"
+#include "starlight/core/math/Core.hh"
 
-#include "starlight/renderer/gpu/RenderPass.h"
+#include "starlight/renderer/gpu/RenderPass.hh"
 
-#include "VKPhysicalDevice.h"
-#include "VKContext.h"
+#include "VKPhysicalDevice.hh"
+#include "VKContext.hh"
 
-#include "Vulkan.h"
-#include "fwd.h"
+#include "Vulkan.hh"
+#include "fwd.hh"
 
-#include "VKRenderTarget.h"
+#include "VKRenderTarget.hh"
 
 namespace sl::vk {
 

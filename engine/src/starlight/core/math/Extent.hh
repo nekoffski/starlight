@@ -2,8 +2,8 @@
 
 #include <concepts>
 
-#include "starlight/core/math/Glm.h"
-#include "starlight/core/math/Vec.hpp"
+#include "starlight/core/math/Glm.hh"
+#include "starlight/core/math/Vec.hh"
 
 namespace sl {
 

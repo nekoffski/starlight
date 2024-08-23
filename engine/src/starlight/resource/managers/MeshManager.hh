@@ -2,15 +2,15 @@
 
 #include <unordered_map>
 
-#include "starlight/core/Core.h"
+#include "starlight/core/Core.hh"
 
-#include "starlight/renderer/gpu/Mesh.h"
-#include "starlight/renderer/gpu/ResourcePools.h"
+#include "starlight/renderer/gpu/Mesh.hh"
+#include "starlight/renderer/gpu/ResourcePools.hh"
 
-#include "ResourceManager.hpp"
-#include "MaterialManager.h"
+#include "ResourceManager.hh"
+#include "MaterialManager.hh"
 
-#include "starlight/resource/configs/MeshConfig.h"
+#include "starlight/resource/configs/MeshConfig.hh"
 
 namespace sl {
 
@@ -25,7 +25,7 @@ public:
         if (auto mesh = createMesh(props); mesh) [[likely]] {
             return storeResource(props.name, mesh->getId(), mesh);
         } else {
-            LOG_ERROR("Could not create mesh");
+            LOG_ERROR("Could not create me.hh");
             return nullptr;
         }
     }

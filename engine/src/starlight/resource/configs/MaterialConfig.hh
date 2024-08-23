@@ -3,10 +3,10 @@
 #include <optional>
 #include <string>
 
-#include "starlight/core/math/Core.h"
-#include "starlight/core/FileSystem.h"
+#include "starlight/core/math/Core.hh"
+#include "starlight/core/FileSystem.hh"
 
-#include "starlight/renderer/Material.h"
+#include "starlight/renderer/Material.hh"
 
 namespace sl {
 

@@ -1,8 +1,8 @@
-#include "MeshComponent.h"
+#include "MeshComponent.hh"
 
-#include "starlight/scene/ecs/Entity.h"
+#include "starlight/scene/ecs/Entity.hh"
 
-#include "starlight/resource/managers/MeshManager.h"
+#include "starlight/resource/managers/MeshManager.hh"
 
 namespace sl {
 

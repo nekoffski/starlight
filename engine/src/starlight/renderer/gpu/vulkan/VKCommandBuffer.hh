@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Vulkan.h"
+#include "Vulkan.hh"
 
-#include "starlight/renderer/gpu/CommandBuffer.h"
+#include "starlight/renderer/gpu/CommandBuffer.hh"
 
-#include "VKLogicalDevice.h"
-#include "fwd.h"
+#include "VKLogicalDevice.hh"
+#include "fwd.hh"
 
 namespace sl::vk {
 

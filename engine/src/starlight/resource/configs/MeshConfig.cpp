@@ -1,6 +1,6 @@
-#include "MeshConfig.h"
+#include "MeshConfig.hh"
 
-#include "starlight/core/math/Geometry.h"
+#include "starlight/core/math/Geometry.hh"
 
 namespace sl {
 

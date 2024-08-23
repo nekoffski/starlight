@@ -1,6 +1,6 @@
 #pragma once
 
-#include "starlight/core/Core.h"
+#include "starlight/core/Core.hh"
 
 namespace sl {
 

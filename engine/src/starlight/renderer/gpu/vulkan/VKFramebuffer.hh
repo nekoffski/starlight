@@ -2,13 +2,13 @@
 
 #include <vector>
 
-#include "starlight/core/Core.h"
+#include "starlight/core/Core.hh"
 
-#include "VKLogicalDevice.h"
-#include "VKContext.h"
+#include "VKLogicalDevice.hh"
+#include "VKContext.hh"
 
-#include "Vulkan.h"
-#include "fwd.h"
+#include "Vulkan.hh"
+#include "fwd.hh"
 
 namespace sl::vk {
 

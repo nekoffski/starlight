@@ -1,8 +1,8 @@
 #pragma once
 
-#include "managers/MaterialManager.h"
-#include "managers/MeshManager.h"
-#include "managers/ShaderManager.h"
-#include "managers/TextureManager.h"
-#include "managers/SkyboxManager.h"
-#include "managers/ModelManager.h"
+#include "managers/MaterialManager.hh"
+#include "managers/MeshManager.hh"
+#include "managers/ShaderManager.hh"
+#include "managers/TextureManager.hh"
+#include "managers/SkyboxManager.hh"
+#include "managers/ModelManager.hh"

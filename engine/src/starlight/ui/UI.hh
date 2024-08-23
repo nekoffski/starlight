@@ -2,13 +2,13 @@
 
 #include <imgui.h>
 
-#include "Utils.h"
+#include "Utils.hh"
 
-#include "fonts/FontAwesome.h"
+#include "fonts/FontAwesome.hh"
 
-#include "widgets/Panel.h"
-#include "widgets/Menu.h"
-#include "widgets/Slider.h"
-#include "widgets/TabMenu.h"
-#include "widgets/Popup.h"
-#include "widgets/Image.h"
+#include "widgets/Panel.hh"
+#include "widgets/Menu.hh"
+#include "widgets/Slider.hh"
+#include "widgets/TabMenu.hh"
+#include "widgets/Popup.hh"
+#include "widgets/Image.hh"

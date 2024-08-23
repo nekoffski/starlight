@@ -1,9 +1,9 @@
-#include "VKRenderPass.h"
+#include "VKRenderPass.hh"
 
-#include "VKCommandBuffer.h"
-#include "VKSwapchain.h"
-#include "VKContext.h"
-#include "VKRenderTarget.h"
+#include "VKCommandBuffer.hh"
+#include "VKSwapchain.hh"
+#include "VKContext.hh"
+#include "VKRenderTarget.hh"
 
 namespace sl::vk {
 

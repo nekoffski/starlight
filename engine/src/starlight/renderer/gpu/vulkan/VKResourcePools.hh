@@ -1,20 +1,20 @@
 #pragma once
 
-#include "starlight/core/ResourcePool.hpp"
-#include "starlight/renderer/gpu/ResourcePools.h"
+#include "starlight/core/ResourcePool.hh"
+#include "starlight/renderer/gpu/ResourcePools.hh"
 
-#include "VKTexture.h"
-#include "VKShader.h"
-#include "VKMesh.h"
-#include "VKContext.h"
-#include "VKPhysicalDevice.h"
-#include "VKContext.h"
+#include "VKTexture.hh"
+#include "VKShader.hh"
+#include "VKMesh.hh"
+#include "VKContext.hh"
+#include "VKPhysicalDevice.hh"
+#include "VKContext.hh"
 
-#include "VKRenderPass.h"
-#include "VKRenderTarget.h"
-#include "VKSwapchain.h"
+#include "VKRenderPass.hh"
+#include "VKRenderTarget.hh"
+#include "VKSwapchain.hh"
 
-#include "fwd.h"
+#include "fwd.hh"
 
 namespace sl::vk {
 

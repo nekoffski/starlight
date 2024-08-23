@@ -1,9 +1,9 @@
 
-#include "VKContext.h"
+#include "VKContext.hh"
 #include <kc/core/Utils.hpp>
 
-#include "starlight/core/window/glfw/Vulkan.h"
-#include "starlight/core/window/Window.h"
+#include "starlight/core/window/glfw/Vulkan.hh"
+#include "starlight/core/window/Window.hh"
 
 namespace sl::vk {
 

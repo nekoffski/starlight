@@ -1,8 +1,8 @@
-#include "SkyboxManager.h"
+#include "SkyboxManager.hh"
 
-#include "starlight/renderer/gpu/ResourcePools.h"
+#include "starlight/renderer/gpu/ResourcePools.hh"
 
-#include "starlight/resource/configs/MeshConfig.h"
+#include "starlight/resource/configs/MeshConfig.hh"
 
 namespace sl {
 

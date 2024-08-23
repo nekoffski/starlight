@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Vulkan.h"
-#include "fwd.h"
+#include "Vulkan.hh"
+#include "fwd.hh"
 
-#include "VKLogicalDevice.h"
-#include "VKContext.h"
+#include "VKLogicalDevice.hh"
+#include "VKContext.hh"
 
 namespace sl::vk {
 

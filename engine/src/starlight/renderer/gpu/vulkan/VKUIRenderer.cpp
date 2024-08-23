@@ -1,15 +1,15 @@
-#include "VKUIRenderer.h"
+#include "VKUIRenderer.hh"
 
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_vulkan.h>
 #include <imgui.h>
 #include <ImGuizmo.h>
 
-#include "starlight/core/Log.h"
+#include "starlight/core/Log.hh"
 
-#include "Vulkan.h"
-#include "VKContext.h"
-#include "VKRenderPass.h"
+#include "Vulkan.hh"
+#include "VKContext.hh"
+#include "VKRenderPass.hh"
 
 namespace sl::vk {
 

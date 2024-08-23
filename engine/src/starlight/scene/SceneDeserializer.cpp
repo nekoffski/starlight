@@ -1,8 +1,8 @@
-#include "SceneDeserializer.h"
+#include "SceneDeserializer.hh"
 
-#include "starlight/core/Log.h"
+#include "starlight/core/Log.hh"
 
-#include "components/All.h"
+#include "components/All.hh"
 
 namespace sl {
 

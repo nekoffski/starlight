@@ -2,8 +2,8 @@
 
 #include <string_view>
 
-#include "starlight/core/math/Core.h"
-#include "starlight/core/event/Input.h"
+#include "starlight/core/math/Core.hh"
+#include "starlight/core/event/Input.hh"
 
 namespace sl {
 

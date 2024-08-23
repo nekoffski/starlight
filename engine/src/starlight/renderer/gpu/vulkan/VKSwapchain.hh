@@ -5,13 +5,13 @@
 #include <optional>
 #include <memory>
 
-#include "VKPhysicalDevice.h"
-#include "VKContext.h"
+#include "VKPhysicalDevice.hh"
+#include "VKContext.hh"
 
-#include "Vulkan.h"
-#include "VKTexture.h"
+#include "Vulkan.hh"
+#include "VKTexture.hh"
 
-#include "fwd.h"
+#include "fwd.hh"
 
 namespace sl::vk {
 

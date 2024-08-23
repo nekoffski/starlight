@@ -10,20 +10,20 @@
 #include <span>
 #include <string_view>
 
-#include "starlight/core/math/Core.h"
-#include "starlight/core/memory/Memory.hpp"
-#include "starlight/core/Id.hpp"
-#include "starlight/core/FileSystem.h"
-#include "starlight/core/Core.h"
-#include "starlight/core/Log.h"
-#include "starlight/renderer/CullMode.h"
-#include "starlight/renderer/PolygonMode.h"
-#include "starlight/renderer/gpu/RendererBackend.h"
-#include "fwd.h"
+#include "starlight/core/math/Core.hh"
+#include "starlight/core/memory/Memory.hh"
+#include "starlight/core/Id.hh"
+#include "starlight/core/FileSystem.hh"
+#include "starlight/core/Core.hh"
+#include "starlight/core/Log.hh"
+#include "starlight/renderer/CullMode.hh"
+#include "starlight/renderer/PolygonMode.hh"
+#include "starlight/renderer/gpu/RendererBackend.hh"
+#include "fwd.hh"
 
-#include "Texture.h"
+#include "Texture.hh"
 
-#include "starlight/renderer/Resource.hpp"
+#include "starlight/renderer/Resource.hh"
 
 namespace sl {
 

@@ -1,8 +1,8 @@
-#include "Scene.h"
+#include "Scene.hh"
 
-#include "components/All.h"
+#include "components/All.hh"
 
-#include "starlight/resource/All.h"
+#include "starlight/resource/All.hh"
 
 namespace sl {
 

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Camera.h"
+#include "Camera.hh"
 
-#include "starlight/core/math/Core.h"
-#include "starlight/core/window/WindowManager.h"
+#include "starlight/core/math/Core.hh"
+#include "starlight/core/window/WindowManager.hh"
 
 namespace sl {
 

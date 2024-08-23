@@ -1,10 +1,10 @@
-#include "RendererFrontend.h"
+#include "RendererFrontend.hh"
 
-#include "starlight/core/math/Core.h"
-#include "starlight/core/memory/Memory.hpp"
+#include "starlight/core/math/Core.hh"
+#include "starlight/core/memory/Memory.hh"
 
-#include "RenderPacket.h"
-#include "camera/EulerCamera.h"
+#include "RenderPacket.hh"
+#include "camera/EulerCamera.hh"
 
 namespace sl {
 

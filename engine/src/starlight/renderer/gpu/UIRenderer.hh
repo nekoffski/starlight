@@ -4,8 +4,8 @@
 #include <string>
 #include <span>
 
-#include "starlight/core/Core.h"
-#include "starlight/renderer/fwd.h"
+#include "starlight/core/Core.hh"
+#include "starlight/renderer/fwd.hh"
 
 // TODO: hide
 #include <imgui.h>

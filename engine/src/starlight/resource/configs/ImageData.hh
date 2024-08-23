@@ -3,8 +3,8 @@
 #include <optional>
 #include <functional>
 
-#include <starlight/core/Core.h>
-#include "starlight/core/memory/Memory.hpp"
+#include "starlight/core/Core.hh"
+#include "starlight/core/memory/Memory.hh"
 
 namespace sl {
 

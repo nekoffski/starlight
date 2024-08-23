@@ -1,4 +1,4 @@
-#include "VKTexture.h"
+#include "VKTexture.hh"
 
 #include <string>
 #include <vector>
@@ -8,11 +8,11 @@
 #include <kc/core/Log.h>
 #include <kc/core/Scope.hpp>
 
-#include "Vulkan.h"
-#include "VKImage.h"
-#include "VKBuffer.h"
-#include "VKContext.h"
-#include "VKCommandBuffer.h"
+#include "Vulkan.hh"
+#include "VKImage.hh"
+#include "VKBuffer.hh"
+#include "VKContext.hh"
+#include "VKCommandBuffer.hh"
 
 namespace sl::vk {
 namespace {

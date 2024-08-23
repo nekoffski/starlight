@@ -5,7 +5,7 @@
 #include <fmt/core.h>
 #include <kc/core/Macros.h>
 
-#include "starlight/core/window/Keys.h"
+#include "starlight/core/window/Keys.hh"
 
 namespace sl {
 

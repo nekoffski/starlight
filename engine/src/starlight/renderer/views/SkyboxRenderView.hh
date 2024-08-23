@@ -1,12 +1,12 @@
 #pragma once
 
-#include "starlight/core/memory/Memory.hpp"
+#include "starlight/core/memory/Memory.hh"
 
-#include "RenderView.h"
+#include "RenderView.hh"
 
-#include "starlight/renderer/gpu/RenderPass.h"
-#include "starlight/renderer/gpu/Shader.h"
-#include "starlight/renderer/Skybox.h"
+#include "starlight/renderer/gpu/RenderPass.hh"
+#include "starlight/renderer/gpu/Shader.hh"
+#include "starlight/renderer/Skybox.hh"
 
 namespace sl {
 

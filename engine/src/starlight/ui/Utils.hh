@@ -5,10 +5,10 @@
 #include <imgui.h>
 #include <fmt/core.h>
 
-#include "starlight/renderer/camera/Camera.h"
+#include "starlight/renderer/camera/Camera.hh"
 
-#include "starlight/core/math/Core.h"
-#include "starlight/renderer/gpu/UIRenderer.h"
+#include "starlight/core/math/Core.hh"
+#include "starlight/renderer/gpu/UIRenderer.hh"
 
 namespace sl::ui {
 

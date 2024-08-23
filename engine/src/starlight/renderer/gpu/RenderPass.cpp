@@ -1,6 +1,6 @@
-#include "RenderPass.h"
+#include "RenderPass.hh"
 
-#include "RenderTarget.h"
+#include "RenderTarget.hh"
 
 namespace sl {
 

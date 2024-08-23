@@ -1,6 +1,6 @@
-#include "CullMode.h"
+#include "CullMode.hh"
 
-#include "starlight/core/Log.h"
+#include "starlight/core/Log.hh"
 
 namespace sl {
 

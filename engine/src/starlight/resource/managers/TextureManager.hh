@@ -4,11 +4,11 @@
 
 #include <kc/core/Singleton.hpp>
 
-#include "starlight/core/Core.h"
-#include "starlight/core/memory/Memory.hpp"
-#include "starlight/renderer/fwd.h"
+#include "starlight/core/Core.hh"
+#include "starlight/core/memory/Memory.hh"
+#include "starlight/renderer/fwd.hh"
 
-#include "ResourceManager.hpp"
+#include "ResourceManager.hh"
 
 namespace sl {
 

@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "starlight/core/Core.h"
-#include "starlight/core/ResourcePool.hpp"
+#include "starlight/core/Core.hh"
+#include "starlight/core/ResourcePool.hh"
 
-#include "starlight/renderer/Skybox.h"
+#include "starlight/renderer/Skybox.hh"
 
-#include "TextureManager.h"
-#include "ResourceManager.hpp"
-#include "MeshManager.h"
+#include "TextureManager.hh"
+#include "ResourceManager.hh"
+#include "MeshManager.hh"
 
 namespace sl {
 

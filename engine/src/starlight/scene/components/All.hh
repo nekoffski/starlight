@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MeshComponent.h"
-#include "TransformComponent.h"
-#include "MaterialComponent.h"
-#include "PointLightComponent.h"
+#include "MeshComponent.hh"
+#include "TransformComponent.hh"
+#include "MaterialComponent.hh"
+#include "PointLightComponent.hh"

@@ -1,4 +1,4 @@
-#include "Skybox.h"
+#include "Skybox.hh"
 
 namespace sl {
 

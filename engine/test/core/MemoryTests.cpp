@@ -1,4 +1,4 @@
-#include "starlight/core/memory/Memory.hpp"
+#include "starlight/core/memory/Memory.hh"
 
 #include <gtest/gtest.h>
 

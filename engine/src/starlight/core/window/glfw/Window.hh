@@ -1,7 +1,7 @@
 #pragma once
 
-#include "starlight/core/window/Window.h"
-#include "starlight/core/math/Core.h"
+#include "starlight/core/window/Window.hh"
+#include "starlight/core/math/Core.hh"
 
 namespace sl::glfw {
 

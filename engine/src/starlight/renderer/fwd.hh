@@ -1,7 +1,7 @@
 #pragma once
 
-#include "camera/fwd.h"
-#include "gpu/fwd.h"
+#include "camera/fwd.hh"
+#include "gpu/fwd.hh"
 
 namespace sl {
 

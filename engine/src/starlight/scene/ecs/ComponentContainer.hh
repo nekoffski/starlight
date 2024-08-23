@@ -2,10 +2,10 @@
 
 #include <unordered_map>
 
-#include "starlight/core/ResourcePool.hpp"
-#include "starlight/core/Core.h"
+#include "starlight/core/ResourcePool.hh"
+#include "starlight/core/Core.hh"
 
-#include "starlight/scene/components/Component.h"
+#include "starlight/scene/components/Component.hh"
 
 namespace sl {
 

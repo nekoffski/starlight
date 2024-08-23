@@ -1,12 +1,12 @@
-#include "starlight/core/window/WindowManager.h"
+#include "starlight/core/window/WindowManager.hh"
 
 #include <gtest/gtest.h>
 
-#include "mock/WindowMock.hpp"
+#include "mock/WindowMock.hh"
 
-#include "starlight/core/event/Event.h"
-#include "starlight/core/event/Input.h"
-#include "starlight/core/event/Quit.h"
+#include "starlight/core/event/Event.hh"
+#include "starlight/core/event/Input.hh"
+#include "starlight/core/event/Quit.hh"
 
 using namespace sl;
 using namespace testing;

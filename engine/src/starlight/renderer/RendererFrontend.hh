@@ -4,20 +4,20 @@
 #include <functional>
 #include <span>
 
-#include "starlight/core/Context.h"
+#include "starlight/core/Context.hh"
 
-#include "RenderPacket.h"
-#include "RenderMode.h"
-#include "FrameStatistics.h"
-#include "Model.h"
-#include "Skybox.h"
+#include "RenderPacket.hh"
+#include "RenderMode.hh"
+#include "FrameStatistics.hh"
+#include "Model.hh"
+#include "Skybox.hh"
 
-#include "camera/Camera.h"
-#include "views/RenderView.h"
-#include "gpu/RendererBackend.h"
-#include "gpu/Vendor.h"
-#include "gpu/Shader.h"
-#include "gpu/Texture.h"
+#include "camera/Camera.hh"
+#include "views/RenderView.hh"
+#include "gpu/RendererBackend.hh"
+#include "gpu/Vendor.hh"
+#include "gpu/Shader.hh"
+#include "gpu/Texture.hh"
 
 namespace sl {
 

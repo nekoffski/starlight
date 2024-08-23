@@ -1,4 +1,4 @@
-#include "starlight/core/Id.hpp"
+#include "starlight/core/Id.hh"
 
 #include <gtest/gtest.h>
 

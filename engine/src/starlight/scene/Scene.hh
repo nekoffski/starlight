@@ -2,12 +2,12 @@
 
 #include <map>
 
-#include "starlight/core/Core.h"
-#include "starlight/core/ResourcePool.hpp"
-#include "starlight/renderer/RenderPacket.h"
+#include "starlight/core/Core.hh"
+#include "starlight/core/ResourcePool.hh"
+#include "starlight/renderer/RenderPacket.hh"
 
-#include "ecs/Entity.h"
-#include "ecs/ComponentContainerMap.hpp"
+#include "ecs/Entity.hh"
+#include "ecs/ComponentContainerMap.hh"
 
 namespace sl {
 

@@ -1,4 +1,4 @@
-#include "Entity.h"
+#include "Entity.hh"
 
 namespace sl {
 

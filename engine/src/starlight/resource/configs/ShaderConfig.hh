@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
-#include "starlight/core/Core.h"
-#include "starlight/core/FileSystem.h"
-#include "starlight/renderer/gpu/Shader.h"
+#include "starlight/core/Core.hh"
+#include "starlight/core/FileSystem.hh"
+#include "starlight/renderer/gpu/Shader.hh"
 
 namespace sl {
 

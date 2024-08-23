@@ -1,8 +1,8 @@
 #pragma once
 
-#include "starlight/core/Core.h"
+#include "starlight/core/Core.hh"
 
-#include "RenderMode.h"
+#include "RenderMode.hh"
 
 namespace sl {
 

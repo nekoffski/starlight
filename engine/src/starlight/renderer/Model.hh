@@ -3,8 +3,8 @@
 #include <vector>
 #include <unordered_map>
 
-#include "starlight/core/math/Transform.h"
-#include "gpu/Mesh.h"
+#include "starlight/core/math/Transform.hh"
+#include "gpu/Mesh.hh"
 
 namespace sl {
 

@@ -1,6 +1,6 @@
-#include "Vertex.h"
+#include "Vertex.hh"
 
-#include "starlight/core/Log.h"
+#include "starlight/core/Log.hh"
 
 namespace sl {
 

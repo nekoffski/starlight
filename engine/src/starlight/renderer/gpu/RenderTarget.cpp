@@ -1,4 +1,4 @@
-#include "RenderTarget.h"
+#include "RenderTarget.hh"
 
 namespace sl {
 

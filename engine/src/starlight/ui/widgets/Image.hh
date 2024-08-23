@@ -1,7 +1,7 @@
 #pragma once
 
-#include "starlight/renderer/gpu/Texture.h"
-#include "starlight/core/math/Core.h"
+#include "starlight/renderer/gpu/Texture.hh"
+#include "starlight/core/math/Core.hh"
 
 namespace sl::ui {
 

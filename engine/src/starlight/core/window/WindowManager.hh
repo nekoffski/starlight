@@ -2,8 +2,8 @@
 
 #include <kc/core/Singleton.hpp>
 
-#include "starlight/core/math/Core.h"
-#include "Window.h"
+#include "starlight/core/math/Core.hh"
+#include "Window.hh"
 
 namespace sl {
 

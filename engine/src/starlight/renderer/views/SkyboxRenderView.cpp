@@ -1,6 +1,6 @@
-#include "SkyboxRenderView.h"
+#include "SkyboxRenderView.hh"
 
-#include "starlight/renderer/gpu/vulkan/VKResourcePools.h"
+#include "starlight/renderer/gpu/vulkan/VKResourcePools.hh"
 
 namespace sl {
 

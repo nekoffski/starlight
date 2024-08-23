@@ -1,10 +1,10 @@
-#include "MaterialManager.h"
+#include "MaterialManager.hh"
 
 #include <optional>
 
 #include <kc/json/Utils.hpp>
 
-#include "TextureManager.h"
+#include "TextureManager.hh"
 
 namespace sl {
 

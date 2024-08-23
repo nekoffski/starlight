@@ -1,8 +1,8 @@
 #pragma once
 
-#include "starlight/core/Core.h"
+#include "starlight/core/Core.hh"
 
-#include "Glm.h"
-#include "Vec.hpp"
-#include "Rect.h"
-#include "Extent.hpp"
+#include "Glm.hh"
+#include "Vec.hh"
+#include "Rect.hh"
+#include "Extent.hh"
