@@ -6,7 +6,7 @@
 #include "window/Vendor.hh"
 
 #include "event/EventBroker.hh"
-#include "TimeManager.hh"
+#include "Clock.hh"
 #include "Config.hh"
 #include "Core.hh"
 
@@ -41,7 +41,7 @@ private:
 
     WindowVendor m_window;
     WindowManager m_windowManager;
-    TimeManager m_timeManager;
+    Clock m_clock;
 };
 
 }  // namespace sl

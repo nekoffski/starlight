@@ -11,22 +11,20 @@ using namespace std::literals::chrono_literals;
 
 namespace sl {
 
-class TimeManager : public kc::core::Singleton<TimeManager> {
-    using Clock = kc::core::Clock;
+class Clock : public kc::core::Singleton<Clock> {
+    using ClockImpl = kc::core::Clock;
 
 public:
-    explicit TimeManager();
+    explicit Clock();
 
     float getFps() const;
     float getDeltaTime() const;
 
     void update();
 
-    Clock* getClock();
-
 private:
-    Clock m_clock;
-    Clock::TimePoint m_lastTimestamp;
+    ClockImpl m_clock;
+    ClockImpl::TimePoint m_lastTimestamp;
 
     float m_deltaTime;
 };

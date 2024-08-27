@@ -13,7 +13,7 @@ Context::Context(const std::string& applicationName) :
     m_loggerInitializator(applicationName), m_windowManager(&m_window) {}
 
 float Context::beginFrame() {
-    const auto deltaTime = m_timeManager.getDeltaTime();
+    const auto deltaTime = m_clock.getDeltaTime();
 
     m_window.update();
     m_eventBroker.dispatch();
@@ -27,7 +27,7 @@ void Context::endFrame() {
     m_window.swapBuffers();
 
     // TODO: no managers!!
-    m_timeManager.update();
+    m_clock.update();
     m_windowManager.update();
 }
 

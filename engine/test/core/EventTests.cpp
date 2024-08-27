@@ -144,6 +144,7 @@ TEST_F(
         proxy.emit<TestEvent>(1337.0f, 1337);
         broker.dispatch();
     }
+
     ASSERT_TRUE(called);
     ASSERT_TRUE(called2);
 
