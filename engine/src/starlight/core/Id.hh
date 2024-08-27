@@ -11,9 +11,12 @@ namespace sl {
 
 template <typename T, typename Id = u64>
 requires std::is_arithmetic_v<Id>
-class Identificable {
+class Identificable : public NonCopyable {
 public:
     explicit Identificable() : m_id(createId()) {}
+
+    Identificable(Identificable&& oth)            = default;
+    Identificable& operator=(Identificable&& oth) = default;
 
     ~Identificable() {
         std::scoped_lock guard{ s_mutex };
@@ -27,18 +30,19 @@ private:
         std::scoped_lock guard{ s_mutex };
 
         if (not s_freeIds.empty()) {
-            const auto id = s_freeIds.front().s_freeIds.pop();
+            const auto id = s_freeIds.front();
+            s_freeIds.pop();
             return id;
         }
 
         return s_generator++;
     }
 
-    const Id m_id;
+    Id m_id;
 
     inline static Id s_generator = 0;
-    static std::queue<Id> s_freeIds;
-    static std::mutex s_mutex;
+    inline static std::queue<Id> s_freeIds;
+    inline static std::mutex s_mutex;
 };
 
 template <typename T>

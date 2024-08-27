@@ -2,7 +2,7 @@
 
 #include <kc/core/Log.h>
 
-#include "starlight/core/event/Event.hh"
+#include "starlight/core/event/EventProxy.hh"
 #include "starlight/core/event/Quit.hh"
 #include "starlight/core/event/Input.hh"
 #include "starlight/core/event/WindowResized.hh"
@@ -25,31 +25,31 @@ bool WindowManager::isMouseButtonPressed(Window::Button buttonCode) const {
 void WindowManager::setCallbacks() {
     m_window->onWindowCloseCallback([]() {
         LOG_INFO("Window closed, emitting event");
-        EventManager::get().emit<QuitEvent>("Window closed");
+        EventProxy::get().emit<QuitEvent>("Window closed");
     });
 
     m_window->onKeyCallback([](KeyAction action, int key) {
         KeyEvent event{ action, key };
         LOG_TRACE("Detected key action, emitting event: {}", event);
-        EventManager::get().emit<KeyEvent>(event);
+        EventProxy::get().emit<KeyEvent>(event);
     });
 
     m_window->onScrollCallback([](float offset) {
         ScrollEvent event{ offset };
         LOG_TRACE("Detected scroll, emitting event: {}", event);
-        EventManager::get().emit<ScrollEvent>(event);
+        EventProxy::get().emit<ScrollEvent>(event);
     });
 
     m_window->onMouseCallback([](MouseAction action, int button) {
         MouseEvent event{ action, button };
         LOG_TRACE("Detected mouse action, emitting event: {}", event);
-        EventManager::get().emit<MouseEvent>(event);
+        EventProxy::get().emit<MouseEvent>(event);
     });
 
     m_window->onWindowResizeCallback([](uint32_t width, uint32_t height) {
         WindowResized event{ width, height };
         LOG_TRACE("Window resized, emitting event: {}", event);
-        EventManager::get().emit<WindowResized>(event);
+        EventProxy::get().emit<WindowResized>(event);
     });
 }
 

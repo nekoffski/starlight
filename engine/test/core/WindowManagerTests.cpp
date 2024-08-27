@@ -4,8 +4,7 @@
 
 #include "mock/WindowMock.hh"
 
-#include "starlight/core/event/Event.hh"
-#include "starlight/core/event/Input.hh"
+#include "starlight/core/event/EventBroker.hh"
 #include "starlight/core/event/Quit.hh"
 
 using namespace sl;
@@ -17,69 +16,94 @@ struct WindowManagerTests : Test {
 
 TEST_F(WindowManagerTests, givenWindowManager_whenCreating_shouldSetOnKeyCallback) {
     EXPECT_CALL(window, onKeyCallback(_)).Times(1);
-    WindowManager WindowManager{&window};
+    WindowManager WindowManager{ &window };
 }
 
-TEST_F(WindowManagerTests, givenWindowManager_whenCreating_shouldSetOnMouseCallback) {
+TEST_F(
+  WindowManagerTests, givenWindowManager_whenCreating_shouldSetOnMouseCallback
+) {
     EXPECT_CALL(window, onMouseCallback(_)).Times(1);
-    WindowManager WindowManager{&window};
+    WindowManager WindowManager{ &window };
 }
 
-TEST_F(WindowManagerTests, givenWindowManager_whenCreating_shouldSetOnWindowCloseCallback) {
+TEST_F(
+  WindowManagerTests, givenWindowManager_whenCreating_shouldSetOnWindowCloseCallback
+) {
     EXPECT_CALL(window, onWindowCloseCallback(_)).Times(1);
-    WindowManager WindowManager{&window};
+    WindowManager WindowManager{ &window };
 }
 
 struct CallbacksTests : WindowManagerTests {
     void SetUp() override { called = false; }
 
-    EventManager eventManager;
+    EventBroker eventBroker;
     bool called;
 };
 
-TEST_F(CallbacksTests, givenWindowManager_whenKeyboardInteractionDetected_shouldEmitMouseEvent) {
-    EXPECT_CALL(window, onMouseCallback).Times(1).WillOnce([](Window::OnMouseCallback callback) {
-        callback(MouseAction::press, 1);
-    });
+TEST_F(
+  CallbacksTests,
+  givenWindowManager_whenKeyboardInteractionDetected_shouldEmitMouseEvent
+) {
+    EXPECT_CALL(window, onMouseCallback)
+      .Times(1)
+      .WillOnce([](Window::OnMouseCallback callback) {
+          callback(MouseAction::press, 1);
+      });
 
-    eventManager.on<MouseEvent>([&]([[maybe_unused]] MouseEvent* event) {
-        EXPECT_EQ(event->action, MouseAction::press);
-        EXPECT_EQ(event->button, 1);
-        called = true;
-    });
+    eventBroker.getProxy().pushEventHandler<MouseEvent>(
+      [&]([[maybe_unused]] const MouseEvent& event) {
+          EXPECT_EQ(event.action, MouseAction::press);
+          EXPECT_EQ(event.button, 1);
+          called = true;
 
-    WindowManager windowManager{&window};
+          return EventChainBehaviour::propagate;
+      }
+    );
 
-    eventManager.dispatch();
+    WindowManager windowManager{ &window };
+
+    eventBroker.dispatch();
     EXPECT_TRUE(called);
 }
 
 TEST_F(CallbacksTests, givenWindowManager_whenWindowCloses_shouldEmitQuitEvent) {
-    eventManager.on<QuitEvent>([&]([[maybe_unused]] auto) { called = true; });
+    eventBroker.getProxy().pushEventHandler<QuitEvent>(
+      [&]([[maybe_unused]] const auto&) {
+          called = true;
+          return EventChainBehaviour::propagate;
+      }
+    );
 
     EXPECT_CALL(window, onWindowCloseCallback)
-        .Times(1)
-        .WillOnce([](Window::OnWindowCloseCallback callback) { callback(); });
+      .Times(1)
+      .WillOnce([](Window::OnWindowCloseCallback callback) { callback(); });
 
-    WindowManager windowManager{&window};
+    WindowManager windowManager{ &window };
 
-    eventManager.dispatch();
+    eventBroker.dispatch();
     EXPECT_TRUE(called);
 }
 
-TEST_F(CallbacksTests, givenWindowManager_whenKeyboardInteractionDetected_shouldEmitKeyEvent) {
-    EXPECT_CALL(window, onKeyCallback).Times(1).WillOnce([](Window::OnKeyCallback callback) {
-        callback(KeyAction::press, 1);
-    });
+TEST_F(
+  CallbacksTests,
+  givenWindowManager_whenKeyboardInteractionDetected_shouldEmitKeyEvent
+) {
+    EXPECT_CALL(window, onKeyCallback)
+      .Times(1)
+      .WillOnce([](Window::OnKeyCallback callback) { callback(KeyAction::press, 1); }
+      );
 
-    eventManager.on<KeyEvent>([&]([[maybe_unused]] KeyEvent* event) {
-        EXPECT_EQ(event->action, KeyAction::press);
-        EXPECT_EQ(event->key, 1);
-        called = true;
-    });
+    eventBroker.getProxy().pushEventHandler<KeyEvent>(
+      [&]([[maybe_unused]] const KeyEvent& event) {
+          EXPECT_EQ(event.action, KeyAction::press);
+          EXPECT_EQ(event.key, 1);
+          called = true;
+          return EventChainBehaviour::propagate;
+      }
+    );
 
-    WindowManager windowManager{&window};
+    WindowManager windowManager{ &window };
 
-    eventManager.dispatch();
+    eventBroker.dispatch();
     EXPECT_TRUE(called);
 }

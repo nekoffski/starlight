@@ -5,7 +5,7 @@
 #include "window/WindowManager.hh"
 #include "window/Vendor.hh"
 
-#include "event/Event.hh"
+#include "event/EventBroker.hh"
 #include "TimeManager.hh"
 #include "Config.hh"
 #include "Core.hh"
@@ -37,7 +37,7 @@ private:
     LoggerInitializator m_loggerInitializator;
 
     Config m_config;
-    EventManager m_eventManager;
+    EventBroker m_eventBroker;
 
     WindowVendor m_window;
     WindowManager m_windowManager;
