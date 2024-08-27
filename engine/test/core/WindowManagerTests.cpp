@@ -50,7 +50,7 @@ TEST_F(
           callback(MouseAction::press, 1);
       });
 
-    eventBroker.getProxy().pushEventHandler<MouseEvent>(
+    [[maybe_unused]] auto id = eventBroker.getProxy().pushEventHandler<MouseEvent>(
       [&]([[maybe_unused]] const MouseEvent& event) {
           EXPECT_EQ(event.action, MouseAction::press);
           EXPECT_EQ(event.button, 1);
@@ -67,7 +67,7 @@ TEST_F(
 }
 
 TEST_F(CallbacksTests, givenWindowManager_whenWindowCloses_shouldEmitQuitEvent) {
-    eventBroker.getProxy().pushEventHandler<QuitEvent>(
+    [[maybe_unused]] auto id = eventBroker.getProxy().pushEventHandler<QuitEvent>(
       [&]([[maybe_unused]] const auto&) {
           called = true;
           return EventChainBehaviour::propagate;
@@ -93,7 +93,7 @@ TEST_F(
       .WillOnce([](Window::OnKeyCallback callback) { callback(KeyAction::press, 1); }
       );
 
-    eventBroker.getProxy().pushEventHandler<KeyEvent>(
+    [[maybe_unused]] auto id = eventBroker.getProxy().pushEventHandler<KeyEvent>(
       [&]([[maybe_unused]] const KeyEvent& event) {
           EXPECT_EQ(event.action, KeyAction::press);
           EXPECT_EQ(event.key, 1);

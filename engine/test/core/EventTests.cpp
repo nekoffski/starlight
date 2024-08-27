@@ -115,3 +115,44 @@ TEST_F(EventTests, givenTwoHandlers_whenPoppingHandler_shouldNotBeCalled) {
     EXPECT_TRUE(called);
     EXPECT_FALSE(called2);
 }
+
+TEST_F(
+  EventTests, givenEventHandlerSentinel_whenDestroying_shouldUnregisterHandlers
+) {
+    bool called  = false;
+    bool called2 = false;
+
+    {
+        EventHandlerSentinel sentinel{ proxy };
+
+        proxy.pushEventHandler<TestEvent>(
+          [&](const TestEvent& ev) {
+              called = true;
+              return EventChainBehaviour::propagate;
+          },
+          sentinel
+        );
+
+        proxy.pushEventHandler<TestEvent>(
+          [&](const TestEvent& ev) {
+              called2 = true;
+              return EventChainBehaviour::propagate;
+          },
+          sentinel
+        );
+
+        proxy.emit<TestEvent>(1337.0f, 1337);
+        broker.dispatch();
+    }
+    ASSERT_TRUE(called);
+    ASSERT_TRUE(called2);
+
+    called  = false;
+    called2 = false;
+
+    proxy.emit<TestEvent>(1337.0f, 1337);
+    broker.dispatch();
+
+    EXPECT_FALSE(called);
+    EXPECT_FALSE(called2);
+}

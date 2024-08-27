@@ -2,6 +2,7 @@
 
 namespace sl {
 
+class EventHandlerGuard;
 class EventBroker;
 class EventProxy;
 

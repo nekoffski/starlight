@@ -4,6 +4,7 @@
 #include "starlight/core/memory/Memory.hh"
 #include "starlight/core/Log.hh"
 #include "Core.hh"
+#include "EventHandlerSentinel.hh"
 
 namespace sl {
 
@@ -33,9 +34,20 @@ public:
         return chain.back().getId();
     }
 
+    template <typename T>
+    void pushEventHandler(
+      std::function<EventChainBehaviour(const T&)>&& handler,
+      EventHandlerSentinel& sentinel
+    ) {
+        const auto handlerId = pushEventHandler(std::move(handler));
+        storeHandlerId(handlerId, sentinel);
+    }
+
     void popEventHandler(const EventHandlerId id);
 
 private:
+    void storeHandlerId(const EventHandlerId& id, EventHandlerSentinel& sentinel);
+
     details::Events& m_events;
     details::EventHandlers& m_handlers;
 };
