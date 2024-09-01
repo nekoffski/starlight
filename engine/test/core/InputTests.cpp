@@ -5,6 +5,7 @@
 #include "mock/WindowMock.hh"
 
 #include "starlight/core/event/EventBroker.hh"
+#include "starlight/core/window/Input.hh"
 
 using namespace sl;
 using namespace testing;
@@ -13,14 +14,14 @@ struct InputTests : Test {
     NiceMock<WindowImplMock> windowImpl;
 };
 
-TEST_F(InputTests, givenWindowManager_whenCreating_shouldSetOnKeyCallback) {
+TEST_F(InputTests, givenInput_whenCreating_shouldSetOnKeyCallback) {
     EXPECT_CALL(windowImpl, onKeyCallback(_)).Times(1);
-    Window window{ windowImpl };
+    Input input{ windowImpl };
 }
 
-TEST_F(InputTests, givenWindowManager_whenCreating_shouldSetOnMouseCallback) {
+TEST_F(InputTests, givenInput_whenCreating_shouldSetOnMouseCallback) {
     EXPECT_CALL(windowImpl, onMouseCallback(_)).Times(1);
-    Window window{ windowImpl };
+    Input input{ windowImpl };
 }
 
 struct InputCallbacksTests : InputTests {
@@ -31,8 +32,7 @@ struct InputCallbacksTests : InputTests {
 };
 
 TEST_F(
-  InputCallbacksTests,
-  givenWindowManager_whenMouseInteractionDetected_shouldEmitMouseEvent
+  InputCallbacksTests, givenInput_whenMouseInteractionDetected_shouldEmitMouseEvent
 ) {
     EXPECT_CALL(windowImpl, onMouseCallback)
       .Times(1)
@@ -50,15 +50,14 @@ TEST_F(
       }
     );
 
-    Window window{ windowImpl };
+    Input input{ windowImpl };
 
     eventBroker.dispatch();
     EXPECT_TRUE(called);
 }
 
 TEST_F(
-  InputCallbacksTests,
-  givenWindowManager_whenKeyboardInteractionDetected_shouldEmitKeyEvent
+  InputCallbacksTests, givenInput_whenKeyboardInteractionDetected_shouldEmitKeyEvent
 ) {
     EXPECT_CALL(windowImpl, onKeyCallback)
       .Times(1)
@@ -75,7 +74,7 @@ TEST_F(
       }
     );
 
-    Window window{ windowImpl };
+    Input input{ windowImpl };
 
     eventBroker.dispatch();
     EXPECT_TRUE(called);
