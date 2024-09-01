@@ -8,7 +8,7 @@ VKMesh::VKMesh(
 ) :
     Mesh(props, data, id),
     m_context(context), m_device(device) {
-    LOG_TRACE("Creating Me.hh");
+    LOG_TRACE("Creating VKMesh");
     LOG_DEBUG(
       "Mesh data vertexSize={}, vertexCount={}, "
       "indicesCount={}, vertexDataPtr={}",
@@ -23,11 +23,11 @@ VKMesh::VKMesh(
     m_dataDescription.indexBufferOffset  = 0;
 
     upload(vertexBuffer, indexBuffer, data);
-    LOG_TRACE("Mesh created");
+    LOG_TRACE("VKMesh created");
 }
 
 VKMesh::~VKMesh() {
-    LOG_TRACE("Destroying me.hh");
+    LOG_TRACE("Destroying VKMesh");
     m_device.waitIdle();
 }
 

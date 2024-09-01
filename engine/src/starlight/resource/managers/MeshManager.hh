@@ -25,7 +25,7 @@ public:
         if (auto mesh = createMesh(props); mesh) [[likely]] {
             return storeResource(props.name, mesh->getId(), mesh);
         } else {
-            LOG_ERROR("Could not create me.hh");
+            LOG_ERROR("Could not create mesh");
             return nullptr;
         }
     }

@@ -2,8 +2,10 @@
 
 #include <string>
 
-#include "window/WindowManager.hh"
+#include "window/WindowImpl.hh"
+#include "window/Window.hh"
 #include "window/Vendor.hh"
+#include "window/Input.hh"
 
 #include "event/EventBroker.hh"
 #include "Clock.hh"
@@ -39,8 +41,9 @@ private:
     Config m_config;
     EventBroker m_eventBroker;
 
-    WindowVendor m_window;
-    WindowManager m_windowManager;
+    WindowVendor m_windowImpl;
+    Window m_window;
+    Input m_input;
     Clock m_clock;
 };
 

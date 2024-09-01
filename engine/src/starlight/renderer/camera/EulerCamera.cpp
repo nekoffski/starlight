@@ -1,6 +1,6 @@
 #include "EulerCamera.hh"
 
-#include "starlight/core/window/WindowManager.hh"
+#include "starlight/core/window/Input.hh"
 #include "starlight/core/window/Keys.hh"
 
 namespace sl {
@@ -39,26 +39,26 @@ void EulerCamera::onViewportResize(Vec2<u32> viewportSize) {
 }
 
 void EulerCamera::processInput(const float speed) {
-    auto windowManager = WindowManager::getPtr();
+    auto& input = Input::get();
 
-    if (windowManager->isKeyPressed(SL_KEY_W)) m_pitch -= speed;
-    if (windowManager->isKeyPressed(SL_KEY_S)) m_pitch += speed;
-    if (windowManager->isKeyPressed(SL_KEY_D)) m_yaw -= speed;
-    if (windowManager->isKeyPressed(SL_KEY_A)) m_yaw += speed;
+    if (input.isKeyPressed(SL_KEY_W)) m_pitch -= speed;
+    if (input.isKeyPressed(SL_KEY_S)) m_pitch += speed;
+    if (input.isKeyPressed(SL_KEY_D)) m_yaw -= speed;
+    if (input.isKeyPressed(SL_KEY_A)) m_yaw += speed;
 
-    if (windowManager->isKeyPressed(SL_KEY_1)) m_radius += speed / 5.0f;
-    if (windowManager->isKeyPressed(SL_KEY_2)) m_radius -= speed / 5.0f;
+    if (input.isKeyPressed(SL_KEY_1)) m_radius += speed / 5.0f;
+    if (input.isKeyPressed(SL_KEY_2)) m_radius -= speed / 5.0f;
 
-    if (windowManager->isMouseButtonPressed(SL_MOUSE_BUTTON_2)) {
-        windowManager->hideCursor();
+    if (input.isMouseButtonPressed(SL_MOUSE_BUTTON_2)) {
+        input.hideCursor();
 
         const float scaledSpeed = speed / 10.0f;
-        const auto delta = scaledSpeed * windowManager->getMousePositionDelta();
+        const auto delta        = scaledSpeed * input.getMousePositionDelta();
 
         m_pitch -= delta.y;
         m_yaw += delta.x;
     } else {
-        windowManager->showCursor();
+        input.showCursor();
     }
 }
 

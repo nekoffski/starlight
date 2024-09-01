@@ -3,7 +3,6 @@
 #include "Camera.hh"
 
 #include "starlight/core/math/Core.hh"
-#include "starlight/core/window/WindowManager.hh"
 
 namespace sl {
 

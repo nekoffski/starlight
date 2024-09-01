@@ -10,12 +10,13 @@ Context::LoggerInitializator::LoggerInitializator(const std::string& application
 }
 
 Context::Context(const std::string& applicationName) :
-    m_loggerInitializator(applicationName), m_windowManager(&m_window) {}
+    m_loggerInitializator(applicationName), m_window(m_windowImpl),
+    m_input(m_windowImpl) {}
 
 float Context::beginFrame() {
     const auto deltaTime = m_clock.getDeltaTime();
 
-    m_window.update();
+    m_windowImpl.update();
     m_eventBroker.dispatch();
 
     return deltaTime;
@@ -24,11 +25,10 @@ float Context::beginFrame() {
 void Context::endFrame() {
     sl::disableVariableLogging();
 
-    m_window.swapBuffers();
+    m_windowImpl.swapBuffers();
 
-    // TODO: no managers!!
     m_clock.update();
-    m_windowManager.update();
+    m_input.update();
 }
 
 Config& Context::getConfig() { return m_config; }

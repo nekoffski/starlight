@@ -1,4 +1,4 @@
-#include "Window.hh"
+#include "GLFWWindow.hh"
 
 #include <GLFW/glfw3.h>
 
@@ -38,7 +38,7 @@ static MouseAction glfwToNovaMouseAction(int action) {
     return MouseAction::unknown;
 }
 
-Window::Window() {
+GLFWWindow::GLFWWindow() {
     glfwInit();
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
@@ -49,16 +49,16 @@ Window::Window() {
     glfwSetWindowUserPointer(GLFW_WINDOW_PTR(m_windowHandle), &m_callbacks);
 }
 
-bool Window::isKeyPressed(Window::Key keyCode) const {
+bool GLFWWindow::isKeyPressed(WindowImpl::Key keyCode) const {
     return glfwGetKey(GLFW_WINDOW_PTR(m_windowHandle), keyCode) == GLFW_PRESS;
 }
 
-bool Window::isMouseButtonPressed(Window::Button buttonCode) const {
+bool GLFWWindow::isMouseButtonPressed(WindowImpl::Button buttonCode) const {
     return glfwGetMouseButton(GLFW_WINDOW_PTR(m_windowHandle), buttonCode)
            == GLFW_PRESS;
 }
 
-void Window::onKeyCallback(OnKeyCallback callback) {
+void GLFWWindow::onKeyCallback(OnKeyCallback callback) {
     m_callbacks.onKey = callback;
 
     static auto onKeyCallback =
@@ -70,7 +70,7 @@ void Window::onKeyCallback(OnKeyCallback callback) {
     glfwSetKeyCallback(GLFW_WINDOW_PTR(m_windowHandle), onKeyCallback);
 }
 
-void Window::onMouseCallback(OnMouseCallback callback) {
+void GLFWWindow::onMouseCallback(OnMouseCallback callback) {
     m_callbacks.onMouse = callback;
 
     static auto onMouseButtonCallback =
@@ -83,7 +83,7 @@ void Window::onMouseCallback(OnMouseCallback callback) {
     );
 }
 
-void Window::onScrollCallback(OnScrollCallback callback) {
+void GLFWWindow::onScrollCallback(OnScrollCallback callback) {
     m_callbacks.onScroll = callback;
 
     static auto onScrollCallback =
@@ -94,7 +94,7 @@ void Window::onScrollCallback(OnScrollCallback callback) {
     glfwSetScrollCallback(GLFW_WINDOW_PTR(m_windowHandle), onScrollCallback);
 }
 
-void Window::onWindowCloseCallback(OnWindowCloseCallback callback) {
+void GLFWWindow::onWindowCloseCallback(OnWindowCloseCallback callback) {
     m_callbacks.onWindowClose = callback;
 
     static auto onWindowCloseCallback = [](GLFWwindow* window) {
@@ -106,7 +106,7 @@ void Window::onWindowCloseCallback(OnWindowCloseCallback callback) {
     );
 }
 
-void Window::onWindowResizeCallback(OnWindowResizeCallback callback) {
+void GLFWWindow::onWindowResizeCallback(OnWindowResizeCallback callback) {
     m_callbacks.onWindowResize = callback;
 
     static auto onWindowResizeCallback =
@@ -121,45 +121,45 @@ void Window::onWindowResizeCallback(OnWindowResizeCallback callback) {
     );
 }
 
-void Window::update() { glfwPollEvents(); }
+void GLFWWindow::update() { glfwPollEvents(); }
 
-void Window::hideCursor() {
+void GLFWWindow::hideCursor() {
     glfwSetInputMode(
       GLFW_WINDOW_PTR(m_windowHandle), GLFW_CURSOR, GLFW_CURSOR_DISABLED
     );
 }
 
-void Window::showCursor() {
+void GLFWWindow::showCursor() {
     glfwSetInputMode(
       GLFW_WINDOW_PTR(m_windowHandle), GLFW_CURSOR, GLFW_CURSOR_NORMAL
     );
 }
 
-void Window::swapBuffers() { glfwSwapBuffers(GLFW_WINDOW_PTR(m_windowHandle)); }
+void GLFWWindow::swapBuffers() { glfwSwapBuffers(GLFW_WINDOW_PTR(m_windowHandle)); }
 
-std::string_view Window::getVendor() const { return "GLFW3"; }
+std::string_view GLFWWindow::getVendor() const { return "GLFW3"; }
 
-Vec2<u32> Window::getFramebufferSize() const {
+Vec2<u32> GLFWWindow::getFramebufferSize() const {
     int width, height;
     glfwGetFramebufferSize(GLFW_WINDOW_PTR(m_windowHandle), &width, &height);
 
     return Vec2<u32>{ static_cast<u32>(width), static_cast<u32>(height) };
 }
 
-Vec2<u32> Window::getSize() const {
+Vec2<u32> GLFWWindow::getSize() const {
     int width, height;
     glfwGetWindowSize(GLFW_WINDOW_PTR(m_windowHandle), &width, &height);
 
     return Vec2<u32>{ static_cast<u32>(width), static_cast<u32>(height) };
 }
 
-Vec2<f32> Window::getMousePosition() const {
+Vec2<f32> GLFWWindow::getMousePosition() const {
     double x, y;
     glfwGetCursorPos(GLFW_WINDOW_PTR(m_windowHandle), &x, &y);
 
     return Vec2<f32>{ x, y };
 }
 
-void* Window::getHandle() { return m_windowHandle; }
+void* GLFWWindow::getHandle() { return m_windowHandle; }
 
 }  // namespace sl::glfw

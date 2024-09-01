@@ -2,10 +2,10 @@
 
 #ifdef SL_USE_GLFW
 
-#include "glfw/Window.hh"
+#include "glfw/GLFWWindow.hh"
 
 namespace sl {
-using WindowVendor = glfw::Window;
+using WindowVendor = glfw::GLFWWindow;
 }
 
 #endif

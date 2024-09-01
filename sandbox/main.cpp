@@ -5,6 +5,7 @@
 #include "starlight/core/Core.hh"
 #include "starlight/core/window/Window.hh"
 #include "starlight/core/Context.hh"
+#include "starlight/core/event/Quit.hh"
 
 #include "starlight/renderer/views/WorldRenderView.hh"
 #include "starlight/renderer/camera/EulerCamera.hh"
@@ -23,6 +24,17 @@ int main() {
 
     auto& window            = context.getWindow();
     const auto viewportSize = window.getFramebufferSize();
+
+    auto& eventProxy = sl::EventProxy::get();
+    sl::EventHandlerSentinel sentinel{ eventProxy };
+
+    eventProxy.pushEventHandler<sl::QuitEvent>(
+      [&](const auto& ev) {
+          isRunning = false;
+          return sl::EventChainBehaviour::propagate;
+      },
+      sentinel
+    );
 
     sl::EulerCamera camera(sl::EulerCamera::Properties{
       .target       = sl::Vec3<sl::f32>{ 0.0f },

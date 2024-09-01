@@ -5,7 +5,7 @@
 #include <unordered_map>
 
 #include "starlight/core/Core.hh"
-#include "starlight/core/window/WindowManager.hh"
+#include "starlight/core/window/Window.hh"
 #include "starlight/renderer/gpu/Texture.hh"
 
 #include "VKRendererBackend.hh"
@@ -664,7 +664,7 @@ static std::unordered_map<PolygonMode, VkPolygonMode> vkPolygonModes = {
 
 void VKShader::createPipeline(RenderPass* renderPass) {
     // viewport & scissor
-    const auto size = WindowManager::get().getSize();
+    const auto size = Window::get().getSize();
 
     VkViewport viewport;
     viewport.x        = 0.0f;

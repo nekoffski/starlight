@@ -1,11 +1,11 @@
 #pragma once
 
-#include "starlight/core/window/Window.hh"
+#include "starlight/core/window/WindowImpl.hh"
 #include "starlight/core/math/Core.hh"
 
 namespace sl::glfw {
 
-class Window : public sl::Window {
+class GLFWWindow : public WindowImpl {
     struct Callbacks {
         OnWindowCloseCallback onWindowClose;
         OnKeyCallback onKey;
@@ -15,7 +15,7 @@ class Window : public sl::Window {
     };
 
 public:
-    explicit Window();
+    explicit GLFWWindow();
 
     void showCursor() override;
     void hideCursor() override;
@@ -26,8 +26,8 @@ public:
     Vec2<u32> getSize() const override;
     Vec2<f32> getMousePosition() const override;
 
-    bool isKeyPressed(Window::Key keyCode) const override;
-    bool isMouseButtonPressed(Window::Button buttonCode) const override;
+    bool isKeyPressed(WindowImpl::Key keyCode) const override;
+    bool isMouseButtonPressed(WindowImpl::Button buttonCode) const override;
     void update() override;
     void swapBuffers() override;
 

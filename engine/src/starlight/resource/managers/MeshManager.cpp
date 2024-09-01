@@ -5,7 +5,7 @@ namespace sl {
 MeshManager::MeshManager(
   ResourcePools& resourcePools, MaterialManager& materialManager
 ) :
-    ResourceManager("Me.hh"),
+    ResourceManager("mesh"),
     m_resourcePools(resourcePools), m_materialManager(materialManager) {
     createDefaultGeometries();
 }

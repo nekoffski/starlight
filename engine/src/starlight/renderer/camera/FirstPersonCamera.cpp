@@ -4,6 +4,7 @@
 
 #include "starlight/core/Log.hh"
 #include "starlight/core/window/Keys.hh"
+#include "starlight/core/window/Input.hh"
 
 namespace sl {
 
@@ -44,19 +45,19 @@ void FirstPersonCamera::onViewportResize(Vec2<u32> viewportSize) {
 }
 
 void FirstPersonCamera::processInput(const float speed) {
-    auto& window = WindowManager::get();
+    auto& input = Input::get();
 
-    if (window.isKeyPressed(SL_KEY_W)) m_position += speed * m_front;
-    if (window.isKeyPressed(SL_KEY_S)) m_position -= speed * m_front;
-    if (window.isKeyPressed(SL_KEY_D)) m_position += speed * m_right;
-    if (window.isKeyPressed(SL_KEY_A)) m_position -= speed * m_right;
+    if (input.isKeyPressed(SL_KEY_W)) m_position += speed * m_front;
+    if (input.isKeyPressed(SL_KEY_S)) m_position -= speed * m_front;
+    if (input.isKeyPressed(SL_KEY_D)) m_position += speed * m_right;
+    if (input.isKeyPressed(SL_KEY_A)) m_position -= speed * m_right;
 
-    const auto mouseDelta = window.getMousePositionDelta() * 0.001f;
+    const auto mouseDelta = input.getMousePositionDelta() * 0.001f;
     m_pitch -= mouseDelta.y;
     m_yaw += mouseDelta.x;
 
-    if (window.isKeyPressed(SL_KEY_M)) m_speed += 0.5f;
-    if (window.isKeyPressed(SL_KEY_N)) m_speed -= 0.5f;
+    if (input.isKeyPressed(SL_KEY_M)) m_speed += 0.5f;
+    if (input.isKeyPressed(SL_KEY_N)) m_speed -= 0.5f;
 }
 
 }  // namespace sl
