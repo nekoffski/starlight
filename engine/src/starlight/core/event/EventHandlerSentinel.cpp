@@ -8,8 +8,10 @@ EventHandlerSentinel::EventHandlerSentinel(EventProxy& eventProxy) :
     m_eventProxy(eventProxy) {}
 
 EventHandlerSentinel::~EventHandlerSentinel() {
-    for (const auto& handlerId : m_handlerIds)
+    for (const auto& handlerId : m_handlerIds) {
+        LOG_DEBUG("Popping event handler with id='{}'", handlerId);
         m_eventProxy.popEventHandler(handlerId);
+    }
 }
 
 void EventHandlerSentinel::addHandlerId(const EventHandlerId& id) {

@@ -59,7 +59,7 @@ static std::optional<TextureComponents> prepareComponents(
         props.isTransparent = false;
         props.isWritable    = false;
 
-        std::vector<u8> buffer;
+        auto& buffer = args.buffer;
 
         for (u8 i = 0u; i < cubeFaces; ++i) {
             const auto& path = texturePaths[i];
@@ -68,7 +68,10 @@ static std::optional<TextureComponents> prepareComponents(
               path, Texture::ImageData::Orientation::horizontal
             );
 
-            if (not imageData) return {};
+            if (not imageData) {
+                LOG_ERROR("Could not load cubemap face: '{}'", path);
+                return {};
+            }
 
             const auto chunkSize =
               imageData->width * imageData->height * imageData->channels;
@@ -89,8 +92,6 @@ static std::optional<TextureComponents> prepareComponents(
 
             u64 offset = i * chunkSize;
             std::memcpy(&buffer[offset], imageData->pixels.data(), chunkSize);
-
-            args.buffer = std::move(buffer);
         }
     }
     return args;
