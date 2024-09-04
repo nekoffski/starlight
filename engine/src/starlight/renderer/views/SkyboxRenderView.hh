@@ -14,7 +14,7 @@ class SkyboxRenderView : public RenderView {
 public:
     using UICallback = std::function<void(float)>;
 
-    explicit SkyboxRenderView(Camera* camera, Skybox* skybox);
+    explicit SkyboxRenderView(Skybox* skybox);
 
     void init(
       RendererBackendProxy& backendProxy, ResourcePools& resourcePools,

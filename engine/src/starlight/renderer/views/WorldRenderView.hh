@@ -11,7 +11,7 @@ namespace sl {
 
 class WorldRenderView : public RenderView {
 public:
-    explicit WorldRenderView(Camera* camera, Shader* shader);
+    explicit WorldRenderView(Shader* shader);
 
     void init(
       RendererBackendProxy& backendProxy, ResourcePools& resourcePools,

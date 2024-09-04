@@ -18,10 +18,8 @@ public:
         bool hasPreviousView;
     };
 
-    explicit RenderView(Camera* camera);
+    explicit RenderView();
     virtual ~RenderView() = default;
-
-    void setCamera(Camera* camera);
 
     virtual void init(
       RendererBackendProxy& backendProxy, ResourcePools& resourcePools,
@@ -37,7 +35,6 @@ public:
 
 protected:
     RenderPass* m_renderPass;
-    Camera* m_camera;
 };
 
 }  // namespace sl

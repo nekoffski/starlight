@@ -19,9 +19,7 @@ public:
 
     using UICallback = std::function<void()>;
 
-    explicit UIRenderView(
-      Camera* camera, const Properties& props, UICallback&& callback
-    );
+    explicit UIRenderView(const Properties& props, UICallback&& callback);
 
     void init(
       RendererBackendProxy& backendProxy, ResourcePools& resourcePools,

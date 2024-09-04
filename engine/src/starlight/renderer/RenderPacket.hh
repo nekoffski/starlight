@@ -3,7 +3,7 @@
 #include "starlight/core/math/Core.hh"
 
 #include "gpu/Mesh.hh"
-
+#include "camera/Camera.hh"
 #include "Material.hh"
 #include "PointLight.hh"
 
@@ -19,6 +19,7 @@ struct RenderPacket {
     std::vector<RenderEntity> entities;
     std::vector<PointLight> pointLights;
     Rect2<u32> viewport;
+    Camera* camera;
 };
 
 }  // namespace sl

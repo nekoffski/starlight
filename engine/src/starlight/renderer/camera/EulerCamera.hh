@@ -24,8 +24,6 @@ public:
 
     void onScroll(float offset);
 
-    void onViewportResize(Vec2<u32> viewportSize) override;
-
 private:
     void processInput(const float speed);
     void truncateCoefficients();

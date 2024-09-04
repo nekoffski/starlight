@@ -4,8 +4,7 @@
 
 namespace sl {
 
-SkyboxRenderView::SkyboxRenderView(Camera* camera, Skybox* skybox) :
-    RenderView(camera), m_skybox(skybox) {}
+SkyboxRenderView::SkyboxRenderView(Skybox* skybox) : m_skybox(skybox) {}
 
 void SkyboxRenderView::init(
   RendererBackendProxy& backendProxy, ResourcePools& resourcePools,
@@ -46,16 +45,17 @@ void SkyboxRenderView::render(
       *backendProxy.getCommandBuffer(), backendProxy.getImageIndex(),
       [&]() {
           auto shader = m_skybox->getShader();
+          auto camera = packet.camera;
 
           shader->use();
           shader->setGlobalUniforms([&](Shader::UniformProxy& proxy) {
-              auto viewMatrix  = m_camera->getViewMatrix();
+              auto viewMatrix  = camera->getViewMatrix();
               viewMatrix[3][0] = 0.0f;
               viewMatrix[3][1] = 0.0f;
               viewMatrix[3][2] = 0.0f;
 
               proxy.set("view", viewMatrix);
-              proxy.set("projection", m_camera->getProjectionMatrix());
+              proxy.set("projection", camera->getProjectionMatrix());
           });
           shader->setInstanceUniforms(
             m_skybox->getInstanceId(),

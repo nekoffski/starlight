@@ -2,8 +2,7 @@
 
 namespace sl {
 
-WorldRenderView::WorldRenderView(Camera* camera, Shader* shader) :
-    RenderView(camera), m_shader(shader) {}
+WorldRenderView::WorldRenderView(Shader* shader) : m_shader(shader) {}
 
 void WorldRenderView::init(
   RendererBackendProxy& backendProxy, ResourcePools& resourcePools,
@@ -57,12 +56,13 @@ void WorldRenderView::render(
       [&]() {
           glm::vec4 ambientColor(0.3f, 0.3f, 0.3f, 1.0f);
 
-          const auto cameraPosition = m_camera->getPosition();
+          auto camera               = packet.camera;
+          const auto cameraPosition = camera->getPosition();
 
           m_shader->use();
           m_shader->setGlobalUniforms([&](Shader::UniformProxy& proxy) {
-              proxy.set("view", m_camera->getViewMatrix());
-              proxy.set("projection", m_camera->getProjectionMatrix());
+              proxy.set("view", camera->getViewMatrix());
+              proxy.set("projection", camera->getProjectionMatrix());
               proxy.set("viewPosition", cameraPosition);
               proxy.set("ambientColor", ambientColor);
               proxy.set("renderMode", static_cast<int>(properties.renderMode));

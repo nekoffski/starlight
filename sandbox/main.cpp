@@ -16,6 +16,17 @@
 
 static std::atomic_bool isRunning = true;
 
+/*
+
+TODO:
+    - Camera as part of RenderPacket
+    - Refactor Scene
+    - LoadObj should return a tree of Entities
+        - renderer needs a composite of Mesh, Material, ModelMatrix, Shader
+        - RenderTree?
+    - simplify components
+*/
+
 int main() {
     std::signal(SIGINT, []([[maybe_unused]] int) { isRunning = false; });
 
@@ -47,7 +58,7 @@ int main() {
 
     auto renderGraph =
       sl::RenderGraph::Builder{ rendererBackend, viewportSize }
-        .addView<sl::SkyboxRenderView>(&camera, skybox.get())
+        .addView<sl::SkyboxRenderView>(skybox.get())
         .build();
 
     sl::RenderPacket renderPacket;
@@ -56,6 +67,7 @@ int main() {
         sl::Vec2<sl::u32>{0u, 0u},
         viewportSize
     };
+    renderPacket.camera = &camera;
 
     while (isRunning) {
         context.beginFrame([&](float deltaTime) {

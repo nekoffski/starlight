@@ -3,15 +3,16 @@
 #include <kc/core/Log.h>
 #include <kc/core/Macros.h>
 
+#include "starlight/core/Core.hh"
+
 namespace sl {
 
 struct WindowResized {
-    uint32_t width;
-    uint32_t height;
+    Vec2<u32> size;
 };
 
 inline std::string toString(const WindowResized& event) {
-    return fmt::format("WindowResized[{}/{}]", event.width, event.height);
+    return fmt::format("WindowResized[{}/{}]", event.size.w, event.size.h);
 }
 
 TO_STRING_STREAM(WindowResized);

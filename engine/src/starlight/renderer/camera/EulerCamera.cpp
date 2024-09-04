@@ -34,10 +34,6 @@ void EulerCamera::update(float deltaTime) {
 
 void EulerCamera::onScroll(float offset) { m_radius -= 2.5f * offset; }
 
-void EulerCamera::onViewportResize(Vec2<u32> viewportSize) {
-    m_viewportSize = viewportSize;
-}
-
 void EulerCamera::processInput(const float speed) {
     auto& input = Input::get();
 

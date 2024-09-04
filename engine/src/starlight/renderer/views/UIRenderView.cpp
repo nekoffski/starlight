@@ -8,10 +8,7 @@
 
 namespace sl {
 
-UIRenderView::UIRenderView(
-  Camera* camera, const Properties& props, UICallback&& callback
-) :
-    RenderView(camera),
+UIRenderView::UIRenderView(const Properties& props, UICallback&& callback) :
     m_props(props), m_uiCallback(std::move(callback)) {}
 
 void UIRenderView::init(

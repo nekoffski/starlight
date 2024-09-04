@@ -40,10 +40,6 @@ void FirstPersonCamera::update(float deltaTime) {
     m_up    = glm::normalize(glm::cross(m_right, m_front));
 }
 
-void FirstPersonCamera::onViewportResize(Vec2<u32> viewportSize) {
-    m_viewportSize = viewportSize;
-}
-
 void FirstPersonCamera::processInput(const float speed) {
     auto& input = Input::get();
 
