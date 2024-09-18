@@ -14,7 +14,7 @@ static constexpr int vulkanMaxMeshCount = 4096;
 class VKMesh : public Mesh {
 public:
     explicit VKMesh(
-      u32 id, VKContext& context, VKLogicalDevice& device, VKBuffer& vertexBuffer,
+      VKContext& context, VKLogicalDevice& device, VKBuffer& vertexBuffer,
       VKBuffer& indexBuffer, const Properties& props, const Data& data
     );
     ~VKMesh();

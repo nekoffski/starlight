@@ -14,17 +14,24 @@
 #include "starlight/renderer/RenderGraph.hh"
 #include "starlight/renderer/gpu/Shader.hh"
 
+#include "starlight/renderer/PointLight.hh"
+
 static std::atomic_bool isRunning = true;
 
 /*
 
 TODO:
-    - Camera as part of RenderPacket
+    - resource should be accessible by id as well
+        force resource type to be derived from identificable
+    - decouple Material and Shader
+    - Refactor Renderer
+    - Simplify components
     - Refactor Scene
+    - Shader as a part of render packet
     - LoadObj should return a tree of Entities
         - renderer needs a composite of Mesh, Material, ModelMatrix, Shader
         - RenderTree?
-    - simplify components
+    - wrap up ResourceRef
 */
 
 int main() {
@@ -47,6 +54,14 @@ int main() {
       sentinel
     );
 
+    eventProxy.pushEventHandler<sl::KeyEvent>(
+      [&](const auto& ev) {
+          if (ev.key == SL_KEY_ESCAPE) isRunning = false;
+          return sl::EventChainBehaviour::propagate;
+      },
+      sentinel
+    );
+
     sl::EulerCamera camera(sl::EulerCamera::Properties{
       .target       = sl::Vec3<sl::f32>{ 0.0f },
       .radius       = 5.0f,
@@ -55,10 +70,12 @@ int main() {
 
     auto& rendererBackend = renderer.getRendererBackend();
     auto skybox           = sl::Skybox::load("skybox2/skybox");
+    auto worldShader      = sl::Shader::load("Builtin.Shader.Material");
 
     auto renderGraph =
       sl::RenderGraph::Builder{ rendererBackend, viewportSize }
         .addView<sl::SkyboxRenderView>(skybox.get())
+        .addView<sl::WorldRenderView>(worldShader.get())
         .build();
 
     sl::RenderPacket renderPacket;
@@ -68,6 +85,23 @@ int main() {
         viewportSize
     };
     renderPacket.camera = &camera;
+
+    auto material = sl::Material::load("Builtin.Material.Test");
+
+    sl::RenderEntity entity = {
+        .worldTransform = sl::math::scale(
+          sl::identityMatrix, sl::Vec3<sl::f32>{ 0.25f, 0.25f, 0.25f }
+        ),
+        .mesh     = sl::Mesh::getCube().get(),
+        .material = material.get(),
+    };
+
+    sl::PointLight light;
+    light.position             = sl::Vec4<sl::f32>{ 0.0f, 3.75f, 0.0f, 1.0f };
+    light.attenuationFactors.x = 0.0f;
+
+    renderPacket.entities.push_back(entity);
+    renderPacket.pointLights.push_back(light);
 
     while (isRunning) {
         context.beginFrame([&](float deltaTime) {

@@ -11,7 +11,7 @@ namespace sl {
 
 template <typename T, typename Id = u64>
 requires std::is_arithmetic_v<Id>
-class Identificable : public NonCopyable {
+class Identificable : public virtual NonCopyable {
 public:
     explicit Identificable() : m_id(createId()) {}
 
@@ -44,6 +44,9 @@ private:
     inline static std::queue<Id> s_freeIds;
     inline static std::mutex s_mutex;
 };
+
+template <typename T>
+concept IsIdentificable = std::derived_from<T, Identificable<T>>;
 
 template <typename T>
 requires std::is_integral_v<T>

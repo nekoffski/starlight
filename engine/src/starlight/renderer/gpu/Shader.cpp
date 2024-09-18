@@ -186,7 +186,7 @@ ResourceRef<Shader> ShaderManager::load(
     return store(
       name,
       createOwningPtr<vk::VKShader>(
-        1u, vkRenderer.getContext(), vkRenderer.getLogicalDevice(),
+        vkRenderer.getContext(), vkRenderer.getLogicalDevice(),
         *vkRenderer.getProxy(), *properties
       )
     );
@@ -359,12 +359,10 @@ void Shader::setLocalUniforms(UniformCallback&& callback) {
     callback(m_uniformProxy);
 }
 
-u32 Shader::getId() const { return m_id; }
-
 const std::string& Shader::getName() const { return m_name; }
 
-Shader::Shader(const Properties& props, u32 id) :
-    m_name(props.name), m_id(id), m_useInstances(props.useInstances),
+Shader::Shader(const Properties& props) :
+    m_name(props.name), m_useInstances(props.useInstances),
     m_useLocals(props.useLocals), m_uniformProxy(*this), m_cullMode(props.cullMode),
     m_polygonMode(props.polygonMode) {}
 

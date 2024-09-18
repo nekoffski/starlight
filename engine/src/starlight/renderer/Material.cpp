@@ -6,8 +6,8 @@
 
 namespace sl {
 
-Material::Material(u64 id, const Properties& props, ResourceRef<Shader> shader) :
-    m_id(id), m_props(props), m_shader(shader), m_renderFrameNumber(0) {
+Material::Material(const Properties& props, ResourceRef<Shader> shader) :
+    m_props(props), m_shader(shader), m_renderFrameNumber(0) {
     LOG_TRACE("Creating Material: {}", m_props.name);
     m_instanceId = shader->acquireInstanceResources(
       { m_props.diffuseMap.get(), m_props.specularMap.get(),
@@ -41,17 +41,14 @@ void Material::applyUniforms(u64 renderFrameNumber) {
     }
 }
 
-u64 Material::getId() const { return m_id; }
-
 const std::string& Material::getName() const { return m_props.name; }
 
 const Material::Properties& Material::getProperties() const { return m_props; }
 
 ResourceRef<Material> Material::load(
-  RendererBackend& renderer, const std::string& name, std::string_view materialsPath,
-  const FileSystem& fs
+  const std::string& name, std::string_view materialsPath, const FileSystem& fs
 ) {
-    return MaterialManager::get().load(renderer, name, materialsPath, fs);
+    return MaterialManager::get().load(name, materialsPath, fs);
 }
 
 ResourceRef<Material> Material::find(const std::string& name) {
@@ -59,8 +56,7 @@ ResourceRef<Material> Material::find(const std::string& name) {
 }
 
 ResourceRef<Material> MaterialManager::load(
-  RendererBackend& renderer, const std::string& name, std::string_view materialsPath,
-  const FileSystem& fs
+  const std::string& name, std::string_view materialsPath, const FileSystem& fs
 ) {
     if (auto config = Material::Config::load(name, materialsPath, fs); not config) {
         LOG_WARN("Could not load material config for '{}'", name);
@@ -78,7 +74,7 @@ ResourceRef<Material> MaterialManager::load(
           Texture::load(config->specularMap, Texture::Type::flat);
 
         auto shader = Shader::load(config->shaderName);
-        return store(name, createOwningPtr<Material>(1u, properties, shader));
+        return store(name, createOwningPtr<Material>(properties, shader));
     }
 }
 

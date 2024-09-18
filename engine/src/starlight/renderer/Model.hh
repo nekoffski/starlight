@@ -4,6 +4,8 @@
 #include <unordered_map>
 
 #include "starlight/core/math/Transform.hh"
+
+#include "fwd.hh"
 #include "gpu/Mesh.hh"
 
 namespace sl {

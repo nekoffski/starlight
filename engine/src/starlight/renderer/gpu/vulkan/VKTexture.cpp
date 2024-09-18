@@ -91,10 +91,10 @@ VKImage::Properties getImageProperties(
 }  // namespace
 
 VKTexture::VKTexture(
-  u32 id, VKContext& context, VKLogicalDevice& device, const Properties& props,
+  VKContext& context, VKLogicalDevice& device, const Properties& props,
   std::span<const u8> pixels
 ) :
-    Texture(props, id),
+    Texture(props),
     m_context(context), m_device(device),
     m_image(
       m_context, m_device,
@@ -109,10 +109,10 @@ VKTexture::VKTexture(
 }
 
 VKTexture::VKTexture(
-  u32 id, VKContext& context, VKLogicalDevice& device, const Properties& props,
+  VKContext& context, VKLogicalDevice& device, const Properties& props,
   VkImage handle, VkFormat format
 ) :
-    Texture(props, id),
+    Texture(props),
     m_context(context), m_device(device),
     m_image(
       m_context, m_device,
@@ -124,15 +124,16 @@ VKTexture::VKTexture(
 }
 
 VKTexture::VKTexture(
-  u32 id, VKContext& context, VKLogicalDevice& device,
-  const VKImage::Properties& props
+  VKContext& context, VKLogicalDevice& device, const VKImage::Properties& props
 ) :
-    Texture(
-      Properties(
-        props.width, props.height, props.channels, true, false, "InternalTexture"
-      ),
-      id
-    ),
+    Texture(Properties{
+      props.width,
+      props.height,
+      props.channels,
+      true,
+      false,
+      "InternalTexture",
+    }),
     m_context(context), m_device(device), m_image(m_context, m_device, props) {
     createSampler(m_props);
 }

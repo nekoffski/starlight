@@ -24,19 +24,18 @@ namespace sl::vk {
 class VKTexture : public Texture {
 public:
     explicit VKTexture(
-      u32 id, VKContext& context, VKLogicalDevice& device, const Properties& props,
+      VKContext& context, VKLogicalDevice& device, const Properties& props,
       std::span<const u8> pixels
     );
 
     // TODO: consider splitting those classes somehow
     explicit VKTexture(
-      u32 id, VKContext& context, VKLogicalDevice& device, const Properties& props,
+      VKContext& context, VKLogicalDevice& device, const Properties& props,
       VkImage handle, VkFormat format
     );
 
     explicit VKTexture(
-      u32 id, VKContext& context, VKLogicalDevice& device,
-      const VKImage::Properties& props
+      VKContext& context, VKLogicalDevice& device, const VKImage::Properties& props
     );
 
     ~VKTexture() override;

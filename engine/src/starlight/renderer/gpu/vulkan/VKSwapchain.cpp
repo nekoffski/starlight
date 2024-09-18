@@ -207,8 +207,7 @@ void VKSwapchain::createImages() {
             props.name = fmt::format("SL_InternalSwapchainTexture_{}", i);
 
             m_textures[i].emplace(
-              static_cast<u32>(i + 2048), m_context, m_device, props,
-              swapchainImageHandle, m_imageFormat.format
+              m_context, m_device, props, swapchainImageHandle, m_imageFormat.format
             );
         }
     } else {
@@ -234,8 +233,7 @@ void VKSwapchain::createImages() {
         m_device.getDepthChannelCount()
     };
 
-    // TODO: those internal ids should be removed or stored somewhere
-    m_depthTexture.emplace(10000u, m_context, m_device, imageProperties);
+    m_depthTexture.emplace(m_context, m_device, imageProperties);
 }
 
 void VKSwapchain::create() {

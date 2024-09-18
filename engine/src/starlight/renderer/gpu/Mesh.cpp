@@ -10,8 +10,8 @@
 
 namespace sl {
 
-Mesh::Mesh(const Properties& props, const Data& data, u32 id) :
-    m_props(props), m_id(id), m_extent(data.extent) {}
+Mesh::Mesh(const Properties& props, const Data& data) :
+    m_props(props), m_extent(data.extent) {}
 
 ResourceRef<Mesh> Mesh::load(const MeshConfig2D& config) {
     return MeshManager::get().load(config);
@@ -40,8 +40,6 @@ const Mesh::Properties& Mesh::getProperties() const { return m_props; }
 
 const Extent3& Mesh::getExtent() const { return m_extent; }
 
-u32 Mesh::getId() const { return m_id; }
-
 static OwningPtr<Mesh> createMesh(
   RendererBackend& renderer, const Mesh::Data& data,
   const Mesh::Properties& properties
@@ -50,7 +48,7 @@ static OwningPtr<Mesh> createMesh(
     auto& vkRenderer = static_cast<vk::VKRendererBackend&>(renderer);
 
     return createOwningPtr<vk::VKMesh>(
-      1u, vkRenderer.getContext(), vkRenderer.getLogicalDevice(),
+      vkRenderer.getContext(), vkRenderer.getLogicalDevice(),
       vkRenderer.getVertexBuffer(), vkRenderer.getIndexBuffer(), properties, data
     );
 #else

@@ -86,10 +86,10 @@ VKShaderStage::~VKShaderStage() {
 }
 
 VKShader::VKShader(
-  u32 id, VKContext& context, VKLogicalDevice& device,
-  VKRendererBackendProxy& backendProxy, const Shader::Properties& props
+  VKContext& context, VKLogicalDevice& device, VKRendererBackendProxy& backendProxy,
+  const Shader::Properties& props
 ) :
-    Shader(props, id),
+    Shader(props),
     m_context(context), m_device(device), m_backendProxy(backendProxy),
     m_requiredUboAlignment(0), m_globalUboSize(0), m_globalUboStride(0),
     m_globalUboOffset(0), m_uboSize(0), m_uboStride(0), m_pushConstantSize(0),
@@ -506,7 +506,7 @@ u32 VKShader::acquireInstanceResources(const std::vector<Texture*>& textures) {
             break;
         }
     }
-    ASSERT(id.hasValue(), "Coult not acquire new resource id");
+    ASSERT(id.hasValue(), "Could not acquire new resource id");
 
     auto& instanceState = m_instanceStates[*id];
     const u8 bindingIndex =

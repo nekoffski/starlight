@@ -3,10 +3,10 @@
 namespace sl::vk {
 
 VKMesh::VKMesh(
-  u32 id, VKContext& context, VKLogicalDevice& device, VKBuffer& vertexBuffer,
+  VKContext& context, VKLogicalDevice& device, VKBuffer& vertexBuffer,
   VKBuffer& indexBuffer, const Properties& props, const Data& data
 ) :
-    Mesh(props, data, id),
+    Mesh(props, data),
     m_context(context), m_device(device) {
     LOG_TRACE("Creating VKMesh");
     LOG_DEBUG(

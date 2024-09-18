@@ -1,5 +1,7 @@
 #include "Model.hh"
 
+#include "starlight/renderer/Material.hh"
+
 namespace sl {
 
 Model::Model(u64 id) : m_id(id), m_transform(nullptr) {}

@@ -1,5 +1,7 @@
 #include "Skybox.hh"
 
+#include "starlight/renderer/gpu/Texture.hh"
+
 namespace sl {
 
 Skybox::Skybox(
@@ -14,8 +16,6 @@ ResourceRef<Skybox> Skybox::load(const std::string& name) {
 }
 
 Skybox::~Skybox() { m_shader->releaseInstanceResources(m_instanceId); }
-
-u64 Skybox::getId() const { return m_id; }
 
 Mesh* Skybox::getMesh() { return m_mesh.get(); }
 

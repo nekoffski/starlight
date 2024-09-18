@@ -19,7 +19,6 @@
 #include "starlight/renderer/CullMode.hh"
 #include "starlight/renderer/PolygonMode.hh"
 #include "starlight/renderer/gpu/RendererBackend.hh"
-#include "fwd.hh"
 
 #include "Texture.hh"
 
@@ -32,7 +31,7 @@ concept GlmCompatible = requires(T object) {
     { glm::value_ptr(object) } -> std::convertible_to<void*>;
 };
 
-class Shader : public NonCopyable, public NonMovable {
+class Shader : public NonMovable, public Identificable<Shader> {
     inline static const std::string baseShadersPath =
       SL_ASSETS_PATH + std::string("/shaders");
 
@@ -170,13 +169,11 @@ public:
     void setInstanceUniforms(u32 instanceId, UniformCallback&&);
     void setLocalUniforms(UniformCallback&&);
 
-    u32 getId() const;
     const std::string& getName() const;
 
 protected:
-    explicit Shader(const Properties& props, u32 id);
+    explicit Shader(const Properties& props);
 
-    u32 m_id;
     std::string m_name;
     bool m_useInstances;
     bool m_useLocals;

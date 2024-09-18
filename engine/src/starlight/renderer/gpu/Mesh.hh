@@ -5,9 +5,12 @@
 
 #include <kc/core/Meta.hpp>
 
+#include "fwd.hh"
+
 #include "starlight/core/math/Extent.hh"
 #include "starlight/core/math/Core.hh"
-#include "starlight/renderer/Material.hh"
+#include "starlight/core/math/Vertex.hh"
+
 #include "starlight/renderer/Resource.hh"
 
 namespace sl {
@@ -93,7 +96,7 @@ struct MeshConfig2D final : public detail::MeshConfigBase {
 template <typename T>
 concept MeshConfig = kc::core::is_one_of2_v<T, MeshConfig3D, MeshConfig2D>;
 
-class Mesh {
+class Mesh : public NonMovable, public Identificable<Mesh> {
 public:
     struct Properties {
         std::string name;
@@ -131,12 +134,8 @@ public:
     const Properties& getProperties() const;
     const Extent3& getExtent() const;
 
-    u32 getId() const;
-
 protected:
-    explicit Mesh(const Properties& props, const Data& data, u32 id);
-
-    u32 m_id;
+    explicit Mesh(const Properties& props, const Data& data);
 
     Properties m_props;
     BufferDescription m_dataDescription;

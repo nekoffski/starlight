@@ -71,7 +71,7 @@ class VKShader final : public Shader {
 
 public:
     explicit VKShader(
-      u32 id, VKContext& context, VKLogicalDevice& device,
+      VKContext& context, VKLogicalDevice& device,
       VKRendererBackendProxy& backendProxy, const Shader::Properties& props
     );
     ~VKShader() override;

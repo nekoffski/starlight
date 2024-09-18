@@ -10,7 +10,7 @@
 
 namespace sl {
 
-class Texture : public NonMovable, public NonCopyable {
+class Texture : public NonMovable, public Identificable<Texture> {
 public:
     inline static const std::string baseTexturesPath =
       SL_ASSETS_PATH + std::string("/textures");
@@ -63,17 +63,15 @@ public:
     virtual void write(u32 offset, std::span<u8> pixels) = 0;
 
     const Properties& getProperties() const;
-    const u32 getId() const;
 
     static inline Texture* defaultDiffuse  = nullptr;
     static inline Texture* defaultNormal   = nullptr;
     static inline Texture* defaultSpecular = nullptr;
 
 protected:
-    explicit Texture(const Properties& props, u32 id);
+    explicit Texture(const Properties& props);
 
     Properties m_props;
-    u32 m_id;
 };
 
 class TextureManager

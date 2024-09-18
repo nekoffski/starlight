@@ -109,9 +109,7 @@ ResourceRef<Texture> Texture::find(const std::string& name) {
 
 const Texture::Properties& Texture::getProperties() const { return m_props; }
 
-const u32 Texture::getId() const { return m_id; }
-
-Texture::Texture(const Properties& props, u32 id) : m_props(props), m_id(id) {}
+Texture::Texture(const Properties& props) : m_props(props) {}
 
 std::optional<Texture::ImageData> Texture::ImageData::loadFromFile(
   std::string_view name, Orientation orientation, std::string_view imagesPath
@@ -194,8 +192,8 @@ ResourceRef<Texture> TextureManager::load(
     return store(
       name,
       createOwningPtr<vk::VKTexture>(
-        1u, vkRenderer.getContext(), vkRenderer.getLogicalDevice(),
-        components->props, components->buffer
+        vkRenderer.getContext(), vkRenderer.getLogicalDevice(), components->props,
+        components->buffer
       )
     );
 
