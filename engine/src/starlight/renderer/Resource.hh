@@ -43,6 +43,7 @@ template <typename T> class ResourceManager {
 
     struct ResourceRecord {
         OwningPtr<T> data;
+        std::string_view name;
         u32 referenceCounter;
     };
 
@@ -53,21 +54,51 @@ public:
         return nullptr;
     }
 
+    template <typename U>
+    requires IsIdentificable<U> && std::is_same_v<U, T> ResourceRef<T> find(
+      const u64 id
+    ) {
+        if (auto record = m_recordsById.find(id); record != m_recordsById.end()) {
+            auto resource = record->second;
+            return ResourceRef<T>(resource.data->get(), this, resource->name);
+        }
+        return nullptr;
+    }
+
 protected:
     ResourceRef<T> store(std::string_view name, OwningPtr<T> resource) {
-        const auto [it, inserted] = m_records.emplace(name, std::move(resource));
+        const auto [it, inserted] =
+          m_records.emplace(name, ResourceRecord{ std::move(resource), name, 0u });
 
         if (not inserted) {
-            // TODO: log
+            LOG_WARN("Record with name='{}' already exists", name);
             return nullptr;
         }
 
-        return ResourceRef<T>(it->second.data.get(), this, name);
+        auto& record = it->second;
+
+        if constexpr (IsIdentificable<T>) {
+            // TODO: check if already exists
+            const auto id            = record.data->getId();
+            const auto [_, inserted] = m_recordsById.emplace(id, &record);
+
+            if (not inserted) {
+                LOG_WARN(
+                  "Record with name='{}', and id='{}' already exists", name, id
+                );
+                return nullptr;
+            }
+        }
+        return ResourceRef<T>(record.data.get(), this, name);
     }
 
     void release(const std::string& name) {
         if (auto it = m_records.find(name); it != m_records.end()) {
-            if (--it->second.referenceCounter == 0) m_records.erase(name);
+            if (auto& record = it->second; --record.referenceCounter == 0) {
+                if constexpr (IsIdentificable<T>)
+                    m_recordsById.erase(record.data->getId());
+                m_records.erase(name);
+            }
         } else {
             LOG_WARN("Could not find record to release with name: {}", name);
         }
@@ -77,6 +108,7 @@ protected:
 
 private:
     std::unordered_map<std::string, ResourceRecord> m_records;
+    std::unordered_map<u64, ResourceRecord*> m_recordsById;
 };
 
 template <typename T>
