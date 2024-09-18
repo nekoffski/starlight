@@ -1,5 +1,4 @@
 {
   "diffuse-color": [1.0, 1.0, 1.0, 1.0],
-  "diffuse-map": "orange_lines_512.png",
-  "shader-name": "Builtin.Shader.UI"
+  "diffuse-map": "orange_lines_512.png"
 }

@@ -54,13 +54,13 @@ public:
         return nullptr;
     }
 
-    template <typename U>
-    requires IsIdentificable<U> && std::is_same_v<U, T> ResourceRef<T> find(
+    template <typename U = T>
+    requires std::is_same_v<U, T> && IsIdentificable<U> ResourceRef<T> find(
       const u64 id
     ) {
         if (auto record = m_recordsById.find(id); record != m_recordsById.end()) {
             auto resource = record->second;
-            return ResourceRef<T>(resource.data->get(), this, resource->name);
+            return ResourceRef<T>(resource->data.get(), this, resource->name);
         }
         return nullptr;
     }

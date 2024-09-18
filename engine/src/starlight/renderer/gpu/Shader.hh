@@ -51,6 +51,7 @@ public:
     );
 
     static ResourceRef<Shader> find(const std::string& name);
+    static ResourceRef<Shader> find(const u64 id);
 
     struct Attribute {
         enum class Type : u8 {

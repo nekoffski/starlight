@@ -162,6 +162,10 @@ ResourceRef<Shader> Shader::find(const std::string& name) {
     return sl::ShaderManager::get().find(name);
 }
 
+ResourceRef<Shader> Shader::find(const u64 id) {
+    return sl::ShaderManager::get().find(id);
+}
+
 ResourceRef<Shader> ShaderManager::load(
   const std::string& name, std::string_view shadersPath, const FileSystem& fs
 ) {

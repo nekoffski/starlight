@@ -2,6 +2,7 @@
 
 #include <optional>
 #include <string>
+#include <unordered_map>
 
 #include "starlight/renderer/Resource.hh"
 #include "starlight/core/math/Core.hh"
@@ -22,7 +23,6 @@ class Material : public NonMovable, public Identificable<Material> {
     inline static auto defaultDiffuseMap   = "Internal.Texture.Default"s;
     inline static auto defaultNormalMap    = "Internal.Texture.DefaultNormalMap"s;
     inline static auto defaultSpecularMap  = "Internal.Texture.DefaultSpecularMap"s;
-    inline static auto defaultShader       = "Builtin.Shader.Material"s;
     inline static auto defaultShininess    = 32.0f;
 
 public:
@@ -41,8 +41,6 @@ public:
         std::string diffuseMap;
         std::string specularMap;
         std::string normalMap;
-
-        std::string shaderName;
     };
 
     struct Properties {
@@ -54,11 +52,11 @@ public:
         std::string name;
     };
 
-    explicit Material(const Properties& props, ResourceRef<Shader> shader);
+    explicit Material(const Properties& props);
     ~Material();
 
     bool isTransparent() const;
-    void applyUniforms(u64 frameNumber);
+    void applyUniforms(Shader& shader, const u64 frameNumber);
 
     const std::string& getName() const;
     const Properties& getProperties() const;
@@ -70,11 +68,13 @@ public:
     static ResourceRef<Material> find(const std::string& name);
 
 private:
-    Properties m_props;
-    ResourceRef<Shader> m_shader;
+    u64 getShaderInstanceId(Shader&);
 
+    Properties m_props;
     u64 m_renderFrameNumber;
-    u64 m_instanceId;
+
+    std::vector<Texture*> m_textures;
+    std::unordered_map<u64, u32> m_shaderInstanceIds;
 };
 
 struct MaterialManager

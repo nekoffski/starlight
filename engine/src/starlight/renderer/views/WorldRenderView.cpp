@@ -108,7 +108,7 @@ void WorldRenderView::render(
                   proxy.set("model", model);
               });
 
-              material->applyUniforms(properties.frameNumber);
+              material->applyUniforms(*m_shader, properties.frameNumber);
               backendProxy.drawMesh(*mesh);
           }
       }

@@ -6,29 +6,36 @@
 
 namespace sl {
 
-Material::Material(const Properties& props, ResourceRef<Shader> shader) :
-    m_props(props), m_shader(shader), m_renderFrameNumber(0) {
+Material::Material(const Properties& props) :
+    m_props(props), m_renderFrameNumber(0), m_textures{
+        m_props.diffuseMap.get(), m_props.specularMap.get(), m_props.normalMap.get()
+    } {
     LOG_TRACE("Creating Material: {}", m_props.name);
-    m_instanceId = shader->acquireInstanceResources(
-      { m_props.diffuseMap.get(), m_props.specularMap.get(),
-        m_props.normalMap.get() }
-    );
-    LOG_DEBUG("Material '{}' instance id: {}", m_props.name, m_instanceId);
 }
 
 Material::~Material() {
     LOG_TRACE("Destroying Material");
-    m_shader->releaseInstanceResources(m_instanceId);
+
+    for (const auto [shaderId, instanceId] : m_shaderInstanceIds) {
+        if (auto shader = Shader::find(shaderId); shader) {
+            shader->releaseInstanceResources(instanceId);
+        } else {
+            LOG_WARN(
+              "Could release shader instance resources with id '{}', could not find shader with id '{}'",
+              instanceId, shaderId
+            );
+        }
+    }
 }
 
 bool Material::isTransparent() const {
     return m_props.diffuseMap->getProperties().isTransparent;
 }
 
-void Material::applyUniforms(u64 renderFrameNumber) {
+void Material::applyUniforms(Shader& shader, const u64 renderFrameNumber) {
     if (m_renderFrameNumber != renderFrameNumber) {
-        m_shader->setInstanceUniforms(
-          m_instanceId,
+        shader.setInstanceUniforms(
+          getShaderInstanceId(shader),
           [&](Shader::UniformProxy& proxy) {
               proxy.set("diffuseColor", m_props.diffuseColor);
               proxy.set("diffuseTexture", m_props.diffuseMap);
@@ -39,6 +46,19 @@ void Material::applyUniforms(u64 renderFrameNumber) {
         );
         m_renderFrameNumber = renderFrameNumber;
     }
+}
+
+u64 Material::getShaderInstanceId(Shader& shader) {
+    const auto shaderId = shader.getId();
+
+    if (const auto record = m_shaderInstanceIds.find(shaderId);
+        record != m_shaderInstanceIds.end()) [[likely]] {
+        return record->second;
+    }
+
+    const auto instanceId         = shader.acquireInstanceResources(m_textures);
+    m_shaderInstanceIds[shaderId] = instanceId;
+    return instanceId;
 }
 
 const std::string& Material::getName() const { return m_props.name; }
@@ -73,8 +93,7 @@ ResourceRef<Material> MaterialManager::load(
         properties.specularMap =
           Texture::load(config->specularMap, Texture::Type::flat);
 
-        auto shader = Shader::load(config->shaderName);
-        return store(name, createOwningPtr<Material>(properties, shader));
+        return store(name, createOwningPtr<Material>(properties));
     }
 }
 
@@ -86,7 +105,6 @@ Material::Config Material::Config::createDefault(const std::string& name) {
         .diffuseMap   = defaultDiffuseMap,
         .specularMap  = defaultSpecularMap,
         .normalMap    = defaultNormalMap,
-        .shaderName   = defaultShader
     };
 }
 
@@ -112,7 +130,6 @@ std::optional<Material::Config> Material::Config::load(
             .diffuseMap   = getFieldOr(root, "diffuse-map", defaultDiffuseMap),
             .specularMap  = getFieldOr(root, "specular-map", defaultSpecularMap),
             .normalMap    = getFieldOr(root, "normal-map", defaultNormalMap),
-            .shaderName   = getFieldOr(root, "shader-name", defaultShader)
         };
     } catch (kc::json::JsonError& e) {
         LOG_ERROR("Could not parse material '{}' file: {}", name, e.asString());
