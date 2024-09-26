@@ -16,10 +16,4 @@ void EventProxy::popEventHandler(const EventHandlerId id) {
     LOG_WARN("Event handler with id='{}' not found", id);
 }
 
-void EventProxy::storeHandlerId(
-  const EventHandlerId& id, EventHandlerSentinel& sentinel
-) {
-    sentinel.addHandlerId(id);
-}
-
 }  // namespace sl

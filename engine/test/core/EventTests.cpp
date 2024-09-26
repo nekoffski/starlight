@@ -1,6 +1,7 @@
 #include "starlight/core/event/Core.hh"
 #include "starlight/core/event/EventProxy.hh"
 #include "starlight/core/event/EventBroker.hh"
+#include "starlight/core/event/EventHandlerSentinel.hh"
 
 #include <gtest/gtest.h>
 
@@ -125,21 +126,15 @@ TEST_F(
     {
         EventHandlerSentinel sentinel{ proxy };
 
-        proxy.pushEventHandler<TestEvent>(
-          [&](const TestEvent& ev) {
-              called = true;
-              return EventChainBehaviour::propagate;
-          },
-          sentinel
-        );
+        sentinel.pushHandler<TestEvent>([&](const TestEvent& ev) {
+            called = true;
+            return EventChainBehaviour::propagate;
+        });
 
-        proxy.pushEventHandler<TestEvent>(
-          [&](const TestEvent& ev) {
-              called2 = true;
-              return EventChainBehaviour::propagate;
-          },
-          sentinel
-        );
+        sentinel.pushHandler<TestEvent>([&](const TestEvent& ev) {
+            called2 = true;
+            return EventChainBehaviour::propagate;
+        });
 
         proxy.emit<TestEvent>(1337.0f, 1337);
         broker.dispatch();

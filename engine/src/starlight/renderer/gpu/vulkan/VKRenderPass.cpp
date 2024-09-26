@@ -164,10 +164,11 @@ VKRenderPass::VKRenderPass(
 }
 
 VKRenderPass::~VKRenderPass() {
-    if (m_handle)
+    if (m_handle) {
         vkDestroyRenderPass(
           m_device.getHandle(), m_handle, m_context.getAllocator()
         );
+    }
 }
 
 VkRenderPass VKRenderPass::getHandle() { return m_handle; }
@@ -219,9 +220,10 @@ VkRenderPassBeginInfo VKRenderPass::createRenderPassBeginInfo(
 
 void VKRenderPass::begin(CommandBuffer& commandBuffer, u8 attachmentIndex) {
     auto clearValues = createClearValues(m_props.clearFlags);
-    auto beginInfo   = createRenderPassBeginInfo(
-        clearValues, m_renderTargets[attachmentIndex].getFramebuffer()->getHandle()
-      );
+
+    auto beginInfo = createRenderPassBeginInfo(
+      clearValues, m_renderTargets[attachmentIndex].getFramebuffer()->getHandle()
+    );
 
     auto vkBuffer = static_cast<VKCommandBuffer*>(&commandBuffer);  // TODO: ugly
 

@@ -4,15 +4,23 @@
 
 #include "fwd.hh"
 #include "Core.hh"
+#include "EventProxy.hh"
 
 namespace sl {
 
 class EventHandlerSentinel {
-    friend class EventProxy;
-
 public:
     explicit EventHandlerSentinel(EventProxy& eventProxy);
     ~EventHandlerSentinel();
+
+    template <typename T>
+    EventHandlerSentinel& pushHandler(
+      std::function<EventChainBehaviour(const T&)>&& handler
+    ) {
+        const auto id = m_eventProxy.pushEventHandler<T>(std::move(handler));
+        m_handlerIds.push_back(id);
+        return *this;
+    }
 
 private:
     void addHandlerId(const EventHandlerId& id);

@@ -18,21 +18,21 @@ VKResourcePools::VKResourcePools(
 VKRenderTarget* VKResourcePools::createRenderTarget(
   const RenderTarget::Properties& props, RenderPass* renderPass
 ) {
-    return m_renderTargets.create(
-      m_context, m_device, static_cast<VKRenderPass*>(renderPass), props
-    );
+    // return m_renderTargets.create(
+    //   m_context, m_device, static_cast<VKRenderPass*>(renderPass), props
+    // );
 }
 void VKResourcePools::destroyRenderTarget(RenderTarget& renderTarget) {
-    m_renderTargets.destroy(renderTarget.getId());
+    // m_renderTargets.destroy(renderTarget.getId());
 }
 
 VKRenderPass* VKResourcePools::createRenderPass(const RenderPass::Properties& props
 ) {
-    return m_renderPasses.create(m_context, m_device, m_swapchain, props);
+    // return m_renderPasses.create(m_context, m_device, m_swapchain, props);
 }
 
 void VKResourcePools::destroyRenderPass(RenderPass& renderPass) {
-    m_renderPasses.destroy(renderPass.getId());
+    // m_renderPasses.destroy(renderPass.getId());
 }
 
 }  // namespace sl::vk

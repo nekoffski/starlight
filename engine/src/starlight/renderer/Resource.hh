@@ -116,7 +116,9 @@ ResourceRef<T>::ResourceRef(
   T* resource, ResourceManager<T>* manager, std::string_view name
 ) :
     m_resource(resource),
-    m_manager(manager), m_name(name) {}
+    m_manager(manager), m_name(name) {
+    LOG_TRACE("Creating resource ref: {}", name);
+}
 
 template <typename T>
 ResourceRef<T>::ResourceRef(T* resource) :

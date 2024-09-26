@@ -14,7 +14,7 @@ Material::Material(const Properties& props) :
 }
 
 Material::~Material() {
-    LOG_TRACE("Destroying Material");
+    LOG_TRACE("Destroying Material - '{}'", m_props.name);
 
     for (const auto [shaderId, instanceId] : m_shaderInstanceIds) {
         if (auto shader = Shader::find(shaderId); shader) {

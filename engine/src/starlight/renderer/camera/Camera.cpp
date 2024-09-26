@@ -6,12 +6,11 @@
 namespace sl {
 
 Camera::Camera() : m_eventSentinel(EventProxy::get()) {
-    EventProxy::get().pushEventHandler<WindowResized>(
+    m_eventSentinel.pushHandler<WindowResized>(
       [&](const auto& event) -> EventChainBehaviour {
           m_viewportSize = event.size;
           return EventChainBehaviour::propagate;
-      },
-      m_eventSentinel
+      }
     );
 }
 

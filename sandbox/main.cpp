@@ -21,13 +21,16 @@ static std::atomic_bool isRunning = true;
 /*
 
 TODO:
-    - resource should be accessible by id as well
-        force resource type to be derived from identificable
-    - decouple Material and Shader
+    - [18-09-2024 23:30:36] [Th: 665267] warning [starlight]: Could not find record
+to release with name:  m;�lUp�O�lUp�O�lU - [Resource.hh:103]
     - Refactor Renderer
+        - getFramebuffer returns texture - this is invalid!
+    - Don't use ResourceManagers for storing default stuff, just create as objects
+    - Shader as a part of render packet
     - Simplify components
     - Refactor Scene
-    - Shader as a part of render packet
+
+    - Builders for XYZ::Properties structures
     - LoadObj should return a tree of Entities
         - renderer needs a composite of Mesh, Material, ModelMatrix, Shader
         - RenderTree?
@@ -46,21 +49,15 @@ int main() {
     auto& eventProxy = sl::EventProxy::get();
     sl::EventHandlerSentinel sentinel{ eventProxy };
 
-    eventProxy.pushEventHandler<sl::QuitEvent>(
-      [&](const auto& ev) {
+    sentinel
+      .pushHandler<sl::QuitEvent>([&](const auto& ev) {
           isRunning = false;
           return sl::EventChainBehaviour::propagate;
-      },
-      sentinel
-    );
-
-    eventProxy.pushEventHandler<sl::KeyEvent>(
-      [&](const auto& ev) {
+      })
+      .pushHandler<sl::KeyEvent>([&](const auto& ev) {
           if (ev.key == SL_KEY_ESCAPE) isRunning = false;
           return sl::EventChainBehaviour::propagate;
-      },
-      sentinel
-    );
+      });
 
     sl::EulerCamera camera(sl::EulerCamera::Properties{
       .target       = sl::Vec3<sl::f32>{ 0.0f },

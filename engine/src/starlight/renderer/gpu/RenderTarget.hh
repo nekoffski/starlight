@@ -4,12 +4,13 @@
 
 #include "starlight/core/Core.hh"
 #include "starlight/core/math/Core.hh"
+#include "starlight/core/Id.hh"
 
 #include "fwd.hh"
 
 namespace sl {
 
-class RenderTarget {
+class RenderTarget /*:  public NonMovable, public Identificable<RenderTarget> */ {
 public:
     enum class SyncMode { noSync, syncWithWindowSize };
 
@@ -21,12 +22,9 @@ public:
     explicit RenderTarget(u32 id, const Properties& props);
     virtual ~RenderTarget() = default;
 
-    u32 getId() const;
-
     virtual void regenerate(const Properties& properties) = 0;
 
 protected:
-    u32 m_id;
     Properties m_props;
 };
 
