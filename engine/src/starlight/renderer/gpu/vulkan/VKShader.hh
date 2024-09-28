@@ -12,7 +12,6 @@
 #include "VKPhysicalDevice.hh"
 #include "VKContext.hh"
 #include "VKPipeline.hh"
-#include "VKRendererBackendProxy.hh"
 
 namespace sl::vk {
 
@@ -71,30 +70,31 @@ class VKShader final : public Shader {
 
 public:
     explicit VKShader(
-      VKContext& context, VKLogicalDevice& device,
-      VKRendererBackendProxy& backendProxy, const Shader::Properties& props
+      VKContext& context, VKLogicalDevice& device, const Shader::Properties& props
     );
     ~VKShader() override;
 
     // clang-format off
-    void use() override;
+    void use(CommandBuffer&) override;
     u32 acquireInstanceResources(
         const std::vector<Texture*>& textures
     ) override;
     void releaseInstanceResources(u32 instanceId) override;
     // clang-format on
 
-    void createPipeline(RenderPass* renderPass) override;
+    void createPipeline(RenderPass& renderPass) override;
 
 private:
     void setSampler(const std::string& uniform, const Texture* value) override;
-    void setUniform(const std::string& uniform, const void* value) override;
+    void setUniform(
+      const std::string& name, const void* value, CommandBuffer& commandBuffer
+    ) override;
 
     void bindInstance(u32 instanceId) override;
 
     void bindGlobals() override;
-    void applyGlobals() override;
-    void applyInstance() override;
+    void applyGlobals(CommandBuffer& commandBuffer, u32 imageIndex) override;
+    void applyInstance(CommandBuffer& commandBuffer, u32 imageIndex) override;
 
     void createModules(std::span<const Stage> stages);
     void processAttributes();
@@ -116,7 +116,6 @@ private:
 
     VKContext& m_context;
     VKLogicalDevice& m_device;
-    VKRendererBackendProxy& m_backendProxy;
 
     void* m_mappedUniformBufferBlock;
     Config m_config;

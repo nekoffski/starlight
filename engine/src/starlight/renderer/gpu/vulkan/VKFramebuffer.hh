@@ -12,7 +12,7 @@
 
 namespace sl::vk {
 
-class VKFramebuffer {
+class VKFramebuffer : public NonMovable, public NonCopyable {
 public:
     explicit VKFramebuffer(
       VKContext& context, VKLogicalDevice& device, VkRenderPass renderPass,

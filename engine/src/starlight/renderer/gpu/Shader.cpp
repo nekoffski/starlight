@@ -190,8 +190,7 @@ ResourceRef<Shader> ShaderManager::load(
     return store(
       name,
       createOwningPtr<vk::VKShader>(
-        vkRenderer.getContext(), vkRenderer.getLogicalDevice(),
-        *vkRenderer.getProxy(), *properties
+        vkRenderer.getContext(), vkRenderer.getLogicalDevice(), *properties
       )
     );
 #else
@@ -346,35 +345,46 @@ u32 Shader::Uniform::getTypeSize(Type type) {
     return record->second;
 }
 
-void Shader::setGlobalUniforms(UniformCallback&& callback) {
+void Shader::setGlobalUniforms(
+  CommandBuffer& commandBuffer, u32 imageIndex, UniformCallback&& callback
+) {
     bindGlobals();
-    callback(m_uniformProxy);
-    applyGlobals();
+    UniformProxy proxy{ *this, commandBuffer };
+    callback(proxy);
+    applyGlobals(commandBuffer, imageIndex);
 }
 
-void Shader::setInstanceUniforms(u32 instanceId, UniformCallback&& callback) {
+void Shader::setInstanceUniforms(
+  CommandBuffer& commandBuffer, u32 instanceId, u32 imageIndex,
+  UniformCallback&& callback
+) {
     bindInstance(instanceId);
-    callback(m_uniformProxy);
-    applyInstance();
+    UniformProxy proxy{ *this, commandBuffer };
+    callback(proxy);
+    applyInstance(commandBuffer, imageIndex);
 }
 
-void Shader::setLocalUniforms(UniformCallback&& callback) {
+void Shader::setLocalUniforms(
+  CommandBuffer& commandBuffer, UniformCallback&& callback
+) {
     // nothing to do here, just for consistency
-    callback(m_uniformProxy);
+    UniformProxy proxy{ *this, commandBuffer };
+    callback(proxy);
 }
 
 const std::string& Shader::getName() const { return m_name; }
 
 Shader::Shader(const Properties& props) :
     m_name(props.name), m_useInstances(props.useInstances),
-    m_useLocals(props.useLocals), m_uniformProxy(*this), m_cullMode(props.cullMode),
+    m_useLocals(props.useLocals), m_cullMode(props.cullMode),
     m_polygonMode(props.polygonMode) {}
 
 void Shader::UniformProxy::set(const std::string& uniform, const Texture* value) {
     m_shader.setSampler(uniform, value);
 }
 
-Shader::UniformProxy::UniformProxy(Shader& shader) : m_shader(shader) {}
+Shader::UniformProxy::UniformProxy(Shader& shader, CommandBuffer& commandBuffer) :
+    m_shader(shader), m_commandBuffer(commandBuffer) {}
 
 ShaderManager::ShaderManager(RendererBackend& renderer) : m_renderer(renderer) {}
 

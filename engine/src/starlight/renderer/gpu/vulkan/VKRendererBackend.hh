@@ -11,7 +11,6 @@
 #include "starlight/core/memory/Memory.hh"
 #include "starlight/core/window/Window.hh"
 #include "starlight/renderer/gpu/RendererBackend.hh"
-#include "starlight/renderer/gpu/RendererBackendProxy.hh"
 
 #include "Vulkan.hh"
 #include "fwd.hh"
@@ -25,15 +24,11 @@
 #include "VKLogicalDevice.hh"
 #include "VKTexture.hh"
 #include "VKBuffer.hh"
-#include "VKResourcePools.hh"
-#include "VKRendererBackendProxy.hh"
 #include "VKUIRenderer.hh"
 
 namespace sl::vk {
 
 class VKRendererBackend : public RendererBackend {
-    friend class VKRendererBackendProxy;
-
 public:
     explicit VKRendererBackend(sl::Window& window, const Config& config);
     ~VKRendererBackend();
@@ -47,25 +42,26 @@ public:
     u64 getRenderedVertexCount() const override;
     void setViewport(const Rect2<u32>& viewport);
 
-    // resources
-    ResourcePools* getResourcePools() override;
-    VKRendererBackendProxy* getProxy() override;
-
     VKBuffer& getIndexBuffer();
     VKBuffer& getVertexBuffer();
-
+    VKSwapchain& getSwapchain();
     VKContext& getContext();
     VKLogicalDevice& getLogicalDevice();
+    VKPhysicalDevice& getPhysicalDevice();
 
     void setViewport(VKCommandBuffer& commandBuffer, const Rect2<u32>& viewport);
     void setScissors(VKCommandBuffer& commandBuffer);
 
-private:
-    UniqPtr<VKUIRenderer> createUIRendererer(RenderPass* renderPass);
-    void gpuCall(std::function<void(CommandBuffer&)>&& callback);
+    VKCommandBuffer& getCommandBuffer() override;
+    u32 getImageIndex() override;
 
-    VKCommandBuffer* getCommandBuffer();
-    u32 getImageIndex();
+    VKTexture* getSwapchainTexture(u32 index) override;
+    VKTexture* getDepthTexture() override;
+
+    Window& getWindow();
+
+private:
+    void gpuCall(std::function<void(CommandBuffer&)>&& callback);
 
     void createCoreComponents(sl::Window& window, const Config& config);
     void createCommandBuffers();
@@ -75,9 +71,6 @@ private:
     void recreateSwapchain();
 
     VKFence* acquireImageFence();
-
-    Texture* getFramebuffer(u64 id);
-    Texture* getDepthBuffer();
 
     bool m_recreatingSwapchain;
 
@@ -98,11 +91,6 @@ private:
     VkDescriptorPool m_uiPool;
 
     u64 m_renderedVertices;
-
-    LocalPtr<VKResourcePools> m_resourcePools;
-
-    VKRendererBackendProxy m_proxy;
-
     u32 m_maxFramesInFlight;
 
     u32 m_imageIndex   = 0;

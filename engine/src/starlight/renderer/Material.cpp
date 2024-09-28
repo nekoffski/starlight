@@ -2,8 +2,6 @@
 
 #include "starlight/core/Json.hh"
 
-#include "gpu/ResourcePools.hh"
-
 namespace sl {
 
 Material::Material(const Properties& props) :
@@ -32,10 +30,13 @@ bool Material::isTransparent() const {
     return m_props.diffuseMap->getProperties().isTransparent;
 }
 
-void Material::applyUniforms(Shader& shader, const u64 renderFrameNumber) {
+void Material::applyUniforms(
+  Shader& shader, CommandBuffer& commandBuffer, u32 imageIndex,
+  const u64 renderFrameNumber
+) {
     if (m_renderFrameNumber != renderFrameNumber) {
         shader.setInstanceUniforms(
-          getShaderInstanceId(shader),
+          commandBuffer, getShaderInstanceId(shader), imageIndex,
           [&](Shader::UniformProxy& proxy) {
               proxy.set("diffuseColor", m_props.diffuseColor);
               proxy.set("diffuseTexture", m_props.diffuseMap);

@@ -8,7 +8,6 @@
 #include "VKContext.hh"
 
 #include "VKCommandBuffer.hh"
-#include "VKRendererBackendProxy.hh"
 #include "Vulkan.hh"
 #include "fwd.hh"
 
@@ -18,8 +17,7 @@ class VKUIRenderer : public UIRenderer {
 public:
     explicit VKUIRenderer(
       VKContext& context, VKPhysicalDevice& physicalDevice,
-      VKLogicalDevice& logicalDevice, RendererBackendProxy& backendProxy,
-      Window& window, RenderPass* renderPass
+      VKLogicalDevice& logicalDevice, Window& window, RenderPass& renderPass
     );
 
     ~VKUIRenderer() override;
@@ -33,8 +31,6 @@ private:
     VKContext& m_context;
     VKPhysicalDevice& m_physicalDevice;
     VKLogicalDevice& m_device;
-
-    RendererBackendProxy& m_backendProxy;
 
     VkDescriptorPool m_uiPool;
 

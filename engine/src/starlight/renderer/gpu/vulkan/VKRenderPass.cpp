@@ -3,7 +3,7 @@
 #include "VKCommandBuffer.hh"
 #include "VKSwapchain.hh"
 #include "VKContext.hh"
-#include "VKRenderTarget.hh"
+#include "VKFramebuffer.hh"
 
 namespace sl::vk {
 
@@ -138,10 +138,10 @@ struct RenderPassCreateInfo {
 };
 
 VKRenderPass::VKRenderPass(
-  u32 id, VKContext& context, VKLogicalDevice& device, const VKSwapchain& swapchain,
+  VKContext& context, VKLogicalDevice& device, const VKSwapchain& swapchain,
   const Properties& properties
 ) :
-    RenderPass(id, properties),
+    RenderPass(properties),
     m_context(context), m_device(device) {
     LOG_TRACE("Creating VKRenderPass instance");
 
@@ -152,15 +152,12 @@ VKRenderPass::VKRenderPass(
     VK_ASSERT(vkCreateRenderPass(
       m_device.getHandle(), &createInfo.handle, m_context.getAllocator(), &m_handle
     ));
+    LOG_TRACE("Vulkan render pass handle created");
 
-    if (properties.targets.size() == 0)
+    if (properties.renderTargets.size() == 0)
         LOG_WARN("Render pass with no render targets created");
-
-    for (auto& renderTarget : properties.targets) {
-        m_renderTargets.emplace_back(
-          id * 1000, m_context, m_device, this, renderTarget
-        );
-    }
+    generateRenderTargets(properties.renderTargets);
+    LOG_TRACE("VKRenderPass instance created");
 }
 
 VKRenderPass::~VKRenderPass() {
@@ -222,7 +219,7 @@ void VKRenderPass::begin(CommandBuffer& commandBuffer, u8 attachmentIndex) {
     auto clearValues = createClearValues(m_props.clearFlags);
 
     auto beginInfo = createRenderPassBeginInfo(
-      clearValues, m_renderTargets[attachmentIndex].getFramebuffer()->getHandle()
+      clearValues, m_framebuffers[attachmentIndex]->getHandle()
     );
 
     auto vkBuffer = static_cast<VKCommandBuffer*>(&commandBuffer);  // TODO: ugly
@@ -240,14 +237,40 @@ void VKRenderPass::end(CommandBuffer& commandBuffer) {
 }
 
 void VKRenderPass::regenerateRenderTargets(
-  const std::vector<RenderTarget::Properties>& targets
+  const std::vector<RenderTarget>& renderTargets
 ) {
+    LOG_TRACE("Regenerating render targets for render pass");
     ASSERT(
-      targets.size() == m_renderTargets.size(),
-      "Properties count doesn't match with render target count"
+      m_framebuffers.size() == renderTargets.size(),
+      "regenerateRenderTargets invalid size of input render target vector"
     );
-    for (int i = 0; i < targets.size(); ++i)
-        m_renderTargets[i].regenerate(targets[i]);
+    m_framebuffers.clear();
+    generateRenderTargets(renderTargets);
+}
+
+void VKRenderPass::generateRenderTargets(
+  const std::vector<RenderTarget>& renderTargets
+) {
+    LOG_TRACE("Generating render targets for render pass");
+    for (const auto& [size, attachments] : renderTargets) {
+        std::vector<VkImageView> attachmentViews;
+        const auto attachmentsSize = attachments.size();
+        attachmentViews.reserve(attachmentsSize);
+
+        for (auto& attachment : attachments) {
+            attachmentViews.push_back(
+              static_cast<VKTexture*>(attachment)->getImage()->getView()
+            );
+        }
+
+        LOG_TRACE(
+          "Creating framebuffer for render target, attachment count: {}",
+          attachmentsSize
+        );
+        m_framebuffers.push_back(createOwningPtr<VKFramebuffer>(
+          m_context, m_device, m_handle, size.x, size.y, attachmentViews
+        ));
+    }
 }
 
 }  // namespace sl::vk

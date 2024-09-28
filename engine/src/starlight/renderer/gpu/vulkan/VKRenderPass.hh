@@ -10,8 +10,6 @@
 #include "Vulkan.hh"
 #include "fwd.hh"
 
-#include "VKRenderTarget.hh"
-
 namespace sl::vk {
 
 class VKRenderPass : public RenderPass {
@@ -26,8 +24,8 @@ public:
     };
 
     explicit VKRenderPass(
-      u32 id, VKContext& context, VKLogicalDevice& device,
-      const VKSwapchain& swapchain, const Properties& properties
+      VKContext& context, VKLogicalDevice& device, const VKSwapchain& swapchain,
+      const Properties& properties
     );
 
     ~VKRenderPass();
@@ -35,12 +33,13 @@ public:
     void begin(CommandBuffer& commandBuffer, u8 attachmentIndex) override;
     void end(CommandBuffer& commandBuffer) override;
 
-    void regenerateRenderTargets(const std::vector<RenderTarget::Properties>& targets
-    ) override;
+    void regenerateRenderTargets(const std::vector<RenderTarget>&) override;
 
     VkRenderPass getHandle();
 
 private:
+    void generateRenderTargets(const std::vector<RenderTarget>&);
+
     std::vector<VkClearValue> createClearValues(u8 flags) const;
 
     VkRenderPassBeginInfo createRenderPassBeginInfo(
@@ -56,7 +55,8 @@ private:
 
     State m_state;
 
-    std::vector<VKRenderTarget> m_renderTargets;
+    // TODO: use local mem pool or static array or something
+    std::vector<OwningPtr<VKFramebuffer>> m_framebuffers;
 };
 
 }  // namespace sl::vk

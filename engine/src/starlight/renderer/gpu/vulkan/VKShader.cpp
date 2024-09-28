@@ -86,16 +86,15 @@ VKShaderStage::~VKShaderStage() {
 }
 
 VKShader::VKShader(
-  VKContext& context, VKLogicalDevice& device, VKRendererBackendProxy& backendProxy,
-  const Shader::Properties& props
+  VKContext& context, VKLogicalDevice& device, const Shader::Properties& props
 ) :
     Shader(props),
-    m_context(context), m_device(device), m_backendProxy(backendProxy),
-    m_requiredUboAlignment(0), m_globalUboSize(0), m_globalUboStride(0),
-    m_globalUboOffset(0), m_uboSize(0), m_uboStride(0), m_pushConstantSize(0),
-    m_pushConstantStride(128), m_instanceTextureCount(0), m_boundInstanceId(0),
-    m_boundUboOffset(0), m_pushConstantRangeCount(0), m_attributeStride(0),
-    m_maxDescriptorSetCount(0), m_descriptorSetCount(0) {
+    m_context(context), m_device(device), m_requiredUboAlignment(0),
+    m_globalUboSize(0), m_globalUboStride(0), m_globalUboOffset(0), m_uboSize(0),
+    m_uboStride(0), m_pushConstantSize(0), m_pushConstantStride(128),
+    m_instanceTextureCount(0), m_boundInstanceId(0), m_boundUboOffset(0),
+    m_pushConstantRangeCount(0), m_attributeStride(0), m_maxDescriptorSetCount(0),
+    m_descriptorSetCount(0) {
     addAttributes(props.attributes);
     addUniforms(props.uniformProperties, props.defaultTexture);
 
@@ -356,9 +355,9 @@ void VKShader::addUniform(
     }
 }
 
-void VKShader::use() {
+void VKShader::use(CommandBuffer& commandBuffer) {
     m_pipeline->bind(
-      *m_backendProxy.getCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS
+      static_cast<VKCommandBuffer&>(commandBuffer), VK_PIPELINE_BIND_POINT_GRAPHICS
     );
 }
 
@@ -372,14 +371,12 @@ void VKShader::bindInstance(u32 instanceId) {
     m_boundUboOffset  = *m_instanceStates[instanceId].offset;
 }
 
-void VKShader::applyGlobals() {
+void VKShader::applyGlobals(CommandBuffer& commandBuffer, u32 imageIndex) {
     // // Apply UBO
     VkDescriptorBufferInfo bufferInfo;
     bufferInfo.buffer = m_uniformBuffer->getHandle();
     bufferInfo.offset = m_globalUboOffset;
     bufferInfo.range  = m_globalUboStride;
-
-    const auto imageIndex = m_backendProxy.getImageIndex();
 
     // Update desriptor sets
     VkWriteDescriptorSet uboWrite = { VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET };
@@ -403,15 +400,13 @@ void VKShader::applyGlobals() {
 
     auto globalDescriptor = &m_globalDescriptorSets[imageIndex];
     vkCmdBindDescriptorSets(
-      m_backendProxy.getCommandBuffer()->getHandle(),
+      static_cast<VKCommandBuffer&>(commandBuffer).getHandle(),
       VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->getLayout(), 0, 1,
       globalDescriptor, 0, 0
     );
 }
 
-void VKShader::applyInstance() {
-    const auto imageIndex = m_backendProxy.getImageIndex();
-
+void VKShader::applyInstance(CommandBuffer& commandBuffer, u32 imageIndex) {
     auto objectState = &m_instanceStates[m_boundInstanceId];
     auto objectDescriptorSet =
       objectState->descriptorSetState.descriptorSets[imageIndex];
@@ -490,7 +485,7 @@ void VKShader::applyInstance() {
         );
     }
     vkCmdBindDescriptorSets(
-      m_backendProxy.getCommandBuffer()->getHandle(),
+      static_cast<VKCommandBuffer&>(commandBuffer).getHandle(),
       VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline->getLayout(), 1, 1,
       &objectDescriptorSet, 0, 0
     );
@@ -596,10 +591,13 @@ void VKShader::setSampler(const std::string& name, const Texture* value) {
     }
 }
 
-void VKShader::setUniform(const std::string& name, const void* value) {
+void VKShader::setUniform(
+  const std::string& name, const void* value, CommandBuffer& commandBuffer
+) {
     if (auto& uniform = m_uniforms[name]; uniform.scope == Scope::local) {
         vkCmdPushConstants(
-          m_backendProxy.getCommandBuffer()->getHandle(), m_pipeline->getLayout(),
+          static_cast<VKCommandBuffer&>(commandBuffer).getHandle(),
+          m_pipeline->getLayout(),
           VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, uniform.offset,
           uniform.size, value
         );
@@ -662,7 +660,7 @@ static std::unordered_map<PolygonMode, VkPolygonMode> vkPolygonModes = {
     { PolygonMode::point, VK_POLYGON_MODE_POINT},
 };
 
-void VKShader::createPipeline(RenderPass* renderPass) {
+void VKShader::createPipeline(RenderPass& renderPass) {
     // viewport & scissor
     const auto size = Window::get().getSize();
 
@@ -703,7 +701,7 @@ void VKShader::createPipeline(RenderPass* renderPass) {
 
     LOG_INFO("Creating shader's pipeline: {}", static_cast<void*>(this));
     m_pipeline.emplace(
-      m_context, m_device, *static_cast<VKRenderPass*>(renderPass), pipelineProps
+      m_context, m_device, static_cast<VKRenderPass&>(renderPass), pipelineProps
     );
 }
 

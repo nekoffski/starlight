@@ -45,20 +45,14 @@ void RendererFrontend::renderFrame(
         RenderProperties renderProperties{
             m_renderMode, m_frameStatistics.frameNumber
         };
-        auto backendProxy = m_backend.getProxy();
-
         for (auto& view : renderGraph.getViews())
-            view->render(*backendProxy, packet, renderProperties, deltaTime);
+            view->render(m_backend, packet, renderProperties, deltaTime);
     });
 }
 
 void RendererFrontend::setRenderMode(RenderMode mode) {
     LOG_TRACE("Render mode set to: {}", mode);  // TODO: toString{}
     m_renderMode = mode;
-}
-
-ResourcePools* RendererFrontend::getResourcePools() {
-    return m_backend.getResourcePools();
 }
 
 void RendererFrontend::onViewportResize(Vec2<u32> viewportSize) {

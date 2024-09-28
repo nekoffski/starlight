@@ -21,23 +21,21 @@ public:
 
     explicit UIRenderView(const Properties& props, UICallback&& callback);
 
-    void init(
-      RendererBackendProxy& backendProxy, ResourcePools& resourcePools,
-      const InitProperties& initProperties
-    ) override;
+    void init(RendererBackend& renderer, const InitProperties& initProperties)
+      override;
 
     void render(
-      RendererBackendProxy& backendProxy, const RenderPacket& packet,
+      RendererBackend& renderer, const RenderPacket& packet,
       const RenderProperties& properties, float deltaTime
     ) override;
 
-    void onViewportResize(RendererBackendProxy& backendProxy, Vec2<u32> viewportSize)
+    void onViewportResize(RendererBackend& renderer, Vec2<u32> viewportSize)
       override;
 
 private:
     Properties m_props;
     UICallback m_uiCallback;
-    UniqPtr<UIRenderer> m_uiRenderer;
+    OwningPtr<UIRenderer> m_uiRenderer;
 
     std::vector<Font*> m_fonts;
 };

@@ -16,10 +16,10 @@ struct RenderEntity {
 };
 
 struct RenderPacket {
-    std::vector<RenderEntity> entities;
-    std::vector<PointLight> pointLights;
     Rect2<u32> viewport;
     Camera* camera;
+    std::vector<PointLight> pointLights;
+    std::vector<RenderEntity> entities;
 };
 
 }  // namespace sl

@@ -16,18 +16,15 @@ public:
 
     explicit SkyboxRenderView(Skybox* skybox);
 
-    void init(
-      RendererBackendProxy& backendProxy, ResourcePools& resourcePools,
-      const InitProperties& initProperties
-    ) override;
+    void init(RendererBackend& backend, const InitProperties& initProperties)
+      override;
 
     void render(
-      RendererBackendProxy& backendProxy, const RenderPacket& packet,
+      RendererBackend& backend, const RenderPacket& packet,
       const RenderProperties& properties, float deltaTime
     ) override;
 
-    void onViewportResize(RendererBackendProxy& backendProxy, Vec2<u32> viewportSize)
-      override;
+    void onViewportResize(RendererBackend& backend, Vec2<u32> viewportSize) override;
 
 private:
     Skybox* m_skybox;

@@ -26,8 +26,7 @@ VKPhysicalDevice::Requirements physicalDeviceRequirements{
 VKRendererBackend::VKRendererBackend(Window& window, const Config& config) :
     m_recreatingSwapchain(false), m_window(window), m_context(window, config),
     m_physicalDevice(m_context, physicalDeviceRequirements),
-    m_logicalDevice(m_context, m_physicalDevice), m_renderedVertices(0u),
-    m_proxy(this) {
+    m_logicalDevice(m_context, m_physicalDevice), m_renderedVertices(0u) {
     auto size = window.getFramebufferSize();
 
     m_framebufferWidth  = size.w;
@@ -39,12 +38,6 @@ VKRendererBackend::VKRendererBackend(Window& window, const Config& config) :
 }
 
 VKRendererBackend::~VKRendererBackend() { m_logicalDevice.waitIdle(); }
-
-UniqPtr<VKUIRenderer> VKRendererBackend::createUIRendererer(RenderPass* renderPass) {
-    return createUniqPtr<VKUIRenderer>(
-      m_context, m_physicalDevice, m_logicalDevice, m_proxy, m_window, renderPass
-    );
-}
 
 // TODO: remove
 void VKRendererBackend::gpuCall(std::function<void(CommandBuffer& buffer)>&& callback
@@ -116,11 +109,21 @@ void VKRendererBackend::createBuffers() {
     );
 }
 
-VKCommandBuffer* VKRendererBackend::getCommandBuffer() {
-    return &m_commandBuffers[m_imageIndex];
+VKCommandBuffer& VKRendererBackend::getCommandBuffer() {
+    return m_commandBuffers[m_imageIndex];
 }
 
 u32 VKRendererBackend::getImageIndex() { return m_imageIndex; }
+
+VKTexture* VKRendererBackend::getSwapchainTexture(u32 index) {
+    return m_swapchain->getFramebuffer(index);
+}
+
+VKTexture* VKRendererBackend::getDepthTexture() {
+    return m_swapchain->getDepthBuffer();
+}
+
+Window& VKRendererBackend::getWindow() { return m_window; }
 
 void VKRendererBackend::createCoreComponents(
   sl::Window& window, const Config& config
@@ -132,11 +135,6 @@ void VKRendererBackend::createCoreComponents(
     m_maxFramesInFlight = m_swapchain->getImageCount();
 
     createBuffers();
-
-    m_resourcePools.emplace(
-      m_context, m_logicalDevice, *m_objectVertexBuffer, *m_objectIndexBuffer,
-      *m_swapchain, this
-    );
 }
 
 void VKRendererBackend::createSemaphoresAndFences() {
@@ -209,22 +207,17 @@ VKFence* VKRendererBackend::acquireImageFence() {
     return fence;
 }
 
-Texture* VKRendererBackend::getFramebuffer(u64 id) {
-    return m_swapchain->getFramebuffer(id);
-}
-
-Texture* VKRendererBackend::getDepthBuffer() {
-    return m_swapchain->getDepthBuffer();
-}
-
-VKRendererBackendProxy* VKRendererBackend::getProxy() { return &m_proxy; }
-
 VKBuffer& VKRendererBackend::getIndexBuffer() { return *m_objectIndexBuffer; }
 
 VKBuffer& VKRendererBackend::getVertexBuffer() { return *m_objectVertexBuffer; }
 
+VKSwapchain& VKRendererBackend::getSwapchain() { return *m_swapchain; }
+
 VKContext& VKRendererBackend::getContext() { return m_context; }
+
 VKLogicalDevice& VKRendererBackend::getLogicalDevice() { return m_logicalDevice; }
+
+VKPhysicalDevice& VKRendererBackend::getPhysicalDevice() { return m_physicalDevice; }
 
 void VKRendererBackend::setViewport(
   VKCommandBuffer& commandBuffer, const Rect2<u32>& viewport
@@ -370,10 +363,6 @@ bool VKRendererBackend::endFrame(float deltaTime) {
     m_currentFrame = (m_currentFrame + 1) % m_maxFramesInFlight;
 
     return true;
-}
-
-ResourcePools* VKRendererBackend::getResourcePools() {
-    return m_resourcePools.get();
 }
 
 }  // namespace sl::vk

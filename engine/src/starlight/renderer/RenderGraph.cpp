@@ -9,10 +9,7 @@ RenderGraph::Builder::Builder(
     m_viewportSize(viewportSize), m_renderGraph(createOwningPtr<RenderGraph>()) {}
 
 OwningPtr<RenderGraph> RenderGraph::Builder::build() && {
-    auto backendProxy  = m_renderer.getProxy();
-    auto resourcePools = m_renderer.getResourcePools();
-    auto& views        = m_renderGraph->getViews();
-
+    auto& views          = m_renderGraph->getViews();
     const auto viewCount = views.size();
 
     RenderView::InitProperties initProperties{ .viewportSize = m_viewportSize };
@@ -20,7 +17,7 @@ OwningPtr<RenderGraph> RenderGraph::Builder::build() && {
     for (u32 i = 0; i < viewCount; ++i) {
         initProperties.hasPreviousView = (i != 0);
         initProperties.hasNextView     = (i != viewCount - 1);
-        views[i]->init(*backendProxy, *resourcePools, initProperties);
+        views[i]->init(m_renderer, initProperties);
     }
 
     return std::move(m_renderGraph);

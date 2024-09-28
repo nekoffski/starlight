@@ -26,6 +26,9 @@ public:
 
     operator bool() const;
 
+    operator T*();
+    operator T*() const;
+
     T* operator->();
     const T* operator->() const;
 
@@ -143,6 +146,9 @@ template <typename T> const T* ResourceRef<T>::operator->() const {
 
 template <typename T> T* ResourceRef<T>::get() { return m_resource; }
 template <typename T> const T* ResourceRef<T>::get() const { return m_resource; }
+
+template <typename T> ResourceRef<T>::operator T*() const { return m_resource; }
+template <typename T> ResourceRef<T>::operator T*() { return m_resource; }
 
 template <typename T> ResourceRef<T>::operator bool() const {
     return m_resource != nullptr;

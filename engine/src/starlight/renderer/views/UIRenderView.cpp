@@ -12,8 +12,7 @@ UIRenderView::UIRenderView(const Properties& props, UICallback&& callback) :
     m_props(props), m_uiCallback(std::move(callback)) {}
 
 void UIRenderView::init(
-  RendererBackendProxy& backendProxy, ResourcePools& resourcePools,
-  const InitProperties& initProperties
+  RendererBackend& renderer, const InitProperties& initProperties
 ) {
     LOG_TRACE("Initializing UIRenderView");
 
@@ -25,17 +24,15 @@ void UIRenderView::init(
         .hasNextPass     = initProperties.hasNextView
     };
 
-    RenderTarget::Properties renderTargetProperties{
-        .attachments = {}, .size = initProperties.viewportSize
-    };
+    RenderTarget renderTarget{ .size = initProperties.viewportSize };
 
     for (u8 i = 0; i < 3; ++i) {
-        renderTargetProperties.attachments = { backendProxy.getFramebuffer(i) };
-        renderPassProperties.targets.push_back(renderTargetProperties);
+        renderTarget.attachments = { renderer.getSwapchainTexture(i) };
+        renderPassProperties.renderTargets.push_back(renderTarget);
     }
 
-    m_renderPass = resourcePools.createRenderPass(renderPassProperties);
-    m_uiRenderer = backendProxy.createUIRendererer(m_renderPass);
+    m_renderPass = RenderPass::create(renderer, renderPassProperties);
+    m_uiRenderer = UIRenderer::create(renderer, *m_renderPass);
 
     m_uiRenderer->setStyle();
 
@@ -46,31 +43,31 @@ void UIRenderView::init(
 }
 
 void UIRenderView::render(
-  RendererBackendProxy& backendProxy, [[maybe_unused]] const RenderPacket& packet,
+  RendererBackend& renderer, [[maybe_unused]] const RenderPacket& packet,
   [[maybe_unused]] const RenderProperties& properties, float deltaTime
 ) {
-    auto commandBuffer = backendProxy.getCommandBuffer();
-    m_renderPass->run(*commandBuffer, backendProxy.getImageIndex(), [&]() {
-        m_uiRenderer->render(*commandBuffer, m_uiCallback);
-    });
+    m_renderPass->run(
+      renderer.getCommandBuffer(), renderer.getImageIndex(),
+      [&](CommandBuffer& commandBuffer, [[maybe_unused]] u32) {
+          m_uiRenderer->render(commandBuffer, m_uiCallback);
+      }
+    );
 }
 
 void UIRenderView::onViewportResize(
-  RendererBackendProxy& backendProxy, Vec2<u32> viewportSize
+  RendererBackend& renderer, Vec2<u32> viewportSize
 ) {
     // TODO: get swapchain images count from backend
-    std::vector<RenderTarget::Properties> renderTargetsProperties;
-    renderTargetsProperties.reserve(3);
+    std::vector<RenderTarget> renderTargets;
+    renderTargets.reserve(3);
 
-    RenderTarget::Properties renderTargetProperties{
-        .attachments = {}, .size = viewportSize
-    };
+    RenderTarget renderTarget{ .size = viewportSize };
 
     for (u8 i = 0; i < 3; ++i) {
-        renderTargetProperties.attachments = { backendProxy.getFramebuffer(i) };
-        renderTargetsProperties.push_back(renderTargetProperties);
+        renderTarget.attachments = { renderer.getSwapchainTexture(i) };
+        renderTargets.push_back(renderTarget);
     }
-    m_renderPass->regenerateRenderTargets(renderTargetsProperties);
+    m_renderPass->regenerateRenderTargets(renderTargets);
     m_renderPass->setRectSize(viewportSize);
 }
 

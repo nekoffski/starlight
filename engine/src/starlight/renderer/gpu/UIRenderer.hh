@@ -4,6 +4,7 @@
 #include <string>
 #include <span>
 
+#include "starlight/core/memory/Memory.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/renderer/fwd.hh"
 
@@ -41,6 +42,8 @@ public:
         ImGui::PopFont();
         end(commandBuffer);
     }
+
+    static OwningPtr<UIRenderer> create(RendererBackend&, RenderPass& renderPass);
 
     virtual ~UIRenderer() = default;
 

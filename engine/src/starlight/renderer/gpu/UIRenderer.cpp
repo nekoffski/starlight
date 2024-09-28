@@ -4,7 +4,27 @@
 
 #include <imgui.h>
 
+#ifdef SL_USE_VK
+#include "starlight/renderer/gpu/vulkan/VKRendererBackend.hh"
+#include "starlight/renderer/gpu/vulkan/VKUIRenderer.hh"
+#endif
+
 namespace sl {
+
+OwningPtr<UIRenderer> UIRenderer::create(
+  RendererBackend& renderer, RenderPass& renderPass
+) {
+#ifdef SL_USE_VK
+    auto& vkRenderer = static_cast<vk::VKRendererBackend&>(renderer);
+
+    return createOwningPtr<vk::VKUIRenderer>(
+      vkRenderer.getContext(), vkRenderer.getPhysicalDevice(),
+      vkRenderer.getLogicalDevice(), vkRenderer.getWindow(), renderPass
+    );
+#else
+    FATAL_ERROR("Could not find renderer backend implementation");
+#endif
+}
 
 void UIRenderer::setStyle() {
     // TODO: move it somewhere closer to the frontend

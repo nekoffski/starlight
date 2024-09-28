@@ -139,36 +139,44 @@ public:
     public:
         void set(const std::string& uniform, const Texture* value);
 
-        void set(const std::string& uniform, const GlmCompatible auto& value) {
-            m_shader.setUniform(uniform, glm::value_ptr(value));
+        template <typename T>
+        requires GlmCompatible<T>
+        void set(const std::string& uniform, const T& value) {
+            m_shader.setUniform(uniform, glm::value_ptr(value), m_commandBuffer);
         }
 
         template <typename T> void set(const std::string& uniform, const T* value) {
-            m_shader.setUniform(uniform, value);
+            m_shader.setUniform(uniform, value, m_commandBuffer);
         }
 
         template <typename T> void set(const std::string& uniform, const T& value) {
-            m_shader.setUniform(uniform, &value);
+            m_shader.setUniform(uniform, &value, m_commandBuffer);
         }
 
     private:
-        explicit UniformProxy(Shader& shader);
+        explicit UniformProxy(Shader& shader, CommandBuffer& commandBuffer);
         Shader& m_shader;
+        CommandBuffer& m_commandBuffer;
     };
 
     using UniformCallback = std::function<void(UniformProxy&)>;
 
     virtual ~Shader() = default;
 
-    virtual void use()                                                          = 0;
+    virtual void use(CommandBuffer&)                                            = 0;
     virtual u32 acquireInstanceResources(const std::vector<Texture*>& textures) = 0;
     virtual void releaseInstanceResources(u32 instanceId)                       = 0;
 
-    virtual void createPipeline(RenderPass* renderPass) = 0;
+    virtual void createPipeline(RenderPass& renderPass) = 0;
 
-    void setGlobalUniforms(UniformCallback&&);
-    void setInstanceUniforms(u32 instanceId, UniformCallback&&);
-    void setLocalUniforms(UniformCallback&&);
+    void setGlobalUniforms(
+      CommandBuffer& commandBuffer, u32 imageIndex, UniformCallback&& callback
+    );
+    void setInstanceUniforms(
+      CommandBuffer& commandBuffer, u32 instanceId, u32 imageIndex,
+      UniformCallback&& callback
+    );
+    void setLocalUniforms(CommandBuffer& commandBuffer, UniformCallback&& callback);
 
     const std::string& getName() const;
 
@@ -179,19 +187,19 @@ protected:
     bool m_useInstances;
     bool m_useLocals;
 
-    UniformProxy m_uniformProxy;
-
     CullMode m_cullMode;
     PolygonMode m_polygonMode;
 
 private:
-    virtual void bindGlobals()                = 0;
-    virtual void bindInstance(u32 instanceId) = 0;
-    virtual void applyGlobals()               = 0;
-    virtual void applyInstance()              = 0;
+    virtual void bindGlobals()                                               = 0;
+    virtual void bindInstance(u32 instanceId)                                = 0;
+    virtual void applyGlobals(CommandBuffer& commandBuffer, u32 imageIndex)  = 0;
+    virtual void applyInstance(CommandBuffer& commandBuffer, u32 imageIndex) = 0;
 
     virtual void setSampler(const std::string& uniform, const Texture* value) = 0;
-    virtual void setUniform(const std::string& uniform, const void* value)    = 0;
+    virtual void setUniform(
+      const std::string& name, const void* value, CommandBuffer& commandBuffer
+    ) = 0;
 };
 
 class ShaderManager

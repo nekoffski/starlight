@@ -15,11 +15,10 @@ namespace sl::vk {
 
 VKUIRenderer::VKUIRenderer(
   VKContext& context, VKPhysicalDevice& physicalDevice, VKLogicalDevice& device,
-  RendererBackendProxy& backendProxy, Window& window, RenderPass* renderPass
+  Window& window, RenderPass& renderPass
 ) :
     m_context(context),
-    m_physicalDevice(physicalDevice), m_device(device),
-    m_backendProxy(backendProxy) {
+    m_physicalDevice(physicalDevice), m_device(device) {
     ASSERT(not s_hasInstance, "Only single instance of UI renderer is allowed");
     s_hasInstance = true;
 
@@ -59,7 +58,7 @@ VKUIRenderer::VKUIRenderer(
     ImGui_ImplGlfw_InitForVulkan(static_cast<GLFWwindow*>(window.getHandle()), true);
 
     auto graphicsQueue    = m_device.getQueues().graphics;
-    auto renderPassHandle = static_cast<VKRenderPass*>(renderPass)->getHandle();
+    auto renderPassHandle = static_cast<VKRenderPass&>(renderPass).getHandle();
 
     ImGui_ImplVulkan_InitInfo initInfo = {};
     initInfo.Instance                  = m_context.getInstance();

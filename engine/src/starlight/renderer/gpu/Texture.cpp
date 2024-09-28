@@ -196,7 +196,6 @@ ResourceRef<Texture> TextureManager::load(
         components->buffer
       )
     );
-
 #else
     FATAL_ERROR("Could not find renderer backend implementation");
 #endif

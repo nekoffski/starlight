@@ -5,8 +5,7 @@ namespace sl {
 WorldRenderView::WorldRenderView(Shader* shader) : m_shader(shader) {}
 
 void WorldRenderView::init(
-  RendererBackendProxy& backendProxy, ResourcePools& resourcePools,
-  const InitProperties& initProperties
+  RendererBackend& renderer, const InitProperties& initProperties
 ) {
     LOG_TRACE("Initializing WorldRenderView");
     auto backgroundColor = (1.0f / 255.0f) * glm::vec4{ 11, 16, 47, 255 };
@@ -23,19 +22,17 @@ void WorldRenderView::init(
         .hasNextPass     = initProperties.hasNextView
     };
 
-    RenderTarget::Properties renderTargetProperties{
-        .attachments = {}, .size = initProperties.viewportSize
-    };
+    RenderTarget renderTarget{ .size = initProperties.viewportSize };
 
     for (u8 i = 0; i < 3; ++i) {
-        renderTargetProperties.attachments = {
-            backendProxy.getFramebuffer(i), backendProxy.getDepthBuffer()
+        renderTarget.attachments = {
+            renderer.getSwapchainTexture(i), renderer.getDepthTexture()
         };
-        renderPassProperties.targets.push_back(renderTargetProperties);
+        renderPassProperties.renderTargets.push_back(renderTarget);
     }
 
-    m_renderPass = resourcePools.createRenderPass(renderPassProperties);
-    m_shader->createPipeline(m_renderPass);
+    m_renderPass = RenderPass::create(renderer, renderPassProperties);
+    m_shader->createPipeline(*m_renderPass);
     LOG_TRACE("WorldRenderView initialized");
 }
 
@@ -47,32 +44,35 @@ struct MeshRenderData {
 };
 
 void WorldRenderView::render(
-  RendererBackendProxy& backendProxy, const RenderPacket& packet,
+  RendererBackend& renderer, const RenderPacket& packet,
   const RenderProperties& properties, [[maybe_unused]] float deltaTime
 ) {
-    backendProxy.setViewport(packet.viewport);
+    renderer.setViewport(packet.viewport);
     m_renderPass->run(
-      *backendProxy.getCommandBuffer(), backendProxy.getImageIndex(),
-      [&]() {
+      renderer.getCommandBuffer(), renderer.getImageIndex(),
+      [&](CommandBuffer& commandBuffer, u32 imageIndex) {
           glm::vec4 ambientColor(0.3f, 0.3f, 0.3f, 1.0f);
 
           auto camera               = packet.camera;
           const auto cameraPosition = camera->getPosition();
 
-          m_shader->use();
-          m_shader->setGlobalUniforms([&](Shader::UniformProxy& proxy) {
-              proxy.set("view", camera->getViewMatrix());
-              proxy.set("projection", camera->getProjectionMatrix());
-              proxy.set("viewPosition", cameraPosition);
-              proxy.set("ambientColor", ambientColor);
-              proxy.set("renderMode", static_cast<int>(properties.renderMode));
+          m_shader->use(commandBuffer);
+          m_shader->setGlobalUniforms(
+            commandBuffer, imageIndex,
+            [&](Shader::UniformProxy& proxy) {
+                proxy.set("view", camera->getViewMatrix());
+                proxy.set("projection", camera->getProjectionMatrix());
+                proxy.set("viewPosition", cameraPosition);
+                proxy.set("ambientColor", ambientColor);
+                proxy.set("renderMode", static_cast<int>(properties.renderMode));
 
-              const auto pointLightCount = packet.pointLights.size();
-              proxy.set("pointLightCount", pointLightCount);
+                const auto pointLightCount = packet.pointLights.size();
+                proxy.set("pointLightCount", pointLightCount);
 
-              if (pointLightCount > 0)
-                  proxy.set("pointLights", packet.pointLights.data());
-          });
+                if (pointLightCount > 0)
+                    proxy.set("pointLights", packet.pointLights.data());
+            }
+          );
 
           std::vector<MeshRenderData> meshes;
           std::vector<MeshRenderData> transparentGeometries;
@@ -104,35 +104,36 @@ void WorldRenderView::render(
           transparentGeometries.clear();
 
           for (auto& [mesh, material, model, _] : meshes) {
-              m_shader->setLocalUniforms([&](Shader::UniformProxy& proxy) {
-                  proxy.set("model", model);
-              });
+              m_shader->setLocalUniforms(
+                commandBuffer,
+                [&](Shader::UniformProxy& proxy) { proxy.set("model", model); }
+              );
 
-              material->applyUniforms(*m_shader, properties.frameNumber);
-              backendProxy.drawMesh(*mesh);
+              material->applyUniforms(
+                *m_shader, commandBuffer, imageIndex, properties.frameNumber
+              );
+              renderer.drawMesh(*mesh);
           }
       }
     );
 }
 
 void WorldRenderView::onViewportResize(
-  RendererBackendProxy& backendProxy, Vec2<u32> viewportSize
+  RendererBackend& renderer, Vec2<u32> viewportSize
 ) {
     // TODO: get swapchain images count from backend
-    std::vector<RenderTarget::Properties> renderTargetsProperties;
-    renderTargetsProperties.reserve(3);
+    std::vector<RenderTarget> renderTargets;
+    renderTargets.reserve(3);
 
-    RenderTarget::Properties renderTargetProperties{
-        .attachments = {}, .size = viewportSize
-    };
+    RenderTarget renderTarget{ .size = viewportSize };
 
     for (u8 i = 0; i < 3; ++i) {
-        renderTargetProperties.attachments = {
-            backendProxy.getFramebuffer(i), backendProxy.getDepthBuffer()
+        renderTarget.attachments = {
+            renderer.getSwapchainTexture(i), renderer.getDepthTexture()
         };
-        renderTargetsProperties.push_back(renderTargetProperties);
+        renderTargets.push_back(renderTarget);
     }
-    m_renderPass->regenerateRenderTargets(renderTargetsProperties);
+    m_renderPass->regenerateRenderTargets(renderTargets);
     m_renderPass->setRectSize(viewportSize);
 }
 

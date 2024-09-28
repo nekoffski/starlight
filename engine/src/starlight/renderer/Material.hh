@@ -56,7 +56,10 @@ public:
     ~Material();
 
     bool isTransparent() const;
-    void applyUniforms(Shader& shader, const u64 frameNumber);
+    void applyUniforms(
+      Shader& shader, CommandBuffer& commandBuffer, u32 imageIndex,
+      const u64 renderFrameNumber
+    );
 
     const std::string& getName() const;
     const Properties& getProperties() const;

@@ -4,7 +4,9 @@
 
 #include "starlight/core/Core.hh"
 #include "starlight/core/math/Core.hh"
+#include "starlight/core/Id.hh"
 
+#include "starlight/renderer/Resource.hh"
 #include "RenderTarget.hh"
 #include "CommandBuffer.hh"
 
@@ -12,7 +14,7 @@
 
 namespace sl {
 
-class RenderPass {
+class RenderPass : public NonMovable, public Identificable<RenderTarget> {
 public:
     static constexpr u8 clearNone          = 0x0;
     static constexpr u8 clearColorBuffer   = 0x1;
@@ -23,20 +25,25 @@ public:
         Rect2u32 rect;
         Vec4<f32> clearColor;
         u8 clearFlags;
+
         bool hasPreviousPass;
         bool hasNextPass;
 
-        std::vector<RenderTarget::Properties> targets;
+        std::vector<RenderTarget> renderTargets;
     };
 
-    explicit RenderPass(u32 id, const Properties& props);
+    static OwningPtr<RenderPass> create(
+      RendererBackend& renderer, const Properties& props
+    );
+
+    explicit RenderPass(const Properties& props);
     virtual ~RenderPass() = default;
 
     template <typename C>
-    requires Callable<C>
+    requires Callable<C, void, CommandBuffer&, u8>
     void run(CommandBuffer& commandBuffer, u8 attachmentIndex, C&& callback) {
         begin(commandBuffer, attachmentIndex);
-        callback();
+        callback(commandBuffer, attachmentIndex);
         end(commandBuffer);
     }
 
@@ -44,10 +51,8 @@ public:
     void setRect(const Rect2u32& extent);
     void setRectSize(const Vec2<u32>& size);
 
-    u32 getId() const;
-
     virtual void regenerateRenderTargets(
-      const std::vector<RenderTarget::Properties>& targets
+      const std::vector<RenderTarget>& renderTargets
     ) = 0;
 
 private:
@@ -55,7 +60,6 @@ private:
     virtual void end(CommandBuffer& commandBuffer)                       = 0;
 
 protected:
-    u32 m_id;
     Properties m_props;
 };
 

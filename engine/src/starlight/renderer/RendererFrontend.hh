@@ -34,7 +34,6 @@ public:
     );
     void setRenderMode(RenderMode mode);
 
-    ResourcePools* getResourcePools();
     void onViewportResize(Vec2<u32> viewportSize);
 
 private:

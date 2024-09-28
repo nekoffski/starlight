@@ -23,9 +23,16 @@ static std::atomic_bool isRunning = true;
 TODO:
     - [18-09-2024 23:30:36] [Th: 665267] warning [starlight]: Could not find record
 to release with name:  m;�lUp�O�lUp�O�lU - [Resource.hh:103]
+    - Move Resource* to core namespace
     - Refactor Renderer
         - getFramebuffer returns texture - this is invalid!
+        -  finish RenderPass
+            - decide how to pass render targets, some temporary object?
+                RenderTarget::Properties doesn't sound right,
+                    remove render target abstraction
     - Don't use ResourceManagers for storing default stuff, just create as objects
+    - move all default values to ctors
+
     - Shader as a part of render packet
     - Simplify components
     - Refactor Scene
@@ -89,8 +96,8 @@ int main() {
         .worldTransform = sl::math::scale(
           sl::identityMatrix, sl::Vec3<sl::f32>{ 0.25f, 0.25f, 0.25f }
         ),
-        .mesh     = sl::Mesh::getCube().get(),
-        .material = material.get(),
+        .mesh     = sl::Mesh::getCube(),
+        .material = material,
     };
 
     sl::PointLight light;
