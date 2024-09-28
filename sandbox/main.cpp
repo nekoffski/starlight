@@ -24,12 +24,8 @@ TODO:
     - [18-09-2024 23:30:36] [Th: 665267] warning [starlight]: Could not find record
 to release with name:  m;�lUp�O�lUp�O�lU - [Resource.hh:103]
     - Move Resource* to core namespace
+    - Fix cleanup errors
     - Refactor Renderer
-        - getFramebuffer returns texture - this is invalid!
-        -  finish RenderPass
-            - decide how to pass render targets, some temporary object?
-                RenderTarget::Properties doesn't sound right,
-                    remove render target abstraction
     - Don't use ResourceManagers for storing default stuff, just create as objects
     - move all default values to ctors
 

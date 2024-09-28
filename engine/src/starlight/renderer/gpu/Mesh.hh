@@ -10,8 +10,7 @@
 #include "starlight/core/math/Extent.hh"
 #include "starlight/core/math/Core.hh"
 #include "starlight/core/math/Vertex.hh"
-
-#include "starlight/renderer/Resource.hh"
+#include "starlight/core/Resource.hh"
 
 namespace sl {
 namespace detail {

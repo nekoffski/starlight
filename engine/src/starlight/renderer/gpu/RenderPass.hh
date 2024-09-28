@@ -5,8 +5,8 @@
 #include "starlight/core/Core.hh"
 #include "starlight/core/math/Core.hh"
 #include "starlight/core/Id.hh"
+#include "starlight/core/Resource.hh"
 
-#include "starlight/renderer/Resource.hh"
 #include "RenderTarget.hh"
 #include "CommandBuffer.hh"
 

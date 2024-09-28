@@ -15,14 +15,14 @@
 #include "starlight/core/Id.hh"
 #include "starlight/core/FileSystem.hh"
 #include "starlight/core/Core.hh"
+#include "starlight/core/Resource.hh"
 #include "starlight/core/Log.hh"
+
 #include "starlight/renderer/CullMode.hh"
 #include "starlight/renderer/PolygonMode.hh"
 #include "starlight/renderer/gpu/RendererBackend.hh"
 
 #include "Texture.hh"
-
-#include "starlight/renderer/Resource.hh"
 
 namespace sl {
 

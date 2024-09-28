@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "starlight/renderer/Resource.hh"
+#include "starlight/core/Resource.hh"
 #include "starlight/core/math/Core.hh"
 #include "starlight/core/Id.hh"
 
