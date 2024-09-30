@@ -162,6 +162,7 @@ VKRenderPass::VKRenderPass(
 
 VKRenderPass::~VKRenderPass() {
     if (m_handle) {
+        m_device.waitIdle();
         vkDestroyRenderPass(
           m_device.getHandle(), m_handle, m_context.getAllocator()
         );

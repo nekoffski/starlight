@@ -99,11 +99,10 @@ private:
     u32 m_framebufferWidth;
     u32 m_framebufferHeight;
 
-    std::vector<VKCommandBuffer> m_commandBuffers;
-
-    std::vector<VKSemaphore> m_imageAvailableSemaphores;
-    std::vector<VKSemaphore> m_queueCompleteSemaphores;
-    std::vector<VKFence> m_inFlightFences;
+    std::vector<LocalPtr<VKCommandBuffer>> m_commandBuffers;
+    std::vector<LocalPtr<VKSemaphore>> m_imageAvailableSemaphores;
+    std::vector<LocalPtr<VKSemaphore>> m_queueCompleteSemaphores;
+    std::vector<LocalPtr<VKFence>> m_inFlightFences;
     std::vector<VKFence*> m_imagesInFlight;
 };
 

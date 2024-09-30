@@ -4,7 +4,8 @@
 
 namespace sl {
 
-struct CommandBufferPool {
+class CommandBufferPool : public NonCopyable, public NonMovable {
+public:
     virtual CommandBuffer* getFrameCommandBuffer() = 0;
 };
 

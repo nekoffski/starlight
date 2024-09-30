@@ -8,7 +8,7 @@
 
 namespace sl::vk {
 
-class VKFence {
+class VKFence : public NonCopyable, public NonMovable {
 public:
     enum class State : unsigned char { signaled, notSignaled };
 

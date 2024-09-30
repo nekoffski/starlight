@@ -63,26 +63,26 @@ void VKRendererBackend::freeDataRange(
 
 void VKRendererBackend::drawMesh(const Mesh& mesh) {
     const auto& dataDescription = mesh.getDataDescription();
-    auto& commandBuffer         = m_commandBuffers[m_imageIndex];
+    auto commandBuffer          = m_commandBuffers[m_imageIndex].get();
 
     VkDeviceSize offsets[1] = { dataDescription.vertexBufferOffset };
 
     vkCmdBindVertexBuffers(
-      commandBuffer.getHandle(), 0, 1, m_objectVertexBuffer->getHandlePointer(),
+      commandBuffer->getHandle(), 0, 1, m_objectVertexBuffer->getHandlePointer(),
       (VkDeviceSize*)offsets
     );
     if (dataDescription.indexCount > 0) {
         vkCmdBindIndexBuffer(
-          commandBuffer.getHandle(), m_objectIndexBuffer->getHandle(),
+          commandBuffer->getHandle(), m_objectIndexBuffer->getHandle(),
           dataDescription.indexBufferOffset, VK_INDEX_TYPE_UINT32
         );
         vkCmdDrawIndexed(
-          commandBuffer.getHandle(), dataDescription.indexCount, 1, 0, 0, 0
+          commandBuffer->getHandle(), dataDescription.indexCount, 1, 0, 0, 0
         );
 
         m_renderedVertices += dataDescription.indexCount;
     } else {
-        vkCmdDraw(commandBuffer.getHandle(), dataDescription.vertexCount, 1, 0, 0);
+        vkCmdDraw(commandBuffer->getHandle(), dataDescription.vertexCount, 1, 0, 0);
         m_renderedVertices += dataDescription.vertexCount;
     }
 }
@@ -110,7 +110,7 @@ void VKRendererBackend::createBuffers() {
 }
 
 VKCommandBuffer& VKRendererBackend::getCommandBuffer() {
-    return m_commandBuffers[m_imageIndex];
+    return *m_commandBuffers[m_imageIndex];
 }
 
 u32 VKRendererBackend::getImageIndex() { return m_imageIndex; }
@@ -163,7 +163,7 @@ void VKRendererBackend::onViewportResize(const Vec2<u32>& viewportSize) {
     );
 
     m_logicalDevice.waitIdle();
-    m_inFlightFences[m_currentFrame].wait(UINT64_MAX);
+    m_inFlightFences[m_currentFrame]->wait(UINT64_MAX);
     recreateSwapchain();
 
     m_recreatingSwapchain = false;
@@ -172,7 +172,7 @@ void VKRendererBackend::onViewportResize(const Vec2<u32>& viewportSize) {
 u64 VKRendererBackend::getRenderedVertexCount() const { return m_renderedVertices; }
 
 void VKRendererBackend::setViewport(const Rect2<u32>& viewport) {
-    setViewport(m_commandBuffers[m_imageIndex], viewport);
+    setViewport(*m_commandBuffers[m_imageIndex], viewport);
 }
 
 void VKRendererBackend::createCommandBuffers() {
@@ -201,7 +201,7 @@ void VKRendererBackend::recreateSwapchain() {
 VKFence* VKRendererBackend::acquireImageFence() {
     auto& fence = m_imagesInFlight[m_imageIndex];
     if (fence) fence->wait(UINT64_MAX);
-    fence = &m_inFlightFences[m_currentFrame];
+    fence = m_inFlightFences[m_currentFrame].get();
     fence->reset();
 
     return fence;
@@ -260,7 +260,7 @@ bool VKRendererBackend::beginFrame(float deltaTime) {
 
     // Wait for the execution of the current frame to complete. The fence being
     // free will allow this one to move on.
-    if (not m_inFlightFences[m_currentFrame].wait(UINT64_MAX)) {
+    if (not m_inFlightFences[m_currentFrame]->wait(UINT64_MAX)) {
         LOG_WARN("In-flight fence wait failure!");
         return false;
     }
@@ -269,7 +269,7 @@ bool VKRendererBackend::beginFrame(float deltaTime) {
     // should signaled when this completes. This same semaphore will later be
     // waited on by the queue submission to ensure this image is available.
     auto nextImageIndex = m_swapchain->acquireNextImageIndex(
-      UINT64_MAX, m_imageAvailableSemaphores[m_currentFrame].getHandle(), nullptr
+      UINT64_MAX, m_imageAvailableSemaphores[m_currentFrame]->getHandle(), nullptr
     );
 
     if (not nextImageIndex) return false;
@@ -277,32 +277,32 @@ bool VKRendererBackend::beginFrame(float deltaTime) {
     m_imageIndex = *nextImageIndex;
 
     // Begin recording commands.
-    auto& commandBuffer = m_commandBuffers[m_imageIndex];
+    auto commandBuffer = m_commandBuffers[m_imageIndex].get();
 
-    commandBuffer.reset();
-    commandBuffer.begin(VKCommandBuffer::BeginFlags{
+    commandBuffer->reset();
+    commandBuffer->begin(VKCommandBuffer::BeginFlags{
       .isSingleUse          = false,
       .isRenderpassContinue = false,
       .isSimultaneousUse    = false,
     });
 
     setViewport(
-      commandBuffer,
+      *commandBuffer,
       Rect2<u32>{
         Vec2<u32>{0u,                  0u                 },
         Vec2<u32>{ m_framebufferWidth, m_framebufferHeight},
     }
     );
-    setScissors(commandBuffer);
+    setScissors(*commandBuffer);
 
     return true;
 }
 
 bool VKRendererBackend::endFrame(float deltaTime) {
     const auto logicalDevice = m_logicalDevice.getHandle();
-    auto& commandBuffer      = m_commandBuffers[m_imageIndex];
+    auto commandBuffer       = m_commandBuffers[m_imageIndex].get();
 
-    commandBuffer.end();
+    commandBuffer->end();
 
     // Make sure the previous frame is not using this image (i.e. its fence is
     // being waited on) if (m_context.images_in_flight[m_context.image_index] !=
@@ -315,7 +315,7 @@ bool VKRendererBackend::endFrame(float deltaTime) {
     // Begin queue submission
     VkSubmitInfo submit_info = { VK_STRUCTURE_TYPE_SUBMIT_INFO };
 
-    auto commandBufferHandle = commandBuffer.getHandle();
+    auto commandBufferHandle = commandBuffer->getHandle();
 
     // Command buffer(s) to be executed.
     submit_info.commandBufferCount = 1;
@@ -324,13 +324,13 @@ bool VKRendererBackend::endFrame(float deltaTime) {
     // The semaphore(s) to be signaled when the queue is complete.
     submit_info.signalSemaphoreCount = 1;
     submit_info.pSignalSemaphores =
-      m_queueCompleteSemaphores[m_currentFrame].getHandlePointer();
+      m_queueCompleteSemaphores[m_currentFrame]->getHandlePointer();
 
     // Wait semaphore ensures that the operation cannot begin until the image is
     // available.
     submit_info.waitSemaphoreCount = 1;
     submit_info.pWaitSemaphores =
-      m_imageAvailableSemaphores[m_currentFrame].getHandlePointer();
+      m_imageAvailableSemaphores[m_currentFrame]->getHandlePointer();
 
     // Each semaphore waits on the corresponding pipeline stage to complete. 1:1
     // ratio. VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT prevents subsequent
@@ -353,11 +353,11 @@ bool VKRendererBackend::endFrame(float deltaTime) {
         return false;
     }
 
-    commandBuffer.updateSubmitted();
+    commandBuffer->updateSubmitted();
 
     m_swapchain->present(
       deviceQueues.graphics, deviceQueues.present,
-      m_queueCompleteSemaphores[m_currentFrame].getHandle(), m_imageIndex
+      m_queueCompleteSemaphores[m_currentFrame]->getHandle(), m_imageIndex
     );
 
     m_currentFrame = (m_currentFrame + 1) % m_maxFramesInFlight;

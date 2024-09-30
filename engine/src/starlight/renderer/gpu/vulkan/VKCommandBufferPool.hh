@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "starlight/core/memory/Memory.hh"
+
 #include "VKCommandBuffer.hh"
 #include "VKLogicalDevice.hh"
 
@@ -19,31 +21,6 @@ public:
         create();
     }
 
-    // static void useImmediateCommandBuffer(
-    //   const VKDevice& device,
-    //   std::function<void(VKCommandBuffer& buffer)>&& callback, VkQueue queue
-    // ) {
-    //     vkQueueWaitIdle(queue);
-
-    //     VKCommandBuffer commandBuffer(
-    //       &device, device.getGraphicsCommandPool(),
-    //       VKCommandBuffer::Severity::primary
-    //     );
-
-    //     commandBuffer.begin(CommandBuffer::BeginFlags::singleUse);
-    //     callback(commandBuffer);
-    //     commandBuffer.end();
-
-    //     auto handle = commandBuffer.getHandle();
-
-    //     VkSubmitInfo submitInfo       = { VK_STRUCTURE_TYPE_SUBMIT_INFO };
-    //     submitInfo.commandBufferCount = 1;
-    //     submitInfo.pCommandBuffers    = &handle;
-
-    //     VK_ASSERT(vkQueueSubmit(queue, 1, &submitInfo, 0));
-    //     VK_ASSERT(vkQueueWaitIdle(queue));
-    // }
-
     void recreate() {
         m_commandBuffers.clear();
         create();
@@ -54,7 +31,7 @@ public:
     }
 
     VKCommandBuffer* getFrameCommandBuffer() override {
-        return &m_commandBuffers[m_frameImageIndex];
+        return m_commandBuffers[m_frameImageIndex].get();
     }
 
 private:
@@ -73,7 +50,7 @@ private:
     u32 m_frameImageIndex;
     u64 m_size;
 
-    std::vector<VKCommandBuffer> m_commandBuffers;
+    std::vector<LocalPtr<VKCommandBuffer>> m_commandBuffers;
 };
 
 }  // namespace sl::vk

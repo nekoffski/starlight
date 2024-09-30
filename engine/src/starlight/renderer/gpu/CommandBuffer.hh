@@ -1,8 +1,10 @@
 #pragma once
 
+#include "starlight/core/Core.hh"
+
 namespace sl {
 
-struct CommandBuffer {
+struct CommandBuffer : public NonCopyable, public NonMovable {
     enum class State : unsigned char {
         ready,
         recording,
