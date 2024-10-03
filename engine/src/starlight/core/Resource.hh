@@ -15,12 +15,18 @@ template <typename T> class ResourceManager;
 template <typename T> class ResourceRef {
 public:
     explicit ResourceRef(
-      T* resource, ResourceManager<T>* manager, std::string_view name
+      T* resource, ResourceManager<T>* manager, const std::string& name
     );
 
     ResourceRef(T* resource);
     ResourceRef(std::nullptr_t);
     ResourceRef();
+
+    ResourceRef(const ResourceRef& oth);
+    ResourceRef(ResourceRef&& oth);
+
+    ResourceRef& operator=(const ResourceRef& oth);
+    ResourceRef& operator=(ResourceRef&& oth);
 
     ~ResourceRef();
 
@@ -46,7 +52,7 @@ template <typename T> class ResourceManager {
 
     struct ResourceRecord {
         OwningPtr<T> data;
-        std::string_view name;
+        std::string name;
         u32 referenceCounter;
     };
 
@@ -69,7 +75,7 @@ public:
     }
 
 protected:
-    ResourceRef<T> store(std::string_view name, OwningPtr<T> resource) {
+    ResourceRef<T> store(const std::string& name, OwningPtr<T> resource) {
         const auto [it, inserted] =
           m_records.emplace(name, ResourceRecord{ std::move(resource), name, 0u });
 
@@ -81,33 +87,41 @@ protected:
         auto& record = it->second;
 
         if constexpr (IsIdentificable<T>) {
-            // TODO: check if already exists
             const auto id            = record.data->getId();
             const auto [_, inserted] = m_recordsById.emplace(id, &record);
 
-            if (not inserted) {
-                LOG_WARN(
-                  "Record with name='{}', and id='{}' already exists", name, id
-                );
-                return nullptr;
-            }
+            ASSERT(inserted, "Map 'id' -> 'record' desynchronized with main buffer");
         }
         return ResourceRef<T>(record.data.get(), this, name);
     }
 
     void release(const std::string& name) {
+        LOG_DEBUG("Releasing resource: {}", name);
+
         if (auto it = m_records.find(name); it != m_records.end()) {
-            if (auto& record = it->second; --record.referenceCounter == 0) {
+            if (auto& record = it->second; --record.referenceCounter <= 0) {
+                LOG_INFO(
+                  "Reference counter of Resource {} less or equals 0, destroying",
+                  name
+                );
                 if constexpr (IsIdentificable<T>)
                     m_recordsById.erase(record.data->getId());
                 m_records.erase(name);
+            } else {
+                LOG_DEBUG("{} references left", record.referenceCounter);
             }
         } else {
             LOG_WARN("Could not find record to release with name: {}", name);
         }
     }
 
-    void acquire(std::string_view name) {}
+    bool acquire(const std::string& name) {
+        if (auto record = m_records.find(name); record != m_records.end()) {
+            record->second.referenceCounter++;
+            return true;
+        }
+        return false;
+    }
 
 private:
     std::unordered_map<std::string, ResourceRecord> m_records;
@@ -116,11 +130,20 @@ private:
 
 template <typename T>
 ResourceRef<T>::ResourceRef(
-  T* resource, ResourceManager<T>* manager, std::string_view name
+  T* resource, ResourceManager<T>* manager, const std::string& name
 ) :
     m_resource(resource),
     m_manager(manager), m_name(name) {
     LOG_TRACE("Creating resource ref: {}", name);
+    ASSERT(
+      resource != nullptr,
+      "Attempt to create ResourceRef with resource == nullptr, {}", name
+    );
+    ASSERT(
+      manager != nullptr,
+      "Attempt to create ResourceRef with manager == nullptr, {}", name
+    );
+    ASSERT(manager->acquire(name), "Could not acquire resource: {}", name);
 }
 
 template <typename T>
@@ -136,6 +159,40 @@ ResourceRef<T>::ResourceRef() : m_resource(nullptr), m_manager(nullptr) {}
 
 template <typename T> ResourceRef<T>::~ResourceRef() {
     if (m_manager) m_manager->release(*m_name);
+}
+
+template <typename T>
+ResourceRef<T>::ResourceRef(const ResourceRef<T>& oth) :
+    m_resource(oth.m_resource), m_manager(oth.m_manager), m_name(oth.m_name) {
+    if (m_manager) m_manager->acquire(*m_name);
+}
+
+template <typename T>
+ResourceRef<T>::ResourceRef(ResourceRef&& oth) :
+    m_resource(std::exchange(oth.m_resource, nullptr)),
+    m_manager(std::exchange(oth.m_manager, nullptr)),
+    m_name(std::exchange(oth.m_name, std::nullopt)) {}
+
+template <typename T>
+ResourceRef<T>& ResourceRef<T>::operator=(const ResourceRef<T>& oth) {
+    if (m_manager) m_manager->release(*m_name);
+
+    m_manager  = oth.m_manager;
+    m_resource = oth.m_resource;
+    m_name     = oth.m_name;
+
+    if (m_manager) m_manager->acquire(*m_name);
+
+    return *this;
+}
+
+template <typename T>
+ResourceRef<T>& ResourceRef<T>::operator=(ResourceRef<T>&& oth) {
+    m_manager     = oth.m_manager;
+    m_resource    = oth.m_resource;
+    m_name        = oth.m_name;
+    oth.m_manager = nullptr;
+    return *this;
 }
 
 template <typename T> T* ResourceRef<T>::operator->() { return m_resource; }
