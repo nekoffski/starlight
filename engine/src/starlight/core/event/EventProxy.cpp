@@ -1,5 +1,8 @@
 #include "EventProxy.hh"
 
+#include <algorithm>
+#include <ranges>
+
 namespace sl {
 
 EventProxy::EventProxy(details::Events& events, details::EventHandlers& handlers) :

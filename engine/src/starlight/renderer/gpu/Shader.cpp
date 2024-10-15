@@ -201,16 +201,16 @@ ResourceRef<Shader> ShaderManager::load(
 Shader::Attribute::Type Shader::Attribute::typeFromString(const std::string& name) {
     static const std::unordered_map<std::string_view, Shader::Attribute::Type>
       nameToType{
-          {"f32",   Shader::Attribute::Type::float32  },
-          { "vec2", Shader::Attribute::Type::float32_2},
-          { "vec3", Shader::Attribute::Type::float32_3},
-          { "vec4", Shader::Attribute::Type::float32_4},
-          { "u8",   Shader::Attribute::Type::uint8    },
-          { "u16",  Shader::Attribute::Type::uint16   },
-          { "u32",  Shader::Attribute::Type::uint32   },
-          { "i8",   Shader::Attribute::Type::int8     },
-          { "i16",  Shader::Attribute::Type::int16    },
-          { "i32",  Shader::Attribute::Type::int32    },
+          { "f32",  Shader::Attribute::Type::float32   },
+          { "vec2", Shader::Attribute::Type::float32_2 },
+          { "vec3", Shader::Attribute::Type::float32_3 },
+          { "vec4", Shader::Attribute::Type::float32_4 },
+          { "u8",   Shader::Attribute::Type::uint8     },
+          { "u16",  Shader::Attribute::Type::uint16    },
+          { "u32",  Shader::Attribute::Type::uint32    },
+          { "i8",   Shader::Attribute::Type::int8      },
+          { "i16",  Shader::Attribute::Type::int16     },
+          { "i32",  Shader::Attribute::Type::int32     },
     };
     const auto record = nameToType.find(name);
     ASSERT(record != nameToType.end(), "Invalid type attribute name: {}", name);
@@ -219,37 +219,41 @@ Shader::Attribute::Type Shader::Attribute::typeFromString(const std::string& nam
 
 std::string Shader::Attribute::typeToString(Type type) {
     static const std::unordered_map<Shader::Attribute::Type, std::string> typeToName{
-        {Shader::Attribute::Type::float32,    "f32" },
-        { Shader::Attribute::Type::float32_2, "vec2"},
-        { Shader::Attribute::Type::float32_3, "vec3"},
-        { Shader::Attribute::Type::float32_4, "vec4"},
-        { Shader::Attribute::Type::uint8,     "u8"  },
-        { Shader::Attribute::Type::uint16,    "u16" },
-        { Shader::Attribute::Type::uint32,    "u32" },
-        { Shader::Attribute::Type::int8,      "i8"  },
-        { Shader::Attribute::Type::int16,     "i16" },
-        { Shader::Attribute::Type::int32,     "i32" },
+        { Shader::Attribute::Type::float32,   "f32"  },
+        { Shader::Attribute::Type::float32_2, "vec2" },
+        { Shader::Attribute::Type::float32_3, "vec3" },
+        { Shader::Attribute::Type::float32_4, "vec4" },
+        { Shader::Attribute::Type::uint8,     "u8"   },
+        { Shader::Attribute::Type::uint16,    "u16"  },
+        { Shader::Attribute::Type::uint32,    "u32"  },
+        { Shader::Attribute::Type::int8,      "i8"   },
+        { Shader::Attribute::Type::int16,     "i16"  },
+        { Shader::Attribute::Type::int32,     "i32"  },
     };
     const auto record = typeToName.find(type);
-    ASSERT(record != typeToName.end(), "Invalid attribute type: {}", type);
+    ASSERT(
+      record != typeToName.end(), "Invalid attribute type: {}", fmt::underlying(type)
+    );
     return record->second;
 }
 
 u32 Shader::Attribute::getTypeSize(Type type) {
     static const std::unordered_map<Shader::Attribute::Type, u32> typeToSize{
-        {Shader::Attribute::Type::float32,    4 },
-        { Shader::Attribute::Type::float32_2, 8 },
-        { Shader::Attribute::Type::float32_3, 12},
-        { Shader::Attribute::Type::float32_4, 16},
-        { Shader::Attribute::Type::uint8,     1 },
-        { Shader::Attribute::Type::uint16,    2 },
-        { Shader::Attribute::Type::uint32,    4 },
-        { Shader::Attribute::Type::int8,      1 },
-        { Shader::Attribute::Type::int16,     2 },
-        { Shader::Attribute::Type::int32,     4 },
+        { Shader::Attribute::Type::float32,   4  },
+        { Shader::Attribute::Type::float32_2, 8  },
+        { Shader::Attribute::Type::float32_3, 12 },
+        { Shader::Attribute::Type::float32_4, 16 },
+        { Shader::Attribute::Type::uint8,     1  },
+        { Shader::Attribute::Type::uint16,    2  },
+        { Shader::Attribute::Type::uint32,    4  },
+        { Shader::Attribute::Type::int8,      1  },
+        { Shader::Attribute::Type::int16,     2  },
+        { Shader::Attribute::Type::int32,     4  },
     };
     const auto record = typeToSize.find(type);
-    ASSERT(record != typeToSize.end(), "Invalid attribute type: {}", type);
+    ASSERT(
+      record != typeToSize.end(), "Invalid attribute type: {}", fmt::underlying(type)
+    );
     return record->second;
 }
 
@@ -276,7 +280,7 @@ std::string Shader::Stage::typeToString(Shader::Stage::Type type) {
         case Shader::Stage::Type::compute:
             return "compute";
     }
-    FATAL_ERROR("Invalid stage type: {}", type);
+    FATAL_ERROR("Invalid stage type: {}", fmt::underlying(type));
 }
 
 bool Shader::Uniform::isSampler() const { return type == Type::sampler; }
@@ -284,19 +288,19 @@ bool Shader::Uniform::isSampler() const { return type == Type::sampler; }
 Shader::Uniform::Type Shader::Uniform::typeFromString(const std::string& name) {
     static const std::unordered_map<std::string_view, Shader::Uniform::Type>
       nameToType{
-          {"f32",     Shader::Uniform::Type::float32  },
-          { "vec2",   Shader::Uniform::Type::float32_2},
-          { "vec3",   Shader::Uniform::Type::float32_3},
-          { "vec4",   Shader::Uniform::Type::float32_4},
-          { "u8",     Shader::Uniform::Type::uint8    },
-          { "u16",    Shader::Uniform::Type::uint16   },
-          { "u32",    Shader::Uniform::Type::uint32   },
-          { "i8",     Shader::Uniform::Type::int8     },
-          { "i16",    Shader::Uniform::Type::int16    },
-          { "i32",    Shader::Uniform::Type::int32    },
-          { "mat4",   Shader::Uniform::Type::mat4     },
-          { "samp",   Shader::Uniform::Type::sampler  },
-          { "custom", Shader::Uniform::Type::custom   }
+          { "f32",    Shader::Uniform::Type::float32   },
+          { "vec2",   Shader::Uniform::Type::float32_2 },
+          { "vec3",   Shader::Uniform::Type::float32_3 },
+          { "vec4",   Shader::Uniform::Type::float32_4 },
+          { "u8",     Shader::Uniform::Type::uint8     },
+          { "u16",    Shader::Uniform::Type::uint16    },
+          { "u32",    Shader::Uniform::Type::uint32    },
+          { "i8",     Shader::Uniform::Type::int8      },
+          { "i16",    Shader::Uniform::Type::int16     },
+          { "i32",    Shader::Uniform::Type::int32     },
+          { "mat4",   Shader::Uniform::Type::mat4      },
+          { "samp",   Shader::Uniform::Type::sampler   },
+          { "custom", Shader::Uniform::Type::custom    }
     };
     const auto record = nameToType.find(name);
     ASSERT(record != nameToType.end(), "Invalid type Uniform name: {}", name);
@@ -305,43 +309,47 @@ Shader::Uniform::Type Shader::Uniform::typeFromString(const std::string& name) {
 
 std::string Shader::Uniform::typeToString(Type type) {
     static const std::unordered_map<Shader::Uniform::Type, std::string> typeToName{
-        {Shader::Uniform::Type::float32,    "f32"   },
-        { Shader::Uniform::Type::float32_2, "vec2"  },
-        { Shader::Uniform::Type::float32_3, "vec3"  },
-        { Shader::Uniform::Type::float32_4, "vec4"  },
-        { Shader::Uniform::Type::uint8,     "u8"    },
-        { Shader::Uniform::Type::uint16,    "u16"   },
-        { Shader::Uniform::Type::uint32,    "u32"   },
-        { Shader::Uniform::Type::int8,      "i8"    },
-        { Shader::Uniform::Type::int16,     "i16"   },
-        { Shader::Uniform::Type::int32,     "i32"   },
-        { Shader::Uniform::Type::mat4,      "mat4"  },
-        { Shader::Uniform::Type::sampler,   "samp"  },
-        { Shader::Uniform::Type::custom,    "custom"},
+        { Shader::Uniform::Type::float32,   "f32"    },
+        { Shader::Uniform::Type::float32_2, "vec2"   },
+        { Shader::Uniform::Type::float32_3, "vec3"   },
+        { Shader::Uniform::Type::float32_4, "vec4"   },
+        { Shader::Uniform::Type::uint8,     "u8"     },
+        { Shader::Uniform::Type::uint16,    "u16"    },
+        { Shader::Uniform::Type::uint32,    "u32"    },
+        { Shader::Uniform::Type::int8,      "i8"     },
+        { Shader::Uniform::Type::int16,     "i16"    },
+        { Shader::Uniform::Type::int32,     "i32"    },
+        { Shader::Uniform::Type::mat4,      "mat4"   },
+        { Shader::Uniform::Type::sampler,   "samp"   },
+        { Shader::Uniform::Type::custom,    "custom" },
     };
     const auto record = typeToName.find(type);
-    ASSERT(record != typeToName.end(), "Invalid Uniform type: {}", type);
+    ASSERT(
+      record != typeToName.end(), "Invalid Uniform type: {}", fmt::underlying(type)
+    );
     return record->second;
 }
 
 u32 Shader::Uniform::getTypeSize(Type type) {
     static const std::unordered_map<Shader::Uniform::Type, u32> typeToSize{
-        {Shader::Uniform::Type::float32,    4 },
-        { Shader::Uniform::Type::float32_2, 8 },
-        { Shader::Uniform::Type::float32_3, 12},
-        { Shader::Uniform::Type::float32_4, 16},
-        { Shader::Uniform::Type::uint8,     1 },
-        { Shader::Uniform::Type::uint16,    2 },
-        { Shader::Uniform::Type::uint32,    4 },
-        { Shader::Uniform::Type::int8,      1 },
-        { Shader::Uniform::Type::int16,     2 },
-        { Shader::Uniform::Type::int32,     4 },
-        { Shader::Uniform::Type::mat4,      64},
-        { Shader::Uniform::Type::sampler,   0 },
-        { Shader::Uniform::Type::custom,    0 }
+        { Shader::Uniform::Type::float32,   4  },
+        { Shader::Uniform::Type::float32_2, 8  },
+        { Shader::Uniform::Type::float32_3, 12 },
+        { Shader::Uniform::Type::float32_4, 16 },
+        { Shader::Uniform::Type::uint8,     1  },
+        { Shader::Uniform::Type::uint16,    2  },
+        { Shader::Uniform::Type::uint32,    4  },
+        { Shader::Uniform::Type::int8,      1  },
+        { Shader::Uniform::Type::int16,     2  },
+        { Shader::Uniform::Type::int32,     4  },
+        { Shader::Uniform::Type::mat4,      64 },
+        { Shader::Uniform::Type::sampler,   0  },
+        { Shader::Uniform::Type::custom,    0  }
     };
     const auto record = typeToSize.find(type);
-    ASSERT(record != typeToSize.end(), "Invalid Uniform type: {}", type);
+    ASSERT(
+      record != typeToSize.end(), "Invalid Uniform type: {}", fmt::underlying(type)
+    );
     return record->second;
 }
 

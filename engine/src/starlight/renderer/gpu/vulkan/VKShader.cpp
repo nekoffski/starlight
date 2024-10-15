@@ -25,24 +25,24 @@ constexpr u32 bindingIndexSampler       = 1;
 
 static const std::unordered_map<Shader::Stage::Type, VkShaderStageFlagBits>
   vkShaderStages = {
-      {Shader::Stage::Type::fragment,  VK_SHADER_STAGE_FRAGMENT_BIT},
-      { Shader::Stage::Type::geometry, VK_SHADER_STAGE_GEOMETRY_BIT},
-      { Shader::Stage::Type::vertex,   VK_SHADER_STAGE_VERTEX_BIT  },
-      { Shader::Stage::Type::compute,  VK_SHADER_STAGE_COMPUTE_BIT }
+      { Shader::Stage::Type::fragment, VK_SHADER_STAGE_FRAGMENT_BIT },
+      { Shader::Stage::Type::geometry, VK_SHADER_STAGE_GEOMETRY_BIT },
+      { Shader::Stage::Type::vertex,   VK_SHADER_STAGE_VERTEX_BIT   },
+      { Shader::Stage::Type::compute,  VK_SHADER_STAGE_COMPUTE_BIT  }
 };
 
 static const std::unordered_map<Shader::Attribute::Type, VkFormat>
   vkAttributeTypes = {
-      {Shader::Attribute::Type::float32,    VK_FORMAT_R32_SFLOAT         },
-      { Shader::Attribute::Type::float32_2, VK_FORMAT_R32G32_SFLOAT      },
-      { Shader::Attribute::Type::float32_3, VK_FORMAT_R32G32B32_SFLOAT   },
-      { Shader::Attribute::Type::float32_4, VK_FORMAT_R32G32B32A32_SFLOAT},
-      { Shader::Attribute::Type::int8,      VK_FORMAT_R8_SINT            },
-      { Shader::Attribute::Type::uint8,     VK_FORMAT_R8_UINT            },
-      { Shader::Attribute::Type::int16,     VK_FORMAT_R16_SINT           },
-      { Shader::Attribute::Type::uint16,    VK_FORMAT_R16_UINT           },
-      { Shader::Attribute::Type::int32,     VK_FORMAT_R32_SINT           },
-      { Shader::Attribute::Type::uint32,    VK_FORMAT_R32_UINT           },
+      { Shader::Attribute::Type::float32,   VK_FORMAT_R32_SFLOAT          },
+      { Shader::Attribute::Type::float32_2, VK_FORMAT_R32G32_SFLOAT       },
+      { Shader::Attribute::Type::float32_3, VK_FORMAT_R32G32B32_SFLOAT    },
+      { Shader::Attribute::Type::float32_4, VK_FORMAT_R32G32B32A32_SFLOAT },
+      { Shader::Attribute::Type::int8,      VK_FORMAT_R8_SINT             },
+      { Shader::Attribute::Type::uint8,     VK_FORMAT_R8_UINT             },
+      { Shader::Attribute::Type::int16,     VK_FORMAT_R16_SINT            },
+      { Shader::Attribute::Type::uint16,    VK_FORMAT_R16_UINT            },
+      { Shader::Attribute::Type::int32,     VK_FORMAT_R32_SINT            },
+      { Shader::Attribute::Type::uint32,    VK_FORMAT_R32_UINT            },
 };
 
 VkShaderStageFlagBits getStageFlagBits(Shader::Stage::Type type) {
@@ -52,15 +52,14 @@ VkShaderStageFlagBits getStageFlagBits(Shader::Stage::Type type) {
         case Shader::Stage::Type::fragment:
             return VK_SHADER_STAGE_FRAGMENT_BIT;
     }
-    FATAL_ERROR("Unknown shader type: {}", type);
+    FATAL_ERROR("Unknown shader type: {}", fmt::underlying(type));
 }
 
 VKShaderStage::VKShaderStage(
   VKContext& context, VKLogicalDevice& device, const Properties& props
 ) :
 
-    m_context(context),
-    m_device(device), m_handle(VK_NULL_HANDLE) {
+    m_context(context), m_device(device), m_handle(VK_NULL_HANDLE) {
     m_moduleCreateInfo          = { VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO };
     m_moduleCreateInfo.codeSize = props.source.size();
     m_moduleCreateInfo.pCode    = (uint32_t*)(props.source.data());
@@ -88,8 +87,7 @@ VKShaderStage::~VKShaderStage() {
 VKShader::VKShader(
   VKContext& context, VKLogicalDevice& device, const Shader::Properties& props
 ) :
-    Shader(props),
-    m_context(context), m_device(device), m_requiredUboAlignment(0),
+    Shader(props), m_context(context), m_device(device), m_requiredUboAlignment(0),
     m_globalUboSize(0), m_globalUboStride(0), m_globalUboOffset(0), m_uboSize(0),
     m_uboStride(0), m_pushConstantSize(0), m_pushConstantStride(128),
     m_instanceTextureCount(0), m_boundInstanceId(0), m_boundUboOffset(0),
@@ -655,9 +653,9 @@ void VKShader::createDescriptorSetLayouts() {
 }
 
 static std::unordered_map<PolygonMode, VkPolygonMode> vkPolygonModes = {
-    {PolygonMode::fill,   VK_POLYGON_MODE_FILL },
-    { PolygonMode::line,  VK_POLYGON_MODE_LINE },
-    { PolygonMode::point, VK_POLYGON_MODE_POINT},
+    { PolygonMode::fill,  VK_POLYGON_MODE_FILL  },
+    { PolygonMode::line,  VK_POLYGON_MODE_LINE  },
+    { PolygonMode::point, VK_POLYGON_MODE_POINT },
 };
 
 void VKShader::createPipeline(RenderPass& renderPass) {

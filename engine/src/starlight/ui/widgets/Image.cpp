@@ -21,14 +21,15 @@ std::unique_ptr<ImageHandle> ImageHandle::createHandle(Texture* texture) {
     return std::make_unique<VulkanImageHandle>(texture);
 }
 
-VulkanImageHandle::VulkanImageHandle(Texture* texture) :
-    m_descriptorSet(createDescriptorSet(texture)) {}
+VulkanImageHandle::VulkanImageHandle(Texture* texture
+) : m_descriptorSet(createDescriptorSet(texture)) {}
 
 void VulkanImageHandle::show(
   const Vec2<f32>& size, const Vec2<f32>& minUV, const Vec2<f32>& maxUV
 ) {
     ImGui::Image(
-      m_descriptorSet, { size.x, size.y }, { minUV.x, minUV.y }, { maxUV.x, maxUV.y }
+      reinterpret_cast<ImTextureID>(m_descriptorSet), { size.x, size.y },
+      { minUV.x, minUV.y }, { maxUV.x, maxUV.y }
     );
 }
 

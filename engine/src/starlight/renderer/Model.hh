@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include <ranges>
 
 #include "starlight/core/math/Transform.hh"
 

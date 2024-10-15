@@ -2,6 +2,7 @@
 
 #include <kc/core/Log.h>
 #include <kc/core/Macros.h>
+#include <kc/core/String.h>
 
 #include "starlight/core/Core.hh"
 
@@ -11,10 +12,8 @@ struct WindowResized {
     Vec2<u32> size;
 };
 
-inline std::string toString(const WindowResized& event) {
+}  // namespace sl
+
+DEFINE_TO_STRING(sl::WindowResized, event) {
     return fmt::format("WindowResized[{}/{}]", event.size.w, event.size.h);
 }
-
-TO_STRING_STREAM(WindowResized);
-
-}  // namespace sl

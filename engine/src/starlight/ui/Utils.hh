@@ -28,10 +28,10 @@ void namedScope(const std::string& name, Callback&& callback);
 
 void treeNode(const std::string& name, std::function<void(bool)>&& callback);
 
-template <typename... Args>
-bool text(const std::string& formatString, Args&&... args) {
+template <typename... Args> bool text(std::string_view fmt, Args&&... args) {
     ImGui::Text(
-      "%s", fmt::format(formatString, std::forward<Args>(args)...).c_str()
+      "%s",
+      fmt::vformat(fmt, fmt::make_format_args(std::forward<Args>(args)...)).c_str()
     );
     return ImGui::IsItemClicked();
 }

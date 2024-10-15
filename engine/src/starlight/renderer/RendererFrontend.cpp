@@ -51,7 +51,7 @@ void RendererFrontend::renderFrame(
 }
 
 void RendererFrontend::setRenderMode(RenderMode mode) {
-    LOG_TRACE("Render mode set to: {}", mode);  // TODO: toString{}
+    LOG_TRACE("Render mode set to: {}", mode);
     m_renderMode = mode;
 }
 
