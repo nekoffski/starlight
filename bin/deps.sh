@@ -7,8 +7,6 @@ if [ -d ./3rdparty/libkc ]; then
     ./3rdparty/libkc/bin/deps.sh
 fi;
 
-sudo apt-get install -y gcc-10 
-sudo apt-get install -y g++-10
 sudo apt-get install -y libxrandr-dev 
 sudo apt-get install -y libxinerama-dev 
 sudo apt-get install -y libx11-dev 
@@ -26,7 +24,7 @@ sudo apt-get install -y libfmt-dev
 sudo apt-get install -y libassimp-dev
 sudo apt-get install -y libfreetype-dev 
 sudo apt-get install -y cppcheck 
-sudo apt-get install -y libbost-dev
+sudo apt-get install -y libboost-dev
 
 # show vulkan version
 apt list --installed | grep vulkan
