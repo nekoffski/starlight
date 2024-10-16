@@ -1,5 +1,6 @@
 #!/bin/bash
 
+sudo add-apt-repository universe
 sudo apt-get update
 
 if [ -d ./3rdparty/libkc ]; then
