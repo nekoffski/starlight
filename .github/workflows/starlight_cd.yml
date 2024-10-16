@@ -4,10 +4,10 @@ on: [push]
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        compiler: [gcc-10]
+        compiler: [gcc-13]
     steps:
       - uses: actions/checkout@v2
       - name: Pull submodules
