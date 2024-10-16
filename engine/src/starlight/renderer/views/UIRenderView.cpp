@@ -17,7 +17,7 @@ void UIRenderView::init(
     LOG_TRACE("Initializing UIRenderView");
 
     RenderPass::Properties renderPassProperties{
-        .rect       = Rect2u32{Vec2<u32>{ 0u, 0u }, initProperties.viewportSize},
+        .rect       = Rect2u32{ Vec2<u32>{ 0u, 0u }, initProperties.viewportSize },
         .clearColor = glm::vec4(0.0f),
         .clearFlags = RenderPass::clearNone,
         .hasPreviousPass = initProperties.hasPreviousView,

@@ -1,5 +1,7 @@
 #include "WorldRenderView.hh"
 
+#include "starlight/core/window/Window.hh"
+
 namespace sl {
 
 WorldRenderView::WorldRenderView(Shader* shader) : m_shader(shader) {}
@@ -15,7 +17,7 @@ void WorldRenderView::init(
         clearFlags |= RenderPass::clearColorBuffer;
 
     RenderPass::Properties renderPassProperties{
-        .rect       = Rect2u32{Vec2<u32>{ 0u, 0u }, initProperties.viewportSize},
+        .rect       = Rect2u32{ Vec2<u32>{ 0u, 0u }, initProperties.viewportSize },
         .clearColor = backgroundColor,
         .clearFlags = clearFlags,
         .hasPreviousPass = initProperties.hasPreviousView,
@@ -47,7 +49,12 @@ void WorldRenderView::render(
   RendererBackend& renderer, const RenderPacket& packet,
   const RenderProperties& properties, [[maybe_unused]] float deltaTime
 ) {
-    renderer.setViewport(packet.viewport);
+    Rect2<u32> viewport{
+        .offset = Vec2<u32>{ 0, 0 },
+        .size   = Window::get().getFramebufferSize(),
+    };
+    renderer.setViewport(viewport);
+
     m_renderPass->run(
       renderer.getCommandBuffer(), renderer.getImageIndex(),
       [&](CommandBuffer& commandBuffer, u32 imageIndex) {

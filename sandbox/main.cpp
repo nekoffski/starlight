@@ -13,17 +13,16 @@
 #include "starlight/renderer/RendererFrontend.hh"
 #include "starlight/renderer/RenderGraph.hh"
 #include "starlight/renderer/gpu/Shader.hh"
-
 #include "starlight/renderer/PointLight.hh"
+#include "starlight/scene/Scene.hh"
 
 static std::atomic_bool isRunning = true;
 
 /*
 
 TODO:
-    - [18-09-2024 23:30:36] [Th: 665267] warning [starlight]: Could not find record
-to release with name:  m;�lUp�O�lUp�O�lU - [Resource.hh:103]
-    - Refactor Renderer
+    - Render views should specify viewport
+    - Refactor RenderViews creation
     - Don't use ResourceManagers for storing default stuff, just create as objects
     - move all default values to ctors
 
@@ -35,7 +34,6 @@ to release with name:  m;�lUp�O�lUp�O�lU - [Resource.hh:103]
     - LoadObj should return a tree of Entities
         - renderer needs a composite of Mesh, Material, ModelMatrix, Shader
         - RenderTree?
-    - wrap up ResourceRef
 */
 
 int main() {
@@ -76,9 +74,21 @@ int main() {
         .addView<sl::WorldRenderView>(worldShader.get())
         .build();
 
-    sl::RenderPacket renderPacket;
+    sl::Scene scene{ window, &camera };
 
-    renderPacket.viewport = sl::Rect2<sl::u32>{
+    while (isRunning) {
+        context.beginFrame([&](float deltaTime) {
+            renderer.renderFrame(deltaTime, scene.getRenderPacket(), *renderGraph);
+            camera.update(deltaTime);
+        });
+    }
+
+    return 0;
+}
+
+/*
+
+renderPacket.viewport = sl::Rect2<sl::u32>{
         sl::Vec2<sl::u32>{0u, 0u},
         viewportSize
     };
@@ -101,12 +111,4 @@ int main() {
     renderPacket.entities.push_back(entity);
     renderPacket.pointLights.push_back(light);
 
-    while (isRunning) {
-        context.beginFrame([&](float deltaTime) {
-            renderer.renderFrame(deltaTime, renderPacket, *renderGraph);
-            camera.update(deltaTime);
-        });
-    }
-
-    return 0;
-}
+*/

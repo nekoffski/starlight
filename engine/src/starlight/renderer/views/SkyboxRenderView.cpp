@@ -1,5 +1,7 @@
 #include "SkyboxRenderView.hh"
 
+#include "starlight/core/window/Window.hh"
+
 namespace sl {
 
 SkyboxRenderView::SkyboxRenderView(Skybox* skybox) : m_skybox(skybox) {}
@@ -11,7 +13,7 @@ void SkyboxRenderView::init(
     auto backgroundColor = (1.0f / 255.0f) * glm::vec4{ 11, 16, 47, 255 };
 
     RenderPass::Properties renderPassProperties{
-        .rect       = Rect2u32{Vec2<u32>{ 0u, 0u }, initProperties.viewportSize},
+        .rect       = Rect2u32{ Vec2<u32>{ 0u, 0u }, initProperties.viewportSize },
         .clearColor = backgroundColor,
         .clearFlags = RenderPass::clearColorBuffer,
         .hasPreviousPass = initProperties.hasPreviousView,
@@ -39,7 +41,11 @@ void SkyboxRenderView::render(
   [[maybe_unused]] const RenderProperties& properties,
   [[maybe_unused]] float deltaTime
 ) {
-    renderer.setViewport(packet.viewport);
+    Rect2<u32> viewport{
+        .offset = Vec2<u32>{ 0, 0 },
+        .size   = Window::get().getFramebufferSize(),
+    };
+    renderer.setViewport(viewport);
 
     m_renderPass->run(
       renderer.getCommandBuffer(), renderer.getImageIndex(),

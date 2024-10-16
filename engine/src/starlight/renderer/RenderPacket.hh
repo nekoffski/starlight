@@ -16,7 +16,6 @@ struct RenderEntity {
 };
 
 struct RenderPacket {
-    Rect2<u32> viewport;
     Camera* camera;
     std::vector<PointLight> pointLights;
     std::vector<RenderEntity> entities;
