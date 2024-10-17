@@ -7,7 +7,7 @@
 
 #include <fmt/core.h>
 
-#include "starlight/core/Json.hh"
+#include "starlight/core/utils/Json.hh"
 
 #ifdef SL_USE_VK
 #include "starlight/renderer/gpu/vulkan/VKShader.hh"

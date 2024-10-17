@@ -1,6 +1,6 @@
 #include "Material.hh"
 
-#include "starlight/core/Json.hh"
+#include "starlight/core/utils/Json.hh"
 
 namespace sl {
 

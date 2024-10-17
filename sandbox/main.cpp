@@ -13,28 +13,10 @@
 #include "starlight/renderer/RendererFrontend.hh"
 #include "starlight/renderer/RenderGraph.hh"
 #include "starlight/renderer/gpu/Shader.hh"
-#include "starlight/renderer/PointLight.hh"
+#include "starlight/renderer/light/PointLight.hh"
 #include "starlight/scene/Scene.hh"
 
 static std::atomic_bool isRunning = true;
-
-/*
-
-TODO:
-    - Render views should specify viewport
-    - Refactor RenderViews creation
-    - Don't use ResourceManagers for storing default stuff, just create as objects
-    - move all default values to ctors
-
-    - Shader as a part of render packet
-    - Simplify components
-    - Refactor Scene
-
-    - Builders for XYZ::Properties structures
-    - LoadObj should return a tree of Entities
-        - renderer needs a composite of Mesh, Material, ModelMatrix, Shader
-        - RenderTree?
-*/
 
 int main() {
     std::signal(SIGINT, []([[maybe_unused]] int) { isRunning = false; });
@@ -75,6 +57,8 @@ int main() {
         .build();
 
     sl::Scene scene{ window, &camera };
+
+    auto& entity = scene.addEntity();
 
     while (isRunning) {
         context.beginFrame([&](float deltaTime) {

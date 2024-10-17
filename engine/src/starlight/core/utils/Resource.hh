@@ -5,7 +5,7 @@
 #include <kc/core/Singleton.hpp>
 
 #include "starlight/core/Core.hh"
-#include "starlight/core/Id.hh"
+#include "starlight/core/utils/Id.hh"
 #include "starlight/core/memory/Memory.hh"
 
 namespace sl {
@@ -64,9 +64,8 @@ public:
     }
 
     template <typename U = T>
-    requires std::is_same_v<U, T> && IsIdentificable<U> ResourceRef<T> find(
-      const u64 id
-    ) {
+    requires std::is_same_v<U, T> && IsIdentificable<U>
+    ResourceRef<T> find(const u64 id) {
         if (auto record = m_recordsById.find(id); record != m_recordsById.end()) {
             auto resource = record->second;
             return ResourceRef<T>(resource->data.get(), this, resource->name);
@@ -131,9 +130,7 @@ private:
 template <typename T>
 ResourceRef<T>::ResourceRef(
   T* resource, ResourceManager<T>* manager, const std::string& name
-) :
-    m_resource(resource),
-    m_manager(manager), m_name(name) {
+) : m_resource(resource), m_manager(manager), m_name(name) {
     LOG_TRACE("Creating resource ref: {}", name);
     ASSERT(
       resource != nullptr,
@@ -147,12 +144,12 @@ ResourceRef<T>::ResourceRef(
 }
 
 template <typename T>
-ResourceRef<T>::ResourceRef(T* resource) :
-    m_resource(resource), m_manager(nullptr) {}
+ResourceRef<T>::ResourceRef(T* resource
+) : m_resource(resource), m_manager(nullptr) {}
 
 template <typename T>
-ResourceRef<T>::ResourceRef(std::nullptr_t) :
-    m_resource(nullptr), m_manager(nullptr) {}
+ResourceRef<T>::ResourceRef(std::nullptr_t
+) : m_resource(nullptr), m_manager(nullptr) {}
 
 template <typename T>
 ResourceRef<T>::ResourceRef() : m_resource(nullptr), m_manager(nullptr) {}
@@ -162,8 +159,8 @@ template <typename T> ResourceRef<T>::~ResourceRef() {
 }
 
 template <typename T>
-ResourceRef<T>::ResourceRef(const ResourceRef<T>& oth) :
-    m_resource(oth.m_resource), m_manager(oth.m_manager), m_name(oth.m_name) {
+ResourceRef<T>::ResourceRef(const ResourceRef<T>& oth
+) : m_resource(oth.m_resource), m_manager(oth.m_manager), m_name(oth.m_name) {
     if (m_manager) m_manager->acquire(*m_name);
 }
 

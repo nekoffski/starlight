@@ -5,7 +5,7 @@
 #include <kc/core/Countable.hpp>
 
 #include "starlight/core/memory/Memory.hh"
-#include "starlight/core/FreeList.hh"
+#include "starlight/core/utils/FreeList.hh"
 
 #include "VKLogicalDevice.hh"
 #include "VKContext.hh"

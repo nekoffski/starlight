@@ -3,9 +3,9 @@
 #include "starlight/core/math/Core.hh"
 
 #include "gpu/Mesh.hh"
+#include "light/PointLight.hh"
 #include "camera/Camera.hh"
 #include "Material.hh"
-#include "PointLight.hh"
 
 namespace sl {
 

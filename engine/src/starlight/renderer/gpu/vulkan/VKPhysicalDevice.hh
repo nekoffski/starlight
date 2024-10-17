@@ -5,7 +5,7 @@
 #include <span>
 
 #include "starlight/core/Core.hh"
-#include "starlight/core/Enum.hh"
+#include "starlight/core/utils/Enum.hh"
 
 #include "Vulkan.hh"
 #include "VKContext.hh"

@@ -5,7 +5,7 @@
 #include "starlight/core/fwd.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/core/Config.hh"
-#include "starlight/core/RAIIWrapper.hh"
+#include "starlight/core/utils/RAIIWrapper.hh"
 
 namespace sl::vk {
 
