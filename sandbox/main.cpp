@@ -60,7 +60,10 @@ int main() {
     sl::Scene scene{ window, &camera };
 
     auto& entity = scene.addEntity();
-    entity.addComponent<sl::MeshTree>();
+
+    entity.addComponent<sl::MeshTree>(
+      sl::Mesh::getCube(), sl::Material::load("Builtin.Material.Test")
+    );
 
     while (isRunning) {
         context.beginFrame([&](float deltaTime) {

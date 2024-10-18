@@ -99,8 +99,6 @@ inline Vec3<f32> operator*(const Mat4<f32>& lhs, const Vec3<f32>& rhs) {
     };
 }
 
-const Mat4<f32> identityMatrix = Mat4<f32>{ 1.0f };
-
 const Vec3<f32> worldUp    = Vec3<f32>{ 0.0f, 1.0f, 0.0f };
 const Vec3<f32> worldRight = Vec3<f32>{ 1.0f, 0.0f, 0.0 };
 const Vec3<f32> worldFront = Vec3<f32>{ 0.0f, 0.0f, 1.0f };

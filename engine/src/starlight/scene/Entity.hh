@@ -16,7 +16,7 @@ public:
     );
 
     template <typename T, typename... Args>
-    Component<T> addComponent(Args&&... args) {
+    Component<T>& addComponent(Args&&... args) {
         return m_componentManager.add<T>(getId(), std::forward<Args>(args)...);
     }
 
