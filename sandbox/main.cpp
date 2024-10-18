@@ -15,6 +15,7 @@
 #include "starlight/renderer/gpu/Shader.hh"
 #include "starlight/renderer/light/PointLight.hh"
 #include "starlight/scene/Scene.hh"
+#include "starlight/renderer/MeshTree.hh"
 
 static std::atomic_bool isRunning = true;
 
@@ -59,6 +60,7 @@ int main() {
     sl::Scene scene{ window, &camera };
 
     auto& entity = scene.addEntity();
+    entity.addComponent<sl::MeshTree>();
 
     while (isRunning) {
         context.beginFrame([&](float deltaTime) {

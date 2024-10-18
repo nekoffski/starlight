@@ -4,8 +4,8 @@
 
 namespace sl {
 
-Entity::Entity() : Entity(fmt::format("Entity_{}", getId())) {}
-
-Entity::Entity(const std::string& name) : m_name(name) {}
+Entity::Entity(ComponentManager& componentManager, std::optional<std::string> name) :
+    m_componentManager(componentManager),
+    m_name(name.value_or(fmt::format("Entity_{}", getId()))) {}
 
 }  // namespace sl

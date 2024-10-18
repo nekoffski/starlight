@@ -11,8 +11,9 @@ RenderPacket Scene::getRenderPacket() {
     return packet;
 }
 
-Entity& Scene::addEntity(const std::string& name) {}
-
-Entity& Scene::addEntity() {}
+Entity& Scene::addEntity(std::optional<std::string> name) {
+    m_entities.emplace_back(m_componentManager, name);
+    return m_entities.back();
+}
 
 }  // namespace sl
