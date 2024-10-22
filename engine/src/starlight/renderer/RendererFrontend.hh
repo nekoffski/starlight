@@ -9,7 +9,6 @@
 #include "RenderPacket.hh"
 #include "RenderMode.hh"
 #include "FrameStatistics.hh"
-#include "Model.hh"
 #include "Skybox.hh"
 #include "RenderGraph.hh"
 

@@ -15,7 +15,7 @@
 #include "starlight/renderer/gpu/Shader.hh"
 #include "starlight/renderer/light/PointLight.hh"
 #include "starlight/scene/Scene.hh"
-#include "starlight/renderer/MeshTree.hh"
+#include "starlight/renderer/MeshComposite.hh"
 
 static std::atomic_bool isRunning = true;
 
@@ -61,9 +61,15 @@ int main() {
 
     auto& entity = scene.addEntity();
 
-    entity.addComponent<sl::MeshTree>(
-      sl::Mesh::getCube(), sl::Material::load("Builtin.Material.Test")
-    );
+    entity
+      .addComponent<sl::MeshComposite>(
+        sl::Mesh::getCube(), sl::Material::load("Builtin.Material.Test")
+      )
+      .data()
+      .getRoot()
+      .getInstances()
+      .front()
+      .scale(sl::Vec3<sl::f32>{ 0.25f });
 
     while (isRunning) {
         context.beginFrame([&](float deltaTime) {
@@ -74,30 +80,3 @@ int main() {
 
     return 0;
 }
-
-/*
-
-renderPacket.viewport = sl::Rect2<sl::u32>{
-        sl::Vec2<sl::u32>{0u, 0u},
-        viewportSize
-    };
-    renderPacket.camera = &camera;
-
-    auto material = sl::Material::load("Builtin.Material.Test");
-
-    sl::RenderEntity entity = {
-        .worldTransform = sl::math::scale(
-          sl::identityMatrix, sl::Vec3<sl::f32>{ 0.25f, 0.25f, 0.25f }
-        ),
-        .mesh     = sl::Mesh::getCube(),
-        .material = material,
-    };
-
-    sl::PointLight light;
-    light.position             = sl::Vec4<sl::f32>{ 0.0f, 3.75f, 0.0f, 1.0f };
-    light.attenuationFactors.x = 0.0f;
-
-    renderPacket.entities.push_back(entity);
-    renderPacket.pointLights.push_back(light);
-
-*/

@@ -1,6 +1,6 @@
 #include "Scene.hh"
 
-#include "starlight/renderer/MeshTree.hh"
+#include "starlight/renderer/MeshComposite.hh"
 
 namespace sl {
 
@@ -10,14 +10,15 @@ RenderPacket Scene::getRenderPacket() {
     RenderPacket packet{};
     packet.camera = m_camera;
 
-    m_componentManager.getComponentContainer<MeshTree>().forEach(
-      [&](Component<MeshTree>& meshTree) {
-          packet.entities.emplace_back(
-            sl::math::scale(
-              sl::identityMatrix, sl::Vec3<sl::f32>{ 0.25f, 0.25f, 0.25f }
-            ),
-            meshTree.data().mesh, meshTree.data().material
-          );
+    m_componentManager.getComponentContainer<MeshComposite>().forEach(
+      [&](Component<MeshComposite>& meshComposite) {
+          meshComposite.data().traverse([&](MeshComposite::Node& node) {
+              for (auto& instance : node.getInstances()) {
+                  packet.entities.emplace_back(
+                    instance.getWorld(), node.getMesh(), node.getMaterial()
+                  );
+              }
+          });
       }
     );
 
