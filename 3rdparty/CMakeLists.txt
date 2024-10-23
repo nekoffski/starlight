@@ -1,6 +1,4 @@
 add_subdirectory(libkc)
-add_subdirectory(expected)
-add_subdirectory(backward-cpp)
 
 # imgui
 

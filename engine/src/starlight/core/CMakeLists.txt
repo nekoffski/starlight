@@ -1,6 +1,6 @@
 find_package(Vulkan REQUIRED)
 
-set(SL_LIBS spdlog stb assimp dl kc fmt glfw expected backward ${Vulkan_LIBRARIES})
+set(SL_LIBS spdlog stb assimp dl kc fmt glfw ${Vulkan_LIBRARIES})
 set(SL_TARGET starlight-core)
 file(GLOB_RECURSE SL_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 

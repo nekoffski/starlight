@@ -27,5 +27,7 @@ sudo apt-get install -y libfreetype-dev
 sudo apt-get install -y cppcheck 
 sudo apt-get install -y libboost-dev
 
+pip install conan
+
 # show vulkan version
 apt list --installed | grep vulkan

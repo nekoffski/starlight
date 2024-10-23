@@ -1,4 +1,4 @@
-set(SL_LIBS spdlog dl kc fmt backward starlight-core starlight-renderer)
+set(SL_LIBS spdlog dl kc fmt starlight-core starlight-renderer)
 set(SL_TARGET starlight-ui)
 file(GLOB_RECURSE SL_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 

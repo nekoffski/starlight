@@ -7,8 +7,6 @@
 #include <kc/core/ErrorBase.hpp>
 #include <kc/core/Scope.hpp>
 
-#include <tl/expected.hpp>
-
 namespace sl {
 
 DEFINE_ERROR(Error);
@@ -54,9 +52,6 @@ template <typename T> struct StepInterval {
 using Intervalf   = Interval<float>;
 using Intervalu32 = Interval<u32>;
 using Intervalu64 = Interval<u64>;
-
-template <typename T> using Expected = tl::expected<T, Error>;
-using Unexpected                     = tl::unexpected<Error>;
 
 std::string_view removeExtension(std::string_view path);
 

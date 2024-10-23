@@ -14,21 +14,5 @@ jobs:
         run: git submodule update --init --recursive
       - name: Set scripts permissions
         run: chmod +x ./bin/*
-      - name: Prepare Vulkan SDK
-        uses: humbletim/setup-vulkan-sdk@v1.2.0
-        with:
-          vulkan-query-version: 1.3.204.0
-          vulkan-components: Vulkan-Headers, Vulkan-Loader
-          vulkan-use-cache: true
-      - name: Install dependencies
-        run: |
-          ./bin/deps.sh
-      - name: Build
-        run: |
-          rm -f build && mkdir build && pushd build && cmake .. -DENABLE_TESTS=ON && make -j`nproc` && popd
-        env:
-          CC: /usr/bin/gcc-10
-          CXX: /usr/bin/g++-10
-      - name: Run unit tests
-        run: |
-          pushd build && make test && popd
+     -  name: Run build
+        run: ./bin/build.sh

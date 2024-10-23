@@ -38,7 +38,7 @@ VKContext::VKContext(sl::Window& window, const Config& config) :
           if (instance) vkDestroyInstance(instance, m_allocator);
       }
     ),
-#ifdef STARLIGHT_VK_DEBUG
+#ifdef SL_VK_DEBUG
     m_debugMessenger(
       [&]() { return createDebugMessenger(); },
       [&](VkDebugUtilsMessengerEXT& messenger) {
@@ -106,7 +106,7 @@ VkInstance VKContext::createInstance() {
 VkDebugUtilsMessengerEXT VKContext::createDebugMessenger() {
     VkDebugUtilsMessengerEXT debugMessenger = nullptr;
 
-#ifdef STARLIGHT_VK_DEBUG
+#ifdef SL_VK_DEBUG
     static const auto debugFactoryFunctionName = "vkCreateDebugUtilsMessengerEXT";
 
     auto debugCreateInfo = createDebugMessengerCreateInfo();
@@ -153,8 +153,8 @@ VkApplicationInfo createApplicationInfo(const Config& config) {
     applicationInfo.pApplicationName = config.window.name.c_str();
     applicationInfo.pEngineName      = "Nova Engine";
     applicationInfo.engineVersion    = VK_MAKE_VERSION(
-         config.version.major, config.version.minor, config.version.build
-       );
+      config.version.major, config.version.minor, config.version.build
+    );
 
     return applicationInfo;
 }
@@ -163,7 +163,7 @@ std::vector<const char*> getRequiredExtensions() {
     const auto platformRequiredExtensions = glfw::getRequiredExtensions();
 
     std::vector<const char*> requiredExtensions = {
-#ifdef STARLIGHT_VK_DEBUG
+#ifdef SL_VK_DEBUG
         VK_EXT_DEBUG_UTILS_EXTENSION_NAME
 #endif
     };
@@ -180,7 +180,7 @@ std::vector<const char*> getLayers() {
     std::vector<const char*> layers;
 
     // validation layers
-#ifdef STARLIGHT_VK_DEBUG
+#ifdef SL_VK_DEBUG
     // get the list of available validation layers
     auto layersAvailable = ::vk::enumerateInstanceLayerProperties();
 

@@ -2,15 +2,9 @@
 	path = 3rdparty/libkc
 	url = https://github.com/nekoffski/libkc.git
 	branch = dev
-[submodule "3rdparty/expected"]
-	path = 3rdparty/expected
-	url = https://github.com/TartanLlama/expected.git
 [submodule "3rdparty/imgui"]
 	path = 3rdparty/imgui
 	url = https://github.com/ocornut/imgui.git
 [submodule "3rdparty/ImGuizmo"]
 	path = 3rdparty/ImGuizmo
 	url = https://github.com/CedricGuillemet/ImGuizmo.git
-[submodule "3rdparty/backward-cpp"]
-	path = 3rdparty/backward-cpp
-	url = https://github.com/bombela/backward-cpp.git
