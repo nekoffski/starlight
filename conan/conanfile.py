@@ -2,7 +2,13 @@ from conan import ConanFile
 
 
 requirements = [
-    "zlib/1.2.11"
+    "vulkan-headers/1.3.290.0",
+    "glfw/3.4",
+    "fmt/10.2.1",
+    "spdlog/1.14.1",
+
+
+
 ]
 
 

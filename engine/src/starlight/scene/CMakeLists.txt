@@ -1,4 +1,7 @@
-set(SL_LIBS spdlog dl kc fmt starlight-core starlight-renderer)
+find_package(spdlog)
+find_package(fmt)
+
+set(SL_LIBS dl kc spdlog::spdlog fmt::fmt starlight-core starlight-renderer)
 set(SL_TARGET starlight-scene)
 file(GLOB_RECURSE SL_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 

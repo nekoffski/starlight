@@ -19,7 +19,6 @@ add_definitions(-DSL_ASSETS_TEXTURES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets/te
 add_definitions(-DSL_ASSETS_MATERIALS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets/materials")
 add_definitions(-DSL_VK_DEBUG=1)
 
-
 set(GCC_COVERAGE_COMPILE_FLAGS "--coverage -O0 -fprofile-arcs -ftest-coverage -fno-elide-constructors -fno-inline")
 set(GCC_COVERAGE_LINK_FLAGS "-lgcov")
 
