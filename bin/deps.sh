@@ -8,7 +8,7 @@ if [ -d ./3rdparty/libkc ]; then
     ./3rdparty/libkc/bin/deps.sh
 fi;
 
-pip install conan
+pip install conan && conan profile detect --force
 
 # sudo apt-get install -y libxrandr-dev 
 # sudo apt-get install -y libxinerama-dev 
