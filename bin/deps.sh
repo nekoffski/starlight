@@ -9,7 +9,10 @@ if [ -d ./3rdparty/libkc ]; then
 fi;
 
 pip install conan && conan profile detect --force
+
 sudo apt-get install -y cppcheck 
+sudo apt-get install -y libboost-dev
+sudo apt-get install -y libfreetype-dev 
 
 # sudo apt-get install -y libxrandr-dev 
 # sudo apt-get install -y libxinerama-dev 
@@ -26,9 +29,5 @@ sudo apt-get install -y cppcheck
 # sudo apt-get install -y libgmock-dev 
 # sudo apt-get install -y libfmt-dev 
 # sudo apt-get install -y libassimp-dev
-# sudo apt-get install -y libfreetype-dev 
-# sudo apt-get install -y libboost-dev
 
-
-# # show vulkan version
-# apt list --installed | grep vulkan
+ 
