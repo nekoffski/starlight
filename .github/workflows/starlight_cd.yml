@@ -22,3 +22,14 @@ jobs:
         run: ./bin/build.sh
       - name: Run unit tests
         run: pushd build && make test
+      - name: Generate coverage file
+        run: ./bin/generate-ut-cov.sh
+      - name: Generate venv
+        run: ./bin/venv.sh
+      - name: Generate code coverage
+        run: ./bin/generate-ut-cov.sh
+      - name: Archive coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report
+          path: coverage.html

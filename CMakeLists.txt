@@ -26,7 +26,7 @@ option(SL_ENABLE_UNIT_TESTS "Build unit tests" OFF)
 option(SL_ENABLE_BENCHMARKS "Build benchmakrs " OFF)
 option(SL_ENABLE_COVERAGE "Enable code coverage" OFF)
 
-if(ENABLE_COVERAGE)
+if(SL_ENABLE_COVERAGE)
     message("-- Triggering build with coverage support")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}")
