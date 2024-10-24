@@ -3,4 +3,7 @@
 
 cd build
 source ../venv/bin/activate
-gcovr -r . -f ../engine/src --exclude-throw-branches --html --output ../coverage.html
+
+rm -rf ../coverage && mkdir ../coverage
+gcovr -f ../engine/src -r . --exclude-throw-branches --html --html-details --output ../coverage/cov.html
+
