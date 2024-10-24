@@ -1,8 +1,10 @@
-set(SL_LIBS spdlog dl kc fmt starlight-core starlight-renderer)
-set(SL_TARGET starlight-scene)
-file(GLOB_RECURSE SL_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+find_package(spdlog REQUIRED)
+find_package(fmt REQUIRED)
 
-add_library(${SL_TARGET} STATIC ${SL_SRC})
-target_include_directories(${SL_TARGET} PRIVATE ${SL_INCLUDE})
-set_property(TARGET ${SL_TARGET} PROPERTY CXX_STANDARD 20)
-target_link_libraries(${SL_TARGET} PUBLIC ${SL_LIBS})
+set(SL_SCENE_LIBS dl kc spdlog::spdlog fmt::fmt starlight-core starlight-renderer)
+set(SL_SCENE_TARGET starlight-scene)
+file(GLOB_RECURSE SL_SCENE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+
+add_library(${SL_SCENE_TARGET} STATIC ${SL_SCENE_SRC})
+target_include_directories(${SL_SCENE_TARGET} PRIVATE ${SL_INCLUDE})
+target_link_libraries(${SL_SCENE_TARGET} PUBLIC ${SL_SCENE_LIBS})

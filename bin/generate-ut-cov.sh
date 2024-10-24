@@ -1,13 +1,9 @@
 #!/bin/bash
 
-sudo apt-get install python3
-sudo python3 -m pip install gcovr
 
-cd cov_build
+cd build
+source ../venv/bin/activate
 
-ls /usr/bin | grep gcov
+rm -rf ../coverage && mkdir ../coverage
+gcovr -f ../engine/src -r . --exclude-throw-branches --xml --output ../coverage/coverage.xml
 
-python3 -m gcovr --version
-python3 -m gcovr -r . -f ../engine/src -f ../editor --gcov-executable /usr/bin/gcov-10 --exclude-throw-branches --xml-pretty --output ../coverage.xml
-
-cat ../coverage.xml

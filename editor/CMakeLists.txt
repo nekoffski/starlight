@@ -1,6 +1,6 @@
 file(GLOB_RECURSE EDITOR_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 set(EDITOR_TARGET starlight-editor)
-set(EDITOR_LIBS backward asan starlight-core starlight-renderer starlight-resource starlight-scene starlight-ui)
+set(EDITOR_LIBS asan starlight-core starlight-renderer starlight-resource starlight-scene starlight-ui)
 
 add_executable(${EDITOR_TARGET} ${EDITOR_SRC})
 set_property(TARGET ${EDITOR_TARGET} PROPERTY CXX_STANDARD 20)

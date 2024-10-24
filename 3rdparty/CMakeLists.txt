@@ -1,8 +1,10 @@
 add_subdirectory(libkc)
-add_subdirectory(expected)
-add_subdirectory(backward-cpp)
 
 # imgui
+
+find_package(VulkanLoader REQUIRED)
+find_package(VulkanHeaders REQUIRED)
+find_package(glfw3 REQUIRED)
 
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
 set(IMGUIZMO_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ImGuizmo)
@@ -13,7 +15,5 @@ file(GLOB_RECURSE IMGUI_SRC ${IMGUI_DIR}/imgui.cpp ${IMGUI_DIR}/imgui_widgets.cp
 add_library(imgui STATIC ${IMGUI_SRC})
 target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/imgui ${CMAKE_CURRENT_SOURCE_DIR}/ImGuizmo)
 set_property(TARGET imgui PROPERTY CXX_STANDARD 20)
-target_link_libraries(imgui PUBLIC freetype)
+target_link_libraries(imgui PUBLIC freetype glfw Vulkan::Loader vulkan-headers::vulkan-headers)
 target_include_directories(imgui PUBLIC /usr/include/freetype2) # TODO: generic way
-
-

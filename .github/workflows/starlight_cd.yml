@@ -1,4 +1,4 @@
-name: Nova CD pipeline
+name: Starlight CD pipeline
 
 on: [push]
 
@@ -14,21 +14,21 @@ jobs:
         run: git submodule update --init --recursive
       - name: Set scripts permissions
         run: chmod +x ./bin/*
-      - name: Prepare Vulkan SDK
-        uses: humbletim/setup-vulkan-sdk@v1.2.0
-        with:
-          vulkan-query-version: 1.3.204.0
-          vulkan-components: Vulkan-Headers, Vulkan-Loader
-          vulkan-use-cache: true
-      - name: Install dependencies
-        run: |
-          ./bin/deps.sh
-      - name: Build
-        run: |
-          rm -f build && mkdir build && pushd build && cmake .. -DENABLE_TESTS=ON && make -j`nproc` && popd
-        env:
-          CC: /usr/bin/gcc-10
-          CXX: /usr/bin/g++-10
+      - name: Install system dependencies
+        run: ./bin/deps.sh
+      - name: Run static code check
+        run: ./bin/run-static-analysis.sh
+      - name: Run build
+        run: ./bin/build.sh
       - name: Run unit tests
+        run: pushd build && make test
+      - name: Generate venv
+        run: ./bin/venv.sh
+      - name: Generate code coverage
+        run: ./bin/generate-ut-cov.sh
+      - name: Upload code coverage
         run: |
-          pushd build && make test && popd
+          curl -Os https://cli.codecov.io/latest/linux/codecov
+          chmod +x codecov
+          ./codecov --verbose upload-process --fail-on-error -t ${{ secrets.CODECOV_TOKEN }} \
+            -n 'service'-${{ github.run_id }} -F service -f ./coverage/coverage.xml
