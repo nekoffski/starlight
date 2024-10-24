@@ -3,4 +3,5 @@ coverage:
     project: off
     patch: off
 ignore:
-  - "**/test"
+  - "engine/test"
+  - "engine/bench"
