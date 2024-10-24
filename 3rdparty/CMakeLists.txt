@@ -2,9 +2,9 @@ add_subdirectory(libkc)
 
 # imgui
 
-find_package(VulkanLoader)
+find_package(VulkanLoader REQUIRED)
 find_package(VulkanHeaders REQUIRED)
-find_package(glfw3)
+find_package(glfw3 REQUIRED)
 
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
 set(IMGUIZMO_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ImGuizmo)

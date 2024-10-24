@@ -1,9 +1,11 @@
 #!/bin/bash
 
+SRC=$(dirname "$0")/../
 
-conan install ./conan/ --output-folder=./build --build=missing --profile ./conan/profiles/debug
+conan install ${SRC}/conan/ --output-folder=${SRC}/build --build=missing --profile ${SRC}/conan/profiles/debug
 
-cd build
+cd ${SRC}/build
 
-cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug
-cmake --build . -j8
+cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DSL_ENABLE_UNIT_TESTS=On \
+    -DSL_ENABLE_COVERAGE=On -DSL_ENABLE_BENCHMARKS=On
+cmake --build . -j`nproc`
