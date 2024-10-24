@@ -1,9 +1,10 @@
+find_package(VulkanLoader)
 find_package(VulkanHeaders REQUIRED)
 find_package(glfw3)
 find_package(spdlog)
 find_package(fmt)
 
-set(SL_LIBS stb dl kc imgui spdlog::spdlog fmt::fmt ${Vulkan_LIBRARIES} starlight-core)
+set(SL_LIBS stb dl kc imgui spdlog::spdlog fmt::fmt Vulkan::Loader vulkan-headers::vulkan-headers starlight-core)
 set(SL_TARGET starlight-renderer)
 file(GLOB_RECURSE SL_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
