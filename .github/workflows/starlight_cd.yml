@@ -27,7 +27,6 @@ jobs:
       - name: Generate code coverage
         run: ./bin/generate-ut-cov.sh
       - name: Upload code coverage
-        - name: Upload coverage reports to Codecov
         run: |
           curl -Os https://cli.codecov.io/latest/linux/codecov
           chmod +x codecov
