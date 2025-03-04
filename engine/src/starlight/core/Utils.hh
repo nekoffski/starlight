@@ -13,6 +13,10 @@
 
 namespace sl {
 
+template <typename T> struct NameGetter {
+    const std::string& operator()(const T& t) const { return t.name; }
+};
+
 using OptStr = std::optional<std::string>;
 
 template <typename T> std::string getTypeName() {

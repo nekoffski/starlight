@@ -38,5 +38,11 @@ TEST(StaticVectorTests, givenVector_whenErasingNotExistingValue_shouldFail) {
 }
 
 TEST(StaticVectorTests, givenVector_whenInsertingValueOverCapacity_shouldFail) {
-    EXPECT_EQ(StaticVector<int>{ 0 }.emplace(1337), nullptr);
+    StaticVector<int> v{ 1 };
+    v.emplace(1);
+    EXPECT_EQ(v.emplace(1337), nullptr);
+}
+
+TEST(StaticVectorTests, whenCreatingEmptyVector_shouldFailAssertion) {
+    EXPECT_DEATH(StaticVector<int>{}, "");
 }

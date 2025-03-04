@@ -10,10 +10,11 @@
 
 namespace sl {
 
-template <typename T> class StaticVector {
+template <typename T, u64 Capacity = 0u> class StaticVector {
 public:
-    explicit StaticVector(u64 capacity
-    ) : m_capacity(capacity), m_buffer(m_capacity) {
+    explicit StaticVector(u64 capacity = Capacity) :
+        m_capacity(capacity), m_buffer(m_capacity) {
+        log::expect(capacity > 0, "StaticVector capacity must be greater than 0");
         for (u64 i = 0; i < capacity; ++i) m_freeSlots.push(i);
     }
 

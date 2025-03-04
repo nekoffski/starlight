@@ -12,14 +12,6 @@
 
 namespace sl {
 
-namespace detail {
-
-template <typename T> struct NameGetter {
-    const std::string& operator()(const T& t) const { return t.name; }
-};
-
-}  // namespace detail
-
 class Shader : public NonMovable, public NamedResource<Shader, "Shader"> {
     static constexpr u32 uniformScopes = 3u;
 
@@ -68,7 +60,7 @@ public:
         std::string name;
     };
 
-    using UniformMap = KeyVector<Uniform, detail::NameGetter<Uniform>>;
+    using UniformMap = KeyVector<Uniform, NameGetter<Uniform>>;
 
     struct DataLayout {
         explicit DataLayout(

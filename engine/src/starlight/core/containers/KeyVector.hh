@@ -29,23 +29,31 @@ public:
     const T& at(const Key& key) const { return *m_view.at(key); }
     T& at(const Key& key) { return *m_view.at(key); }
 
-    u64 size() const { return m_buffer.size(); }
-
-    void push(const T& value) {
-        m_buffer.push_back(value);
-        rebuildView();
+    T* find(const Key& key) {
+        auto iterator = m_view.find(key);
+        return iterator == m_view.end() ? nullptr : iterator->second;
     }
 
-    void push(T&& value) {
+    u64 size() const { return m_buffer.size(); }
+
+    T& push(const T& value) {
+        m_buffer.push_back(value);
+        rebuildView();
+        return m_buffer.back();
+    }
+
+    T& push(T&& value) {
         m_buffer.push_back(std::move(value));
         rebuildView();
+        return m_buffer.back();
     }
 
     template <typename... Args>
     requires std::is_constructible_v<T, Args...>
-    void emplace(Args&&... args) {
+    T& emplace(Args&&... args) {
         m_buffer.emplace_back(std::forward<Args>(args)...);
         rebuildView();
+        return m_buffer.back();
     }
 
     template <typename Callback>

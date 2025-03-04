@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-#include "mock/WindowMock.hh"
+#include "utils/WindowMock.hh"
 
 #include "starlight/event/EventBroker.hh"
 #include "starlight/window/Events.hh"
