@@ -3,7 +3,7 @@
 #include <optional>
 
 #include <starlight/ui/UI.hh>
-#include <starlight/app/scene/ecs/Entity.hh>
+#include <starlight/app/scene/Entity.hh>
 #include <starlight/app/scene/Scene.hh>
 #include <starlight/event/EventHandlerSentinel.hh>
 #include <starlight/renderer/RenderGraph.hh>

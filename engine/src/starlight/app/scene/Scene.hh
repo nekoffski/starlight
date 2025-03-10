@@ -9,8 +9,8 @@
 #include "starlight/core/Concepts.hh"
 #include "starlight/renderer/Skybox.hh"
 
-#include "ecs/Entity.hh"
-#include "ecs/ComponentManager.hh"
+#include "Entity.hh"
+#include "ComponentManager.hh"
 
 namespace sl {
 
