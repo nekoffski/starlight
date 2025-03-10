@@ -1,0 +1,101 @@
+#include "SceneParser.hh"
+
+#include "starlight/core/Time.hh"
+#include "starlight/app/factories/SkyboxFactory.hh"
+
+#include "BuiltinSerializers.hh"
+
+namespace sl {
+
+SceneParser::SceneParser(const FileSystem* fs) : m_fs(fs) {
+    registerBuiltinComponents(*this);
+}
+
+void SceneParser::serialize(Scene& scene, const std::string& path) {
+    log::debug("Serializing scene: {}", path);
+    nlohmann::json root;
+
+    root["ts"] = getTimeString("%Y-%m-%d %H:%M:%S");
+
+    if (auto skybox = scene.getSkybox(); skybox) {
+        const auto skyboxName = skybox->name;
+        log::debug("Saving skybox: {}", skyboxName);
+        root["skybox"] = skyboxName;
+    }
+
+    scene.forEachEntity([&](auto& entity) {
+        root["entities"].push_back(serializeEntity(entity));
+    });
+
+    const auto buffer = root.dump();
+    log::debug("Parsed scene: {}", buffer);
+
+    m_fs->writeFile(path, buffer, FileSystem::WritePolicy::override);
+    log::info("Scene successfully saved to: {}", path);
+}
+
+nlohmann::json SceneParser::serializeEntity(Entity& entity) {
+    nlohmann::json node;
+    log::debug("Processing entity: {}", entity.name);
+    node["name"] = entity.name;
+
+    for (const auto component : entity.getComponentTypes()) {
+        log::debug("Processing component: {}", component.name());
+        if (auto it = m_serializers.find(component); it != m_serializers.end()) {
+            auto& serializer = it->second;
+
+            log::expect(
+              false, "fixme - serializer should push into the existing object"
+            );
+            // node["components"][serializer] =
+            //   serializer->serialize(entity.getComponent(component));
+        } else {
+            log::error("Serializer not found: {}", component.name());
+        }
+    }
+
+    return node;
+}
+
+SharedPtr<Scene> SceneParser::deserialize(const std::string& path) {
+    auto scene = SharedPtr<Scene>::create();
+
+    log::debug("Deserializing scene: {}", path);
+    log::expect(m_fs->isFile(path), "Scene file does not exist");
+    auto root = nlohmann::json::parse(m_fs->readFile(path));
+
+    if (json::hasField(root, "skybox")) {
+        const auto skybox = root["skybox"].get<std::string>();
+        log::debug("Found skybox: {}", skybox);
+        scene->setSkybox(SkyboxFactory::get().load(skybox));
+    }
+
+    log::debug("Processing entitites");
+    for (const auto& entityNode : root["entities"])
+        deserializeEntity(*scene, entityNode);
+
+    log::info("Scene successfully loaded: {}", path);
+
+    return scene;
+}
+
+void SceneParser::deserializeEntity(Scene& scene, const nlohmann::json& node) {
+    const auto entityName = node["name"].get<std::string>();
+    log::debug("Processing entity: {}", entityName);
+
+    auto& entity           = scene.addEntity(entityName);
+    const auto& components = node["components"];
+
+    for (const auto& [componentName, body] :
+         components.get<nlohmann::json::object_t>()) {
+        log::debug("Processing component: {}", componentName);
+        if (auto it = m_deserializers.find(componentName);
+            it != m_deserializers.end()) {
+            std::invoke(it->second, entity, components[componentName]);
+        } else {
+            log::error("Could not find deserializer for: {}", componentName);
+        }
+    }
+}
+
+}  // namespace sl

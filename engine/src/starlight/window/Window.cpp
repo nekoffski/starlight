@@ -1,8 +1,6 @@
 #include "Window.hh"
 
 #include "Events.hh"
-#include "starlight/event/EventProxy.hh"
-#include "starlight/core/Globals.hh"
 
 #ifdef SL_USE_GLFW
 #include "glfw/GLFWWindow.hh"
@@ -10,10 +8,7 @@
 
 namespace sl {
 
-Window::Window(UniquePtr<Impl> impl
-) : m_guard([] { expectCreated<Globals, EventProxy>(); }), m_impl(std::move(impl)) {
-    setCallbacks();
-}
+Window::Window(UniquePtr<Impl> impl) : m_impl(std::move(impl)) { setCallbacks(); }
 
 void Window::setCallbacks() {
     m_impl->onWindowCloseCallback([]() {

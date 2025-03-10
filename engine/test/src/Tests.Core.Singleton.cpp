@@ -49,3 +49,12 @@ TEST(
     Singleton singleton;
     EXPECT_NO_FATAL_FAILURE(sl::expectCreated<Singleton>());
 }
+
+TEST(
+  SingletonTests,
+  givenSingleSingleton_whenCreatingSingletonGuard_shouldReturnCorrectValue
+) {
+    ASSERT_DEATH(sl::SingletonGuard<Singleton>{}, "");
+    Singleton singleton;
+    EXPECT_NO_FATAL_FAILURE(sl::SingletonGuard<Singleton>{});
+}

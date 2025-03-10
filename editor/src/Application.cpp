@@ -23,7 +23,7 @@ Application::Application(
     m_userInterface(sl::Window::get().getFramebufferSize(), getScene()) {
     if (scenePath) {
         sl::log::info("Loading initial scene: {}", *scenePath);
-        m_sceneParser.deserialize(*getScene(), *scenePath);
+        setScene(m_sceneParser.deserialize(*scenePath));
     }
 
     initEvents();
@@ -61,8 +61,7 @@ void Application::initEvents() {
               m_sceneParser.serialize(*getScene(), event.path);
           } else {
               editorWriteDebug("Deserializing scene: {}", event.path);
-              getScene()->clear();
-              m_sceneParser.deserialize(*getScene(), event.path);
+              setScene(m_sceneParser.deserialize(event.path));
           }
           handled();
       });

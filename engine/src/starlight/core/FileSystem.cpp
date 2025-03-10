@@ -7,6 +7,9 @@
 
 namespace sl {
 
+// TODO: singleton
+FileSystem fileSystem;
+
 bool FileSystem::isFile(const Path& path) const {
     return std::filesystem::is_regular_file(path);
 }
@@ -56,6 +59,8 @@ std::filesystem::file_time_type FileSystem::getLastFileModificationTime(
     return std::filesystem::last_write_time(path);
 }
 
-FileSystem FileSystem::getDefault() { return FileSystem(); }
+const FileSystem& FileSystem::getDefault() { return fileSystem; }
+
+const FileSystem* FileSystem::getDefaultPtr() { return &fileSystem; }
 
 }  // namespace sl

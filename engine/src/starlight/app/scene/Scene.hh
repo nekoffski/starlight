@@ -5,7 +5,6 @@
 #include "starlight/core/Core.hh"
 #include "starlight/window/Window.hh"
 #include "starlight/core/containers/FlatMap.hh"
-#include "starlight/renderer/camera/Camera.hh"
 #include "starlight/renderer/RenderPacket.hh"
 #include "starlight/core/Concepts.hh"
 #include "starlight/renderer/Skybox.hh"
@@ -19,11 +18,10 @@ class Scene {
     static constexpr u64 maxEntities = 1024;
 
 public:
-    explicit Scene(Camera* camera);
+    explicit Scene();
+    void clear();
 
     RenderPacket getRenderPacket();
-
-    void clear();
 
     template <typename C>
     requires Callable<C, void, Entity&>
@@ -33,11 +31,12 @@ public:
 
     Entity& addEntity(std::optional<std::string> name = {});
 
-public:
-    Camera* camera;
-    SharedPtr<Skybox> skybox;
+    void setSkybox(SharedPtr<Skybox> skybox);
+    void resetSkybox();
+    Skybox* getSkybox();
 
 private:
+    SharedPtr<Skybox> m_skybox;
     ComponentManager m_componentManager;
     StaticVector<Entity> m_entities;
 };

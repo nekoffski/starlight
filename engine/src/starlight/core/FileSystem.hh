@@ -27,7 +27,8 @@ public:
       const Path& path
     ) const;
 
-    static FileSystem getDefault();
+    static const FileSystem& getDefault();
+    static const FileSystem* getDefaultPtr();
 };
 
 }  // namespace sl

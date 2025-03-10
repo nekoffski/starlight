@@ -7,6 +7,7 @@
 #include "starlight/core/Time.hh"
 #include "starlight/core/Globals.hh"
 #include "starlight/core/TaskQueue.hh"
+#include "starlight/core/memory/Memory.hh"
 #include "starlight/event/EventBroker.hh"
 #include "starlight/event/EventHandlerSentinel.hh"
 #include "starlight/window/Window.hh"
@@ -46,7 +47,14 @@ private:
 
 protected:
     Scene* getScene();
+    void setScene(SharedPtr<Scene> scene);
+
     RenderGraph* getRenderGraph();
+    void setRenderGraph(SharedPtr<RenderGraph> renderGraph);
+
+    Camera* getCamera();
+    void setCamera(Camera* camera);
+    void useDefaultCamera();
 
 private:
     Globals m_globals;
@@ -66,12 +74,10 @@ private:
     Renderer m_renderer;
 
     EulerCamera m_defaultCamera;
-    Scene m_defaultScene;
-    RenderGraph m_defaultRenderGraph;
 
     Camera* m_camera;
-    Scene* m_scene;
-    RenderGraph* m_renderGraph;
+    SharedPtr<Scene> m_scene;
+    SharedPtr<RenderGraph> m_renderGraph;
 
     // factories
     ShaderFactory m_shaderFactory;

@@ -4,7 +4,8 @@
 #include "starlight/core/Config.hh"
 #include "starlight/core/math/Core.hh"
 #include "starlight/core/memory/UniquePtr.hh"
-#include "starlight/core/Function.hh"
+#include "starlight/event/EventProxy.hh"
+#include "starlight/core/Globals.hh"
 
 #include "Events.hh"
 
@@ -66,7 +67,7 @@ public:
 private:
     void setCallbacks();
 
-    SingleCaller m_guard;
+    SingletonGuard<Globals, EventProxy> m_guard;
     UniquePtr<Impl> m_impl;
 };
 

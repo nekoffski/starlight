@@ -5,9 +5,8 @@ namespace sl {
 Engine::Engine(const Config& config) :
     m_globals(config), m_isRunning(true), m_eventProxy(m_eventBroker.getProxy()),
     m_eventSentinel(m_eventProxy), m_input(m_window.getImpl()),
-    m_defaultScene(&m_defaultCamera), m_defaultRenderGraph(m_renderer),
-    m_camera(&m_defaultCamera), m_scene(&m_defaultScene),
-    m_renderGraph(&m_defaultRenderGraph),
+    m_camera(&m_defaultCamera), m_scene(SharedPtr<Scene>::create()),
+    m_renderGraph(SharedPtr<RenderGraph>::create(m_renderer)),
     m_meshFactory(m_renderer.getVertexBuffer(), m_renderer.getIndexBuffer()) {
     initEvents();
 }
@@ -24,7 +23,8 @@ int Engine::run() {
 }
 
 void Engine::render() {
-    auto renderPacket = m_scene->getRenderPacket();
+    auto renderPacket   = m_scene->getRenderPacket();
+    renderPacket.camera = getCamera();
     m_renderGraph->render(renderPacket);
 }
 
@@ -46,9 +46,21 @@ void Engine::endFrame() {
     m_taskQueue.dispatchQueue(TaskQueue::Type::postFrame);
 }
 
-Scene* Engine::getScene() { return m_scene; }
+Scene* Engine::getScene() { return m_scene.get(); }
 
-RenderGraph* Engine::getRenderGraph() { return m_renderGraph; }
+void Engine::setScene(SharedPtr<Scene> scene) { m_scene = std::move(scene); }
+
+RenderGraph* Engine::getRenderGraph() { return m_renderGraph.get(); }
+
+void Engine::setRenderGraph(SharedPtr<RenderGraph> renderGraph) {
+    m_renderGraph = renderGraph;
+}
+
+Camera* Engine::getCamera() { return m_camera; }
+
+void Engine::setCamera(Camera* camera) { m_camera = camera; }
+
+void Engine::useDefaultCamera() { m_camera = &m_defaultCamera; }
 
 void Engine::updateFrame(float frameTime) {
     m_camera->update(frameTime);

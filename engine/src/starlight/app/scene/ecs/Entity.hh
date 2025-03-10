@@ -10,7 +10,7 @@
 
 namespace sl {
 
-class Entity : public Identificable<Entity> {
+class Entity : public NamedResource<Entity, "Entity"> {
 public:
     explicit Entity(
       ComponentManager& componentManager, std::optional<std::string> name

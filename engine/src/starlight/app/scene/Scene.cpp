@@ -8,12 +8,10 @@ namespace sl {
 static constexpr u32 maxPointLights       = 5;
 static constexpr u32 maxDirectionalLights = 5;
 
-Scene::Scene(Camera* camera
-) : camera(camera), skybox(nullptr), m_entities(maxEntities) {}
+Scene::Scene() : m_skybox(nullptr), m_entities(maxEntities) {}
 
 RenderPacket Scene::getRenderPacket() {
     RenderPacket packet{};
-    packet.camera = camera;
 
     packet.directionalLights.reserve(maxDirectionalLights);
     packet.pointLights.reserve(maxPointLights);
@@ -57,13 +55,13 @@ RenderPacket Scene::getRenderPacket() {
     // light.data.color      = Vec4<f32>{ 0.5f, 0.5f, 0.1f, 1.0f };
     // packet.pointLights.push_back(light);
 
-    packet.skybox = skybox.get();
+    packet.skybox = m_skybox.get();
 
     return packet;
 }
 
 void Scene::clear() {
-    skybox = nullptr;
+    m_skybox.reset();
     m_entities.clear();
 }
 
@@ -72,5 +70,11 @@ Entity& Scene::addEntity(std::optional<std::string> name) {
     log::expect(record, "Could not add entity");
     return *record;
 }
+
+void Scene::setSkybox(SharedPtr<Skybox> skybox) { m_skybox = std::move(skybox); }
+
+void Scene::resetSkybox() { m_skybox.reset(); }
+
+Skybox* Scene::getSkybox() { return m_skybox.get(); }
 
 }  // namespace sl

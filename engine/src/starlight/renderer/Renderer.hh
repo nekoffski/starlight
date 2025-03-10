@@ -41,7 +41,7 @@ private:
 
     Fence* getImageFence(u32 imageIndex);
 
-    SingleCaller m_guard;
+    SingletonGuard<Globals, Window, Device, EventProxy> m_guard;
 
     std::optional<u8> beginFrame();
     void endFrame(u32 imageIndex);

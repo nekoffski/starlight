@@ -9,7 +9,7 @@
 #include "starlight/app/renderPasses/ShadowMapsRenderPass.hh"
 #include "starlight/app/renderPasses/WorldRenderPass.hh"
 #include "starlight/app/renderPasses/UIRenderPass.hh"
-#include "starlight/app/scene/parsing/SceneParser.hh"
+#include "starlight/app/scene/SceneParser.hh"
 #include "starlight/renderer/MeshComposite.hh"
 
 class Sandbox : public sl::Engine {
@@ -19,7 +19,7 @@ public:
     ) : Engine(config) {
         sl::Vec2<sl::f32> viewportOffset{ 0.0f, 0.0f };
 
-        if (scenePath) sl::SceneParser{}.deserialize(*getScene(), *scenePath);
+        if (scenePath) setScene(sl::SceneParser{}.deserialize(*scenePath));
 
         getRenderGraph()->addPass<sl::SkyboxRenderPass>(viewportOffset);
         getRenderGraph()->addPass<sl::ShadowMapsRenderPass>();

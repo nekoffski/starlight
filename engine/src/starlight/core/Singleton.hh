@@ -52,4 +52,8 @@ void expectCreated() {
     (detail::expectCreatedImpl<T>(), ...);
 }
 
+template <typename... T> struct SingletonGuard {
+    SingletonGuard() { expectCreated<T...>(); }
+};
+
 }  // namespace sl
