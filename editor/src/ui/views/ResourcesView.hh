@@ -1,32 +1,32 @@
-#pragma once
+// #pragma once
 
-#include <unordered_map>
+// #include <unordered_map>
 
-#include <starlight/ui/UI.hh>
-#include <starlight/ui/widgets/Image.hh>
+// #include <starlight/ui/UI.hh>
+// #include <starlight/ui/widgets/Image.hh>
 
-#include "Resources.hh"
-#include "resources/MaterialUI.hh"
-#include "resources/TextureUI.hh"
+// #include "Resources.hh"
+// #include "resources/MaterialUI.hh"
+// #include "resources/TextureUI.hh"
 
-namespace sle {
+// namespace sle {
 
-class ResourcesView {
-public:
-    explicit ResourcesView(Resources& resources);
+// class ResourcesView {
+// public:
+//     explicit ResourcesView(Resources& resources);
 
-    void render();
+//     void render();
 
-private:
-    void renderTexturesTab();
-    void renderMeshesTab();
-    void renderMaterialsTab();
+// private:
+//     void renderTexturesTab();
+//     void renderMeshesTab();
+//     void renderMaterialsTab();
 
-    Resources& m_resources;
-    sl::ui::TabMenu m_tabMenu;
+//     Resources& m_resources;
+//     sl::ui::TabMenu m_tabMenu;
 
-    MaterialUI m_materialUI;
-    TextureUI m_textureUI;
-};
+//     MaterialUI m_materialUI;
+//     TextureUI m_textureUI;
+// };
 
-}  // namespace sle
+// }  // namespace sle

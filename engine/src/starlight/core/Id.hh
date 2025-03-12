@@ -5,6 +5,7 @@
 #include <concepts>
 #include <optional>
 #include <queue>
+#include <type_traits>
 
 #include <fmt/core.h>
 
@@ -48,7 +49,7 @@ private:
     inline static std::mutex s_mutex;
 };
 
-template <typename T, StringLiteral NameGenerator>
+template <typename T, StringLiteral NameGenerator, bool Const = true>
 class NamedResource : public Identificable<T> {
     inline const static std::string baseName = NameGenerator.value;
 
@@ -66,7 +67,7 @@ public:
         );
     }
 
-    const std::string name;
+    std::conditional_t<Const, const std::string, std::string> name;
 
 private:
     std::string generateName(std::optional<std::string> name) {

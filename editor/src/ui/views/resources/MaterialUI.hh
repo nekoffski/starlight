@@ -1,19 +1,19 @@
-#pragma once
+// #pragma once
 
-#include <starlight/renderer/Material.hh>
+// #include <starlight/renderer/Material.hh>
 
-#include "Resources.hh"
+// #include "Resources.hh"
 
-namespace sle {
+// namespace sle {
 
-class MaterialUI {
-public:
-    explicit MaterialUI(Resources& resources);
+// class MaterialUI {
+// public:
+//     explicit MaterialUI(Resources& resources);
 
-    void render(sl::SharedPtr<sl::Material> material);
+//     void render(sl::SharedPtr<sl::Material> material);
 
-private:
-    Resources& m_resources;
-};
+// private:
+//     Resources& m_resources;
+// };
 
-}  // namespace sle
+// }  // namespace sle

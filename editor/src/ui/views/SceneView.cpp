@@ -1,37 +1,29 @@
 #include "SceneView.hh"
 
 #include <starlight/event/EventProxy.hh>
+#include <starlight/renderer/MeshComposite.hh>
+#include <starlight/app/factories/MeshFactory.hh>
+#include <starlight/app/factories/MaterialFactory.hh>
+#include <starlight/app/factories/TextureFactory.hh>
 
-#include "components/PointLightUI.hh"
-#include "components/DirectionalLightUI.hh"
-#include "components/MeshCompositeUI.hh"
 #include "Events.hh"
 
 namespace sle {
 
-SceneView::SceneView(sl::Scene* scene, Resources& resources) :
-    m_tabMenu("Scene"), m_entitiesTab(scene, resources), m_skyboxTab(scene),
-    m_cameraTab(scene) {
+SceneView::SceneView(Data& data) : m_data(data), m_tabMenu("Scene") {
     m_tabMenu
-      .addTab(
-        ICON_FA_CODE_BRANCH "  Entities Tree", [&]() { m_entitiesTab.render(); }
-      )
-      .addTab(ICON_FA_CLOUD "  Skybox", [&]() { m_skyboxTab.render(); })
-      .addTab(ICON_FA_CAMERA "  Camera", [&]() { m_cameraTab.render(); });
+      .addTab(ICON_FA_CODE_BRANCH "  Entities Tree", [&]() { renderEntitiesTab(); })
+      .addTab(ICON_FA_CLOUD "  Skybox", [&]() { renderSkyboxTab(); })
+      .addTab(ICON_FA_CAMERA "  Camera", [&]() { renderCameraTab(); });
 }
 
 void SceneView::render() { m_tabMenu.render(); }
 
-SceneView::EntitiesTab::EntitiesTab(sl::Scene* scene, Resources& resources) :
-    SceneTab(scene), m_selectedEntity(nullptr) {
-    addComponentUI<PointLightUI>();
-    addComponentUI<DirectionalLightUI>();
-    addComponentUI<MeshCompositeUI>(resources);
-}
+void SceneView::renderEntitiesTab() {
+    auto& scene = *m_data.scene;
 
-void SceneView::EntitiesTab::render() {
     if (sl::ui::button("Add Entity", sl::ui::parentWidth)) {
-        auto& entity = m_scene->addEntity();
+        auto& entity = scene.addEntity();
         editorWriteInfo("New entity added: {}/{}", entity.id, entity.name);
     }
 
@@ -39,55 +31,93 @@ void SceneView::EntitiesTab::render() {
     sl::ui::treeNode(
       "Root",
       [&]() {
-          m_scene->forEachEntity([&](sl::Entity& entity) {
+          scene.forEachEntity([&](sl::Entity& entity) {
               auto flags =
                 ImGuiTreeNodeFlags_OpenOnDoubleClick
                 | ImGuiTreeNodeFlags_DefaultOpen;
 
-              if (m_selectedEntity && m_selectedEntity->id == entity.id)
+              if (m_data.selectedEntity != nullptr
+                  && m_data.selectedEntity->id == entity.id)
                   flags |= ImGuiTreeNodeFlags_Selected;
-
               sl::ui::treeNode(
                 entity.name,
                 [&]() {
-                    if (sl::ui::wasItemClicked()) {
-                        const auto clearComponentCallback =
-                          not m_selectedEntity || m_selectedEntity->id != entity.id;
-                        selectEntity(entity, clearComponentCallback);
-                    }
-
-                    for (const auto& componentIndex : entity.getComponentTypes()) {
-                        if (m_componentUIs.contains(componentIndex)) {
-                            bool entityClicked =
-                              m_componentUIs[componentIndex]->renderSceneNode(
-                                entity.getComponent(componentIndex)
-                              );
-                            if (entityClicked) selectEntity(entity, false);
-                        }
-                    }
                     // TODO: display child entitites
                 },
                 flags
               );
+              if (sl::ui::wasItemClicked()) {
+                  m_data.selectedEntity    = &entity;
+                  m_data.inspectorCallback = [&]() { renderEntityInspector(); };
+              }
           });
       },
       ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen
     );
 }
 
-void SceneView::EntitiesTab::selectEntity(
-  sl::Entity& entity, bool clearComponentCallback
-) {
-    editorWriteDebug("Entity selected: {}", entity.name);
-    m_selectedEntity = &entity;
-    sl::EventProxy::get()
-      .emit<events::EntitySelected>(m_selectedEntity, clearComponentCallback);
+#define ADD_COMPONENT(Component, ...)                                \
+    if (m_data.selectedEntity->hasComponent<Component>()) {          \
+        editorWriteWarn("Component already added, skipping...");     \
+    } else {                                                         \
+        m_data.selectedEntity->addComponent<Component>(__VA_ARGS__); \
+    }
+
+void SceneView::renderEntityInspector() {
+    static std::vector<const char*> componentNames = {
+        "MeshComposite", "PointLight", "DirectionalLight"
+    };
+
+    m_entityData.nameBuffer = m_data.selectedEntity->name;
+
+    sl::ui::namedScope(m_data.selectedEntity->name, [&]() {
+        if (ImGui::InputText(
+              "##", &m_entityData.nameBuffer, ImGuiInputTextFlags_EnterReturnsTrue
+            )) {
+            editorWriteDebug("Entity name changed to: {}", m_entityData.nameBuffer);
+            m_data.selectedEntity->name = m_entityData.nameBuffer;
+        }
+        sl::ui::separator();
+
+        ImGui::Combo(
+          "##combo2", &m_entityData.selectedComponentIndex, componentNames.data(),
+          componentNames.size()
+        );
+
+        sl::ui::sameLine();
+
+        if (sl::ui::button("Add Component", sl::ui::parentWidth)) {
+            editorWriteDebug(
+              "Add component clicked: {}/{}", m_data.selectedEntity->name,
+              m_entityData.selectedComponentIndex
+            );
+
+            if (m_entityData.selectedComponentIndex == 0) {
+                ADD_COMPONENT(
+                  sl::MeshComposite, sl::MeshFactory::get().getCube(),
+                  sl::MaterialFactory::get().getDefault()
+                );
+            } else if (m_entityData.selectedComponentIndex == 1) {
+                ADD_COMPONENT(sl::PointLight);
+            } else if (m_entityData.selectedComponentIndex == 2) {
+                ADD_COMPONENT(sl::DirectionalLight);
+            }
+        }
+
+        if (sl::ui::button("Remove Entity", sl::ui::parentWidth)) {
+        }
+
+        for (auto componentType : m_data.selectedEntity->getComponentTypes()) {
+            sl::ui::separator();
+            m_componentViews.render(
+              componentType, m_data.selectedEntity->getComponent(componentType)
+            );
+        }
+    });
 }
 
-SceneView::SceneTab::SceneTab(sl::Scene* scene) : m_scene(scene) {}
+void SceneView::renderCameraTab() {}
 
-void SceneView::SkyboxTab::render() {}
-
-void SceneView::CameraTab::render() {}
+void SceneView::renderSkyboxTab() {}
 
 }  // namespace sle

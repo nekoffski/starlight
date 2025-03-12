@@ -8,7 +8,7 @@
 #include "views/PropertiesView.hh"
 #include "views/ResourcesView.hh"
 #include "Console.hh"
-#include "Resources.hh"
+#include "Data.hh"
 
 #include "starlight/app/renderPasses/UIRenderPass.hh"
 
@@ -31,6 +31,7 @@ public:
 
     void onViewportReisze(const sl::Vec2<sl::u32>& viewport);
     void setRenderGraph(sl::RenderGraph& renderGraph);
+    void setScene(sl::Scene& scene);
 
     void render() override;
 
@@ -49,7 +50,7 @@ private:
     sl::Vec2<sl::u32> m_viewport;
 
     Console m_console;
-    Resources m_resources;
+    Data m_data;
 
     sl::ui::MainMenuBar m_menu;
     sl::LocalPtr<sl::ui::PanelCombo> m_leftCombo;
@@ -57,7 +58,7 @@ private:
 
     SceneView m_sceneView;
     PropertiesView m_propertiesView;
-    ResourcesView m_resourcesView;
+    // ResourcesView m_resourcesView;
 };
 
 }  // namespace sle

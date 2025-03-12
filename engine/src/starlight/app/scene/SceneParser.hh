@@ -16,6 +16,8 @@ class SceneParser {
 
 public:
     template <typename T, typename S, typename D>
+    requires Callable<S, nlohmann::json, T&>
+             && Callable<D, void, Entity&, const nlohmann::json&>
     SceneParser& registerComponent(
       const std::string& name, S&& serializer, D&& deserializer
     ) {

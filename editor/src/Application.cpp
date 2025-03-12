@@ -24,6 +24,7 @@ Application::Application(
     if (scenePath) {
         sl::log::info("Loading initial scene: {}", *scenePath);
         setScene(m_sceneParser.deserialize(*scenePath));
+        m_userInterface.setScene(*getScene());
     }
 
     initEvents();

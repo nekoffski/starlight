@@ -10,7 +10,7 @@
 
 namespace sl {
 
-class Entity : public NamedResource<Entity, "Entity"> {
+class Entity : public NamedResource<Entity, "Entity", false> {
 public:
     explicit Entity(
       ComponentManager& componentManager, std::optional<std::string> name
@@ -42,9 +42,6 @@ public:
 private:
     ComponentManager& m_componentManager;
     std::vector<std::type_index> m_componentTypes;
-
-public:
-    std::string name;
 };
 
 }  // namespace sl
