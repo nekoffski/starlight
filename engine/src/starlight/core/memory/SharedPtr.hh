@@ -38,8 +38,8 @@ public:
     SharedPtr& operator=(SharedPtr<F>&& oth) {
         reset();
 
-        m_buffer       = std::exchange(oth.m_buffer, nullptr);
         m_controlBlock = std::exchange(oth.m_controlBlock, nullptr);
+        m_buffer       = std::exchange(oth.m_buffer, nullptr);
 
         return *this;
     }
@@ -47,8 +47,8 @@ public:
     SharedPtr& operator=(const SharedPtr& oth) {
         reset();
 
-        m_buffer       = oth.m_buffer;
         m_controlBlock = oth.m_controlBlock;
+        m_buffer       = oth.m_buffer;
 
         if (m_controlBlock) m_controlBlock->referenceCounter++;
 
@@ -70,8 +70,8 @@ public:
     template <typename F>
     requires std::derived_from<F, T>
     SharedPtr(SharedPtr<F>&& oth) {
-        m_buffer       = std::exchange(oth.m_buffer, nullptr);
         m_controlBlock = std::exchange(oth.m_controlBlock, nullptr);
+        m_buffer       = std::exchange(oth.m_buffer, nullptr);
     }
 
     void reset() {

@@ -37,20 +37,22 @@ public:
     }
 
     template <typename T> ComponentContainer<T>& getComponentContainer() {
-        auto& type = typeid(T);
         // we could calculate hash once but iterator version is very long and hard to
         // read, in case of under-performance - rewrite
+        auto& type = typeid(T);
+
         if (not m_componentContainers.contains(type)) [[unlikely]] {
-            m_componentContainers.insert(
-              { type, UniquePtr<ComponentContainer<T>>::create() }
-            );
+            sl::log::warn("Creating new container: {}", type.name());
+            m_componentContainers[type] = UniquePtr<ComponentContainer<T>>::create();
         }
-        return static_cast<ComponentContainer<T>&>(*m_componentContainers[type]);
+        return *static_cast<ComponentContainer<T>*>(
+          m_componentContainers.at(type).get()
+        );
     }
 
     void clear();
 
-private:
+public:
     ComponentContainers m_componentContainers;
 };
 

@@ -18,6 +18,7 @@ public:
 
     template <typename T, typename... Args>
     Component<T>& addComponent(Args&&... args) {
+        log::expect(not hasComponent<T>(), "Could not add the same component twice");
         m_componentTypes.emplace_back(typeid(T));
         return m_componentManager.add<T>(id, std::forward<Args>(args)...);
     }
@@ -27,8 +28,10 @@ public:
     }
 
     template <typename T> bool hasComponent() {
-        return std::find(m_componentTypes.begin(), m_componentTypes.end(), typeid(T))
-               != m_componentTypes.end();
+        return m_componentManager.has<T>(id);
+        // return std::find(m_componentTypes.begin(), m_componentTypes.end(),
+        // typeid(T))
+        //    != m_componentTypes.end();
     }
 
     void* getComponent(std::type_index component) {

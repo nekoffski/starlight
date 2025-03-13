@@ -40,8 +40,6 @@ RenderPacket Scene::getRenderPacket() {
       }
     );
 
-    packet.directionalLights.emplace_back();
-
     // mock for testing
     // PointLight light;
 
@@ -66,6 +64,12 @@ void Scene::clear() {
 }
 
 Entity& Scene::addEntity(std::optional<std::string> name) {
+    if (name.has_value()) {
+        log::expect(
+          not m_entities.has([&](auto& entity) { return entity.name == *name; }),
+          "Entity {} already exists", *name
+        );
+    }
     auto record = m_entities.emplace(m_componentManager, name);
     log::expect(record, "Could not add entity");
     return *record;

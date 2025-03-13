@@ -7,22 +7,28 @@
 
 namespace sl {
 
-class PointLight {
+class PointLight : public NonCopyable {
 public:
     struct LOD {
         f32 distance;
         f32 opacity;
     };
 
-    struct ShaderData {
-        alignas(16) Vec4<f32> color;
-        alignas(16) Vec3<f32> position;
-        alignas(16) Vec3<f32> attenuation;
+    struct alignas(16) ShaderData {
+        Vec4<f32> color;
+        Vec3<f32> position;
+        Vec3<f32> attenuation;
     };
+
+    PointLight(PointLight&& oth);
+    PointLight(const PointLight& oth);
+
+    PointLight& operator=(const PointLight& oth);
+    PointLight& operator=(PointLight&& oth);
 
     explicit PointLight(
       const Vec4<f32>& color       = Vec4<f32>{ 1.0f },
-      const Vec3<f32>& position    = Vec3<f32>{ 0.0f, 0.0f, 0.0 },
+      const Vec3<f32>& position    = Vec3<f32>{ 0.0f },
       const Vec3<f32>& attenuation = Vec3<f32>{ 0.5f, 1.0f, 1.0f }
     );
 

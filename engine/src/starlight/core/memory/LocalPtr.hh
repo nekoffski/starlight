@@ -2,7 +2,7 @@
 
 #include <utility>
 #include <array>
-
+#include <type_traits>
 #include "starlight/core/Core.hh"
 
 namespace sl {
@@ -20,7 +20,7 @@ public:
 
     template <typename... Args> T* emplace(Args&&... args) {
         clear();
-        m_pointer = new ((T*)m_buffer.data()) T(std::forward<Args>(args)...);
+        m_pointer = new ((T*)&m_buffer) T(std::forward<Args>(args)...);
         return m_pointer;
     }
 
@@ -34,10 +34,10 @@ public:
     LocalPtr(const LocalPtr&)            = delete;
     LocalPtr& operator=(const LocalPtr&) = delete;
 
-    LocalPtr(LocalPtr&& rhs) :
-        m_buffer(std::exchange(rhs.m_buffer, std::array<char, sizeof(T)>{})),
-        m_pointer((T*)m_buffer.data()) {
-        rhs.m_pointer = nullptr;
+    LocalPtr(LocalPtr&& rhs) {
+        std::memcpy(m_buffer, rhs.m_buffer, sizeof(m_buffer));
+        m_pointer = (T*)&m_buffer;
+        rhs.clear(false);
     }
 
     LocalPtr& operator=(LocalPtr&& rhs) {
@@ -45,23 +45,24 @@ public:
 
         using std::swap;
         swap(rhs.m_buffer, m_buffer);
-        m_pointer     = (T*)m_buffer.data();
+        m_pointer     = (T*)&m_buffer;
         rhs.m_pointer = nullptr;
 
         return *this;
     }
 
-    void clear() {
-        if (m_pointer) m_pointer->T::~T();
+    void clear(bool destroy = true) {
+        if (m_pointer && destroy) m_pointer->T::~T();
 
-        m_buffer.fill(0);
+        std::memset(&m_buffer, 0, sizeof(m_buffer));
         m_pointer = nullptr;
     }
 
     T* operator->() { return m_pointer; }
 
 private:
-    std::array<char, sizeof(T)> m_buffer;
+    alignas(T) std::byte m_buffer[sizeof(T)];
+
     T* m_pointer;
 };
 

@@ -10,7 +10,7 @@
 
 namespace sl {
 
-struct ComponentContainerBase {
+struct ComponentContainerBase : public NonCopyable {
     virtual ~ComponentContainerBase()  = default;
     virtual void* getRaw(u64 entityId) = 0;
 };
@@ -43,7 +43,7 @@ public:
     }
 
     void* getRaw(u64 entityId) override {
-        return static_cast<void*>(&m_components.get(entityId)->data());
+        return static_cast<void*>(&(m_components.get(entityId)->data()));
     }
 
     template <typename C>

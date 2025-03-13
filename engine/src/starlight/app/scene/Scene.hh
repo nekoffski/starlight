@@ -14,7 +14,7 @@
 
 namespace sl {
 
-class Scene {
+class Scene : public NonCopyable {
     static constexpr u64 maxEntities = 1024;
 
 public:
@@ -26,7 +26,7 @@ public:
     template <typename C>
     requires Callable<C, void, Entity&>
     void forEachEntity(C&& callback) {
-        m_entities.forEach(std::move(callback));
+        m_entities.forEach(std::forward<C>(callback));
     }
 
     Entity& addEntity(std::optional<std::string> name = {});
@@ -35,7 +35,7 @@ public:
     void resetSkybox();
     Skybox* getSkybox();
 
-private:
+public:
     SharedPtr<Skybox> m_skybox;
     ComponentManager m_componentManager;
     StaticVector<Entity> m_entities;

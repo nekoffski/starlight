@@ -37,9 +37,8 @@ void PropertiesView::renderRendererTab() {
 }
 
 void PropertiesView::renderInspectorTab() {
-    std::invoke(m_data.inspectorCallback.value_or([]() {
-        sl::ui::text("Nothing to show");
-    }));
+    static auto defaultPanel = []() { sl::ui::text("Nothing to show"); };
+    std::invoke(m_data.inspectorCallback.value_or(defaultPanel));
 }
 
 }  // namespace sle
