@@ -1,0 +1,23 @@
+#pragma once
+
+#include "Component.hh"
+
+#include "starlight/renderer/light/DirectionalLight.hh"
+#include "starlight/renderer/light/PointLight.hh"
+#include "starlight/app/model/Model.hh"
+
+namespace sl {
+
+struct DirectionalLightComponent : Component<DirectionalLight> {
+    using Component::Component;
+};
+
+struct PointLightComponent : Component<PointLight> {
+    using Component::Component;
+};
+
+struct ModelComponent : Component<SharedPtr<Model>> {
+    using Component::Component;
+};
+
+}  // namespace sl

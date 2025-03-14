@@ -10,7 +10,6 @@
 #include "starlight/app/renderPasses/WorldRenderPass.hh"
 #include "starlight/app/renderPasses/UIRenderPass.hh"
 #include "starlight/app/scene/SceneParser.hh"
-#include "starlight/renderer/MeshComposite.hh"
 
 class Sandbox : public sl::Engine {
 public:

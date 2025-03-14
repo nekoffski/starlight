@@ -1,7 +1,6 @@
 #include "ComponentViews.hh"
 
-#include <starlight/renderer/light/DirectionalLight.hh>
-#include <starlight/renderer/light/PointLight.hh>
+#include <starlight/app/scene/Components.hh>
 #include <starlight/ui/UI.hh>
 
 namespace sle {
@@ -75,7 +74,8 @@ namespace sle {
 //     return clicked;
 // }
 
-void renderPointLight(sl::PointLight& component) {
+void renderPointLight(sl::PointLightComponent& c) {
+    auto& component = c.data();
     sl::ui::treeNode(
       ICON_FA_LIGHTBULB "  PointLight",
       [&]() {
@@ -94,7 +94,8 @@ void renderPointLight(sl::PointLight& component) {
     );
 }
 
-void renderDirectionalLight(sl::DirectionalLight& component) {
+void renderDirectionalLight(sl::DirectionalLightComponent& c) {
+    auto& component = c.data();
     sl::ui::treeNode(
       ICON_FA_SUN "  DirectionalLight",
       [&]() {
@@ -108,8 +109,8 @@ void renderDirectionalLight(sl::DirectionalLight& component) {
 }
 
 ComponentViews::ComponentViews() {
-    registerView<sl::DirectionalLight>(renderDirectionalLight);
-    registerView<sl::PointLight>(renderPointLight);
+    registerView<sl::DirectionalLightComponent>(renderDirectionalLight);
+    registerView<sl::PointLightComponent>(renderPointLight);
 }
 
 void ComponentViews::render(std::type_index index, void* component) {

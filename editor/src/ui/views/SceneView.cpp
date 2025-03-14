@@ -2,7 +2,6 @@
 
 #include "Events.hh"
 
-#include <starlight/renderer/MeshComposite.hh>
 #include <starlight/app/factories/MeshFactory.hh>
 #include <starlight/app/factories/MaterialFactory.hh>
 #include <starlight/app/factories/TextureFactory.hh>
@@ -68,14 +67,14 @@ void SceneView::renderEntitiesTab() {
         editorWriteWarn("Component already added, skipping..."); \
     } else {                                                     \
         editorWriteDebug("Adding component: {}", #Component);    \
-        entity.addComponent<Component>(__VA_ARGS__);             \
+        entity.add<Component>(__VA_ARGS__);                      \
     }
 
 void renderEntityInspector(
   sl::Entity& entity, SceneView::EntityData& entityData, ComponentViews& views
 ) {
     static std::vector<const char*> componentNames = {
-        "MeshComposite", "PointLight", "DirectionalLight"
+        "Model", "PointLight", "DirectionalLight"
     };
 
     entityData.nameBuffer = entity.name;
@@ -107,22 +106,22 @@ void renderEntityInspector(
               entityData.selectedComponentIndex
             );
 
-            if (entityData.selectedComponentIndex == 0) {
-                ADD_COMPONENT(
-                  sl::MeshComposite, sl::MeshFactory::get().getCube(),
-                  sl::MaterialFactory::get().getDefault()
-                );
-            } else if (entityData.selectedComponentIndex == 1) {
-                ADD_COMPONENT(sl::PointLight);
-            } else if (entityData.selectedComponentIndex == 2) {
-                ADD_COMPONENT(sl::DirectionalLight);
-            }
+            // if (entityData.selectedComponentIndex == 0) {
+            //     ADD_COMPONENT(
+            //       sl::MeshComposite, sl::MeshFactory::get().getCube(),
+            //       sl::MaterialFactory::get().getDefault()
+            //     );
+            // } else if (entityData.selectedComponentIndex == 1) {
+            //     ADD_COMPONENT(sl::PointLight);
+            // } else if (entityData.selectedComponentIndex == 2) {
+            //     ADD_COMPONENT(sl::DirectionalLight);
+            // }
         }
 
         for (const auto& componentType : entity.getComponentTypes()) {
             sl::ui::separator();
             sl::ui::namedScope(componentType.name(), [&]() {
-                views.render(componentType, entity.getComponent(componentType));
+                views.render(componentType, entity.get(componentType));
             });
         }
     });

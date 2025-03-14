@@ -16,13 +16,13 @@ struct ComponentContainerBase : public NonCopyable {
 };
 
 template <typename T> class ComponentContainer : public ComponentContainerBase {
-    using ComponentBuffer              = FlatMap<u64, Component<T>>;
+    using ComponentBuffer              = FlatMap<u64, T>;
     static constexpr u64 maxComponents = 1024;
 
 public:
     explicit ComponentContainer() : m_components(maxComponents) {}
 
-    template <typename... Args> Component<T>& add(u64 entityId, Args&&... args) {
+    template <typename... Args> T& add(u64 entityId, Args&&... args) {
         // entityId is a key for the map but also Component<T> ctor argument
         auto record =
           m_components.emplace(entityId, entityId, std::forward<Args>(args)...);
@@ -32,10 +32,10 @@ public:
 
     bool has(u64 entityId) { return m_components.has(entityId); }
 
-    Component<T>& get(u64 entityId) { return *m_components.get(entityId); }
+    T& get(u64 entityId) { return *m_components.get(entityId); }
 
     template <typename C>
-    requires Callable<C, void, Component<T>&>
+    requires Callable<C, void, T&>
     void forEach(C&& callback) {
         m_components.forEach([&]([[maybe_unused]] const auto& k, auto& v) {
             callback(v);
@@ -43,7 +43,7 @@ public:
     }
 
     void* getRaw(u64 entityId) override {
-        return static_cast<void*>(&(m_components.get(entityId)->data()));
+        return static_cast<void*>(m_components.get(entityId));
     }
 
     template <typename C>

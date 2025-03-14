@@ -15,8 +15,7 @@ class ComponentManager {
       std::unordered_map<std::type_index, UniquePtr<ComponentContainerBase>>;
 
 public:
-    template <typename T, typename... Args>
-    Component<T>& add(u64 entityId, Args&&... args) {
+    template <typename T, typename... Args> T& add(u64 entityId, Args&&... args) {
         return getComponentContainer<T>().add(entityId, std::forward<Args>(args)...);
     }
 
@@ -24,7 +23,7 @@ public:
         return getComponentContainer<T>().has(entityId);
     }
 
-    template <typename T> Component<T>& get(u64 entityId) {
+    template <typename T> T& get(u64 entityId) {
         return getComponentContainer<T>().get(entityId);
     }
 
@@ -42,7 +41,6 @@ public:
         auto& type = typeid(T);
 
         if (not m_componentContainers.contains(type)) [[unlikely]] {
-            sl::log::warn("Creating new container: {}", type.name());
             m_componentContainers[type] = UniquePtr<ComponentContainer<T>>::create();
         }
         return *static_cast<ComponentContainer<T>*>(

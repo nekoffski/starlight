@@ -1,15 +1,19 @@
 #include "BuiltinSerializers.hh"
 
 #include "starlight/core/Json.hh"
-#include "starlight/renderer/MeshComposite.hh"
 #include "starlight/app/factories/MaterialFactory.hh"
 #include "starlight/app/factories/MeshFactory.hh"
+#include "starlight/app/factories/ModelFactory.hh"
+
+#include "Components.hh"
 
 #include "SceneParser.hh"
 
 namespace sl {
 
-nlohmann::json serializeDirectionalLight(DirectionalLight& component) {
+nlohmann::json serializeDirectionalLight(DirectionalLightComponent& c) {
+    auto& component = c.data();
+
     nlohmann::json json;
     json["color"]     = component.color;
     json["direction"] = component.direction;
@@ -18,12 +22,17 @@ nlohmann::json serializeDirectionalLight(DirectionalLight& component) {
 }
 
 void deserializeDirectionalLight(Entity& entity, const nlohmann::json& json) {
-    entity.addComponent<DirectionalLight>(
-      json.at("color").get<Vec4<f32>>(), json.at("direction").get<Vec3<f32>>()
-    );
+    const auto color     = json.at("color").get<Vec4<f32>>();
+    const auto direction = json.at("direction").get<Vec3<f32>>();
+
+    log::debug("Deserialized DirectionalLightComponent: {}/{}", color, direction);
+
+    entity.add<DirectionalLightComponent>(color, direction);
 }
 
-nlohmann::json serializePointLight(PointLight& component) {
+nlohmann::json serializePointLight(PointLightComponent& c) {
+    auto& component = c.data();
+
     nlohmann::json json;
     const auto& pointLightData = component.getShaderData();
 
@@ -35,50 +44,67 @@ nlohmann::json serializePointLight(PointLight& component) {
 }
 
 void deserializePointLight(Entity& entity, const nlohmann::json& json) {
-    entity.addComponent<PointLight>(
-      json.at("color").get<Vec4<f32>>(), json.at("position").get<Vec3<f32>>(),
-      json.at("attenuation").get<Vec3<f32>>()
+    const auto color       = json.at("color").get<Vec4<f32>>();
+    const auto position    = json.at("position").get<Vec3<f32>>();
+    const auto attenuation = json.at("attenuation").get<Vec3<f32>>();
+
+    log::debug(
+      "Deserialized PointLightComponent: {}/{}/{}", color, position, attenuation
     );
+    entity.add<PointLightComponent>(color, position, attenuation);
 }
 
-nlohmann::json serializeMeshComposite(MeshComposite& component) {
+nlohmann::json serializeModel(ModelComponent& c) {
+    auto& component = c.data();
+
     nlohmann::json json;
-
-    // just root for now
-    auto& root = component.getRoot();
-
-    json["material"] = root.material->name;
-    json["mesh"]     = root.mesh->name;
+    // todo
 
     return json;
 }
 
-void deserializeMeshComposite(Entity& entity, const nlohmann::json& json) {
-    // TODO: store default materials/meshes/shaders/textures in some lookup table
-    static const auto getMesh = [](const std::string& name) {
-        return MeshFactory::get().find(name);
-    };
+void deserializeModel(Entity& entity, const nlohmann::json& json) {
+    auto& meshFactory     = MeshFactory::get();
+    auto& modelFactory    = ModelFactory::get();
+    auto& materialFactory = MaterialFactory::get();
 
-    static const auto getMaterial = [](const std::string& name) {
-        return MaterialFactory::get().load(name);
-    };
+    auto model = [&] {
+        switch (const auto type = json.at("type").get<Model::Type>(); type) {
+            case Model::Type::custom: {
+                log::debug("Deserializing CustomModel");
+                auto model = modelFactory.create();
+                for (const auto& sub : json.at("body")) {
+                    const auto meshName     = sub.at("mesh").get<std::string>();
+                    const auto materialName = sub.at("material").get<std::string>();
 
-    auto mesh     = getMesh(json.at("mesh").get<std::string>());
-    auto material = getMaterial(json.at("material").get<std::string>());
+                    log::debug("SubModel: {}/{}", meshName, materialName);
 
-    entity.addComponent<MeshComposite>(mesh, material);
+                    model->addSub(
+                      meshFactory.find(meshName), materialFactory.load(materialName)
+                    );
+                }
+                return model;
+            }
+
+            case Model::Type::wavefront: {
+                break;
+            }
+        }
+    }();
+    entity.add<ModelComponent>(model);
 }
 
 void registerBuiltinComponents(SceneParser& parser) {
     parser
-      .registerComponent<DirectionalLight>(
-        "DirectionalLight", serializeDirectionalLight, deserializeDirectionalLight
+      .registerComponent<DirectionalLightComponent>(
+        "DirectionalLightComponent", serializeDirectionalLight,
+        deserializeDirectionalLight
       )
-      .registerComponent<PointLight>(
-        "PointLight", serializePointLight, deserializePointLight
+      .registerComponent<PointLightComponent>(
+        "PointLightComponent", serializePointLight, deserializePointLight
       )
-      .registerComponent<MeshComposite>(
-        "MeshComposite", serializeMeshComposite, deserializeMeshComposite
+      .registerComponent<ModelComponent>(
+        "ModelComponent", serializeModel, deserializeModel
       );
 }
 

@@ -1,7 +1,7 @@
 #include "Scene.hh"
 
-#include "starlight/renderer/MeshComposite.hh"
-#include "starlight/renderer/light/PointLight.hh"
+#include "starlight/app/model/Model.hh"
+#include "Components.hh"
 
 namespace sl {
 
@@ -16,28 +16,20 @@ RenderPacket Scene::getRenderPacket() {
     packet.directionalLights.reserve(maxDirectionalLights);
     packet.pointLights.reserve(maxPointLights);
 
-    m_componentManager.getComponentContainer<MeshComposite>().forEach(
-      [&](Component<MeshComposite>& meshComposite) {
-          meshComposite.data().traverse([&](MeshComposite::Node& node) {
-              for (auto& instance : node.getInstances()) {
-                  packet.entities.emplace_back(
-                    instance.getWorld(), node.mesh.get(), node.material.get()
-                  );
-              }
-          });
-      }
+    m_componentManager.getComponentContainer<ModelComponent>().forEach([&](auto& c) {
+        auto& model     = c.data();
+        auto& transform = model.getTransform();
+        model.traverse([&](Mesh& mesh, Material& material) {
+            packet.entities.emplace_back(transform.getWorld(), &mesh, &material);
+        });
+    });
+
+    m_componentManager.getComponentContainer<PointLightComponent>().forEach(
+      [&](auto& light) { packet.pointLights.push_back(light.data()); }
     );
 
-    m_componentManager.getComponentContainer<PointLight>().forEach(
-      [&](Component<PointLight>& light) {
-          packet.pointLights.push_back(light.data());
-      }
-    );
-
-    m_componentManager.getComponentContainer<DirectionalLight>().forEach(
-      [&](Component<DirectionalLight>& light) {
-          packet.directionalLights.push_back(light.data());
-      }
+    m_componentManager.getComponentContainer<DirectionalLightComponent>().forEach(
+      [&](auto& light) { packet.directionalLights.push_back(light.data()); }
     );
 
     // mock for testing
