@@ -22,6 +22,8 @@ struct ModelComponent : Component<SharedPtr<Model>> {
 
 struct TransformComponent : Component<Transform> {
     using Component::Component;
+
+    void onInit() override;
 };
 
 }  // namespace sl

@@ -76,7 +76,7 @@ void renderEntityInspector(
   sl::Entity& entity, SceneView::EntityData& entityData, ComponentViews& views
 ) {
     static std::vector<const char*> componentNames = {
-        "Model", "PointLight", "DirectionalLight"
+        "Model", "PointLight", "DirectionalLight", "Transform"
     };
 
     entityData.nameBuffer = entity.name;
@@ -116,6 +116,8 @@ void renderEntityInspector(
                 ADD_COMPONENT(sl::PointLightComponent);
             } else if (entityData.selectedComponentIndex == 2) {
                 ADD_COMPONENT(sl::DirectionalLightComponent);
+            } else if (entityData.selectedComponentIndex == 3) {
+                ADD_COMPONENT(sl::TransformComponent);
             }
         }
 

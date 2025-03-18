@@ -14,6 +14,12 @@ public:
     virtual ~ComponentBase() = default;
     u64 getEntityId() const;
 
+    virtual void onInit() {}
+    virtual void onDestroy() {}
+
+    // todo: const
+    Entity& getEntity();
+
 private:
     Entity& m_entity;
 };

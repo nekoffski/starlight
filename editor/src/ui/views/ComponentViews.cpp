@@ -5,75 +5,6 @@
 
 namespace sle {
 
-// void MeshCompositeUI::renderInstanceUI(sl::Transform& instance) {
-//     auto position = instance.getPosition();
-//     if (sl::ui::slider("Position", position, { -10.0f, 10.0f, 0.01f })) {
-//         instance.setPosition(position);
-//     }
-//     auto scale = instance.getScale();
-//     if (sl::ui::slider("Scale", scale, { -5.0f, 5.0f, 0.01f })) {
-//         instance.setScale(scale);
-//     }
-// }
-
-// void MeshCompositeUI::renderNodeUI(sl::MeshComposite::Node& node) {
-//     // sl::ui::combo(
-//     //   "Mesh", node.mesh->name, sl::MeshFactory::get().getAll(),
-//     //   [&](auto& mesh) { node.mesh = mesh; }
-//     // );
-//     // sl::ui::combo(
-//     //   "Material", node.material->name, sl::MaterialFactory::get().getAll(),
-//     //   [&](auto& material) { node.material = material; }
-//     // );
-//     if (sl::ui::button("Add Instance")) node.addInstance();
-// }
-
-// void MeshCompositeUI::renderMeshCompositeUI([[maybe_unused]] sl::MeshComposite&
-// mesh ) {}
-
-// bool MeshCompositeUI::renderSceneNode(sl::MeshComposite& component) {
-//     const auto treeFlags =
-//       ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen;
-//     bool clicked = false;
-
-//     auto uiOnClick = [&](auto&& callback) {
-//         if (sl::ui::wasItemClicked()) {
-//             clicked = true;
-//             sl::EventProxy::get().emit<events::SetComponentUICallback>(
-//               std::move(callback)
-//             );
-//         }
-//     };
-
-//     sl::ui::treeNode(
-//       ICON_FA_CUBES "  MeshComposite",
-//       [&]() {
-//           uiOnClick([&]() { renderMeshCompositeUI(component); });
-
-//           component.traverse([&](auto& node) {
-//               sl::ui::treeNode(
-//                 fmt::format("{}  {}", ICON_FA_CUBE, node.name),
-//                 [&]() {
-//                     uiOnClick([&]() { renderNodeUI(node); });
-
-//                     auto instances = node.getInstances();
-//                     for (sl::u64 i = 0; i < instances.size(); ++i) {
-//                         auto& instance          = instances[i];
-//                         const auto instanceName = fmt::format("Instance_{}", i);
-//                         ImGui::BulletText("%s", instanceName.c_str());
-//                         uiOnClick([&]() { renderInstanceUI(instance); });
-//                     }
-//                 },
-//                 treeFlags
-//               );
-//           });
-//       },
-//       treeFlags
-//     );
-
-//     return clicked;
-// }
-
 void renderPointLight(sl::PointLightComponent& c) {
     auto& component = c.data();
     sl::ui::treeNode(
@@ -108,9 +39,47 @@ void renderDirectionalLight(sl::DirectionalLightComponent& c) {
     );
 }
 
+void renderModel(sl::ModelComponent& c) {
+    auto& component = c.data();
+    sl::ui::treeNode(
+      ICON_FA_CAR "  Model",
+      [&]() {
+
+      },
+      ImGuiTreeNodeFlags_DefaultOpen
+    );
+}
+
+void renderTransform(sl::TransformComponent& c) {
+    auto& component = c.data();
+    sl::ui::treeNode(
+      ICON_FA_ARROWS_ALT "  Transform",
+      [&]() {
+          auto position = component.getPosition();
+          if (sl::ui::slider("##Position", position, { -10.0f, 10.0f, 0.01f }))
+              component.setPosition(position);
+          sl::ui::sameLine();
+          sl::ui::text("Position");
+
+          //   auto rotation = component.getRotation();
+          //   if (sl::ui::slider("##Rotation", rotation, { -1.0f, 1.0f, 0.02f }))
+          //       component.setRotation(rotation);
+
+          auto scale = component.getScale();
+          if (sl::ui::slider("##Scale", scale, { -5.0f, 5.0f, 0.01f }))
+              component.setScale(scale);
+          sl::ui::sameLine();
+          sl::ui::text("Scale");
+      },
+      ImGuiTreeNodeFlags_DefaultOpen
+    );
+}
+
 ComponentViews::ComponentViews() {
     registerView<sl::DirectionalLightComponent>(renderDirectionalLight);
     registerView<sl::PointLightComponent>(renderPointLight);
+    registerView<sl::ModelComponent>(renderModel);
+    registerView<sl::TransformComponent>(renderTransform);
 }
 
 void ComponentViews::render(std::type_index index, void* component) {

@@ -25,13 +25,16 @@ public:
         getRenderGraph()->addPass<sl::ShadowMapsRenderPass>();
         getRenderGraph()->addPass<sl::WorldRenderPass>(viewportOffset);
         getRenderGraph()->addPass<sl::GridRenderPass>(viewportOffset);
+
+        getScene()->getEntity("Entity_0")->add<sl::TransformComponent>();
     }
 
 private:
     void update(float frameTime) override {
-        auto entity = getScene()->getEntity("Entity_0");
+        auto entity     = getScene()->getEntity("Entity_0");
+        auto& transform = entity->get<sl::TransformComponent>()->data();
 
-        // transform.rotate(sl::worldUp, frameTime * 0.1f);
+        transform.rotate(sl::worldUp, frameTime * 0.1f);
     }
 };
 

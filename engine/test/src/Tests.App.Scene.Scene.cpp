@@ -25,7 +25,7 @@ TEST_F(SceneTests, givenScene_whenAddingComponent_shouldHaveCorrectValues) {
     auto& entity2 = scene.addEntity("test-entity2");
     entity2.add<sl::PointLightComponent>();
 
-    auto& c = entity2.get<sl::PointLightComponent>().data();
+    auto& c = entity2.get<sl::PointLightComponent>()->data();
 
     EXPECT_FLOAT_EQ(c.color.x, color.x);
     EXPECT_FLOAT_EQ(c.color.y, color.y);

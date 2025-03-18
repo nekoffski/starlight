@@ -24,13 +24,15 @@ public:
           not container->has(id), "Could not add the same component twice"
         );
         m_componentTypes.emplace_back(typeid(T));
-        return *container->emplace(id, *this, std::forward<Args>(args)...);
+        auto component = container->emplace(id, *this, std::forward<Args>(args)...);
+        component->onInit();
+        return *component;
     }
 
     template <typename T>
     requires std::derived_from<T, ComponentBase>
-    T& get() {
-        return *m_componentManager.getContainer<T>()->get(id);
+    T* get() {
+        return m_componentManager.getContainer<T>()->get(id);
     }
 
     template <typename T>
