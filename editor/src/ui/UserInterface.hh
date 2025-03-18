@@ -58,7 +58,7 @@ private:
 
     SceneView m_sceneView;
     PropertiesView m_propertiesView;
-    // ResourcesView m_resourcesView;
+    ResourcesView m_resourcesView;
 };
 
 }  // namespace sle

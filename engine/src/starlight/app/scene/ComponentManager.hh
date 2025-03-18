@@ -3,39 +3,46 @@
 #include <typeindex>
 #include <unordered_map>
 
+#include "starlight/core/Core.hh"
+#include "starlight/core/Concepts.hh"
 #include "starlight/core/memory/Memory.hh"
+#include "starlight/core/containers/FlatMap.hh"
 
 #include "Component.hh"
-#include "ComponentContainer.hh"
 
 namespace sl {
+
+struct ComponentContainerBase : public NonCopyable {
+    virtual ~ComponentContainerBase()  = default;
+    virtual void* getRaw(u64 entityId) = 0;
+};
+
+template <typename T> class ComponentContainer : public ComponentContainerBase {
+    using ComponentBuffer              = FlatMap<u64, T>;
+    static constexpr u64 maxComponents = 1024;
+
+public:
+    explicit ComponentContainer() : m_components(maxComponents) {}
+    ComponentBuffer* operator->() { return &m_components; }
+
+    void* getRaw(u64 entityId) override {
+        return static_cast<void*>(m_components.get(entityId));
+    }
+
+private:
+    ComponentBuffer m_components;
+};
 
 class ComponentManager {
     using ComponentContainers =
       std::unordered_map<std::type_index, UniquePtr<ComponentContainerBase>>;
 
 public:
-    template <typename T, typename... Args> T& add(u64 entityId, Args&&... args) {
-        return getComponentContainer<T>().add(entityId, std::forward<Args>(args)...);
+    ComponentContainerBase& getContainer(const std::type_index& index) {
+        return *m_componentContainers.at(index);
     }
 
-    template <typename T> bool has(u64 entityId) {
-        return getComponentContainer<T>().has(entityId);
-    }
-
-    template <typename T> T& get(u64 entityId) {
-        return getComponentContainer<T>().get(entityId);
-    }
-
-    void* getComponent(std::type_index type, u64 entityId) {
-        log::expect(
-          m_componentContainers.contains(type),
-          "Could not find container for type: {}", type.name()
-        );
-        return m_componentContainers.at(type)->getRaw(entityId);
-    }
-
-    template <typename T> ComponentContainer<T>& getComponentContainer() {
+    template <typename T> ComponentContainer<T>& getContainer() {
         // we could calculate hash once but iterator version is very long and hard to
         // read, in case of under-performance - rewrite
         auto& type = typeid(T);

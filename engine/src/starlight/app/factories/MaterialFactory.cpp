@@ -50,6 +50,8 @@ MaterialFactory::MaterialFactory() { createDefault(); }
 SharedPtr<Material> MaterialFactory::load(
   const std::string& name, const FileSystem& fs
 ) {
+    if (auto resource = find(name); resource) return resource;
+
     const auto& materialsPath = Globals::get().getConfig().paths.materials;
     const auto fullPath       = fmt::format("{}/{}.json", materialsPath, name);
 

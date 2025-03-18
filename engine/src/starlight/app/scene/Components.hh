@@ -20,4 +20,8 @@ struct ModelComponent : Component<SharedPtr<Model>> {
     using Component::Component;
 };
 
+struct TransformComponent : Component<Transform> {
+    using Component::Component;
+};
+
 }  // namespace sl

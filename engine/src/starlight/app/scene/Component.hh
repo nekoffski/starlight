@@ -3,11 +3,19 @@
 #include "starlight/core/Id.hh"
 #include "starlight/core/memory/Memory.hh"
 
+#include "fwd.hh"
+
 namespace sl {
 
-struct ComponentBase {
-    virtual ~ComponentBase()        = default;
-    virtual u64 getEntityId() const = 0;
+class ComponentBase {
+public:
+    explicit ComponentBase(Entity& entity);
+
+    virtual ~ComponentBase() = default;
+    u64 getEntityId() const;
+
+private:
+    Entity& m_entity;
 };
 
 namespace detail {
@@ -16,13 +24,10 @@ template <typename T>
 class ComponentImpl : public Identificable<ComponentImpl<T>>, public ComponentBase {
 public:
     template <typename... Args>
-    explicit ComponentImpl(u64 entityId, Args&&... args) :
-        m_entityId(entityId), m_data(std::forward<Args>(args)...) {}
-
-    u64 getEntityId() const override { return m_entityId; }
+    explicit ComponentImpl(Entity& entity, Args&&... args) :
+        ComponentBase(entity), m_data(std::forward<Args>(args)...) {}
 
 protected:
-    u64 m_entityId;
     T m_data;
 };
 

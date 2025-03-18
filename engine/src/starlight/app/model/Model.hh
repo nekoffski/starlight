@@ -19,16 +19,15 @@ public:
     struct Sub {
         SharedPtr<Mesh> mesh;
         SharedPtr<Material> material;
+        Transform transform = {};
     };
 
     explicit Model(OptStr name = {});
 
-    Transform& getTransform();
-
     template <typename C>
-    requires Callable<C, void, Mesh&, Material&>
+    requires Callable<C, void, Sub&>
     void traverse(C&& callback) {
-        for (auto& [mesh, material] : m_subs) callback(*mesh, *material);
+        for (auto& sub : m_subs) callback(sub);
     }
 
     virtual Type getType() const             = 0;
@@ -36,7 +35,6 @@ public:
 
 protected:
     std::vector<Sub> m_subs;
-    Transform m_transform;
 };
 
 }  // namespace sl

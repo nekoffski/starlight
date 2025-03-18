@@ -6,7 +6,7 @@
 
 namespace sl {
 
-class TextureFactory : public Factory<TextureFactory, Texture> {
+class TextureFactory : public Factory<TextureFactory, Texture, Texture::Type> {
 public:
     explicit TextureFactory();
 

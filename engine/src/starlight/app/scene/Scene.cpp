@@ -16,21 +16,22 @@ RenderPacket Scene::getRenderPacket() {
     packet.directionalLights.reserve(maxDirectionalLights);
     packet.pointLights.reserve(maxPointLights);
 
-    m_componentManager.getComponentContainer<ModelComponent>().forEach([&](auto& c) {
-        auto& model     = c.data();
-        auto& transform = model.getTransform();
-        model.traverse([&](Mesh& mesh, Material& material) {
-            packet.entities.emplace_back(transform.getWorld(), &mesh, &material);
+    forEach<ModelComponent>([&](auto& c) {
+        auto& model = c.data();
+        model.traverse([&](Model::Sub& sub) {
+            packet.entities.emplace_back(
+              sub.transform.getWorld(), sub.mesh.get(), sub.material.get()
+            );
         });
     });
 
-    m_componentManager.getComponentContainer<PointLightComponent>().forEach(
-      [&](auto& light) { packet.pointLights.push_back(light.data()); }
-    );
+    forEach<PointLightComponent>([&](auto& light) {
+        packet.pointLights.push_back(light.data());
+    });
 
-    m_componentManager.getComponentContainer<DirectionalLightComponent>().forEach(
-      [&](auto& light) { packet.directionalLights.push_back(light.data()); }
-    );
+    forEach<DirectionalLightComponent>([&](auto& light) {
+        packet.directionalLights.push_back(light.data());
+    });
 
     // mock for testing
     // PointLight light;
@@ -65,6 +66,12 @@ Entity& Scene::addEntity(std::optional<std::string> name) {
     auto record = m_entities.emplace(m_componentManager, name);
     log::expect(record, "Could not add entity");
     return *record;
+}
+
+Entity* Scene::getEntity(const std::string& name) {
+    return m_entities.find([&](auto& entity) -> bool {
+        return entity.name == name;
+    });
 }
 
 void Scene::setSkybox(SharedPtr<Skybox> skybox) { m_skybox = std::move(skybox); }

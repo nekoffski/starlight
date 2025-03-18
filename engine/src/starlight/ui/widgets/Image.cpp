@@ -17,8 +17,8 @@ private:
     VkDescriptorSet m_descriptorSet;
 };
 
-std::unique_ptr<ImageHandle> ImageHandle::createHandle(Texture* texture) {
-    return std::make_unique<VulkanImageHandle>(texture);
+UniquePtr<ImageHandle> ImageHandle::createHandle(Texture* texture) {
+    return UniquePtr<VulkanImageHandle>::create(texture);
 }
 
 VulkanImageHandle::VulkanImageHandle(Texture* texture
@@ -34,7 +34,7 @@ void VulkanImageHandle::show(
 }
 
 VkDescriptorSet VulkanImageHandle::createDescriptorSet(Texture* texture) {
-    auto vulkanTexture = static_cast<vk::VulkanTexture*>(texture);
+    auto vulkanTexture = static_cast<vk::VulkanTextureBase*>(texture);
     auto sampler       = vulkanTexture->getSampler();
     auto view          = vulkanTexture->getView();
 

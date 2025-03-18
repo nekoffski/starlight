@@ -40,7 +40,8 @@ UserInterface::UserInterface(
   const Config& config
 ) :
     m_eventSentinel(sl::EventProxy::get()), m_config(config), m_viewport(viewport),
-    m_data(scene, renderGraph), m_sceneView(m_data), m_propertiesView(m_data) {
+    m_data(scene, renderGraph), m_sceneView(m_data), m_propertiesView(m_data),
+    m_resourcesView(m_data) {
     m_eventSentinel.add<sl::WindowResized>([&](auto& event) {
         onViewportReisze(event.size);
     });
@@ -85,12 +86,7 @@ const UserInterface::Config& UserInterface::getConfig() const { return m_config;
 
 void UserInterface::initBottomCombo() {
     (*m_bottomCombo)
-      .addPanel(
-        ICON_FA_FOLDER "  Resources",
-        [&]() {
-            // m_resourcesView.render();
-        }
-      )
+      .addPanel(ICON_FA_FOLDER "  Resources", [&]() { m_resourcesView.render(); })
       .addPanel(ICON_FA_TERMINAL "  Messages", [&]() {
           sl::ui::namedScope("console-content", [&]() {
               sl::ui::text("{}", m_console.getBuffer());

@@ -7,6 +7,12 @@ namespace sl {
 
 // SharedPtr<Model> ModelFactory::load(const std::string& name) {}
 
+ModelFactory::ModelFactory() {
+    m_defaultModel = create("Cube");
+    m_defaultModel
+      ->addSub(MeshFactory::get().getCube(), MaterialFactory::get().getDefault());
+}
+
 SharedPtr<CustomModel> ModelFactory::create(OptStr name) {
     if (name) {
         // TODO: need shared pointer dowcasting
@@ -18,5 +24,7 @@ SharedPtr<CustomModel> ModelFactory::create(OptStr name) {
     save(model);
     return model;
 }
+
+SharedPtr<Model> ModelFactory::getDefault() { return m_defaultModel; }
 
 }  // namespace sl

@@ -23,7 +23,7 @@ void SceneParser::serialize(Scene& scene, const std::string& path) {
         root["skybox"] = skyboxName;
     }
 
-    scene.forEachEntity([&](auto& entity) {
+    scene.forEach([&](Entity& entity) {
         root["entities"].push_back(serializeEntity(entity));
     });
 

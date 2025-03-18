@@ -5,6 +5,8 @@
 #include <starlight/app/factories/MeshFactory.hh>
 #include <starlight/app/factories/MaterialFactory.hh>
 #include <starlight/app/factories/TextureFactory.hh>
+#include <starlight/app/factories/ModelFactory.hh>
+#include <starlight/app/scene/Components.hh>
 
 namespace sle {
 
@@ -33,7 +35,7 @@ void SceneView::renderEntitiesTab() {
     sl::ui::treeNode(
       "Root",
       [&]() {
-          scene.forEachEntity([&](sl::Entity& entity) {
+          scene.forEach([&](sl::Entity& entity) {
               auto flags =
                 ImGuiTreeNodeFlags_OpenOnDoubleClick
                 | ImGuiTreeNodeFlags_DefaultOpen;
@@ -63,7 +65,7 @@ void SceneView::renderEntitiesTab() {
 }
 
 #define ADD_COMPONENT(Component, ...)                            \
-    if (entity.hasComponent<Component>()) {                      \
+    if (entity.has<Component>()) {                               \
         editorWriteWarn("Component already added, skipping..."); \
     } else {                                                     \
         editorWriteDebug("Adding component: {}", #Component);    \
@@ -106,16 +108,15 @@ void renderEntityInspector(
               entityData.selectedComponentIndex
             );
 
-            // if (entityData.selectedComponentIndex == 0) {
-            //     ADD_COMPONENT(
-            //       sl::MeshComposite, sl::MeshFactory::get().getCube(),
-            //       sl::MaterialFactory::get().getDefault()
-            //     );
-            // } else if (entityData.selectedComponentIndex == 1) {
-            //     ADD_COMPONENT(sl::PointLight);
-            // } else if (entityData.selectedComponentIndex == 2) {
-            //     ADD_COMPONENT(sl::DirectionalLight);
-            // }
+            if (entityData.selectedComponentIndex == 0) {
+                ADD_COMPONENT(
+                  sl::ModelComponent, sl::ModelFactory::get().getDefault()
+                );
+            } else if (entityData.selectedComponentIndex == 1) {
+                ADD_COMPONENT(sl::PointLightComponent);
+            } else if (entityData.selectedComponentIndex == 2) {
+                ADD_COMPONENT(sl::DirectionalLightComponent);
+            }
         }
 
         for (const auto& componentType : entity.getComponentTypes()) {

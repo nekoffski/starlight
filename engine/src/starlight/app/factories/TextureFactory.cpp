@@ -135,7 +135,7 @@ static std::optional<Texture::ImageData> loadImageData(
              : loadFlatImageData(path, Texture::Orientation::vertical);
 }
 
-TextureFactory::TextureFactory() {}
+TextureFactory::TextureFactory() { createDefaults(); }
 
 SharedPtr<Texture> TextureFactory::load(
   const std::string& name, Texture::Type textureType,
@@ -148,7 +148,7 @@ SharedPtr<Texture> TextureFactory::load(
     const auto fullPath     = fmt::format("{}/{}", texturesPath, name);
 
     if (auto data = loadImageData(fullPath, textureType); data)
-        return save(Texture::create(*data, sampler, name));
+        return save(Texture::create(*data, sampler, name), textureType);
 
     log::warn("Could not process texture: {}", fullPath);
     return nullptr;
@@ -161,15 +161,18 @@ void TextureFactory::createDefaults() {
 
     auto sampler = Texture::SamplerProperties::createDefault();
 
-    m_defaultSpecularMap =
-      save(Texture::create(image, sampler, "Default.SpecularMap"));
+    m_defaultSpecularMap = save(
+      Texture::create(image, sampler, "Default.SpecularMap"), Texture::Type::flat
+    );
 
     for (auto index = 0u; index < bufferSize; index += image.channels) {
         image.pixels[index]     = 128;
         image.pixels[index + 1] = 128;
         image.pixels[index + 2] = 255;
     }
-    m_defaultNormalMap = save(Texture::create(image, sampler, "Default.NormalMap"));
+    m_defaultNormalMap = save(
+      Texture::create(image, sampler, "Default.NormalMap"), Texture::Type::flat
+    );
 
     static constexpr u8 white    = 255u;
     static constexpr u8 black    = 0u;
@@ -191,7 +194,8 @@ void TextureFactory::createDefaults() {
             image.pixels[index + 2] = color;
         }
     }
-    m_defaultDiffuseMap = save(Texture::create(image, sampler, "Default.DiffuseMap")
+    m_defaultDiffuseMap = save(
+      Texture::create(image, sampler, "Default.DiffuseMap"), Texture::Type::flat
     );
 }
 

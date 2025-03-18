@@ -19,26 +19,28 @@ public:
     template <typename T, typename... Args>
     requires std::derived_from<T, ComponentBase>
     T& add(Args&&... args) {
-        log::expect(not has<T>(), "Could not add the same component twice");
+        auto& container = m_componentManager.getContainer<T>();
+        log::expect(
+          not container->has(id), "Could not add the same component twice"
+        );
         m_componentTypes.emplace_back(typeid(T));
-        return m_componentManager.add<T>(id, std::forward<Args>(args)...);
+        return *container->emplace(id, *this, std::forward<Args>(args)...);
     }
 
     template <typename T>
     requires std::derived_from<T, ComponentBase>
     T& get() {
-        return m_componentManager.get<T>(id);
+        return *m_componentManager.getContainer<T>()->get(id);
     }
 
     template <typename T>
     requires std::derived_from<T, ComponentBase>
     bool has() {
-        return std::find(m_componentTypes.begin(), m_componentTypes.end(), typeid(T))
-               != m_componentTypes.end();
+        return m_componentManager.getContainer<T>()->has(id);
     }
 
     void* get(std::type_index component) {
-        return m_componentManager.getComponent(component, id);
+        return m_componentManager.getContainer(component).getRaw(id);
     }
 
     std::span<const std::type_index> getComponentTypes() const {

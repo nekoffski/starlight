@@ -25,11 +25,21 @@ public:
 
     template <typename C>
     requires Callable<C, void, Entity&>
-    void forEachEntity(C&& callback) {
+    void forEach(C&& callback) {
         m_entities.forEach(std::forward<C>(callback));
     }
 
+    template <typename Component, typename C>
+    requires std::derived_from<Component, ComponentBase>
+             && Callable<C, void, Component&>
+    void forEach(C&& callback) {
+        m_componentManager.getContainer<Component>()->forEach(
+          [&]([[maybe_unused]] const auto& k, auto& v) { callback(v); }
+        );
+    }
+
     Entity& addEntity(std::optional<std::string> name = {});
+    Entity* getEntity(const std::string& name);
 
     void setSkybox(SharedPtr<Skybox> skybox);
     void resetSkybox();

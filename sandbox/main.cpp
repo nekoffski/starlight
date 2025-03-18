@@ -10,6 +10,7 @@
 #include "starlight/app/renderPasses/WorldRenderPass.hh"
 #include "starlight/app/renderPasses/UIRenderPass.hh"
 #include "starlight/app/scene/SceneParser.hh"
+#include "starlight/app/scene/Components.hh"
 
 class Sandbox : public sl::Engine {
 public:
@@ -27,7 +28,11 @@ public:
     }
 
 private:
-    void update([[maybe_unused]] float frameTime) override {}
+    void update(float frameTime) override {
+        auto entity = getScene()->getEntity("Entity_0");
+
+        // transform.rotate(sl::worldUp, frameTime * 0.1f);
+    }
 };
 
 int main(int argc, char** argv) {
