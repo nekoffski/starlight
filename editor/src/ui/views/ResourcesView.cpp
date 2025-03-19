@@ -30,7 +30,7 @@ static void renderResourceTab(
     sl::ui::separator();
     const auto width = getThumbnailWidth();
 
-    for (sl::u64 i = 0; i < resources.size(); ++i) {
+    for (sl::u64 i = 0u; i < resources.size(); ++i) {
         if (i % rowSize != 0) sl::ui::sameLine();
 
         auto& resource = *resources[i];

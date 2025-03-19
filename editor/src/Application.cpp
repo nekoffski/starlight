@@ -42,6 +42,7 @@ Application::Application(
     getRenderGraph()->addPass<sl::UIRenderPass>(m_userInterface);
 
     m_userInterface.setRenderGraph(*getRenderGraph());
+    m_userInterface.setCamera(*getCamera());
 }
 
 void Application::update([[maybe_unused]] float frameTime) {

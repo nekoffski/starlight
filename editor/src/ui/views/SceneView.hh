@@ -3,6 +3,7 @@
 #include <unordered_map>
 
 #include <starlight/ui/UI.hh>
+#include <starlight/event/EventHandlerSentinel.hh>
 
 #include "Console.hh"
 #include "ComponentViews.hh"
@@ -29,6 +30,12 @@ private:
     ComponentViews m_componentViews;
 
     std::unordered_map<sl::u64, EntityData> m_entitiesData;
+    sl::EventHandlerSentinel m_eventSentinel;
+
+    void setSelectedEntity(sl::Entity& entity);
+    void resetSelectedEntity();
+
+    void traceEntity(const sl::Vec2<sl::f32>& mousePosition);
 
     void renderEntitiesTab();
     void renderSkyboxTab();

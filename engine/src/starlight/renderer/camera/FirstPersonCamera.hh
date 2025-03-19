@@ -15,15 +15,11 @@ public:
 
     explicit FirstPersonCamera(const Properties& props);
 
-    Mat4<f32> getViewMatrix() const override;
-    Vec3<f32> getPosition() const override;
-
     void update(float deltaTime) override;
 
 private:
     void processInput(const float speed);
 
-    Vec3<f32> m_position;
     Vec3<f32> m_front;
     Vec3<f32> m_up;
     Vec3<f32> m_right;

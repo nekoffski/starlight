@@ -1,5 +1,7 @@
 #include "Model.hh"
 
+#include "starlight/physx/bvh/AABB.hh"
+
 namespace sl {
 
 class CustomModel : public Model {
@@ -10,6 +12,11 @@ public:
 
     Type getType() const override;
     nlohmann::json serialize() const override;
+
+    const BoundingVolume* getBoundingVolume() const;
+
+private:
+    AABB m_boundingBox;
 };
 
 }  // namespace sl

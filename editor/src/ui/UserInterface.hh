@@ -16,13 +16,6 @@ namespace sle {
 
 class UserInterface : public sl::UI {
 public:
-    struct Config {
-        static Config createDefault();
-
-        sl::f32 panelWidthRatio;
-        sl::f32 panelHeightRatio;
-    };
-
     explicit UserInterface(
       const sl::Vec2<sl::u32>& viewport, sl::Scene* scene,
       sl::RenderGraph* renderGraph = nullptr,
@@ -30,8 +23,10 @@ public:
     );
 
     void onViewportReisze(const sl::Vec2<sl::u32>& viewport);
+
     void setRenderGraph(sl::RenderGraph& renderGraph);
     void setScene(sl::Scene& scene);
+    void setCamera(sl::Camera& camera);
 
     void render() override;
 
@@ -44,8 +39,6 @@ private:
     void initBottomCombo();
 
     sl::EventHandlerSentinel m_eventSentinel;
-
-    Config m_config;
 
     sl::Vec2<sl::u32> m_viewport;
 

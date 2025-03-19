@@ -36,5 +36,6 @@ using f32 = float;
 using f64 = double;
 
 template <typename T> T max() { return std::numeric_limits<T>::max(); }
+template <typename T> T min() { return std::numeric_limits<T>::min(); }
 
 }  // namespace sl

@@ -8,6 +8,7 @@ find_package(glm REQUIRED)
 find_package(SPIRV-Cross REQUIRED)
 
 add_subdirectory(core)
+add_subdirectory(physx)
 add_subdirectory(event)
 add_subdirectory(window)
 add_subdirectory(renderer)

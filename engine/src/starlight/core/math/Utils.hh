@@ -5,6 +5,9 @@
 #include <concepts>
 #include <cmath>
 
+#include "Glm.hh"
+#include "Vec.hh"
+
 namespace sl {
 
 template <typename T>
@@ -28,5 +31,10 @@ std::optional<std::pair<T, T>> solveQuadraticEquation(T a, T b, T c) {
 
     return std::make_pair(x0, x1);
 }
+
+Vec3<f32> deproject(
+  const Vec2<f32>& mouseCords, const Vec2<u32>& viewport,
+  const Mat4<f32>& invProjectionMatrix, const Mat4<f32>& invViewMatrix
+);
 
 }  // namespace sl

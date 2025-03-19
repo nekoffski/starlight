@@ -7,14 +7,24 @@
 #include <starlight/app/factories/TextureFactory.hh>
 #include <starlight/app/factories/ModelFactory.hh>
 #include <starlight/app/scene/Components.hh>
+#include <starlight/core/math/Utils.hh>
+#include <starlight/physx/Ray.hh>
 
 namespace sle {
 
-SceneView::SceneView(Data& data) : m_data(data), m_tabMenu("Scene") {
+SceneView::SceneView(Data& data
+) : m_data(data), m_tabMenu("Scene"), m_eventSentinel(sl::EventProxy::get()) {
     m_tabMenu
       .addTab(ICON_FA_CODE_BRANCH "  Entities Tree", [&]() { renderEntitiesTab(); })
       .addTab(ICON_FA_CLOUD "  Skybox", [&]() { renderSkyboxTab(); })
       .addTab(ICON_FA_CAMERA "  Camera", [&]() { renderCameraTab(); });
+
+    m_eventSentinel.add<sl::MouseEvent>([&](auto& event) {
+        if (event.action == sl::MouseAction::press
+            && event.button == SL_MOUSE_BUTTON_1) {
+            traceEntity(event.position);
+        }
+    });
 }
 
 void SceneView::render() { m_tabMenu.render(); }
@@ -22,6 +32,55 @@ void SceneView::render() { m_tabMenu.render(); }
 void renderEntityInspector(
   sl::Entity& entity, SceneView::EntityData& entityData, ComponentViews& views
 );
+
+void SceneView::setSelectedEntity(sl::Entity& entity) {
+    m_data.selectedEntity    = &entity;
+    m_data.inspectorCallback = [&]() {
+        renderEntityInspector(entity, m_entitiesData[entity.id], m_componentViews);
+    };
+}
+
+void SceneView::resetSelectedEntity() {
+    m_data.selectedEntity = nullptr;
+    m_data.inspectorCallback.reset();
+}
+
+void SceneView::traceEntity(const sl::Vec2<sl::f32>& mousePosition) {
+    sl::Vec2<sl::f32> viewportOffset{
+        m_data.config.panelWidthRatio, m_data.config.panelHeightRatio
+    };
+
+    auto viewport = sl::Window::get().getFramebufferSize();
+
+    sl::Vec2<sl::f32> biasedMousePosition{
+        mousePosition.x - viewportOffset.x * viewport.x, mousePosition.y
+    };
+
+    viewport.x *= (1.0f - viewportOffset.x);
+    viewport.y *= (1.0f - viewportOffset.y);
+
+    const auto camera = m_data.camera;
+
+    const auto direction = sl::deproject(
+      biasedMousePosition, viewport, camera->getInvProjectionMatrix(),
+      camera->getInvViewMatrix()
+    );
+
+    sl::Ray ray{ camera->getPosition(), direction };
+
+    bool found = false;
+
+    m_data.scene->forEach<sl::ModelComponent>([&](auto& component) {
+        auto boundingVolume = component->getBoundingVolume();
+        component.getEntity();
+        if (auto intersection = boundingVolume->intersects(ray); intersection) {
+            setSelectedEntity(component.getEntity());
+            found = true;
+        }
+    });
+
+    if (not found) resetSelectedEntity();
+}
 
 void SceneView::renderEntitiesTab() {
     auto& scene = *m_data.scene;
@@ -50,14 +109,7 @@ void SceneView::renderEntitiesTab() {
                 },
                 flags
               );
-              if (sl::ui::wasItemClicked()) {
-                  m_data.selectedEntity    = &entity;
-                  m_data.inspectorCallback = [&]() {
-                      renderEntityInspector(
-                        entity, m_entitiesData[entity.id], m_componentViews
-                      );
-                  };
-              }
+              if (sl::ui::wasItemClicked()) setSelectedEntity(entity);
           });
       },
       ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen

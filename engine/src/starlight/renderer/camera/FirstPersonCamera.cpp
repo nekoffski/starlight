@@ -9,15 +9,9 @@
 namespace sl {
 
 FirstPersonCamera::FirstPersonCamera(const Properties& props) :
-    Camera(props.viewportSize), m_position(props.position),
-    m_front(0.0f, 0.0f, 1.0f), m_up(0.0f, 1.0f, 0.0f), m_right(1.0f, 0.0f, 0.0f),
-    m_yaw(0.0f), m_pitch(0.0f), m_speed(10.0f) {}
-
-Mat4<f32> FirstPersonCamera::getViewMatrix() const {
-    return glm::lookAt(m_position, m_position + m_front, worldUp);
-}
-
-Vec3<f32> FirstPersonCamera::getPosition() const { return m_position; }
+    Camera(props.viewportSize, props.position), m_front(0.0f, 0.0f, 1.0f),
+    m_up(0.0f, 1.0f, 0.0f), m_right(1.0f, 0.0f, 0.0f), m_yaw(0.0f), m_pitch(0.0f),
+    m_speed(10.0f) {}
 
 void FirstPersonCamera::update(float deltaTime) {
     processInput(m_speed * deltaTime);
@@ -29,6 +23,8 @@ void FirstPersonCamera::update(float deltaTime) {
 
     m_right = glm::normalize(glm::cross(m_front, worldUp));
     m_up    = glm::normalize(glm::cross(m_right, m_front));
+
+    setViewMatrix(glm::lookAt(m_position, m_position + m_front, worldUp));
 }
 
 void FirstPersonCamera::processInput(const float speed) {

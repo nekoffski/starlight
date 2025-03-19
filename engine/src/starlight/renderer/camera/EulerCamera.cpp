@@ -7,18 +7,14 @@
 namespace sl {
 
 EulerCamera::EulerCamera(const Properties& props) :
-    Camera(props.viewportSize), m_target(props.target), m_radius(props.radius),
-    m_yaw(90.0f), m_pitch(90.0f) {
+    Camera(props.viewportSize, Vec3<f32>{ 0.0f }), m_target(props.target),
+    m_radius(props.radius), m_yaw(90.0f), m_pitch(90.0f) {
     recalculateVectors();
     updateViewMatrix();
 
     m_eventSentinel.add<sl::ScrollEvent>([&](auto& event) { onScroll(event.offset); }
     );
 }
-
-Mat4<f32> EulerCamera::getViewMatrix() const { return m_viewMatrix; }
-
-Vec3<f32> EulerCamera::getPosition() const { return m_position; }
 
 void EulerCamera::update(float deltaTime) {
     static constexpr float speed = 50.0f;
@@ -91,7 +87,7 @@ void EulerCamera::recalculateVectors() {
 }
 
 void EulerCamera::updateViewMatrix() {
-    m_viewMatrix = glm::lookAt(m_position, m_target, m_up);
+    setViewMatrix(glm::lookAt(m_position, m_target, m_up));
 }
 
 EulerCamera::Properties EulerCamera::Properties::createDefault() {

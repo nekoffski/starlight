@@ -9,6 +9,7 @@
 #include "starlight/core/Id.hh"
 #include "starlight/renderer/Mesh.hh"
 #include "starlight/renderer/Material.hh"
+#include "starlight/physx/bvh/BoundingVolume.hh"
 
 namespace sl {
 
@@ -30,8 +31,9 @@ public:
         for (auto& sub : m_subs) callback(sub);
     }
 
-    virtual Type getType() const             = 0;
-    virtual nlohmann::json serialize() const = 0;
+    virtual Type getType() const                            = 0;
+    virtual nlohmann::json serialize() const                = 0;
+    virtual const BoundingVolume* getBoundingVolume() const = 0;
 
 protected:
     std::vector<Sub> m_subs;

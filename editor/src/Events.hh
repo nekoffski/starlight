@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace sle::events {
 
 struct SceneSerialization {

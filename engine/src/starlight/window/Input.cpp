@@ -30,7 +30,7 @@ void Input::setCallbacks() {
 
     m_window.onMouseCallback([&](MouseAction action, int button) {
         if (m_mouseState == State::on) [[likely]] {
-            MouseEvent event{ action, button };
+            MouseEvent event{ action, button, getMousePosition() };
             log::trace("Detected mouse action, emitting event: {}", event);
             EventProxy::get().emit<MouseEvent>(event);
         }

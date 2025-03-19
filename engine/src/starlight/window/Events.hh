@@ -21,6 +21,7 @@ struct KeyEvent {
 struct MouseEvent {
     MouseAction action;
     int button;
+    Vec2<f32> position;
 };
 
 struct ScrollEvent {
@@ -31,48 +32,11 @@ struct WindowResized {
     Vec2<u32> size;
 };
 
-inline std::string toString(const WindowResized& event) {
-    return fmt::format("WindowResized[{}/{}]", event.size.w, event.size.h);
-}
-
-inline std::string toString(const KeyAction& action) {
-    switch (action) {
-        case sl::KeyAction::press:
-            return "KeyPress";
-
-        case sl::KeyAction::repeat:
-            return "KeyRepeat";
-
-        case sl::KeyAction::release:
-            return "KeyRelease";
-
-        default:
-            return "KeyUnknownAction";
-    }
-}
-
-inline std::string toString(const MouseAction& action) {
-    switch (action) {
-        case sl::MouseAction::press:
-            return "KeyPress";
-
-        case sl::MouseAction::release:
-            return "KeyRelease";
-        default:
-            return "KeyUnknownAction";
-    }
-}
-
-inline std::string toString(const KeyEvent& event) {
-    return fmt::format("KeyEvent[{}/{}]", event.key, event.action);
-}
-
-inline std::string toString(const MouseEvent& event) {
-    return fmt::format("MouseEvent[{}/{}]", event.button, event.action);
-}
-
-inline std::string toString(const ScrollEvent& event) {
-    return fmt::format("ScrollEvent[{}]", event.offset);
-}
+std::string toString(const WindowResized& event);
+std::string toString(const KeyAction& action);
+std::string toString(const MouseAction& action);
+std::string toString(const KeyEvent& event);
+std::string toString(const MouseEvent& event);
+std::string toString(const ScrollEvent& event);
 
 }  // namespace sl

@@ -20,24 +20,35 @@ public:
     };
 
     explicit Camera(
-      const Vec2<u32>& viewport,
+      const Vec2<u32>& viewport, const Vec3<f32>& position,
       const ProjectionProperties& projectionProperties =
         ProjectionProperties::getDefault()
     );
 
-    virtual Mat4<f32> getViewMatrix() const = 0;
-    virtual Vec3<f32> getPosition() const   = 0;
-    virtual void update(float deltaTime)    = 0;
+    virtual void update(float deltaTime) = 0;
 
+    const Vec3<f32>& getPosition() const;
+    const Mat4<f32>& getViewMatrix() const;
+    const Mat4<f32>& getInvViewMatrix() const;
     const Mat4<f32>& getProjectionMatrix() const;
+    const Mat4<f32>& getInvProjectionMatrix() const;
 
 protected:
+    void setViewMatrix(const Mat4<f32>& viewMatrix);
+
     void calculateProjectionMatrix();
 
+    Vec3<f32> m_position;
+    EventHandlerSentinel m_eventSentinel;
+
+private:
     Vec2<u32> m_viewportSize;
     Mat4<f32> m_projectionMatrix;
+    Mat4<f32> m_invProjectionMatrix;
+    Mat4<f32> m_viewMatrix;
+    Mat4<f32> m_invViewMatrix;
+
     ProjectionProperties m_projectionProperties;
-    EventHandlerSentinel m_eventSentinel;
 };
 
 }  // namespace sl
