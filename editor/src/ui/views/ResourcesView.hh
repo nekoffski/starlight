@@ -23,9 +23,12 @@ private:
     void renderCubemapsTab();
     void renderModelsTab();
 
+    void renderMaterial(sl::Material& material);
+
     void showTexture(sl::Texture& texture, sl::f32 width);
 
     sl::ui::TabMenu m_tabMenu;
+    std::string m_nameBuffer;
 };
 
 }  // namespace sle

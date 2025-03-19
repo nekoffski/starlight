@@ -46,6 +46,8 @@ void Engine::endFrame() {
     m_taskQueue.dispatchQueue(TaskQueue::Type::postFrame);
 }
 
+void Engine::stop() { m_isRunning = false; }
+
 Scene* Engine::getScene() { return m_scene.get(); }
 
 void Engine::setScene(SharedPtr<Scene> scene) { m_scene = std::move(scene); }
@@ -68,17 +70,10 @@ void Engine::updateFrame(float frameTime) {
 }
 
 void Engine::initEvents() {
-    m_eventSentinel
-      .add<sl::KeyEvent>([&](auto& event) {
-          if (event.action == sl::KeyAction::press && event.key == SL_KEY_ESCAPE) {
-              log::debug("ESC pressed, quit requested");
-              m_isRunning = false;
-          }
-      })
-      .add<QuitEvent>([&](auto& event) {
-          log::debug("Got QuitEvent reason: {}, quit requested", event.reason);
-          m_isRunning = false;
-      });
+    m_eventSentinel.add<QuitEvent>([&](auto& event) {
+        log::debug("Got QuitEvent reason: {}, quit requested", event.reason);
+        m_isRunning = false;
+    });
 }
 
 }  // namespace sl

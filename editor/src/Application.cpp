@@ -10,6 +10,7 @@
 #include <starlight/ui/fonts/FontAwesome.hh>
 #include <starlight/ui/UI.hh>
 #include <starlight/app/scene/Scene.hh>
+#include <starlight/window/Input.hh>
 
 #include "Events.hh"
 
@@ -43,7 +44,17 @@ Application::Application(
     m_userInterface.setRenderGraph(*getRenderGraph());
 }
 
-void Application::update([[maybe_unused]] float frameTime) {}
+void Application::update([[maybe_unused]] float frameTime) {
+    auto& io    = ImGui::GetIO();
+    auto& input = sl::Input::get();
+
+    input.switchMouseInput(
+      io.WantCaptureMouse ? sl::Input::State::off : sl::Input::State::on
+    );
+    input.switchKeyboardInput(
+      io.WantCaptureKeyboard ? sl::Input::State::off : sl::Input::State::on
+    );
+}
 
 void Application::initEvents() {
     m_eventSentinel

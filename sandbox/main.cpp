@@ -27,6 +27,13 @@ public:
         getRenderGraph()->addPass<sl::GridRenderPass>(viewportOffset);
 
         getScene()->getEntity("Entity_0")->add<sl::TransformComponent>();
+
+        sl::EventProxy::get().pushEventHandler<sl::KeyEvent>([&](auto& event) {
+            if (event.action == sl::KeyAction::press && event.key == SL_KEY_ESCAPE) {
+                sl::log::debug("ESC pressed, quit requested");
+                stop();
+            }
+        });
     }
 
 private:

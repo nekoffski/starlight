@@ -1,11 +1,10 @@
 #include "ResourcesView.hh"
 
-// #include <starlight/event/EventProxy.hh>
-// #include <starlight/renderer/Material.hh>
 #include <starlight/app/factories/MeshFactory.hh>
 #include <starlight/app/factories/MaterialFactory.hh>
 #include <starlight/app/factories/TextureFactory.hh>
 #include <starlight/app/factories/ModelFactory.hh>
+#include <starlight/core/TaskQueue.hh>
 
 #include "Console.hh"
 
@@ -20,7 +19,7 @@ static sl::f32 getThumbnailWidth() {
 // // TODO: add concepts
 static void renderResourceTab(
   const std::string& name, auto resources, auto&& create, auto&& render,
-  auto&& renderThumbnail
+  auto&& renderThumbnail, Data& data
 ) {
     if (sl::ui::button(fmt::format("Create new {}", name))) {
         // sl::EventProxy::get().emit<events::SetResourceUICallback>(
@@ -43,11 +42,10 @@ static void renderResourceTab(
 
         if (sl::ui::wasItemClicked()) {
             editorWriteDebug("{} selected: {}", name, resource.name);
-            //         sl::EventProxy::get().emit<events::SetResourceUICallback>(
-            //           [render = std::move(render), resource = resources[i]]() {
-            //               render(resource);
-            //           }
-            //         );
+            data.inspectorCallback = [&, render = std::move(render)]() {
+                render(resource);
+            };
+            data.selectedEntity = nullptr;
         }
     }
 }
@@ -69,13 +67,77 @@ void ResourcesView::renderMeshesTab() {
     // }
 }
 
+void ResourcesView::renderMaterial(sl::Material& material) {
+    sl::ui::namedScope(material.name, [&]() {
+        sl::ui::text(ICON_FA_SCROLL "  Material - {}", material.name);
+        sl::ui::separator();
+
+        const auto width = ImGui::GetWindowWidth() / 1.1f;
+        auto textures = sl::TextureFactory::get().getValues(sl::Texture::Type::flat);
+        bool textureChanged = false;
+
+        sl::ui::text("Diffuse color:");
+        ImGui::ColorEdit4(
+          "##diffuse-color", sl::math::value_ptr(material.diffuseColor)
+        );
+
+        sl::ui::separator();
+        sl::ui::text("Shininess:");
+        ImGui::SliderFloat("##shininess", &material.shininess, 0.0f, 64.0f);
+
+        auto diffuseMap = material.diffuseMap;
+        sl::ui::separator();
+        sl::ui::combo(
+          "Diffuse map", material.diffuseMap->name, textures,
+          [&](auto& texture) {
+              diffuseMap     = texture;
+              textureChanged = true;
+          }
+        );
+        showTexture(*material.diffuseMap, width);
+
+        auto specularMap = material.specularMap;
+        sl::ui::separator();
+        sl::ui::combo(
+          "Specular map", material.specularMap->name, textures,
+          [&](auto& texture) {
+              specularMap    = texture;
+              textureChanged = true;
+          }
+        );
+        showTexture(*material.specularMap, width);
+
+        auto normalMap = material.normalMap;
+        sl::ui::separator();
+        sl::ui::combo(
+          "Normal map", material.normalMap->name, textures,
+          [&](auto& texture) {
+              normalMap      = texture;
+              textureChanged = true;
+          }
+        );
+        showTexture(*material.normalMap, width);
+
+        if (textureChanged) {
+            sl::TaskQueue::get().callPostFrame(
+              [&material, diffuseMap, specularMap, normalMap]() mutable {
+                  material.diffuseMap  = diffuseMap;
+                  material.specularMap = specularMap;
+                  material.normalMap   = normalMap;
+              }
+            );
+        }
+    });
+}
+
 void ResourcesView::renderMaterialsTab() {
     renderResourceTab(
       "Material", sl::MaterialFactory::get().getValues(), [&]() {},
-      [&](auto& material) {},
+      [&](auto& material) { renderMaterial(material); },
       [&](auto& material, const auto width) {
           showTexture(*material.diffuseMap, width);
-      }
+      },
+      m_data
     );
 }
 
@@ -87,7 +149,7 @@ void ResourcesView::renderTexturesTab() {
     renderResourceTab(
       "Texture", sl::TextureFactory::get().getValues(sl::Texture::Type::flat),
       [&]() {}, [&](auto& texture) {},
-      [&](auto& texture, const auto width) { showTexture(texture, width); }
+      [&](auto& texture, const auto width) { showTexture(texture, width); }, m_data
     );
 }
 

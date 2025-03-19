@@ -80,7 +80,6 @@ void renderEntityInspector(
     };
 
     entityData.nameBuffer = entity.name;
-
     sl::ui::namedScope(entity.name, [&]() {
         if (ImGui::InputText(
               "##", &entityData.nameBuffer, ImGuiInputTextFlags_EnterReturnsTrue

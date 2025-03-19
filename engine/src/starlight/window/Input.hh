@@ -7,6 +7,8 @@ namespace sl {
 
 class Input : public Singleton<Input> {
 public:
+    enum class State : u8 { on, off };
+
     using Button = Window::Button;
     using Key    = Window::Key;
 
@@ -23,9 +25,15 @@ public:
 
     void update();
 
+    void switchKeyboardInput(State state);
+    void switchMouseInput(State state);
+
 private:
     void setCallbacks();
     void calculateMousePositionDelta();
+
+    State m_keyboardState;
+    State m_mouseState;
 
     Window::Impl& m_window;
 

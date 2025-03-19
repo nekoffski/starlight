@@ -17,7 +17,9 @@ namespace sl {
 
 using namespace std::string_literals;
 
-class Material : public NonMovable, public NamedResource<Material, "Material"> {
+class Material
+    : public NonMovable,
+      public NamedResource<Material, "Material", false> {
 public:
     struct Properties {
         SharedPtr<Texture> diffuseMap;

@@ -47,6 +47,8 @@ private:
     void endFrame();
 
 protected:
+    void stop();
+
     Scene* getScene();
     void setScene(SharedPtr<Scene> scene);
 

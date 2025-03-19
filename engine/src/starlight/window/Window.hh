@@ -17,11 +17,11 @@ public:
     using Button = int;
 
     struct Impl {
-        using OnKeyCallback          = void (*)(KeyAction, Key);
-        using OnMouseCallback        = void (*)(MouseAction, Button);
-        using OnScrollCallback       = void (*)(float);
-        using OnWindowCloseCallback  = void (*)();
-        using OnWindowResizeCallback = void (*)(uint32_t, uint32_t);
+        using OnKeyCallback          = std::function<void(KeyAction, Key)>;
+        using OnMouseCallback        = std::function<void(MouseAction, Button)>;
+        using OnScrollCallback       = std::function<void(float)>;
+        using OnWindowCloseCallback  = std::function<void()>;
+        using OnWindowResizeCallback = std::function<void(u32, u32)>;
 
         virtual ~Impl() = default;
 
