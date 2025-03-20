@@ -1,0 +1,74 @@
+#pragma once
+
+#include "Config.hh"
+
+#include <functional>
+#include <optional>
+#include <unordered_map>
+
+#include <starlight/app/scene/Scene.hh>
+#include <starlight/app/scene/Entity.hh>
+#include <starlight/renderer/RenderGraph.hh>
+#include <starlight/renderer/gpu/Texture.hh>
+#include <starlight/renderer/camera/Camera.hh>
+#include <starlight/ui/widgets/Image.hh>
+
+#include "Config.hh"
+
+namespace sle {
+
+class Widget {
+    using Callback    = std::function<void()>;
+    using OptCallback = std::optional<Callback>;
+
+public:
+    class State {
+        friend class Widget;
+
+    public:
+        explicit State(
+          const sl::Vec2<sl::u32>& viewport, const Config& config, sl::Scene& scene,
+          sl::RenderGraph& renderGraph, sl::Camera& camera
+        );
+
+        void setViewport(const sl::Vec2<sl::u32>& viewport);
+        void setScene(sl::Scene& scene);
+        void setRenderGraph(sl::RenderGraph& renderGraph);
+        void setCamera(sl::Camera& camera);
+
+    private:
+        Config m_config;
+        sl::Vec2<sl::u32> m_viewport;
+        sl::Scene* m_scene;
+        sl::RenderGraph* m_renderGraph;
+        sl::Camera* m_camera;
+        sl::Entity* m_selectedEntity;
+
+        OptCallback m_inspectorCallback;
+        std::unordered_map<sl::u64, sl::UniquePtr<sl::ui::ImageHandle>> m_images;
+    };
+
+    explicit Widget(State& state);
+
+    sl::RenderGraph& getRenderGraph();
+    sl::Scene& getScene();
+    sl::Camera& getCamera();
+    const sl::Vec2<sl::u32>& getViewport();
+
+    sl::Entity* getSeletedEntity();
+    void setSelectedEntity(sl::Entity& entity, Callback&& callback);
+    void setInspectorCallback(Callback&& callback);
+    void resetSelectedEntity();
+
+    sl::Vec2<sl::f32> getBiasedCoords(const sl::Vec2<sl::f32>& coords);
+    sl::Vec2<sl::u32> getBiasedViewport();
+
+    OptCallback& getInspectorCallback();
+
+    void showImage(sl::Texture& texture, sl::f32 width);
+
+private:
+    State& m_state;
+};
+
+}  // namespace sle

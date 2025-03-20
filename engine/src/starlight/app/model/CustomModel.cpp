@@ -11,8 +11,8 @@ Model::Type CustomModel::getType() const { return Type::custom; }
 
 nlohmann::json CustomModel::serialize() const { return nlohmann::json(); }
 
-const BoundingVolume* CustomModel::getBoundingVolume() const {
-    return &m_boundingBox;
+const BoundingVolume& CustomModel::getBoundingVolume() const {
+    return m_boundingBox;
 }
 
 }  // namespace sl

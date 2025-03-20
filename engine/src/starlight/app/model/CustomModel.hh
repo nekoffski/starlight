@@ -13,7 +13,7 @@ public:
     Type getType() const override;
     nlohmann::json serialize() const override;
 
-    const BoundingVolume* getBoundingVolume() const;
+    const BoundingVolume& getBoundingVolume() const;
 
 private:
     AABB m_boundingBox;

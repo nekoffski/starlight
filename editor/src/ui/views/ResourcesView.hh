@@ -5,18 +5,17 @@
 #include <starlight/ui/UI.hh>
 #include <starlight/ui/widgets/Image.hh>
 
-#include "ui/Data.hh"
+#include "ui/Widget.hh"
 
 namespace sle {
 
-class ResourcesView {
+class ResourcesView : public Widget {
 public:
-    explicit ResourcesView(Data& data);
+    explicit ResourcesView(Widget::State& state);
 
     void render();
 
 private:
-    Data& m_data;
     void renderTexturesTab();
     void renderMeshesTab();
     void renderMaterialsTab();
@@ -24,8 +23,6 @@ private:
     void renderModelsTab();
 
     void renderMaterial(sl::Material& material);
-
-    void showTexture(sl::Texture& texture, sl::f32 width);
 
     sl::ui::TabMenu m_tabMenu;
     std::string m_nameBuffer;

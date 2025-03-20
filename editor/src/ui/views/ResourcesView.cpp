@@ -18,8 +18,8 @@ static sl::f32 getThumbnailWidth() {
 
 // // TODO: add concepts
 static void renderResourceTab(
-  const std::string& name, auto resources, auto&& create, auto&& render,
-  auto&& renderThumbnail, Data& data
+  const std::string& name, auto resources, auto&& create, auto&& renderThumbnail,
+  auto&& setInspectorCallback
 ) {
     if (sl::ui::button(fmt::format("Create new {}", name))) {
         // sl::EventProxy::get().emit<events::SetResourceUICallback>(
@@ -42,16 +42,13 @@ static void renderResourceTab(
 
         if (sl::ui::wasItemClicked()) {
             editorWriteDebug("{} selected: {}", name, resource.name);
-            data.inspectorCallback = [&, render = std::move(render)]() {
-                render(resource);
-            };
-            data.selectedEntity = nullptr;
+            setInspectorCallback(resource);
         }
     }
 }
 
-ResourcesView::ResourcesView(Data& data
-) : m_data(data), m_tabMenu("resource-view-tab-menu") {
+ResourcesView::ResourcesView(Widget::State& state
+) : Widget(state), m_tabMenu("resource-view-tab-menu") {
     m_tabMenu.addTab("Materials", [&]() { renderMaterialsTab(); })
       .addTab("Cubemaps", [&]() { renderCubemapsTab(); })
       .addTab("Textures", [&]() { renderTexturesTab(); })
@@ -94,7 +91,7 @@ void ResourcesView::renderMaterial(sl::Material& material) {
               textureChanged = true;
           }
         );
-        showTexture(*material.diffuseMap, width);
+        showImage(*material.diffuseMap, width);
 
         auto specularMap = material.specularMap;
         sl::ui::separator();
@@ -105,7 +102,7 @@ void ResourcesView::renderMaterial(sl::Material& material) {
               textureChanged = true;
           }
         );
-        showTexture(*material.specularMap, width);
+        showImage(*material.specularMap, width);
 
         auto normalMap = material.normalMap;
         sl::ui::separator();
@@ -116,7 +113,7 @@ void ResourcesView::renderMaterial(sl::Material& material) {
               textureChanged = true;
           }
         );
-        showTexture(*material.normalMap, width);
+        showImage(*material.normalMap, width);
 
         if (textureChanged) {
             sl::TaskQueue::get().callPostFrame(
@@ -131,13 +128,19 @@ void ResourcesView::renderMaterial(sl::Material& material) {
 }
 
 void ResourcesView::renderMaterialsTab() {
+    auto onCreate = []() {};
+
+    auto onThumbnail = [&](auto& material, const auto width) {
+        showImage(*material.diffuseMap, width);
+    };
+
+    auto onClicked = [&](auto& material) {
+        setInspectorCallback([&] { renderMaterial(material); });
+    };
+
     renderResourceTab(
-      "Material", sl::MaterialFactory::get().getValues(), [&]() {},
-      [&](auto& material) { renderMaterial(material); },
-      [&](auto& material, const auto width) {
-          showTexture(*material.diffuseMap, width);
-      },
-      m_data
+      "Material", sl::MaterialFactory::get().getValues(), onCreate, onThumbnail,
+      onClicked
     );
 }
 
@@ -146,16 +149,18 @@ void ResourcesView::renderCubemapsTab() {}
 void ResourcesView::renderModelsTab() {}
 
 void ResourcesView::renderTexturesTab() {
+    auto onCreate = []() {};
+
+    auto onThumbnail = [&](auto& texture, const auto width) {
+        showImage(texture, width);
+    };
+
+    auto onClicked = [&](auto& texture) {};
+
     renderResourceTab(
       "Texture", sl::TextureFactory::get().getValues(sl::Texture::Type::flat),
-      [&]() {}, [&](auto& texture) {},
-      [&](auto& texture, const auto width) { showTexture(texture, width); }, m_data
+      onCreate, onThumbnail, onClicked
     );
-}
-
-void ResourcesView::showTexture(sl::Texture& texture, sl::f32 width) {
-    m_data.getTextureImage(texture)
-      ->show({ width, width }, { 0, 0 }, { 1.0f, 1.0f });
 }
 
 }  // namespace sle

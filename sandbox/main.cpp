@@ -21,12 +21,12 @@ public:
 
         if (scenePath) setScene(sl::SceneParser{}.deserialize(*scenePath));
 
-        getRenderGraph()->addPass<sl::SkyboxRenderPass>(viewportOffset);
-        getRenderGraph()->addPass<sl::ShadowMapsRenderPass>();
-        getRenderGraph()->addPass<sl::WorldRenderPass>(viewportOffset);
-        getRenderGraph()->addPass<sl::GridRenderPass>(viewportOffset);
+        getRenderGraph().addPass<sl::SkyboxRenderPass>(viewportOffset);
+        getRenderGraph().addPass<sl::ShadowMapsRenderPass>();
+        getRenderGraph().addPass<sl::WorldRenderPass>(viewportOffset);
+        getRenderGraph().addPass<sl::GridRenderPass>(viewportOffset);
 
-        getScene()->getEntity("Entity_0")->add<sl::TransformComponent>();
+        getScene().getEntity("Entity_0")->add<sl::TransformComponent>();
 
         sl::EventProxy::get().pushEventHandler<sl::KeyEvent>([&](auto& event) {
             if (event.action == sl::KeyAction::press && event.key == SL_KEY_ESCAPE) {
@@ -38,7 +38,7 @@ public:
 
 private:
     void update(float frameTime) override {
-        auto entity     = getScene()->getEntity("Entity_0");
+        auto entity     = getScene().getEntity("Entity_0");
         auto& transform = entity->get<sl::TransformComponent>()->data();
 
         transform.rotate(sl::worldUp, frameTime * 0.1f);

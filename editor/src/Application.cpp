@@ -21,28 +21,25 @@ Application::Application(
 ) :
     Engine(config), m_eventSentinel(sl::EventProxy::get()),
     m_cameras(sl::Window::get().getFramebufferSize()),
-    m_userInterface(sl::Window::get().getFramebufferSize(), getScene()) {
+    m_userInterface(
+      sl::Window::get().getFramebufferSize(), getScene(), getRenderGraph(),
+      getCamera()
+    ) {
     if (scenePath) {
         sl::log::info("Loading initial scene: {}", *scenePath);
         setScene(m_sceneParser.deserialize(*scenePath));
-        m_userInterface.setScene(*getScene());
+        m_userInterface.setScene(getScene());
     }
 
     initEvents();
 
-    sl::Vec2<sl::f32> viewportOffset{
-        m_userInterface.getConfig().panelWidthRatio,
-        m_userInterface.getConfig().panelHeightRatio
-    };
+    const auto& viewportOffset = m_userInterface.getConfig().layoutSizeRatio;
 
-    getRenderGraph()->addPass<sl::SkyboxRenderPass>(viewportOffset);
-    getRenderGraph()->addPass<sl::ShadowMapsRenderPass>();
-    getRenderGraph()->addPass<sl::WorldRenderPass>(viewportOffset);
-    getRenderGraph()->addPass<sl::GridRenderPass>(viewportOffset);
-    getRenderGraph()->addPass<sl::UIRenderPass>(m_userInterface);
-
-    m_userInterface.setRenderGraph(*getRenderGraph());
-    m_userInterface.setCamera(*getCamera());
+    getRenderGraph().addPass<sl::SkyboxRenderPass>(viewportOffset);
+    getRenderGraph().addPass<sl::ShadowMapsRenderPass>();
+    getRenderGraph().addPass<sl::WorldRenderPass>(viewportOffset);
+    getRenderGraph().addPass<sl::GridRenderPass>(viewportOffset);
+    getRenderGraph().addPass<sl::UIRenderPass>(m_userInterface);
 }
 
 void Application::update([[maybe_unused]] float frameTime) {
@@ -71,7 +68,7 @@ void Application::initEvents() {
       .add<events::SceneSerialization>([&](const auto& event, auto&& handled) {
           if (event.action == events::SceneSerialization::Action::serialize) {
               editorWriteDebug("Serializing scene: {}", event.path);
-              m_sceneParser.serialize(*getScene(), event.path);
+              m_sceneParser.serialize(getScene(), event.path);
           } else {
               editorWriteDebug("Deserializing scene: {}", event.path);
               setScene(m_sceneParser.deserialize(event.path));

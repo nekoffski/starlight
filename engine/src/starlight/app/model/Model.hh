@@ -33,7 +33,7 @@ public:
 
     virtual Type getType() const                            = 0;
     virtual nlohmann::json serialize() const                = 0;
-    virtual const BoundingVolume* getBoundingVolume() const = 0;
+    virtual const BoundingVolume& getBoundingVolume() const = 0;
 
 protected:
     std::vector<Sub> m_subs;

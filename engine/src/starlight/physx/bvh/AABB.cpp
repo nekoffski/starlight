@@ -23,7 +23,7 @@ void AABB::addExtent(const Extent3& extent) {
     }
 }
 
-std::optional<Intersection> AABB::intersects(const Ray& ray) const {
+std::optional<Interval<f32>> AABB::intersects(const Ray& ray) const {
     using std::swap;
 
     f32 tMin = (m_min.x - ray.origin.x) / ray.direction.x;
@@ -51,7 +51,7 @@ std::optional<Intersection> AABB::intersects(const Ray& ray) const {
     if (tzMin > tMin) tMin = tMin;
     if (tzMax < tMax) tMax = tMax;
 
-    return Intersection{ tMin, tMax };
+    return Interval<f32>{ tMin, tMax };
 }
 
 }  // namespace sl

@@ -24,7 +24,7 @@ int Engine::run() {
 
 void Engine::render() {
     auto renderPacket   = m_scene->getRenderPacket();
-    renderPacket.camera = getCamera();
+    renderPacket.camera = &getCamera();
     m_renderGraph->render(renderPacket);
 }
 
@@ -48,19 +48,19 @@ void Engine::endFrame() {
 
 void Engine::stop() { m_isRunning = false; }
 
-Scene* Engine::getScene() { return m_scene.get(); }
+Scene& Engine::getScene() { return *m_scene; }
 
 void Engine::setScene(SharedPtr<Scene> scene) { m_scene = std::move(scene); }
 
-RenderGraph* Engine::getRenderGraph() { return m_renderGraph.get(); }
+RenderGraph& Engine::getRenderGraph() { return *m_renderGraph; }
 
 void Engine::setRenderGraph(SharedPtr<RenderGraph> renderGraph) {
     m_renderGraph = renderGraph;
 }
 
-Camera* Engine::getCamera() { return m_camera; }
+Camera& Engine::getCamera() { return *m_camera; }
 
-void Engine::setCamera(Camera* camera) { m_camera = camera; }
+void Engine::setCamera(Camera& camera) { m_camera = &camera; }
 
 void Engine::useDefaultCamera() { m_camera = &m_defaultCamera; }
 

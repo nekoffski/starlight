@@ -8,7 +8,8 @@
 #include "views/PropertiesView.hh"
 #include "views/ResourcesView.hh"
 #include "Console.hh"
-#include "Data.hh"
+#include "Widget.hh"
+#include "Config.hh"
 
 #include "starlight/app/renderPasses/UIRenderPass.hh"
 
@@ -17,12 +18,10 @@ namespace sle {
 class UserInterface : public sl::UI {
 public:
     explicit UserInterface(
-      const sl::Vec2<sl::u32>& viewport, sl::Scene* scene,
-      sl::RenderGraph* renderGraph = nullptr,
-      const Config& config         = Config::createDefault()
+      const sl::Vec2<sl::u32>& viewport, sl::Scene& scene,
+      sl::RenderGraph& renderGraph, sl::Camera& camera,
+      const Config& config = Config::createDefault()
     );
-
-    void onViewportReisze(const sl::Vec2<sl::u32>& viewport);
 
     void setRenderGraph(sl::RenderGraph& renderGraph);
     void setScene(sl::Scene& scene);
@@ -33,6 +32,7 @@ public:
     const Config& getConfig() const;
 
 private:
+    void onViewportReisze(const sl::Vec2<sl::u32>& viewport);
     void createLayout(const sl::Vec2<sl::u32>& viewport);
     void initMenu();
     void initLeftCombo();
@@ -43,7 +43,8 @@ private:
     sl::Vec2<sl::u32> m_viewport;
 
     Console m_console;
-    Data m_data;
+    Config m_config;
+    Widget::State m_widgetState;
 
     sl::ui::MainMenuBar m_menu;
     sl::LocalPtr<sl::ui::PanelCombo> m_leftCombo;

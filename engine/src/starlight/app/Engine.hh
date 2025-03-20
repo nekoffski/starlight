@@ -49,14 +49,14 @@ private:
 protected:
     void stop();
 
-    Scene* getScene();
+    Scene& getScene();
     void setScene(SharedPtr<Scene> scene);
 
-    RenderGraph* getRenderGraph();
+    RenderGraph& getRenderGraph();
     void setRenderGraph(SharedPtr<RenderGraph> renderGraph);
 
-    Camera* getCamera();
-    void setCamera(Camera* camera);
+    Camera& getCamera();
+    void setCamera(Camera& camera);
     void useDefaultCamera();
 
 private:

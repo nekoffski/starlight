@@ -4,7 +4,8 @@
 
 namespace sle {
 
-PropertiesView::PropertiesView(Data& data) : m_data(data), m_tabMenu("Properties") {
+PropertiesView::PropertiesView(Widget::State& state
+) : Widget(state), m_tabMenu("Properties") {
     m_tabMenu.addTab(ICON_FA_WRENCH "  Inspector", [&]() { renderInspectorTab(); })
       .addTab(ICON_FA_EYE "  Renderer", [&]() { renderRendererTab(); });
 }
@@ -18,7 +19,7 @@ void PropertiesView::renderRendererTab() {
 
         bool changed = false;
 
-        m_data.renderGraph->forEach([&](auto& active, auto& renderPass) {
+        getRenderGraph().forEach([&](auto& active, auto& renderPass) {
             if (renderPass.name != "UIRenderPass") {  // TODO: find better way
                 sl::ui::namedScope(renderPass.name, [&]() {
                     if (sl::ui::checkbox("##Active", active)) changed = true;
@@ -29,8 +30,8 @@ void PropertiesView::renderRendererTab() {
         });
 
         if (changed) {
-            sl::TaskQueue::get().callPostFrame([&]() {
-                m_data.renderGraph->rebuildChain();
+            sl::TaskQueue::get().callPostFrame([&renderGraph = getRenderGraph()]() {
+                renderGraph.rebuildChain();
             });
         }
     });
@@ -38,7 +39,7 @@ void PropertiesView::renderRendererTab() {
 
 void PropertiesView::renderInspectorTab() {
     static auto defaultPanel = []() { sl::ui::text("Nothing to show"); };
-    std::invoke(m_data.inspectorCallback.value_or(defaultPanel));
+    std::invoke(getInspectorCallback().value_or(defaultPanel));
 }
 
 }  // namespace sle

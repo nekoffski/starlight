@@ -13,7 +13,7 @@ public:
     explicit AABB();
 
     void addExtent(const Extent3& extent);
-    std::optional<Intersection> intersects(const Ray& ray) const override;
+    std::optional<Interval<f32>> intersects(const Ray& ray) const override;
 
 private:
     Vec3<f32> m_min;

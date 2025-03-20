@@ -8,23 +8,22 @@
 #include "Console.hh"
 #include "ComponentViews.hh"
 
-#include "ui/Data.hh"
+#include "ui/Widget.hh"
 
 namespace sle {
 
-class SceneView {
+class SceneView : public Widget {
 public:
     struct EntityData {
         std::string nameBuffer;
         sl::i32 selectedComponentIndex;
     };
 
-    explicit SceneView(Data& data);
+    explicit SceneView(Widget::State& state);
 
     void render();
 
 private:
-    Data& m_data;
     sl::ui::TabMenu m_tabMenu;
     EntityData m_entityData;
     ComponentViews m_componentViews;
@@ -33,7 +32,6 @@ private:
     sl::EventHandlerSentinel m_eventSentinel;
 
     void setSelectedEntity(sl::Entity& entity);
-    void resetSelectedEntity();
 
     void traceEntity(const sl::Vec2<sl::f32>& mousePosition);
 

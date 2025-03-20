@@ -10,9 +10,10 @@ namespace sle {
 static sl::ui::PanelCombo::Properties createLeftComboProperties(
   const sl::Vec2<sl::u32>& viewport, const Config& config
 ) {
+    auto& w = config.layoutSizeRatio.x;
     return sl::ui::PanelCombo::Properties{
-        .position             = { 0,                                   0          },
-        .size                 = { config.panelWidthRatio * viewport.x, viewport.y },
+        .position             = { 0,              0          },
+        .size                 = { w * viewport.x, viewport.y },
         .alignWithMainMenuBar = true,
         .orientation          = sl::ui::PanelCombo::Orientation::vertical,
     };
@@ -21,23 +22,24 @@ static sl::ui::PanelCombo::Properties createLeftComboProperties(
 static sl::ui::PanelCombo::Properties createBottomComboProperties(
   const sl::Vec2<sl::u32>& viewport, const Config& config
 ) {
+    auto& w = config.layoutSizeRatio.x;
+    auto& h = config.layoutSizeRatio.y;
     return sl::ui::PanelCombo::Properties{
-        .position             = { config.panelWidthRatio * viewport.x,
-                                 (1.0f - config.panelHeightRatio) * viewport.y },
-        .size                 = { (1.0f - config.panelWidthRatio) * viewport.x,
-                                 viewport.y * config.panelHeightRatio          },
+        .position             = { w * viewport.x,          (1.0f - h) * viewport.y },
+        .size                 = { (1.0f - w) * viewport.x, viewport.y * h          },
         .alignWithMainMenuBar = true,
         .orientation          = sl::ui::PanelCombo::Orientation::horizontal,
     };
 }
 
 UserInterface::UserInterface(
-  const sl::Vec2<sl::u32>& viewport, sl::Scene* scene, sl::RenderGraph* renderGraph,
-  const Config& config
+  const sl::Vec2<sl::u32>& viewport, sl::Scene& scene, sl::RenderGraph& renderGraph,
+  sl::Camera& camera, const Config& config
 ) :
-    m_eventSentinel(sl::EventProxy::get()), m_viewport(viewport),
-    m_data(config, scene, renderGraph), m_sceneView(m_data),
-    m_propertiesView(m_data), m_resourcesView(m_data) {
+    m_eventSentinel(sl::EventProxy::get()), m_viewport(viewport), m_config(config),
+    m_widgetState(viewport, config, scene, renderGraph, camera),
+    m_sceneView(m_widgetState), m_propertiesView(m_widgetState),
+    m_resourcesView(m_widgetState) {
     m_eventSentinel.add<sl::WindowResized>([&](auto& event) {
         onViewportReisze(event.size);
     });
@@ -53,10 +55,9 @@ void UserInterface::createLayout(const sl::Vec2<sl::u32>& viewport) {
     m_bottomCombo.clear();
     m_leftCombo.clear();
 
-    m_leftCombo
-      .emplace("left-combo", createLeftComboProperties(viewport, m_data.config));
+    m_leftCombo.emplace("left-combo", createLeftComboProperties(viewport, m_config));
     m_bottomCombo
-      .emplace("bottom-combo", createBottomComboProperties(viewport, m_data.config));
+      .emplace("bottom-combo", createBottomComboProperties(viewport, m_config));
 
     initLeftCombo();
     initBottomCombo();
@@ -64,16 +65,19 @@ void UserInterface::createLayout(const sl::Vec2<sl::u32>& viewport) {
 
 void UserInterface::onViewportReisze(const sl::Vec2<sl::u32>& viewport) {
     m_viewport = viewport;
+    m_widgetState.setViewport(viewport);
     createLayout(viewport);
 }
 
 void UserInterface::setRenderGraph(sl::RenderGraph& renderGraph) {
-    m_data.renderGraph = &renderGraph;
+    m_widgetState.setRenderGraph(renderGraph);
 }
 
-void UserInterface::setScene(sl::Scene& scene) { m_data.scene = &scene; }
+void UserInterface::setScene(sl::Scene& scene) { m_widgetState.setScene(scene); }
 
-void UserInterface::setCamera(sl::Camera& camera) { m_data.camera = &camera; }
+void UserInterface::setCamera(sl::Camera& camera) {
+    m_widgetState.setCamera(camera);
+}
 
 void UserInterface::render() {
     m_menu.render();
@@ -81,7 +85,7 @@ void UserInterface::render() {
     m_bottomCombo->render();
 }
 
-const Config& UserInterface::getConfig() const { return m_data.config; }
+const Config& UserInterface::getConfig() const { return m_config; }
 
 void UserInterface::initBottomCombo() {
     (*m_bottomCombo)

@@ -3,17 +3,16 @@
 #include <starlight/ui/UI.hh>
 
 #include "Console.hh"
-#include "ui/Data.hh"
+#include "ui/Widget.hh"
 
 namespace sle {
 
-class PropertiesView {
+class PropertiesView : public Widget {
 public:
-    explicit PropertiesView(Data& data);
+    explicit PropertiesView(Widget::State& state);
     void render();
 
 private:
-    Data& m_data;
     sl::ui::TabMenu m_tabMenu;
 
     void renderInspectorTab();
