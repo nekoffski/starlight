@@ -60,7 +60,10 @@ public:
     void setInspectorCallback(Callback&& callback);
     void resetSelectedEntity();
 
-    sl::Vec2<sl::f32> getBiasedCoords(const sl::Vec2<sl::f32>& coords);
+    sl::Vec2<sl::f32> getBiasedCoords(
+      const sl::Vec2<sl::f32>& coords = sl::Vec2<sl::f32>{ 0.0f }
+    );
+    sl::Vec2<sl::f32> getRenderPreviewCoords();
     sl::Vec2<sl::u32> getBiasedViewport();
 
     OptCallback& getInspectorCallback();

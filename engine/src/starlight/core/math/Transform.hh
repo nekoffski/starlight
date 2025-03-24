@@ -35,7 +35,7 @@ public:
     Transform& setScale(const Vec3<f32>& scale);
     Transform& setRotation(const Mat4<f32>& rotation);
 
-    Mat4<f32> getModel();
+    Mat4<f32>& getLocal();
     Mat4<f32> getWorld();
 
     void setAsDirty();

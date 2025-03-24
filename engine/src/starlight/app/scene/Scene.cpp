@@ -17,10 +17,11 @@ RenderPacket Scene::getRenderPacket() {
     packet.pointLights.reserve(maxPointLights);
 
     forEach<ModelComponent>([&](auto& c) {
-        auto& model = c.data();
+        auto& model     = c.data();
+        auto& transform = model.getTransform();
         model.traverse([&](Model::Sub& sub) {
             packet.entities.emplace_back(
-              sub.transform.getWorld(), sub.mesh.get(), sub.material.get()
+              transform.getWorld(), sub.mesh.get(), sub.material.get()
             );
         });
     });

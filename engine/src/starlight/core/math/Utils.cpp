@@ -1,5 +1,7 @@
 #include "Utils.hh"
 
+#include <glm/gtx/matrix_decompose.hpp>
+
 namespace sl {
 
 Vec3<f32> deproject(
@@ -19,6 +21,20 @@ Vec3<f32> deproject(
     rayEye.w = 0.0f;
 
     return math::normalize(Vec3<f32>(invViewMatrix * rayEye));
+}
+
+MatrixComponents decomposeTransformation(const Mat4<f32>& matrix) {
+    MatrixComponents components;
+
+    math::decompose(
+      matrix, components.scale, components.rotation, components.translation,
+      components.skew, components.perspective
+    );
+
+    components.rotation = math::conjugate(components.rotation);
+    components.euler    = math::eulerAngles(components.rotation);
+
+    return components;
 }
 
 }  // namespace sl

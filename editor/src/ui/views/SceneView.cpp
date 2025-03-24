@@ -10,6 +10,8 @@
 #include <starlight/core/math/Utils.hh>
 #include <starlight/physx/Ray.hh>
 
+#include <ImGuizmo.h>
+
 namespace sle {
 
 SceneView::SceneView(Widget::State& state
@@ -27,7 +29,29 @@ SceneView::SceneView(Widget::State& state
     });
 }
 
-void SceneView::render() { m_tabMenu.render(); }
+void SceneView::render() {
+    m_tabMenu.render();
+
+    if (auto entity = getSeletedEntity();
+        entity && entity->has<sl::TransformComponent>()) {
+        auto& transform = entity->get<sl::TransformComponent>()->data().getLocal();
+
+        auto& camera = getCamera();
+
+        const auto& view       = camera.getViewMatrix();
+        const auto& projection = camera.getProjectionMatrix();
+
+        auto coords   = getRenderPreviewCoords();
+        auto viewport = getBiasedViewport();
+
+        ImGuizmo::SetRect(coords.x, coords.y, viewport.x, viewport.y);
+        ImGuizmo::Manipulate(
+          sl::math::value_ptr(view), sl::math::value_ptr(projection),
+          ImGuizmo::TRANSLATE, ImGuizmo::LOCAL, sl::math::value_ptr(transform),
+          nullptr, nullptr
+        );
+    }
+}
 
 void renderEntityInspector(
   sl::Entity& entity, SceneView::EntityData& entityData, ComponentViews& views

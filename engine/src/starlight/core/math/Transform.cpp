@@ -8,9 +8,8 @@ Transform::Transform() :
 Transform::Transform(
   const Vec3<f32>& position, const Vec3<f32>& scale, const Mat4<f32>& rotation
 ) :
-    m_model(identityMatrix),
-    m_position(position), m_scale(scale), m_rotation(rotation), m_updated(false),
-    m_parent(nullptr) {}
+    m_model(identityMatrix), m_position(position), m_scale(scale),
+    m_rotation(rotation), m_updated(false), m_parent(nullptr) {}
 
 Transform* Transform::getParent() const { return m_parent; }
 
@@ -82,7 +81,7 @@ Transform& Transform::setRotation(const Mat4<f32>& rotation) {
     return *this;
 }
 
-Mat4<f32> Transform::getModel() {
+Mat4<f32>& Transform::getLocal() {
     if (m_updated) {
         calculateModelMatrix();
         m_updated = false;
@@ -91,7 +90,7 @@ Mat4<f32> Transform::getModel() {
 }
 
 Mat4<f32> Transform::getWorld() {
-    auto model = getModel();
+    auto model = getLocal();
     if (m_parent) model = m_parent->getWorld() * model;
     return model;
 }
@@ -99,8 +98,9 @@ Mat4<f32> Transform::getWorld() {
 void Transform::setAsDirty() { m_updated = true; }
 
 void Transform::calculateModelMatrix() {
-    m_model =
-      glm::scale(m_rotation * glm::translate(m_rotation, m_position), m_scale);
+    m_model = glm::scale(
+      m_rotation * glm::translate(glm::mat4{ 1.0f }, m_position), m_scale
+    );
 }
 
 }  // namespace sl

@@ -5,6 +5,7 @@
 #include <concepts>
 #include <cmath>
 
+#include "Core.hh"
 #include "Glm.hh"
 #include "Vec.hh"
 
@@ -36,5 +37,16 @@ Vec3<f32> deproject(
   const Vec2<f32>& mouseCords, const Vec2<u32>& viewport,
   const Mat4<f32>& invProjectionMatrix, const Mat4<f32>& invViewMatrix
 );
+
+struct MatrixComponents {
+    Vec3<f32> scale;
+    Quat rotation;
+    Vec3<f32> translation;
+    Vec3<f32> euler;
+    Vec3<f32> skew;
+    Vec4<f32> perspective;
+};
+
+MatrixComponents decomposeTransformation(const Mat4<f32>& matrix);
 
 }  // namespace sl

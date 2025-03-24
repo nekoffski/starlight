@@ -20,7 +20,6 @@ public:
     struct Sub {
         SharedPtr<Mesh> mesh;
         SharedPtr<Material> material;
-        Transform transform = {};
     };
 
     explicit Model(OptStr name = {});
@@ -31,11 +30,14 @@ public:
         for (auto& sub : m_subs) callback(sub);
     }
 
+    Transform& getTransform();
+
     virtual Type getType() const                            = 0;
     virtual nlohmann::json serialize() const                = 0;
     virtual const BoundingVolume& getBoundingVolume() const = 0;
 
 protected:
+    Transform m_transform;
     std::vector<Sub> m_subs;
 };
 

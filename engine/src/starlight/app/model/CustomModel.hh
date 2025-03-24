@@ -8,6 +8,8 @@ class CustomModel : public Model {
 public:
     using Model::Model;
 
+    explicit CustomModel(OptStr name = {});
+
     void addSub(SharedPtr<Mesh> mesh, SharedPtr<Material> material);
 
     Type getType() const override;

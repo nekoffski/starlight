@@ -6,7 +6,8 @@
 
 namespace sl {
 
-AABB::AABB() : m_min(max<f32>()), m_max(min<f32>()) {}
+AABB::AABB(Transform& transform
+) : m_transform(transform), m_min(max<f32>()), m_max(min<f32>()) {}
 
 void AABB::addExtent(const Extent3& extent) {
     static constexpr auto dimensions = 3u;
@@ -26,13 +27,18 @@ void AABB::addExtent(const Extent3& extent) {
 std::optional<Interval<f32>> AABB::intersects(const Ray& ray) const {
     using std::swap;
 
-    f32 tMin = (m_min.x - ray.origin.x) / ray.direction.x;
-    f32 tMax = (m_max.x - ray.origin.x) / ray.direction.x;
+    const auto& localMatrix = m_transform.getWorld();
+
+    const auto min = localMatrix * m_min;
+    const auto max = localMatrix * m_max;
+
+    f32 tMin = (min.x - ray.origin.x) / ray.direction.x;
+    f32 tMax = (max.x - ray.origin.x) / ray.direction.x;
 
     if (tMin > tMax) swap(tMin, tMax);
 
-    f32 tyMin = (m_min.y - ray.origin.y) / ray.direction.y;
-    f32 tyMax = (m_max.y - ray.origin.y) / ray.direction.y;
+    f32 tyMin = (min.y - ray.origin.y) / ray.direction.y;
+    f32 tyMax = (max.y - ray.origin.y) / ray.direction.y;
 
     if (tyMin > tyMax) swap(tyMin, tyMax);
 
@@ -41,8 +47,8 @@ std::optional<Interval<f32>> AABB::intersects(const Ray& ray) const {
     if (tyMin > tMin) tMin = tyMin;
     if (tyMax < tMax) tMax = tyMax;
 
-    f32 tzMin = (m_min.z - ray.origin.z) / ray.direction.z;
-    f32 tzMax = (m_max.z - ray.origin.z) / ray.direction.z;
+    f32 tzMin = (min.z - ray.origin.z) / ray.direction.z;
+    f32 tzMax = (max.z - ray.origin.z) / ray.direction.z;
 
     if (tzMin > tzMax) swap(tzMin, tzMax);
 

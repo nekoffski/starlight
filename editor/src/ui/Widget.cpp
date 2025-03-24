@@ -34,6 +34,13 @@ sl::Vec2<sl::f32> Widget::getBiasedCoords(const sl::Vec2<sl::f32>& coords) {
     };
 }
 
+sl::Vec2<sl::f32> Widget::getRenderPreviewCoords() {
+    return sl::Vec2<sl::f32>{
+        m_state.m_config.layoutSizeRatio.x * m_state.m_viewport.x,
+        0.0f,
+    };
+}
+
 sl::Vec2<sl::u32> Widget::getBiasedViewport() {
     return sl::Vec2<sl::u32>{
         static_cast<sl::u32>(

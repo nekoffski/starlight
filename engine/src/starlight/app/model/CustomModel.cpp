@@ -2,6 +2,8 @@
 
 namespace sl {
 
+CustomModel::CustomModel(OptStr name) : Model(name), m_boundingBox(getTransform()) {}
+
 void CustomModel::addSub(SharedPtr<Mesh> mesh, SharedPtr<Material> material) {
     m_boundingBox.addExtent(mesh->getExtent());
     m_subs.emplace_back(std::move(mesh), std::move(material));

@@ -2,6 +2,7 @@
 
 #include <starlight/app/scene/Components.hh>
 #include <starlight/ui/UI.hh>
+#include <starlight/core/math/Utils.hh>
 
 namespace sle {
 
@@ -55,19 +56,33 @@ void renderTransform(sl::TransformComponent& c) {
     sl::ui::treeNode(
       ICON_FA_ARROWS_ALT "  Transform",
       [&]() {
-          auto position = component.getPosition();
-          if (sl::ui::slider("##Position", position, { -10.0f, 10.0f, 0.01f }))
-              component.setPosition(position);
+          auto components = sl::decomposeTransformation(component.getLocal());
+
+          if (sl::ui::slider(
+                "##Position", components.translation, { -10.0f, 10.0f, 0.01f }
+              )) {
+              component.setPosition(components.translation);
+          }
           sl::ui::sameLine();
           sl::ui::text("Position");
 
-          //   auto rotation = component.getRotation();
-          //   if (sl::ui::slider("##Rotation", rotation, { -1.0f, 1.0f, 0.02f }))
-          //       component.setRotation(rotation);
+          auto cp = components.euler;
 
-          auto scale = component.getScale();
-          if (sl::ui::slider("##Scale", scale, { -5.0f, 5.0f, 0.01f }))
-              component.setScale(scale);
+          if (sl::ui::slider(
+                "##Rotation", components.euler, { -3.14f, 3.14f, 0.001f }
+              )) {
+              sl::log::warn("{} - {}", components.euler, cp);
+              auto rotation = sl::math::eulerAngleXYZ(
+                components.euler.x, components.euler.y, components.euler.z
+              );
+              component.setRotation(rotation);
+          }
+
+          sl::ui::sameLine();
+          sl::ui::text("Rotation");
+
+          if (sl::ui::slider("##Scale", components.scale, { -5.0f, 5.0f, 0.01f }))
+              component.setScale(components.scale);
           sl::ui::sameLine();
           sl::ui::text("Scale");
       },
