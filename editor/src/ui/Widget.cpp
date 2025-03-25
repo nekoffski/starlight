@@ -68,12 +68,15 @@ sl::Camera& Widget::getCamera() { return *m_state.m_camera; }
 
 sl::RenderGraph& Widget::getRenderGraph() { return *m_state.m_renderGraph; }
 
+Widget::State& Widget::getState() { return m_state; }
+
 Widget::State::State(
   const sl::Vec2<sl::u32>& viewport, const Config& config, sl::Scene& scene,
   sl::RenderGraph& renderGraph, sl::Camera& camera
 ) :
-    m_config(config), m_viewport(viewport), m_scene(&scene),
-    m_renderGraph(&renderGraph), m_camera(&camera), m_selectedEntity(nullptr) {}
+    centerOnSelectedEntity(true), m_config(config), m_viewport(viewport),
+    m_scene(&scene), m_renderGraph(&renderGraph), m_camera(&camera),
+    m_selectedEntity(nullptr) {}
 
 void Widget::State::setScene(sl::Scene& scene) { m_scene = &scene; }
 

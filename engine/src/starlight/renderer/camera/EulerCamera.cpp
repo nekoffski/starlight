@@ -19,6 +19,11 @@ EulerCamera::EulerCamera(const Properties& props) :
 void EulerCamera::update(float deltaTime) {
     static constexpr float speed = 50.0f;
 
+    if (m_animation) {
+        m_animation->update();
+        if (m_animation->done()) m_animation.reset();
+    }
+
     processInput(speed * deltaTime);
     truncateCoefficients();
     recalculateVectors();
@@ -28,6 +33,10 @@ void EulerCamera::update(float deltaTime) {
 void EulerCamera::onScroll(float offset) {
     static constexpr f32 scrollSpeed = 0.25f;
     m_radius -= scrollSpeed * offset;
+}
+
+void EulerCamera::lookAt(const Vec3<f32>& target, f32 time) {
+    m_animation.emplace(*this, target);
 }
 
 void EulerCamera::processInput(const float speed) {
@@ -74,7 +83,7 @@ void EulerCamera::recalculateVectors() {
     const auto yawRadians   = glm::radians(m_yaw);
 
     // clang-format off
-    m_position = m_radius * Vec3<f32> {
+    m_position = m_target +  m_radius * Vec3<f32> {
         std::sin(pitchRadians) * std::cos(yawRadians),
         std::cos(pitchRadians),
         std::sin(pitchRadians) * std::sin(yawRadians)
@@ -97,5 +106,25 @@ EulerCamera::Properties EulerCamera::Properties::createDefault() {
         .viewportSize = Window::get().getFramebufferSize(),
     };
 }
+
+EulerCamera::Animation::Animation(EulerCamera& camera, const Vec3<f32>& target) :
+    m_camera(camera), m_done(false), m_target(target),
+    m_step((m_target - camera.m_target) / 10.0f) {}
+
+void EulerCamera::Animation::update() {
+    static constexpr f32 delta = 0.005f;
+
+    auto& cameraTarget = m_camera.m_target;
+    log::warn("Animation step: {} - {}", cameraTarget, m_target);
+    cameraTarget += m_step;
+    log::warn("Animation step: {} - {}", cameraTarget, m_target);
+
+    if (almostEquals(cameraTarget, m_target, delta)) {
+        cameraTarget = m_target;
+        m_done       = true;
+    }
+}
+
+bool EulerCamera::Animation::done() const { return m_done; }
 
 }  // namespace sl

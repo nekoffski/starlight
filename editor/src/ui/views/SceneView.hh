@@ -37,7 +37,6 @@ private:
 
     void renderEntitiesTab();
     void renderSkyboxTab();
-    void renderCameraTab();
 };
 
 }  // namespace sle

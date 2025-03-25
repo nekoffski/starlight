@@ -3,6 +3,7 @@
 #include <numbers>
 
 #include "starlight/core/Core.hh"
+#include "starlight/core/Concepts.hh"
 
 #include "Glm.hh"
 #include "Vec.hh"
@@ -25,5 +26,13 @@ template <> constexpr u64 getSize<Vec4<f32>>() { return 4u; }
 template <> constexpr u64 getSize<Mat2<f32>>() { return 4u; }
 template <> constexpr u64 getSize<Mat3<f32>>() { return 9u; }
 template <> constexpr u64 getSize<Mat4<f32>>() { return 16u; }
+
+template <typename T, typename F = f32>
+requires OneOf<T, Vec2<f32>, Vec3<f32>, Vec4<f32>>
+inline bool almostEquals(const T& lhs, const T& rhs, F delta) {
+    for (u64 i = 0; i < getSize<T>(); ++i)
+        if (std::fabs(rhs[i] - lhs[i]) > delta) return false;
+    return true;
+}
 
 }  // namespace sl

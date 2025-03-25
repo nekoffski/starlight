@@ -36,6 +36,8 @@ public:
         void setRenderGraph(sl::RenderGraph& renderGraph);
         void setCamera(sl::Camera& camera);
 
+        bool centerOnSelectedEntity;
+
     private:
         Config m_config;
         sl::Vec2<sl::u32> m_viewport;
@@ -49,6 +51,8 @@ public:
     };
 
     explicit Widget(State& state);
+
+    State& getState();
 
     sl::RenderGraph& getRenderGraph();
     sl::Scene& getScene();

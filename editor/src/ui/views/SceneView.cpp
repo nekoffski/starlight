@@ -18,8 +18,7 @@ SceneView::SceneView(Widget::State& state
 ) : Widget(state), m_tabMenu("Scene"), m_eventSentinel(sl::EventProxy::get()) {
     m_tabMenu
       .addTab(ICON_FA_CODE_BRANCH "  Entities Tree", [&]() { renderEntitiesTab(); })
-      .addTab(ICON_FA_CLOUD "  Skybox", [&]() { renderSkyboxTab(); })
-      .addTab(ICON_FA_CAMERA "  Camera", [&]() { renderCameraTab(); });
+      .addTab(ICON_FA_CLOUD "  Skybox", [&]() { renderSkyboxTab(); });
 
     m_eventSentinel.add<sl::MouseEvent>([&](auto& event) {
         if (event.action == sl::MouseAction::press
@@ -61,6 +60,11 @@ void SceneView::setSelectedEntity(sl::Entity& entity) {
     Widget::setSelectedEntity(entity, [&]() {
         renderEntityInspector(entity, m_entitiesData[entity.id], m_componentViews);
     });
+
+    if (getState().centerOnSelectedEntity && entity.has<sl::TransformComponent>()) {
+        auto position = entity.get<sl::TransformComponent>()->data().getPosition();
+        getCamera().lookAt(position);
+    }
 }
 
 void SceneView::traceEntity(const sl::Vec2<sl::f32>& mousePosition) {
@@ -194,8 +198,6 @@ void renderEntityInspector(
         }
     });
 }
-
-void SceneView::renderCameraTab() {}
 
 void SceneView::renderSkyboxTab() {}
 

@@ -17,6 +17,7 @@ private:
 
     void renderInspectorTab();
     void renderRendererTab();
+    void renderCameraTab();
 };
 
 }  // namespace sle

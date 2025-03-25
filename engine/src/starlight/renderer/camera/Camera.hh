@@ -26,6 +26,9 @@ public:
     );
 
     virtual void update(float deltaTime) = 0;
+    virtual void lookAt(
+      [[maybe_unused]] const Vec3<f32>& target, [[maybe_unused]] f32 time = 0.0f
+    ) {}
 
     const Vec3<f32>& getPosition() const;
     const Mat4<f32>& getViewMatrix() const;

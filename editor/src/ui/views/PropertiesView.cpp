@@ -7,7 +7,8 @@ namespace sle {
 PropertiesView::PropertiesView(Widget::State& state
 ) : Widget(state), m_tabMenu("Properties") {
     m_tabMenu.addTab(ICON_FA_WRENCH "  Inspector", [&]() { renderInspectorTab(); })
-      .addTab(ICON_FA_EYE "  Renderer", [&]() { renderRendererTab(); });
+      .addTab(ICON_FA_EYE "  Renderer", [&]() { renderRendererTab(); })
+      .addTab(ICON_FA_CAMERA "  Camera", [&]() { renderCameraTab(); });
 }
 
 void PropertiesView::render() { m_tabMenu.render(); }
@@ -40,6 +41,11 @@ void PropertiesView::renderRendererTab() {
 void PropertiesView::renderInspectorTab() {
     static auto defaultPanel = []() { sl::ui::text("Nothing to show"); };
     std::invoke(getInspectorCallback().value_or(defaultPanel));
+}
+
+void PropertiesView::renderCameraTab() {
+    auto& centerOnSelectedEntity = getState().centerOnSelectedEntity;
+    sl::ui::checkbox("Center on selected entity", centerOnSelectedEntity);
 }
 
 }  // namespace sle
