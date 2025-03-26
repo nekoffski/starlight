@@ -5,6 +5,7 @@
 #include "starlight/renderer/light/DirectionalLight.hh"
 #include "starlight/renderer/light/PointLight.hh"
 #include "starlight/app/model/Model.hh"
+#include "starlight/physx/Transform.hh"
 
 namespace sl {
 

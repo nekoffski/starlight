@@ -5,10 +5,10 @@
 #include "starlight/core/Json.hh"
 #include "starlight/core/memory/Memory.hh"
 #include "starlight/core/Concepts.hh"
-#include "starlight/core/math/Transform.hh"
 #include "starlight/core/Id.hh"
 #include "starlight/renderer/Mesh.hh"
 #include "starlight/renderer/Material.hh"
+#include "starlight/physx/Transform.hh"
 #include "starlight/physx/bvh/BoundingVolume.hh"
 
 namespace sl {

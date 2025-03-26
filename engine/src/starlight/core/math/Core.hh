@@ -29,10 +29,17 @@ template <> constexpr u64 getSize<Mat4<f32>>() { return 16u; }
 
 template <typename T, typename F = f32>
 requires OneOf<T, Vec2<f32>, Vec3<f32>, Vec4<f32>>
-inline bool almostEquals(const T& lhs, const T& rhs, F delta) {
+bool almostEquals(const T& lhs, const T& rhs, F delta) {
     for (u64 i = 0; i < getSize<T>(); ++i)
         if (std::fabs(rhs[i] - lhs[i]) > delta) return false;
     return true;
+}
+
+template <typename T>
+requires OneOf<T, Vec2<f32>, Vec3<f32>, Vec4<f32>>
+bool almostNull(const T& lhs) {
+    static constexpr f32 delta = 0.001f;
+    return math::length2(lhs) <= delta;
 }
 
 }  // namespace sl

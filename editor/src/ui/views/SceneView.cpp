@@ -10,12 +10,11 @@
 #include <starlight/core/math/Utils.hh>
 #include <starlight/physx/Ray.hh>
 
-#include <ImGuizmo.h>
-
 namespace sle {
 
-SceneView::SceneView(Widget::State& state
-) : Widget(state), m_tabMenu("Scene"), m_eventSentinel(sl::EventProxy::get()) {
+SceneView::SceneView(Widget::State& state) :
+    Widget(state), m_tabMenu("Scene"), m_componentViews(state),
+    m_eventSentinel(sl::EventProxy::get()) {
     m_tabMenu
       .addTab(ICON_FA_CODE_BRANCH "  Entities Tree", [&]() { renderEntitiesTab(); })
       .addTab(ICON_FA_CLOUD "  Skybox", [&]() { renderSkyboxTab(); });
@@ -28,29 +27,7 @@ SceneView::SceneView(Widget::State& state
     });
 }
 
-void SceneView::render() {
-    m_tabMenu.render();
-
-    if (auto entity = getSeletedEntity();
-        entity && entity->has<sl::TransformComponent>()) {
-        auto& transform = entity->get<sl::TransformComponent>()->data().getLocal();
-
-        auto& camera = getCamera();
-
-        const auto& view       = camera.getViewMatrix();
-        const auto& projection = camera.getProjectionMatrix();
-
-        auto coords   = getRenderPreviewCoords();
-        auto viewport = getBiasedViewport();
-
-        ImGuizmo::SetRect(coords.x, coords.y, viewport.x, viewport.y);
-        ImGuizmo::Manipulate(
-          sl::math::value_ptr(view), sl::math::value_ptr(projection),
-          ImGuizmo::TRANSLATE, ImGuizmo::LOCAL, sl::math::value_ptr(transform),
-          nullptr, nullptr
-        );
-    }
-}
+void SceneView::render() { m_tabMenu.render(); }
 
 void renderEntityInspector(
   sl::Entity& entity, SceneView::EntityData& entityData, ComponentViews& views
@@ -63,7 +40,8 @@ void SceneView::setSelectedEntity(sl::Entity& entity) {
 
     if (getState().centerOnSelectedEntity && entity.has<sl::TransformComponent>()) {
         auto position = entity.get<sl::TransformComponent>()->data().getPosition();
-        getCamera().lookAt(position);
+        static constexpr sl::u32 steps = 20u;
+        getCamera().lookAt(position, steps);
     }
 }
 

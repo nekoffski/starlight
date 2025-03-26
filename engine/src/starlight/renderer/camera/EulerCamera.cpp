@@ -35,8 +35,11 @@ void EulerCamera::onScroll(float offset) {
     m_radius -= scrollSpeed * offset;
 }
 
-void EulerCamera::lookAt(const Vec3<f32>& target, f32 time) {
-    m_animation.emplace(*this, target);
+void EulerCamera::lookAt(const Vec3<f32>& target, u32 steps) {
+    if (steps == 1u)
+        m_target = target;
+    else
+        m_animation.emplace(*this, target, steps);
 }
 
 void EulerCamera::processInput(const float speed) {
@@ -107,9 +110,11 @@ EulerCamera::Properties EulerCamera::Properties::createDefault() {
     };
 }
 
-EulerCamera::Animation::Animation(EulerCamera& camera, const Vec3<f32>& target) :
+EulerCamera::Animation::Animation(
+  EulerCamera& camera, const Vec3<f32>& target, u32 steps
+) :
     m_camera(camera), m_done(false), m_target(target),
-    m_step((m_target - camera.m_target) / 10.0f) {}
+    m_step((m_target - camera.m_target) / static_cast<f32>(steps)) {}
 
 void EulerCamera::Animation::update() {
     static constexpr f32 delta = 0.005f;

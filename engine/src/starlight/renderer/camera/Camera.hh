@@ -27,7 +27,7 @@ public:
 
     virtual void update(float deltaTime) = 0;
     virtual void lookAt(
-      [[maybe_unused]] const Vec3<f32>& target, [[maybe_unused]] f32 time = 0.0f
+      [[maybe_unused]] const Vec3<f32>& target, [[maybe_unused]] u32 steps = 1u
     ) {}
 
     const Vec3<f32>& getPosition() const;

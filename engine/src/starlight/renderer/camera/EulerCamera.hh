@@ -11,7 +11,7 @@ namespace sl {
 class EulerCamera : public Camera {
     class Animation {
     public:
-        explicit Animation(EulerCamera& camera, const Vec3<f32>& target);
+        explicit Animation(EulerCamera& camera, const Vec3<f32>& target, u32 steps);
 
         void update();
         bool done() const;
@@ -39,7 +39,7 @@ public:
     void update(float deltaTime) override;
     void onScroll(float offset);
 
-    void lookAt(const Vec3<f32>& target, f32 time = 0.0f) override;
+    void lookAt(const Vec3<f32>& target, u32 steps = 1u) override;
 
 private:
     void processInput(const float speed);

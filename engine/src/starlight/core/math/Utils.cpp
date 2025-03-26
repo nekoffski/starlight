@@ -31,8 +31,8 @@ MatrixComponents decomposeTransformation(const Mat4<f32>& matrix) {
       components.skew, components.perspective
     );
 
-    components.rotation = math::conjugate(components.rotation);
     components.euler    = math::eulerAngles(components.rotation);
+    components.rotation = math::conjugate(components.rotation);
 
     return components;
 }

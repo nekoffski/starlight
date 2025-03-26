@@ -6,22 +6,24 @@
 
 #include <starlight/core/Concepts.hh>
 
+#include "ui/Widget.hh"
+
 namespace sle {
 
-class ComponentViews {
-    using Callback = std::function<void(void*)>;
+class ComponentViews : public Widget {
+    using Callback = std::function<void(void*, Widget&)>;
 
 public:
-    explicit ComponentViews();
+    explicit ComponentViews(Widget::State& state);
 
     void render(std::type_index index, void* component);
 
 private:
     template <typename T, typename F>
-    requires sl::Callable<F, void, T&>
+    requires sl::Callable<F, void, T&, Widget&>
     void registerView(F&& callback) {
-        m_views[typeid(T)] = [callback](void* component) {
-            callback(*static_cast<T*>(component));
+        m_views[typeid(T)] = [callback](void* component, Widget& widget) {
+            callback(*static_cast<T*>(component), widget);
         };
     }
 

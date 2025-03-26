@@ -7,6 +7,7 @@ namespace sle {
 PropertiesView::PropertiesView(Widget::State& state
 ) : Widget(state), m_tabMenu("Properties") {
     m_tabMenu.addTab(ICON_FA_WRENCH "  Inspector", [&]() { renderInspectorTab(); })
+      .addTab(ICON_FA_TOOLBOX "  Tools", [&]() { renderToolsTab(); })
       .addTab(ICON_FA_EYE "  Renderer", [&]() { renderRendererTab(); })
       .addTab(ICON_FA_CAMERA "  Camera", [&]() { renderCameraTab(); });
 }
@@ -44,8 +45,9 @@ void PropertiesView::renderInspectorTab() {
 }
 
 void PropertiesView::renderCameraTab() {
-    auto& centerOnSelectedEntity = getState().centerOnSelectedEntity;
-    sl::ui::checkbox("Center on selected entity", centerOnSelectedEntity);
+    sl::ui::checkbox("Center on selected entity", getState().centerOnSelectedEntity);
 }
+
+void PropertiesView::renderToolsTab() { sl::ui::separator(); }
 
 }  // namespace sle

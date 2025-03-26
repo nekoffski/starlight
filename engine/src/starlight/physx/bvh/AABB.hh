@@ -3,7 +3,7 @@
 #include "starlight/core/Core.hh"
 #include "starlight/core/math/Vec.hh"
 #include "starlight/core/math/Extent.hh"
-#include "starlight/core/math/Transform.hh"
+#include "starlight/physx/Transform.hh"
 
 #include "BoundingVolume.hh"
 

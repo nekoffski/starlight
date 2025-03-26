@@ -94,6 +94,19 @@ void deserializeModel(Entity& entity, const nlohmann::json& json) {
     entity.add<ModelComponent>(model);
 }
 
+nlohmann::json serializeTransform(TransformComponent& c) {
+    auto& component = c.data();
+
+    nlohmann::json json;
+    // todo
+
+    return json;
+}
+
+void deserializeTransform(Entity& entity, const nlohmann::json& json) {
+    entity.add<TransformComponent>();
+}
+
 void registerBuiltinComponents(SceneParser& parser) {
     parser
       .registerComponent<DirectionalLightComponent>(
@@ -105,6 +118,9 @@ void registerBuiltinComponents(SceneParser& parser) {
       )
       .registerComponent<ModelComponent>(
         "ModelComponent", serializeModel, deserializeModel
+      )
+      .registerComponent<TransformComponent>(
+        "TransformComponent", serializeTransform, deserializeTransform
       );
 }
 

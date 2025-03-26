@@ -111,18 +111,28 @@ template <typename T> using Mat2 = detail::Mat2Picker<T>::Type;
 template <typename T> using Mat3 = detail::Mat3Picker<T>::Type;
 template <typename T> using Mat4 = detail::Mat4Picker<T>::Type;
 
-inline Vec2<u32> operator+(const Vec2<u32>& lhs, const Vec2<u32>& rhs) {
-    return Vec2<u32>{ lhs.x + rhs.x, lhs.y + rhs.y };
-}
-
-inline Vec3<f32> operator*(const Mat4<f32>& lhs, const Vec3<f32>& rhs) {
-    return Vec3<f32>{
-        lhs * Vec4<f32>{ rhs, 1.0f }
-    };
-}
-
 const Vec3<f32> worldUp    = Vec3<f32>{ 0.0f, 1.0f, 0.0f };
 const Vec3<f32> worldRight = Vec3<f32>{ 1.0f, 0.0f, 0.0 };
 const Vec3<f32> worldFront = Vec3<f32>{ 0.0f, 0.0f, 1.0f };
 
 }  // namespace sl
+
+inline sl::Vec2<sl::u32> operator+(
+  const sl::Vec2<sl::u32>& lhs, const sl::Vec2<sl::u32>& rhs
+) {
+    return sl::Vec2<sl::u32>{ lhs.x + rhs.x, lhs.y + rhs.y };
+}
+
+inline sl::Vec2<sl::u32> operator-(
+  const sl::Vec2<sl::u32>& lhs, const sl::Vec2<sl::u32>& rhs
+) {
+    return sl::Vec2<sl::u32>{ lhs.x - rhs.x, lhs.y - rhs.y };
+}
+
+inline sl::Vec3<sl::f32> operator*(
+  const sl::Mat4<sl::f32>& lhs, const sl::Vec3<sl::f32>& rhs
+) {
+    return sl::Vec3<sl::f32>{
+        lhs * sl::Vec4<sl::f32>{ rhs, 1.0f }
+    };
+}

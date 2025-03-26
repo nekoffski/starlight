@@ -1,19 +1,21 @@
 #include "Transform.hh"
 
+#include <glm/gtx/euler_angles.hpp>
+
 namespace sl {
 
 Transform::Transform() :
     Transform(Vec3<f32>{ 0.0f }, Vec3<f32>{ 1.0f }, identityMatrix) {}
 
 Transform::Transform(
-  const Vec3<f32>& position, const Vec3<f32>& scale, const Mat4<f32>& rotation
+  const Vec3<f32>& position, const Vec3<f32>& scale, const Quat& orientation
 ) :
     m_model(identityMatrix), m_position(position), m_scale(scale),
-    m_rotation(rotation), m_updated(false), m_parent(nullptr) {}
+    m_orientation(orientation), m_updated(false), m_parent(nullptr) {}
 
 Transform* Transform::getParent() const { return m_parent; }
 
-void Transform::setParent(Transform* parent) { m_parent = parent; }
+void Transform::setParent(Transform& parent) { m_parent = &parent; }
 
 Transform Transform::fromScale(const Vec3<f32>& scale) {
     return Transform(Vec3<f32>{ 0.0f }, scale, identityMatrix);
@@ -24,18 +26,18 @@ Transform Transform::fromPosition(const Vec3<f32>& position) {
 }
 
 Transform Transform::fromRotation(const Vec3<f32>& axis, const float angle) {
-    return Transform::fromRotation(glm::rotate(identityMatrix, angle, axis));
+    return Transform::fromOrientation(math::angleAxis(angle, axis));
 }
 
-Transform Transform::fromRotation(const Mat4<f32>& rotation) {
-    return Transform(Vec3<f32>{ 0.0f }, Vec3<f32>{ 1.0f }, rotation);
+Transform Transform::fromOrientation(const Quat& orientation) {
+    return Transform(Vec3<f32>{ 0.0f }, Vec3<f32>{ 1.0f }, orientation);
 }
 
-Vec3<f32> Transform::getPosition() const { return m_position; }
+const Vec3<f32>& Transform::getPosition() const { return m_position; }
 
-Vec3<f32> Transform::getScale() const { return m_scale; }
+const Vec3<f32>& Transform::getScale() const { return m_scale; }
 
-Mat4<f32> Transform::getRotation() const { return m_rotation; }
+const Quat& Transform::getOrientation() const { return m_orientation; }
 
 Transform& Transform::translate(const Vec3<f32>& position) {
     m_position += position;
@@ -43,19 +45,19 @@ Transform& Transform::translate(const Vec3<f32>& position) {
     return *this;
 }
 
-Transform& Transform::rotate(const Mat4<f32>& rotation) {
-    m_rotation = rotation * m_rotation;
-    m_updated  = true;
+Transform& Transform::rotate(const Quat& rotation) {
+    m_orientation = rotation * m_orientation;
+    m_updated     = true;
     return *this;
 }
 
 Transform& Transform::rotate(const Vec3<f32>& axis, const float angle) {
-    m_rotation = glm::rotate(m_rotation, angle, axis);
-    m_updated  = true;
-    return *this;
+    return rotate(math::angleAxis(angle, axis));
 }
 
 Transform& Transform::scale(float scale) { return this->scale(Vec3<f32>{ scale }); }
+
+Vec3<f32> Transform::getEuler() const { return math::eulerAngles(m_orientation); }
 
 Transform& Transform::scale(const Vec3<f32>& scale) {
     m_scale *= scale;
@@ -75,13 +77,17 @@ Transform& Transform::setScale(const Vec3<f32>& scale) {
     return *this;
 }
 
-Transform& Transform::setRotation(const Mat4<f32>& rotation) {
-    m_rotation = rotation;
-    m_updated  = true;
+Transform& Transform::setOrientation(const Quat& orientation) {
+    m_orientation = orientation;
+    m_updated     = true;
     return *this;
 }
 
-Mat4<f32>& Transform::getLocal() {
+Transform& Transform::setOrientation(const Vec3<f32>& euler) {
+    return setOrientation(Quat{ euler });
+}
+
+const Mat4<f32>& Transform::getLocal() {
     if (m_updated) {
         calculateModelMatrix();
         m_updated = false;
@@ -98,9 +104,9 @@ Mat4<f32> Transform::getWorld() {
 void Transform::setAsDirty() { m_updated = true; }
 
 void Transform::calculateModelMatrix() {
-    m_model = glm::scale(
-      m_rotation * glm::translate(glm::mat4{ 1.0f }, m_position), m_scale
-    );
+    m_model =
+      math::translate(identityMatrix, m_position) * math::mat4_cast(m_orientation)
+      * math::scale(identityMatrix, m_scale);
 }
 
 }  // namespace sl
