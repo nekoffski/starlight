@@ -2,7 +2,7 @@
 
 #include "starlight/ui/Utils.hh"
 
-namespace sl::ui {
+namespace sl {
 
 Slider3::Slider3(
   const std::string& name, const StepInterval<float>& range,
@@ -12,8 +12,16 @@ Slider3::Slider3(
     m_range(range) {}
 
 void Slider3::render(Callback&& callback) {
-    sl::ui::text("{}", m_name);
-    if (sl::ui::slider(m_id, m_data, m_range)) callback(m_data);
+    sl::text("{}", m_name);
+    if (immediateSlider(m_id, m_data, m_range)) callback(m_data);
 }
 
-}  // namespace sl::ui
+bool immediateSlider(
+  const std::string& name, Vec3<f32>& data, const StepInterval<float>& range
+) {
+    return ImGui::DragFloat3(
+      name.c_str(), &data[0], range.step, range.min, range.max
+    );
+}
+
+}  // namespace sl

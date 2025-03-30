@@ -5,7 +5,7 @@
 namespace sl {
 
 sl::UIRenderPass::UIRenderPass(Renderer& renderer, UI& ui) :
-    RenderPassBase(renderer, { 0.0f, 0.0f }, "UIRenderPass"), m_ui(ui) {}
+    RenderPassBase(renderer, { 0.0f, 0.0f, 1.0f, 1.0f }, "UIRenderPass"), m_ui(ui) {}
 
 void UIRenderPass::init(bool hasPreviousPass, bool hasNextPass) {
     const auto props = createRenderPassProperties(hasPreviousPass, hasNextPass);

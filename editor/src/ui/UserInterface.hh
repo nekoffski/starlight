@@ -7,6 +7,7 @@
 #include "views/SceneView.hh"
 #include "views/PropertiesView.hh"
 #include "views/ResourcesView.hh"
+#include "views/InspectorView.hh"
 #include "Console.hh"
 #include "Widget.hh"
 #include "Config.hh"
@@ -31,6 +32,8 @@ public:
 
     const Config& getConfig() const;
 
+    sl::Vec4<sl::f32> getViewportScale() const;
+
 private:
     void onViewportReisze(const sl::Vec2<sl::u32>& viewport);
     void createLayout(const sl::Vec2<sl::u32>& viewport);
@@ -46,13 +49,15 @@ private:
     Config m_config;
     Widget::State m_widgetState;
 
-    sl::ui::MainMenuBar m_menu;
-    sl::LocalPtr<sl::ui::PanelCombo> m_leftCombo;
-    sl::LocalPtr<sl::ui::PanelCombo> m_bottomCombo;
+    sl::MainMenuBar m_menu;
+    sl::LocalPtr<sl::PanelCombo> m_leftCombo;
+    sl::LocalPtr<sl::PanelCombo> m_bottomCombo;
+    sl::LocalPtr<sl::PanelCombo> m_inspectorPanel;
 
     SceneView m_sceneView;
     PropertiesView m_propertiesView;
     ResourcesView m_resourcesView;
+    InspectorView m_inspectorView;
 };
 
 }  // namespace sle

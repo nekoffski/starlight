@@ -24,7 +24,7 @@ public:
     void render();
 
 private:
-    sl::ui::TabMenu m_tabMenu;
+    sl::TabMenu m_tabMenu;
     EntityData m_entityData;
     ComponentViews m_componentViews;
 

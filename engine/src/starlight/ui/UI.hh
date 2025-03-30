@@ -1,6 +1,7 @@
 #pragma once
 
 #include <imgui.h>
+#include <ImGuizmo.h>
 
 #include "Utils.hh"
 
@@ -12,3 +13,4 @@
 #include "widgets/TabMenu.hh"
 #include "widgets/Popup.hh"
 #include "widgets/Image.hh"
+#include "widgets/Combo.hh"

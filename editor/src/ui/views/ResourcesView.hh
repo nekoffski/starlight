@@ -24,7 +24,7 @@ private:
 
     void renderMaterial(sl::Material& material);
 
-    sl::ui::TabMenu m_tabMenu;
+    sl::TabMenu m_tabMenu;
     std::string m_nameBuffer;
 };
 

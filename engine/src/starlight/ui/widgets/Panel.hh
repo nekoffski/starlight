@@ -2,7 +2,7 @@
 
 #include "starlight/ui/Core.hh"
 
-namespace sl::ui {
+namespace sl {
 
 class Panel {
 public:
@@ -55,4 +55,4 @@ private:
     bool m_dirty;
 };
 
-}  // namespace sl::ui
+}  // namespace sl

@@ -4,7 +4,7 @@
 
 #include "starlight/ui/Core.hh"
 
-namespace sl::ui {
+namespace sl {
 
 class TabMenu {
     struct Tab {
@@ -23,4 +23,4 @@ private:
     std::vector<Tab> m_tabs;
 };
 
-}  // namespace sl::ui
+}  // namespace sl

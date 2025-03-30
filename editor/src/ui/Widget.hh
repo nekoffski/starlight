@@ -6,6 +6,8 @@
 #include <optional>
 #include <unordered_map>
 
+#include <starlight/ui/UI.hh>
+
 #include <starlight/app/scene/Scene.hh>
 #include <starlight/app/scene/Entity.hh>
 #include <starlight/renderer/RenderGraph.hh>
@@ -47,7 +49,10 @@ public:
         sl::Entity* m_selectedEntity;
 
         OptCallback m_inspectorCallback;
-        std::unordered_map<sl::u64, sl::UniquePtr<sl::ui::ImageHandle>> m_images;
+        std::unordered_map<sl::u64, sl::UniquePtr<sl::ImageHandle>> m_images;
+
+        ImGuizmo::MODE m_gizmoMode;
+        ImGuizmo::OPERATION m_gizmoOperation;
     };
 
     explicit Widget(State& state);
@@ -57,6 +62,9 @@ public:
     sl::RenderGraph& getRenderGraph();
     sl::Scene& getScene();
     sl::Camera& getCamera();
+    ImGuizmo::MODE& getGizmoMode();
+    ImGuizmo::OPERATION& getGizmoOperation();
+
     const sl::Vec2<sl::u32>& getViewport();
 
     sl::Entity* getSeletedEntity();

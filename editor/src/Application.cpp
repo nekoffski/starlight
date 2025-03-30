@@ -33,12 +33,12 @@ Application::Application(
 
     initEvents();
 
-    const auto& viewportOffset = m_userInterface.getConfig().layoutSizeRatio;
+    const auto& viewportScale = m_userInterface.getViewportScale();
 
-    getRenderGraph().addPass<sl::SkyboxRenderPass>(viewportOffset);
+    getRenderGraph().addPass<sl::SkyboxRenderPass>(viewportScale);
     getRenderGraph().addPass<sl::ShadowMapsRenderPass>();
-    getRenderGraph().addPass<sl::WorldRenderPass>(viewportOffset);
-    getRenderGraph().addPass<sl::GridRenderPass>(viewportOffset);
+    getRenderGraph().addPass<sl::WorldRenderPass>(viewportScale);
+    getRenderGraph().addPass<sl::GridRenderPass>(viewportScale);
     getRenderGraph().addPass<sl::UIRenderPass>(m_userInterface);
 }
 

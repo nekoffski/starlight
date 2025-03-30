@@ -6,7 +6,7 @@
 #include "starlight/ui/Core.hh"
 #include "starlight/core/Log.hh"
 
-namespace sl::ui {
+namespace sl {
 
 class Popup {
 public:
@@ -20,4 +20,4 @@ private:
     Callback m_callback;
 };
 
-}  // namespace sl::ui
+}  // namespace sl

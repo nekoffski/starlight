@@ -3,10 +3,10 @@
 #include <optional>
 #include <vector>
 
-#include "starlight/ui/Core.hh"
 #include "starlight/core/Log.hh"
+#include "starlight/ui/Core.hh"
 
-namespace sl::ui {
+namespace sl {
 
 class Menu {
 public:
@@ -43,4 +43,4 @@ private:
     std::vector<Menu> m_menus;
 };
 
-}  // namespace sl::ui
+}  // namespace sl

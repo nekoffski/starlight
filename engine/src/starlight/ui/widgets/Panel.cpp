@@ -4,7 +4,7 @@
 
 #include "starlight/ui/Utils.hh"
 
-namespace sl::ui {
+namespace sl {
 
 Panel::Panel(const std::string& name, const Properties& props, Callback&& callback) :
     m_name(name), m_props(props), m_callback(std::move(callback)) {}
@@ -82,4 +82,4 @@ void PanelCombo::rebuildPanels() {
     m_dirty = false;
 }
 
-}  // namespace sl::ui
+}  // namespace sl

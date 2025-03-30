@@ -1,6 +1,6 @@
 #include "TabMenu.hh"
 
-namespace sl::ui {
+namespace sl {
 
 TabMenu::TabMenu(const std::string& name) : m_name(name) {}
 
@@ -21,4 +21,4 @@ TabMenu& TabMenu::addTab(const std::string& name, Callback&& callback) {
     return *this;
 }
 
-}  // namespace sl::ui
+}  // namespace sl

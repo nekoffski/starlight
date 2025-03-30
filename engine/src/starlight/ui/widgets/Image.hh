@@ -1,9 +1,9 @@
 #pragma once
 
 #include "starlight/renderer/gpu/Texture.hh"
-#include "starlight/core/math/Core.hh"
+#include "starlight/ui/Core.hh"
 
-namespace sl::ui {
+namespace sl {
 
 struct ImageHandle {
     static UniquePtr<ImageHandle> createHandle(Texture* texture);
@@ -12,4 +12,4 @@ struct ImageHandle {
     ) = 0;
 };
 
-}  // namespace sl::ui
+}  // namespace sl

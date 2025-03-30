@@ -9,22 +9,17 @@
 namespace sl {
 
 RenderPassBase::RenderPassBase(
-  Renderer& renderer, const Vec2<f32>& viewportOffset,
-  std::optional<std::string> name
-) : NamedResource(name), m_renderer(renderer), m_viewportOffset(viewportOffset) {}
+  Renderer& renderer, const Vec4<f32>& viewportScale, std::optional<std::string> name
+) : NamedResource(name), m_renderer(renderer), m_viewportScale(viewportScale) {}
 
 Rect2<u32> RenderPassBase::getViewport() {
     auto framebufferSize = Window::get().getFramebufferSize();
 
-    Vec2<u32> viewportOffset{
-        static_cast<u32>(framebufferSize.x * m_viewportOffset.x), 0u
-    };
-
     return Rect2<u32>{
-        viewportOffset,
+        Vec2<u32>(static_cast<u32>(framebufferSize.x * m_viewportScale.x), 0u),
         Vec2<u32>(
-          framebufferSize.x - viewportOffset.x,
-          static_cast<u32>((1.0f - m_viewportOffset.y) * framebufferSize.y)
+          static_cast<u32>(framebufferSize.x * m_viewportScale.z),
+          static_cast<u32>(framebufferSize.y * m_viewportScale.w)
         )
     };
 }
@@ -67,10 +62,10 @@ Pipeline::Properties RenderPassBase::createPipelineProperties() {
 }
 
 RenderPass::RenderPass(
-  Renderer& renderer, SharedPtr<Shader> shader, const Vec2<f32>& viewportOffset,
+  Renderer& renderer, SharedPtr<Shader> shader, const Vec4<f32>& viewportScale,
   std::optional<std::string> name
 ) :
-    RenderPassBase(renderer, viewportOffset, name), m_shader(shader),
+    RenderPassBase(renderer, viewportScale, name), m_shader(shader),
     m_shaderDataBinder(ShaderDataBinder::create(*m_shader)) {}
 
 void RenderPass::run(

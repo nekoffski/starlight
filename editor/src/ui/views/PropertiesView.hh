@@ -13,12 +13,14 @@ public:
     void render();
 
 private:
-    sl::ui::TabMenu m_tabMenu;
+    sl::TabMenu m_tabMenu;
 
-    void renderInspectorTab();
     void renderRendererTab();
     void renderCameraTab();
     void renderToolsTab();
+
+    sl::Combo<ImGuizmo::OPERATION> m_gizmoOperationCombo;
+    sl::Combo<ImGuizmo::MODE> m_gizmoModeCombo;
 };
 
 }  // namespace sle

@@ -6,7 +6,7 @@ namespace sl {
 
 class WorldRenderPass : public RenderPass {
 public:
-    explicit WorldRenderPass(Renderer& renderer, const Vec2<f32>& viewportOffset);
+    explicit WorldRenderPass(Renderer& renderer, const Vec4<f32>& viewportScale);
 
 private:
     RenderPassBackend::Properties createRenderPassProperties(

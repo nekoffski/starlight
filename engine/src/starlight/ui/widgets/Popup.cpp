@@ -1,6 +1,6 @@
 #include "Popup.hh"
 
-namespace sl::ui {
+namespace sl {
 
 Popup::Popup(const std::string& name, Callback&& callback) :
     m_name(name), m_callback(std::move(callback)) {}
@@ -14,4 +14,4 @@ void Popup::render() {
 
 void Popup::open() { ImGui::OpenPopup(m_name.c_str()); }
 
-}  // namespace sl::ui
+}  // namespace sl

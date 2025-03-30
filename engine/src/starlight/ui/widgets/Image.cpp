@@ -3,7 +3,7 @@
 #include "backends/imgui_impl_vulkan.h"
 #include "starlight/renderer/gpu/vulkan/VulkanTexture.hh"
 
-namespace sl::ui {
+namespace sl {
 
 class VulkanImageHandle : public ImageHandle {
 public:
@@ -43,4 +43,4 @@ VkDescriptorSet VulkanImageHandle::createDescriptorSet(Texture* texture) {
     );
 }
 
-}  // namespace sl::ui
+}  // namespace sl

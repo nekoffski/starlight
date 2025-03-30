@@ -8,10 +8,10 @@
 namespace sl {
 
 WorldRenderPass::WorldRenderPass(
-  Renderer& renderer, const Vec2<f32>& viewportOffset
+  Renderer& renderer, const Vec4<f32>& viewportScale
 ) :
     RenderPass(
-      renderer, ShaderFactory::get().load("Builtin.Shader.Material"), viewportOffset,
+      renderer, ShaderFactory::get().load("Builtin.Shader.Material"), viewportScale,
       "WorldRenderPass"
     ) {}
 

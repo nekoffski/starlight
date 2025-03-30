@@ -1,6 +1,6 @@
 #include "Menu.hh"
 
-namespace sl::ui {
+namespace sl {
 
 Menu::Menu(const std::string& name) : m_name(name) {}
 
@@ -47,4 +47,4 @@ void MainMenuBar::render() {
     }
 }
 
-}  // namespace sl::ui
+}  // namespace sl

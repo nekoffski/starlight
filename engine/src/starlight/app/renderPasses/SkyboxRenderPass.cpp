@@ -6,10 +6,10 @@
 namespace sl {
 
 SkyboxRenderPass::SkyboxRenderPass(
-  Renderer& renderer, const Vec2<f32>& viewportOffset
+  Renderer& renderer, const Vec4<f32>& viewportScale
 ) :
     RenderPass(
-      renderer, SkyboxFactory::get().getDefaultShader(), viewportOffset,
+      renderer, SkyboxFactory::get().getDefaultShader(), viewportScale,
       "SkyboxRenderPass"
     ) {}
 

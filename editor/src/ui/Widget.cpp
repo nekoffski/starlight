@@ -44,7 +44,7 @@ sl::Vec2<sl::f32> Widget::getRenderPreviewCoords() {
 sl::Vec2<sl::u32> Widget::getBiasedViewport() {
     return sl::Vec2<sl::u32>{
         static_cast<sl::u32>(
-          m_state.m_viewport.x * (1.0f - m_state.m_config.layoutSizeRatio.x)
+          m_state.m_viewport.x * (1.0f - m_state.m_config.layoutSizeRatio.x * 2.0f)
         ),
         static_cast<sl::u32>(
           m_state.m_viewport.y * (1.0f - m_state.m_config.layoutSizeRatio.y)
@@ -59,12 +59,16 @@ Widget::OptCallback& Widget::getInspectorCallback() {
 void Widget::showImage(sl::Texture& texture, sl::f32 width) {
     auto [it, _] = m_state.m_images.try_emplace(
       texture.id,
-      sl::lazyEvaluate([&] { return sl::ui::ImageHandle::createHandle(&texture); })
+      sl::lazyEvaluate([&] { return sl::ImageHandle::createHandle(&texture); })
     );
     it->second->show({ width, width }, { 0, 0 }, { 1.0f, 1.0f });
 }
 
 sl::Camera& Widget::getCamera() { return *m_state.m_camera; }
+
+ImGuizmo::MODE& Widget::getGizmoMode() { return m_state.m_gizmoMode; }
+
+ImGuizmo::OPERATION& Widget::getGizmoOperation() { return m_state.m_gizmoOperation; }
 
 sl::RenderGraph& Widget::getRenderGraph() { return *m_state.m_renderGraph; }
 
@@ -76,7 +80,8 @@ Widget::State::State(
 ) :
     centerOnSelectedEntity(true), m_config(config), m_viewport(viewport),
     m_scene(&scene), m_renderGraph(&renderGraph), m_camera(&camera),
-    m_selectedEntity(nullptr) {}
+    m_selectedEntity(nullptr), m_gizmoMode(ImGuizmo::LOCAL),
+    m_gizmoOperation(ImGuizmo::TRANSLATE) {}
 
 void Widget::State::setScene(sl::Scene& scene) { m_scene = &scene; }
 

@@ -4,7 +4,7 @@
 
 #include <backends/imgui_impl_vulkan.h>
 
-namespace sl::ui {
+namespace sl {
 
 bool checkbox(const std::string& label, bool& value) {
     return ImGui::Checkbox(label.c_str(), &value);
@@ -43,14 +43,6 @@ void treeNode(const std::string& name, std::function<void()>&& callback, i32 fla
 
 bool wasItemClicked() { return ImGui::IsItemClicked(); }
 
-bool slider(
-  const std::string& name, Vec3<f32>& data, const StepInterval<float>& range
-) {
-    return ImGui::DragFloat3(
-      name.c_str(), &data[0], range.step, range.min, range.max
-    );
-}
-
 void closeCurrentPopup() { ImGui::CloseCurrentPopup(); }
 void sameLine() { ImGui::SameLine(); }
 void separator() { ImGui::Separator(); }
@@ -68,4 +60,4 @@ void withColor(const Vec3<f32>& color, Callback&& callback) {
     popTextColor();
 }
 
-}  // namespace sl::ui
+}  // namespace sl

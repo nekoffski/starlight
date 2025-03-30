@@ -4,9 +4,9 @@
 
 namespace sl {
 
-GridRenderPass::GridRenderPass(Renderer& renderer, const Vec2<f32>& viewportOffset) :
+GridRenderPass::GridRenderPass(Renderer& renderer, const Vec4<f32>& viewportScale) :
     RenderPass(
-      renderer, ShaderFactory::get().load("Builtin.Shader.Grid"), viewportOffset,
+      renderer, ShaderFactory::get().load("Builtin.Shader.Grid"), viewportScale,
       "GridRenderPass"
     ) {}
 

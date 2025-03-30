@@ -21,26 +21,26 @@ static void renderResourceTab(
   const std::string& name, auto resources, auto&& create, auto&& renderThumbnail,
   auto&& setInspectorCallback
 ) {
-    if (sl::ui::button(fmt::format("Create new {}", name))) {
+    if (sl::button(fmt::format("Create new {}", name))) {
         // sl::EventProxy::get().emit<events::SetResourceUICallback>(
         //   [&, render, resource = create()]() { render(resource); }
         // );
     }
 
-    sl::ui::separator();
+    sl::separator();
     const auto width = getThumbnailWidth();
 
     for (sl::u64 i = 0u; i < resources.size(); ++i) {
-        if (i % rowSize != 0) sl::ui::sameLine();
+        if (i % rowSize != 0) sl::sameLine();
 
         auto& resource = *resources[i];
 
-        sl::ui::group([&]() {
+        sl::group([&]() {
             renderThumbnail(resource, width);
-            sl::ui::text("{}", resource.name);
+            sl::text("{}", resource.name);
         });
 
-        if (sl::ui::wasItemClicked()) {
+        if (sl::wasItemClicked()) {
             editorWriteDebug("{} selected: {}", name, resource.name);
             setInspectorCallback(resource);
         }
@@ -60,31 +60,31 @@ void ResourcesView::render() { m_tabMenu.render(); }
 
 void ResourcesView::renderMeshesTab() {
     // for (auto& mesh : sl::MeshFactory::get().getAll()) {
-    //     sl::ui::text("{}", mesh.name);
+    //     sl::text("{}", mesh.name);
     // }
 }
 
 void ResourcesView::renderMaterial(sl::Material& material) {
-    sl::ui::namedScope(material.name, [&]() {
-        sl::ui::text(ICON_FA_SCROLL "  Material - {}", material.name);
-        sl::ui::separator();
+    sl::namedScope(material.name, [&]() {
+        sl::text(ICON_FA_SCROLL "  Material - {}", material.name);
+        sl::separator();
 
         const auto width = ImGui::GetWindowWidth() / 1.1f;
         auto textures = sl::TextureFactory::get().getValues(sl::Texture::Type::flat);
         bool textureChanged = false;
 
-        sl::ui::text("Diffuse color:");
+        sl::text("Diffuse color:");
         ImGui::ColorEdit4(
           "##diffuse-color", sl::math::value_ptr(material.diffuseColor)
         );
 
-        sl::ui::separator();
-        sl::ui::text("Shininess:");
+        sl::separator();
+        sl::text("Shininess:");
         ImGui::SliderFloat("##shininess", &material.shininess, 0.0f, 64.0f);
 
         auto diffuseMap = material.diffuseMap;
-        sl::ui::separator();
-        sl::ui::combo(
+        sl::separator();
+        sl::immediateCombo(
           "Diffuse map", material.diffuseMap->name, textures,
           [&](auto& texture) {
               diffuseMap     = texture;
@@ -94,8 +94,8 @@ void ResourcesView::renderMaterial(sl::Material& material) {
         showImage(*material.diffuseMap, width);
 
         auto specularMap = material.specularMap;
-        sl::ui::separator();
-        sl::ui::combo(
+        sl::separator();
+        sl::immediateCombo(
           "Specular map", material.specularMap->name, textures,
           [&](auto& texture) {
               specularMap    = texture;
@@ -105,8 +105,8 @@ void ResourcesView::renderMaterial(sl::Material& material) {
         showImage(*material.specularMap, width);
 
         auto normalMap = material.normalMap;
-        sl::ui::separator();
-        sl::ui::combo(
+        sl::separator();
+        sl::immediateCombo(
           "Normal map", material.normalMap->name, textures,
           [&](auto& texture) {
               normalMap      = texture;

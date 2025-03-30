@@ -81,13 +81,13 @@ void SceneView::traceEntity(const sl::Vec2<sl::f32>& mousePosition) {
 void SceneView::renderEntitiesTab() {
     auto& scene = getScene();
 
-    if (sl::ui::button("Add Entity", sl::ui::parentWidth)) {
+    if (sl::button("Add Entity", sl::parentWidth)) {
         auto& entity = scene.addEntity();
         editorWriteInfo("New entity added: {}/{}", entity.id, entity.name);
     }
 
-    sl::ui::separator();
-    sl::ui::treeNode(
+    sl::separator();
+    sl::treeNode(
       "Root",
       [&]() {
           scene.forEach([&](sl::Entity& entity) {
@@ -98,14 +98,14 @@ void SceneView::renderEntitiesTab() {
               auto selectedEntity = getSeletedEntity();
               if (selectedEntity != nullptr && selectedEntity->id == entity.id)
                   flags |= ImGuiTreeNodeFlags_Selected;
-              sl::ui::treeNode(
+              sl::treeNode(
                 entity.name,
                 [&]() {
                     // TODO: display child entitites
                 },
                 flags
               );
-              if (sl::ui::wasItemClicked()) setSelectedEntity(entity);
+              if (sl::wasItemClicked()) setSelectedEntity(entity);
           });
       },
       ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen
@@ -128,28 +128,28 @@ void renderEntityInspector(
     };
 
     entityData.nameBuffer = entity.name;
-    sl::ui::namedScope(entity.name, [&]() {
+    sl::namedScope(entity.name, [&]() {
         if (ImGui::InputText(
               "##", &entityData.nameBuffer, ImGuiInputTextFlags_EnterReturnsTrue
             )) {
             editorWriteDebug("Entity name changed to: {}", entityData.nameBuffer);
             entity.name = entityData.nameBuffer;
         }
-        sl::ui::sameLine();
+        sl::sameLine();
 
-        if (sl::ui::button("Remove", sl::ui::parentWidth)) {
+        if (sl::button("Remove", sl::parentWidth)) {
         }
 
-        sl::ui::separator();
+        sl::separator();
 
         ImGui::Combo(
           "##combo2", &entityData.selectedComponentIndex, componentNames.data(),
           componentNames.size()
         );
 
-        sl::ui::sameLine();
+        sl::sameLine();
 
-        if (sl::ui::button("Add", sl::ui::parentWidth)) {
+        if (sl::button("Add", sl::parentWidth)) {
             editorWriteDebug(
               "Add component clicked: {}/{}", entity.name,
               entityData.selectedComponentIndex
@@ -169,8 +169,8 @@ void renderEntityInspector(
         }
 
         for (const auto& componentType : entity.getComponentTypes()) {
-            sl::ui::separator();
-            sl::ui::namedScope(componentType.name(), [&]() {
+            sl::separator();
+            sl::namedScope(componentType.name(), [&]() {
                 views.render(componentType, entity.get(componentType));
             });
         }

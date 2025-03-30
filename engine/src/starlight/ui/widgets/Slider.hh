@@ -2,7 +2,7 @@
 
 #include "starlight/ui/Core.hh"
 
-namespace sl::ui {
+namespace sl {
 
 class Slider3 {
     using Callback = std::function<void(const Vec3<f32>&)>;
@@ -24,4 +24,8 @@ private:
     StepInterval<float> m_range;
 };
 
-}  // namespace sl::ui
+bool immediateSlider(
+  const std::string& name, Vec3<f32>& data, const StepInterval<float>& range
+);
+
+}  // namespace sl

@@ -26,7 +26,8 @@ class RenderPassBase
       public NamedResource<RenderPassBase, "RenderPass"> {
 public:
     explicit RenderPassBase(
-      Renderer& renderer, const Vec2<f32>& viewportOffset = { 0.0f, 0.0f },
+      Renderer& renderer,
+      const Vec4<f32>& viewportScale  = { 0.0f, 0.0f, 1.0f, 1.0f },
       std::optional<std::string> name = {}
     );
     virtual ~RenderPassBase() = default;
@@ -53,14 +54,14 @@ protected:
 
     Renderer& m_renderer;
     UniquePtr<RenderPassBackend> m_renderPassBackend;
-    Vec2<f32> m_viewportOffset;
+    Vec4<f32> m_viewportScale;
 };
 
 class RenderPass : public RenderPassBase {
 public:
     explicit RenderPass(
       Renderer& renderer, SharedPtr<Shader> shader,
-      const Vec2<f32>& viewportOffset = { 0.0f, 0.0f },
+      const Vec4<f32>& viewportScale  = { 0.0f, 0.0f, 1.0f, 1.0f },
       std::optional<std::string> name = {}
     );
 

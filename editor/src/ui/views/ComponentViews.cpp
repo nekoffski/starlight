@@ -10,18 +10,22 @@ namespace sle {
 
 void renderPointLight(sl::PointLightComponent& c, [[maybe_unused]] Widget& widget) {
     auto& component = c.data();
-    sl::ui::treeNode(
+    sl::treeNode(
       ICON_FA_LIGHTBULB "  PointLight",
       [&]() {
-          sl::ui::text("Position:");
-          sl::ui::slider("##Position", component.position, { -10.0f, 10.0f, 0.01f });
+          sl::text("Position:");
+          sl::immediateSlider(
+            "##Position", component.position, { -10.0f, 10.0f, 0.01f }
+          );
 
-          sl::ui::text("Attenuation:");
+          sl::text("Attenuation:");
           auto attenuation = component.getAttenuation();
-          if (sl::ui::slider("##Attenuation", attenuation, { -10.0f, 10.0f, 0.01f }))
+          if (sl::immediateSlider(
+                "##Attenuation", attenuation, { -10.0f, 10.0f, 0.01f }
+              ))
               component.setAttenuation(attenuation);
 
-          sl::ui::text("Color:");
+          sl::text("Color:");
           ImGui::ColorEdit4("##Color", sl::math::value_ptr(component.color));
       },
       ImGuiTreeNodeFlags_DefaultOpen
@@ -32,12 +36,14 @@ void renderDirectionalLight(
   sl::DirectionalLightComponent& c, [[maybe_unused]] Widget& widget
 ) {
     auto& component = c.data();
-    sl::ui::treeNode(
+    sl::treeNode(
       ICON_FA_SUN "  DirectionalLight",
       [&]() {
-          sl::ui::text("Direction:");
-          sl::ui::slider("##Direction", component.direction, { -1.0f, 1.0f, 0.02f });
-          sl::ui::text("Color:");
+          sl::text("Direction:");
+          sl::immediateSlider(
+            "##Direction", component.direction, { -1.0f, 1.0f, 0.02f }
+          );
+          sl::text("Color:");
           ImGui::ColorEdit4("##Color", sl::math::value_ptr(component.color));
       },
       ImGuiTreeNodeFlags_DefaultOpen
@@ -46,7 +52,7 @@ void renderDirectionalLight(
 
 void renderModel(sl::ModelComponent& c, [[maybe_unused]] Widget& widget) {
     auto& component = c.data();
-    sl::ui::treeNode(
+    sl::treeNode(
       ICON_FA_CAR "  Model",
       [&]() {
 
@@ -57,31 +63,31 @@ void renderModel(sl::ModelComponent& c, [[maybe_unused]] Widget& widget) {
 
 void renderTransform(sl::TransformComponent& c, Widget& widget) {
     auto& component = c.data();
-    sl::ui::treeNode(
+    sl::treeNode(
       ICON_FA_ARROWS_ALT "  Transform",
       [&]() {
           auto& camera  = widget.getCamera();
           auto position = component.getPosition();
-          if (sl::ui::slider("##Position", position, { -10.0f, 10.0f, 0.01f }))
+          if (sl::immediateSlider("##Position", position, { -10.0f, 10.0f, 0.01f }))
               component.setPosition(position);
-          sl::ui::sameLine();
-          sl::ui::text("Position");
+          sl::sameLine();
+          sl::text("Position");
 
           auto originalEuler = sl::math::degrees(component.getEuler());
           auto euler         = originalEuler;
-          if (sl::ui::slider("##Rotation", euler, { -180.0f, 180.0f, 0.25f })) {
+          if (sl::immediateSlider("##Rotation", euler, { -180.0f, 180.0f, 0.25f })) {
               auto diff = euler - originalEuler;
               component.rotate(sl::math::radians(diff));
           }
 
-          sl::ui::sameLine();
-          sl::ui::text("Rotation");
+          sl::sameLine();
+          sl::text("Rotation");
 
           auto scale = component.getScale();
-          if (sl::ui::slider("##Scale", scale, { -5.0f, 5.0f, 0.01f }))
+          if (sl::immediateSlider("##Scale", scale, { -5.0f, 5.0f, 0.01f }))
               component.setScale(scale);
-          sl::ui::sameLine();
-          sl::ui::text("Scale");
+          sl::sameLine();
+          sl::text("Scale");
 
           auto matrix = component.getLocal();
 
@@ -95,8 +101,8 @@ void renderTransform(sl::TransformComponent& c, Widget& widget) {
 
           const auto changed = ImGuizmo::Manipulate(
             sl::math::value_ptr(view), sl::math::value_ptr(projection),
-            ImGuizmo::TRANSLATE, ImGuizmo::LOCAL, sl::math::value_ptr(matrix),
-            nullptr, nullptr
+            widget.getGizmoOperation(), widget.getGizmoMode(),
+            sl::math::value_ptr(matrix), nullptr, nullptr
           );
 
           if (changed) {
