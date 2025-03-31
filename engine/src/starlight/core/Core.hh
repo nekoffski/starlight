@@ -9,15 +9,20 @@
 namespace sl {
 
 struct NonCopyable {
-    NonCopyable()                         = default;
+    NonCopyable() = default;
+
+    NonCopyable(NonCopyable const&)            = delete;
+    NonCopyable& operator=(const NonCopyable&) = delete;
+
     NonCopyable(NonCopyable&&)            = default;
     NonCopyable& operator=(NonCopyable&&) = default;
 };
 
 struct NonMovable {
-    NonMovable()                             = default;
-    NonMovable(NonMovable const&)            = delete;
-    NonMovable& operator=(NonMovable const&) = delete;
+    NonMovable() = default;
+
+    NonMovable(NonMovable&&)            = delete;
+    NonMovable& operator=(NonMovable&&) = delete;
 };
 
 using u64 = uint64_t;

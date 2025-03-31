@@ -17,14 +17,12 @@ public:
     explicit Sandbox(
       const sl::Config& config, std::optional<std::string> scenePath
     ) : Engine(config) {
-        sl::Vec4<sl::f32> viewportScale{ 0.0f, 0.0f, 1.0f, 1.0f };
-
         if (scenePath) setScene(sl::SceneParser{}.deserialize(*scenePath));
 
-        getRenderGraph().addPass<sl::SkyboxRenderPass>(viewportScale);
+        getRenderGraph().addPass<sl::SkyboxRenderPass>();
         getRenderGraph().addPass<sl::ShadowMapsRenderPass>();
-        getRenderGraph().addPass<sl::WorldRenderPass>(viewportScale);
-        getRenderGraph().addPass<sl::GridRenderPass>(viewportScale);
+        getRenderGraph().addPass<sl::WorldRenderPass>();
+        getRenderGraph().addPass<sl::GridRenderPass>();
 
         getScene().getEntity("Entity_0")->add<sl::TransformComponent>();
 

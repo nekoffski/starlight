@@ -32,6 +32,11 @@ struct WindowResized {
     Vec2<u32> size;
 };
 
+struct ViewportChanged {
+    Rect2<u32> ui;
+    Rect2<u32> world;
+};
+
 std::string toString(const WindowResized& event);
 std::string toString(const KeyAction& action);
 std::string toString(const MouseAction& action);

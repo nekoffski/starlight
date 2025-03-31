@@ -7,14 +7,16 @@ namespace sl {
 Camera::Camera(
   const Vec2<u32>& viewport, const Vec3<f32>& position,
   const ProjectionProperties& projectionProperties
-) :
-    m_position(position), m_eventSentinel(EventProxy::get()),
-    m_viewportSize(viewport), m_projectionProperties(projectionProperties) {
-    m_eventSentinel.add<WindowResized>([&](auto& event) {
-        m_viewportSize = event.size;
+)
+    : m_position(position)
+    , m_eventSentinel(EventProxy::get())
+    , m_viewportSize(viewport)
+    , m_projectionProperties(projectionProperties) {
+    calculateProjectionMatrix();
+    m_eventSentinel.add<ViewportChanged>([&](auto& event) {
+        m_viewportSize = event.world.size;
         calculateProjectionMatrix();
     });
-    calculateProjectionMatrix();
 }
 
 const Vec3<f32>& Camera::getPosition() const { return m_position; }

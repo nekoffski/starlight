@@ -18,7 +18,7 @@ private:
       u64 frameNumber
     ) override;
 
-    Rect2<u32> getViewport() override;
+    Rect2<u32> getViewport() const override;
 
     std::vector<SharedPtr<Texture>> m_shadowMaps;
 };

@@ -13,6 +13,8 @@ public:
     explicit UIRenderPass(Renderer& renderer, UI& ui);
 
 private:
+    virtual Rect2<u32> getViewport() const override;
+
     void init(bool hasPreviousPass, bool hasNextPass) override;
 
     void run(

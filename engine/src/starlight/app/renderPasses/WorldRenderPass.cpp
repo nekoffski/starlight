@@ -7,11 +7,9 @@
 
 namespace sl {
 
-WorldRenderPass::WorldRenderPass(
-  Renderer& renderer, const Vec4<f32>& viewportScale
-) :
+WorldRenderPass::WorldRenderPass(Renderer& renderer) :
     RenderPass(
-      renderer, ShaderFactory::get().load("Builtin.Shader.Material"), viewportScale,
+      renderer, ShaderFactory::get().load("Builtin.Shader.Material"),
       "WorldRenderPass"
     ) {}
 

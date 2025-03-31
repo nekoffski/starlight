@@ -34,11 +34,12 @@ Application::Application(
     initEvents();
 
     const auto& viewportScale = m_userInterface.getViewportScale();
+    sl::Window::get().setUserInterfaceLayoutScale(viewportScale);
 
-    getRenderGraph().addPass<sl::SkyboxRenderPass>(viewportScale);
+    getRenderGraph().addPass<sl::SkyboxRenderPass>();
     getRenderGraph().addPass<sl::ShadowMapsRenderPass>();
-    getRenderGraph().addPass<sl::WorldRenderPass>(viewportScale);
-    getRenderGraph().addPass<sl::GridRenderPass>(viewportScale);
+    getRenderGraph().addPass<sl::WorldRenderPass>();
+    getRenderGraph().addPass<sl::GridRenderPass>();
     getRenderGraph().addPass<sl::UIRenderPass>(m_userInterface);
 }
 

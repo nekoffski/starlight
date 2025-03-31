@@ -61,6 +61,11 @@ public:
     u32 getWidth() const;
     u32 getHeight() const;
 
+    Rect2<u32> getWorldViewport();
+    Rect2<u32> getUserInterfaceViewport();
+
+    void setUserInterfaceLayoutScale(const Vec4<f32>& scale);
+
     void* getHandle();
     Impl& getImpl();
 
@@ -69,6 +74,7 @@ private:
 
     SingletonGuard<Globals, EventProxy> m_guard;
     UniquePtr<Impl> m_impl;
+    Vec4<f32> m_userInterfaceLayoutScale;
 };
 
 }  // namespace sl

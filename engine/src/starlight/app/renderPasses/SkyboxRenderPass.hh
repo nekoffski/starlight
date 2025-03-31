@@ -6,7 +6,7 @@ namespace sl {
 
 class SkyboxRenderPass : public RenderPass {
 public:
-    explicit SkyboxRenderPass(Renderer& renderer, const Vec4<f32>& viewportScale);
+    explicit SkyboxRenderPass(Renderer& renderer);
 
 private:
     RenderPassBackend::Properties createRenderPassProperties(

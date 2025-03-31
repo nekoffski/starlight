@@ -11,7 +11,7 @@ static constexpr u64 shadowMapResolution = 1024;
 ShadowMapsRenderPass::ShadowMapsRenderPass(Renderer& renderer) :
     RenderPass(
       renderer, ShaderFactory::get().load("Builtin.Shader.ShadowMaps"),
-      { 0.0f, 0.0f, 1.0f, 1.0f }, "ShadowMapsRenderPass"
+      "ShadowMapsRenderPass"
     ) {}
 
 RenderPassBackend::Properties ShadowMapsRenderPass::createRenderPassProperties(
@@ -71,7 +71,7 @@ void ShadowMapsRenderPass::render(
     packet.shadowMaps.push_back(m_shadowMaps[imageIndex].get());
 }
 
-Rect2<u32> ShadowMapsRenderPass::getViewport() {
+Rect2<u32> ShadowMapsRenderPass::getViewport() const {
     return Rect2<u32>{
         Vec2<u32>{ 0u,                  0u                  },
         Vec2<u32>{ shadowMapResolution, shadowMapResolution }
