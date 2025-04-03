@@ -8,34 +8,48 @@
 
 namespace sl {
 
-// TODO: measure if it causes bottlenecks ->
-// if yes implement lightweight wrapper
-
 bool checkbox(const std::string& label, bool& value);
 
-void indent(Callback&& callback);
+template <typename C>
+requires Callable<C>
+void indent(C&& callback) {
+    ImGui::Indent();
+    callback();
+    ImGui::Unindent();
+}
 
-void pushTextColor(const Vec3<f32>& color);
-void popTextColor(int count = 1);
-void withColor(const Vec3<f32>& color, Callback&& callback);
+template <typename C>
+requires Callable<C>
+void namedScope(const std::string& name, C&& callback) {
+    ImGui::PushID(name.c_str());
+    callback();
+    ImGui::PopID();
+}
 
-void namedScope(const std::string& name, Callback&& callback);
+template <typename C>
+requires Callable<C>
+void group(C&& callback) {
+    ImGui::BeginGroup();
+    callback();
+    ImGui::EndGroup();
+}
 
-void group(Callback&& callback);
+template <typename C>
+requires Callable<C>
+void treeNode(const std::string& name, C&& callback, i32 flags) {
+    if (ImGui::TreeNodeEx(name.c_str(), flags)) {
+        callback();
+        ImGui::TreePop();
+    }
+}
 
-void treeNode(
-  const std::string& name, std::function<void()>&& callback,
-  i32 flags = ImGuiTreeNodeFlags_None
-);
+template <typename C>
+requires Callable<C>
+void openTreeNode(const std::string& name, C&& callback) {
+    treeNode(name, std::forward<C>(callback), ImGuiTreeNodeFlags_DefaultOpen);
+}
 
 bool wasItemClicked();
-
-template <typename... Args> bool text(const std::string& fmt, Args&&... args) {
-    ImGui::Text(
-      "%s", fmt::format(fmt::runtime(fmt), std::forward<Args>(args)...).c_str()
-    );
-    return ImGui::IsItemClicked();
-}
 
 bool button(const std::string& text, const Vec2<f32>& size = { 0.0f, 0.0f });
 

@@ -89,36 +89,39 @@ void renderTransform(sl::TransformComponent& c, Widget& widget) {
           sl::sameLine();
           sl::text("Scale");
 
-          auto matrix = component.getLocal();
+          if (widget.isGizmoEnabled()) {
+              auto matrix = component.getLocal();
 
-          const auto& view       = camera.getViewMatrix();
-          const auto& projection = camera.getProjectionMatrix();
+              const auto& view       = camera.getViewMatrix();
+              const auto& projection = camera.getProjectionMatrix();
 
-          auto coords   = widget.getRenderPreviewCoords();
-          auto viewport = widget.getBiasedViewport();
+              auto coords   = widget.getRenderPreviewCoords();
+              auto viewport = widget.getBiasedViewport();
 
-          ImGuizmo::SetRect(coords.x, coords.y, viewport.x, viewport.y);
+              ImGuizmo::SetRect(coords.x, coords.y, viewport.x, viewport.y);
 
-          const auto changed = ImGuizmo::Manipulate(
-            sl::math::value_ptr(view), sl::math::value_ptr(projection),
-            widget.getGizmoOperation(), widget.getGizmoMode(),
-            sl::math::value_ptr(matrix), nullptr, nullptr
-          );
+              const auto changed = ImGuizmo::Manipulate(
+                sl::math::value_ptr(view), sl::math::value_ptr(projection),
+                widget.getGizmoOperation(), widget.getGizmoMode(),
+                sl::math::value_ptr(matrix), nullptr, nullptr
+              );
 
-          if (changed) {
-              auto euler      = component.getEuler();
-              auto components = sl::decomposeTransformation(matrix);
+              if (changed) {
+                  auto euler      = component.getEuler();
+                  auto components = sl::decomposeTransformation(matrix);
 
-              component.setPosition(components.translation);
-              component.rotate(components.euler - euler);
-              component.setScale(components.scale);
+                  component.setPosition(components.translation);
+                  component.rotate(components.euler - euler);
+                  component.setScale(components.scale);
+              }
           }
       },
       ImGuiTreeNodeFlags_DefaultOpen
     );
 }
 
-ComponentViews::ComponentViews(Widget::State& state) : Widget(state) {
+ComponentViews::ComponentViews(Widget::State& state)
+    : Widget(state) {
     registerView<sl::DirectionalLightComponent>(renderDirectionalLight);
     registerView<sl::PointLightComponent>(renderPointLight);
     registerView<sl::ModelComponent>(renderModel);

@@ -53,6 +53,7 @@ public:
 
         ImGuizmo::MODE m_gizmoMode;
         ImGuizmo::OPERATION m_gizmoOperation;
+        bool m_gizmoEnabled;
     };
 
     explicit Widget(State& state);
@@ -64,6 +65,7 @@ public:
     sl::Camera& getCamera();
     ImGuizmo::MODE& getGizmoMode();
     ImGuizmo::OPERATION& getGizmoOperation();
+    bool& isGizmoEnabled();
 
     const sl::Vec2<sl::u32>& getViewport();
 

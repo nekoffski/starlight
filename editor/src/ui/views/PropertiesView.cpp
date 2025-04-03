@@ -4,9 +4,11 @@
 
 namespace sle {
 
-PropertiesView::PropertiesView(Widget::State& state) :
-    Widget(state), m_tabMenu("Properties"), m_gizmoOperationCombo("Gizmo Operation"),
-    m_gizmoModeCombo("Gizmo Mode") {
+PropertiesView::PropertiesView(Widget::State& state)
+    : Widget(state)
+    , m_tabMenu("Properties")
+    , m_gizmoOperationCombo("Operation")
+    , m_gizmoModeCombo("Mode") {
     m_tabMenu.addTab(ICON_FA_TOOLBOX "  Tools", [&]() { renderToolsTab(); })
       .addTab(ICON_FA_EYE "  Renderer", [&]() { renderRendererTab(); })
       .addTab(ICON_FA_CAMERA "  Camera", [&]() { renderCameraTab(); });
@@ -50,31 +52,38 @@ void PropertiesView::renderCameraTab() {
 }
 
 void PropertiesView::renderToolsTab() {
-    if (sl::button("Full Screen Preview", sl::parentWidth)) {
-    }
-
-    sl::separator();
-    sl::text("Simulation");
-
-    if (sl::button("Play")) {
-    }
-
-    sl::sameLine();
-
-    if (sl::button("Pause")) {
-    }
-
-    sl::sameLine();
-
-    if (sl::button("Stop")) {
-    }
-
-    sl::separator();
-    m_gizmoOperationCombo.render([&](const auto& selectedOperation) {
-        getGizmoOperation() = selectedOperation;
+    sl::openTreeNode("Window", [&]() {
+        if (sl::button("Full Screen Preview", sl::parentWidth)) {
+        }
     });
-    m_gizmoModeCombo.render([&](const auto& selectedMode) {
-        getGizmoMode() = selectedMode;
+
+    sl::separator();
+    sl::openTreeNode("Simulation", [&]() {
+        if (sl::button("Play")) {
+        }
+
+        sl::sameLine();
+
+        if (sl::button("Pause")) {
+        }
+
+        sl::sameLine();
+
+        if (sl::button("Stop")) {
+        }
+    });
+
+    sl::separator();
+
+    sl::openTreeNode("Gizmo", [&]() {
+        sl::checkbox("Enabled", isGizmoEnabled());
+
+        m_gizmoOperationCombo.render([&](const auto& selectedOperation) {
+            getGizmoOperation() = selectedOperation;
+        });
+        m_gizmoModeCombo.render([&](const auto& selectedMode) {
+            getGizmoMode() = selectedMode;
+        });
     });
     sl::separator();
 }

@@ -14,3 +14,4 @@
 #include "widgets/Popup.hh"
 #include "widgets/Image.hh"
 #include "widgets/Combo.hh"
+#include "widgets/Text.hh"

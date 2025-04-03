@@ -4,7 +4,8 @@
 
 namespace sle {
 
-Widget::Widget(State& state) : m_state(state) {}
+Widget::Widget(State& state)
+    : m_state(state) {}
 
 sl::Scene& Widget::getScene() { return *m_state.m_scene; }
 
@@ -70,6 +71,8 @@ ImGuizmo::MODE& Widget::getGizmoMode() { return m_state.m_gizmoMode; }
 
 ImGuizmo::OPERATION& Widget::getGizmoOperation() { return m_state.m_gizmoOperation; }
 
+bool& Widget::isGizmoEnabled() { return m_state.m_gizmoEnabled; }
+
 sl::RenderGraph& Widget::getRenderGraph() { return *m_state.m_renderGraph; }
 
 Widget::State& Widget::getState() { return m_state; }
@@ -77,11 +80,17 @@ Widget::State& Widget::getState() { return m_state; }
 Widget::State::State(
   const sl::Vec2<sl::u32>& viewport, const Config& config, sl::Scene& scene,
   sl::RenderGraph& renderGraph, sl::Camera& camera
-) :
-    centerOnSelectedEntity(true), m_config(config), m_viewport(viewport),
-    m_scene(&scene), m_renderGraph(&renderGraph), m_camera(&camera),
-    m_selectedEntity(nullptr), m_gizmoMode(ImGuizmo::LOCAL),
-    m_gizmoOperation(ImGuizmo::TRANSLATE) {}
+)
+    : centerOnSelectedEntity(true)
+    , m_config(config)
+    , m_viewport(viewport)
+    , m_scene(&scene)
+    , m_renderGraph(&renderGraph)
+    , m_camera(&camera)
+    , m_selectedEntity(nullptr)
+    , m_gizmoMode(ImGuizmo::LOCAL)
+    , m_gizmoOperation(ImGuizmo::TRANSLATE)
+    , m_gizmoEnabled(true) {}
 
 void Widget::State::setScene(sl::Scene& scene) { m_scene = &scene; }
 

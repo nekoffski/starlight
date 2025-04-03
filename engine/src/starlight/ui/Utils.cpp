@@ -10,37 +10,6 @@ bool checkbox(const std::string& label, bool& value) {
     return ImGui::Checkbox(label.c_str(), &value);
 }
 
-void indent(Callback&& callback) {
-    ImGui::Indent();
-    callback();
-    ImGui::Unindent();
-}
-
-void pushTextColor(const Vec3<f32>& color) {
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(color.x, color.y, color.z, 1.0f));
-}
-
-void popTextColor(int count) { ImGui::PopStyleColor(count); }
-
-void namedScope(const std::string& name, Callback&& callback) {
-    ImGui::PushID(name.c_str());
-    callback();
-    ImGui::PopID();
-}
-
-void group(Callback&& callback) {
-    ImGui::BeginGroup();
-    callback();
-    ImGui::EndGroup();
-}
-
-void treeNode(const std::string& name, std::function<void()>&& callback, i32 flags) {
-    if (ImGui::TreeNodeEx(name.c_str(), flags)) {
-        callback();
-        ImGui::TreePop();
-    }
-}
-
 bool wasItemClicked() { return ImGui::IsItemClicked(); }
 
 void closeCurrentPopup() { ImGui::CloseCurrentPopup(); }
@@ -53,11 +22,5 @@ bool button(const std::string& text, const Vec2<f32>& size) {
 }
 
 float getFrameHeight() { return ImGui::GetFrameHeight(); }
-
-void withColor(const Vec3<f32>& color, Callback&& callback) {
-    pushTextColor(color);
-    callback();
-    popTextColor();
-}
 
 }  // namespace sl

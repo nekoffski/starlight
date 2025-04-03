@@ -4,6 +4,7 @@
 
 #include "starlight/ui/Core.hh"
 #include "starlight/core/Log.hh"
+#include "Text.hh"
 
 namespace sl {
 
@@ -14,8 +15,10 @@ template <typename T> class Combo {
     };
 
 public:
-    explicit Combo(std::string_view name
-    ) : m_name(name), m_label(fmt::format("##{}-combo", name)), m_selected(0u) {}
+    explicit Combo(std::string_view name)
+        : m_name(name)
+        , m_label(fmt::format("##{}-combo", name))
+        , m_selected(0u) {}
 
     Combo& addOption(const std::string& name, const T& value) {
         m_records.emplace_back(name, value);
