@@ -7,11 +7,16 @@
 
 namespace sl {
 
-namespace detail {
+namespace details {
 
 template <typename T> struct Vec2Base {
-    explicit Vec2Base(T x = 0, T y = 0) : x(x), y(y), w(this->x), h(this->y) {}
-    Vec2Base(const Vec2Base& oth) : Vec2Base(oth.x, oth.y) {}
+    explicit Vec2Base(T x = 0, T y = 0)
+        : x(x)
+        , y(y)
+        , w(this->x)
+        , h(this->y) {}
+    Vec2Base(const Vec2Base& oth)
+        : Vec2Base(oth.x, oth.y) {}
 
     Vec2Base& operator=(const Vec2Base& oth) {
         x = oth.x;
@@ -27,9 +32,15 @@ template <typename T> struct Vec2Base {
 };
 
 template <typename T> struct Vec3Base {
-    explicit Vec3Base(T x = 0, T y = 0, T z = 0) :
-        x(x), y(y), z(z), w(this->x), h(this->y), d(this->z) {}
-    Vec3Base(const Vec3Base& oth) : Vec3Base(oth.x, oth.y, oth.z) {}
+    explicit Vec3Base(T x = 0, T y = 0, T z = 0)
+        : x(x)
+        , y(y)
+        , z(z)
+        , w(this->x)
+        , h(this->y)
+        , d(this->z) {}
+    Vec3Base(const Vec3Base& oth)
+        : Vec3Base(oth.x, oth.y, oth.z) {}
 
     Vec3Base& operator=(const Vec3Base& oth) {
         x = oth.x;
@@ -48,8 +59,13 @@ template <typename T> struct Vec3Base {
 };
 
 template <typename T> struct Vec4Base {
-    explicit Vec4Base(T x = 0, T y = 0, T z = 0, T w = 0) : x(x), y(y), z(z), w(w) {}
-    Vec4Base(const Vec4Base& oth) : Vec4Base(oth.x, oth.y, oth.z, oth.w) {}
+    explicit Vec4Base(T x = 0, T y = 0, T z = 0, T w = 0)
+        : x(x)
+        , y(y)
+        , z(z)
+        , w(w) {}
+    Vec4Base(const Vec4Base& oth)
+        : Vec4Base(oth.x, oth.y, oth.z, oth.w) {}
 
     Vec4Base& operator=(const Vec4Base& oth) {
         x = oth.x;
@@ -101,15 +117,15 @@ template <> struct Vec4Picker<f32> {
     using Type = math::vec4;
 };
 
-}  // namespace detail
+}  // namespace details
 
-template <typename T> using Vec2 = detail::Vec2Picker<T>::Type;
-template <typename T> using Vec3 = detail::Vec3Picker<T>::Type;
-template <typename T> using Vec4 = detail::Vec4Picker<T>::Type;
+template <typename T> using Vec2 = details::Vec2Picker<T>::Type;
+template <typename T> using Vec3 = details::Vec3Picker<T>::Type;
+template <typename T> using Vec4 = details::Vec4Picker<T>::Type;
 
-template <typename T> using Mat2 = detail::Mat2Picker<T>::Type;
-template <typename T> using Mat3 = detail::Mat3Picker<T>::Type;
-template <typename T> using Mat4 = detail::Mat4Picker<T>::Type;
+template <typename T> using Mat2 = details::Mat2Picker<T>::Type;
+template <typename T> using Mat3 = details::Mat3Picker<T>::Type;
+template <typename T> using Mat4 = details::Mat4Picker<T>::Type;
 
 const Vec3<f32> worldUp    = Vec3<f32>{ 0.0f, 1.0f, 0.0f };
 const Vec3<f32> worldRight = Vec3<f32>{ 1.0f, 0.0f, 0.0 };

@@ -23,7 +23,8 @@ struct EventStorageBase {
 template <typename T> class EventStorage : public EventStorageBase {
 public:
     template <typename... Args>
-    explicit EventStorage(Args&&... args) : m_event(std::forward<Args>(args)...) {}
+    explicit EventStorage(Args&&... args)
+        : m_event(std::forward<Args>(args)...) {}
 
     void* getEvent() override { return static_cast<void*>(&m_event); }
     std::type_index getType() const override { return typeid(T); }

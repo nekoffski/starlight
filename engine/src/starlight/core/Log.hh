@@ -9,7 +9,7 @@
 
 namespace sl::log {
 
-namespace detail {
+namespace details {
 
 struct FormatWithLocation {
     std::string_view fmt;
@@ -19,12 +19,12 @@ struct FormatWithLocation {
     FormatWithLocation(
       const String& s,
       const std::source_location& location = std::source_location::current()
-    ) :
-        fmt(s),
-        loc(
-          location.file_name(), static_cast<int>(location.line()),
-          location.function_name()
-        ) {}
+    )
+        : fmt(s)
+        , loc(
+            location.file_name(), static_cast<int>(location.line()),
+            location.function_name()
+          ) {}
 };
 
 template <typename... Args>
@@ -34,12 +34,12 @@ template <typename... Args>
     fmt::println(fmt::runtime(formatString.fmt), std::forward<Args>(args)...);
     std::abort();
 }
-}  // namespace detail
+}  // namespace details
 
 void init(std::string_view applicationName);
 
 template <typename... Args>
-void debug(detail::FormatWithLocation fmt, Args&&... args) {
+void debug(details::FormatWithLocation fmt, Args&&... args) {
     spdlog::default_logger_raw()->log(
       fmt.loc, spdlog::level::debug, fmt::runtime(fmt.fmt),
       std::forward<Args>(args)...
@@ -47,14 +47,14 @@ void debug(detail::FormatWithLocation fmt, Args&&... args) {
 }
 
 template <typename... Args>
-void error(detail::FormatWithLocation fmt, Args&&... args) {
+void error(details::FormatWithLocation fmt, Args&&... args) {
     spdlog::default_logger_raw()->log(
       fmt.loc, spdlog::level::err, fmt::runtime(fmt.fmt), std::forward<Args>(args)...
     );
 }
 
 template <typename... Args>
-void info(detail::FormatWithLocation fmt, Args&&... args) {
+void info(details::FormatWithLocation fmt, Args&&... args) {
     spdlog::default_logger_raw()->log(
       fmt.loc, spdlog::level::info, fmt::runtime(fmt.fmt),
       std::forward<Args>(args)...
@@ -62,7 +62,7 @@ void info(detail::FormatWithLocation fmt, Args&&... args) {
 }
 
 template <typename... Args>
-void trace(detail::FormatWithLocation fmt, Args&&... args) {
+void trace(details::FormatWithLocation fmt, Args&&... args) {
     spdlog::default_logger_raw()->log(
       fmt.loc, spdlog::level::trace, fmt::runtime(fmt.fmt),
       std::forward<Args>(args)...
@@ -70,7 +70,7 @@ void trace(detail::FormatWithLocation fmt, Args&&... args) {
 }
 
 template <typename... Args>
-void warn(detail::FormatWithLocation fmt, Args&&... args) {
+void warn(details::FormatWithLocation fmt, Args&&... args) {
     spdlog::default_logger_raw()->log(
       fmt.loc, spdlog::level::warn, fmt::runtime(fmt.fmt),
       std::forward<Args>(args)...
@@ -78,22 +78,22 @@ void warn(detail::FormatWithLocation fmt, Args&&... args) {
 }
 
 template <typename... Args>
-[[noreturn]] void panic(detail::FormatWithLocation fmt, Args&&... args) {
+[[noreturn]] void panic(details::FormatWithLocation fmt, Args&&... args) {
     fmt::println(
       "!! PANIC, unexpected path executed: {}:{} - {}", fmt.loc.filename,
       fmt.loc.line, fmt.loc.funcname
     );
-    detail::abort(std::move(fmt), std::forward<Args>(args)...);
+    details::abort(std::move(fmt), std::forward<Args>(args)...);
 }
 
 template <typename... Args>
-void expect(bool condition, detail::FormatWithLocation fmt, Args&&... args) {
+void expect(bool condition, details::FormatWithLocation fmt, Args&&... args) {
     if (not condition) [[unlikely]] {
         fmt::println(
           "!! ASSERTION FAILED: {}:{} - {}", fmt.loc.filename, fmt.loc.line,
           fmt.loc.funcname
         );
-        detail::abort(std::move(fmt), std::forward<Args>(args)...);
+        details::abort(std::move(fmt), std::forward<Args>(args)...);
     }
 }
 

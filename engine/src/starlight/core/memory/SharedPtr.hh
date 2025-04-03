@@ -14,13 +14,13 @@
 */
 
 namespace sl {
-namespace detail {
+namespace details {
 
 struct ControlBlock {
     std::atomic<i64> referenceCounter = 1;
 };
 
-}  // namespace detail
+}  // namespace details
 
 template <typename T> class SharedPtr {
     template <typename C> friend class SharedPtr;
@@ -28,8 +28,11 @@ template <typename T> class SharedPtr {
     struct PrivateConstructorTag {};
 
 public:
-    explicit SharedPtr() : m_controlBlock(nullptr), m_buffer(nullptr) {}
-    SharedPtr(std::nullptr_t) : SharedPtr() {}
+    explicit SharedPtr()
+        : m_controlBlock(nullptr)
+        , m_buffer(nullptr) {}
+    SharedPtr(std::nullptr_t)
+        : SharedPtr() {}
 
     ~SharedPtr() { reset(); }
 
@@ -57,13 +60,15 @@ public:
 
     template <typename F>
     requires std::derived_from<F, T>
-    SharedPtr(const SharedPtr<F>& oth
-    ) : m_controlBlock(oth.m_controlBlock), m_buffer(oth.m_buffer) {
+    SharedPtr(const SharedPtr<F>& oth)
+        : m_controlBlock(oth.m_controlBlock)
+        , m_buffer(oth.m_buffer) {
         if (m_controlBlock) m_controlBlock->referenceCounter++;
     }
 
-    SharedPtr(const SharedPtr<T>& oth
-    ) : m_controlBlock(oth.m_controlBlock), m_buffer(oth.m_buffer) {
+    SharedPtr(const SharedPtr<T>& oth)
+        : m_controlBlock(oth.m_controlBlock)
+        , m_buffer(oth.m_buffer) {
         if (m_controlBlock) m_controlBlock->referenceCounter++;
     }
 
@@ -104,11 +109,11 @@ public:
 private:
     template <typename... Args>
     requires std::constructible_from<T, Args...>
-    explicit SharedPtr(PrivateConstructorTag, Args&&... args) :
-        m_controlBlock(new detail::ControlBlock),
-        m_buffer(new T(std::forward<Args>(args)...)) {}
+    explicit SharedPtr(PrivateConstructorTag, Args&&... args)
+        : m_controlBlock(new details::ControlBlock)
+        , m_buffer(new T(std::forward<Args>(args)...)) {}
 
-    detail::ControlBlock* m_controlBlock;
+    details::ControlBlock* m_controlBlock;
     T* m_buffer;
 };
 

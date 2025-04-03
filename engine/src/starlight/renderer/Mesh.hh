@@ -14,7 +14,7 @@
 #include "gpu/Buffer.hh"
 
 namespace sl {
-namespace detail {
+namespace details {
 
 template <typename T>
 concept ExtentType = OneOf<T, Extent2, Extent3>;
@@ -48,7 +48,7 @@ Extent calculateExtent(const std::vector<Vertex>& vertices) {
     return Extent(min, max);
 }
 
-}  // namespace detail
+}  // namespace details
 
 struct PlaneProperties {
     float width;
@@ -90,7 +90,7 @@ public:
         u64 indexCount;
     };
 
-    template <detail::VertexType Vertex, detail::ExtentType Extent>
+    template <details::VertexType Vertex, details::ExtentType Extent>
     struct Properties {
         using IndexType = u32;
 
@@ -98,7 +98,7 @@ public:
         std::vector<Vertex> vertices;
 
         Extent calculateExtent() const {
-            return detail::calculateExtent<Extent, Vertex>(vertices);
+            return details::calculateExtent<Extent, Vertex>(vertices);
         }
 
         Data toMeshData() const& {

@@ -17,7 +17,7 @@ concept GlmCompatible = requires(T object) {
     { glm::value_ptr(object) } -> std::convertible_to<void*>;
 };
 
-namespace detail {
+namespace details {
 
 template <typename T>
 requires GlmCompatible<T>
@@ -37,7 +37,7 @@ template <typename T> const void* addressOf(const std::vector<T>& vector) {
 
 template <typename T> const void* addressOf(const T* value) { return value; }
 
-}  // namespace detail
+}  // namespace details
 
 class ShaderDataBinder {
 public:
@@ -59,7 +59,7 @@ public:
         void set(const std::string& uniform, T&& value) {
             static constexpr bool isSampler = false;
             m_updated |= m_uniformSetter(
-              getUniform(uniform, isSampler), detail::addressOf(value)
+              getUniform(uniform, isSampler), details::addressOf(value)
             );
         }
 
@@ -104,7 +104,7 @@ public:
           uniforms.contains(name), "Could not find '{}' push constant", name
         );
         setPushConstant(
-          uniforms.at(name), detail::addressOf(value), commandBuffer, pipeline
+          uniforms.at(name), details::addressOf(value), commandBuffer, pipeline
         );
     }
 

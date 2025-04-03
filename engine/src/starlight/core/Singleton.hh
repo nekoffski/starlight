@@ -34,7 +34,7 @@ private:
     inline static T* s_instance = nullptr;
 };
 
-namespace detail {
+namespace details {
 
 template <typename T>
 requires std::derived_from<T, Singleton<T>>
@@ -44,12 +44,12 @@ void expectCreatedImpl() {
     );
 }
 
-}  // namespace detail
+}  // namespace details
 
 template <typename... T>
 requires(std::derived_from<T, Singleton<T>> && ...)
 void expectCreated() {
-    (detail::expectCreatedImpl<T>(), ...);
+    (details::expectCreatedImpl<T>(), ...);
 }
 
 template <typename... T> struct SingletonGuard {

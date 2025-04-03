@@ -5,12 +5,13 @@
 
 #include "Macros.hh"
 
-namespace sl::detail {
+namespace sl::details {
 
 template <typename Callback, typename Condition> class ScopeGuard {
 public:
-    explicit ScopeGuard(Callback&& callback, Condition&& condition) :
-        m_callback(std::move(callback)), m_condition(std::move(condition)) {}
+    explicit ScopeGuard(Callback&& callback, Condition&& condition)
+        : m_callback(std::move(callback))
+        , m_condition(std::move(condition)) {}
 
     ~ScopeGuard() {
         if (m_condition()) m_callback();
@@ -74,10 +75,10 @@ ScopeGuard<Callback, decltype(_ScopeGuardOnSuccessCondition{})> operator+(
     );
 }
 
-}  // namespace sl::detail
+}  // namespace sl::details
 
 // clang-format off
-#define ON_SCOPE_EXIT         auto ANONYMOUS_VAR(SCOPE_EXIT)    = sl::detail::_ScopeGuardOnExit      {} + [&]()
-#define ON_SCOPE_FAIL         auto ANONYMOUS_VAR(SCOPE_FAIL)    = sl::detail::_ScopeGuardOnFailure   {} + [&]()
-#define ON_SCOPE_SUCCESS      auto ANONYMOUS_VAR(SCOPE_SUCCESS) = sl::detail::_ScopeGuardOnSuccess   {} + [&]()
+#define ON_SCOPE_EXIT         auto ANONYMOUS_VAR(SCOPE_EXIT)    = sl::details::_ScopeGuardOnExit      {} + [&]()
+#define ON_SCOPE_FAIL         auto ANONYMOUS_VAR(SCOPE_FAIL)    = sl::details::_ScopeGuardOnFailure   {} + [&]()
+#define ON_SCOPE_SUCCESS      auto ANONYMOUS_VAR(SCOPE_SUCCESS) = sl::details::_ScopeGuardOnSuccess   {} + [&]()
 // clang-format on
