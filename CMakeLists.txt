@@ -30,9 +30,9 @@ endif()
 add_subdirectory(3rdparty)
 
 if(SL_WERR)
-    set(SL_COMPILER_FLAGS -Wall -Wextra -Wpedantic -Werror)
+    set(SL_COMPILER_FLAGS -fPIC -Wall -Wextra -Wpedantic -Werror)
 else()
-    set(SL_COMPILER_FLAGS -Wall -Wextra -Wpedantic)
+    set(SL_COMPILER_FLAGS -fPIC -Wall -Wextra -Wpedantic)
 endif()
 
 find_package(kstd REQUIRED)
