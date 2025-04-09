@@ -35,6 +35,7 @@ else()
     set(SL_COMPILER_FLAGS -Wall -Wextra -Wpedantic)
 endif()
 
+find_package(kstd REQUIRED)
 find_package(VulkanLoader REQUIRED)
 find_package(VulkanHeaders REQUIRED)
 find_package(glfw3 REQUIRED)

@@ -22,8 +22,6 @@ jobs:
       - name: Run build
         run: ./bin/build.sh
         env:
-          SL_BUILD_SANDBOX: 1
-          SL_BUILD_EDITOR: 1
           SL_BUILD_TESTS: 1
           SL_BUILD_BENCHMARKS: 1
           SL_RUN_TESTS: 1

@@ -1,4 +1,4 @@
-set(SL_EVENT_LIBS stb dl kstd)
+set(SL_EVENT_LIBS stb dl kstd::kstd)
 set(SL_EVENT_TARGET starlight-event)
 file(GLOB_RECURSE SL_EVENT_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 

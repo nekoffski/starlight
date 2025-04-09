@@ -1,4 +1,4 @@
-set(SL_CORE_LIBS stb dl glm::glm kstd)
+set(SL_CORE_LIBS stb dl glm::glm kstd::kstd)
 set(SL_CORE_TARGET starlight-core)
 file(GLOB_RECURSE SL_CORE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 

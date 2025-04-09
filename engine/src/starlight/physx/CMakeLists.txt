@@ -1,4 +1,4 @@
-set(SL_PHYSX_LIBS dl kstd starlight-core)
+set(SL_PHYSX_LIBS dl kstd::kstd starlight-core)
 set(SL_PHYSX_TARGET starlight-physx)
 file(GLOB_RECURSE SL_PHYSX_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
