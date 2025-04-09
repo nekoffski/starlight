@@ -44,7 +44,7 @@ template <typename T> struct Component : details::ComponentImpl<T> {
     using details::ComponentImpl<T>::ComponentImpl;
 
     T& data() { return this->m_data; }
-    const T& data() const { this->m_data; }
+    const T& data() const { return this->m_data; }
     T* operator->() { return &this->m_data; }
 };
 

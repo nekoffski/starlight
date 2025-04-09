@@ -15,7 +15,8 @@ requirements = [
     "boost/1.86.0",
     "nlohmann_json/3.11.3",
     "glm/cci.20230113",
-    "spirv-cross/cci.20211113"
+    "spirv-cross/cci.20211113",
+    "kstd/1.0"
 ]
 
 env_variables_names = [
