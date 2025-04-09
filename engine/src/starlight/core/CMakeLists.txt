@@ -1,4 +1,4 @@
-set(SL_CORE_LIBS stb dl spdlog::spdlog glm::glm fmt::fmt nlohmann_json::nlohmann_json)
+set(SL_CORE_LIBS stb dl glm::glm kstd)
 set(SL_CORE_TARGET starlight-core)
 file(GLOB_RECURSE SL_CORE_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
