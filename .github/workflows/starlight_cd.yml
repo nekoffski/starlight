@@ -12,7 +12,9 @@ jobs:
       matrix:
         compiler: [gcc-13]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Set scripts permissions
         run: chmod +x ./bin/*
       - name: Install system dependencies
