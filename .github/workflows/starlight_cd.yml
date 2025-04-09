@@ -20,16 +20,19 @@ jobs:
       - name: Run static code check
         run: ./bin/run-static-analysis.sh
       - name: Run build
-        run: ./bin/build.sh dev
-      - name: Run unit tests
-        run: pushd build && make test
-      - name: Generate venv
-        run: ./bin/venv.sh
+        run: ./bin/build.sh
+        env:
+          SL_BUILD_SANDBOX: 1
+          SL_BUILD_EDITOR: 1
+          SL_BUILD_TESTS: 1
+          SL_BUILD_BENCHMARKS: 1
+          SL_RUN_TESTS: 1
+          SL_RUN_BENCHMARKS: 1
+          SL_WERR: 0
       - name: Generate code coverage
         run: ./bin/generate-ut-cov.sh
       - name: Upload code coverage
-        run: |
-          curl -Os https://cli.codecov.io/latest/linux/codecov
+        run: curl -Os https://cli.codecov.io/latest/linux/codecov
           chmod +x codecov
           ./codecov --verbose upload-process --fail-on-error -t ${{ secrets.CODECOV_TOKEN }} \
-            -n 'service'-${{ github.run_id }} -F service -f ./coverage/coverage.xml
+          -n 'service'-${{ github.run_id }} -F service -f ./coverage/coverage.xml
