@@ -12,7 +12,9 @@ jobs:
       matrix:
         compiler: [gcc-13]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Set scripts permissions
         run: chmod +x ./bin/*
       - name: Install system dependencies
@@ -20,11 +22,14 @@ jobs:
       - name: Run static code check
         run: ./bin/run-static-analysis.sh
       - name: Run build
-        run: ./bin/build.sh dev
-      - name: Run unit tests
-        run: pushd build && make test
-      - name: Generate venv
-        run: ./bin/venv.sh
+        run: ./bin/build.sh
+        env:
+          SL_ENABLE_COVERAGE: 1
+          SL_BUILD_TESTS: 1
+          SL_BUILD_BENCHMARKS: 1
+          SL_RUN_TESTS: 1
+          SL_RUN_BENCHMARKS: 1
+          SL_WERR: 0
       - name: Generate code coverage
         run: ./bin/generate-ut-cov.sh
       - name: Upload code coverage

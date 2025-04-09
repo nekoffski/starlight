@@ -5,5 +5,5 @@ coverage:
 ignore:
   - "engine/test"
   - "engine/bench"
+  - "engine/sandbox"
   - "editor"
-  - "sandbox"
