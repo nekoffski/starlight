@@ -6,7 +6,7 @@
 #include <starlight/event/EventHandlerSentinel.hh>
 
 #include "Console.hh"
-#include "ComponentViews.hh"
+#include "ComponentViewAggregate.hh"
 
 #include "ui/Widget.hh"
 
@@ -26,7 +26,7 @@ public:
 private:
     sl::TabMenu m_tabMenu;
     EntityData m_entityData;
-    ComponentViews m_componentViews;
+    ComponentViewAggregate m_componentViews;
 
     std::unordered_map<sl::u64, EntityData> m_entitiesData;
     sl::EventHandlerSentinel m_eventSentinel;

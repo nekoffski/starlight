@@ -12,9 +12,11 @@
 
 namespace sle {
 
-SceneView::SceneView(Widget::State& state) :
-    Widget(state), m_tabMenu("Scene"), m_componentViews(state),
-    m_eventSentinel(sl::EventProxy::get()) {
+SceneView::SceneView(Widget::State& state)
+    : Widget(state)
+    , m_tabMenu("Scene")
+    , m_componentViews(state)
+    , m_eventSentinel(sl::EventProxy::get()) {
     m_tabMenu
       .addTab(ICON_FA_CODE_BRANCH "  Entities Tree", [&]() { renderEntitiesTab(); })
       .addTab(ICON_FA_CLOUD "  Skybox", [&]() { renderSkyboxTab(); });
@@ -30,7 +32,8 @@ SceneView::SceneView(Widget::State& state) :
 void SceneView::render() { m_tabMenu.render(); }
 
 void renderEntityInspector(
-  sl::Entity& entity, SceneView::EntityData& entityData, ComponentViews& views
+  sl::Entity& entity, SceneView::EntityData& entityData,
+  ComponentViewAggregate& views
 );
 
 void SceneView::setSelectedEntity(sl::Entity& entity) {
@@ -88,7 +91,7 @@ void SceneView::renderEntitiesTab() {
 
     sl::separator();
     sl::treeNode(
-      "Root",
+      "Scene",
       [&]() {
           scene.forEach([&](sl::Entity& entity) {
               auto flags =
@@ -110,6 +113,10 @@ void SceneView::renderEntitiesTab() {
       },
       ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen
     );
+    sl::treeNode(
+      "Prefabs", [&]() {},
+      ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen
+    );
 }
 
 #define ADD_COMPONENT(Component, ...)                            \
@@ -121,7 +128,8 @@ void SceneView::renderEntitiesTab() {
     }
 
 void renderEntityInspector(
-  sl::Entity& entity, SceneView::EntityData& entityData, ComponentViews& views
+  sl::Entity& entity, SceneView::EntityData& entityData,
+  ComponentViewAggregate& views
 ) {
     static std::vector<const char*> componentNames = {
         "Model", "PointLight", "DirectionalLight", "Transform"

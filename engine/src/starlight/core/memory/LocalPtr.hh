@@ -9,12 +9,16 @@ namespace sl {
 
 template <typename T> class LocalPtr : public NonCopyable {
 public:
-    explicit LocalPtr() : m_pointer(nullptr) { clear(); }
+    explicit LocalPtr()
+        : m_pointer(nullptr) {
+        clear();
+    }
 
     ~LocalPtr() { clear(); }
 
     template <typename... Args>
-    explicit LocalPtr(Args&&... args) : m_pointer(nullptr) {
+    explicit LocalPtr(Args&&... args)
+        : m_pointer(nullptr) {
         emplace(std::forward<Args>(args)...);
     }
 
