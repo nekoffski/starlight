@@ -1,6 +1,6 @@
 #include "Scene.hh"
 
-#include "starlight/app/model/Model.hh"
+#include "starlight/app/factories/MaterialFactory.hh"
 
 #include "Components.hh"
 
@@ -16,18 +16,15 @@ Scene::Scene()
 RenderPacket Scene::getRenderPacket() {
     RenderPacket packet{};
 
+    auto defaultMaterial = MaterialFactory::get().getDefault();
+
     packet.directionalLights.reserve(maxDirectionalLights);
     packet.pointLights.reserve(maxPointLights);
 
-    // forEach<ModelComponent>([&](auto& c) {
-    //     auto& model     = c.data();
-    //     auto& transform = model.getTransform();
-    //     model.traverse([&](Model::Sub& sub) {
-    //         packet.entities.emplace_back(
-    //           transform.getWorld(), sub.mesh.get(), sub.material.get()
-    //         );
-    //     });
-    // });
+    forEach<MeshComponent>([&](auto& c) {
+        packet.entities
+          .emplace_back(identityMatrix, c->mesh.get(), defaultMaterial.get());
+    });
 
     forEach<PointLightComponent>([&](auto& light) {
         packet.pointLights.push_back(light.data());

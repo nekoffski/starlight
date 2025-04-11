@@ -25,7 +25,6 @@
 #include "factories/SkyboxFactory.hh"
 #include "factories/MeshFactory.hh"
 #include "factories/MaterialFactory.hh"
-#include "factories/ModelFactory.hh"
 
 namespace sl {
 
@@ -88,7 +87,6 @@ private:
     MaterialFactory m_materialFactory;
     MeshFactory m_meshFactory;
     SkyboxFactory m_skyboxFactory;
-    ModelFactory m_modelFactory;
 };
 
 }  // namespace sl

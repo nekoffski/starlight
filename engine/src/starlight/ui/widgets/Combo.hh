@@ -59,8 +59,6 @@ void immediateCombo(
   const std::string& name, const std::string& preview, std::span<T> container,
   C&& onSelect
 ) {
-    sl::text("{}: ", name);
-    sl::sameLine();
     if (ImGui::BeginCombo(
           fmt::format("##{}-combo", name).c_str(), preview.c_str()
         )) {

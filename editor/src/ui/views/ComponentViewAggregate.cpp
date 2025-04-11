@@ -6,6 +6,7 @@
 #include "components/DirectionalLightComponentView.hh"
 #include "components/PointLightComponentView.hh"
 #include "components/TransformComponentView.hh"
+#include "components/MeshComponentView.hh"
 
 namespace sle {
 
@@ -14,6 +15,7 @@ ComponentViewAggregate::ComponentViewAggregate(Widget::State& state)
     registerView<sl::DirectionalLightComponent, DirectionalLightComponentView>();
     registerView<sl::PointLightComponent, PointLightComponentView>();
     registerView<sl::TransformComponent, TransformComponentView>();
+    registerView<sl::MeshComponent, MeshComponentView>();
 }
 
 void ComponentViewAggregate::render(std::type_index index, void* component) {

@@ -5,7 +5,6 @@
 #include <starlight/app/factories/MeshFactory.hh>
 #include <starlight/app/factories/MaterialFactory.hh>
 #include <starlight/app/factories/TextureFactory.hh>
-#include <starlight/app/factories/ModelFactory.hh>
 #include <starlight/app/scene/Components.hh>
 #include <starlight/core/math/Utils.hh>
 #include <starlight/physx/Ray.hh>
@@ -91,7 +90,7 @@ void SceneView::renderEntitiesTab() {
 
     sl::separator();
     sl::treeNode(
-      "Scene",
+      ICON_FA_PROJECT_DIAGRAM "  Scene",
       [&]() {
           scene.forEach([&](sl::Entity& entity) {
               auto flags =
@@ -102,7 +101,7 @@ void SceneView::renderEntitiesTab() {
               if (selectedEntity != nullptr && selectedEntity->id == entity.id)
                   flags |= ImGuiTreeNodeFlags_Selected;
               sl::treeNode(
-                entity.name,
+                fmt::format("{}  {}", ICON_FA_CUBE, entity.name),
                 [&]() {
                     // TODO: display child entitites
                 },
@@ -114,7 +113,7 @@ void SceneView::renderEntitiesTab() {
       ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen
     );
     sl::treeNode(
-      "Prefabs", [&]() {},
+      ICON_FA_CUBES "  Prefabs", [&]() {},
       ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen
     );
 }

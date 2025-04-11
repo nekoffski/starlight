@@ -12,6 +12,7 @@ SceneParser::SceneParser(const FileSystem* fs)
     registerParser<DirectionalLightComponent, DirectionalLightComponent::Parser>();
     registerParser<PointLightComponent, PointLightComponent::Parser>();
     registerParser<TransformComponent, TransformComponent::Parser>();
+    registerParser<MeshComponent, MeshComponent::Parser>();
 }
 
 void SceneParser::serialize(Scene& scene, const std::string& path) {

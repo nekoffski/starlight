@@ -3,7 +3,6 @@
 #include <starlight/app/factories/MeshFactory.hh>
 #include <starlight/app/factories/MaterialFactory.hh>
 #include <starlight/app/factories/TextureFactory.hh>
-#include <starlight/app/factories/ModelFactory.hh>
 #include <starlight/core/TaskQueue.hh>
 
 #include "Console.hh"
@@ -47,8 +46,9 @@ static void renderResourceTab(
     }
 }
 
-ResourcesView::ResourcesView(Widget::State& state
-) : Widget(state), m_tabMenu("resource-view-tab-menu") {
+ResourcesView::ResourcesView(Widget::State& state)
+    : Widget(state)
+    , m_tabMenu("resource-view-tab-menu") {
     m_tabMenu.addTab("Materials", [&]() { renderMaterialsTab(); })
       .addTab("Cubemaps", [&]() { renderCubemapsTab(); })
       .addTab("Textures", [&]() { renderTexturesTab(); })
