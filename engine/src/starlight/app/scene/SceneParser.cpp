@@ -3,12 +3,15 @@
 #include "starlight/core/Time.hh"
 #include "starlight/app/factories/SkyboxFactory.hh"
 
-#include "BuiltinSerializers.hh"
+#include "Components.hh"
 
 namespace sl {
 
-SceneParser::SceneParser(const FileSystem* fs) : m_fs(fs) {
-    registerBuiltinComponents(*this);
+SceneParser::SceneParser(const FileSystem* fs)
+    : m_fs(fs) {
+    registerParser<DirectionalLightComponent, DirectionalLightComponent::Parser>();
+    registerParser<PointLightComponent, PointLightComponent::Parser>();
+    registerParser<TransformComponent, TransformComponent::Parser>();
 }
 
 void SceneParser::serialize(Scene& scene, const std::string& path) {
@@ -41,17 +44,17 @@ nlohmann::json SceneParser::serializeEntity(Entity& entity) {
 
     for (const auto component : entity.getComponentTypes()) {
         log::debug("Processing component: {}", component.name());
-        if (auto it = m_serializers.find(component); it != m_serializers.end()) {
-            auto& serializer = it->second;
+        // if (auto it = m_serializers.find(component); it != m_serializers.end()) {
+        //     auto& serializer = it->second;
 
-            log::expect(
-              false, "fixme - serializer should push into the existing object"
-            );
-            // node["components"][serializer] =
-            //   serializer->serialize(entity.getComponent(component));
-        } else {
-            log::error("Serializer not found: {}", component.name());
-        }
+        //     log::expect(
+        //       false, "fixme - serializer should push into the existing object"
+        //     );
+        //     // node["components"][serializer] =
+        //     //   serializer->serialize(entity.getComponent(component));
+        // } else {
+        //     log::error("Serializer not found: {}", component.name());
+        // }
     }
 
     return node;
@@ -89,13 +92,20 @@ void SceneParser::deserializeEntity(Scene& scene, const nlohmann::json& node) {
     for (const auto& [componentName, body] :
          components.get<nlohmann::json::object_t>()) {
         log::debug("Processing component: {}", componentName);
-        if (auto it = m_deserializers.find(componentName);
-            it != m_deserializers.end()) {
-            std::invoke(it->second, entity, components[componentName]);
-        } else {
+
+        if (not deserializeComponent(componentName, entity, body))
             log::error("Could not find deserializer for: {}", componentName);
-        }
     }
+}
+
+bool SceneParser::deserializeComponent(
+  const std::string& name, Entity& entity, const nlohmann::json& node
+) {
+    const auto parser = m_componentParsers.find(name);
+    if (parser == m_componentParsers.end()) return false;
+
+    parser->second->deserialize(entity, node);
+    return true;
 }
 
 }  // namespace sl

@@ -12,17 +12,18 @@
 
 namespace sl {
 
-struct ComponentContainerBase : public NonCopyable {
-    virtual ~ComponentContainerBase()  = default;
+struct ComponentContainer : public NonCopyable {
+    virtual ~ComponentContainer()      = default;
     virtual void* getRaw(u64 entityId) = 0;
 };
 
-template <typename T> class ComponentContainer : public ComponentContainerBase {
+template <typename T> class ComponentContainerBase : public ComponentContainer {
     using ComponentBuffer              = FlatMap<u64, T>;
     static constexpr u64 maxComponents = 1024;
 
 public:
-    explicit ComponentContainer() : m_components(maxComponents) {}
+    explicit ComponentContainerBase()
+        : m_components(maxComponents) {}
     ComponentBuffer* operator->() { return &m_components; }
 
     void* getRaw(u64 entityId) override {
@@ -35,22 +36,23 @@ private:
 
 class ComponentManager {
     using ComponentContainers =
-      std::unordered_map<std::type_index, UniquePtr<ComponentContainerBase>>;
+      std::unordered_map<std::type_index, UniquePtr<ComponentContainer>>;
 
 public:
-    ComponentContainerBase& getContainer(const std::type_index& index) {
+    ComponentContainer& getContainer(const std::type_index& index) {
         return *m_componentContainers.at(index);
     }
 
-    template <typename T> ComponentContainer<T>& getContainer() {
+    template <typename T> ComponentContainerBase<T>& getContainer() {
         // we could calculate hash once but iterator version is very long and hard to
         // read, in case of under-performance - rewrite
         auto& type = typeid(T);
 
         if (not m_componentContainers.contains(type)) [[unlikely]] {
-            m_componentContainers[type] = UniquePtr<ComponentContainer<T>>::create();
+            m_componentContainers[type] =
+              UniquePtr<ComponentContainerBase<T>>::create();
         }
-        return *static_cast<ComponentContainer<T>*>(
+        return *static_cast<ComponentContainerBase<T>*>(
           m_componentContainers.at(type).get()
         );
     }

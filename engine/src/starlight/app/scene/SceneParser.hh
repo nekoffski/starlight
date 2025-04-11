@@ -8,6 +8,8 @@
 #include "starlight/core/Json.hh"
 #include "starlight/app/scene/Scene.hh"
 
+#include "ComponentParser.hh"
+
 namespace sl {
 
 class SceneParser {
@@ -15,22 +17,18 @@ class SceneParser {
     using Serializer   = std::function<nlohmann::json(void*)>;
 
 public:
-    template <typename T, typename S, typename D>
-    requires Callable<S, nlohmann::json, T&>
-             && Callable<D, void, Entity&, const nlohmann::json&>
-    SceneParser& registerComponent(
-      const std::string& name, S&& serializer, D&& deserializer
-    ) {
+    template <typename T, typename Parser>
+    requires(std::is_base_of_v<Component, T> && std::is_base_of_v<ComponentParser, Parser>)
+    SceneParser& registerParser() {
         log::expect(
-          not m_deserializers.contains(name
-          ) && not m_serializers.contains(typeid(T)),
-          "Parser for component '{}' already registered", name
+          not m_componentToName.contains(typeid(T)),
+          "Parser for component '{}' already registered", typeid(T).name()
         );
 
-        m_serializers[typeid(T)] = [s = std::move(serializer)](void* component) {
-            return s(*static_cast<T*>(component));
-        };
-        m_deserializers[name] = std::move(deserializer);
+        auto parser                  = std::make_unique<Parser>();
+        const auto name              = parser->getComponentName();
+        m_componentToName[typeid(T)] = name;
+        m_componentParsers[name]     = std::move(parser);
 
         return *this;
     }
@@ -44,10 +42,15 @@ private:
     void deserializeEntity(Scene& scene, const nlohmann::json& node);
     nlohmann::json serializeEntity(Entity& entity);
 
+    bool deserializeComponent(
+      const std::string& name, Entity& entity, const nlohmann::json& node
+    );
+
     const FileSystem* m_fs;
 
-    std::unordered_map<std::string, Deserializer> m_deserializers;
-    std::unordered_map<std::type_index, Serializer> m_serializers;
+    std::unordered_map<std::type_index, std::string> m_componentToName;
+    std::unordered_map<std::string, std::unique_ptr<ComponentParser>>
+      m_componentParsers;
 };
 
 }  // namespace sl

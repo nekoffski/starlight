@@ -29,11 +29,11 @@ public:
         m_entities.forEach(std::forward<C>(callback));
     }
 
-    template <typename Component, typename C>
-    requires std::derived_from<Component, ComponentBase>
-             && Callable<C, void, Component&>
+    template <typename ComponentType, typename C>
+    requires std::derived_from<ComponentType, Component>
+             && Callable<C, void, ComponentType&>
     void forEach(C&& callback) {
-        m_componentManager.getContainer<Component>()->forEach(
+        m_componentManager.getContainer<ComponentType>()->forEach(
           [&]([[maybe_unused]] const auto& k, auto& v) { callback(v); }
         );
     }

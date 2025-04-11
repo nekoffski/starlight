@@ -2,7 +2,7 @@
 
 #include "ComponentView.hh"
 
-#include "starlight/app/scene/Components.hh"
+#include "starlight/app/scene/components/DirectionalLightComponent.hh"
 
 namespace sle {
 

@@ -64,16 +64,16 @@ void SceneView::traceEntity(const sl::Vec2<sl::f32>& mousePosition) {
     sl::Entity* hitEntity = nullptr;
     auto closestHit       = sl::max<sl::f32>();
 
-    getScene().forEach<sl::ModelComponent>([&](auto& component) {
-        auto& boundingVolume = component->getBoundingVolume();
+    // getScene().forEach<sl::ModelComponent>([&](auto& component) {
+    //     auto& boundingVolume = component->getBoundingVolume();
 
-        if (auto intersection = boundingVolume.intersects(ray); intersection) {
-            if (intersection->min < closestHit) {
-                closestHit = intersection->min;
-                hitEntity  = &component.getEntity();
-            }
-        }
-    });
+    //     if (auto intersection = boundingVolume.intersects(ray); intersection) {
+    //         if (intersection->min < closestHit) {
+    //             closestHit = intersection->min;
+    //             hitEntity  = &component.getEntity();
+    //         }
+    //     }
+    // });
 
     if (hitEntity)
         setSelectedEntity(*hitEntity);
@@ -164,9 +164,9 @@ void renderEntityInspector(
             );
 
             if (entityData.selectedComponentIndex == 0) {
-                ADD_COMPONENT(
-                  sl::ModelComponent, sl::ModelFactory::get().getDefault()
-                );
+                // ADD_COMPONENT(
+                //   sl::ModelComponent, sl::ModelFactory::get().getDefault()
+                // );
             } else if (entityData.selectedComponentIndex == 1) {
                 ADD_COMPONENT(sl::PointLightComponent);
             } else if (entityData.selectedComponentIndex == 2) {

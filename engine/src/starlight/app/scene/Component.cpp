@@ -5,10 +5,11 @@
 
 namespace sl {
 
-ComponentBase::ComponentBase(Entity& entity) : m_entity(entity) {}
+Component::Component(Entity& entity)
+    : m_entity(entity) {}
 
-u64 ComponentBase::getEntityId() const { return m_entity.id; }
+u64 Component::getEntityId() const { return m_entity.id; }
 
-Entity& ComponentBase::getEntity() { return m_entity; }
+Entity& Component::getEntity() { return m_entity; }
 
 }  // namespace sl

@@ -7,11 +7,11 @@
 
 namespace sl {
 
-class ComponentBase {
+class Component {
 public:
-    explicit ComponentBase(Entity& entity);
+    explicit Component(Entity& entity);
 
-    virtual ~ComponentBase() = default;
+    virtual ~Component() = default;
     u64 getEntityId() const;
 
     virtual void onInit() {}
@@ -27,11 +27,11 @@ private:
 namespace details {
 
 template <typename T>
-class ComponentImpl : public Identificable<ComponentImpl<T>>, public ComponentBase {
+class ComponentImpl : public Identificable<ComponentImpl<T>>, public Component {
 public:
     template <typename... Args>
     explicit ComponentImpl(Entity& entity, Args&&... args)
-        : ComponentBase(entity)
+        : Component(entity)
         , m_data(std::forward<Args>(args)...) {}
 
 protected:
@@ -40,7 +40,7 @@ protected:
 
 }  // namespace details
 
-template <typename T> struct Component : details::ComponentImpl<T> {
+template <typename T> struct ComponentBase : details::ComponentImpl<T> {
     using details::ComponentImpl<T>::ComponentImpl;
 
     T& data() { return this->m_data; }
@@ -49,7 +49,7 @@ template <typename T> struct Component : details::ComponentImpl<T> {
 };
 
 template <typename T>
-struct Component<SharedPtr<T>> : details::ComponentImpl<SharedPtr<T>> {
+struct ComponentBase<SharedPtr<T>> : details::ComponentImpl<SharedPtr<T>> {
     using details::ComponentImpl<SharedPtr<T>>::ComponentImpl;
 
     T& data() { return *this->m_data; }

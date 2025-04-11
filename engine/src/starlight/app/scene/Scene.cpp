@@ -1,6 +1,7 @@
 #include "Scene.hh"
 
 #include "starlight/app/model/Model.hh"
+
 #include "Components.hh"
 
 namespace sl {
@@ -8,7 +9,9 @@ namespace sl {
 static constexpr u32 maxPointLights       = 5;
 static constexpr u32 maxDirectionalLights = 5;
 
-Scene::Scene() : m_skybox(nullptr), m_entities(maxEntities) {}
+Scene::Scene()
+    : m_skybox(nullptr)
+    , m_entities(maxEntities) {}
 
 RenderPacket Scene::getRenderPacket() {
     RenderPacket packet{};
@@ -16,15 +19,15 @@ RenderPacket Scene::getRenderPacket() {
     packet.directionalLights.reserve(maxDirectionalLights);
     packet.pointLights.reserve(maxPointLights);
 
-    forEach<ModelComponent>([&](auto& c) {
-        auto& model     = c.data();
-        auto& transform = model.getTransform();
-        model.traverse([&](Model::Sub& sub) {
-            packet.entities.emplace_back(
-              transform.getWorld(), sub.mesh.get(), sub.material.get()
-            );
-        });
-    });
+    // forEach<ModelComponent>([&](auto& c) {
+    //     auto& model     = c.data();
+    //     auto& transform = model.getTransform();
+    //     model.traverse([&](Model::Sub& sub) {
+    //         packet.entities.emplace_back(
+    //           transform.getWorld(), sub.mesh.get(), sub.material.get()
+    //         );
+    //     });
+    // });
 
     forEach<PointLightComponent>([&](auto& light) {
         packet.pointLights.push_back(light.data());

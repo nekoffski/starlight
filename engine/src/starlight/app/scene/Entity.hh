@@ -17,7 +17,7 @@ public:
     );
 
     template <typename T, typename... Args>
-    requires std::derived_from<T, ComponentBase>
+    requires std::derived_from<T, Component>
     T& add(Args&&... args) {
         auto& container = m_componentManager.getContainer<T>();
         log::expect(
@@ -30,13 +30,13 @@ public:
     }
 
     template <typename T>
-    requires std::derived_from<T, ComponentBase>
+    requires std::derived_from<T, Component>
     T* get() {
         return m_componentManager.getContainer<T>()->get(id);
     }
 
     template <typename T>
-    requires std::derived_from<T, ComponentBase>
+    requires std::derived_from<T, Component>
     bool has() {
         return m_componentManager.getContainer<T>()->has(id);
     }
