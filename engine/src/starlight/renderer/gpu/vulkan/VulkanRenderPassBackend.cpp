@@ -19,7 +19,9 @@ namespace sl::vk {
 VulkanRenderPassBackend::Framebuffer::Framebuffer(
   VulkanDevice& device, VkRenderPass renderPass, const Vec2<u32>& size,
   const std::vector<VkImageView>& attachments
-) : handle(VK_NULL_HANDLE), m_device(device) {
+)
+    : handle(VK_NULL_HANDLE)
+    , m_device(device) {
     VkFramebufferCreateInfo createInfo;
     clearMemory(&createInfo);
 
@@ -86,9 +88,12 @@ private:
 VulkanRenderPassBackend::VulkanRenderPassBackend(
   VulkanDevice& device, const RenderPassBackend::Properties& properties,
   bool hasPreviousPass, bool hasNextPass
-) :
-    m_device(device), m_handle(VK_NULL_HANDLE), m_props(properties),
-    m_hasColorAttachment(false), m_hasDepthAttachment(false) {
+)
+    : m_device(device)
+    , m_handle(VK_NULL_HANDLE)
+    , m_props(properties)
+    , m_hasColorAttachment(false)
+    , m_hasDepthAttachment(false) {
     log::trace("Creating VulkanRenderPassBackend instance");
 
     for (auto& target : properties.renderTargets) {
@@ -331,7 +336,8 @@ void VulkanRenderPassBackendCreateInfo::createRenderPassCreateInfo() {
 VulkanImguiRenderPassBackend::VulkanImguiRenderPassBackend(
   VulkanDevice& device, const Properties& properties, bool hasPreviousPass,
   bool hasNextPass, const std::string& fontsPath
-) : VulkanRenderPassBackend(device, properties, hasPreviousPass, hasNextPass) {
+)
+    : VulkanRenderPassBackend(device, properties, hasPreviousPass, hasNextPass) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
