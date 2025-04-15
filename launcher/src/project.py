@@ -1,6 +1,7 @@
 from pathlib import Path
 import shutil
 import json
+import os
 
 
 def create_new_project(path: Path, name: str, engine_path: str):
@@ -12,27 +13,21 @@ def create_new_project(path: Path, name: str, engine_path: str):
     for sub in subs:
         shutil.copytree(f'{engine_path}/assets/{sub}', f'{project_dir}/{sub}')
 
+    os.mkdir(f"{project_dir}/scenes")
     shutil.copy(
-        f'{engine_path}/assets/scenes/test.starscene.json', project_dir)
+        f'{engine_path}/assets/scenes/test.starscene.json', f'{project_dir}/scenes/test.starscene.json')
 
     config = {
         "window": {
             "width": 1920,
-            "height": 1080,
-            "name": "Starlight"
+            "height": 1080
         },
-        "version": {
-            "major": 0,
-            "minor": 1,
-            "build": 1
+        "layout": {
+            "width": 0.20,
+            "height": 0.25,
         },
-        "paths": {
-            "root": str(project_dir),
-            "textures": f"{project_dir}/textures",
-            "shaders": f"{project_dir}/shaders",
-            "materials": f"{project_dir}/materials",
-            "fonts": f"{project_dir}/fonts"
-        }
+        "project-root": str(project_dir),
+        "initial-scene": "test.starscene.json"
     }
 
     with open(project_dir / 'config.json', 'w+') as f:

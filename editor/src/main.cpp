@@ -3,6 +3,7 @@
 #include <starlight/core/Config.hh>
 
 #include "utils/ProgramOptions.hh"
+#include "Config.hh"
 #include "Application.hh"
 
 int main(int argc, char** argv) {
@@ -10,9 +11,9 @@ int main(int argc, char** argv) {
 
     try {
         if (auto opts = sle::ProgramOptions::parse(argc, argv); opts) {
-            if (auto config = sl::Config::fromJson(opts->configPath); config) {
+            if (auto config = sle::Config::fromJson(opts->configPath); config) {
                 sl::log::info("Config loaded successfully, starting engine");
-                return sle::Application{ *config, opts->scene }.run();
+                return sle::Application{ *config }.run();
             } else {
                 sl::log::error("Could not load config");
                 return -2;

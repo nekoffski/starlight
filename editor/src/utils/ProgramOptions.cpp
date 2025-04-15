@@ -11,8 +11,7 @@ namespace po = boost::program_options;
 namespace sle {
 
 static void showHelp() {
-    std::cout
-      << "usage: starlight-editor --config <path-to-config> --scene <path-to-initial-scene>\n";
+    std::cout << "usage: starlight-editor --config <path-to-editor-config>\n";
 }
 
 std::optional<ProgramOptions> ProgramOptions::parse(int argc, char** argv) {
@@ -20,9 +19,8 @@ std::optional<ProgramOptions> ProgramOptions::parse(int argc, char** argv) {
     po::variables_map vm;
 
     optionsDescription
-      .add_options()("config", po::value<std::string>(), "Path to the json config file")("help", "Print help")(
-        "scene", po::value<std::string>(),
-        "Path to the scene that should be loaded by default"
+      .add_options()("config", po::value<std::string>(), "Path to the json config file")(
+        "help", "Print help"
       );
 
     po::store(po::parse_command_line(argc, argv, optionsDescription), vm);
@@ -38,13 +36,7 @@ std::optional<ProgramOptions> ProgramOptions::parse(int argc, char** argv) {
         return {};
     }
 
-    std::optional<std::string> scene;
-    if (vm.contains("scene")) scene = vm["scene"].as<std::string>();
-
-    return ProgramOptions{
-        .configPath = vm["config"].as<std::string>(),
-        .scene      = scene,
-    };
+    return ProgramOptions{ .configPath = vm["config"].as<std::string>() };
 }
 
 }  // namespace sle

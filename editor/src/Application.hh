@@ -4,7 +4,6 @@
 #include <optional>
 
 #include <starlight/core/math/Core.hh>
-#include <starlight/core/Config.hh>
 #include <starlight/core/memory/Memory.hh>
 #include <starlight/event/EventHandlerSentinel.hh>
 #include <starlight/renderer/Renderer.hh>
@@ -14,20 +13,20 @@
 
 #include "Cameras.hh"
 #include "ui/UserInterface.hh"
+#include "Config.hh"
 
 namespace sle {
 
 class Application : public sl::Engine {
 public:
-    explicit Application(
-      const sl::Config& config, std::optional<std::string> scenePath
-    );
+    explicit Application(const Config& config);
 
 private:
     void update(float frameTime) override;
 
     void initEvents();
 
+    Config m_config;
     sl::EventHandlerSentinel m_eventSentinel;
     Cameras m_cameras;
 

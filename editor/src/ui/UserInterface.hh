@@ -20,8 +20,7 @@ class UserInterface : public sl::UI {
 public:
     explicit UserInterface(
       const sl::Vec2<sl::u32>& viewport, sl::Scene& scene,
-      sl::RenderGraph& renderGraph, sl::Camera& camera,
-      const Config& config = Config::createDefault()
+      sl::RenderGraph& renderGraph, sl::Camera& camera, const Config& config
     );
 
     void setRenderGraph(sl::RenderGraph& renderGraph);

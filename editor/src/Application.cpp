@@ -16,18 +16,20 @@
 
 namespace sle {
 
-Application::Application(
-  const sl::Config& config, std::optional<std::string> scenePath
-) :
-    Engine(config), m_eventSentinel(sl::EventProxy::get()),
-    m_cameras(sl::Window::get().getFramebufferSize()),
-    m_userInterface(
-      sl::Window::get().getFramebufferSize(), getScene(), getRenderGraph(),
-      getCamera()
-    ) {
-    if (scenePath) {
-        sl::log::info("Loading initial scene: {}", *scenePath);
-        setScene(m_sceneParser.deserialize(*scenePath));
+Application::Application(const Config& config)
+    : Engine(config.toEngineConfig())
+    , m_config(config)
+    , m_eventSentinel(sl::EventProxy::get())
+    , m_cameras(sl::Window::get().getFramebufferSize())
+    , m_userInterface(
+        sl::Window::get().getFramebufferSize(), getScene(), getRenderGraph(),
+        getCamera(), m_config
+      ) {
+    if (m_config.initialScene) {
+        const auto scenePath =
+          fmt::format("{}/scenes/{}", m_config.projectRoot, *m_config.initialScene);
+        sl::log::info("Loading initial scene: {}", scenePath);
+        setScene(m_sceneParser.deserialize(scenePath));
         m_userInterface.setScene(getScene());
     }
 
