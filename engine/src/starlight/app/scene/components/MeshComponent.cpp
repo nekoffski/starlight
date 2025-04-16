@@ -1,8 +1,27 @@
 #include "MeshComponent.hh"
 
 #include "starlight/app/factories/MeshFactory.hh"
+#include "starlight/physx/bvh/AABB.hh"
+#include "BoundingVolumeComponent.hh"
+#include "TransformComponent.hh"
 
 namespace sl {
+
+void MeshComponent::onInit() {
+    auto& entity = getEntity();
+    if (not entity.has<BoundingVolumeComponent>()) {
+        auto aabb = std::make_unique<AABB>();
+        aabb->addExtent(data().mesh->getExtent());
+
+        entity.on<TransformComponent>([&](auto& c) {
+            auto& transform = c.data();
+            aabb->setTransform(transform);
+            data().setTransform(transform);
+        });
+
+        entity.add<BoundingVolumeComponent>(std::move(aabb));
+    }
+}
 
 void MeshComponent::Parser::deserialize(Entity& entity, const nlohmann::json& json)
   const {

@@ -63,16 +63,16 @@ void SceneView::traceEntity(const sl::Vec2<sl::f32>& mousePosition) {
     sl::Entity* hitEntity = nullptr;
     auto closestHit       = sl::max<sl::f32>();
 
-    // getScene().forEach<sl::ModelComponent>([&](auto& component) {
-    //     auto& boundingVolume = component->getBoundingVolume();
+    getScene().forEach<sl::BoundingVolumeComponent>([&](auto& component) {
+        auto bv = component->boundingVolume.get();
 
-    //     if (auto intersection = boundingVolume.intersects(ray); intersection) {
-    //         if (intersection->min < closestHit) {
-    //             closestHit = intersection->min;
-    //             hitEntity  = &component.getEntity();
-    //         }
-    //     }
-    // });
+        if (auto intersection = bv->intersects(ray); intersection) {
+            if (intersection->min < closestHit) {
+                closestHit = intersection->min;
+                hitEntity  = &component.getEntity();
+            }
+        }
+    });
 
     if (hitEntity)
         setSelectedEntity(*hitEntity);

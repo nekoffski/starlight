@@ -2,13 +2,19 @@
 
 #include "starlight/app/scene/Entity.hh"
 
+#include "BoundingVolumeComponent.hh"
+#include "MeshComponent.hh"
+
 namespace sl {
 
 void TransformComponent::onInit() {
-    // if (auto& entity = getEntity(); entity.has<ModelComponent>()) {
-    //     auto& parent = data();
-    //     entity.get<ModelComponent>()->data().getTransform().setParent(parent);
-    // }
+    auto& entity = getEntity();
+
+    entity.on<BoundingVolumeComponent>([&](auto& c) {
+        c.data().boundingVolume->setTransform(data());
+    });
+
+    entity.on<MeshComponent>([&](auto& c) { c.data().setTransform(data()); });
 }
 
 void TransformComponent::Parser::deserialize(

@@ -63,6 +63,7 @@ public:
     sl::RenderGraph& getRenderGraph();
     sl::Scene& getScene();
     sl::Camera& getCamera();
+    const Config& getConfig();
     ImGuizmo::MODE& getGizmoMode();
     ImGuizmo::OPERATION& getGizmoOperation();
     bool& isGizmoEnabled();

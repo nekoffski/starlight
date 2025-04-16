@@ -6,8 +6,14 @@
 
 namespace sl {
 
-AABB::AABB(Transform& transform
-) : m_transform(transform), m_min(max<f32>()), m_max(min<f32>()) {}
+AABB::AABB()
+    : m_min(max<f32>())
+    , m_max(min<f32>()) {}
+
+AABB::AABB(Transform& transform)
+    : AABB() {
+    setTransform(transform);
+}
 
 void AABB::addExtent(const Extent3& extent) {
     static constexpr auto dimensions = 3u;
@@ -24,13 +30,19 @@ void AABB::addExtent(const Extent3& extent) {
     }
 }
 
+std::type_index AABB::getType() const { return typeid(AABB); }
+
+const Vec3<f32>& AABB::getMax() const { return m_max; }
+
+const Vec3<f32>& AABB::getMin() const { return m_min; }
+
 std::optional<Interval<f32>> AABB::intersects(const Ray& ray) const {
     using std::swap;
 
-    const auto& localMatrix = m_transform.getWorld();
+    const auto& worldTransform = getWorld();
 
-    const auto min = localMatrix * m_min;
-    const auto max = localMatrix * m_max;
+    const auto min = worldTransform * m_min;
+    const auto max = worldTransform * m_max;
 
     f32 tMin = (min.x - ray.origin.x) / ray.direction.x;
     f32 tMax = (max.x - ray.origin.x) / ray.direction.x;

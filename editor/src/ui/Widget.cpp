@@ -69,6 +69,8 @@ sl::Camera& Widget::getCamera() { return *m_state.m_camera; }
 
 ImGuizmo::MODE& Widget::getGizmoMode() { return m_state.m_gizmoMode; }
 
+const Config& Widget::getConfig() { return m_state.m_config; }
+
 ImGuizmo::OPERATION& Widget::getGizmoOperation() { return m_state.m_gizmoOperation; }
 
 bool& Widget::isGizmoEnabled() { return m_state.m_gizmoEnabled; }

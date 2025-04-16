@@ -41,6 +41,12 @@ public:
         return m_componentManager.getContainer<T>()->has(id);
     }
 
+    template <typename T, typename Callback>
+    requires(std::derived_from<T, Component> && Callable<Callback, void, T&>)
+    void on(Callback&& callback) {
+        if (has<T>()) callback(*get<T>());
+    }
+
     void* get(std::type_index component) {
         return m_componentManager.getContainer(component).getRaw(id);
     }

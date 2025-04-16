@@ -7,7 +7,9 @@
 
 namespace sl {
 
-struct BoundingVolumeComponentData {};
+struct BoundingVolumeComponentData {
+    std::unique_ptr<BoundingVolume> boundingVolume;
+};
 
 struct BoundingVolumeComponent : ComponentBase<BoundingVolumeComponentData> {
     using ComponentBase::ComponentBase;

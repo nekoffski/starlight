@@ -18,10 +18,10 @@ public:
     void render(std::type_index index, void* component);
 
 private:
-    template <typename T, typename View>
+    template <typename View>
     requires std::is_base_of_v<ComponentView, View>
     void registerView() {
-        m_views[typeid(T)] = std::make_unique<View>(getState());
+        m_views[typeid(typename View::Type)] = std::make_unique<View>(getState());
     }
 
     std::unordered_map<std::type_index, std::unique_ptr<ComponentView>> m_views;

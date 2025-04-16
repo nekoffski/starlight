@@ -23,7 +23,7 @@ RenderPacket Scene::getRenderPacket() {
 
     forEach<MeshComponent>([&](auto& c) {
         packet.entities
-          .emplace_back(identityMatrix, c->mesh.get(), defaultMaterial.get());
+          .emplace_back(c->getWorld(), c->mesh.get(), defaultMaterial.get());
     });
 
     forEach<PointLightComponent>([&](auto& light) {

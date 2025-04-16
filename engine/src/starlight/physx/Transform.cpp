@@ -4,14 +4,18 @@
 
 namespace sl {
 
-Transform::Transform() :
-    Transform(Vec3<f32>{ 0.0f }, Vec3<f32>{ 1.0f }, identityMatrix) {}
+Transform::Transform()
+    : Transform(Vec3<f32>{ 0.0f }, Vec3<f32>{ 1.0f }, identityMatrix) {}
 
 Transform::Transform(
   const Vec3<f32>& position, const Vec3<f32>& scale, const Quat& orientation
-) :
-    m_model(identityMatrix), m_position(position), m_scale(scale),
-    m_orientation(orientation), m_updated(false), m_parent(nullptr) {}
+)
+    : m_model(identityMatrix)
+    , m_position(position)
+    , m_scale(scale)
+    , m_orientation(orientation)
+    , m_updated(false)
+    , m_parent(nullptr) {}
 
 Transform* Transform::getParent() const { return m_parent; }
 
@@ -108,5 +112,21 @@ void Transform::calculateModelMatrix() {
       math::translate(identityMatrix, m_position) * math::mat4_cast(m_orientation)
       * math::scale(identityMatrix, m_scale);
 }
+
+Transformable::Transformable()
+    : m_transform(&s_emptyTransform) {}
+
+Transformable::Transformable(Transform& transform)
+    : m_transform(&transform) {}
+
+const Mat4<f32>& sl::Transformable::getLocal() const {
+    return m_transform->getLocal();
+}
+
+Mat4<f32> Transformable::getWorld() const { return m_transform->getWorld(); }
+
+void Transformable::setTransform(Transform& transform) { m_transform = &transform; }
+
+void Transformable::resetTransform() { m_transform = &s_emptyTransform; }
 
 }  // namespace sl

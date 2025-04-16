@@ -2,6 +2,8 @@
 
 #include "ui/Widget.hh"
 
+#include <starlight/app/scene/Component.hh>
+
 namespace sle {
 
 struct ComponentView : Widget {
@@ -12,9 +14,12 @@ struct ComponentView : Widget {
     virtual void render(void* ptr) = 0;
 };
 
-template <typename T> class ComponentViewBase : public ComponentView {
+template <typename T>
+requires std::derived_from<T, sl::Component>
+class ComponentViewBase : public ComponentView {
 public:
     using ComponentView::ComponentView;
+    using Type = T;
 
 private:
     void render(void* ptr) override { render(*static_cast<T*>(ptr)); }

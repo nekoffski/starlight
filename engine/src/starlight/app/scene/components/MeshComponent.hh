@@ -4,15 +4,21 @@
 #include "starlight/app/scene/ComponentParser.hh"
 
 #include "starlight/renderer/Mesh.hh"
+#include "starlight/physx/Transform.hh"
 
 namespace sl {
 
-struct MeshComponentData {
+struct MeshComponentData : Transformable {
+    MeshComponentData(SharedPtr<Mesh> mesh)
+        : mesh(std::move(mesh)) {}
+
     SharedPtr<Mesh> mesh;
 };
 
 struct MeshComponent : ComponentBase<MeshComponentData> {
     using ComponentBase::ComponentBase;
+
+    void onInit() override;
 
     struct Parser : ComponentParserBase<MeshComponentData> {
         void deserialize(Entity&, const nlohmann::json&) const override;

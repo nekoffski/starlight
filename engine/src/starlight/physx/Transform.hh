@@ -1,6 +1,7 @@
 #pragma once
 
 #include "starlight/core/Core.hh"
+#include "starlight/core/Concepts.hh"
 #include "starlight/core/math/Core.hh"
 
 namespace sl {
@@ -55,6 +56,22 @@ private:
 
     bool m_updated;
     Transform* m_parent;
+};
+
+class Transformable : public NonCopyable {
+public:
+    explicit Transformable();
+    explicit Transformable(Transform& transform);
+
+    const Mat4<f32>& getLocal() const;
+    Mat4<f32> getWorld() const;
+
+    void resetTransform();
+    void setTransform(Transform& transform);
+
+private:
+    Transform* m_transform;
+    inline static Transform s_emptyTransform;
 };
 
 }  // namespace sl
