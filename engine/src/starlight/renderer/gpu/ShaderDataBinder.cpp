@@ -17,10 +17,11 @@ namespace sl {
 ShaderDataBinder::Setter::Setter(
   UniformSetter&& uniformSetter, SamplerSetter&& samplerSetter,
   const Shader::DataLayout::DescriptorSet& descriptorLayout
-) :
-    m_updated(false), m_uniformSetter(std::forward<UniformSetter>(uniformSetter)),
-    m_samplerSetter(std::forward<SamplerSetter>(samplerSetter)),
-    m_descriptorLayout(descriptorLayout) {}
+)
+    : m_updated(false)
+    , m_uniformSetter(std::forward<UniformSetter>(uniformSetter))
+    , m_samplerSetter(std::forward<SamplerSetter>(samplerSetter))
+    , m_descriptorLayout(descriptorLayout) {}
 
 void ShaderDataBinder::Setter::set(
   const std::string& uniform, const Texture* value
@@ -44,9 +45,9 @@ const Shader::Uniform& ShaderDataBinder::Setter::getUniform(
     ShaderDataBinder
 */
 
-UniquePtr<ShaderDataBinder> ShaderDataBinder::create(Shader& shader) {
+kstd::UniquePtr<ShaderDataBinder> ShaderDataBinder::create(Shader& shader) {
 #ifdef SL_USE_VK
-    return UniquePtr<vk::VulkanShaderDataBinder>::create(
+    return kstd::makeUnique<vk::VulkanShaderDataBinder>(
       static_cast<vk::VulkanDevice&>(Device::get().getImpl()),
       static_cast<vk::VulkanShader&>(shader)
     );
@@ -55,8 +56,8 @@ UniquePtr<ShaderDataBinder> ShaderDataBinder::create(Shader& shader) {
 #endif
 }
 
-ShaderDataBinder::ShaderDataBinder(Shader& shader
-) : m_dataLayout(shader.properties.layout) {}
+ShaderDataBinder::ShaderDataBinder(Shader& shader)
+    : m_dataLayout(shader.properties.layout) {}
 
 void ShaderDataBinder::setGlobalUniforms(
   Pipeline& pipeline, CommandBuffer& commandBuffer, u64 frameNumber, u32 imageIndex,

@@ -5,15 +5,15 @@
 
 #include "starlight/core/Core.hh"
 #include "starlight/core/Log.hh"
-#include "starlight/core/memory/Memory.hh"
 #include "starlight/core/Concepts.hh"
 
 namespace sl {
 
 template <typename T, u64 Capacity = 0u> class StaticVector {
 public:
-    explicit StaticVector(u64 capacity = Capacity) :
-        m_capacity(capacity), m_buffer(m_capacity) {
+    explicit StaticVector(u64 capacity = Capacity)
+        : m_capacity(capacity)
+        , m_buffer(m_capacity) {
         log::expect(capacity > 0, "StaticVector capacity must be greater than 0");
         for (u64 i = 0; i < capacity; ++i) m_freeSlots.push(i);
     }
@@ -73,7 +73,7 @@ public:
 
 private:
     const u64 m_capacity;
-    std::vector<LocalPtr<T>> m_buffer;
+    std::vector<kstd::LocalPtr<T>> m_buffer;
     std::queue<u64> m_freeSlots;
 };
 

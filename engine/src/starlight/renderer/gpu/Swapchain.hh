@@ -3,7 +3,6 @@
 #include <optional>
 
 #include "starlight/core/Core.hh"
-#include "starlight/core/memory/UniquePtr.hh"
 #include "starlight/core/math/Core.hh"
 #include "starlight/window/Window.hh"
 
@@ -14,7 +13,7 @@ namespace sl {
 
 class Swapchain {
 public:
-    static UniquePtr<Swapchain> create(
+    static kstd::UniquePtr<Swapchain> create(
       const Vec2<u32>& size = Window::get().getFramebufferSize()
     );
 

@@ -6,7 +6,7 @@
 
 using namespace sl;
 
-TEST(Function, givenFunction_whenConvertingToValue_shouldBeCalled) {
+TEST(LazyEvaluatorTests, convertToValue) {
     bool called = false;
     int x       = lazyEvaluate([&]() -> int {
         called = true;
@@ -16,7 +16,7 @@ TEST(Function, givenFunction_whenConvertingToValue_shouldBeCalled) {
     ASSERT_TRUE(called);
 }
 
-TEST(Function, givenFunction_whenNotConvertingToValue_shouldNotBeCalled) {
+TEST(LazyEvaluatorTests, noConvertToValue) {
     bool called = false;
     lazyEvaluate([&]() -> int {
         called = true;
@@ -25,7 +25,7 @@ TEST(Function, givenFunction_whenNotConvertingToValue_shouldNotBeCalled) {
     ASSERT_FALSE(called);
 }
 
-TEST(Function, givenUnorderedMap_whenRecordExists_shouldNotEvaluate) {
+TEST(LazyEvaluatorTests, unorderMapExisting) {
     std::unordered_map<int, int> map;
     bool called   = false;
     const int key = 1;
@@ -42,7 +42,7 @@ TEST(Function, givenUnorderedMap_whenRecordExists_shouldNotEvaluate) {
     EXPECT_EQ(it->second, 2);
 }
 
-TEST(Function, givenUnorderedMap_whenRecordNotExist_shouldEvaluate) {
+TEST(LazyEvaluatorTests, unorderedMapNonExisting) {
     std::unordered_map<int, int> map;
     bool called               = false;
     const int key             = 1;
@@ -57,7 +57,7 @@ TEST(Function, givenUnorderedMap_whenRecordNotExist_shouldEvaluate) {
     EXPECT_EQ(it->second, 3);
 }
 
-TEST(Function, givenSingleCaller_whenCreating_shouldBeCalled) {
+TEST(SingleCallerTests, callOnCreate) {
     bool called = false;
     SingleCaller{ [&] { called = true; } };
     EXPECT_TRUE(called);

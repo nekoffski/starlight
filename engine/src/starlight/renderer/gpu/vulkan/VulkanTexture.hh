@@ -5,7 +5,6 @@
 
 #include <stb.h>
 
-#include "starlight/core/memory/Memory.hh"
 #include "starlight/renderer/gpu/Texture.hh"
 
 #include "Vulkan.hh"

@@ -4,16 +4,11 @@
 
 using namespace sl;
 
-TEST(
-  UtilsTests, whenSolvingQuadraticEquationWithoutRootInRealNumbers_shouldReturnNone
-) {
+TEST(UtilsTests, solveQuadraticEquationWithoutRoots) {
     EXPECT_FALSE(solveQuadraticEquation(100.0f, 1.0f, 1.0f).has_value());
 }
 
-TEST(
-  UtilsTests,
-  whenSolvingQuadraticEquationWithDeltaEqualZero_shouldReturnTwoSameValues
-) {
+TEST(UtilsTests, solveQuadraticEquationDeltaZero) {
     auto roots = solveQuadraticEquation(1.0f, 2.0f, 1.0f);
 
     EXPECT_TRUE(roots.has_value());
@@ -22,10 +17,7 @@ TEST(
     EXPECT_EQ(x0, x1);
 }
 
-TEST(
-  UtilsTests,
-  whenSolvingQuadraticEquationWithPositiveDelta_shouldReturnTwoDifferentRoots
-) {
+TEST(UtilsTests, solveQuadraticEquationDeltaPositive) {
     auto roots = solveQuadraticEquation(1.0f, -14.0f, 11.0f);
 
     EXPECT_TRUE(roots.has_value());

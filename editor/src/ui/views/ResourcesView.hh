@@ -16,16 +16,7 @@ public:
     void render();
 
 private:
-    void renderTexturesTab();
-    void renderMeshesTab();
-    void renderMaterialsTab();
-    void renderCubemapsTab();
-    void renderModelsTab();
-
-    void renderMaterial(sl::Material& material);
-
-    sl::TabMenu m_tabMenu;
-    std::string m_nameBuffer;
+    // std::string m_nameBuffer;
 };
 
 }  // namespace sle

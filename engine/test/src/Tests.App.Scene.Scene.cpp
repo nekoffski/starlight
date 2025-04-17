@@ -7,7 +7,7 @@ struct SceneTests : ::testing::Test {
     sl::Scene scene;
 };
 
-TEST_F(SceneTests, givenScene_whenAddingSameComponenToTwoEntites_shouldWork) {
+TEST_F(SceneTests, addSameComponentTwice) {
     auto& entity = scene.addEntity("test-entity");
     entity.add<sl::PointLightComponent>();
 
@@ -15,7 +15,7 @@ TEST_F(SceneTests, givenScene_whenAddingSameComponenToTwoEntites_shouldWork) {
     entity2.add<sl::PointLightComponent>();
 }
 
-TEST_F(SceneTests, givenScene_whenAddingComponent_shouldHaveCorrectValues) {
+TEST_F(SceneTests, addComponent) {
     sl::Vec4<sl::f32> color{ 1.0f };
     sl::Vec3<sl::f32> position{ 0.0f };
 

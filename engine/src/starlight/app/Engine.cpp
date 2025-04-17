@@ -2,12 +2,16 @@
 
 namespace sl {
 
-Engine::Engine(const Config& config) :
-    m_globals(config), m_isRunning(true), m_eventProxy(m_eventBroker.getProxy()),
-    m_eventSentinel(m_eventProxy), m_input(m_window.getImpl()),
-    m_camera(&m_defaultCamera), m_scene(SharedPtr<Scene>::create()),
-    m_renderGraph(SharedPtr<RenderGraph>::create(m_renderer)),
-    m_meshFactory(m_renderer.getVertexBuffer(), m_renderer.getIndexBuffer()) {
+Engine::Engine(const Config& config)
+    : m_globals(config)
+    , m_isRunning(true)
+    , m_eventProxy(m_eventBroker.getProxy())
+    , m_eventSentinel(m_eventProxy)
+    , m_input(m_window.getImpl())
+    , m_camera(&m_defaultCamera)
+    , m_scene(kstd::makeShared<Scene>())
+    , m_renderGraph(kstd::makeShared<RenderGraph>(m_renderer))
+    , m_meshFactory(m_renderer.getVertexBuffer(), m_renderer.getIndexBuffer()) {
     initEvents();
 }
 
@@ -50,11 +54,11 @@ void Engine::stop() { m_isRunning = false; }
 
 Scene& Engine::getScene() { return *m_scene; }
 
-void Engine::setScene(SharedPtr<Scene> scene) { m_scene = std::move(scene); }
+void Engine::setScene(kstd::SharedPtr<Scene> scene) { m_scene = std::move(scene); }
 
 RenderGraph& Engine::getRenderGraph() { return *m_renderGraph; }
 
-void Engine::setRenderGraph(SharedPtr<RenderGraph> renderGraph) {
+void Engine::setRenderGraph(kstd::SharedPtr<RenderGraph> renderGraph) {
     m_renderGraph = renderGraph;
 }
 

@@ -9,7 +9,7 @@
 
 namespace sl {
 
-struct Queue : NonCopyable, NonMovable {
+struct Queue : kstd::NonCopyable, kstd::NonMovable {
     enum class Type : u8 {
         none     = 0x0,
         graphics = 0x1,

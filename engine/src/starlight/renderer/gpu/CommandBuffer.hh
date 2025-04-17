@@ -1,7 +1,6 @@
 #pragma once
 
 #include "starlight/core/Core.hh"
-#include "starlight/core/memory/Memory.hh"
 #include "starlight/core/Enum.hh"
 
 #include "fwd.hh"
@@ -10,8 +9,8 @@
 
 namespace sl {
 
-struct CommandBuffer : public NonCopyable, public NonMovable {
-    class Immediate : public NonCopyable, public NonMovable {
+struct CommandBuffer : public kstd::NonCopyable, public kstd::NonMovable {
+    class Immediate : public kstd::NonCopyable, public kstd::NonMovable {
     public:
         Immediate(Queue& queue);
         ~Immediate();
@@ -20,7 +19,7 @@ struct CommandBuffer : public NonCopyable, public NonMovable {
         operator CommandBuffer&();
 
     private:
-        UniquePtr<CommandBuffer> m_commandBuffer;
+        kstd::UniquePtr<CommandBuffer> m_commandBuffer;
         Queue& m_queue;
     };
 
@@ -33,7 +32,9 @@ struct CommandBuffer : public NonCopyable, public NonMovable {
         simultaneousUse      = 0x4
     };
 
-    static UniquePtr<CommandBuffer> create(Severity severity = Severity::primary);
+    static kstd::UniquePtr<CommandBuffer> create(
+      Severity severity = Severity::primary
+    );
 
     virtual ~CommandBuffer() = default;
 

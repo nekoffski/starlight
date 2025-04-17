@@ -58,7 +58,7 @@ private:
     Transform* m_parent;
 };
 
-class Transformable : public NonCopyable {
+class Transformable : public kstd::NonCopyable {
 public:
     explicit Transformable();
     explicit Transformable(Transform& transform);

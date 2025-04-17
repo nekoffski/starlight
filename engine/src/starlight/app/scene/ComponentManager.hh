@@ -5,14 +5,13 @@
 
 #include "starlight/core/Core.hh"
 #include "starlight/core/Concepts.hh"
-#include "starlight/core/memory/Memory.hh"
 #include "starlight/core/containers/FlatMap.hh"
 
 #include "Component.hh"
 
 namespace sl {
 
-struct ComponentContainer : public NonCopyable {
+struct ComponentContainer : public kstd::NonCopyable {
     virtual ~ComponentContainer()      = default;
     virtual void* getRaw(u64 entityId) = 0;
 };
@@ -36,7 +35,7 @@ private:
 
 class ComponentManager {
     using ComponentContainers =
-      std::unordered_map<std::type_index, UniquePtr<ComponentContainer>>;
+      std::unordered_map<std::type_index, kstd::UniquePtr<ComponentContainer>>;
 
 public:
     ComponentContainer& getContainer(const std::type_index& index) {
@@ -50,7 +49,7 @@ public:
 
         if (not m_componentContainers.contains(type)) [[unlikely]] {
             m_componentContainers[type] =
-              UniquePtr<ComponentContainerBase<T>>::create();
+              kstd::makeUnique<ComponentContainerBase<T>>();
         }
         return *static_cast<ComponentContainerBase<T>*>(
           m_componentContainers.at(type).get()

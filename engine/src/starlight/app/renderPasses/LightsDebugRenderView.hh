@@ -22,7 +22,7 @@
 //     ) override;
 
 // private:
-//     SharedPtr<Shader> m_shader;
+//     kstd::SharedPtr<Shader> m_shader;
 //     Mesh* m_mesh;
 // };
 

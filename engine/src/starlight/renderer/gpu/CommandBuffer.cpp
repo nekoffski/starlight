@@ -9,8 +9,9 @@
 
 namespace sl {
 
-CommandBuffer::Immediate::Immediate(Queue& queue
-) : m_commandBuffer(CommandBuffer::create()), m_queue(queue) {
+CommandBuffer::Immediate::Immediate(Queue& queue)
+    : m_commandBuffer(CommandBuffer::create())
+    , m_queue(queue) {
     m_commandBuffer->begin(CommandBuffer::BeginFlags::singleUse);
 }
 
@@ -24,9 +25,9 @@ CommandBuffer& CommandBuffer::Immediate::get() { return *m_commandBuffer; }
 
 CommandBuffer::Immediate::operator CommandBuffer&() { return get(); }
 
-UniquePtr<CommandBuffer> CommandBuffer::create(Severity severity) {
+kstd::UniquePtr<CommandBuffer> CommandBuffer::create(Severity severity) {
 #ifdef SL_USE_VK
-    return UniquePtr<vk::VulkanCommandBuffer>::create(
+    return kstd::makeUnique<vk::VulkanCommandBuffer>(
       static_cast<vk::VulkanDevice&>(Device::get().getImpl()), severity
     );
 #else

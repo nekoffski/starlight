@@ -22,8 +22,9 @@ static Rect2<u32> calculateUserInterfaceViewport(u32 w, u32 h) {
     };
 }
 
-Window::Window(UniquePtr<Impl> impl
-) : m_impl(std::move(impl)), m_userInterfaceLayoutScale(0.0f, 0.0f, 1.0f, 1.0f) {
+Window::Window(kstd::UniquePtr<Impl> impl)
+    : m_impl(std::move(impl))
+    , m_userInterfaceLayoutScale(0.0f, 0.0f, 1.0f, 1.0f) {
     setCallbacks();
 }
 
@@ -74,10 +75,10 @@ void Window::setUserInterfaceLayoutScale(const Vec4<f32>& scale) {
     m_userInterfaceLayoutScale = scale;
 }
 
-UniquePtr<Window::Impl> Window::Impl::create() {
+kstd::UniquePtr<Window::Impl> Window::Impl::create() {
     const auto& windowConfig = Globals::get().getConfig().window;
 #ifdef SL_USE_GLFW
-    return UniquePtr<glfw::GLFWWindow>::create(windowConfig);
+    return kstd::makeUnique<glfw::GLFWWindow>(windowConfig);
 #else
     log::panic("Window provider not specified");
 #endif

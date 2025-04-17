@@ -87,7 +87,7 @@ std::optional<Shader::Properties> parseShader(
     return properties;
 }
 
-SharedPtr<Shader> ShaderFactory::load(
+kstd::SharedPtr<Shader> ShaderFactory::load(
   const std::string& name, const FileSystem& fs
 ) {
     const auto shadersPath = Globals::get().getConfig().paths.shaders;

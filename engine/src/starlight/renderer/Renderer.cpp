@@ -10,15 +10,19 @@ namespace sl {
 
 static constexpr u64 bufferSize = 1024 * 1024;
 
-static UniquePtr<Buffer> createVertexBuffer();
-static UniquePtr<Buffer> createIndexBuffer();
+static kstd::UniquePtr<Buffer> createVertexBuffer();
+static kstd::UniquePtr<Buffer> createIndexBuffer();
 
-Renderer::Renderer() :
-    m_swapchain(Swapchain::create()), m_vertexBuffer(createVertexBuffer()),
-    m_indexBuffer(createIndexBuffer()), m_currentFrame(0u),
-    m_maxFramesInFlight(m_swapchain->getImageCount()), m_frameNumber(0u),
-    m_eventSentinel(EventProxy::get()), m_recreatingSwapchain(false),
-    m_framesSinceResize(0u) {
+Renderer::Renderer()
+    : m_swapchain(Swapchain::create())
+    , m_vertexBuffer(createVertexBuffer())
+    , m_indexBuffer(createIndexBuffer())
+    , m_currentFrame(0u)
+    , m_maxFramesInFlight(m_swapchain->getImageCount())
+    , m_frameNumber(0u)
+    , m_eventSentinel(EventProxy::get())
+    , m_recreatingSwapchain(false)
+    , m_framesSinceResize(0u) {
     createSyncPrimitives();
     createBuffers();
     initEventHandlers();
@@ -153,7 +157,7 @@ void Renderer::endFrame(u32 imageIndex) {
     m_currentFrame = (m_currentFrame + 1) % m_maxFramesInFlight;
 }
 
-UniquePtr<Buffer> createVertexBuffer() {
+kstd::UniquePtr<Buffer> createVertexBuffer() {
     return Buffer::create(Buffer::Properties{
       .size           = bufferSize * sizeof(Vertex3),
       .memoryProperty = MemoryProperty::MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -165,7 +169,7 @@ UniquePtr<Buffer> createVertexBuffer() {
     });
 }
 
-UniquePtr<Buffer> createIndexBuffer() {
+kstd::UniquePtr<Buffer> createIndexBuffer() {
     return Buffer::create(Buffer::Properties{
       .size           = bufferSize * sizeof(u32),
       .memoryProperty = MemoryProperty::MEMORY_PROPERTY_DEVICE_LOCAL_BIT,

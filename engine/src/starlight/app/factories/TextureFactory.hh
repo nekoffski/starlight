@@ -10,25 +10,25 @@ class TextureFactory : public Factory<TextureFactory, Texture, Texture::Type> {
 public:
     explicit TextureFactory();
 
-    SharedPtr<Texture> load(
+    kstd::SharedPtr<Texture> load(
       const std::string& name, Texture::Type textureType,
       const Texture::SamplerProperties& sampler =
         Texture::SamplerProperties::createDefault()
     );
 
-    SharedPtr<Texture> getDefaultDiffuseMap();
-    SharedPtr<Texture> getDefaultNormalMap();
-    SharedPtr<Texture> getDefaultSpecularMap();
+    kstd::SharedPtr<Texture> getDefaultDiffuseMap();
+    kstd::SharedPtr<Texture> getDefaultNormalMap();
+    kstd::SharedPtr<Texture> getDefaultSpecularMap();
 
 private:
     void createDefaults();
 
-    SharedPtr<Texture> m_defaultDiffuseMap;
-    SharedPtr<Texture> m_defaultNormalMap;
-    SharedPtr<Texture> m_defaultSpecularMap;
+    kstd::SharedPtr<Texture> m_defaultDiffuseMap;
+    kstd::SharedPtr<Texture> m_defaultNormalMap;
+    kstd::SharedPtr<Texture> m_defaultSpecularMap;
 };
 
-void serialize(nlohmann::json& j, const SharedPtr<Texture>& v);
-void deserialize(const nlohmann::json& j, SharedPtr<Texture>& v);
+void serialize(nlohmann::json& j, const kstd::SharedPtr<Texture>& v);
+void deserialize(const nlohmann::json& j, kstd::SharedPtr<Texture>& v);
 
 }  // namespace sl

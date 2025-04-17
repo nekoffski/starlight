@@ -6,7 +6,8 @@
 
 namespace sl {
 
-template <typename T> class Singleton : public NonMovable, public NonCopyable {
+template <typename T>
+class Singleton : public kstd::NonMovable, public kstd::NonCopyable {
     inline static std::string className = getTypeName<T>();
 
 public:

@@ -7,30 +7,18 @@ struct UtilsTests : ::testing::Test {
     std::vector<const char*> elements2 = { "aaa", "bbb", "ccc" };
 };
 
-TEST_F(
-  UtilsTests, givenVectorWithValue_whenCheckingIfContainsValue_shouldReturnTrue
-) {
-    EXPECT_TRUE(sl::contains(elements, 1));
-}
+TEST_F(UtilsTests, containsExisting) { EXPECT_TRUE(sl::contains(elements, 1)); }
 
-TEST_F(
-  UtilsTests, givenVectorWithoutValue_whenCheckingIfContainsValue_shouldReturnFalse
-) {
+TEST_F(UtilsTests, containsNonExisting) {
     EXPECT_FALSE(sl::contains(elements, 1337));
 }
 
-TEST_F(
-  UtilsTests,
-  givenConstCharPointerVectorWithValue_whenCheckingIfContainsValue_shouldReturnTrue
-) {
+TEST_F(UtilsTests, constainsConstCharPtr) {
     std::string text = "bbb";
     EXPECT_TRUE(sl::contains(elements2, text.c_str()));
 }
 
-TEST_F(
-  UtilsTests,
-  givenConstCharPointerVectorWithoutValue_whenCheckingIfContainsValue_shouldReturnFalse
-) {
+TEST_F(UtilsTests, containtConstCharPtrNonExisting) {
     std::string text = "ddd";
     EXPECT_FALSE(sl::contains(elements2, text.c_str()));
 }

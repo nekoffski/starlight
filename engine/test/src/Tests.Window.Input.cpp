@@ -14,12 +14,12 @@ struct InputTests : Test {
     NiceMock<WindowImplMock> windowImpl;
 };
 
-TEST_F(InputTests, givenInput_whenCreating_shouldSetOnKeyCallback) {
+TEST_F(InputTests, onKeyCallbackSet) {
     EXPECT_CALL(windowImpl, onKeyCallback(_)).Times(1);
     Input input{ windowImpl };
 }
 
-TEST_F(InputTests, givenInput_whenCreating_shouldSetOnMouseCallback) {
+TEST_F(InputTests, onMouseCallbackSet) {
     EXPECT_CALL(windowImpl, onMouseCallback(_)).Times(1);
     Input input{ windowImpl };
 }
@@ -31,9 +31,7 @@ struct InputCallbacksTests : InputTests {
     bool called;
 };
 
-TEST_F(
-  InputCallbacksTests, givenInput_whenMouseInteractionDetected_shouldEmitMouseEvent
-) {
+TEST_F(InputCallbacksTests, mouseInteraction) {
     EXPECT_CALL(windowImpl, onMouseCallback)
       .Times(1)
       .WillOnce([](Window::Impl::OnMouseCallback callback) {
@@ -54,9 +52,7 @@ TEST_F(
     EXPECT_TRUE(called);
 }
 
-TEST_F(
-  InputCallbacksTests, givenInput_whenKeyboardInteractionDetected_shouldEmitKeyEvent
-) {
+TEST_F(InputCallbacksTests, keyboardInteraction) {
     EXPECT_CALL(windowImpl, onKeyCallback)
       .Times(1)
       .WillOnce([](Window::Impl::OnKeyCallback callback) {

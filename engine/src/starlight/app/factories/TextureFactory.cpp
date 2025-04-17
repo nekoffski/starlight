@@ -2,12 +2,11 @@
 
 #include <fmt/core.h>
 #include <stb.h>
+#include <kstd/Scope.hh>
 
 #include "starlight/core/Globals.hh"
-#include "starlight/core/Scope.hh"
 
 namespace sl {
-
 static std::optional<Texture::ImageData> loadFlatImageData(
   std::string_view path, Texture::Orientation orientation
 ) {
@@ -137,7 +136,7 @@ static std::optional<Texture::ImageData> loadImageData(
 
 TextureFactory::TextureFactory() { createDefaults(); }
 
-SharedPtr<Texture> TextureFactory::load(
+kstd::SharedPtr<Texture> TextureFactory::load(
   const std::string& name, Texture::Type textureType,
   const Texture::SamplerProperties& sampler
 ) {
@@ -199,23 +198,25 @@ void TextureFactory::createDefaults() {
     );
 }
 
-SharedPtr<Texture> TextureFactory::getDefaultDiffuseMap() {
+kstd::SharedPtr<Texture> TextureFactory::getDefaultDiffuseMap() {
     return m_defaultDiffuseMap;
 }
 
-SharedPtr<Texture> TextureFactory::getDefaultNormalMap() {
+kstd::SharedPtr<Texture> TextureFactory::getDefaultNormalMap() {
     return m_defaultNormalMap;
 }
 
-SharedPtr<Texture> TextureFactory::getDefaultSpecularMap() {
+kstd::SharedPtr<Texture> TextureFactory::getDefaultSpecularMap() {
     return m_defaultSpecularMap;
 }
 
+// TODO: ??
 void serialize(
-  [[maybe_unused]] nlohmann::json& j, [[maybe_unused]] const SharedPtr<Texture>& v
+  [[maybe_unused]] nlohmann::json& j,
+  [[maybe_unused]] const kstd::SharedPtr<Texture>& v
 ) {}
 
-void deserialize(const nlohmann::json& j, SharedPtr<Texture>& v) {
+void deserialize(const nlohmann::json& j, kstd::SharedPtr<Texture>& v) {
     v = TextureFactory::get().load(j.get<std::string>(), Texture::Type::flat);
 }
 

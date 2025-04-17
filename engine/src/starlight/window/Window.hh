@@ -1,9 +1,10 @@
 #pragma once
 
+#include <kstd/memory/UniquePtr.hh>
+
 #include "starlight/core/Singleton.hh"
 #include "starlight/core/Config.hh"
 #include "starlight/core/math/Core.hh"
-#include "starlight/core/memory/UniquePtr.hh"
 #include "starlight/event/EventProxy.hh"
 #include "starlight/core/Globals.hh"
 
@@ -48,10 +49,10 @@ public:
 
         virtual void* getHandle() = 0;
 
-        static UniquePtr<Impl> create();
+        static kstd::UniquePtr<Impl> create();
     };
 
-    explicit Window(UniquePtr<Impl> = Impl::create());
+    explicit Window(kstd::UniquePtr<Impl> = Impl::create());
 
     Vec2<u32> getSize() const;
     Vec2<u32> getFramebufferSize() const;
@@ -73,7 +74,7 @@ private:
     void setCallbacks();
 
     SingletonGuard<Globals, EventProxy> m_guard;
-    UniquePtr<Impl> m_impl;
+    kstd::UniquePtr<Impl> m_impl;
     Vec4<f32> m_userInterfaceLayoutScale;
 };
 

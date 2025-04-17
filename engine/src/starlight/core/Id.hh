@@ -17,9 +17,10 @@ namespace sl {
 
 template <typename T, typename Id = u64>
 requires std::is_arithmetic_v<Id>
-class Identificable : public virtual NonCopyable {
+class Identificable : public virtual kstd::NonCopyable {
 public:
-    explicit Identificable() : id(createId()) {}
+    explicit Identificable()
+        : id(createId()) {}
 
     Identificable(Identificable&& oth)            = default;
     Identificable& operator=(Identificable&& oth) = default;
@@ -54,8 +55,8 @@ class NamedResource : public Identificable<T> {
     inline const static std::string baseName = NameGenerator.value;
 
 public:
-    explicit NamedResource(std::optional<std::string> name = {}) :
-        name(generateName(name)) {
+    explicit NamedResource(std::optional<std::string> name = {})
+        : name(generateName(name)) {
         log::debug(
           "Creating {} - id={} name='{}'", baseName, Identificable<T>::id, this->name
         );
@@ -86,8 +87,10 @@ class Id {
 public:
     using Type = T;
 
-    Id() : m_value(invalidId) {}
-    Id(T value) : m_value(value) {}
+    Id()
+        : m_value(invalidId) {}
+    Id(T value)
+        : m_value(value) {}
 
     T operator*() const { return get(); }
     T get() const { return m_value; }

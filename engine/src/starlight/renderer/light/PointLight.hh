@@ -7,7 +7,7 @@
 
 namespace sl {
 
-class PointLight : public NonCopyable {
+class PointLight : public kstd::NonCopyable {
 public:
     struct LOD {
         f32 distance;

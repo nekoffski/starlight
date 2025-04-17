@@ -53,7 +53,7 @@ RenderPacket Scene::getRenderPacket() {
 }
 
 void Scene::clear() {
-    m_skybox.reset();
+    m_skybox.clear();
     m_entities.clear();
 }
 
@@ -75,9 +75,11 @@ Entity* Scene::getEntity(const std::string& name) {
     });
 }
 
-void Scene::setSkybox(SharedPtr<Skybox> skybox) { m_skybox = std::move(skybox); }
+void Scene::setSkybox(kstd::SharedPtr<Skybox> skybox) {
+    m_skybox = std::move(skybox);
+}
 
-void Scene::resetSkybox() { m_skybox.reset(); }
+void Scene::resetSkybox() { m_skybox.clear(); }
 
 Skybox* Scene::getSkybox() { return m_skybox.get(); }
 

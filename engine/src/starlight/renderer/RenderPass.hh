@@ -22,7 +22,7 @@
 namespace sl {
 
 class RenderPassBase
-    : public NonMovable,
+    : public kstd::NonMovable,
       public NamedResource<RenderPassBase, "RenderPass"> {
 public:
     explicit RenderPassBase(
@@ -51,13 +51,13 @@ protected:
     ) = 0;
 
     Renderer& m_renderer;
-    UniquePtr<RenderPassBackend> m_renderPassBackend;
+    kstd::UniquePtr<RenderPassBackend> m_renderPassBackend;
 };
 
 class RenderPass : public RenderPassBase {
 public:
     explicit RenderPass(
-      Renderer& renderer, SharedPtr<Shader> shader,
+      Renderer& renderer, kstd::SharedPtr<Shader> shader,
       std::optional<std::string> name = {}
     );
 
@@ -68,9 +68,9 @@ public:
     );
 
 private:
-    SharedPtr<Shader> m_shader;
-    UniquePtr<Pipeline> m_pipeline;
-    UniquePtr<ShaderDataBinder> m_shaderDataBinder;
+    kstd::SharedPtr<Shader> m_shader;
+    kstd::UniquePtr<Pipeline> m_pipeline;
+    kstd::UniquePtr<ShaderDataBinder> m_shaderDataBinder;
 
     std::unordered_map<u32, u32> m_localDescriptorSets;
 

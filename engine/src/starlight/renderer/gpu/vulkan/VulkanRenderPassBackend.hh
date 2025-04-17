@@ -10,7 +10,7 @@
 namespace sl::vk {
 
 class VulkanRenderPassBackend : public RenderPassBackend {
-    class Framebuffer : public NonMovable, public NonCopyable {
+    class Framebuffer : public kstd::NonMovable, public kstd::NonCopyable {
     public:
         explicit Framebuffer(
           VulkanDevice& device, VkRenderPass renderPass, const Vec2<u32>& size,
@@ -51,7 +51,7 @@ protected:
     bool m_hasColorAttachment;
     bool m_hasDepthAttachment;
 
-    std::vector<LocalPtr<Framebuffer>> m_framebuffers;
+    std::vector<kstd::LocalPtr<Framebuffer>> m_framebuffers;
 };
 
 class VulkanImguiRenderPassBackend : public VulkanRenderPassBackend {

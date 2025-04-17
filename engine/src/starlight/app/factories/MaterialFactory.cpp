@@ -47,7 +47,7 @@ static std::optional<Material::Properties> loadProperties(
 
 MaterialFactory::MaterialFactory() { createDefault(); }
 
-SharedPtr<Material> MaterialFactory::load(
+kstd::SharedPtr<Material> MaterialFactory::load(
   const std::string& name, const FileSystem& fs
 ) {
     if (auto resource = find(name); resource) return resource;
@@ -63,17 +63,17 @@ SharedPtr<Material> MaterialFactory::load(
     return nullptr;
 }
 
-SharedPtr<Material> MaterialFactory::create(
+kstd::SharedPtr<Material> MaterialFactory::create(
   const std::string& name, const Material::Properties& properties
 ) {
-    return save(SharedPtr<Material>::create(properties, name));
+    return save(kstd::makeShared<Material>(properties, name));
 }
 
-SharedPtr<Material> MaterialFactory::getDefault() { return m_defaultMaterial; }
+kstd::SharedPtr<Material> MaterialFactory::getDefault() { return m_defaultMaterial; }
 
 void MaterialFactory::createDefault() {
     m_defaultMaterial =
-      save(SharedPtr<Material>::create(getDefaultProperties(), "Material.Default"));
+      save(kstd::makeShared<Material>(getDefaultProperties(), "Material.Default"));
 }
 
 }  // namespace sl

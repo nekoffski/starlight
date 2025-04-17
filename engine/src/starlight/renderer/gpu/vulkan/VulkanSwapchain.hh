@@ -43,8 +43,8 @@ private:
 
     VkExtent2D m_swapchainExtent;
 
-    LocalPtr<VulkanTexture> m_depthTexture;
-    std::vector<LocalPtr<VulkanSwapchainTexture>> m_textures;
+    kstd::LocalPtr<VulkanTexture> m_depthTexture;
+    std::vector<kstd::LocalPtr<VulkanSwapchainTexture>> m_textures;
 
     u32 m_imageCount;
 };

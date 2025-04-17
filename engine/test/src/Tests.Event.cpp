@@ -18,14 +18,14 @@ struct EventTests : Test {
     EventProxy& proxy = broker.getProxy();
 };
 
-TEST_F(EventTests, givenNoHandler_whenEmittingEvent_shouldHaveNoConsequences) {
+TEST_F(EventTests, noHandler) {
     EXPECT_NO_THROW({
         proxy.emit<TestEvent>(0.0f, 0);
         broker.dispatch();
     });
 }
 
-TEST_F(EventTests, givenHandler_whenEmittingEvent_shouldBeCalled) {
+TEST_F(EventTests, emitWithHandler) {
     bool called = false;
 
     [[maybe_unused]] auto id =
@@ -42,7 +42,7 @@ TEST_F(EventTests, givenHandler_whenEmittingEvent_shouldBeCalled) {
     EXPECT_TRUE(called);
 }
 
-TEST_F(EventTests, givenTwoHandlers_whenEmittingEventWithPropagate_shouldCallBoth) {
+TEST_F(EventTests, twoHandlersPropagate) {
     bool called  = false;
     bool called2 = false;
 
@@ -61,7 +61,7 @@ TEST_F(EventTests, givenTwoHandlers_whenEmittingEventWithPropagate_shouldCallBot
     EXPECT_TRUE(called2);
 }
 
-TEST_F(EventTests, givenTwoHandlers_whenEmittingEventWithStop_shouldNotCallBoth) {
+TEST_F(EventTests, twoHandlersStopPropagation) {
     bool called  = false;
     bool called2 = false;
 
@@ -83,7 +83,7 @@ TEST_F(EventTests, givenTwoHandlers_whenEmittingEventWithStop_shouldNotCallBoth)
     EXPECT_FALSE(called2);
 }
 
-TEST_F(EventTests, givenTwoHandlers_whenPoppingHandler_shouldNotBeCalled) {
+TEST_F(EventTests, popHandler) {
     bool called  = false;
     bool called2 = false;
 
@@ -112,9 +112,7 @@ TEST_F(EventTests, givenTwoHandlers_whenPoppingHandler_shouldNotBeCalled) {
     EXPECT_FALSE(called2);
 }
 
-TEST_F(
-  EventTests, givenEventHandlerSentinel_whenDestroying_shouldUnregisterHandlers
-) {
+TEST_F(EventTests, unregisterOnDestructor) {
     bool called  = false;
     bool called2 = false;
 

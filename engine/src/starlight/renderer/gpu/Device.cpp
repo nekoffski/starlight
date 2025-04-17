@@ -6,11 +6,12 @@
 
 namespace sl {
 
-Device::Device() : m_impl(Impl::create()) {}
+Device::Device()
+    : m_impl(Impl::create()) {}
 
-UniquePtr<Device::Impl> Device::Impl::create() {
+kstd::UniquePtr<Device::Impl> Device::Impl::create() {
 #ifdef SL_USE_VK
-    return UniquePtr<vk::VulkanDevice>::create();
+    return kstd::makeUnique<vk::VulkanDevice>();
 #endif
     return nullptr;
 }

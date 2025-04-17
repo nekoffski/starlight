@@ -2,7 +2,6 @@
 
 #include <vector>
 
-#include "starlight/core/memory/Memory.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/event/EventHandlerSentinel.hh"
 #include "starlight/core/Concepts.hh"
@@ -46,19 +45,19 @@ private:
     std::optional<u8> beginFrame();
     void endFrame(u32 imageIndex);
 
-    UniquePtr<Swapchain> m_swapchain;
+    kstd::UniquePtr<Swapchain> m_swapchain;
 
-    UniquePtr<Buffer> m_vertexBuffer;
-    UniquePtr<Buffer> m_indexBuffer;
+    kstd::UniquePtr<Buffer> m_vertexBuffer;
+    kstd::UniquePtr<Buffer> m_indexBuffer;
 
     u8 m_currentFrame;
     u8 m_maxFramesInFlight;
     u64 m_frameNumber;
 
-    std::vector<UniquePtr<CommandBuffer>> m_commandBuffers;
-    std::vector<UniquePtr<Semaphore>> m_imageAvailableSemaphores;
-    std::vector<UniquePtr<Semaphore>> m_queueCompleteSemaphores;
-    std::vector<UniquePtr<Fence>> m_frameFences;
+    std::vector<kstd::UniquePtr<CommandBuffer>> m_commandBuffers;
+    std::vector<kstd::UniquePtr<Semaphore>> m_imageAvailableSemaphores;
+    std::vector<kstd::UniquePtr<Semaphore>> m_queueCompleteSemaphores;
+    std::vector<kstd::UniquePtr<Fence>> m_frameFences;
     std::vector<Fence*> m_imageFences;
 
     EventHandlerSentinel m_eventSentinel;

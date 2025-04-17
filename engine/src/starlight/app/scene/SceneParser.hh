@@ -3,7 +3,6 @@
 #include <unordered_map>
 
 #include "starlight/core/FileSystem.hh"
-#include "starlight/core/memory/SharedPtr.hh"
 #include "starlight/core/Log.hh"
 #include "starlight/core/Json.hh"
 #include "starlight/app/scene/Scene.hh"
@@ -36,7 +35,7 @@ public:
     explicit SceneParser(const FileSystem* fs = FileSystem::getDefaultPtr());
 
     void serialize(Scene& scene, const std::string& path);
-    SharedPtr<Scene> deserialize(const std::string& path);
+    kstd::SharedPtr<Scene> deserialize(const std::string& path);
 
 private:
     void deserializeEntity(Scene& scene, const nlohmann::json& node);

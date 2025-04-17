@@ -77,7 +77,7 @@ public:
         const Shader::DataLayout::DescriptorSet& m_descriptorLayout;
     };
 
-    static UniquePtr<ShaderDataBinder> create(Shader& shader);
+    static kstd::UniquePtr<ShaderDataBinder> create(Shader& shader);
 
     explicit ShaderDataBinder(Shader& shader);
     virtual ~ShaderDataBinder() = default;

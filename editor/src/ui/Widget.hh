@@ -49,7 +49,7 @@ public:
         sl::Entity* m_selectedEntity;
 
         OptCallback m_inspectorCallback;
-        std::unordered_map<sl::u64, sl::UniquePtr<sl::ImageHandle>> m_images;
+        std::unordered_map<sl::u64, kstd::UniquePtr<sl::ImageHandle>> m_images;
 
         ImGuizmo::MODE m_gizmoMode;
         ImGuizmo::OPERATION m_gizmoOperation;

@@ -8,7 +8,7 @@
 
 namespace sl {
 
-struct Pipeline : public NonCopyable, public NonMovable {
+struct Pipeline : public kstd::NonCopyable, public kstd::NonMovable {
     struct Properties {
         static Properties createDefault();
 
@@ -19,7 +19,7 @@ struct Pipeline : public NonCopyable, public NonMovable {
         bool depthTestEnabled;
     };
 
-    static UniquePtr<Pipeline> create(
+    static kstd::UniquePtr<Pipeline> create(
       Shader& shader, RenderPassBackend& renderPass,
       const Properties& props = Properties::createDefault()
     );

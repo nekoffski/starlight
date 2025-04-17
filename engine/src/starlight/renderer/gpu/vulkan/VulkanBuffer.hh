@@ -1,6 +1,5 @@
 #pragma once
 
-#include "starlight/core/memory/Memory.hh"
 #include "starlight/core/containers/FreeList.hh"
 
 #include "starlight/renderer/gpu/Buffer.hh"

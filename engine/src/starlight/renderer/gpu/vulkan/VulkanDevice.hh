@@ -15,7 +15,7 @@
 namespace sl::vk {
 
 class VulkanDevice : public Device::Impl {
-    class Instance : public NonCopyable, public NonMovable {
+    class Instance : public kstd::NonCopyable, public kstd::NonMovable {
     public:
         explicit Instance(Allocator* allocator);
         ~Instance();
@@ -26,7 +26,7 @@ class VulkanDevice : public Device::Impl {
         Allocator* m_allocator;
     };
 
-    class DebugMessenger : public NonCopyable, public NonMovable {
+    class DebugMessenger : public kstd::NonCopyable, public kstd::NonMovable {
     public:
         explicit DebugMessenger(VkInstance instance, Allocator* allocator);
         ~DebugMessenger();
@@ -37,7 +37,7 @@ class VulkanDevice : public Device::Impl {
         VkDebugUtilsMessengerEXT m_handle;
     };
 
-    class Surface : public NonCopyable, public NonMovable {
+    class Surface : public kstd::NonCopyable, public kstd::NonMovable {
     public:
         explicit Surface(VkInstance instance, Allocator* allocator);
         ~Surface();
@@ -52,7 +52,7 @@ class VulkanDevice : public Device::Impl {
 public:
     using Queues = std::unordered_map<Queue::Type, VulkanQueue>;
 
-    class Physical : public NonCopyable, public NonMovable {
+    class Physical : public kstd::NonCopyable, public kstd::NonMovable {
     public:
         using QueueIndices = std::unordered_map<Queue::Type, u32>;
 
@@ -86,7 +86,7 @@ public:
     private:
     };
 
-    class Logical : public NonCopyable, public NonMovable {
+    class Logical : public kstd::NonCopyable, public kstd::NonMovable {
     public:
         Logical(
           VkPhysicalDevice device, Allocator* allocator,

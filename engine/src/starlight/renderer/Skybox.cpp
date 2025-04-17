@@ -4,8 +4,9 @@
 
 namespace sl {
 
-Skybox::Skybox(SharedPtr<Texture> cubeMap, OptStr name) :
-    NamedResource(name), m_cubeMap(cubeMap) {}
+Skybox::Skybox(kstd::SharedPtr<Texture> cubeMap, OptStr name)
+    : NamedResource(name)
+    , m_cubeMap(cubeMap) {}
 
 Texture* Skybox::getCubeMap() { return m_cubeMap.get(); }
 

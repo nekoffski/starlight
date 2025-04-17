@@ -14,7 +14,7 @@ struct RenderTarget {
     Texture* depthAttachment = nullptr;
 };
 
-class RenderPassBackend : public NonMovable, public NonCopyable {
+class RenderPassBackend : public kstd::NonMovable, public kstd::NonCopyable {
 public:
     enum class Type : u8 { normal, ui };
 
@@ -28,7 +28,7 @@ public:
         Type type   = Type::normal;
     };
 
-    static UniquePtr<RenderPassBackend> create(
+    static kstd::UniquePtr<RenderPassBackend> create(
       const Properties& props, bool hasPreviousPass, bool hasNextPass
     );
 

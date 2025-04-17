@@ -1,16 +1,15 @@
 #pragma once
 
-#include "starlight/core/memory/Memory.hh"
 #include "starlight/core/Core.hh"
 
 #include "fwd.hh"
 
 namespace sl {
 
-struct Fence : public NonCopyable, public NonMovable {
+struct Fence : public kstd::NonCopyable, public kstd::NonMovable {
     enum class State : u8 { signaled, notSignaled };
 
-    static UniquePtr<Fence> create(State state);
+    static kstd::UniquePtr<Fence> create(State state);
 
     virtual ~Fence() = default;
 
@@ -18,8 +17,8 @@ struct Fence : public NonCopyable, public NonMovable {
     virtual void reset()                                = 0;
 };
 
-struct Semaphore : public NonCopyable, public NonMovable {
-    static UniquePtr<Semaphore> create();
+struct Semaphore : public kstd::NonCopyable, public kstd::NonMovable {
+    static kstd::UniquePtr<Semaphore> create();
 
     virtual ~Semaphore() = default;
 };

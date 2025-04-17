@@ -6,24 +6,12 @@
 #include <limits>
 #include <string>
 
+#include <kstd/memory/SharedPtr.hh>
+#include <kstd/memory/UniquePtr.hh>
+#include <kstd/memory/LocalPtr.hh>
+#include <kstd/Concepts.hh>
+
 namespace sl {
-
-struct NonCopyable {
-    NonCopyable() = default;
-
-    NonCopyable(NonCopyable const&)            = delete;
-    NonCopyable& operator=(const NonCopyable&) = delete;
-
-    NonCopyable(NonCopyable&&)            = default;
-    NonCopyable& operator=(NonCopyable&&) = default;
-};
-
-struct NonMovable {
-    NonMovable() = default;
-
-    NonMovable(NonMovable&&)            = delete;
-    NonMovable& operator=(NonMovable&&) = delete;
-};
 
 using u64 = uint64_t;
 using u32 = uint32_t;

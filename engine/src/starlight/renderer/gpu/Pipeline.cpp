@@ -25,11 +25,11 @@ Pipeline::Properties Pipeline::Properties::createDefault() {
     };
 }
 
-UniquePtr<Pipeline> Pipeline::create(
+kstd::UniquePtr<Pipeline> Pipeline::create(
   Shader& shader, RenderPassBackend& renderPass, const Properties& props
 ) {
 #ifdef SL_USE_VK
-    return UniquePtr<vk::VulkanPipeline>::create(
+    return kstd::makeUnique<vk::VulkanPipeline>(
       static_cast<vk::VulkanDevice&>(Device::get().getImpl()),
       static_cast<vk::VulkanShader&>(shader),
       static_cast<vk::VulkanRenderPassBackend&>(renderPass), props

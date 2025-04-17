@@ -15,11 +15,11 @@ struct WindowTests : Test {
     EventBroker eventBroker;
     Globals globals{ {} };
 
-    UniquePtr<NiceMock<WindowImplMock>> windowImpl =
-      UniquePtr<NiceMock<WindowImplMock>>::create();
+    kstd::UniquePtr<NiceMock<WindowImplMock>> windowImpl =
+      kstd::makeUnique<NiceMock<WindowImplMock>>();
 };
 
-TEST_F(WindowTests, givenWindow_whenCreating_shouldSetOnWindowCloseCallback) {
+TEST_F(WindowTests, onWindowCloseCallbackSet) {
     EXPECT_CALL(*windowImpl, onWindowCloseCallback(_)).Times(1);
     Window window{ std::move(windowImpl) };
 }
@@ -29,7 +29,7 @@ struct WindowCallbacksTests : WindowTests {
     bool called;
 };
 
-TEST_F(WindowCallbacksTests, givenWindow_whenWindowCloses_shouldEmitQuitEvent) {
+TEST_F(WindowCallbacksTests, closeWindow) {
     [[maybe_unused]] auto id = eventBroker.getProxy().pushEventHandler<QuitEvent>(
       [&]([[maybe_unused]] const auto&) { called = true; }
     );

@@ -8,7 +8,7 @@ namespace sl {
 
 class ShaderFactory : public Factory<ShaderFactory, Shader> {
 public:
-    SharedPtr<Shader> load(
+    kstd::SharedPtr<Shader> load(
       const std::string& name, const FileSystem& fs = FileSystem::getDefault()
     );
 };

@@ -2,7 +2,6 @@
 
 #include <starlight/ui/UI.hh>
 #include <starlight/app/scene/Scene.hh>
-#include <starlight/core/memory/Memory.hh>
 
 #include "views/SceneView.hh"
 #include "views/PropertiesView.hh"
@@ -49,9 +48,9 @@ private:
     Widget::State m_widgetState;
 
     sl::MainMenuBar m_menu;
-    sl::LocalPtr<sl::PanelCombo> m_leftCombo;
-    sl::LocalPtr<sl::PanelCombo> m_bottomCombo;
-    sl::LocalPtr<sl::PanelCombo> m_inspectorPanel;
+    kstd::LocalPtr<sl::PanelCombo> m_leftCombo;
+    kstd::LocalPtr<sl::PanelCombo> m_bottomCombo;
+    kstd::LocalPtr<sl::PanelCombo> m_inspectorPanel;
 
     SceneView m_sceneView;
     PropertiesView m_propertiesView;

@@ -13,20 +13,20 @@ public:
 
     explicit MaterialFactory();
 
-    SharedPtr<Material> load(
+    kstd::SharedPtr<Material> load(
       const std::string& name, const FileSystem& fs = FileSystem::getDefault()
     );
 
-    SharedPtr<Material> create(
+    kstd::SharedPtr<Material> create(
       const std::string& name, const Material::Properties& properties
     );
 
-    SharedPtr<Material> getDefault();
+    kstd::SharedPtr<Material> getDefault();
 
 private:
     void createDefault();
 
-    SharedPtr<Material> m_defaultMaterial;
+    kstd::SharedPtr<Material> m_defaultMaterial;
 };
 
 }  // namespace sl

@@ -6,7 +6,6 @@
 
 #include "starlight/core/math/Core.hh"
 #include "starlight/core/Id.hh"
-#include "starlight/core/memory/Memory.hh"
 
 #include "fwd.hh"
 #include "starlight/renderer/gpu/Shader.hh"
@@ -18,13 +17,13 @@ namespace sl {
 using namespace std::string_literals;
 
 class Material
-    : public NonMovable,
+    : public kstd::NonMovable,
       public NamedResource<Material, "Material", false> {
 public:
     struct Properties {
-        SharedPtr<Texture> diffuseMap;
-        SharedPtr<Texture> specularMap;
-        SharedPtr<Texture> normalMap;
+        kstd::SharedPtr<Texture> diffuseMap;
+        kstd::SharedPtr<Texture> specularMap;
+        kstd::SharedPtr<Texture> normalMap;
         Vec4<f32> diffuseColor;
         float shininess;
     };
@@ -33,9 +32,9 @@ public:
 
     bool isTransparent() const;
 
-    SharedPtr<Texture> diffuseMap;
-    SharedPtr<Texture> specularMap;
-    SharedPtr<Texture> normalMap;
+    kstd::SharedPtr<Texture> diffuseMap;
+    kstd::SharedPtr<Texture> specularMap;
+    kstd::SharedPtr<Texture> normalMap;
     float shininess;
     Vec4<f32> diffuseColor;
 };

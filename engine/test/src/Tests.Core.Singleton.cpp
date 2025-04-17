@@ -4,56 +4,34 @@
 
 class Singleton : public sl::Singleton<Singleton> {};
 
-TEST(SingletonTests, givenSingleton_whenGettingInstance_shouldReturnValidAddress) {
+TEST(SingletonTests, singletonInstanceAddress) {
     Singleton singleton;
     EXPECT_EQ(&singleton, &Singleton::get());
-}
-
-TEST(SingletonTests, givenSingleton_getPtrShouldReturnSameAddressAsGet) {
-    Singleton singleton;
     EXPECT_EQ(&Singleton::get(), Singleton::getPtr());
 }
 
-TEST(SingletonTests, givenSingleton_whenCreatingSecondInstnace_shouldThrow) {
+TEST(SingletonTests, twoInstances) {
     Singleton singleton;
     ASSERT_DEATH(Singleton{}, "");
 }
 
-TEST(
-  SingletonTests,
-  givenSingleSingletonWithoutInstance_whenGettingInstancePtr_shouldReturnNullptr
-) {
-    EXPECT_EQ(Singleton::getPtr(), nullptr);
-}
+TEST(SingletonTests, noInstance) { EXPECT_EQ(Singleton::getPtr(), nullptr); }
 
-TEST(
-  SingletonTests, givenSingleSingletonWithoutInstance_whenGettingInstance_shouldCrash
-) {
-    ASSERT_DEATH(Singleton::get(), "");
-}
+TEST(SingletonTests, getWithoutInstance) { ASSERT_DEATH(Singleton::get(), ""); }
 
-TEST(
-  SingletonTests,
-  givenSingleSingleton_whenCheckingIfIsCreated_shouldReturnCorrectValue
-) {
+TEST(SingletonTests, isCreated) {
     ASSERT_FALSE(Singleton::isCreated());
     Singleton singleton;
     EXPECT_TRUE(Singleton::isCreated());
 }
 
-TEST(
-  SingletonTests,
-  givenSingleSingleton_whenCallingExpectCreated_shouldReturnCorrectValue
-) {
+TEST(SingletonTests, expectCreated) {
     ASSERT_DEATH(sl::expectCreated<Singleton>(), "");
     Singleton singleton;
     EXPECT_NO_FATAL_FAILURE(sl::expectCreated<Singleton>());
 }
 
-TEST(
-  SingletonTests,
-  givenSingleSingleton_whenCreatingSingletonGuard_shouldReturnCorrectValue
-) {
+TEST(SingletonTests, singletonGuard) {
     ASSERT_DEATH(sl::SingletonGuard<Singleton>{}, "");
     Singleton singleton;
     EXPECT_NO_FATAL_FAILURE(sl::SingletonGuard<Singleton>{});

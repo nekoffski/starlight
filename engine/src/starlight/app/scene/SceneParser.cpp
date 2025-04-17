@@ -61,8 +61,8 @@ nlohmann::json SceneParser::serializeEntity(Entity& entity) {
     return node;
 }
 
-SharedPtr<Scene> SceneParser::deserialize(const std::string& path) {
-    auto scene = SharedPtr<Scene>::create();
+kstd::SharedPtr<Scene> SceneParser::deserialize(const std::string& path) {
+    auto scene = kstd::makeShared<Scene>();
 
     log::debug("Deserializing scene: {}", path);
     log::expect(m_fs->isFile(path), "Scene file does not exist");

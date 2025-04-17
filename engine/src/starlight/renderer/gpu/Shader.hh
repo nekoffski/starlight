@@ -4,7 +4,8 @@
 #include <span>
 #include <array>
 
-#include "starlight/core/memory/Memory.hh"
+#include <kstd/memory/SharedPtr.hh>
+
 #include "starlight/core/containers/KeyVector.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/core/Utils.hh"
@@ -12,7 +13,7 @@
 
 namespace sl {
 
-class Shader : public NonMovable, public NamedResource<Shader, "Shader"> {
+class Shader : public kstd::NonMovable, public NamedResource<Shader, "Shader"> {
     static constexpr u32 uniformScopes = 3u;
 
 public:
@@ -103,7 +104,7 @@ public:
         DataLayout layout;
     };
 
-    static SharedPtr<Shader> create(const Properties& props, OptStr name = {});
+    static kstd::SharedPtr<Shader> create(const Properties& props, OptStr name = {});
     virtual ~Shader() = default;
 
     const Properties properties;

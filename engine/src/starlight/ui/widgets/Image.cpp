@@ -17,12 +17,12 @@ private:
     VkDescriptorSet m_descriptorSet;
 };
 
-UniquePtr<ImageHandle> ImageHandle::createHandle(Texture* texture) {
-    return UniquePtr<VulkanImageHandle>::create(texture);
+kstd::UniquePtr<ImageHandle> ImageHandle::createHandle(Texture* texture) {
+    return kstd::makeUnique<VulkanImageHandle>(texture);
 }
 
-VulkanImageHandle::VulkanImageHandle(Texture* texture
-) : m_descriptorSet(createDescriptorSet(texture)) {}
+VulkanImageHandle::VulkanImageHandle(Texture* texture)
+    : m_descriptorSet(createDescriptorSet(texture)) {}
 
 void VulkanImageHandle::show(
   const Vec2<f32>& size, const Vec2<f32>& minUV, const Vec2<f32>& maxUV

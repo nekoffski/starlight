@@ -1,9 +1,9 @@
 #include "Texture.hh"
 
 #include <stb.h>
+#include <kstd/Scope.hh>
 
 #include "starlight/core/Log.hh"
-#include "starlight/core/Scope.hh"
 
 #include "Device.hh"
 
@@ -58,11 +58,11 @@ Texture::SamplerProperties Texture::SamplerProperties::createDefault() {
     };
 }
 
-SharedPtr<Texture> Texture::create(
+kstd::SharedPtr<Texture> Texture::create(
   const ImageData& image, const SamplerProperties& sampler, OptStr name
 ) {
 #ifdef SL_USE_VK
-    return SharedPtr<vk::VulkanTexture>::create(
+    return kstd::makeShared<vk::VulkanTexture>(
       static_cast<vk::VulkanDevice&>(Device::get().getImpl()), image, sampler, name
     );
 #else
@@ -77,8 +77,9 @@ const Texture::ImageData& Texture::getImageData() const { return m_imageData; }
 
 Texture::Texture(
   const ImageData& imageData, const SamplerProperties& samplerProperties, OptStr name
-) :
-    NamedResource(name), m_imageData(imageData),
-    m_samplerProperties(samplerProperties) {}
+)
+    : NamedResource(name)
+    , m_imageData(imageData)
+    , m_samplerProperties(samplerProperties) {}
 
 }  // namespace sl

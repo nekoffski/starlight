@@ -2,26 +2,27 @@
 
 namespace sl {
 
-MeshFactory::MeshFactory(Buffer& vertexBuffer, Buffer& indexBuffer) :
-    m_vertexBuffer(vertexBuffer), m_indexBuffer(indexBuffer) {
+MeshFactory::MeshFactory(Buffer& vertexBuffer, Buffer& indexBuffer)
+    : m_vertexBuffer(vertexBuffer)
+    , m_indexBuffer(indexBuffer) {
     createDefaults();
 }
 
-SharedPtr<Mesh> MeshFactory::create(
+kstd::SharedPtr<Mesh> MeshFactory::create(
   const std::string& name, const Mesh::Properties2D& config
 ) {
     return save(createMesh(config.toMeshData(), name));
 }
 
-SharedPtr<Mesh> MeshFactory::create(
+kstd::SharedPtr<Mesh> MeshFactory::create(
   const std::string& name, const Mesh::Properties3D& config
 ) {
     return save(createMesh(config.toMeshData(), name));
 }
 
-SharedPtr<Mesh> MeshFactory::getCube() { return m_cube; }
-SharedPtr<Mesh> MeshFactory::getUnitSphere() { return m_unitSphere; }
-SharedPtr<Mesh> MeshFactory::getPlane() { return m_plane; }
+kstd::SharedPtr<Mesh> MeshFactory::getCube() { return m_cube; }
+kstd::SharedPtr<Mesh> MeshFactory::getUnitSphere() { return m_unitSphere; }
+kstd::SharedPtr<Mesh> MeshFactory::getPlane() { return m_plane; }
 
 void MeshFactory::createDefaults() {
     Mesh::Properties3D unitSphere{
@@ -40,10 +41,10 @@ void MeshFactory::createDefaults() {
     m_cube = save(createMesh(cube.toMeshData(), "Cube"));
 }
 
-SharedPtr<Mesh> MeshFactory::createMesh(
+kstd::SharedPtr<Mesh> MeshFactory::createMesh(
   const Mesh::Data& meshData, const std::string& name
 ) {
-    return SharedPtr<Mesh>::create(meshData, m_vertexBuffer, m_indexBuffer, name);
+    return kstd::makeShared<Mesh>(meshData, m_vertexBuffer, m_indexBuffer, name);
 }
 
 }  // namespace sl

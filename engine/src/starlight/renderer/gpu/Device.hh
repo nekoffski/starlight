@@ -2,7 +2,6 @@
 
 #include "starlight/core/Core.hh"
 #include "starlight/core/Singleton.hh"
-#include "starlight/core/memory/Memory.hh"
 
 #include "fwd.hh"
 #include "Queue.hh"
@@ -11,13 +10,13 @@ namespace sl {
 
 class Device : public Singleton<Device> {
 public:
-    struct Impl : NonCopyable, NonMovable {
+    struct Impl : kstd::NonCopyable, kstd::NonMovable {
         virtual ~Impl() = default;
 
         virtual void waitIdle()                   = 0;
         virtual Queue& getQueue(Queue::Type type) = 0;
 
-        static UniquePtr<Impl> create();
+        static kstd::UniquePtr<Impl> create();
     };
 
     explicit Device();
@@ -31,7 +30,7 @@ public:
     Impl& getImpl();
 
 private:
-    UniquePtr<Impl> m_impl;
+    kstd::UniquePtr<Impl> m_impl;
 };
 
 }  // namespace sl

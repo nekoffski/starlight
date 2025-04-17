@@ -71,7 +71,7 @@ struct SphereProperties {
     float radius;
 };
 
-class Mesh : public NonMovable, public NamedResource<Mesh, "Mesh"> {
+class Mesh : public kstd::NonMovable, public NamedResource<Mesh, "Mesh"> {
 public:
     struct Data {
         u64 indexCount;

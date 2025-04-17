@@ -14,7 +14,7 @@
 
 namespace sl {
 
-class Scene : public NonCopyable {
+class Scene : public kstd::NonCopyable {
     static constexpr u64 maxEntities = 1024;
 
 public:
@@ -41,12 +41,12 @@ public:
     Entity& addEntity(std::optional<std::string> name = {});
     Entity* getEntity(const std::string& name);
 
-    void setSkybox(SharedPtr<Skybox> skybox);
+    void setSkybox(kstd::SharedPtr<Skybox> skybox);
     void resetSkybox();
     Skybox* getSkybox();
 
 public:
-    SharedPtr<Skybox> m_skybox;
+    kstd::SharedPtr<Skybox> m_skybox;
     ComponentManager m_componentManager;
     StaticVector<Entity> m_entities;
 };

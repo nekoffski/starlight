@@ -9,7 +9,7 @@
 
 namespace sl {
 
-struct Buffer : public NonCopyable, public NonMovable {
+struct Buffer : public kstd::NonCopyable, public kstd::NonMovable {
     struct Properties {
         u64 size;
         MemoryProperty memoryProperty;
@@ -28,7 +28,7 @@ struct Buffer : public NonCopyable, public NonMovable {
         }
     };
 
-    static UniquePtr<Buffer> create(const Properties& props);
+    static kstd::UniquePtr<Buffer> create(const Properties& props);
 
     virtual ~Buffer() = default;
 

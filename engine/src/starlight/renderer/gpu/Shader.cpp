@@ -10,9 +10,9 @@
 
 namespace sl {
 
-SharedPtr<Shader> Shader::create(const Properties& props, OptStr name) {
+kstd::SharedPtr<Shader> Shader::create(const Properties& props, OptStr name) {
 #ifdef SL_USE_VK
-    return SharedPtr<vk::VulkanShader>::create(
+    return kstd::makeShared<vk::VulkanShader>(
       static_cast<vk::VulkanDevice&>(Device::get().getImpl()), props, name
     );
 #else
@@ -20,8 +20,9 @@ SharedPtr<Shader> Shader::create(const Properties& props, OptStr name) {
 #endif
 }
 
-Shader::Shader(const Properties& properties, OptStr name) :
-    NamedResource(name), properties(properties) {
+Shader::Shader(const Properties& properties, OptStr name)
+    : NamedResource(name)
+    , properties(properties) {
     const auto stageCount = properties.stages.size();
     log::expect(
       stageCount <= maxStages, "Max shader stages ({}) exceed: {}", maxStages,

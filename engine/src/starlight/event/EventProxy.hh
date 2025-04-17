@@ -1,7 +1,6 @@
 #pragma once
 
 #include "starlight/core/Singleton.hh"
-#include "starlight/core/memory/Memory.hh"
 #include "starlight/core/Log.hh"
 #include "Core.hh"
 
@@ -13,7 +12,7 @@ public:
 
     template <typename T, typename... Args> void emit(Args&&... args) {
         m_events.push_back(
-          UniquePtr<details::EventStorage<T>>::create(std::forward<Args>(args)...)
+          kstd::makeUnique<details::EventStorage<T>>(std::forward<Args>(args)...)
         );
     }
 

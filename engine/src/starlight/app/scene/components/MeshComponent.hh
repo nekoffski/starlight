@@ -9,10 +9,10 @@
 namespace sl {
 
 struct MeshComponentData : Transformable {
-    MeshComponentData(SharedPtr<Mesh> mesh)
+    MeshComponentData(kstd::SharedPtr<Mesh> mesh)
         : mesh(std::move(mesh)) {}
 
-    SharedPtr<Mesh> mesh;
+    kstd::SharedPtr<Mesh> mesh;
 };
 
 struct MeshComponent : ComponentBase<MeshComponentData> {

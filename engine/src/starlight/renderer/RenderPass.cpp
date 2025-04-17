@@ -8,8 +8,9 @@
 
 namespace sl {
 
-RenderPassBase::RenderPassBase(Renderer& renderer, std::optional<std::string> name) :
-    NamedResource(name), m_renderer(renderer) {}
+RenderPassBase::RenderPassBase(Renderer& renderer, std::optional<std::string> name)
+    : NamedResource(name)
+    , m_renderer(renderer) {}
 
 Rect2<u32> RenderPassBase::getViewport() const {
     return Window::get().getWorldViewport();
@@ -53,10 +54,11 @@ Pipeline::Properties RenderPassBase::createPipelineProperties() {
 }
 
 RenderPass::RenderPass(
-  Renderer& renderer, SharedPtr<Shader> shader, std::optional<std::string> name
-) :
-    RenderPassBase(renderer, name), m_shader(shader),
-    m_shaderDataBinder(ShaderDataBinder::create(*m_shader)) {}
+  Renderer& renderer, kstd::SharedPtr<Shader> shader, std::optional<std::string> name
+)
+    : RenderPassBase(renderer, name)
+    , m_shader(shader)
+    , m_shaderDataBinder(ShaderDataBinder::create(*m_shader)) {}
 
 void RenderPass::run(
   RenderPacket& packet, CommandBuffer& commandBuffer, u32 imageIndex, u64 frameNumber

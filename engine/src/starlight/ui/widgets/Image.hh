@@ -6,7 +6,7 @@
 namespace sl {
 
 struct ImageHandle {
-    static UniquePtr<ImageHandle> createHandle(Texture* texture);
+    static kstd::UniquePtr<ImageHandle> createHandle(Texture* texture);
     virtual void show(
       const Vec2<f32>& size, const Vec2<f32>& minUV, const Vec2<f32>& maxUV
     ) = 0;

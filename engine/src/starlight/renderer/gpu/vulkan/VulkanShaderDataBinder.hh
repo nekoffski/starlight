@@ -25,7 +25,7 @@ class VulkanShaderDataBinder : public ShaderDataBinder {
     };
 
     using LocalDescriptorSets =
-      std::array<LocalPtr<LocalDescriptorSet>, maxLocalDescriptorSets>;
+      std::array<kstd::LocalPtr<LocalDescriptorSet>, maxLocalDescriptorSets>;
 
 public:
     explicit VulkanShaderDataBinder(VulkanDevice& device, VulkanShader& shader);
@@ -90,7 +90,7 @@ private:
     u64 m_localUboStride;
     u64 m_globalUboOffset;
 
-    LocalPtr<VulkanBuffer> m_uniformBuffer;
+    kstd::LocalPtr<VulkanBuffer> m_uniformBuffer;
     void* m_uniformBufferView;
 
     std::vector<VkDescriptorSet> m_globalDescriptorSets;

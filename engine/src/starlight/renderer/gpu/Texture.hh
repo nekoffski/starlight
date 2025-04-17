@@ -4,14 +4,13 @@
 
 #include "starlight/core/Id.hh"
 #include "starlight/core/Core.hh"
-#include "starlight/core/memory/Memory.hh"
 
 #include "starlight/renderer/Core.hh"
 #include "CommandBuffer.hh"
 
 namespace sl {
 
-class Texture : public NonMovable, public NamedResource<Texture, "Texture"> {
+class Texture : public kstd::NonMovable, public NamedResource<Texture, "Texture"> {
 public:
     using PixelWidth = u8;
     using Pixels     = std::vector<PixelWidth>;
@@ -74,7 +73,7 @@ public:
         Repeat wRepeat;
     };
 
-    static SharedPtr<Texture> create(
+    static kstd::SharedPtr<Texture> create(
       const ImageData& image           = ImageData::createDefault(defaultPixelColor),
       const SamplerProperties& sampler = SamplerProperties::createDefault(),
       OptStr name                      = {}

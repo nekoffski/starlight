@@ -1,7 +1,6 @@
 #pragma once
 
 #include "starlight/core/Id.hh"
-#include "starlight/core/memory/Memory.hh"
 
 #include "fwd.hh"
 
@@ -49,8 +48,9 @@ template <typename T> struct ComponentBase : details::ComponentImpl<T> {
 };
 
 template <typename T>
-struct ComponentBase<SharedPtr<T>> : details::ComponentImpl<SharedPtr<T>> {
-    using details::ComponentImpl<SharedPtr<T>>::ComponentImpl;
+struct ComponentBase<kstd::SharedPtr<T>>
+    : details::ComponentImpl<kstd::SharedPtr<T>> {
+    using details::ComponentImpl<kstd::SharedPtr<T>>::ComponentImpl;
 
     T& data() { return *this->m_data; }
     const T& data() const { return *this->m_data; }
