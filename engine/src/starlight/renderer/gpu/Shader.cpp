@@ -109,7 +109,7 @@ std::string toString(const Shader::Uniform::Scope& scope) {
 }
 
 void logObject(const Shader::Properties& properties) {
-    log::debug("ShaderProperties {");
+    log::debug("ShaderProperties");
     log::debug("{}Stages:", spaces(2));
     for (const auto& stage : properties.stages) log::debug("{}{}", spaces(4), stage);
 
@@ -152,8 +152,6 @@ void logObject(const Shader::Properties& properties) {
       layout.globalDescriptorSet.size
     );
     logDescriptorSet(layout.globalDescriptorSet);
-
-    log::debug("}");
 }
 
 template <> Shader::DataType fromString<Shader::DataType>(std::string_view str) {

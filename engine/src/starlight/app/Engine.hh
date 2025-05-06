@@ -2,6 +2,8 @@
 
 #include <atomic>
 
+#include <kstd/FileSystem.hh>
+
 #include "starlight/core/Core.hh"
 #include "starlight/core/Config.hh"
 #include "starlight/core/Time.hh"

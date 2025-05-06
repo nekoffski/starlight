@@ -7,6 +7,7 @@
 #include "starlight/core/Globals.hh"
 
 namespace sl {
+
 static std::optional<Texture::ImageData> loadFlatImageData(
   std::string_view path, Texture::Orientation orientation
 ) {
@@ -18,7 +19,7 @@ static std::optional<Texture::ImageData> loadFlatImageData(
     int height;
     int channels;
 
-    stbi_set_flip_vertically_on_load(orientation == Texture::Orientation::vertical);
+    stbi_set_flip_vertically_on_load(orientation == Texture::Orientation::flipped);
 
     const auto pixels =
       stbi_load(path.data(), &width, &height, &channels, requiredChannels);
@@ -70,7 +71,9 @@ static std::optional<Texture::ImageData> loadFlatImageData(
     return image;
 }
 
-static std::optional<Texture::ImageData> loadCubemapData(std::string_view path) {
+static std::optional<Texture::ImageData> loadCubemapData(
+  std::string_view path, Texture::Orientation orientation
+) {
     // +X, -X, +Y, -Y, +Z, -Z
     log::debug("Loading cube map: {}", path);
 
@@ -96,8 +99,7 @@ static std::optional<Texture::ImageData> loadCubemapData(std::string_view path) 
     u64 offset = 0;
 
     for (const auto& path : texturePaths) {
-        const auto imageData =
-          loadFlatImageData(path, Texture::Orientation::horizontal);
+        const auto imageData = loadFlatImageData(path, orientation);
 
         if (not imageData) {
             log::error("Could not load cubemap face: '{}'", path);
@@ -127,18 +129,31 @@ static std::optional<Texture::ImageData> loadCubemapData(std::string_view path) 
 }
 
 static std::optional<Texture::ImageData> loadImageData(
-  std::string_view path, Texture::Type textureType
+  std::string_view path, Texture::Type textureType, Texture::Orientation orientation
 ) {
     return textureType == Texture::Type::cubemap
-             ? loadCubemapData(path)
-             : loadFlatImageData(path, Texture::Orientation::vertical);
+             ? loadCubemapData(path, orientation)
+             : loadFlatImageData(path, orientation);
 }
 
 TextureFactory::TextureFactory() { createDefaults(); }
 
+kstd::SharedPtr<Texture> TextureFactory::loadCubemap(
+  const std::string& name, const Texture::SamplerProperties& sampler
+) {
+    return load(name, Texture::Type::cubemap, Texture::Orientation::normal, sampler);
+}
+
+kstd::SharedPtr<Texture> TextureFactory::loadFlat(
+  const std::string& name, Texture::Orientation orientation,
+  const Texture::SamplerProperties& sampler
+) {
+    return load(name, Texture::Type::flat, orientation, sampler);
+}
+
 kstd::SharedPtr<Texture> TextureFactory::load(
   const std::string& name, Texture::Type textureType,
-  const Texture::SamplerProperties& sampler
+  Texture::Orientation orientation, const Texture::SamplerProperties& sampler
 ) {
     if (auto resource = find(name); resource) [[unlikely]]
         return resource;
@@ -146,7 +161,7 @@ kstd::SharedPtr<Texture> TextureFactory::load(
     const auto texturesPath = Globals::get().getConfig().paths.textures;
     const auto fullPath     = fmt::format("{}/{}", texturesPath, name);
 
-    if (auto data = loadImageData(fullPath, textureType); data)
+    if (auto data = loadImageData(fullPath, textureType, orientation); data)
         return save(Texture::create(*data, sampler, name), textureType);
 
     log::warn("Could not process texture: {}", fullPath);
@@ -217,7 +232,7 @@ void serialize(
 ) {}
 
 void deserialize(const nlohmann::json& j, kstd::SharedPtr<Texture>& v) {
-    v = TextureFactory::get().load(j.get<std::string>(), Texture::Type::flat);
+    v = TextureFactory::get().loadFlat(j.get<std::string>());
 }
 
 }  // namespace sl

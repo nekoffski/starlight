@@ -5,8 +5,8 @@
 
 namespace sl::vk {
 
-VulkanCommandBuffer::VulkanCommandBuffer(VulkanDevice& device, Severity severity) :
-    m_device(device) {
+VulkanCommandBuffer::VulkanCommandBuffer(VulkanDevice& device, Severity severity)
+    : m_device(device) {
     VkCommandBufferAllocateInfo allocateInfo;
     clearMemory(&allocateInfo);
     allocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -20,7 +20,7 @@ VulkanCommandBuffer::VulkanCommandBuffer(VulkanDevice& device, Severity severity
     allocateInfo.level              = level;
     allocateInfo.commandBufferCount = 1;
 
-    log::expect(
+    log::vkExpect(
       vkAllocateCommandBuffers(m_device.logical.handle, &allocateInfo, &m_handle)
     );
     log::trace("vkAllocateCommandBuffers: {}", static_cast<void*>(m_handle));
@@ -42,13 +42,13 @@ static VkCommandBufferBeginInfo createCommandBufferBeginInfo(
     clearMemory(&beginInfo);
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-    if (isFlagEnabled(flags, CommandBuffer::BeginFlags::singleUse))
+    if (static_cast<bool>(flags & CommandBuffer::BeginFlags::singleUse))
         beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-    if (isFlagEnabled(flags, CommandBuffer::BeginFlags::isRenderpassContinue))
+    if (static_cast<bool>(flags & CommandBuffer::BeginFlags::isRenderpassContinue))
         beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT;
 
-    if (isFlagEnabled(flags, CommandBuffer::BeginFlags::simultaneousUse))
+    if (static_cast<bool>(flags & CommandBuffer::BeginFlags::simultaneousUse))
         beginInfo.flags |= VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
 
     return beginInfo;
@@ -56,10 +56,10 @@ static VkCommandBufferBeginInfo createCommandBufferBeginInfo(
 
 void VulkanCommandBuffer::begin(BeginFlags flags) {
     auto beginInfo = createCommandBufferBeginInfo(flags);
-    log::expect(vkBeginCommandBuffer(m_handle, &beginInfo));
+    log::vkExpect(vkBeginCommandBuffer(m_handle, &beginInfo));
 }
 
-void VulkanCommandBuffer::end() { log::expect(vkEndCommandBuffer(m_handle)); }
+void VulkanCommandBuffer::end() { log::vkExpect(vkEndCommandBuffer(m_handle)); }
 
 VkCommandBuffer* VulkanCommandBuffer::getHandlePtr() { return &m_handle; }
 

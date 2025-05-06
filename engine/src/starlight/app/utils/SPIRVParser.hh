@@ -5,7 +5,7 @@
 #include <spirv_cross/spirv_cross.hpp>
 #include <spirv_cross/spirv_glsl.hpp>
 
-#include "starlight/core/FileSystem.hh"
+#include "kstd/FileSystem.hh"
 #include "starlight/renderer/gpu/Shader.hh"
 
 namespace sl {
@@ -33,7 +33,7 @@ private:
 };
 
 std::optional<Shader::Properties> parseShader(
-  const std::string& basePath, const FileSystem& fs
+  const std::string& basePath, const kstd::FileSystem& fs
 );
 
 }  // namespace sl

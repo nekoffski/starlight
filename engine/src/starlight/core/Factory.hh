@@ -2,15 +2,18 @@
 
 #include <unordered_map>
 
-#include "Singleton.hh"
-#include "Id.hh"
+#include <kstd/Singleton.hh>
+#include <kstd/Id.hh>
+
 #include "Concepts.hh"
+#include "Core.hh"
+#include "Log.hh"
 
 namespace sl {
 
 template <typename CFactory, typename T, typename Tag = u64>
 requires HasName<T>
-class Factory : public Singleton<CFactory> {
+class Factory : public kstd::Singleton<CFactory> {
 public:
     using Keys       = std::vector<std::string_view>;
     using Values     = std::vector<kstd::SharedPtr<T>>;

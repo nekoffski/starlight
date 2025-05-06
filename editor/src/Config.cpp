@@ -14,14 +14,14 @@ void from_json(const nlohmann::json& j, Config& out) {
     layout.at("width").get_to(out.layoutSizeRatio.x);
     layout.at("height").get_to(out.layoutSizeRatio.y);
 
-    j.at("project-root").get_to(out.projectRoot);
+    j.at("assets-root").get_to(out.assetsRoot);
 
     if (j.contains("initial-scene"))
         out.initialScene = j.at("initial-scene").get<std::string>();
 }
 
 std::optional<Config> Config::fromJson(
-  const std::string& path, const sl::FileSystem& fs
+  const std::string& path, const kstd::FileSystem& fs
 ) {
     if (not fs.isFile(path)) {
         sl::log::error("Config file '{}' does not exist", path);
@@ -40,10 +40,10 @@ sl::Config Config::toEngineConfig() const {
         .window  = { windowSize.w, windowSize.h, "Starligt Editor" },
         .version = { 1,            0,            0                 },
         .paths  = {
-            .textures = fmt::format("{}/textures", projectRoot),
-            .shaders = fmt::format("{}/shaders", projectRoot),
-            .materials = fmt::format("{}/materials", projectRoot),
-            .fonts = fmt::format("{}/fonts", projectRoot),
+            .textures = fmt::format("{}/textures", assetsRoot),
+            .shaders = fmt::format("{}/shaders", assetsRoot),
+            .materials = fmt::format("{}/materials", assetsRoot),
+            .fonts = fmt::format("{}/fonts", assetsRoot),
         }
     };
 }

@@ -8,14 +8,16 @@ def create_new_project(path: Path, name: str, engine_path: str):
     project_dir = path / name
     project_dir.mkdir()
 
+    assets_dir = f'{project_dir}/assets'
+    os.mkdir(assets_dir)
+    os.mkdir(f"{assets_dir}/scenes")
+
     subs = ['materials', 'models', 'textures', 'shaders', 'fonts']
-
     for sub in subs:
-        shutil.copytree(f'{engine_path}/assets/{sub}', f'{project_dir}/{sub}')
+        shutil.copytree(f'{engine_path}/assets/{sub}', f'{assets_dir}/{sub}')
 
-    os.mkdir(f"{project_dir}/scenes")
     shutil.copy(
-        f'{engine_path}/assets/scenes/test.starscene.json', f'{project_dir}/scenes/test.starscene.json')
+        f'{engine_path}/assets/scenes/test.starscene.json', f'{assets_dir}/scenes/test.starscene.json')
 
     config = {
         "window": {
@@ -24,9 +26,9 @@ def create_new_project(path: Path, name: str, engine_path: str):
         },
         "layout": {
             "width": 0.20,
-            "height": 0.25,
+            "height": 0.3,
         },
-        "project-root": str(project_dir),
+        "assets-root": f'{project_dir}/assets',
         "initial-scene": "test.starscene.json"
     }
 

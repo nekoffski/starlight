@@ -14,9 +14,8 @@
 
 class Sandbox : public sl::Engine {
 public:
-    explicit Sandbox(
-      const sl::Config& config, std::optional<std::string> scenePath
-    ) : Engine(config) {
+    explicit Sandbox(const sl::Config& config, std::optional<std::string> scenePath)
+        : Engine(config) {
         if (scenePath) setScene(sl::SceneParser{}.deserialize(*scenePath));
 
         getRenderGraph().addPass<sl::SkyboxRenderPass>();
@@ -46,6 +45,8 @@ private:
 int main(int argc, char** argv) {
     sl::log::init("sl-sandbox");
     sl::log::expect(argc >= 2, "Config path required");
+
+    kstd::GlobalFileSystem fs;
 
     std::optional<std::string> scenePath;
     if (argc >= 3) scenePath = std::string{ argv[2] };

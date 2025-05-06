@@ -5,7 +5,7 @@
 #include <unordered_map>
 
 #include "starlight/core/math/Core.hh"
-#include "starlight/core/Id.hh"
+#include <kstd/Id.hh>
 
 #include "fwd.hh"
 #include "starlight/renderer/gpu/Shader.hh"
@@ -18,7 +18,7 @@ using namespace std::string_literals;
 
 class Material
     : public kstd::NonMovable,
-      public NamedResource<Material, "Material", false> {
+      public kstd::NamedResource<Material, "Material", false> {
 public:
     struct Properties {
         kstd::SharedPtr<Texture> diffuseMap;

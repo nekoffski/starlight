@@ -1,7 +1,8 @@
 #pragma once
 
-#include "starlight/core/Id.hh"
+#include <kstd/Id.hh>
 
+#include "starlight/core/Core.hh"
 #include "fwd.hh"
 
 namespace sl {
@@ -26,7 +27,9 @@ private:
 namespace details {
 
 template <typename T>
-class ComponentImpl : public Identificable<ComponentImpl<T>>, public Component {
+class ComponentImpl
+    : public kstd::Identificable<ComponentImpl<T>>,
+      public Component {
 public:
     template <typename... Args>
     explicit ComponentImpl(Entity& entity, Args&&... args)

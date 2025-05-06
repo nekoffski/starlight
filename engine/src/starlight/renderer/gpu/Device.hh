@@ -1,14 +1,14 @@
 #pragma once
 
 #include "starlight/core/Core.hh"
-#include "starlight/core/Singleton.hh"
+#include "kstd/Singleton.hh"
 
 #include "fwd.hh"
 #include "Queue.hh"
 
 namespace sl {
 
-class Device : public Singleton<Device> {
+class Device : public kstd::Singleton<Device> {
 public:
     struct Impl : kstd::NonCopyable, kstd::NonMovable {
         virtual ~Impl() = default;

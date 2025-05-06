@@ -2,7 +2,7 @@
 
 #include <unordered_map>
 
-#include "starlight/core/FileSystem.hh"
+#include "kstd/FileSystem.hh"
 #include "starlight/core/Log.hh"
 #include "starlight/core/Json.hh"
 #include "starlight/app/scene/Scene.hh"
@@ -32,7 +32,9 @@ public:
         return *this;
     }
 
-    explicit SceneParser(const FileSystem* fs = FileSystem::getDefaultPtr());
+    explicit SceneParser(
+      const kstd::FileSystem* fs = kstd::GlobalFileSystem::getPtr()
+    );
 
     void serialize(Scene& scene, const std::string& path);
     kstd::SharedPtr<Scene> deserialize(const std::string& path);
@@ -45,7 +47,7 @@ private:
       const std::string& name, Entity& entity, const nlohmann::json& node
     );
 
-    const FileSystem* m_fs;
+    const kstd::FileSystem* m_fs;
 
     std::unordered_map<std::type_index, std::string> m_componentToName;
     std::unordered_map<std::string, std::unique_ptr<ComponentParser>>

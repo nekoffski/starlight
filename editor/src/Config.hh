@@ -10,11 +10,11 @@ namespace sle {
 struct Config {
     static std::optional<Config> fromJson(
       const std::string& path,
-      const sl::FileSystem& fs = sl::FileSystem::getDefault()
+      const kstd::FileSystem& fs = kstd::GlobalFileSystem::get()
     );
     sl::Config toEngineConfig() const;
 
-    std::string projectRoot;
+    std::string assetsRoot;
 
     sl::Vec2<sl::u32> windowSize;
     sl::Vec2<sl::f32> layoutSizeRatio;

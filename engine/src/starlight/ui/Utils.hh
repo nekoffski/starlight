@@ -10,6 +10,16 @@ namespace sl {
 
 bool checkbox(const std::string& label, bool& value);
 
+void padding(const Vec2<f32>& padding);
+
+template <typename C>
+requires Callable<C>
+void conditionallyDisabled(C&& callback, bool disabled) {
+    if (disabled) ImGui::BeginDisabled();
+    callback();
+    if (disabled) ImGui::EndDisabled();
+}
+
 template <typename C>
 requires Callable<C>
 void indent(C&& callback) {

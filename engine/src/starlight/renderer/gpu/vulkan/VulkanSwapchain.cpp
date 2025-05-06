@@ -6,8 +6,10 @@
 
 namespace sl::vk {
 
-VulkanSwapchain::VulkanSwapchain(VulkanDevice& device, const Vec2<u32>& size) :
-    m_handle(VK_NULL_HANDLE), m_device(device), m_size(size) {
+VulkanSwapchain::VulkanSwapchain(VulkanDevice& device, const Vec2<u32>& size)
+    : m_handle(VK_NULL_HANDLE)
+    , m_device(device)
+    , m_size(size) {
     create();
 }
 
@@ -129,7 +131,7 @@ void VulkanSwapchain::createSwapchain() {
       m_device.physical.info.presentMode, m_device.physical.info
     );
 
-    log::expect(vkCreateSwapchainKHR(
+    log::vkExpect(vkCreateSwapchainKHR(
       m_device.logical.handle, &swapchainCreateInfo.handle, m_device.allocator,
       &m_handle
     ));
@@ -137,13 +139,13 @@ void VulkanSwapchain::createSwapchain() {
 }
 
 void VulkanSwapchain::createImages() {
-    log::expect(
+    log::vkExpect(
       vkGetSwapchainImagesKHR(m_device.logical.handle, m_handle, &m_imageCount, 0)
     );
     log::expect(m_imageCount > 0, "swapchainImageCount==0 for vulkan swapchain");
 
     std::vector<VkImage> swapchainImages(m_imageCount, 0);
-    log::expect(vkGetSwapchainImagesKHR(
+    log::vkExpect(vkGetSwapchainImagesKHR(
       m_device.logical.handle, m_handle, &m_imageCount, swapchainImages.data()
     ));
 

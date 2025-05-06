@@ -1,12 +1,12 @@
 #pragma once
 
-#include "starlight/core/Singleton.hh"
+#include "kstd/Singleton.hh"
 #include "starlight/core/Log.hh"
 #include "Core.hh"
 
 namespace sl {
 
-class EventProxy : public Singleton<EventProxy> {
+class EventProxy : public kstd::Singleton<EventProxy> {
 public:
     explicit EventProxy(details::Events& events, details::EventHandlers& handlers);
 

@@ -3,14 +3,14 @@
 #include <optional>
 #include <vector>
 
-#include "starlight/core/Id.hh"
+#include <kstd/Id.hh>
 
 #include "Component.hh"
 #include "ComponentManager.hh"
 
 namespace sl {
 
-class Entity : public NamedResource<Entity, "Entity", false> {
+class Entity : public kstd::NamedResource<Entity, "Entity", false> {
 public:
     explicit Entity(
       ComponentManager& componentManager, std::optional<std::string> name

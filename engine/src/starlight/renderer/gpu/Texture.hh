@@ -2,7 +2,7 @@
 
 #include <span>
 
-#include "starlight/core/Id.hh"
+#include <kstd/Id.hh>
 #include "starlight/core/Core.hh"
 
 #include "starlight/renderer/Core.hh"
@@ -10,7 +10,9 @@
 
 namespace sl {
 
-class Texture : public kstd::NonMovable, public NamedResource<Texture, "Texture"> {
+class Texture
+    : public kstd::NonMovable,
+      public kstd::NamedResource<Texture, "Texture"> {
 public:
     using PixelWidth = u8;
     using Pixels     = std::vector<PixelWidth>;
@@ -23,7 +25,7 @@ public:
     enum class Type : u8 { flat, cubemap };
     enum class Filter : u8 { nearest, linear };
     enum class Repeat : u8 { repeat, mirroredRepeat, clampToEdge, clampToBorder };
-    enum class Orientation : u8 { vertical, horizontal };
+    enum class Orientation : u8 { normal, flipped };
     enum class Flags : u8 { none = 0x0, writable = 0x1, transparent = 0x2 };
     enum class Tiling : u8 { optimal = 0x0, linear = 0x1 };
     enum class Usage : u32 {

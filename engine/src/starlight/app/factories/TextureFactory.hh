@@ -10,17 +10,29 @@ class TextureFactory : public Factory<TextureFactory, Texture, Texture::Type> {
 public:
     explicit TextureFactory();
 
-    kstd::SharedPtr<Texture> load(
-      const std::string& name, Texture::Type textureType,
-      const Texture::SamplerProperties& sampler =
-        Texture::SamplerProperties::createDefault()
-    );
-
     kstd::SharedPtr<Texture> getDefaultDiffuseMap();
     kstd::SharedPtr<Texture> getDefaultNormalMap();
     kstd::SharedPtr<Texture> getDefaultSpecularMap();
 
+    kstd::SharedPtr<Texture> loadFlat(
+      const std::string& name,
+      Texture::Orientation orientation = Texture::Orientation::normal,
+      const Texture::SamplerProperties& sampler =
+        Texture::SamplerProperties::createDefault()
+    );
+
+    kstd::SharedPtr<Texture> loadCubemap(
+      const std::string& name,
+      const Texture::SamplerProperties& sampler =
+        Texture::SamplerProperties::createDefault()
+    );
+
 private:
+    kstd::SharedPtr<Texture> load(
+      const std::string& name, Texture::Type textureType,
+      Texture::Orientation orientation, const Texture::SamplerProperties& sampler
+    );
+
     void createDefaults();
 
     kstd::SharedPtr<Texture> m_defaultDiffuseMap;

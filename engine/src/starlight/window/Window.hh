@@ -2,7 +2,7 @@
 
 #include <kstd/memory/UniquePtr.hh>
 
-#include "starlight/core/Singleton.hh"
+#include "kstd/Singleton.hh"
 #include "starlight/core/Config.hh"
 #include "starlight/core/math/Core.hh"
 #include "starlight/event/EventProxy.hh"
@@ -12,7 +12,7 @@
 
 namespace sl {
 
-class Window : public Singleton<Window> {
+class Window : public kstd::Singleton<Window> {
 public:
     using Key    = int;
     using Button = int;
@@ -73,7 +73,7 @@ public:
 private:
     void setCallbacks();
 
-    SingletonGuard<Globals, EventProxy> m_guard;
+    kstd::SingletonGuard<Globals, EventProxy> m_guard;
     kstd::UniquePtr<Impl> m_impl;
     Vec4<f32> m_userInterfaceLayoutScale;
 };

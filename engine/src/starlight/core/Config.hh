@@ -3,14 +3,16 @@
 #include <optional>
 #include <string>
 
+#include <kstd/FileSystem.hh>
+
 #include "Core.hh"
-#include "FileSystem.hh"
 
 namespace sl {
 
 struct Config {
     static std::optional<Config> fromJson(
-      const std::string& path, const FileSystem& fs = FileSystem::getDefault()
+      const std::string& path,
+      const kstd::FileSystem& fs = kstd::GlobalFileSystem::get()
     );
 
     struct Window {

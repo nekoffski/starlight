@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 
-#include "Singleton.hh"
+#include <kstd/Singleton.hh>
 
 using namespace std::literals::chrono_literals;
 
@@ -25,7 +25,7 @@ float toSeconds(const TimePoint& timePoint);
 
 std::string getTimeString(const std::string& format);
 
-class Clock : public Singleton<Clock> {
+class Clock : public kstd::Singleton<Clock> {
 public:
     explicit Clock();
 

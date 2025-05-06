@@ -25,11 +25,13 @@ static VkMemoryAllocateInfo createMemoryAllocateInfo(
     return allocateInfo;
 }
 
-VulkanBuffer::VulkanBuffer(VulkanDevice& device, const Properties& props) :
-    m_device(device), m_props(props), m_freeList(props.size) {
+VulkanBuffer::VulkanBuffer(VulkanDevice& device, const Properties& props)
+    : m_device(device)
+    , m_props(props)
+    , m_freeList(props.size) {
     auto bufferCreateInfo = createBufferCreateInfo();
 
-    log::expect(vkCreateBuffer(
+    log::vkExpect(vkCreateBuffer(
       m_device.logical.handle, &bufferCreateInfo, m_device.allocator, &m_handle
     ));
     log::trace("vkCreateBuffer: {}", static_cast<void*>(m_handle));
@@ -47,7 +49,7 @@ VulkanBuffer::VulkanBuffer(VulkanDevice& device, const Properties& props) :
     const auto allocateInfo =
       createMemoryAllocateInfo(memoryRequirements, *memoryIndex);
 
-    log::expect(vkAllocateMemory(
+    log::vkExpect(vkAllocateMemory(
       m_device.logical.handle, &allocateInfo, m_device.allocator, &m_memory
     ));
     log::trace("vkAllocateMemory: {}", static_cast<void*>(m_memory));
@@ -92,14 +94,14 @@ VkBufferCreateInfo VulkanBuffer::createBufferCreateInfo() const {
 }
 
 void VulkanBuffer::bind(u64 offset) {
-    log::expect(
+    log::vkExpect(
       vkBindBufferMemory(m_device.logical.handle, m_handle, m_memory, offset)
     );
 }
 
 void* VulkanBuffer::lockMemory(const Range& range) {
     void* data;
-    log::expect(vkMapMemory(
+    log::vkExpect(vkMapMemory(
       m_device.logical.handle, m_memory, range.offset,
       range.size == max<u64>() ? VK_WHOLE_SIZE : range.size, 0, &data
     ));
@@ -120,8 +122,8 @@ std::optional<Range> VulkanBuffer::allocate(u64 size, const void* data) {
     Range range{ .offset = *offset, .size = size };
 
     if (data != nullptr) {
-        const auto isDeviceLocal = isFlagEnabled(
-          m_props.memoryProperty, MemoryProperty::MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+        const auto isDeviceLocal = static_cast<bool>(
+          m_props.memoryProperty & MemoryProperty::MEMORY_PROPERTY_DEVICE_LOCAL_BIT
         );
 
         if (isDeviceLocal) {

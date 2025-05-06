@@ -2,7 +2,7 @@
 
 #include "starlight/core/Core.hh"
 #include "starlight/window/Window.hh"
-#include "starlight/core/Enum.hh"
+#include "kstd/Enum.hh"
 #include "starlight/event/EventHandlerSentinel.hh"
 
 #include "starlight/renderer/gpu/Device.hh"

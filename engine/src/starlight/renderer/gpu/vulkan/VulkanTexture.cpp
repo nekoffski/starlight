@@ -92,7 +92,7 @@ static VkFormat toVk(Format format, u8 channels) {
 
 void VulkanTextureBase::createSampler() {
     const auto samplerInfo = createSamplerCreateInfo(m_samplerProperties);
-    log::expect(vkCreateSampler(
+    log::vkExpect(vkCreateSampler(
       m_device.logical.handle, &samplerInfo, m_device.allocator, &m_sampler
     ));
     log::trace("vkCreateSampler: {}", static_cast<void*>(m_sampler));
@@ -122,7 +122,7 @@ static VkImageViewCreateInfo createViewCreateInfo(
 
 void VulkanTextureBase::createView() {
     auto viewCreateInfo = createViewCreateInfo(m_imageData, m_image);
-    log::expect(vkCreateImageView(
+    log::vkExpect(vkCreateImageView(
       m_device.logical.handle, &viewCreateInfo, m_device.allocator, &m_view
     ));
     log::trace("vkCreateImageView: {}", static_cast<void*>(m_view));
@@ -338,11 +338,11 @@ void VulkanTexture::allocateAndBindMemory() {
     memoryAllocateInfo.allocationSize  = memoryRequirements.size;
     memoryAllocateInfo.memoryTypeIndex = memoryType.value_or(-1);
 
-    log::expect(vkAllocateMemory(
+    log::vkExpect(vkAllocateMemory(
       m_device.logical.handle, &memoryAllocateInfo, m_device.allocator, &m_memory
     ));
     log::trace("vkAllocateMemory: {}", static_cast<void*>(m_memory));
-    log::expect(vkBindImageMemory(m_device.logical.handle, m_image, m_memory, 0));
+    log::vkExpect(vkBindImageMemory(m_device.logical.handle, m_image, m_memory, 0));
 }
 
 void VulkanTexture::recreate(const Texture::ImageData& imageData) {
@@ -371,7 +371,7 @@ void VulkanTexture::createImage() {
     imageCreateInfo.sharingMode   = VK_SHARING_MODE_EXCLUSIVE;
     if (isCubemap) imageCreateInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
 
-    log::expect(vkCreateImage(
+    log::vkExpect(vkCreateImage(
       m_device.logical.handle, &imageCreateInfo, m_device.allocator, &m_image
     ));
     log::trace("vkCreateImage: {}", static_cast<void*>(m_image));

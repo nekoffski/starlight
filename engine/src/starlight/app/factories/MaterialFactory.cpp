@@ -19,7 +19,7 @@ static Material::Properties getDefaultProperties() {
 }
 
 static std::optional<Material::Properties> loadProperties(
-  const std::string& path, const FileSystem& fs
+  const std::string& path, const kstd::FileSystem& fs
 ) {
     log::trace("Loading material properties file: {}", path);
 
@@ -48,7 +48,7 @@ static std::optional<Material::Properties> loadProperties(
 MaterialFactory::MaterialFactory() { createDefault(); }
 
 kstd::SharedPtr<Material> MaterialFactory::load(
-  const std::string& name, const FileSystem& fs
+  const std::string& name, const kstd::FileSystem& fs
 ) {
     if (auto resource = find(name); resource) return resource;
 

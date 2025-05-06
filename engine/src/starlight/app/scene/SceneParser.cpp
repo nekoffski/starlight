@@ -7,7 +7,7 @@
 
 namespace sl {
 
-SceneParser::SceneParser(const FileSystem* fs)
+SceneParser::SceneParser(const kstd::FileSystem* fs)
     : m_fs(fs) {
     registerParser<DirectionalLightComponent, DirectionalLightComponent::Parser>();
     registerParser<PointLightComponent, PointLightComponent::Parser>();
@@ -34,7 +34,7 @@ void SceneParser::serialize(Scene& scene, const std::string& path) {
     const auto buffer = root.dump();
     log::debug("Parsed scene: {}", buffer);
 
-    m_fs->writeFile(path, buffer, FileSystem::WritePolicy::override);
+    m_fs->writeFile(path, buffer, kstd::FileSystem::WritePolicy::override);
     log::info("Scene successfully saved to: {}", path);
 }
 

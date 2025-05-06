@@ -4,12 +4,13 @@
 
 namespace sl::vk {
 
-VulkanSemaphore::VulkanSemaphore(VulkanDevice& device
-) : m_handle(VK_NULL_HANDLE), m_device(device) {
+VulkanSemaphore::VulkanSemaphore(VulkanDevice& device)
+    : m_handle(VK_NULL_HANDLE)
+    , m_device(device) {
     VkSemaphoreCreateInfo semaphoreCreateInfo;
     clearMemory(&semaphoreCreateInfo);
     semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-    log::expect(vkCreateSemaphore(
+    log::vkExpect(vkCreateSemaphore(
       m_device.logical.handle, &semaphoreCreateInfo, m_device.allocator, &m_handle
     ));
     log::trace("vkCreateSemaphore: {}", static_cast<void*>(m_handle));

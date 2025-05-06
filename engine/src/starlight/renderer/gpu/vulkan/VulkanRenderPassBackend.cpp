@@ -33,7 +33,7 @@ VulkanRenderPassBackend::Framebuffer::Framebuffer(
     createInfo.height          = size.h;
     createInfo.layers          = 1;
 
-    log::expect(vkCreateFramebuffer(
+    log::vkExpect(vkCreateFramebuffer(
       m_device.logical.handle, &createInfo, m_device.allocator, &handle
     ));
     log::trace("vkCreateFramebuffer: {}", static_cast<void*>(handle));
@@ -107,7 +107,7 @@ VulkanRenderPassBackend::VulkanRenderPassBackend(
       m_hasDepthAttachment
     );
 
-    log::expect(vkCreateRenderPass(
+    log::vkExpect(vkCreateRenderPass(
       m_device.logical.handle, &createInfo.handle, m_device.allocator, &m_handle
     ));
     log::trace("vkCreateRenderPass: {}", static_cast<void*>(m_handle));
@@ -145,11 +145,11 @@ std::vector<VkClearValue> VulkanRenderPassBackend::createClearValues(ClearFlags 
         clearValues.push_back(clearValue);
     }
 
-    if (m_hasDepthAttachment && isFlagEnabled(flags, ClearFlags::depth)) {
+    if (m_hasDepthAttachment && static_cast<bool>(flags & ClearFlags::depth)) {
         VkClearValue clearValue;
         clearValue.depthStencil.depth = m_props.depth;
 
-        if (isFlagEnabled(flags, ClearFlags::stencil))
+        if (static_cast<bool>(flags & ClearFlags::stencil))
             clearValue.depthStencil.stencil = m_props.stencil;
 
         clearValues.push_back(clearValue);
@@ -256,7 +256,7 @@ void VulkanRenderPassBackendCreateInfo::createColorAttachment(
     m_colorAttachment.format  = surfaceFormat.format;  // TODO: configurable
     m_colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
     m_colorAttachment.loadOp =
-      isFlagEnabled(props.clearFlags, ClearFlags::color)
+      static_cast<bool>(props.clearFlags & ClearFlags::color)
         ? VK_ATTACHMENT_LOAD_OP_CLEAR
         : VK_ATTACHMENT_LOAD_OP_LOAD;
     m_colorAttachment.storeOp        = VK_ATTACHMENT_STORE_OP_STORE;
@@ -279,7 +279,7 @@ void VulkanRenderPassBackendCreateInfo::createColorAttachment(
 void VulkanRenderPassBackendCreateInfo::createDepthAttachment(
   VkFormat depthFormat, RenderPassBackend::Properties props
 ) {
-    bool clearDepth = isFlagEnabled(props.clearFlags, ClearFlags::depth);
+    bool clearDepth = static_cast<bool>(props.clearFlags & ClearFlags::depth);
 
     m_depthAttachment.format  = depthFormat;
     m_depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;

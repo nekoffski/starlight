@@ -6,7 +6,9 @@
 
 namespace sl {
 
-class Skybox : public kstd::NonMovable, public NamedResource<Skybox, "Skybox"> {
+class Skybox
+    : public kstd::NonMovable,
+      public kstd::NamedResource<Skybox, "Skybox"> {
 public:
     explicit Skybox(kstd::SharedPtr<Texture> cubeMap, OptStr name = {});
 

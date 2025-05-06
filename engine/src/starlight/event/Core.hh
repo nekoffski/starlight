@@ -4,9 +4,10 @@
 #include <functional>
 #include <vector>
 
-#include <kstd/memory/UniquePtr.hh>
+#include "starlight/core/Core.hh"
 
-#include "starlight/core/Id.hh"
+#include <kstd/memory/UniquePtr.hh>
+#include <kstd/Id.hh>
 
 namespace sl {
 
@@ -38,7 +39,7 @@ using HandledCallback = std::function<void()>;
 using EventCallback   = std::function<void(EventStorageBase&, HandledCallback&&)>;
 using Events          = std::vector<kstd::UniquePtr<EventStorageBase>>;
 
-struct EventHandlerRecord : Identificable<EventHandlerRecord, EventHandlerId> {
+struct EventHandlerRecord : kstd::Identificable<EventHandlerRecord, EventHandlerId> {
     explicit EventHandlerRecord(EventCallback&& callback);
 
     EventCallback callback;

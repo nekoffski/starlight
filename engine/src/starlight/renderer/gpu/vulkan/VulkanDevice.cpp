@@ -22,13 +22,18 @@
 
 namespace sl::vk {
 
-VulkanDevice::VulkanDevice() :
-    m_eventSentinel(EventProxy::get()), allocator(nullptr), instance(allocator),
+VulkanDevice::VulkanDevice()
+    : m_eventSentinel(EventProxy::get())
+    , allocator(nullptr)
+    , instance(allocator)
+    ,
 #ifdef SL_VK_DEBUG
-    m_debugMessenger(instance.handle, allocator),
+    m_debugMessenger(instance.handle, allocator)
+    ,
 #endif
-    surface(instance.handle, allocator), physical(instance.handle, surface.handle),
-    logical(physical.handle, allocator, physical.info.queueIndices) {
+    surface(instance.handle, allocator)
+    , physical(instance.handle, surface.handle)
+    , logical(physical.handle, allocator, physical.info.queueIndices) {
 
     createUiResources();
 
@@ -150,8 +155,9 @@ static VkInstanceCreateInfo createInstanceCreateInfo(
     return instanceCreateInfo;
 }
 
-VulkanDevice::Instance::Instance(Allocator* allocator
-) : handle(VK_NULL_HANDLE), m_allocator(allocator) {
+VulkanDevice::Instance::Instance(Allocator* allocator)
+    : handle(VK_NULL_HANDLE)
+    , m_allocator(allocator) {
     auto applicationInfo = createApplicationInfo();
     auto layers          = getLayers();
     auto extensions      = getExtensions();
@@ -163,7 +169,7 @@ VulkanDevice::Instance::Instance(Allocator* allocator
     auto instanceCreateInfo =
       createInstanceCreateInfo(applicationInfo, extensions, layers);
 
-    log::expect(vkCreateInstance(&instanceCreateInfo, m_allocator, &handle));
+    log::vkExpect(vkCreateInstance(&instanceCreateInfo, m_allocator, &handle));
     log::trace("Vulkan Instance initialized");
 }
 
@@ -222,7 +228,9 @@ static VkDebugUtilsMessengerCreateInfoEXT createDebugMessengerCreateInfo() {
 
 VulkanDevice::DebugMessenger::DebugMessenger(
   VkInstance instance, Allocator* allocator
-) : m_instance(instance), m_allocator(allocator) {
+)
+    : m_instance(instance)
+    , m_allocator(allocator) {
     static const auto debugFactoryFunctionName = "vkCreateDebugUtilsMessengerEXT";
 
     auto debugCreateInfo      = createDebugMessengerCreateInfo();
@@ -230,7 +238,7 @@ VulkanDevice::DebugMessenger::DebugMessenger(
       vkGetInstanceProcAddr(m_instance, debugFactoryFunctionName)
     );
     log::expect(createDebugMessenger, "Failed to create debug messenger factory");
-    log::expect(
+    log::vkExpect(
       createDebugMessenger(m_instance, &debugCreateInfo, m_allocator, &m_handle)
     );
     log::trace("Created Vulkan Debug Messenger");
@@ -253,10 +261,12 @@ VulkanDevice::DebugMessenger::~DebugMessenger() {
     Surface
 */
 
-VulkanDevice::Surface::Surface(VkInstance instance, Allocator* allocator) :
-    handle(glfw::createVulkanSurface(instance, Window::get().getHandle(), allocator)
-    ),
-    m_instance(instance), m_allocator(allocator) {
+VulkanDevice::Surface::Surface(VkInstance instance, Allocator* allocator)
+    : handle(
+        glfw::createVulkanSurface(instance, Window::get().getHandle(), allocator)
+      )
+    , m_instance(instance)
+    , m_allocator(allocator) {
     log::trace("Vulkan surface created");
 }
 
@@ -273,11 +283,11 @@ VulkanDevice::Surface::~Surface() {
 
 static std::vector<VkPhysicalDevice> getPhysicalDevices(VkInstance instance) {
     u32 deviceCount = 0;
-    log::expect(vkEnumeratePhysicalDevices(instance, &deviceCount, 0));
+    log::vkExpect(vkEnumeratePhysicalDevices(instance, &deviceCount, 0));
     log::expect(deviceCount > 0, "Could not find any physical device");
 
     std::vector<VkPhysicalDevice> physicalDevices(deviceCount);
-    log::expect(
+    log::vkExpect(
       vkEnumeratePhysicalDevices(instance, &deviceCount, physicalDevices.data())
     );
 
@@ -310,7 +320,7 @@ static bool assignQueues(
         if (queueFlags & VK_QUEUE_TRANSFER_BIT) markIndex(Queue::Type::transfer, i);
 
         VkBool32 supportsPresent = false;
-        log::expect(
+        log::vkExpect(
           vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &supportsPresent)
         );
 
@@ -322,12 +332,12 @@ static bool assignQueues(
 static bool queryDeviceSwapchainSupport(
   VkPhysicalDevice device, VkSurfaceKHR surface, VulkanDevice::Physical::Info& info
 ) {
-    log::expect(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
+    log::vkExpect(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
       device, surface, &info.surfaceCapabilities
     ));
 
     u32 count = 0;
-    log::expect(vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &count, 0));
+    log::vkExpect(vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &count, 0));
 
     if (count == 0) {
         log::info("No surface formats supported, skipping");
@@ -335,12 +345,13 @@ static bool queryDeviceSwapchainSupport(
     }
 
     info.surfaceFormats.resize(count);
-    log::expect(vkGetPhysicalDeviceSurfaceFormatsKHR(
+    log::vkExpect(vkGetPhysicalDeviceSurfaceFormatsKHR(
       device, surface, &count, info.surfaceFormats.data()
     ));
 
     count = 0;
-    log::expect(vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &count, 0)
+    log::vkExpect(
+      vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &count, 0)
     );
 
     if (count == 0) {
@@ -349,7 +360,7 @@ static bool queryDeviceSwapchainSupport(
     }
 
     info.presentModes.resize(count);
-    log::expect(vkGetPhysicalDeviceSurfacePresentModesKHR(
+    log::vkExpect(vkGetPhysicalDeviceSurfacePresentModesKHR(
       device, surface, &count, info.presentModes.data()
     ));
 
@@ -382,7 +393,7 @@ void VulkanDevice::createUiResources() {
     poolInfo.poolSizeCount = std::size(poolSizes);
     poolInfo.pPoolSizes    = poolSizes;
 
-    log::expect(
+    log::vkExpect(
       vkCreateDescriptorPool(logical.handle, &poolInfo, allocator, &uiDescriptorPool)
     );
 }
@@ -395,12 +406,12 @@ static bool validateExtensions(
     u32 availableExtensionCount = 0;
     std::vector<VkExtensionProperties> availableExtenions;
 
-    log::expect(
+    log::vkExpect(
       vkEnumerateDeviceExtensionProperties(device, 0, &availableExtensionCount, 0)
     );
     availableExtenions.resize(availableExtensionCount);
 
-    log::expect(vkEnumerateDeviceExtensionProperties(
+    log::vkExpect(vkEnumerateDeviceExtensionProperties(
       device, 0, &availableExtensionCount, availableExtenions.data()
     ));
 
@@ -581,8 +592,8 @@ static void showDeviceInfo(const VulkanDevice::Physical::Info& info) {
     }
 }
 
-VulkanDevice::Physical::Physical(VkInstance instance, VkSurfaceKHR surface) :
-    handle(VK_NULL_HANDLE) {
+VulkanDevice::Physical::Physical(VkInstance instance, VkSurfaceKHR surface)
+    : handle(VK_NULL_HANDLE) {
     Requirements requirements{
         .supportedQueues =
           Queue::Type::graphics | Queue::Type::present | Queue::Type::transfer,
@@ -613,9 +624,11 @@ VulkanDevice::Physical::Physical(VkInstance instance, VkSurfaceKHR surface) :
 VulkanDevice::Logical::Logical(
   VkPhysicalDevice device, Allocator* allocator,
   const Physical::QueueIndices& queueIndices
-) :
-    handle(VK_NULL_HANDLE), graphicsCommandPool(VK_NULL_HANDLE),
-    m_physicalDevice(device), m_allocator(allocator) {
+)
+    : handle(VK_NULL_HANDLE)
+    , graphicsCommandPool(VK_NULL_HANDLE)
+    , m_physicalDevice(device)
+    , m_allocator(allocator) {
     createDevice(queueIndices);
     assignQueues(queueIndices);
     createCommandPool(queueIndices);
@@ -690,7 +703,7 @@ void VulkanDevice::Logical::createDevice(const Physical::QueueIndices& queueIndi
     deviceCreateInfo.enabledExtensionCount   = extensionNames.size();
     deviceCreateInfo.ppEnabledExtensionNames = extensionNames.data();
 
-    log::expect(
+    log::vkExpect(
       vkCreateDevice(m_physicalDevice, &deviceCreateInfo, m_allocator, &handle)
     );
     log::trace("vkCreateDevice: {}", static_cast<void*>(handle));
@@ -706,7 +719,7 @@ void VulkanDevice::Logical::createCommandPool(
     poolCreateInfo.queueFamilyIndex = queueIndices.at(Queue::Type::graphics);
     poolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-    log::expect(
+    log::vkExpect(
       vkCreateCommandPool(handle, &poolCreateInfo, m_allocator, &graphicsCommandPool)
     );
     log::trace("vkCreateCommandPool: {}", static_cast<void*>(graphicsCommandPool));

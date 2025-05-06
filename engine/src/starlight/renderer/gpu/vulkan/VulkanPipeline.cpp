@@ -38,7 +38,10 @@ static VkPolygonMode toVk(PolygonMode mode) {
 VulkanPipeline::VulkanPipeline(
   VulkanDevice& device, VulkanShader& shader, VulkanRenderPassBackend& renderPass,
   const Properties& props
-) : m_device(device), m_layout(VK_NULL_HANDLE), m_handle(VK_NULL_HANDLE) {
+)
+    : m_device(device)
+    , m_layout(VK_NULL_HANDLE)
+    , m_handle(VK_NULL_HANDLE) {
     // ViewportState
     VkPipelineViewportStateCreateInfo viewportState;
     clearMemory(&viewportState);
@@ -198,7 +201,7 @@ VulkanPipeline::VulkanPipeline(
     pipelineLayoutCreateInfo.pSetLayouts    = descriptorSetLayouts.data();
 
     // Create the pipeline layout.
-    log::expect(vkCreatePipelineLayout(
+    log::vkExpect(vkCreatePipelineLayout(
       m_device.logical.handle, &pipelineLayoutCreateInfo, m_device.allocator,
       &m_layout
     ));
@@ -232,7 +235,7 @@ VulkanPipeline::VulkanPipeline(
     pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
     pipelineCreateInfo.basePipelineIndex  = -1;
 
-    log::expect(vkCreateGraphicsPipelines(
+    log::vkExpect(vkCreateGraphicsPipelines(
       m_device.logical.handle, VK_NULL_HANDLE, 1, &pipelineCreateInfo,
       m_device.allocator, &m_handle
     ));

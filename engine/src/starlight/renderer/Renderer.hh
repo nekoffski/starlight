@@ -40,7 +40,7 @@ private:
 
     Fence* getImageFence(u32 imageIndex);
 
-    SingletonGuard<Globals, Window, Device, EventProxy> m_guard;
+    kstd::SingletonGuard<Globals, Window, Device, EventProxy> m_guard;
 
     std::optional<u8> beginFrame();
     void endFrame(u32 imageIndex);

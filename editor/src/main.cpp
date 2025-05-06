@@ -8,6 +8,7 @@
 
 int main(int argc, char** argv) {
     sl::log::init("starlight-editor");
+    kstd::GlobalFileSystem fs;
 
     try {
         if (auto opts = sle::ProgramOptions::parse(argc, argv); opts) {

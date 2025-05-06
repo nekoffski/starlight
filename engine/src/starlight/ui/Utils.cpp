@@ -10,6 +10,10 @@ bool checkbox(const std::string& label, bool& value) {
     return ImGui::Checkbox(label.c_str(), &value);
 }
 
+void padding(const Vec2<f32>& padding) {
+    ImGui::Dummy(ImVec2{ padding.x, padding.y });
+}
+
 bool wasItemClicked() { return ImGui::IsItemClicked(); }
 
 void closeCurrentPopup() { ImGui::CloseCurrentPopup(); }

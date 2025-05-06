@@ -10,15 +10,21 @@ namespace sl::vk {
 
 VulkanShaderDataBinder::VulkanShaderDataBinder(
   VulkanDevice& device, VulkanShader& shader
-) :
-    ShaderDataBinder(shader), m_device(device), m_shader(shader),
-    m_dataLayout(shader.properties.layout), m_descriptorPool(VK_NULL_HANDLE),
-    m_localDescriptorDirtyFrames(0u), m_globalDescriptorDirtyFrames(0u),
-    m_globalUboStride(0u), m_localUboStride(0u), m_globalUboOffset(0u),
-    m_uniformBufferView(nullptr),
-    m_globalDescriptorSets(maxFramesInFlight, VK_NULL_HANDLE),
-    m_globalTextures(m_dataLayout.globalDescriptorSet.samplers.size(), nullptr),
-    m_globalLastUpdateFrame(max<u64>()) {
+)
+    : ShaderDataBinder(shader)
+    , m_device(device)
+    , m_shader(shader)
+    , m_dataLayout(shader.properties.layout)
+    , m_descriptorPool(VK_NULL_HANDLE)
+    , m_localDescriptorDirtyFrames(0u)
+    , m_globalDescriptorDirtyFrames(0u)
+    , m_globalUboStride(0u)
+    , m_localUboStride(0u)
+    , m_globalUboOffset(0u)
+    , m_uniformBufferView(nullptr)
+    , m_globalDescriptorSets(maxFramesInFlight, VK_NULL_HANDLE)
+    , m_globalTextures(m_dataLayout.globalDescriptorSet.samplers.size(), nullptr)
+    , m_globalLastUpdateFrame(max<u64>()) {
     createDescriptorPool();
     createUniformBuffer();
 }
@@ -26,14 +32,14 @@ VulkanShaderDataBinder::VulkanShaderDataBinder(
 VulkanShaderDataBinder::~VulkanShaderDataBinder() {
     m_device.waitIdle();
 
-    log::expect(vkFreeDescriptorSets(
+    log::vkExpect(vkFreeDescriptorSets(
       m_device.logical.handle, m_descriptorPool, maxFramesInFlight,
       m_globalDescriptorSets.data()
     ));
 
     for (auto& localSet : m_localDescriptorSets) {
         if (localSet) {
-            log::expect(vkFreeDescriptorSets(
+            log::vkExpect(vkFreeDescriptorSets(
               m_device.logical.handle, m_descriptorPool, maxFramesInFlight,
               localSet->descriptorSets.data()
             ));
@@ -79,7 +85,7 @@ u32 VulkanShaderDataBinder::acquireLocalDescriptorSet() {
         allocateInfo.descriptorSetCount = maxFramesInFlight;
         allocateInfo.pSetLayouts        = localLayouts.data();
 
-        log::expect(vkAllocateDescriptorSets(
+        log::vkExpect(vkAllocateDescriptorSets(
           m_device.logical.handle, &allocateInfo, localSet->descriptorSets.data()
         ));
         log::trace("vkAllocateDescriptorSets");
@@ -101,7 +107,7 @@ void VulkanShaderDataBinder::releaseLocalDescriptorSet(u32 id) {
     for (auto& descriptorSet : localSet->descriptorSets)
         log::trace("\t {}", static_cast<void*>(descriptorSet));
 
-    log::expect(vkFreeDescriptorSets(
+    log::vkExpect(vkFreeDescriptorSets(
       m_device.logical.handle, m_descriptorPool, maxFramesInFlight,
       localSet->descriptorSets.data()
     ));
@@ -300,7 +306,7 @@ void VulkanShaderDataBinder::createDescriptorPool() {
     poolInfo.maxSets       = maxDescriptorAllocateCount;
     poolInfo.flags         = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
-    log::expect(vkCreateDescriptorPool(
+    log::vkExpect(vkCreateDescriptorPool(
       m_device.logical.handle, &poolInfo, m_device.allocator, &m_descriptorPool
     ));
     log::trace("vkCreateDescriptorPool: {}", static_cast<void*>(m_descriptorPool));
@@ -365,7 +371,7 @@ void VulkanShaderDataBinder::createUniformBuffer() {
         allocateInfo.descriptorSetCount = maxFramesInFlight;
         allocateInfo.pSetLayouts        = globalLayouts.data();
 
-        log::expect(vkAllocateDescriptorSets(
+        log::vkExpect(vkAllocateDescriptorSets(
           m_device.logical.handle, &allocateInfo, m_globalDescriptorSets.data()
         ));
         log::trace("vkAllocateDescriptorSets");
@@ -385,8 +391,11 @@ VulkanShaderDataBinder::LocalDescriptorSet*
 
 VulkanShaderDataBinder::LocalDescriptorSet::LocalDescriptorSet(
   u32 id, u32 textureCount
-) :
-    id(id), offset(0u), lastUpdateFrame(max<u64>()),
-    descriptorSets({ VK_NULL_HANDLE }), textures(textureCount, nullptr) {}
+)
+    : id(id)
+    , offset(0u)
+    , lastUpdateFrame(max<u64>())
+    , descriptorSets({ VK_NULL_HANDLE })
+    , textures(textureCount, nullptr) {}
 
 }  // namespace sl::vk

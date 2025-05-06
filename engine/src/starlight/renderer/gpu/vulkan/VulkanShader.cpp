@@ -46,7 +46,9 @@ static VkShaderStageFlagBits toVk(Shader::Stage::Type type) {
 
 VulkanShader::VulkanShader(
   VulkanDevice& device, const Shader::Properties& properties, OptStr name
-) : Shader(properties, name), m_device(device) {
+)
+    : Shader(properties, name)
+    , m_device(device) {
     const auto stagesCount = properties.stages.size();
     m_modules.reserve(stagesCount);
     m_pipelineStageInfos.reserve(stagesCount);
@@ -149,7 +151,7 @@ void VulkanShader::createDescriptorSetLayout(Uniform::Scope scope) {
     info.pBindings    = bindingLayouts.data();
 
     VkDescriptorSetLayout layout;
-    log::expect(vkCreateDescriptorSetLayout(
+    log::vkExpect(vkCreateDescriptorSetLayout(
       m_device.logical.handle, &info, m_device.allocator, &layout
     ));
     log::trace("vkCreateDescriptorSetLayout: {}", static_cast<void*>(layout));
@@ -200,7 +202,7 @@ void VulkanShader::processStage(const Shader::Stage& stage) {
 
     VkShaderModule shaderModule = VK_NULL_HANDLE;
 
-    log::expect(vkCreateShaderModule(
+    log::vkExpect(vkCreateShaderModule(
       m_device.logical.handle, &moduleCreateInfo, m_device.allocator, &shaderModule
     ));
 

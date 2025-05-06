@@ -12,7 +12,7 @@ kstd::SharedPtr<Skybox> SkyboxFactory::load(const std::string& name) {
     if (auto resource = find(name); resource) [[unlikely]]
         return resource;
 
-    auto cubemap = TextureFactory::get().load(name, Texture::Type::cubemap);
+    auto cubemap = TextureFactory::get().loadCubemap(name);
     return save(kstd::makeShared<Skybox>(cubemap, name));
 }
 

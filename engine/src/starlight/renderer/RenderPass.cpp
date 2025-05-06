@@ -37,10 +37,10 @@ RenderPassBackend::Properties RenderPassBase::generateRenderPassProperties(
         renderTarget.depthAttachment = nullptr;
         renderTarget.colorAttachment = nullptr;
 
-        if (isFlagEnabled(attachments, Attachment::swapchainColor))
+        if (static_cast<bool>(attachments & Attachment::swapchainColor))
             renderTarget.colorAttachment = swapchain.getImage(i);
 
-        if (isFlagEnabled(attachments, Attachment::depth))
+        if (static_cast<bool>(attachments & Attachment::depth))
             renderTarget.depthAttachment = swapchain.getDepthBuffer();
 
         props.renderTargets.push_back(renderTarget);

@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Config.hh"
-#include "Singleton.hh"
+#include <kstd/Singleton.hh>
 
 namespace sl {
 
-class Globals : public Singleton<Globals> {
+class Globals : public kstd::Singleton<Globals> {
 public:
     explicit Globals(const Config& config);
 

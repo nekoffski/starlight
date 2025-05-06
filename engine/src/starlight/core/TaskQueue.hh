@@ -4,13 +4,13 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Singleton.hh"
+#include <kstd/Singleton.hh>
 #include "Core.hh"
 #include "Concepts.hh"
 
 namespace sl {
 
-class TaskQueue : public Singleton<TaskQueue> {
+class TaskQueue : public kstd::Singleton<TaskQueue> {
     using Queue = std::vector<std::function<void()>>;
 
 public:

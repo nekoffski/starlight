@@ -27,7 +27,7 @@ Application::Application(const Config& config)
       ) {
     if (m_config.initialScene) {
         const auto scenePath =
-          fmt::format("{}/scenes/{}", m_config.projectRoot, *m_config.initialScene);
+          fmt::format("{}/scenes/{}", m_config.assetsRoot, *m_config.initialScene);
         sl::log::info("Loading initial scene: {}", scenePath);
         setScene(m_sceneParser.deserialize(scenePath));
         m_userInterface.setScene(getScene());

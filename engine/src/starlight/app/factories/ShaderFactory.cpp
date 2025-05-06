@@ -34,7 +34,7 @@ static void removeDuplicates(std::vector<Shader::Uniform>& uniforms) {
 }
 
 std::optional<Shader::Properties> parseShader(
-  const std::string& basePath, const FileSystem& fs
+  const std::string& basePath, const kstd::FileSystem& fs
 ) {
     std::vector<Shader::Stage> stages;
     std::vector<Shader::Uniform> uniforms;
@@ -88,7 +88,7 @@ std::optional<Shader::Properties> parseShader(
 }
 
 kstd::SharedPtr<Shader> ShaderFactory::load(
-  const std::string& name, const FileSystem& fs
+  const std::string& name, const kstd::FileSystem& fs
 ) {
     const auto shadersPath = Globals::get().getConfig().paths.shaders;
     const auto basePath    = fmt::format("{}/{}", shadersPath, name);

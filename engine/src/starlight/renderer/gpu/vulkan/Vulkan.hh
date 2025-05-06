@@ -18,8 +18,8 @@ using Allocator = VkAllocationCallbacks;
 }  // namespace vk
 
 namespace log {
-constexpr void expect(VkResult result) {
-    log::expect(
+constexpr void vkExpect(VkResult result) {
+    kstd::log::expect(
       result == VK_SUCCESS, "Vulkan call failed: {}",
       vk::getResultString(result, true)
     );

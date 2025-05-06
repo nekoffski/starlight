@@ -9,11 +9,13 @@
 #include "starlight/core/containers/KeyVector.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/core/Utils.hh"
-#include "starlight/core/Id.hh"
+#include <kstd/Id.hh>
 
 namespace sl {
 
-class Shader : public kstd::NonMovable, public NamedResource<Shader, "Shader"> {
+class Shader
+    : public kstd::NonMovable,
+      public kstd::NamedResource<Shader, "Shader"> {
     static constexpr u32 uniformScopes = 3u;
 
 public:

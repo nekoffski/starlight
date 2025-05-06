@@ -24,7 +24,7 @@ void deserialize(const nlohmann::json& j, Config& out) {
 }
 
 std::optional<Config> Config::fromJson(
-  const std::string& path, const FileSystem& fs
+  const std::string& path, const kstd::FileSystem& fs
 ) {
     if (not fs.isFile(path)) {
         log::error("Config file '{}' does not exist", path);

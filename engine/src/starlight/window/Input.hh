@@ -1,11 +1,11 @@
 #pragma once
 
-#include "starlight/core/Singleton.hh"
+#include "kstd/Singleton.hh"
 #include "Window.hh"
 
 namespace sl {
 
-class Input : public Singleton<Input> {
+class Input : public kstd::Singleton<Input> {
 public:
     enum class State : u8 { on, off };
 

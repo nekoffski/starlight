@@ -6,8 +6,10 @@
 
 namespace sl::vk {
 
-VulkanFence::VulkanFence(VulkanDevice& device, State state) :
-    m_handle(VK_NULL_HANDLE), m_device(device), m_state(state) {
+VulkanFence::VulkanFence(VulkanDevice& device, State state)
+    : m_handle(VK_NULL_HANDLE)
+    , m_device(device)
+    , m_state(state) {
     VkFenceCreateInfo fenceCreateInfo;
     clearMemory(&fenceCreateInfo);
     fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
@@ -15,7 +17,7 @@ VulkanFence::VulkanFence(VulkanDevice& device, State state) :
     if (state == VulkanFence::State::signaled)
         fenceCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-    log::expect(vkCreateFence(
+    log::vkExpect(vkCreateFence(
       m_device.logical.handle, &fenceCreateInfo, m_device.allocator, &m_handle
     ));
     log::trace("vkCreateFence: {}", static_cast<void*>(m_handle));
@@ -67,7 +69,7 @@ bool VulkanFence::wait(Nanoseconds timeout) {
 
 void VulkanFence::reset() {
     if (m_state == State::signaled) {
-        log::expect(vkResetFences(m_device.logical.handle, 1, &m_handle));
+        log::vkExpect(vkResetFences(m_device.logical.handle, 1, &m_handle));
         m_state = State::notSignaled;
     }
 }

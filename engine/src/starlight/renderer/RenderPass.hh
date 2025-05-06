@@ -6,8 +6,8 @@
 
 #include "starlight/core/Core.hh"
 #include "starlight/core/math/Core.hh"
-#include "starlight/core/Enum.hh"
-#include "starlight/core/Id.hh"
+#include "kstd/Enum.hh"
+#include <kstd/Id.hh>
 #include "starlight/renderer/RenderPacket.hh"
 
 #include "gpu/Texture.hh"
@@ -23,7 +23,7 @@ namespace sl {
 
 class RenderPassBase
     : public kstd::NonMovable,
-      public NamedResource<RenderPassBase, "RenderPass"> {
+      public kstd::NamedResource<RenderPassBase, "RenderPass"> {
 public:
     explicit RenderPassBase(
       Renderer& renderer, std::optional<std::string> name = {}
