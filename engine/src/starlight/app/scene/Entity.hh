@@ -21,10 +21,11 @@ public:
     T& add(Args&&... args) {
         auto& container = m_componentManager.getContainer<T>();
         log::expect(
-          not container->has(id), "Could not add the same component twice"
+          not container->has(getId()), "Could not add the same component twice"
         );
         m_componentTypes.emplace_back(typeid(T));
-        auto component = container->emplace(id, *this, std::forward<Args>(args)...);
+        auto component =
+          container->emplace(getId(), *this, std::forward<Args>(args)...);
         component->onInit();
         return *component;
     }
@@ -32,13 +33,13 @@ public:
     template <typename T>
     requires std::derived_from<T, Component>
     T* get() {
-        return m_componentManager.getContainer<T>()->get(id);
+        return m_componentManager.getContainer<T>()->get(getId());
     }
 
     template <typename T>
     requires std::derived_from<T, Component>
     bool has() {
-        return m_componentManager.getContainer<T>()->has(id);
+        return m_componentManager.getContainer<T>()->has(getId());
     }
 
     template <typename T, typename Callback>
@@ -48,7 +49,7 @@ public:
     }
 
     void* get(std::type_index component) {
-        return m_componentManager.getContainer(component).getRaw(id);
+        return m_componentManager.getContainer(component).getRaw(getId());
     }
 
     std::span<const std::type_index> getComponentTypes() const {

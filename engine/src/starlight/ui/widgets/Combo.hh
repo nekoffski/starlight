@@ -63,8 +63,9 @@ void immediateCombo(
           fmt::format("##{}-combo", name).c_str(), preview.c_str()
         )) {
         for (auto& option : container) {
-            bool selected = option->name == preview;
-            if (ImGui::Selectable(option->name.c_str(), selected)) onSelect(option);
+            bool selected = option->getName() == preview;
+            if (ImGui::Selectable(option->getName().c_str(), selected))
+                onSelect(option);
             if (selected) ImGui::SetItemDefaultFocus();
         }
         ImGui::EndCombo();

@@ -5,12 +5,13 @@
 
 namespace sl {
 
-EventProxy::EventProxy(details::Events& events, details::EventHandlers& handlers) :
-    m_events(events), m_handlers(handlers) {}
+EventProxy::EventProxy(details::Events& events, details::EventHandlers& handlers)
+    : m_events(events)
+    , m_handlers(handlers) {}
 
 void EventProxy::popEventHandler(const EventHandlerId id) {
     const auto condition = [id](const auto& record) -> bool {
-        return record.id == id;
+        return record.getId() == id;
     };
 
     for (auto& chain : m_handlers | std::views::values)
@@ -25,7 +26,7 @@ EventHandlerId EventProxy::pushEventHandlerImpl(
     // TODO: ensure thread safety
     auto& chain = m_handlers[type];
     chain.emplace_back(std::move(wrapper));
-    return chain.back().id;
+    return chain.back().getId();
 }
 
 }  // namespace sl

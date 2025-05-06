@@ -12,11 +12,11 @@
 
 namespace sl {
 
-SPIRVParser::SPIRVParser(const std::string& spirv) :
-    m_compiler(
-      reinterpret_cast<const u32*>(spirv.data()), spirv.size() / sizeof(u32)
-    ),
-    m_resources(m_compiler.get_shader_resources()) {}
+SPIRVParser::SPIRVParser(const std::string& spirv)
+    : m_compiler(
+        reinterpret_cast<const u32*>(spirv.data()), spirv.size() / sizeof(u32)
+      )
+    , m_resources(m_compiler.get_shader_resources()) {}
 
 std::optional<SPIRVParser::Output> SPIRVParser::process(Shader::Stage::Type stage
 ) && {

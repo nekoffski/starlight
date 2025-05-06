@@ -39,7 +39,7 @@ using HandledCallback = std::function<void()>;
 using EventCallback   = std::function<void(EventStorageBase&, HandledCallback&&)>;
 using Events          = std::vector<kstd::UniquePtr<EventStorageBase>>;
 
-struct EventHandlerRecord : kstd::Identificable<EventHandlerRecord, EventHandlerId> {
+struct EventHandlerRecord : kstd::WithId<EventHandlerRecord> {
     explicit EventHandlerRecord(EventCallback&& callback);
 
     EventCallback callback;

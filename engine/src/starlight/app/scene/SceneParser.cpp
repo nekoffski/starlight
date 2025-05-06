@@ -22,7 +22,7 @@ void SceneParser::serialize(Scene& scene, const std::string& path) {
     root["ts"] = getTimeString("%Y-%m-%d %H:%M:%S");
 
     if (auto skybox = scene.getSkybox(); skybox) {
-        const auto skyboxName = skybox->name;
+        const auto skyboxName = skybox->getName();
         log::debug("Saving skybox: {}", skyboxName);
         root["skybox"] = skyboxName;
     }
@@ -40,8 +40,8 @@ void SceneParser::serialize(Scene& scene, const std::string& path) {
 
 nlohmann::json SceneParser::serializeEntity(Entity& entity) {
     nlohmann::json node;
-    log::debug("Processing entity: {}", entity.name);
-    node["name"] = entity.name;
+    log::debug("Processing entity: {}", entity.getName());
+    node["name"] = entity.getName();
 
     for (const auto component : entity.getComponentTypes()) {
         log::debug("Processing component: {}", component.name());

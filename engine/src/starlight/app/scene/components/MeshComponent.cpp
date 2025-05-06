@@ -32,7 +32,7 @@ void MeshComponent::Parser::deserialize(Entity& entity, const nlohmann::json& js
 nlohmann::json MeshComponent::Parser::serialize(const MeshComponentData& data
 ) const {
     nlohmann::json root;
-    root["mesh"] = data.mesh->name;
+    root["mesh"] = data.mesh->getName();
     return root;
 }
 

@@ -60,7 +60,8 @@ void Scene::clear() {
 Entity& Scene::addEntity(std::optional<std::string> name) {
     if (name.has_value()) {
         log::expect(
-          not m_entities.has([&](auto& entity) { return entity.name == *name; }),
+          not m_entities.has([&](auto& entity) { return entity.getName() == *name; }
+          ),
           "Entity {} already exists", *name
         );
     }
@@ -71,7 +72,7 @@ Entity& Scene::addEntity(std::optional<std::string> name) {
 
 Entity* Scene::getEntity(const std::string& name) {
     return m_entities.find([&](auto& entity) -> bool {
-        return entity.name == name;
+        return entity.getName() == name;
     });
 }
 

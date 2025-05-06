@@ -36,7 +36,7 @@ public:
 
 protected:
     kstd::SharedPtr<T> save(kstd::SharedPtr<T> resource, Tag tag = 0u) {
-        const auto name = resource->name;
+        const auto name = resource->getName();
 
         // TODO: do not access by hash everytime, this requires kstd::SharedPtr fix
         // first

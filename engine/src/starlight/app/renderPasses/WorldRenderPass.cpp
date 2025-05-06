@@ -7,11 +7,11 @@
 
 namespace sl {
 
-WorldRenderPass::WorldRenderPass(Renderer& renderer) :
-    RenderPass(
-      renderer, ShaderFactory::get().load("Builtin.Shader.Material"),
-      "WorldRenderPass"
-    ) {}
+WorldRenderPass::WorldRenderPass(Renderer& renderer)
+    : RenderPass(
+        renderer, ShaderFactory::get().load("Builtin.Shader.Material"),
+        "WorldRenderPass"
+      ) {}
 
 RenderPassBackend::Properties WorldRenderPass::createRenderPassProperties(
   [[maybe_unused]] bool hasPreviousPass, [[maybe_unused]] bool hasNextPass
@@ -100,7 +100,7 @@ void WorldRenderPass::render(
 
     for (auto& [mesh, material, model, _] : meshes) {
         setLocalUniforms(
-          commandBuffer, frameNumber, getLocalDescriporSetId(material->id),
+          commandBuffer, frameNumber, getLocalDescriporSetId(material->getId()),
           imageIndex,
           [&](auto& setter) {
               setter.set("diffuseColor", material->diffuseColor);

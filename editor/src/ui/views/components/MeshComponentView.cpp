@@ -10,9 +10,10 @@ void MeshComponentView::render(sl::MeshComponent& c) {
       ICON_FA_CAR_SIDE "  Mesh",
       [&]() {
           auto meshes = sl::MeshFactory::get().getValues();
-          sl::immediateCombo("Mesh", component.mesh->name, meshes, [&](auto& mesh) {
-              component.mesh = mesh;
-          });
+          sl::immediateCombo(
+            "Mesh", component.mesh->getName(), meshes,
+            [&](auto& mesh) { component.mesh = mesh; }
+          );
       },
       ImGuiTreeNodeFlags_DefaultOpen
     );

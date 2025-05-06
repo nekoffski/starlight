@@ -13,7 +13,7 @@ concept HasToString = requires(const T& value) {
 
 template <typename T>
 concept HasName = requires(const T& value) {
-    { value.name } -> std::convertible_to<std::string>;
+    { value.getName() } -> std::convertible_to<std::string>;
 };
 
 template <typename C, typename R = void, typename... Args>

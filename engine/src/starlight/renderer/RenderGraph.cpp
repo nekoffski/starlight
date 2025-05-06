@@ -6,8 +6,9 @@
 
 namespace sl {
 
-RenderGraph::RenderGraph(Renderer& renderer
-) : m_renderer(renderer), m_eventSentinel(EventProxy::get()) {
+RenderGraph::RenderGraph(Renderer& renderer)
+    : m_renderer(renderer)
+    , m_eventSentinel(EventProxy::get()) {
     m_eventSentinel.add<WindowResized>([&]([[maybe_unused]] auto&) {
         onWindowResize();
     });
@@ -30,7 +31,7 @@ void RenderGraph::rebuildChain() {
     activePasses.reserve(m_nodes.size());
 
     for (auto& [renderPass, active] : m_nodes) {
-        log::debug("{} - {}", renderPass->name, active ? "ACTIVE" : "INACTIVE");
+        log::debug("{} - {}", renderPass->getName(), active ? "ACTIVE" : "INACTIVE");
         if (active) activePasses.push_back(renderPass.get());
     }
 

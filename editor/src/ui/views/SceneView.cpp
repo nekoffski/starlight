@@ -37,7 +37,9 @@ void renderEntityInspector(
 
 void SceneView::setSelectedEntity(sl::Entity& entity) {
     Widget::setSelectedEntity(entity, [&]() {
-        renderEntityInspector(entity, m_entitiesData[entity.id], m_componentViews);
+        renderEntityInspector(
+          entity, m_entitiesData[entity.getId()], m_componentViews
+        );
     });
 
     if (getState().centerOnSelectedEntity && entity.has<sl::TransformComponent>()) {
@@ -85,7 +87,7 @@ void SceneView::renderEntitiesTab() {
 
     if (sl::button("Add Entity", sl::parentWidth)) {
         auto& entity = scene.addEntity();
-        editorWriteInfo("New entity added: {}/{}", entity.id, entity.name);
+        editorWriteInfo("New entity added: {}/{}", entity.getId(), entity.getName());
     }
 
     sl::separator();
@@ -98,10 +100,11 @@ void SceneView::renderEntitiesTab() {
                 | ImGuiTreeNodeFlags_DefaultOpen;
 
               auto selectedEntity = getSeletedEntity();
-              if (selectedEntity != nullptr && selectedEntity->id == entity.id)
+              if (selectedEntity != nullptr
+                  && selectedEntity->getId() == entity.getId())
                   flags |= ImGuiTreeNodeFlags_Selected;
               sl::treeNode(
-                fmt::format("{}  {}", ICON_FA_CUBE, entity.name),
+                fmt::format("{}  {}", ICON_FA_CUBE, entity.getName()),
                 [&]() {
                     // TODO: display child entitites
                 },
@@ -134,13 +137,13 @@ void renderEntityInspector(
         "Model", "PointLight", "DirectionalLight", "Transform"
     };
 
-    entityData.nameBuffer = entity.name;
-    sl::namedScope(entity.name, [&]() {
+    entityData.nameBuffer = entity.getName();
+    sl::namedScope(entity.getName(), [&]() {
         if (ImGui::InputText(
               "##", &entityData.nameBuffer, ImGuiInputTextFlags_EnterReturnsTrue
             )) {
             editorWriteDebug("Entity name changed to: {}", entityData.nameBuffer);
-            entity.name = entityData.nameBuffer;
+            entity.setName(entityData.nameBuffer);
         }
         sl::sameLine();
 
@@ -158,7 +161,7 @@ void renderEntityInspector(
 
         if (sl::button("Add", sl::parentWidth)) {
             editorWriteDebug(
-              "Add component clicked: {}/{}", entity.name,
+              "Add component clicked: {}/{}", entity.getName(),
               entityData.selectedComponentIndex
             );
 

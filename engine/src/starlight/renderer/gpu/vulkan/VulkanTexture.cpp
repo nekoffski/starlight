@@ -155,7 +155,7 @@ VulkanTexture::VulkanTexture(
     : VulkanTextureBase(device, imageData, sampler, name)
     , m_memory(VK_NULL_HANDLE)
     , m_layout(VK_IMAGE_LAYOUT_GENERAL) {
-    log::trace("Creating vulkan texture: {}", id);
+    log::trace("Creating vulkan texture: {}", getId());
     create();
 }
 
@@ -293,7 +293,7 @@ void VulkanTexture::create() {
 }
 
 void VulkanTexture::destroy() {
-    log::trace("Destroying vulkan texture: {}", id);
+    log::trace("Destroying vulkan texture: {}", getId());
     auto device    = m_device.logical.handle;
     auto allocator = m_device.allocator;
     m_device.waitIdle();

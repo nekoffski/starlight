@@ -27,9 +27,7 @@ private:
 namespace details {
 
 template <typename T>
-class ComponentImpl
-    : public kstd::Identificable<ComponentImpl<T>>,
-      public Component {
+class ComponentImpl : public kstd::WithId<ComponentImpl<T>>, public Component {
 public:
     template <typename... Args>
     explicit ComponentImpl(Entity& entity, Args&&... args)

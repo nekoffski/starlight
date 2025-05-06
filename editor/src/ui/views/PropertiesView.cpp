@@ -30,11 +30,11 @@ void PropertiesView::renderRendererTab() {
         bool changed = false;
 
         getRenderGraph().forEach([&](auto& active, auto& renderPass) {
-            if (renderPass.name != "UIRenderPass") {  // TODO: find better way
-                sl::namedScope(renderPass.name, [&]() {
+            if (renderPass.getName() != "UIRenderPass") {  // TODO: find better way
+                sl::namedScope(renderPass.getName(), [&]() {
                     if (sl::checkbox("##Active", active)) changed = true;
                     sl::sameLine();
-                    sl::text(renderPass.name);
+                    sl::text(renderPass.getName());
                 });
             }
         });

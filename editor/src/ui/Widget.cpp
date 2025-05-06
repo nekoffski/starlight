@@ -59,7 +59,7 @@ Widget::OptCallback& Widget::getInspectorCallback() {
 
 void Widget::showImage(sl::Texture& texture, sl::f32 width) {
     auto [it, _] = m_state.m_images.try_emplace(
-      texture.id,
+      texture.getId(),
       sl::lazyEvaluate([&] { return sl::ImageHandle::createHandle(&texture); })
     );
     it->second->show({ width, width }, { 0, 0 }, { 1.0f, 1.0f });
