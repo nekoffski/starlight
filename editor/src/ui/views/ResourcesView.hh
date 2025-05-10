@@ -13,10 +13,11 @@ namespace sle {
 class ResourcesView : public Widget {
 public:
     struct Node {
-        Node* parent;
         ResourceType type;
         std::string name;
         std::string fullPath;
+        std::string extension;
+        bool isDirectory;
         std::vector<Node> children;
     };
 
@@ -26,8 +27,10 @@ public:
 
 private:
     void renderResourceTree();
+    void renderNode(Node& node);
 
     void build();
+    void processNode(Node& node, const kstd::FileSystem& fs);
 
     kstd::SharedPtr<sl::Texture> m_folderTexture;
     Node m_root;

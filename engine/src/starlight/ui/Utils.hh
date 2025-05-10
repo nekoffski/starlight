@@ -8,6 +8,10 @@
 
 namespace sl {
 
+void verticalLine(
+  float padding = 4.0f, const Vec4<f32> color = { 255, 255, 255, 150 },
+  float thickness = 1.0f
+);
 bool checkbox(const std::string& label, bool& value);
 
 void padding(const Vec2<f32>& padding);
@@ -51,6 +55,17 @@ void treeNode(const std::string& name, C&& callback, i32 flags) {
         callback();
         ImGui::TreePop();
     }
+}
+
+template <typename C>
+requires Callable<C>
+void child(
+  const std::string& name, C&& callback, const Vec2<f32>& size = { 0.0f, 0.0f },
+  i32 flags = ImGuiWindowFlags_None
+) {
+    ImGui::BeginChild(name.c_str(), ImVec2{ size.x, size.y }, flags);
+    callback();
+    ImGui::EndChild();
 }
 
 template <typename C>

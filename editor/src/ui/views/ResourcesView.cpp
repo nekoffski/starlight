@@ -11,10 +11,34 @@
 
 namespace sle {
 
-static constexpr sl::u32 rowSize = 8u;
+static ResourceType extensionToResourceType(const std::string& extension) {
+    if (extension == ".tga" || extension == ".jpg" || extension == ".png")
+        return ResourceType::texture;
+    else if (extension == ".obj")
+        return ResourceType::wavefrontObject;
+    else if (extension == ".mtl")
+        return ResourceType::wavefrontMaterial;
+    else if (extension == ".vert" || extension == ".spv" || extension == ".frag")
+        return ResourceType::shader;
+    return ResourceType::unknown;
+}
 
-static sl::f32 getThumbnailWidth() {
-    return ImGui::GetWindowWidth() / static_cast<sl::f32>(rowSize + 1);
+static std::string_view getResourceThumbnail(ResourceType type) {
+    switch (type) {
+        case ResourceType::directory:
+            return ICON_FA_FOLDER;
+        case ResourceType::texture:
+            return ICON_FA_IMAGE;
+        case ResourceType::shader:
+            return ICON_FA_LIGHTBULB;
+        case ResourceType::wavefrontMaterial:
+            return ICON_FA_FEATHER;
+        case ResourceType::wavefrontObject:
+            return ICON_FA_CUBE;
+        case ResourceType::unknown:
+        default:
+            return ICON_FA_FILE;
+    }
 }
 
 ResourcesView::ResourcesView(Widget::State& state)
@@ -25,98 +49,52 @@ ResourcesView::ResourcesView(Widget::State& state)
 }
 
 void ResourcesView::render() {
-    sl::conditionallyDisabled(
-      [&]() {
-          if (sl::button(ICON_FA_BACKWARD)) m_activeNode = m_activeNode->parent;
-      },
-      m_activeNode->parent == nullptr
-    );
-
-    sl::sameLine();
-
-    if (sl::button("New")) {
-    }
-
-    sl::sameLine();
-    sl::conditionallyDisabled(
-      [&]() {
-          if (sl::button("Delete")) {
-          }
-      },
-      true
-    );
-
-    sl::sameLine();
-    sl::text("  {}", m_activeNode->fullPath);
-
+    sl::text("Project path: {}", m_activeNode->fullPath);
     sl::separator();
-    renderResourceTree();
+    sl::child("ResourceTree", [&]() { renderResourceTree(); });
 }
 
 void ResourcesView::renderResourceTree() {
-    const auto w = getThumbnailWidth();
+    sl::treeNode(
+      ICON_FA_FOLDER "  assets", [&]() { renderNode(m_root); },
+      ImGuiTreeNodeFlags_DefaultOpen
+    );
+}
 
-    for (sl::u32 i = 0; i < m_activeNode->children.size(); ++i) {
-        auto& child = m_activeNode->children[i];
-
-        ImVec2 padding(4, 4);
-        ImVec2 imageSize(w, w);
-        ImVec2 textSize = ImGui::CalcTextSize(child.name.c_str());
-        float spacing   = ImGui::GetStyle().ItemSpacing.y;
-
-        ImVec2 groupSize(
-          std::max(imageSize.x, textSize.x) + padding.x * 2,
-          imageSize.y + spacing + textSize.y + padding.y * 2
+void ResourcesView::renderNode(Node& node) {
+    for (auto& child : node.children) {
+        const auto flags =
+          child.isDirectory
+            ? ImGuiTreeNodeFlags_DefaultOpen
+            : ImGuiTreeNodeFlags_Leaf;
+        sl::treeNode(
+          fmt::format("{}  {}", getResourceThumbnail(child.type), child.name),
+          [&]() { renderNode(child); }, flags
         );
-
-        if (i % rowSize == 0) ImGui::NewLine();
-
-        ImVec2 startPos = ImGui::GetCursorScreenPos();
-
-        if (ImGui::InvisibleButton(("hover_" + child.name).c_str(), groupSize)) {
-            if (child.type == ResourceType::directory) {
-                m_activeNode = &child;
-                return;
-            } else {
-            }
-        }
-        bool isHovered = ImGui::IsItemHovered();
-        ImGui::SameLine();
-
-        if (isHovered) {
-            ImDrawList* drawList = ImGui::GetWindowDrawList();
-            drawList->AddRectFilled(
-              startPos, ImVec2(startPos.x + groupSize.x, startPos.y + groupSize.y),
-              IM_COL32(100, 100, 255, 165), 5.0f
-            );
-        }
-
-        ImGui::SetCursorScreenPos(
-          ImVec2(startPos.x + padding.x, startPos.y + padding.y)
-        );
-        sl::group([&]() {
-            showImage(*m_folderTexture, w);
-            sl::text("{}{}", sl::spaces(2u), child.name);
-        });
-
-        sl::sameLine();
     }
 }
 
 void ResourcesView::build() {
-    m_root.parent   = nullptr;
     m_root.name     = "Assets";
     m_root.fullPath = getConfig().assetsRoot;
     m_root.type     = ResourceType::directory;
 
     auto& fs = kstd::GlobalFileSystem::get();
+    processNode(m_root, fs);
+}
 
-    for (const auto& item : fs.listDirectory(m_root.fullPath)) {
-        if (fs.isDirectory(item)) {
-            m_root.children.emplace_back(
-              &m_root, ResourceType::directory, kstd::nameFromPath(item), item
-            );
-        }
+void ResourcesView::processNode(Node& node, const kstd::FileSystem& fs) {
+    for (const auto& item : fs.listDirectory(node.fullPath)) {
+        bool isDirectory = fs.isDirectory(item);
+        const auto extension =
+          kstd::extensionFromPath(item, kstd::ExtensionExtractionMode::lastChunk)
+            .value_or("");
+        node.children.emplace_back(
+          isDirectory ? ResourceType::directory : extensionToResourceType(extension),
+          kstd::nameFromPath(item, kstd::NameExtractionMode::withExtension), item,
+          extension, isDirectory
+        );
+        if (isDirectory) processNode(node.children.back(), fs);
     }
 }
 

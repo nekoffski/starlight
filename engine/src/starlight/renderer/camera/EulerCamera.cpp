@@ -6,9 +6,12 @@
 
 namespace sl {
 
-EulerCamera::EulerCamera(const Properties& props) :
-    Camera(props.viewportSize, Vec3<f32>{ 0.0f }), m_target(props.target),
-    m_radius(props.radius), m_yaw(90.0f), m_pitch(90.0f) {
+EulerCamera::EulerCamera(const Properties& props)
+    : Camera(props.viewportSize, Vec3<f32>{ 0.0f })
+    , m_target(props.target)
+    , m_radius(props.radius)
+    , m_yaw(90.0f)
+    , m_pitch(90.0f) {
     recalculateVectors();
     updateViewMatrix();
 
@@ -112,17 +115,17 @@ EulerCamera::Properties EulerCamera::Properties::createDefault() {
 
 EulerCamera::Animation::Animation(
   EulerCamera& camera, const Vec3<f32>& target, u32 steps
-) :
-    m_camera(camera), m_done(false), m_target(target),
-    m_step((m_target - camera.m_target) / static_cast<f32>(steps)) {}
+)
+    : m_camera(camera)
+    , m_done(false)
+    , m_target(target)
+    , m_step((m_target - camera.m_target) / static_cast<f32>(steps)) {}
 
 void EulerCamera::Animation::update() {
     static constexpr f32 delta = 0.005f;
 
     auto& cameraTarget = m_camera.m_target;
-    log::warn("Animation step: {} - {}", cameraTarget, m_target);
     cameraTarget += m_step;
-    log::warn("Animation step: {} - {}", cameraTarget, m_target);
 
     if (almostEquals(cameraTarget, m_target, delta)) {
         cameraTarget = m_target;
