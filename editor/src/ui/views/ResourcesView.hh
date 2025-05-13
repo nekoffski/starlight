@@ -6,7 +6,7 @@
 #include <starlight/ui/widgets/Image.hh>
 
 #include "ui/Widget.hh"
-#include "resources/ResourceView.hh"
+#include "ui/ResourceType.hh"
 
 namespace sle {
 

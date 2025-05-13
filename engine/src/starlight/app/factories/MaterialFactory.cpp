@@ -53,7 +53,7 @@ kstd::SharedPtr<Material> MaterialFactory::load(
     if (auto resource = find(name); resource) return resource;
 
     const auto& materialsPath = Globals::get().getConfig().paths.materials;
-    const auto fullPath       = fmt::format("{}/{}.json", materialsPath, name);
+    const auto fullPath       = fmt::format("{}/{}.starmtl", materialsPath, name);
 
     if (auto props = loadProperties(fullPath, fs); props) {
         return create(name, *props);

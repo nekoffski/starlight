@@ -16,6 +16,7 @@
 #include <starlight/ui/widgets/Image.hh>
 
 #include "Config.hh"
+#include "ResourceType.hh"
 
 namespace sle {
 
@@ -54,6 +55,8 @@ public:
         ImGuizmo::MODE m_gizmoMode;
         ImGuizmo::OPERATION m_gizmoOperation;
         bool m_gizmoEnabled;
+
+        std::unordered_map<ResourceType, std::vector<std::string>> m_resources;
     };
 
     explicit Widget(State& state);
@@ -84,6 +87,11 @@ public:
     OptCallback& getInspectorCallback();
 
     void showImage(sl::Texture& texture, sl::f32 width);
+
+    std::vector<std::string>& getResources(ResourceType type);
+    void addResource(ResourceType type, const std::string& name);
+    void resetResources();
+    void resetResources(ResourceType);
 
 private:
     State& m_state;

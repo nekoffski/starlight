@@ -12,7 +12,7 @@ SceneParser::SceneParser(const kstd::FileSystem* fs)
     registerParser<DirectionalLightComponent, DirectionalLightComponent::Parser>();
     registerParser<PointLightComponent, PointLightComponent::Parser>();
     registerParser<TransformComponent, TransformComponent::Parser>();
-    registerParser<MeshComponent, MeshComponent::Parser>();
+    registerParser<MeshRendererComponent, MeshRendererComponent::Parser>();
 }
 
 void SceneParser::serialize(Scene& scene, const std::string& path) {

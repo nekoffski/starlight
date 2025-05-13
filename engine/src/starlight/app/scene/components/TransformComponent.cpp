@@ -3,7 +3,7 @@
 #include "starlight/app/scene/Entity.hh"
 
 #include "BoundingVolumeComponent.hh"
-#include "MeshComponent.hh"
+#include "MeshRendererComponent.hh"
 
 namespace sl {
 
@@ -14,7 +14,8 @@ void TransformComponent::onInit() {
         c.data().boundingVolume->setTransform(data());
     });
 
-    entity.on<MeshComponent>([&](auto& c) { c.data().setTransform(data()); });
+    entity.on<MeshRendererComponent>([&](auto& c) { c.data().setTransform(data()); }
+    );
 }
 
 void TransformComponent::Parser::deserialize(

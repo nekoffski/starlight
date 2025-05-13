@@ -53,21 +53,12 @@ private:
     u64 m_selected;
 };
 
-template <typename T, typename C>
-requires Callable<C, void, T&>
+template <typename C>
 void immediateCombo(
-  const std::string& name, const std::string& preview, std::span<T> container,
-  C&& onSelect
+  const std::string& tag, const std::string& preview, C&& callback
 ) {
-    if (ImGui::BeginCombo(
-          fmt::format("##{}-combo", name).c_str(), preview.c_str()
-        )) {
-        for (auto& option : container) {
-            bool selected = option->getName() == preview;
-            if (ImGui::Selectable(option->getName().c_str(), selected))
-                onSelect(option);
-            if (selected) ImGui::SetItemDefaultFocus();
-        }
+    if (ImGui::BeginCombo(tag.c_str(), preview.c_str())) {
+        callback();
         ImGui::EndCombo();
     }
 }

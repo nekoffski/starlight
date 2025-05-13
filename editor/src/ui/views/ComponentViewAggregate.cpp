@@ -6,7 +6,7 @@
 #include "components/DirectionalLightComponentView.hh"
 #include "components/PointLightComponentView.hh"
 #include "components/TransformComponentView.hh"
-#include "components/MeshComponentView.hh"
+#include "components/MeshRendererComponentView.hh"
 #include "components/BoundingVolumeComponentView.hh"
 
 namespace sle {
@@ -16,7 +16,7 @@ ComponentViewAggregate::ComponentViewAggregate(Widget::State& state)
     registerView<DirectionalLightComponentView>();
     registerView<PointLightComponentView>();
     registerView<TransformComponentView>();
-    registerView<MeshComponentView>();
+    registerView<MeshRendererComponentView>();
     registerView<BoundingVolumeComponentView>();
 }
 

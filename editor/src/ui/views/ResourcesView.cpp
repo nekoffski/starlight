@@ -20,6 +20,8 @@ static ResourceType extensionToResourceType(const std::string& extension) {
         return ResourceType::wavefrontMaterial;
     else if (extension == ".vert" || extension == ".spv" || extension == ".frag")
         return ResourceType::shader;
+    else if (extension == ".starmtl")
+        return ResourceType::material;
     return ResourceType::unknown;
 }
 
@@ -31,6 +33,7 @@ static std::string_view getResourceThumbnail(ResourceType type) {
             return ICON_FA_IMAGE;
         case ResourceType::shader:
             return ICON_FA_LIGHTBULB;
+        case ResourceType::material:
         case ResourceType::wavefrontMaterial:
             return ICON_FA_FEATHER;
         case ResourceType::wavefrontObject:
@@ -75,6 +78,8 @@ void ResourcesView::renderNode(Node& node) {
 }
 
 void ResourcesView::build() {
+    resetResources();
+
     m_root.name     = "Assets";
     m_root.fullPath = getConfig().assetsRoot;
     m_root.type     = ResourceType::directory;
@@ -89,12 +94,20 @@ void ResourcesView::processNode(Node& node, const kstd::FileSystem& fs) {
         const auto extension =
           kstd::extensionFromPath(item, kstd::ExtensionExtractionMode::lastChunk)
             .value_or("");
-        node.children.emplace_back(
-          isDirectory ? ResourceType::directory : extensionToResourceType(extension),
-          kstd::nameFromPath(item, kstd::NameExtractionMode::withExtension), item,
-          extension, isDirectory
+
+        const auto type =
+          isDirectory ? ResourceType::directory : extensionToResourceType(extension);
+        const auto name = kstd::nameFromPath(
+          item, kstd::NameExtractionMode::withoutLastExtensionChunk
         );
-        if (isDirectory) processNode(node.children.back(), fs);
+
+        node.children
+          .emplace_back(type, name + extension, item, extension, isDirectory);
+
+        if (isDirectory)
+            processNode(node.children.back(), fs);
+        else
+            addResource(type, name);
     }
 }
 

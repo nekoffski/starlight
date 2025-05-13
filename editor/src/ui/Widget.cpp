@@ -1,6 +1,7 @@
 #include "Widget.hh"
 
 #include <starlight/core/Function.hh>
+#include <starlight/app/factories/MaterialFactory.hh>
 
 namespace sle {
 
@@ -105,5 +106,22 @@ void Widget::State::setRenderGraph(sl::RenderGraph& renderGraph) {
 void Widget::State::setViewport(const sl::Vec2<sl::u32>& viewport) {
     m_viewport = viewport;
 }
+
+std::vector<std::string>& Widget::getResources(ResourceType type) {
+    return m_state.m_resources[type];
+}
+
+void Widget::addResource(ResourceType type, const std::string& name) {
+    m_state.m_resources[type].push_back(name);
+}
+
+void Widget::resetResources() {
+    m_state.m_resources.clear();
+    m_state.m_resources[ResourceType::material].push_back(
+      sl::MaterialFactory::get().getDefault()->getName()
+    );
+}
+
+void Widget::resetResources(ResourceType type) { m_state.m_resources[type].clear(); }
 
 }  // namespace sle

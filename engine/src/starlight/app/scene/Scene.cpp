@@ -21,9 +21,9 @@ RenderPacket Scene::getRenderPacket() {
     packet.directionalLights.reserve(maxDirectionalLights);
     packet.pointLights.reserve(maxPointLights);
 
-    forEach<MeshComponent>([&](auto& c) {
+    forEach<MeshRendererComponent>([&](auto& c) {
         packet.entities
-          .emplace_back(c->getWorld(), c->mesh.get(), defaultMaterial.get());
+          .emplace_back(c->getWorld(), c->mesh.get(), c->material.get());
     });
 
     forEach<PointLightComponent>([&](auto& light) {
@@ -48,7 +48,6 @@ RenderPacket Scene::getRenderPacket() {
     // packet.pointLights.push_back(light);
 
     packet.skybox = m_skybox.get();
-
     return packet;
 }
 
