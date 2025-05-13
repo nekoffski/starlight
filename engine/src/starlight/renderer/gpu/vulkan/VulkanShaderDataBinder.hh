@@ -22,6 +22,7 @@ class VulkanShaderDataBinder : public ShaderDataBinder {
         u64 lastUpdateFrame;
         std::array<VkDescriptorSet, maxFramesInFlight> descriptorSets;
         std::vector<const VulkanTexture*> textures;
+        u8 dirtyFrames;
     };
 
     using LocalDescriptorSets =
@@ -83,7 +84,6 @@ private:
 
     VkDescriptorPool m_descriptorPool;
 
-    u8 m_localDescriptorDirtyFrames;
     u8 m_globalDescriptorDirtyFrames;
 
     u64 m_globalUboStride;

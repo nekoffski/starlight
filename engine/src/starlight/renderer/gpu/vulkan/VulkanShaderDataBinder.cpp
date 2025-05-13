@@ -16,7 +16,6 @@ VulkanShaderDataBinder::VulkanShaderDataBinder(
     , m_shader(shader)
     , m_dataLayout(shader.properties.layout)
     , m_descriptorPool(VK_NULL_HANDLE)
-    , m_localDescriptorDirtyFrames(0u)
     , m_globalDescriptorDirtyFrames(0u)
     , m_globalUboStride(0u)
     , m_localUboStride(0u)
@@ -55,15 +54,17 @@ u32 VulkanShaderDataBinder::acquireLocalDescriptorSet() {
     const auto samplers = m_dataLayout.localDescriptorSet.samplers.size();
     localSet->textures.resize(samplers, nullptr);
 
-    if (auto localUboSize = m_dataLayout.localDescriptorSet.nonSamplers.size();
-        localUboSize > 0u) {
-        auto allocatedRange = m_uniformBuffer->allocate(localUboSize);
+    if (m_dataLayout.localDescriptorSet.nonSamplers.size() > 0) {
+        auto allocatedRange = m_uniformBuffer->allocate(m_localUboStride);
         log::expect(
           allocatedRange.has_value(), "Could not allocate space for local UBO"
         );
 
         localSet->offset = allocatedRange->offset;
-        log::debug("Allocated offset={} for instance resources", localSet->offset);
+        log::debug(
+          "Allocated offset={} for local descriptor set, size={}", localSet->offset,
+          allocatedRange->size
+        );
     } else {
         log::debug("No uniforms in local UBO, not allocating memory");
     }
@@ -123,10 +124,10 @@ void VulkanShaderDataBinder::releaseLocalDescriptorSet(u32 id) {
 void VulkanShaderDataBinder::bindDescriptorSet(
   CommandBuffer& commandBuffer, Pipeline& pipeline, VkDescriptorSet& descriptorSet,
   u64 uniformBufferOffset, u64 stride, std::span<const VulkanTexture*> textures,
-  u64 nonSamplerCount, u64 descriptorIndex, u8& counter
+  u64 nonSamplerCount, u64 descriptorIndex, u8& dirtyFrames
 ) {
-    if (counter > 0) {
-        counter--;
+    if (dirtyFrames > 0) {
+        dirtyFrames--;
 
         std::vector<VkWriteDescriptorSet> descriptorWrites;
         VkDescriptorBufferInfo bufferInfo;
@@ -216,12 +217,12 @@ void VulkanShaderDataBinder::bindLocalDescriptorSet(
         const auto nonSamplerCount =
           m_dataLayout.localDescriptorSet.nonSamplers.size();
 
-        if (update) m_localDescriptorDirtyFrames = maxFramesInFlight;
+        if (update) localDescriptor->dirtyFrames = maxFramesInFlight;
 
         bindDescriptorSet(
           commandBuffer, pipeline, localDescriptor->descriptorSets[imageIndex],
           localDescriptor->offset, m_localUboStride, localDescriptor->textures,
-          nonSamplerCount, Shader::uboLocalSet, m_localDescriptorDirtyFrames
+          nonSamplerCount, Shader::uboLocalSet, localDescriptor->dirtyFrames
         );
     }
 }
@@ -322,6 +323,8 @@ void VulkanShaderDataBinder::createUniformBuffer() {
       getAlignedValue(m_dataLayout.localDescriptorSet.size, requiredUboAlignment);
 
     log::debug("Minimal uniform buffer offset alignment: {}", requiredUboAlignment);
+    log::debug("Global uniform buffer stride: {}", m_globalUboStride);
+    log::debug("Local uniform buffer stride: {}", m_localUboStride);
 
     const auto deviceLocalBits =
       m_device.physical.info.supportsDeviceLocalHostVisibleMemory
@@ -396,6 +399,7 @@ VulkanShaderDataBinder::LocalDescriptorSet::LocalDescriptorSet(
     , offset(0u)
     , lastUpdateFrame(max<u64>())
     , descriptorSets({ VK_NULL_HANDLE })
-    , textures(textureCount, nullptr) {}
+    , textures(textureCount, nullptr)
+    , dirtyFrames(0u) {}
 
 }  // namespace sl::vk
