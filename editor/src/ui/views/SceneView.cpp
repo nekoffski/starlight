@@ -6,7 +6,7 @@
 #include <starlight/app/factories/MaterialFactory.hh>
 #include <starlight/app/factories/TextureFactory.hh>
 #include <starlight/app/scene/Components.hh>
-#include <starlight/core/math/Utils.hh>
+#include <starlight/math/Utils.hh>
 #include <starlight/physx/Ray.hh>
 
 namespace sle {

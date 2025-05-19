@@ -1,8 +1,8 @@
 #pragma once
 
 #include "starlight/core/Core.hh"
-#include "starlight/core/math/Vec.hh"
-#include "starlight/core/math/Extent.hh"
+#include "starlight/math/Vec.hh"
+#include "starlight/math/Extent.hh"
 #include "starlight/physx/Transform.hh"
 
 #include "BoundingVolume.hh"

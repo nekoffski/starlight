@@ -1,6 +1,6 @@
 #include "AABB.hh"
 
-#include "starlight/core/math/Utils.hh"
+#include "starlight/math/Utils.hh"
 
 #include "starlight/core/Log.hh"
 

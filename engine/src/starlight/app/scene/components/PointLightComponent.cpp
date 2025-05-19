@@ -1,5 +1,7 @@
 #include "PointLightComponent.hh"
 
+#include "starlight/math/Json.hh"
+
 namespace sl {
 
 void PointLightComponent::Parser::deserialize(

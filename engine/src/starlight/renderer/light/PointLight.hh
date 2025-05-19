@@ -3,7 +3,7 @@
 #include <span>
 #include <vector>
 
-#include "starlight/core/math/Core.hh"
+#include "starlight/math/Core.hh"
 
 namespace sl {
 

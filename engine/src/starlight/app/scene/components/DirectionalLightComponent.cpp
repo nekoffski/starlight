@@ -1,5 +1,7 @@
 #include "DirectionalLightComponent.hh"
 
+#include "starlight/math/Json.hh"
+
 namespace sl {
 
 void DirectionalLightComponent::Parser::deserialize(

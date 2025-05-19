@@ -1,7 +1,7 @@
 #pragma once
 
 #include "starlight/core/Core.hh"
-#include "starlight/core/math/Vec.hh"
+#include "starlight/math/Vec.hh"
 
 namespace sl {
 

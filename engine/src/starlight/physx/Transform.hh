@@ -2,7 +2,7 @@
 
 #include "starlight/core/Core.hh"
 #include "starlight/core/Concepts.hh"
-#include "starlight/core/math/Core.hh"
+#include "starlight/math/Core.hh"
 
 namespace sl {
 

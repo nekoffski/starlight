@@ -1,5 +1,5 @@
 set(SL_RENDERER_LIBS stb dl imgui kstd::kstd Vulkan::Loader 
-    vulkan-headers::vulkan-headers starlight-core starlight-window starlight-event)
+    vulkan-headers::vulkan-headers starlight-core starlight-math starlight-window starlight-event)
 set(SL_RENDERER_TARGET starlight-renderer)
 file(GLOB_RECURSE SL_RENDERER_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 

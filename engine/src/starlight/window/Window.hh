@@ -4,7 +4,7 @@
 
 #include "kstd/Singleton.hh"
 #include "starlight/core/Config.hh"
-#include "starlight/core/math/Core.hh"
+#include "starlight/math/Core.hh"
 #include "starlight/event/EventProxy.hh"
 #include "starlight/core/Globals.hh"
 

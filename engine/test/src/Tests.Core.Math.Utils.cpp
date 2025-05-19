@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "starlight/core/math/Utils.hh"
+#include "starlight/math/Utils.hh"
 
 using namespace sl;
 

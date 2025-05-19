@@ -1,15 +1,19 @@
 #include "PointLight.hh"
 
-#include "starlight/core/math/Utils.hh"
+#include "starlight/math/Utils.hh"
 #include "starlight/core/Log.hh"
 
 namespace sl {
 
-PointLight::PointLight(PointLight&& oth
-) : m_data(std::move(oth.m_data)), color(m_data.color), position(m_data.position) {}
+PointLight::PointLight(PointLight&& oth)
+    : m_data(std::move(oth.m_data))
+    , color(m_data.color)
+    , position(m_data.position) {}
 
-PointLight::PointLight(const PointLight& oth
-) : m_data(oth.m_data), color(m_data.color), position(m_data.position) {}
+PointLight::PointLight(const PointLight& oth)
+    : m_data(oth.m_data)
+    , color(m_data.color)
+    , position(m_data.position) {}
 
 PointLight& PointLight::operator=(const PointLight& oth) {
     m_data   = oth.m_data;
@@ -29,9 +33,10 @@ PointLight& PointLight::operator=(PointLight&& oth) {
 
 PointLight::PointLight(
   const Vec4<f32>& color, const Vec3<f32>& position, const Vec3<f32>& attenuation
-) :
-    m_data{ color, position, attenuation }, color(m_data.color),
-    position(m_data.position) {
+)
+    : m_data{ color, position, attenuation }
+    , color(m_data.color)
+    , position(m_data.position) {
     generateLODs();
 }
 

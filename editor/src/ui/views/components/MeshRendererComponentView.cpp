@@ -27,7 +27,7 @@ void MeshRendererComponentView::render(sl::MeshRendererComponent& c) {
           });
 
           sl::text("Material: ");
-          auto& materials                 = getResources(ResourceType::material);
+          auto& materials                 = getResources(Resource::Type::material);
           const auto& currentMaterialName = component.material->getName();
           sl::immediateCombo("##MaterialCombo", currentMaterialName, [&]() {
               for (auto& materialName : materials) {

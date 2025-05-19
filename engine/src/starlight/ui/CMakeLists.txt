@@ -1,4 +1,4 @@
-set(SL_UI_LIBS dl kstd::kstd starlight-core starlight-renderer)
+set(SL_UI_LIBS dl kstd::kstd starlight-core starlight-math starlight-renderer)
 set(SL_UI_TARGET starlight-ui)
 file(GLOB_RECURSE SL_UI_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 

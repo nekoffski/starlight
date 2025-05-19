@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "starlight/core/math/Core.hh"
+#include "starlight/math/Core.hh"
 #include <kstd/Id.hh>
 
 #include "fwd.hh"

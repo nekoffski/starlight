@@ -5,19 +5,18 @@
 #include <starlight/ui/UI.hh>
 #include <starlight/ui/widgets/Image.hh>
 
+#include <kstd/memory/UniquePtr.hh>
+
 #include "ui/Widget.hh"
-#include "ui/ResourceType.hh"
+#include "ui/Resource.hh"
+#include "resources/ResourceView.hh"
 
 namespace sle {
 
 class ResourcesView : public Widget {
 public:
-    struct Node {
-        ResourceType type;
-        std::string name;
-        std::string fullPath;
-        std::string extension;
-        bool isDirectory;
+    struct Node : Resource {
+        using Resource::Resource;
         std::vector<Node> children;
     };
 
@@ -28,13 +27,17 @@ public:
 private:
     void renderResourceTree();
     void renderNode(Node& node);
+    void setSelectedResource(Resource& node);
+    void renderUnknownResource(Resource& resource);
 
     void build();
-    void processNode(Node& node, const kstd::FileSystem& fs);
+    void processNode(Node& node);
 
+    const kstd::FileSystem& m_fs;
     kstd::SharedPtr<sl::Texture> m_folderTexture;
     Node m_root;
-    Node* m_activeNode;
+
+    std::unordered_map<Resource::Type, kstd::UniquePtr<ResourceView>> m_views;
 };
 
 }  // namespace sle

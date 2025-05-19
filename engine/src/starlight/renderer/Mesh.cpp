@@ -1,15 +1,15 @@
 #include "Mesh.hh"
 
-#include "starlight/core/math/Geometry.hh"
-#include "starlight/core/math/Vertex.hh"
+#include "starlight/math/Geometry.hh"
+#include "starlight/math/Vertex.hh"
 
 namespace sl {
 
-Mesh::Mesh(
-  const Data& data, Buffer& vertexBuffer, Buffer& indexBuffer, OptStr name
-) :
-    NamedResource(name), m_extent(data.extent), m_vertexBuffer(vertexBuffer),
-    m_indexBuffer(indexBuffer) {
+Mesh::Mesh(const Data& data, Buffer& vertexBuffer, Buffer& indexBuffer, OptStr name)
+    : NamedResource(name)
+    , m_extent(data.extent)
+    , m_vertexBuffer(vertexBuffer)
+    , m_indexBuffer(indexBuffer) {
     log::debug(
       "Creating Mesh, vertex data size = {}b, index data size = {}b",
       data.vertexDataSize, data.indexDataSize

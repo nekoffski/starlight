@@ -5,7 +5,7 @@
 #include <unordered_map>
 
 #include "starlight/core/Core.hh"
-#include "starlight/core/math/Core.hh"
+#include "starlight/math/Core.hh"
 #include "kstd/Enum.hh"
 #include <kstd/Id.hh>
 #include "starlight/renderer/RenderPacket.hh"

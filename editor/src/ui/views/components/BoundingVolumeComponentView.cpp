@@ -1,6 +1,6 @@
 #include "BoundingVolumeComponentView.hh"
 
-#include <starlight/core/math/Utils.hh>
+#include <starlight/math/Utils.hh>
 #include <starlight/physx/bvh/AABB.hh>
 
 namespace sle {

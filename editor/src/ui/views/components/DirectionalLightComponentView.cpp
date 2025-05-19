@@ -1,6 +1,6 @@
 #include "DirectionalLightComponentView.hh"
 
-#include <starlight/core/math/Utils.hh>
+#include <starlight/math/Utils.hh>
 
 namespace sle {
 

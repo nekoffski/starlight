@@ -1,7 +1,7 @@
 #pragma once
 
 #include "starlight/core/Core.hh"
-#include "starlight/core/math/Core.hh"
+#include "starlight/math/Core.hh"
 #include "starlight/event/EventProxy.hh"
 #include "starlight/event/EventHandlerSentinel.hh"
 

@@ -1,4 +1,5 @@
 add_subdirectory(core)
+add_subdirectory(math)
 add_subdirectory(physx)
 add_subdirectory(event)
 add_subdirectory(window)

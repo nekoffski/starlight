@@ -3,7 +3,7 @@
 #include <variant>
 
 #include "starlight/core/Core.hh"
-#include "starlight/core/math/Core.hh"
+#include "starlight/math/Core.hh"
 #include "starlight/renderer/gpu/Buffer.hh"
 
 namespace sl {

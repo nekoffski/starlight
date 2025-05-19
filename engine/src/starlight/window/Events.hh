@@ -1,6 +1,6 @@
 #pragma once
 
-#include "starlight/core/math/Core.hh"
+#include "starlight/math/Core.hh"
 #include "starlight/core/Utils.hh"
 #include "Keys.hh"
 

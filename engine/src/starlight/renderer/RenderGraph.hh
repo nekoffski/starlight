@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "starlight/event/EventProxy.hh"
-#include "starlight/core/math/Core.hh"
+#include "starlight/math/Core.hh"
 #include "starlight/core/Concepts.hh"
 #include "RenderPass.hh"
 #include "Renderer.hh"

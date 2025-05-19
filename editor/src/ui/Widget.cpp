@@ -107,21 +107,23 @@ void Widget::State::setViewport(const sl::Vec2<sl::u32>& viewport) {
     m_viewport = viewport;
 }
 
-std::vector<std::string>& Widget::getResources(ResourceType type) {
+std::vector<std::string>& Widget::getResources(Resource::Type type) {
     return m_state.m_resources[type];
 }
 
-void Widget::addResource(ResourceType type, const std::string& name) {
+void Widget::addResource(Resource::Type type, const std::string& name) {
     m_state.m_resources[type].push_back(name);
 }
 
 void Widget::resetResources() {
     m_state.m_resources.clear();
-    m_state.m_resources[ResourceType::material].push_back(
+    m_state.m_resources[Resource::Type::material].push_back(
       sl::MaterialFactory::get().getDefault()->getName()
     );
 }
 
-void Widget::resetResources(ResourceType type) { m_state.m_resources[type].clear(); }
+void Widget::resetResources(Resource::Type type) {
+    m_state.m_resources[type].clear();
+}
 
 }  // namespace sle

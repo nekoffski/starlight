@@ -3,7 +3,7 @@
 #include <optional>
 
 #include "starlight/core/Core.hh"
-#include "starlight/core/math/Core.hh"
+#include "starlight/math/Core.hh"
 #include "starlight/window/Window.hh"
 
 #include "Sync.hh"

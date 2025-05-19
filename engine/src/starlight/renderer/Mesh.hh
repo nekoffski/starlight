@@ -5,9 +5,9 @@
 
 #include "fwd.hh"
 
-#include "starlight/core/math/Extent.hh"
-#include "starlight/core/math/Core.hh"
-#include "starlight/core/math/Vertex.hh"
+#include "starlight/math/Extent.hh"
+#include "starlight/math/Core.hh"
+#include "starlight/math/Vertex.hh"
 #include "starlight/core/Concepts.hh"
 
 #include "gpu/Device.hh"

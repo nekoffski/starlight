@@ -1,6 +1,6 @@
 #include "TransformComponentView.hh"
 
-#include <starlight/core/math/Utils.hh>
+#include <starlight/math/Utils.hh>
 
 #include <ImGuizmo.h>
 

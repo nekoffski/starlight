@@ -1,6 +1,6 @@
 #pragma once
 
-#include "starlight/core/math/Core.hh"
+#include "starlight/math/Core.hh"
 
 #include "gpu/Texture.hh"
 #include "Mesh.hh"

@@ -1,6 +1,6 @@
 #include "Renderer.hh"
 
-#include "starlight/core/math/Vertex.hh"
+#include "starlight/math/Vertex.hh"
 #include "starlight/window/Window.hh"
 
 #include "starlight/window/Events.hh"

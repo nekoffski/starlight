@@ -11,48 +11,16 @@
 
 namespace sle {
 
-static ResourceType extensionToResourceType(const std::string& extension) {
-    if (extension == ".tga" || extension == ".jpg" || extension == ".png")
-        return ResourceType::texture;
-    else if (extension == ".obj")
-        return ResourceType::wavefrontObject;
-    else if (extension == ".mtl")
-        return ResourceType::wavefrontMaterial;
-    else if (extension == ".vert" || extension == ".spv" || extension == ".frag")
-        return ResourceType::shader;
-    else if (extension == ".starmtl")
-        return ResourceType::material;
-    return ResourceType::unknown;
-}
-
-static std::string_view getResourceThumbnail(ResourceType type) {
-    switch (type) {
-        case ResourceType::directory:
-            return ICON_FA_FOLDER;
-        case ResourceType::texture:
-            return ICON_FA_IMAGE;
-        case ResourceType::shader:
-            return ICON_FA_LIGHTBULB;
-        case ResourceType::material:
-        case ResourceType::wavefrontMaterial:
-            return ICON_FA_FEATHER;
-        case ResourceType::wavefrontObject:
-            return ICON_FA_CUBE;
-        case ResourceType::unknown:
-        default:
-            return ICON_FA_FILE;
-    }
-}
-
 ResourcesView::ResourcesView(Widget::State& state)
     : Widget(state)
-    , m_folderTexture(sl::TextureFactory::get().loadFlat("folder.png")) {
-    m_activeNode = &m_root;
+    , m_fs(kstd::GlobalFileSystem::get())
+    , m_folderTexture(sl::TextureFactory::get().loadFlat("folder.png"))
+    , m_root(getConfig().assetsRoot, m_fs) {
     build();
 }
 
 void ResourcesView::render() {
-    sl::text("Project path: {}", m_activeNode->fullPath);
+    sl::text("Project path: {}", m_root.fullPath);
     sl::separator();
     sl::child("ResourceTree", [&]() { renderResourceTree(); });
 }
@@ -67,47 +35,44 @@ void ResourcesView::renderResourceTree() {
 void ResourcesView::renderNode(Node& node) {
     for (auto& child : node.children) {
         const auto flags =
-          child.isDirectory
+          child.isDirectory()
             ? ImGuiTreeNodeFlags_DefaultOpen
             : ImGuiTreeNodeFlags_Leaf;
         sl::treeNode(
-          fmt::format("{}  {}", getResourceThumbnail(child.type), child.name),
+          fmt::format("{}  {}", child.thumbnail, child.name),
           [&]() { renderNode(child); }, flags
         );
+        if (not child.isDirectory() && sl::wasItemClicked())
+            setSelectedResource(child);
     }
+}
+
+void ResourcesView::renderUnknownResource(Resource& resource) {
+    sl::text("Could not render preview, unknown resource format");
+    sl::separator();
+    sl::text("{}", resource.name + resource.extension);
+}
+
+void ResourcesView::setSelectedResource(Resource& node) {
+    if (auto view = m_views.find(node.type); view != m_views.end())
+        setInspectorCallback([&]() { view->second->render(node); });
+    else
+        setInspectorCallback([&]() { renderUnknownResource(node); });
 }
 
 void ResourcesView::build() {
     resetResources();
-
-    m_root.name     = "Assets";
-    m_root.fullPath = getConfig().assetsRoot;
-    m_root.type     = ResourceType::directory;
-
-    auto& fs = kstd::GlobalFileSystem::get();
-    processNode(m_root, fs);
+    processNode(m_root);
 }
 
-void ResourcesView::processNode(Node& node, const kstd::FileSystem& fs) {
-    for (const auto& item : fs.listDirectory(node.fullPath)) {
-        bool isDirectory = fs.isDirectory(item);
-        const auto extension =
-          kstd::extensionFromPath(item, kstd::ExtensionExtractionMode::lastChunk)
-            .value_or("");
+void ResourcesView::processNode(Node& node) {
+    for (const auto& item : m_fs.listDirectory(node.fullPath)) {
+        node.children.emplace_back(item, m_fs);
 
-        const auto type =
-          isDirectory ? ResourceType::directory : extensionToResourceType(extension);
-        const auto name = kstd::nameFromPath(
-          item, kstd::NameExtractionMode::withoutLastExtensionChunk
-        );
-
-        node.children
-          .emplace_back(type, name + extension, item, extension, isDirectory);
-
-        if (isDirectory)
-            processNode(node.children.back(), fs);
+        if (auto& child = node.children.back(); child.isDirectory())
+            processNode(child);
         else
-            addResource(type, name);
+            addResource(child.type, child.name);
     }
 }
 

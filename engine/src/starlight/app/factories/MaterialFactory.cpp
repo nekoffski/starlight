@@ -2,6 +2,7 @@
 
 #include "starlight/core/Json.hh"
 #include "starlight/core/Globals.hh"
+#include "starlight/math/Json.hh"
 
 #include "TextureFactory.hh"
 

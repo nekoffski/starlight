@@ -2,7 +2,7 @@
 
 #include <optional>
 
-#include <starlight/core/math/Vec.hh>
+#include <starlight/math/Vec.hh>
 #include <starlight/core/Config.hh>
 
 namespace sle {

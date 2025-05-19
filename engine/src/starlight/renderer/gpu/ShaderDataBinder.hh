@@ -4,7 +4,7 @@
 #include <functional>
 
 #include "starlight/core/Core.hh"
-#include "starlight/core/math/Core.hh"
+#include "starlight/math/Core.hh"
 
 #include "Texture.hh"
 #include "Pipeline.hh"

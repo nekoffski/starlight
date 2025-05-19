@@ -3,7 +3,7 @@
 #include <atomic>
 #include <optional>
 
-#include <starlight/core/math/Core.hh>
+#include <starlight/math/Core.hh>
 #include <starlight/event/EventHandlerSentinel.hh>
 #include <starlight/renderer/Renderer.hh>
 #include <starlight/renderer/camera/Camera.hh>
