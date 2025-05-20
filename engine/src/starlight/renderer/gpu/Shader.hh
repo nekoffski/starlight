@@ -5,8 +5,8 @@
 #include <array>
 
 #include <kstd/memory/SharedPtr.hh>
+#include <kstd/containers/FlatMap.hh>
 
-#include "starlight/core/containers/KeyVector.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/core/Utils.hh"
 #include <kstd/Id.hh>
@@ -63,7 +63,7 @@ public:
         std::string name;
     };
 
-    using UniformMap = KeyVector<Uniform, NameGetter<Uniform>>;
+    using UniformMap = kstd::DynamicFlatMap<std::string, Uniform>;
 
     struct DataLayout {
         explicit DataLayout(

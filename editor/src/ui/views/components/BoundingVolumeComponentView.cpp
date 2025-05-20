@@ -13,9 +13,12 @@ void BoundingVolumeComponentView::render(sl::BoundingVolumeComponent& c) {
       ICON_FA_BOX "  BoundingVolume",
       [&]() {
           if (bv->is<sl::AABB>()) {
-              sl::text("Axis-Aligned Bounding Box");
+              sl::text("Type:");
+              sl::text("\tAxis-Aligned Bounding Box");
+
               auto aabb = bv->as<sl::AABB>();
-              sl::text("Extent: {} - {}", aabb->getMin(), aabb->getMax());
+              sl::text("Extent:");
+              sl::text("\t{} - {}", aabb->getMin(), aabb->getMax());
           }
       },
       ImGuiTreeNodeFlags_DefaultOpen

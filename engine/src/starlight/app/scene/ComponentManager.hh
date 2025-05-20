@@ -3,9 +3,10 @@
 #include <typeindex>
 #include <unordered_map>
 
+#include <kstd/containers/FlatMap.hh>
+
 #include "starlight/core/Core.hh"
 #include "starlight/core/Concepts.hh"
-#include "starlight/core/containers/FlatMap.hh"
 
 #include "Component.hh"
 
@@ -17,12 +18,10 @@ struct ComponentContainer : public kstd::NonCopyable {
 };
 
 template <typename T> class ComponentContainerBase : public ComponentContainer {
-    using ComponentBuffer              = FlatMap<u64, T>;
     static constexpr u64 maxComponents = 1024;
+    using ComponentBuffer              = kstd::StaticFlatMap<u64, T, maxComponents>;
 
 public:
-    explicit ComponentContainerBase()
-        : m_components(maxComponents) {}
     ComponentBuffer* operator->() { return &m_components; }
 
     void* getRaw(u64 entityId) override {

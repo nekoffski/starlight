@@ -4,6 +4,7 @@
 #include <functional>
 
 #include "starlight/core/Core.hh"
+#include "starlight/core/Log.hh"
 #include "starlight/math/Core.hh"
 
 #include "Texture.hh"
@@ -104,7 +105,7 @@ public:
           uniforms.contains(name), "Could not find '{}' push constant", name
         );
         setPushConstant(
-          uniforms.at(name), details::addressOf(value), commandBuffer, pipeline
+          *uniforms.get(name), details::addressOf(value), commandBuffer, pipeline
         );
     }
 

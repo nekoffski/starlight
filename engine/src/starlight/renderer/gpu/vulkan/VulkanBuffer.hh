@@ -1,6 +1,6 @@
 #pragma once
 
-#include "starlight/core/containers/FreeList.hh"
+#include <kstd/containers/FreeBlockList.hh>
 
 #include "starlight/renderer/gpu/Buffer.hh"
 
@@ -34,7 +34,7 @@ private:
 
     VulkanDevice& m_device;
     Properties m_props;
-    FreeList m_freeList;
+    kstd::FreeBlockList m_freeList;
 
     VkBuffer m_handle;
     VkDeviceMemory m_memory;

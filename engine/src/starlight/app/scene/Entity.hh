@@ -5,6 +5,7 @@
 
 #include <kstd/Id.hh>
 
+#include "starlight/core/Log.hh"
 #include "Component.hh"
 #include "ComponentManager.hh"
 

@@ -2,9 +2,10 @@
 
 #include <vector>
 
+#include <kstd/containers/SlotBuffer.hh>
+
 #include "starlight/core/Core.hh"
 #include "starlight/window/Window.hh"
-#include "starlight/core/containers/FlatMap.hh"
 #include "starlight/renderer/RenderPacket.hh"
 #include "starlight/core/Concepts.hh"
 #include "starlight/renderer/Skybox.hh"
@@ -34,7 +35,7 @@ public:
              && Callable<C, void, ComponentType&>
     void forEach(C&& callback) {
         m_componentManager.getContainer<ComponentType>()->forEach(
-          [&]([[maybe_unused]] const auto& k, auto& v) { callback(v); }
+          [&]([[maybe_unused]] const auto& k, ComponentType& v) { callback(v); }
         );
     }
 
@@ -48,7 +49,7 @@ public:
 public:
     kstd::SharedPtr<Skybox> m_skybox;
     ComponentManager m_componentManager;
-    StaticVector<Entity> m_entities;
+    kstd::StackSlotBuffer<Entity, maxEntities> m_entities;
 };
 
 }  // namespace sl

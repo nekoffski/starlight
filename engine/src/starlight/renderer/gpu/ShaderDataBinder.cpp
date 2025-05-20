@@ -38,7 +38,7 @@ const Shader::Uniform& ShaderDataBinder::Setter::getUniform(
     const auto& container =
       isSampler ? m_descriptorLayout.samplers : m_descriptorLayout.nonSamplers;
     log::expect(container.contains(uniform), "Could not find '{}' uniform", uniform);
-    return container.at(uniform);
+    return *container.get(uniform);
 }
 
 /*

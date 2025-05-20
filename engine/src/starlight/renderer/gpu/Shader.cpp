@@ -210,14 +210,14 @@ Shader::DataLayout::DataLayout(
 
     for (const auto& uniform : uniforms) {
         if (uniform.scope == Uniform::Scope::pushConstant) {
-            pushConstants.nonSamplers.push(uniform);
+            pushConstants.nonSamplers.insert(uniform.name, uniform);
             pushConstants.size += uniform.size;
         } else {
             auto set = getDescriptorSet(uniform.scope);
             if (uniform.type == DataType::sampler) {
-                set->samplers.push(uniform);
+                set->samplers.insert(uniform.name, uniform);
             } else {
-                set->nonSamplers.push(uniform);
+                set->nonSamplers.insert(uniform.name, uniform);
                 set->size += uniform.size;
             }
         }

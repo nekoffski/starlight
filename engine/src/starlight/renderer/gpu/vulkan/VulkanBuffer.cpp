@@ -113,13 +113,13 @@ void VulkanBuffer::unlockMemory() {
 }
 
 std::optional<Range> VulkanBuffer::allocate(u64 size, const void* data) {
-    auto offset = m_freeList.allocateBlock(size);
+    auto block = m_freeList.acquireBlock(size);
 
-    if (not offset) {
+    if (not block) {
         log::warn("Could not allocate {}b, not space left", size);
         return {};
     }
-    Range range{ .offset = *offset, .size = size };
+    Range range{ .offset = block->offset, .size = block->size };
 
     if (data != nullptr) {
         const auto isDeviceLocal = static_cast<bool>(
@@ -150,7 +150,7 @@ std::optional<Range> VulkanBuffer::allocate(u64 size, const void* data) {
 }
 
 void VulkanBuffer::free(const Range& range) {
-    m_freeList.freeBlock(range.size, range.offset);
+    m_freeList.releaseBlock({ .offset = range.offset, .size = range.size });
 }
 
 void VulkanBuffer::copy(const Range& range, const void* data) {

@@ -354,6 +354,7 @@ void VulkanShaderDataBinder::createUniformBuffer() {
     log::expect(
       allocatedRange.has_value(), "Could not allocate global UBO from uniform buffer"
     );
+    log::debug("Allocated offset: {}", allocatedRange->offset);
     m_globalUboOffset   = allocatedRange->offset;
     m_uniformBufferView = m_uniformBuffer->lockMemory();
 

@@ -183,6 +183,7 @@ void renderEntityInspector(
             sl::namedScope(componentType.name(), [&]() {
                 views.render(componentType, entity.get(componentType));
             });
+            sl::lineBreak();
         }
     });
 }
