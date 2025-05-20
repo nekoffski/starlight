@@ -2,6 +2,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include "Core.hh"
+
 namespace glm {
 
 template <typename T>

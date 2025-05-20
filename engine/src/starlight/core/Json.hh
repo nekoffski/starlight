@@ -3,6 +3,7 @@
 #include <nlohmann/json.hpp>
 
 #include "Concepts.hh"
+#include "Core.hh"
 
 namespace sl {
 

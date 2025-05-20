@@ -2,6 +2,8 @@
 
 #include <gtest/gtest.h>
 
+#include "starlight/math/Json.hh"
+
 using namespace sl;
 
 TEST(JsonTests, getIfExistExistingField) {
