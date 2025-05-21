@@ -90,7 +90,7 @@ private:
     u64 m_localUboStride;
     u64 m_globalUboOffset;
 
-    kstd::LocalPtr<VulkanBuffer> m_uniformBuffer;
+    kstd::UniquePtr<VulkanBuffer> m_uniformBuffer;
     void* m_uniformBufferView;
 
     std::vector<VkDescriptorSet> m_globalDescriptorSets;

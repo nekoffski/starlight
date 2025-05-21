@@ -1,8 +1,14 @@
 #include "MaterialFactory.hh"
 
+#include <span>
+#include <boost/algorithm/string.hpp>
+
+#include <kstd/containers/FlatMap.hh>
+#include <kstd/Algorithms.hh>
+
 #include "starlight/core/Json.hh"
 #include "starlight/core/Globals.hh"
-#include "starlight/math/Json.hh"
+#include "starlight/math/Serialization.hh"
 
 #include "TextureFactory.hh"
 
@@ -19,31 +25,76 @@ static Material::Properties getDefaultProperties() {
     };
 }
 
+using MaterialFile = kstd::StaticFlatMap<std::string, std::string, 8u>;
+
+static std::optional<MaterialFile> parseMaterialFile(
+  std::span<const std::string> file
+) {
+    MaterialFile tokens;
+    for (const auto& token : file) {
+        const auto assignment = token.find_first_of("=");
+        if (assignment == token.npos) {
+            log::error("Invalid entry in material file: {}", token);
+            return {};
+        }
+
+        auto k = token.substr(0, assignment);
+        auto v = token.substr(assignment + 1);
+
+        boost::algorithm::trim(k);
+        boost::algorithm::trim(v);
+
+        log::debug("Parsed material property: '{}' = '{}'", k, v);
+
+        if (tokens.contains(k)) {
+            log::error("Property '{}' defined more than once", k);
+            return {};
+        }
+
+        tokens.insert(k, v);
+    }
+    return tokens;
+}
+
 static std::optional<Material::Properties> loadProperties(
   const std::string& path, const kstd::FileSystem& fs
 ) {
-    log::trace("Loading material properties file: {}", path);
+    log::info("Loading material properties file: {}", path);
 
     if (not fs.isFile(path)) {
         log::error("Could not find file: '{}'", path);
         return {};
     }
 
-    try {
-        const auto root = nlohmann::json::parse(fs.readFile(path));
-        auto props      = getDefaultProperties();
+    if (auto f = parseMaterialFile(fs.readLines(path)); not f) {
+        log::error("Could not parse material file");
+        return {};
+    } else {
+        auto props = getDefaultProperties();
+        auto& tf   = sl::TextureFactory::get();
 
-        json::getIfExists(root, "diffuse-color", props.diffuseColor);
-        json::getIfExists(root, "diffuse-map", props.diffuseMap);
-        json::getIfExists(root, "specular-map", props.specularMap);
-        json::getIfExists(root, "normal-map", props.normalMap);
-        json::getIfExists(root, "shininess", props.shininess);
+        if (auto diffuseColor = f->get("DIFFUSE_COLOR"); diffuseColor)
+            props.diffuseColor = fromString<Vec4<f32>>(*diffuseColor);
+
+        if (auto diffuseMap = f->get("DIFFUSE_MAP"); diffuseMap)
+            props.diffuseMap = tf.loadFlat(*diffuseMap);
+
+        if (auto specularMap = f->get("SPECULAR_MAP"); specularMap)
+            props.specularMap = tf.loadFlat(*specularMap);
+
+        if (auto normalMap = f->get("NORMAL_MAP"); normalMap)
+            props.normalMap = tf.loadFlat(*normalMap);
+
+        try {
+            if (auto shininess = f->get("SHININESS"); shininess)
+                props.shininess = std::stof(*shininess);
+        } catch (std::invalid_argument& e) {
+            log::error("Could not parse property: {}", e.what());
+            return {};
+        }
 
         return props;
-    } catch (const nlohmann::json::parse_error& e) {
-        log::error("Could not parse material '{}' file: {}", path, e.what());
     }
-    return {};
 }
 
 MaterialFactory::MaterialFactory() { createDefault(); }
@@ -51,6 +102,7 @@ MaterialFactory::MaterialFactory() { createDefault(); }
 kstd::SharedPtr<Material> MaterialFactory::load(
   const std::string& name, const kstd::FileSystem& fs
 ) {
+    log::info("Loading material: {}", name);
     if (auto resource = find(name); resource) return resource;
 
     const auto& materialsPath = Globals::get().getConfig().paths.materials;

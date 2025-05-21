@@ -16,7 +16,7 @@ SceneParser::SceneParser(const kstd::FileSystem* fs)
 }
 
 void SceneParser::serialize(Scene& scene, const std::string& path) {
-    log::debug("Serializing scene: {}", path);
+    log::info("Serializing scene: {}", path);
     nlohmann::json root;
 
     root["ts"] = getTimeString("%Y-%m-%d %H:%M:%S");
@@ -64,7 +64,7 @@ nlohmann::json SceneParser::serializeEntity(Entity& entity) {
 kstd::SharedPtr<Scene> SceneParser::deserialize(const std::string& path) {
     auto scene = kstd::makeShared<Scene>();
 
-    log::debug("Deserializing scene: {}", path);
+    log::info("Deserializing scene: {}", path);
     log::expect(m_fs->isFile(path), "Scene file does not exist");
     auto root = nlohmann::json::parse(m_fs->readFile(path));
 

@@ -75,10 +75,14 @@ std::optional<u8> Renderer::beginFrame() {
     if (m_recreatingSwapchain) [[unlikely]] {
         static constexpr u64 framesToDrop = 60u;
         m_recreatingSwapchain = (++m_framesSinceResize) <= framesToDrop - 1;
-        log::trace(
-          "Recreating swapchain, dropping frame: {}/{}", m_framesSinceResize,
-          framesToDrop
-        );
+        if (m_recreatingSwapchain) {
+            log::trace(
+              "Recreating swapchain, dropping frame: {}/{}", m_framesSinceResize,
+              framesToDrop
+            );
+        } else {
+            log::info("Swapchain recreated");
+        }
         return {};
     }
 

@@ -347,7 +347,7 @@ void VulkanShaderDataBinder::createUniformBuffer() {
       "Creating uniform buffer, globalUboStride={}, localUboStride={}, totalSize = {}",
       m_globalUboStride, m_localUboStride, totalBufferSize
     );
-    m_uniformBuffer.emplace(m_device, bufferProps);
+    m_uniformBuffer = kstd::makeUnique<VulkanBuffer>(m_device, bufferProps);
 
     log::debug("Allocating {}b of memory", m_globalUboStride);
     auto allocatedRange = m_uniformBuffer->allocate(m_globalUboStride);

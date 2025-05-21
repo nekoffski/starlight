@@ -13,7 +13,7 @@ static std::optional<Texture::ImageData> loadFlatImageData(
 ) {
     static constexpr int requiredChannels = 4;
 
-    log::trace("Loading image: '{}'", path);
+    log::debug("Loading image: '{}'", path);
 
     int width;
     int height;
@@ -63,7 +63,7 @@ static std::optional<Texture::ImageData> loadFlatImageData(
     image.pixels.reserve(bufferSize);
     std::copy(pixels, pixels + bufferSize, std::back_inserter(image.pixels));
 
-    log::trace(
+    log::debug(
       "Image loaded: width={}, height={}, channels={}", image.width, image.height,
       image.channels
     );
@@ -141,6 +141,7 @@ TextureFactory::TextureFactory() { createDefaults(); }
 kstd::SharedPtr<Texture> TextureFactory::loadCubemap(
   const std::string& name, const Texture::SamplerProperties& sampler
 ) {
+    log::info("Loading cubemap: {}", name);
     return load(name, Texture::Type::cubemap, Texture::Orientation::normal, sampler);
 }
 
@@ -148,6 +149,7 @@ kstd::SharedPtr<Texture> TextureFactory::loadFlat(
   const std::string& name, Texture::Orientation orientation,
   const Texture::SamplerProperties& sampler
 ) {
+    log::info("Loading flat texture: {}", name);
     return load(name, Texture::Type::flat, orientation, sampler);
 }
 

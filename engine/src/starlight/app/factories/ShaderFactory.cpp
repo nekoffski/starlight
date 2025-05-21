@@ -42,7 +42,7 @@ std::optional<Shader::Properties> parseShader(
 
     stages.reserve(Shader::maxStages);
 
-    log::debug("Processing shader program: '{}'", basePath);
+    log::info("Processing shader program: '{}'", basePath);
 
     for (const auto& [extension, type] : acceptedExtensions) {
         const auto stagePath = fmt::format("{}.{}.spv", basePath, extension);
@@ -74,6 +74,8 @@ std::optional<Shader::Properties> parseShader(
         return {};
     }
 
+    log::info("Shader program processed");
+
     removeDuplicates(uniforms);
 
     Shader::Properties properties{
@@ -90,6 +92,7 @@ std::optional<Shader::Properties> parseShader(
 kstd::SharedPtr<Shader> ShaderFactory::load(
   const std::string& name, const kstd::FileSystem& fs
 ) {
+    log::info("Loading shader: {}", name);
     const auto shadersPath = Globals::get().getConfig().paths.shaders;
     const auto basePath    = fmt::format("{}/{}", shadersPath, name);
 

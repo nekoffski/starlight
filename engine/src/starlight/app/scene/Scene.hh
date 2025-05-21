@@ -35,7 +35,7 @@ public:
              && Callable<C, void, ComponentType&>
     void forEach(C&& callback) {
         m_componentManager.getContainer<ComponentType>()->forEach(
-          [&]([[maybe_unused]] const auto& k, ComponentType& v) { callback(v); }
+          [&](ComponentType& v) { callback(v); }
         );
     }
 

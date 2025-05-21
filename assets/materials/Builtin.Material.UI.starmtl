@@ -1,4 +1,2 @@
-{
-  "diffuse-color": [1.0, 1.0, 1.0, 1.0],
-  "diffuse-map": "orange_lines_512.png"
-}
+DIFFUSE_COLOR=[1.0, 1.0, 1.0, 1.0]
+DIFFUSE_MAP=orange_lines_512.png

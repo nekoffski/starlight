@@ -51,7 +51,7 @@ protected:
     bool m_hasColorAttachment;
     bool m_hasDepthAttachment;
 
-    std::vector<kstd::LocalPtr<Framebuffer>> m_framebuffers;
+    std::vector<kstd::UniquePtr<Framebuffer>> m_framebuffers;
 };
 
 class VulkanImguiRenderPassBackend : public VulkanRenderPassBackend {

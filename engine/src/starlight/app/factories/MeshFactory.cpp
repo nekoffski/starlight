@@ -44,6 +44,7 @@ void MeshFactory::createDefaults() {
 kstd::SharedPtr<Mesh> MeshFactory::createMesh(
   const Mesh::Data& meshData, const std::string& name
 ) {
+    log::info("Creating mesh: {}", name);
     return kstd::makeShared<Mesh>(meshData, m_vertexBuffer, m_indexBuffer, name);
 }
 

@@ -39,15 +39,6 @@ void generateTangents(std::span<Vertex3> vertices, const std::span<u32> indices)
         auto& v1 = vertices[indices[i + 1]];
         auto& v2 = vertices[indices[i + 2]];
 
-        // log::trace(
-        //   "Input vertices positions: {} {} {}", v0.position, v1.position,
-        //   v2.position
-        // );
-        // log::trace(
-        //   "Input vertices tex coords: {} {} {}", v0.textureCoordinates,
-        //   v1.textureCoordinates, v2.textureCoordinates
-        // );
-
         auto edge1 = v1.position - v0.position;
         auto edge2 = v2.position - v0.position;
 
@@ -73,8 +64,6 @@ void generateTangents(std::span<Vertex3> vertices, const std::span<u32> indices)
         v0.tangent = hTangent;
         v1.tangent = hTangent;
         v2.tangent = hTangent;
-
-        // log::trace("Generated tangent: {}", hTangent);
     }
 }
 

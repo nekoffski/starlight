@@ -211,10 +211,10 @@ void VulkanRenderPassBackend::generateRenderTargets() {
           attachmentViews.size()
         );
 
-        m_framebuffers.emplace_back(
+        m_framebuffers.emplace_back(kstd::makeUnique<Framebuffer>(
           m_device, m_handle, m_props.rect.offset + m_props.rect.size,
           attachmentViews
-        );
+        ));
     }
 }
 

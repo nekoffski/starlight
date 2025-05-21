@@ -1,7 +1,5 @@
-{
-  "diffuse-color": [0.8, 0.8, 0.8, 1.0],
-  "diffuse-map": "cobblestone.png",
-  "specular-map": "cobblestone_SPEC.png",
-  "normal-map": "cobblestone_NRM.png",
-  "shininess": 32
-}
+DIFFUSE_COLOR=[0.8, 0.8, 0.8, 1.0]
+DIFFUSE_MAP=cobblestone.png
+SPECULAR_MAP=cobblestone_SPEC.png
+NORMAL_MAP=cobblestone_NRM.png
+SHININESS=32

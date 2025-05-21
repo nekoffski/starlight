@@ -9,6 +9,8 @@ SkyboxFactory::SkyboxFactory()
     : m_defaultSkyboxShader(ShaderFactory::get().load("Builtin.Shader.Skybox")) {}
 
 kstd::SharedPtr<Skybox> SkyboxFactory::load(const std::string& name) {
+    log::info("Loading skybox: {}", name);
+
     if (auto resource = find(name); resource) [[unlikely]]
         return resource;
 

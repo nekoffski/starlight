@@ -75,7 +75,7 @@ void Engine::updateFrame(float frameTime) {
 
 void Engine::initEvents() {
     m_eventSentinel.add<QuitEvent>([&](auto& event) {
-        log::debug("Got QuitEvent reason: {}, quit requested", event.reason);
+        log::info("Got QuitEvent reason: {}, quit requested", event.reason);
         m_isRunning = false;
     });
 }

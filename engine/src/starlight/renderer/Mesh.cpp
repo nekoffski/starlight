@@ -10,7 +10,7 @@ Mesh::Mesh(const Data& data, Buffer& vertexBuffer, Buffer& indexBuffer, OptStr n
     , m_extent(data.extent)
     , m_vertexBuffer(vertexBuffer)
     , m_indexBuffer(indexBuffer) {
-    log::debug(
+    log::info(
       "Creating Mesh, vertex data size = {}b, index data size = {}b",
       data.vertexDataSize, data.indexDataSize
     );
@@ -122,12 +122,6 @@ Mesh::Properties3D::Properties3D(const PlaneProperties& props) {
 
             v3->position           = glm::vec3{ maxX, 0.0f, minZ };
             v3->textureCoordinates = glm::vec2{ maxUVX, minUVZ };
-
-            log::debug("Plane y={}/x={} segment", y, x);
-            log::debug("v0={}", *v0);
-            log::debug("v1={}", *v1);
-            log::debug("v2={}", *v2);
-            log::debug("v3={}", *v3);
 
             uint32_t iOffset = ((y * props.xSegments) + x) * 6;
 
