@@ -56,17 +56,15 @@ static std::optional<MaterialFile> parseMaterialFile(
     return tokens;
 }
 
-static std::optional<Material::Properties> loadProperties(
-  const std::string& path, const kstd::FileSystem& fs
-) {
+static std::optional<Material::Properties> loadProperties(const std::string& path) {
     log::info("Loading material properties file: {}", path);
 
-    if (not fs.isFile(path)) {
+    if (not kstd::isFile(path)) {
         log::error("Could not find file: '{}'", path);
         return {};
     }
 
-    if (auto f = parseMaterialFile(fs.readLines(path)); not f) {
+    if (auto f = parseMaterialFile(kstd::readLines(path)); not f) {
         log::error("Could not parse material file");
         return {};
     } else {
@@ -99,16 +97,14 @@ static std::optional<Material::Properties> loadProperties(
 
 MaterialFactory::MaterialFactory() { createDefault(); }
 
-kstd::SharedPtr<Material> MaterialFactory::load(
-  const std::string& name, const kstd::FileSystem& fs
-) {
+kstd::SharedPtr<Material> MaterialFactory::load(const std::string& name) {
     log::info("Loading material: {}", name);
     if (auto resource = find(name); resource) return resource;
 
     const auto& materialsPath = Globals::get().getConfig().paths.materials;
     const auto fullPath       = fmt::format("{}/{}.starmtl", materialsPath, name);
 
-    if (auto props = loadProperties(fullPath, fs); props) {
+    if (auto props = loadProperties(fullPath); props) {
         return create(name, *props);
     }
 

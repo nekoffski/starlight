@@ -13,9 +13,8 @@ namespace sle {
 
 ResourcesView::ResourcesView(Widget::State& state)
     : Widget(state)
-    , m_fs(kstd::GlobalFileSystem::get())
     , m_folderTexture(sl::TextureFactory::get().loadFlat("folder.png"))
-    , m_root(getConfig().assetsRoot, m_fs) {
+    , m_root(getConfig().assetsRoot) {
     build();
 }
 
@@ -66,8 +65,8 @@ void ResourcesView::build() {
 }
 
 void ResourcesView::processNode(Node& node) {
-    for (const auto& item : m_fs.listDirectory(node.fullPath)) {
-        node.children.emplace_back(item, m_fs);
+    for (const auto& item : kstd::listDirectory(node.fullPath)) {
+        node.children.emplace_back(item);
 
         if (auto& child = node.children.back(); child.isDirectory())
             processNode(child);

@@ -20,15 +20,13 @@ void from_json(const nlohmann::json& j, Config& out) {
         out.initialScene = j.at("initial-scene").get<std::string>();
 }
 
-std::optional<Config> Config::fromJson(
-  const std::string& path, const kstd::FileSystem& fs
-) {
-    if (not fs.isFile(path)) {
+std::optional<Config> Config::fromJson(const std::string& path) {
+    if (not kstd::isFile(path)) {
         sl::log::error("Config file '{}' does not exist", path);
         return {};
     }
     try {
-        return nlohmann::json::parse(fs.readFile(path)).get<Config>();
+        return nlohmann::json::parse(kstd::readFile(path)).get<Config>();
     } catch (const nlohmann::json::parse_error& e) {
         sl::log::error("Could not parse config file '{}' - {}", path, e.what());
     }

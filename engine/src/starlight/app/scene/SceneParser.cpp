@@ -7,8 +7,7 @@
 
 namespace sl {
 
-SceneParser::SceneParser(const kstd::FileSystem* fs)
-    : m_fs(fs) {
+SceneParser::SceneParser() {
     registerParser<DirectionalLightComponent, DirectionalLightComponent::Parser>();
     registerParser<PointLightComponent, PointLightComponent::Parser>();
     registerParser<TransformComponent, TransformComponent::Parser>();
@@ -34,7 +33,7 @@ void SceneParser::serialize(Scene& scene, const std::string& path) {
     const auto buffer = root.dump();
     log::debug("Parsed scene: {}", buffer);
 
-    m_fs->writeFile(path, buffer, kstd::FileSystem::WritePolicy::override);
+    kstd::writeFile(path, buffer);
     log::info("Scene successfully saved to: {}", path);
 }
 
@@ -65,8 +64,8 @@ kstd::SharedPtr<Scene> SceneParser::deserialize(const std::string& path) {
     auto scene = kstd::makeShared<Scene>();
 
     log::info("Deserializing scene: {}", path);
-    log::expect(m_fs->isFile(path), "Scene file does not exist");
-    auto root = nlohmann::json::parse(m_fs->readFile(path));
+    log::expect(kstd::isFile(path), "Scene file does not exist");
+    auto root = nlohmann::json::parse(kstd::readFile(path));
 
     if (json::hasField(root, "skybox")) {
         const auto skybox = root["skybox"].get<std::string>();

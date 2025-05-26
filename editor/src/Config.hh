@@ -8,9 +8,8 @@
 namespace sle {
 
 struct Config {
-    static std::optional<Config> fromJson(
-      const std::string& path,
-      const kstd::FileSystem& fs = kstd::GlobalFileSystem::get()
+    static std::optional<Config> fromJson(const std::string& path
+
     );
     sl::Config toEngineConfig() const;
 

@@ -33,7 +33,6 @@ private:
     void build();
     void processNode(Node& node);
 
-    const kstd::FileSystem& m_fs;
     kstd::SharedPtr<sl::Texture> m_folderTexture;
     Node m_root;
 

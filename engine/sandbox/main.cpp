@@ -46,8 +46,6 @@ int main(int argc, char** argv) {
     sl::log::init("sl-sandbox");
     sl::log::expect(argc >= 2, "Config path required");
 
-    kstd::GlobalFileSystem fs;
-
     std::optional<std::string> scenePath;
     if (argc >= 3) scenePath = std::string{ argv[2] };
 

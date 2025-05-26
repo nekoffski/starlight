@@ -40,7 +40,7 @@ static std::string_view getResourceThumbnail(Resource::Type type) {
     }
 }
 
-Resource::Resource(const std::string& fullPath, const kstd::FileSystem& fs)
+Resource::Resource(const std::string& fullPath)
     : fullPath(fullPath) {
     name = kstd::nameFromPath(
       fullPath, kstd::NameExtractionMode::withoutLastExtensionChunk
@@ -49,7 +49,7 @@ Resource::Resource(const std::string& fullPath, const kstd::FileSystem& fs)
       kstd::extensionFromPath(fullPath, kstd::ExtensionExtractionMode::lastChunk)
         .value_or("");
     type =
-      fs.isDirectory(fullPath)
+      kstd::isDirectory(fullPath)
         ? Resource::Type::directory
         : extensionToResourceType(extension);
     thumbnail = getResourceThumbnail(type);

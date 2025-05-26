@@ -5,7 +5,6 @@
 #include <spirv_cross/spirv_cross.hpp>
 #include <spirv_cross/spirv_glsl.hpp>
 
-#include "kstd/FileSystem.hh"
 #include "starlight/renderer/gpu/Shader.hh"
 
 namespace sl {
@@ -32,8 +31,6 @@ private:
     Output m_output;
 };
 
-std::optional<Shader::Properties> parseShader(
-  const std::string& basePath, const kstd::FileSystem& fs
-);
+std::optional<Shader::Properties> parseShader(const std::string& basePath);
 
 }  // namespace sl

@@ -1,5 +1,7 @@
 #include "Config.hh"
 
+#include <kstd/FileSystem.hh>
+
 #include "starlight/core/Json.hh"
 #include "starlight/core/Log.hh"
 
@@ -23,16 +25,14 @@ void deserialize(const nlohmann::json& j, Config& out) {
     paths.at("fonts").get_to(out.paths.fonts);
 }
 
-std::optional<Config> Config::fromJson(
-  const std::string& path, const kstd::FileSystem& fs
-) {
-    if (not fs.isFile(path)) {
+std::optional<Config> Config::fromJson(const std::string& path) {
+    if (not kstd::isFile(path)) {
         log::error("Config file '{}' does not exist", path);
         return {};
     }
 
     try {
-        return nlohmann::json::parse(fs.readFile(path)).get<Config>();
+        return nlohmann::json::parse(kstd::readFile(path)).get<Config>();
     } catch (const nlohmann::json::parse_error& e) {
         log::error("Could not parse config file '{}' - {}", path, e.what());
     }

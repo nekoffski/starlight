@@ -33,9 +33,7 @@ static void removeDuplicates(std::vector<Shader::Uniform>& uniforms) {
     );
 }
 
-std::optional<Shader::Properties> parseShader(
-  const std::string& basePath, const kstd::FileSystem& fs
-) {
+std::optional<Shader::Properties> parseShader(const std::string& basePath) {
     std::vector<Shader::Stage> stages;
     std::vector<Shader::Uniform> uniforms;
     std::vector<Shader::InputAttribute> attributes;
@@ -46,11 +44,11 @@ std::optional<Shader::Properties> parseShader(
 
     for (const auto& [extension, type] : acceptedExtensions) {
         const auto stagePath = fmt::format("{}.{}.spv", basePath, extension);
-        if (fs.isFile(stagePath)) {
+        if (kstd::isFile(stagePath)) {
             log::debug(
               "Found {} stage for '{}' shader, will try to process", type, basePath
             );
-            const auto source = fs.readFile(stagePath);
+            const auto source = kstd::readFile(stagePath);
             if (auto output = SPIRVParser{ source }.process(type); not output) {
                 log::warn("Could not parse shader stage: {}", stagePath);
                 return {};
@@ -89,14 +87,12 @@ std::optional<Shader::Properties> parseShader(
     return properties;
 }
 
-kstd::SharedPtr<Shader> ShaderFactory::load(
-  const std::string& name, const kstd::FileSystem& fs
-) {
+kstd::SharedPtr<Shader> ShaderFactory::load(const std::string& name) {
     log::info("Loading shader: {}", name);
     const auto shadersPath = Globals::get().getConfig().paths.shaders;
     const auto basePath    = fmt::format("{}/{}", shadersPath, name);
 
-    if (auto properties = parseShader(basePath, fs); properties)
+    if (auto properties = parseShader(basePath); properties)
         return save(Shader::create(*properties, name));
 
     log::warn("Could not parse shader properties");

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "starlight/core/Factory.hh"
-#include "kstd/FileSystem.hh"
 #include "starlight/renderer/Material.hh"
 
 namespace sl {
@@ -13,10 +12,7 @@ public:
 
     explicit MaterialFactory();
 
-    kstd::SharedPtr<Material> load(
-      const std::string& name,
-      const kstd::FileSystem& fs = kstd::GlobalFileSystem::get()
-    );
+    kstd::SharedPtr<Material> load(const std::string& name);
 
     kstd::SharedPtr<Material> create(
       const std::string& name, const Material::Properties& properties

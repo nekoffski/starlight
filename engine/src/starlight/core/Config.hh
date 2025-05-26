@@ -3,17 +3,12 @@
 #include <optional>
 #include <string>
 
-#include <kstd/FileSystem.hh>
-
 #include "Core.hh"
 
 namespace sl {
 
 struct Config {
-    static std::optional<Config> fromJson(
-      const std::string& path,
-      const kstd::FileSystem& fs = kstd::GlobalFileSystem::get()
-    );
+    static std::optional<Config> fromJson(const std::string& path);
 
     struct Window {
         u32 width;

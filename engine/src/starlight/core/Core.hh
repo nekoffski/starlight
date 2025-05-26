@@ -10,6 +10,7 @@
 #include <kstd/memory/UniquePtr.hh>
 #include <kstd/memory/LocalPtr.hh>
 #include <kstd/Concepts.hh>
+#include <kstd/FileSystem.hh>
 
 namespace sl {
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <starlight/core/Core.hh>
-#include <kstd/FileSystem.hh>
 
 namespace sle {
 
@@ -17,7 +16,7 @@ struct Resource {
         wavefrontMaterial
     };
 
-    explicit Resource(const std::string& fullPath, const kstd::FileSystem& fs);
+    explicit Resource(const std::string& fullPath);
     bool isDirectory() const;
 
     std::string fullPath;
