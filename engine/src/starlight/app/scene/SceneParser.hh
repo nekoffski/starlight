@@ -2,6 +2,8 @@
 
 #include <unordered_map>
 
+#include <kstd/serialization/All.hh>
+
 #include "starlight/core/Log.hh"
 #include "starlight/core/Json.hh"
 #include "starlight/app/scene/Scene.hh"
@@ -11,9 +13,6 @@
 namespace sl {
 
 class SceneParser {
-    using Deserializer = std::function<void(Entity&, const nlohmann::json&)>;
-    using Serializer   = std::function<nlohmann::json(void*)>;
-
 public:
     template <typename T, typename Parser>
     requires(std::is_base_of_v<Component, T> && std::is_base_of_v<ComponentParser, Parser>)
@@ -38,7 +37,7 @@ public:
 
 private:
     void deserializeEntity(Scene& scene, const nlohmann::json& node);
-    nlohmann::json serializeEntity(Entity& entity);
+    void serializeEntity(Entity& entity);
 
     bool deserializeComponent(
       const std::string& name, Entity& entity, const nlohmann::json& node

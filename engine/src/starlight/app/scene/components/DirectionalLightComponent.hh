@@ -11,8 +11,9 @@ struct DirectionalLightComponent : ComponentBase<DirectionalLight> {
     using ComponentBase::ComponentBase;
 
     struct Parser : ComponentParserBase<DirectionalLightComponent> {
-        void deserialize(Entity&, const nlohmann::json&) const override;
-        nlohmann::json serialize(const DirectionalLightComponent&) const override;
+        void deserialize(Entity&, kstd::BinaryReader&) const override;
+        void serialize(const DirectionalLightComponent&, kstd::BinaryWriter&)
+          const override;
         std::string getComponentName() const override;
     };
 };

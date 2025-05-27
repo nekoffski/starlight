@@ -5,6 +5,7 @@
 #include <starlight/app/factories/MeshFactory.hh>
 #include <starlight/app/factories/MaterialFactory.hh>
 #include <starlight/app/factories/TextureFactory.hh>
+#include <starlight/app/factories/SkyboxFactory.hh>
 #include <starlight/app/scene/Components.hh>
 #include <starlight/math/Utils.hh>
 #include <starlight/physx/Ray.hh>
@@ -121,12 +122,14 @@ void SceneView::renderEntitiesTab() {
     );
 }
 
-#define ADD_COMPONENT(Component, ...)                            \
-    if (entity.has<Component>()) {                               \
-        editorWriteWarn("Component already added, skipping..."); \
-    } else {                                                     \
-        editorWriteDebug("Adding component: {}", #Component);    \
-        entity.add<Component>(__VA_ARGS__);                      \
+#define ADD_COMPONENT(Index, Component, ...)                         \
+    if (entityData.selectedComponentIndex == Index) {                \
+        if (entity.has<Component>()) {                               \
+            editorWriteWarn("Component already added, skipping..."); \
+        } else {                                                     \
+            editorWriteDebug("Adding component: {}", #Component);    \
+            entity.add<Component>(__VA_ARGS__);                      \
+        }                                                            \
     }
 
 void renderEntityInspector(
@@ -134,7 +137,7 @@ void renderEntityInspector(
   ComponentViewAggregate& views
 ) {
     static std::vector<const char*> componentNames = {
-        "Model", "PointLight", "DirectionalLight", "Transform"
+        "Transform", "Point Light", "Directional Light", "Mesh Renderer"
     };
 
     entityData.nameBuffer = entity.getName();
@@ -165,17 +168,10 @@ void renderEntityInspector(
               entityData.selectedComponentIndex
             );
 
-            if (entityData.selectedComponentIndex == 0) {
-                // ADD_COMPONENT(
-                //   sl::ModelComponent, sl::ModelFactory::get().getDefault()
-                // );
-            } else if (entityData.selectedComponentIndex == 1) {
-                ADD_COMPONENT(sl::PointLightComponent);
-            } else if (entityData.selectedComponentIndex == 2) {
-                ADD_COMPONENT(sl::DirectionalLightComponent);
-            } else if (entityData.selectedComponentIndex == 3) {
-                ADD_COMPONENT(sl::TransformComponent);
-            }
+            ADD_COMPONENT(0u, sl::TransformComponent);
+            ADD_COMPONENT(1u, sl::PointLightComponent);
+            ADD_COMPONENT(2u, sl::DirectionalLightComponent);
+            ADD_COMPONENT(3u, sl::MeshRendererComponent);
         }
 
         for (const auto& componentType : entity.getComponentTypes()) {
@@ -188,6 +184,31 @@ void renderEntityInspector(
     });
 }
 
-void SceneView::renderSkyboxTab() {}
+void SceneView::renderSkyboxTab() {
+    // TODO: FIXME, create a proper CubemapFactory
+
+    std::vector<std::string> skyboxes = { "None" };
+    auto textures                     = getResources(Resource::Type::texture);
+    for (const auto& t : textures)
+        if (t.ends_with("_u")) skyboxes.push_back(t.substr(0, t.size() - 2u));
+
+    auto& scene = getScene();
+
+    std::string skyboxName = "None";
+    if (auto skybox = scene.getSkybox(); skybox) skyboxName = skybox->getName();
+
+    sl::immediateCombo("##SkyboxCombo", skyboxName, [&]() {
+        for (auto& skybox : skyboxes) {
+            bool selected = skyboxName == skybox;
+            if (ImGui::Selectable(skybox.c_str(), selected)) {
+                if (skybox == "None")
+                    scene.resetSkybox();
+                else
+                    scene.setSkybox(sl::SkyboxFactory::get().load(skybox));
+            }
+            if (selected) ImGui::SetItemDefaultFocus();
+        }
+    });
+}
 
 }  // namespace sle

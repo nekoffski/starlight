@@ -15,8 +15,9 @@ struct BoundingVolumeComponent : ComponentBase<BoundingVolumeComponentData> {
     using ComponentBase::ComponentBase;
 
     struct Parser : ComponentParserBase<BoundingVolumeComponent> {
-        void deserialize(Entity&, const nlohmann::json&) const override;
-        nlohmann::json serialize(const BoundingVolumeComponent&) const override;
+        void deserialize(Entity&, kstd::BinaryReader&) const override;
+        void serialize(const BoundingVolumeComponent&, kstd::BinaryWriter&)
+          const override;
         std::string getComponentName() const override;
     };
 };

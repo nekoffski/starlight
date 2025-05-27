@@ -10,11 +10,15 @@ namespace sle {
 UserInterface::UserInterface(
   const sl::Vec2<sl::u32>& viewport, sl::Scene& scene, sl::RenderGraph& renderGraph,
   sl::Camera& camera, const Config& config
-) :
-    m_eventSentinel(sl::EventProxy::get()), m_viewport(viewport), m_config(config),
-    m_widgetState(viewport, config, scene, renderGraph, camera),
-    m_sceneView(m_widgetState), m_propertiesView(m_widgetState),
-    m_resourcesView(m_widgetState), m_inspectorView(m_widgetState) {
+)
+    : m_eventSentinel(sl::EventProxy::get())
+    , m_viewport(viewport)
+    , m_config(config)
+    , m_widgetState(viewport, config, scene, renderGraph, camera)
+    , m_sceneView(m_widgetState)
+    , m_propertiesView(m_widgetState)
+    , m_resourcesView(m_widgetState)
+    , m_inspectorView(m_widgetState) {
     m_eventSentinel.add<sl::WindowResized>([&](auto& event) {
         onViewportReisze(event.size);
     });
@@ -131,12 +135,12 @@ void UserInterface::initMenu() {
         sl::EventProxy::get().emit<sl::QuitEvent>("UI.File.Exit pressed");
     });
 
-    static std::string scenePath = "./test.starscene.json";
-
     m_menu.addMenu("Scene")
       .addItem(
         "Load",
         [&]() {
+            std::string scenePath =
+              getConfig().assetsRoot + "/scenes/test.starscene";
             editorWriteDebug("Requesting scene load: {}", scenePath);
             sl::EventProxy::get().emit<events::SceneSerialization>(
               events::SceneSerialization::Action::deserialize, scenePath
@@ -144,6 +148,7 @@ void UserInterface::initMenu() {
         }
       )
       .addItem("Save", [&]() {
+          std::string scenePath = getConfig().assetsRoot + "/scenes/test.starscene";
           editorWriteDebug("Requesting scene save: {}", scenePath);
           sl::EventProxy::get().emit<events::SceneSerialization>(
             events::SceneSerialization::Action::serialize, scenePath

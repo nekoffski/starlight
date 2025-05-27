@@ -2,11 +2,12 @@
 
 namespace sl {
 
-void BoundingVolumeComponent::Parser::deserialize(Entity&, const nlohmann::json&)
+void BoundingVolumeComponent::Parser::deserialize(Entity&, kstd::BinaryReader& br)
   const {}
 
-nlohmann::json
-  BoundingVolumeComponent::Parser::serialize(const BoundingVolumeComponent&) const {}
+void BoundingVolumeComponent::Parser::serialize(
+  const BoundingVolumeComponent&, kstd::BinaryWriter& bw
+) const {}
 
 std::string BoundingVolumeComponent::Parser::getComponentName() const {
     return "BoundingVolumeComponent";

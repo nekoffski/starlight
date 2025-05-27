@@ -59,7 +59,7 @@ class Recipe(ConanFile):
 
     def test(self):
         self.output.info("Running tests...")
-        self.run('ctest -VV --output-on-failure --test-dir ./engine')
+        self.run('ctest --output-on-failure --test-dir ./engine')
 
     def benchmark(self):
         self.output.info("Running benchmarks...")

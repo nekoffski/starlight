@@ -29,18 +29,18 @@ void MeshRendererComponent::onInit() {
 }
 
 void MeshRendererComponent::Parser::deserialize(
-  Entity& entity, const nlohmann::json& json
+  Entity& entity, kstd::BinaryReader& br
 ) const {
-    const auto& meshName = json["mesh"].get<std::string>();
-    entity.add<MeshRendererComponent>(MeshFactory::get().find(meshName));
+    // const auto& meshName = json["mesh"].get<std::string>();
+    // entity.add<MeshRendererComponent>(MeshFactory::get().find(meshName));
 }
 
-nlohmann::json MeshRendererComponent::Parser::serialize(
-  const MeshRendererComponentData& data
+void MeshRendererComponent::Parser::serialize(
+  const MeshRendererComponentData& data, kstd::BinaryWriter& bw
 ) const {
-    nlohmann::json root;
-    root["mesh"] = data.mesh->getName();
-    return root;
+    // nlohmann::json root;
+    // root["mesh"] = data.mesh->getName();
+    // return root;
 }
 
 std::string MeshRendererComponent::Parser::getComponentName() const {

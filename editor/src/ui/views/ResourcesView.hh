@@ -31,7 +31,7 @@ private:
     void renderUnknownResource(Resource& resource);
 
     void build();
-    void processNode(Node& node);
+    void processNode(Node& node, const std::string& prefix = "");
 
     kstd::SharedPtr<sl::Texture> m_folderTexture;
     Node m_root;

@@ -17,7 +17,7 @@ def create_new_project(path: Path, name: str, engine_path: str):
         shutil.copytree(f'{engine_path}/assets/{sub}', f'{assets_dir}/{sub}')
 
     shutil.copy(
-        f'{engine_path}/assets/scenes/test.starscene.json', f'{assets_dir}/scenes/test.starscene.json')
+        f'{engine_path}/assets/scenes/test.starscene', f'{assets_dir}/scenes/test.starscene')
 
     config = {
         "window": {
@@ -29,7 +29,7 @@ def create_new_project(path: Path, name: str, engine_path: str):
             "height": 0.3,
         },
         "assets-root": f'{project_dir}/assets',
-        "initial-scene": "test.starscene.json"
+        "initial-scene": "test.starscene"
     }
 
     with open(project_dir / 'config.json', 'w+') as f:

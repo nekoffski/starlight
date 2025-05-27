@@ -8,11 +8,11 @@ namespace sl {
 
 static constexpr u64 shadowMapResolution = 1024;
 
-ShadowMapsRenderPass::ShadowMapsRenderPass(Renderer& renderer) :
-    RenderPass(
-      renderer, ShaderFactory::get().load("Builtin.Shader.ShadowMaps"),
-      "ShadowMapsRenderPass"
-    ) {}
+ShadowMapsRenderPass::ShadowMapsRenderPass(Renderer& renderer)
+    : RenderPass(
+        renderer, ShaderFactory::get().load("Builtin.Shader.ShadowMaps"),
+        "ShadowMapsRenderPass"
+      ) {}
 
 RenderPassBackend::Properties ShadowMapsRenderPass::createRenderPassProperties(
   [[maybe_unused]] bool hasPreviousPass, [[maybe_unused]] bool hasNextPass
@@ -51,7 +51,10 @@ RenderPassBackend::Properties ShadowMapsRenderPass::createRenderPassProperties(
 void ShadowMapsRenderPass::render(
   RenderPacket& packet, CommandBuffer& commandBuffer, u32 imageIndex, u64 frameNumber
 ) {
-    if (packet.directionalLights.empty()) return;
+    if (packet.directionalLights.empty()) {
+        packet.shadowMaps.push_back(m_shadowMaps[imageIndex].get());
+        return;
+    }
 
     auto depthMVP =
       math::ortho<float>(-5.0f, 5.0f, -5.0f, 5.0f, -5.0f, 20.0f)

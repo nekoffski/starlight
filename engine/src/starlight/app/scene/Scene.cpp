@@ -46,7 +46,7 @@ RenderPacket Scene::getRenderPacket() {
     // light.data.color      = Vec4<f32>{ 0.5f, 0.5f, 0.1f, 1.0f };
     // packet.pointLights.push_back(light);
 
-    packet.skybox = m_skybox.get();
+    packet.skybox = m_skybox ? m_skybox.get() : nullptr;
     return packet;
 }
 

@@ -13,8 +13,9 @@ struct TransformComponent : ComponentBase<Transform> {
     void onInit() override;
 
     struct Parser : ComponentParserBase<TransformComponent> {
-        void deserialize(Entity&, const nlohmann::json&) const override;
-        nlohmann::json serialize(const TransformComponent&) const override;
+        void deserialize(Entity&, kstd::BinaryReader&) const override;
+        void serialize(const TransformComponent&, kstd::BinaryWriter&)
+          const override;
         std::string getComponentName() const override;
     };
 };

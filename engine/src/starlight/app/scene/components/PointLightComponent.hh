@@ -11,8 +11,9 @@ struct PointLightComponent : ComponentBase<PointLight> {
     using ComponentBase::ComponentBase;
 
     struct Parser : ComponentParserBase<PointLightComponent> {
-        void deserialize(Entity&, const nlohmann::json&) const override;
-        nlohmann::json serialize(const PointLightComponent&) const override;
+        void deserialize(Entity&, kstd::BinaryReader&) const override;
+        void serialize(const PointLightComponent&, kstd::BinaryWriter&)
+          const override;
         std::string getComponentName() const override;
     };
 };

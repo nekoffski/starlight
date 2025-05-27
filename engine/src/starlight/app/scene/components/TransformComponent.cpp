@@ -18,9 +18,8 @@ void TransformComponent::onInit() {
     );
 }
 
-void TransformComponent::Parser::deserialize(
-  Entity& entity, const nlohmann::json& json
-) const {
+void TransformComponent::Parser::deserialize(Entity& entity, kstd::BinaryReader& br)
+  const {
     entity.add<TransformComponent>();
 }
 
@@ -28,14 +27,10 @@ std::string TransformComponent::Parser::getComponentName() const {
     return "TransformComponent";
 }
 
-nlohmann::json sl::TransformComponent::Parser::serialize(const TransformComponent& c
+void sl::TransformComponent::Parser::serialize(
+  const TransformComponent& c, kstd::BinaryWriter& bw
 ) const {
     auto& component = c.data();
-
-    nlohmann::json json;
-    //     // todo
-
-    return json;
 }
 
 }  // namespace sl

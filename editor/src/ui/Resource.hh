@@ -16,10 +16,11 @@ struct Resource {
         wavefrontMaterial
     };
 
-    explicit Resource(const std::string& fullPath);
+    explicit Resource(const std::string& fullPath, const std::string& assetPath);
     bool isDirectory() const;
 
     std::string fullPath;
+    std::string assetPath;
     std::string name;
     std::string extension;
     Type type;

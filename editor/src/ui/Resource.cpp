@@ -1,9 +1,10 @@
 #include "Resource.hh"
 
 #include <string_view>
+#include <kstd/String.hh>
 
 #include <starlight/ui/fonts/FontAwesome.hh>
-#include <kstd/String.hh>
+#include <starlight/core/Globals.hh>
 
 namespace sle {
 
@@ -40,7 +41,7 @@ static std::string_view getResourceThumbnail(Resource::Type type) {
     }
 }
 
-Resource::Resource(const std::string& fullPath)
+Resource::Resource(const std::string& fullPath, const std::string& assetPath)
     : fullPath(fullPath) {
     name = kstd::nameFromPath(
       fullPath, kstd::NameExtractionMode::withoutLastExtensionChunk
@@ -52,7 +53,8 @@ Resource::Resource(const std::string& fullPath)
       kstd::isDirectory(fullPath)
         ? Resource::Type::directory
         : extensionToResourceType(extension);
-    thumbnail = getResourceThumbnail(type);
+    thumbnail       = getResourceThumbnail(type);
+    this->assetPath = fmt::format("{}/{}", assetPath, name);
 }
 
 bool Resource::isDirectory() const { return type == Type::directory; }

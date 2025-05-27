@@ -31,6 +31,8 @@ struct MeshRenderData {
 void WorldRenderPass::render(
   RenderPacket& packet, CommandBuffer& commandBuffer, u32 imageIndex, u64 frameNumber
 ) {
+    if (packet.entities.empty()) return;
+
     Vec4<f32> ambientColor(0.05f, 0.05f, 0.05f, 1.0f);
     auto camera               = packet.camera;
     const auto cameraPosition = camera->getPosition();
@@ -49,7 +51,7 @@ void WorldRenderPass::render(
         setter.set("viewPosition", cameraPosition);
         setter.set("ambientColor", ambientColor);
         setter.set("mode", static_cast<int>(RenderMode::standard));
-        setter.set("shadowMap", packet.shadowMaps[0]);
+        setter.set("shadowMap", packet.shadowMaps[0]);  // TODO: FIXME
 
         const auto pointLightCount = packet.pointLights.size();
 
