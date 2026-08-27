@@ -1,0 +1,53 @@
+*.png
+
+
+# Build
+build/
+cmake-build-*/
+
+# Conan
+CMakeUserPresets.json
+
+# Compile commands (symlink in root is fine, ignore copies)
+compile_commands.json
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Objects / binaries
+*.o
+*.a
+*.so
+*.dylib
+*.exe
+*.out
+
+TODO.md
+DESIGN.md
+
+__pycache__
+
+# Python SDK
+dist/
+*.egg-info/
+*.whl
+.venv/
+.test-venv/
+
+
+logs
+bench-logs
+
+.agents
+.codex
+
+.pytest_cache
