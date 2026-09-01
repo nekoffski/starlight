@@ -14,8 +14,8 @@ int main() {
     log::info("Hello world!");
 
     Platform::logInfo();
-
     RenderingSystem rs{cfg};
+
     auto proxy = rs.createRendererProxy();
 
     return 0;

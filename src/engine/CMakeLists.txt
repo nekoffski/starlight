@@ -12,9 +12,12 @@ add_library(starlight STATIC
     "starlight/renderer/RendererProxy.cpp"
     "starlight/renderer/RenderingSystem.cpp"
     "starlight/renderer/backend/Renderer.cpp"
-    "starlight/renderer/orchestrator/RenderOrchestrator.cpp"
+    "starlight/renderer/executor/RenderExecutor.cpp"
+    "starlight/renderer/executor/RendererCommandDispatcher.cpp"
     # -- platform
     "starlight/platform/Platform.cpp"
+    # -- runtime
+    "starlight/runtime/Thread.cpp"
 )
 
 target_include_directories(starlight
