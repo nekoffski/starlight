@@ -2,7 +2,7 @@
 
 #include "Log.hh"
 
-namespace starlight {
+namespace sl {
 
 template <typename T>
 T unwrap(Result<T>&& result) {
@@ -10,4 +10,4 @@ T unwrap(Result<T>&& result) {
     return std::move(*result);
 }
 
-}  // namespace starlight
+}  // namespace sl

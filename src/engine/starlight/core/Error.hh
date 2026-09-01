@@ -8,7 +8,7 @@
 
 #include "ErrorCode.hh"
 
-namespace starlight {
+namespace sl {
 
 class Error {
    public:
@@ -45,4 +45,4 @@ class Error {
 template <typename T>
 using Result = std::expected<T, Error>;
 
-}  // namespace starlight
+}  // namespace sl

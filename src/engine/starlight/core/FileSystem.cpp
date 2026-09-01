@@ -6,7 +6,7 @@
 
 namespace fs = std::filesystem;
 
-namespace starlight {
+namespace sl {
 
 const Str& Path::str() const { return m_path; }
 
@@ -199,4 +199,4 @@ Result<void> Directory::touch(const Path& name) {
     return {};
 }
 
-}  // namespace starlight
+}  // namespace sl

@@ -8,7 +8,7 @@
 #include "Concepts.hh"
 #include "Core.hh"
 
-namespace starlight {
+namespace sl {
 
 template <typename T = std::string>
     requires OneOf<T, std::string, u64, i64, f32, f64>
@@ -33,4 +33,4 @@ inline Opt<T> getEnv(const std::string& env) {
     return {};
 }
 
-}  // namespace starlight
+}  // namespace sl

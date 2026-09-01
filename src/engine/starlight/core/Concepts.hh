@@ -3,7 +3,7 @@
 #include <concepts>
 #include <utility>
 
-namespace starlight {
+namespace sl {
 
 struct StaticClass {
     StaticClass() = delete;
@@ -56,4 +56,4 @@ concept Countable = requires(T& t) {
     { t.size() };
 };
 
-}  // namespace starlight
+}  // namespace sl

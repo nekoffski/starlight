@@ -1,6 +1,6 @@
 #include "OS.hh"
 
-namespace starlight {
+namespace sl {
 
 Str toString(OS os) {
     switch (os) {
@@ -14,4 +14,4 @@ Str toString(OS os) {
     return "Unknown";
 }
 
-}  // namespace starlight
+}  // namespace sl

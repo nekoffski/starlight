@@ -6,7 +6,7 @@
 #include "starlight/core/Profiler.hh"
 #include "starlight/core/Scope.hh"
 
-namespace starlight {
+namespace sl {
 
 Result<void> Thread::join() {
     if (m_thread.joinable()) {
@@ -34,7 +34,7 @@ void Thread::start() {
 }
 
 void Thread::go() {
-    STARLIGHT_PROFILE_REGISTER_THREAD();
+    SL_PROFILE_REGISTER_THREAD();
     log::info("{} - thread starting", m_ident);
 
     try {
@@ -62,4 +62,4 @@ void Thread::go() {
     log::info("{} - thread exiting", m_ident);
 }
 
-}  // namespace starlight
+}  // namespace sl

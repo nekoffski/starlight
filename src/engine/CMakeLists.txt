@@ -9,6 +9,11 @@ add_library(starlight STATIC
     "starlight/core/Profiler.cpp"
     "starlight/core/Random.cpp"
     "starlight/core/String.cpp"
+    # --- renderer
+    "starlight/renderer/RendererProxy.cpp"
+    "starlight/renderer/RenderingSystem.cpp"
+    "starlight/renderer/backend/Renderer.cpp"
+    "starlight/renderer/orchestrator/RenderOrchestrator.cpp"
 )
 
 target_include_directories(starlight
@@ -22,8 +27,9 @@ target_link_libraries(starlight
         spdlog::spdlog
         stduuid::stduuid
         stb::stb
+        sdl::sdl
 )
 
-if (STARLIGHT_ENABLE_PROFILING)
-    target_compile_definitions(starlight PRIVATE STARLIGHT_ENABLE_PROFILING=1)
+if (SL_ENABLE_PROFILING)
+    target_compile_definitions(starlight PRIVATE SL_ENABLE_PROFILING=1)
 endif()

@@ -8,7 +8,7 @@
 #include "starlight/core/Core.hh"
 #include "starlight/core/Error.hh"
 
-namespace starlight {
+namespace sl {
 
 class Thread : public NonCopyable, public NonMovable {
    public:
@@ -35,4 +35,4 @@ class Thread : public NonCopyable, public NonMovable {
     std::thread m_thread;
 };
 
-}  // namespace starlight
+}  // namespace sl

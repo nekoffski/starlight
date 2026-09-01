@@ -6,7 +6,7 @@
 #include "Core.hh"
 #include "Error.hh"
 
-namespace starlight {
+namespace sl {
 
 class Path {
    public:
@@ -74,4 +74,4 @@ class Directory {
     Path m_path;
 };
 
-}  // namespace starlight
+}  // namespace sl

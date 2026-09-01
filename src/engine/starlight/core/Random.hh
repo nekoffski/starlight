@@ -7,7 +7,7 @@
 #include "Core.hh"
 #include "Singleton.hh"
 
-namespace starlight {
+namespace sl {
 
 class RandomEngine : public Singleton<RandomEngine> {
    public:
@@ -20,4 +20,4 @@ class RandomEngine : public Singleton<RandomEngine> {
     uuids::uuid_random_generator m_uuidGen;
 };
 
-}  // namespace starlight
+}  // namespace sl

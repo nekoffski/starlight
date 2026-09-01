@@ -2,7 +2,7 @@
 
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-namespace starlight::log {
+namespace sl::log {
 
 static Level currentLogLevel{Level::trace};
 
@@ -91,4 +91,4 @@ void setLogLevel(Level level) {
     }
 }
 
-}  // namespace starlight::log
+}  // namespace sl::log

@@ -2,8 +2,8 @@
 
 #include "Random.hh"
 
-namespace starlight {
+namespace sl {
 
 Tag<Str> Tag<Str>::fromUuid() { return Tag<Str>{RandomEngine::get().uuid()}; }
 
-}  // namespace starlight
+}  // namespace sl

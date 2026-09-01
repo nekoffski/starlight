@@ -10,7 +10,7 @@
 
 #include "Core.hh"
 
-namespace starlight {
+namespace sl {
 
 template <u64 N>
 struct StringLiteral {
@@ -57,4 +57,4 @@ std::string toHexString(CBytesView bytes);
 
 std::string hexDump(CBytesView bytes);
 
-}  // namespace starlight
+}  // namespace sl

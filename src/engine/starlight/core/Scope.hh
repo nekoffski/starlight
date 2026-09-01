@@ -6,7 +6,7 @@
 #include "Concepts.hh"
 #include "Macros.hh"
 
-namespace starlight::details {
+namespace sl::details {
 
 template <typename T>
 class Scoped : public NonCopyable {
@@ -131,10 +131,10 @@ ScopeGuard<Callback, decltype(_ScopeGuardOnSuccessCondition{})> operator+(
     );
 }
 
-}  // namespace starlight::details
+}  // namespace sl::details
 
 // clang-format off
-#define ON_SCOPE_EXIT    auto ANONYMOUS_VAR(SCOPE_EXIT)    = starlight::details::_ScopeGuardOnExit      {} + [&]()
-#define ON_SCOPE_FAIL    auto ANONYMOUS_VAR(SCOPE_FAIL)    = starlight::details::_ScopeGuardOnFailure   {} + [&]()
-#define ON_SCOPE_SUCCESS auto ANONYMOUS_VAR(SCOPE_SUCCESS) = starlight::details::_ScopeGuardOnSuccess   {} + [&]()
+#define ON_SCOPE_EXIT    auto ANONYMOUS_VAR(SCOPE_EXIT)    = sl::details::_ScopeGuardOnExit      {} + [&]()
+#define ON_SCOPE_FAIL    auto ANONYMOUS_VAR(SCOPE_FAIL)    = sl::details::_ScopeGuardOnFailure   {} + [&]()
+#define ON_SCOPE_SUCCESS auto ANONYMOUS_VAR(SCOPE_SUCCESS) = sl::details::_ScopeGuardOnSuccess   {} + [&]()
 // clang-format on

@@ -9,7 +9,7 @@
 #include <span>
 #include <vector>
 
-namespace starlight {
+namespace sl {
 
 template <typename T>
 T maxOf() {
@@ -93,18 +93,18 @@ class Tag<Str> : public Wrapper<Str> {
     static Tag<Str> fromUuid();
 };
 
-}  // namespace starlight
+}  // namespace sl
 
 template <typename T>
-struct std::hash<starlight::Wrapper<T>> {
-    std::size_t operator()(const starlight::Wrapper<T>& v) const noexcept {
+struct std::hash<sl::Wrapper<T>> {
+    std::size_t operator()(const sl::Wrapper<T>& v) const noexcept {
         return std::hash<T>{}(v.get());
     }
 };
 
 template <typename T>
-struct std::hash<starlight::Tag<T>> {
-    std::size_t operator()(const starlight::Tag<T>& v) const noexcept {
+struct std::hash<sl::Tag<T>> {
+    std::size_t operator()(const sl::Tag<T>& v) const noexcept {
         return std::hash<T>{}(v.get());
     }
 };

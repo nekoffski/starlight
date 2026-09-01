@@ -9,7 +9,7 @@
 #include "Singleton.hh"
 #include "Time.hh"
 
-namespace starlight {
+namespace sl {
 
 struct ProfilerEvent {
     enum class Type { begin, end };
@@ -98,36 +98,33 @@ class Profiler : public Singleton<Profiler> {
     thread_local static ProfilerEvents* s_threadEvents;
 };
 
-}  // namespace starlight
+}  // namespace sl
 
 constexpr bool profilerEnabled() {
-#ifdef STARLIGHT_ENABLE_PROFILING
+#ifdef SL_ENABLE_PROFILING
     return true;
 #else
     return false;
 #endif
 }
 
-#ifdef STARLIGHT_ENABLE_PROFILING
+#ifdef SL_ENABLE_PROFILING
 
-#define STARLIGHT_PROFILE_REGION(name) \
-    auto ANONYMOUS_VAR(REGION_TIMER) = \
-        starlight::Profiler::get().profileRegion(name)
+#define SL_PROFILE_REGION(name) \
+    auto ANONYMOUS_VAR(REGION_TIMER) = sl::Profiler::get().profileRegion(name)
 
-#define STARLIGHT_PROFILE_FUNCTION()     \
+#define SL_PROFILE_FUNCTION()            \
     auto ANONYMOUS_VAR(FUNCTION_TIMER) = \
-        starlight::Profiler::get().profileRegion(__func__)
+        sl::Profiler::get().profileRegion(__func__)
 
-#define STARLIGHT_PROFILE_REGISTER_THREAD() \
-    starlight::Profiler::get().registerThread()
-#define STARLIGHT_PROFILE_DUMP_SUMMARY() \
-    starlight::Profiler::get().generateSummary().print()
+#define SL_PROFILE_REGISTER_THREAD() sl::Profiler::get().registerThread()
+#define SL_PROFILE_DUMP_SUMMARY() sl::Profiler::get().generateSummary().print()
 
 #else
 
-#define STARLIGHT_PROFILE_REGION(name)
-#define STARLIGHT_PROFILE_FUNCTION()
-#define STARLIGHT_PROFILE_REGISTER_THREAD()
-#define STARLIGHT_PROFILE_DUMP_SUMMARY()
+#define SL_PROFILE_REGION(name)
+#define SL_PROFILE_FUNCTION()
+#define SL_PROFILE_REGISTER_THREAD()
+#define SL_PROFILE_DUMP_SUMMARY()
 
 #endif

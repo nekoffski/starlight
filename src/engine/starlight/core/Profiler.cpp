@@ -7,7 +7,7 @@
 
 #include "Scope.hh"
 
-namespace starlight {
+namespace sl {
 
 thread_local ProfilerEvents* Profiler::s_threadEvents = nullptr;
 
@@ -192,4 +192,4 @@ void ProfilerSummary::forEachNodeImpl(
     }
 }
 
-}  // namespace starlight
+}  // namespace sl

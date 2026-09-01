@@ -17,6 +17,7 @@ class StarlightConan(ConanFile):
         self.requires("spdlog/1.14.1")
         self.requires("stduuid/1.2.3")
         self.requires("stb/cci.20240531")
+        self.requires("sdl/3.4.14")
 
         if self.settings.os == "Macos":
             self.requires("metal-cpp/26")
@@ -35,4 +36,3 @@ class StarlightConan(ConanFile):
 
     def layout(self):
         cmake_layout(self)
-

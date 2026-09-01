@@ -4,7 +4,7 @@
 #include "Core.hh"
 #include "Log.hh"
 
-namespace starlight {
+namespace sl {
 
 template <typename T>
 class Singleton : public virtual NonMovable, public virtual NonCopyable {
@@ -35,4 +35,4 @@ class UniqueInstance : public virtual NonMovable, public virtual NonCopyable {
     inline static T* s_instance = nullptr;
 };
 
-}  // namespace starlight
+}  // namespace sl

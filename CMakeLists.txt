@@ -5,13 +5,13 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(STARLIGHT_ENABLE_PROFILING OFF)
+set(SL_ENABLE_PROFILING OFF)
 
 find_package(spdlog REQUIRED)
 find_package(stduuid REQUIRED)
 find_package(GTest REQUIRED)
 find_package(stb REQUIRED)
+find_package(SDL3 REQUIRED)
 
 include(CTest)
-
 add_subdirectory(src)

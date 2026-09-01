@@ -1,6 +1,6 @@
 #include "Error.hh"
 
-namespace starlight {
+namespace sl {
 
 Error::Error(ErrorCode code, const std::string& message)
     : m_code(code), m_message(message) {}
@@ -15,4 +15,4 @@ std::unexpected<Error> Error::unexpected(const Error& error) {
 
 std::optional<Error> Error::empty() { return {}; }
 
-}  // namespace starlight
+}  // namespace sl

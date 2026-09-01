@@ -9,7 +9,7 @@
 
 #include "Concepts.hh"
 
-namespace starlight {
+namespace sl {
 
 template <typename Signature>
 class MoveOnlyFunction;
@@ -170,4 +170,4 @@ constexpr auto lazyEvaluate(F&& f) {
 
 #define LAZY_EVALUATE(expr) lazyEvaluate([&]() { return (expr); })
 
-}  // namespace starlight
+}  // namespace sl

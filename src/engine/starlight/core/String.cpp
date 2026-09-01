@@ -1,6 +1,6 @@
 #include "String.hh"
 
-namespace starlight {
+namespace sl {
 
 std::vector<std::string> split(
     const std::string& input, const std::string& separator
@@ -74,4 +74,4 @@ std::string hexDump(CBytesView bytes) {
     return fmt::format("{} | {}", hex, ascii);
 }
 
-}  // namespace starlight
+}  // namespace sl

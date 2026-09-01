@@ -3,14 +3,14 @@
 #include "Core.hh"
 
 #ifdef _WIN32
-#define STARLIGHT_PLATFORM_WINDOWS
+#define SL_PLATFORM_WINDOWS
 #elif __APPLE__
-#define STARLIGHT_PLATFORM_DARWIN
+#define SL_PLATFORM_DARWIN
 #else
-#define STARLIGHT_PLATFORM_LINUX
+#define SL_PLATFORM_LINUX
 #endif
 
-namespace starlight {
+namespace sl {
 
 enum class OS {
     linux,
@@ -19,9 +19,9 @@ enum class OS {
 };
 
 inline constexpr OS detectOs() {
-#ifdef STARLIGHT_PLATFORM_WINDOWS
+#ifdef SL_PLATFORM_WINDOWS
     return OS::windows;
-#elif defined(STARLIGHT_PLATFORM_DARWIN)
+#elif defined(SL_PLATFORM_DARWIN)
     return OS::darwin;
 #else
     return OS::linux;
@@ -30,4 +30,4 @@ inline constexpr OS detectOs() {
 
 Str toString(OS os);
 
-}  // namespace starlight
+}  // namespace sl

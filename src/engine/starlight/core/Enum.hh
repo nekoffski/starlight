@@ -34,7 +34,7 @@ constexpr auto operator&=(T& a, T b) {
     return a = a & b;
 }
 
-namespace starlight {
+namespace sl {
 
 bool checkFlag(auto value, auto flag) {
     using T = std::decay_t<decltype(value)>;
@@ -49,6 +49,6 @@ bool checkFlag(auto value, auto flag) {
            0;
 }
 
-#define STARLIGHT_BIT_ENUM(name) constexpr void enableBitOperations(name);
+#define SL_BIT_ENUM(name) constexpr void enableBitOperations(name);
 
-}  // namespace starlight
+}  // namespace sl

@@ -2,7 +2,7 @@
 
 #include "Core.hh"
 
-namespace starlight {
+namespace sl {
 
 enum class ErrorCode {
     noError = 0,
@@ -10,4 +10,4 @@ enum class ErrorCode {
     invalidArgument = 2,
 };
 
-}  // namespace starlight
+}  // namespace sl
