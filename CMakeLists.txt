@@ -7,11 +7,5 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(SL_ENABLE_PROFILING OFF)
 
-find_package(spdlog REQUIRED)
-find_package(stduuid REQUIRED)
-find_package(GTest REQUIRED)
-find_package(stb REQUIRED)
-find_package(SDL3 REQUIRED)
-
 include(CTest)
 add_subdirectory(src)

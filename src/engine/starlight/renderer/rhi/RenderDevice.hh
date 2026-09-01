@@ -5,9 +5,9 @@
 
 namespace sl {
 
-class RenderOrchestrator : public NonCopyable, public NonMovable {
+class RenderDevice : public NonCopyable, public NonMovable {
    public:
-   private:
+    virtual ~RenderDevice() = default;
 };
 
 }  // namespace sl

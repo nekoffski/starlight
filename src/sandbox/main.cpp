@@ -1,15 +1,22 @@
 
+#include "starlight/core/Config.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/core/Log.hh"
+#include "starlight/platform/Platform.hh"
 #include "starlight/renderer/RenderingSystem.hh"
 
-int main() {
-    using namespace sl;
+using namespace sl;
 
-    log::init();
+int main() {
+    Config cfg;
+
+    log::init(log::LoggerOptions{.level = cfg.log.level});
     log::info("Hello world!");
 
-    RenderingSystem rs;
+    Platform::logInfo();
+
+    RenderingSystem rs{cfg};
+    auto proxy = rs.createRendererProxy();
 
     return 0;
 }

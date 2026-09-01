@@ -57,6 +57,7 @@ template <typename... Args>
 
 struct LoggerOptions {
     bool enableColors{false};
+    Level level{Level::info};
     std::string formatPattern{
         "%^[%d-%m-%Y %T] [Th: %t] %-7l [starlight]: %v %$"
     };
