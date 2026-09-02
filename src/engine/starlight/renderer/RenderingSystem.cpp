@@ -14,8 +14,8 @@ RenderingSystem::RenderingSystem(const Config& config)
 
 RenderingSystem::~RenderingSystem() { stop(); }
 
-RendererProxy RenderingSystem::createRendererProxy() const {
-    return RendererProxy{};
+RendererProxy RenderingSystem::createRendererProxy() {
+    return RendererProxy{m_renderExecutor.createSubmitter()};
 }
 
 void RenderingSystem::stop() { m_renderExecutor.stop(); }

@@ -15,7 +15,7 @@ class RenderingSystem : public NonCopyable, public NonMovable {
     explicit RenderingSystem(const Config& config);
     ~RenderingSystem();
 
-    RendererProxy createRendererProxy() const;
+    RendererProxy createRendererProxy();
 
     void stop();
 

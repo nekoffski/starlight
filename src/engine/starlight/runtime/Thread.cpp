@@ -34,10 +34,10 @@ void Thread::go() {
         run();
     } catch (const std::exception& e) {
         log::error("{} - standard exception in thread: {}", m_ident, e.what());
-        return;
+        throw;
     } catch (...) {
         log::error("{} - unknown exception in thread", m_ident);
-        return;
+        throw;
     }
     log::info("{} - thread exiting", m_ident);
 }

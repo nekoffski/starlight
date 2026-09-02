@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "RendererCommand.hh"
 #include "RendererCommandDispatcher.hh"
 #include "starlight/core/Concepts.hh"
@@ -21,23 +23,23 @@ class RenderExecutor : public NonCopyable, public NonMovable {
        private:
         void run() override;
 
+        Renderer& m_renderer;
         RendererCommandDispatcher m_dispatcher;
         Queue& m_queue;
     };
 
-    class Submitter : public NonCopyable, public NonMovable {
+    class Submitter {
        public:
-        constexpr Submitter(Queue& queue) : m_queue(queue) {}
+        explicit Submitter(std::shared_ptr<Queue> queue);
 
-        constexpr bool submit(RendererCommand command) {
-            return m_queue.push(std::move(command));
-        }
+        bool submit(RendererCommand command);
 
        private:
-        Queue& m_queue;
+        std::weak_ptr<Queue> m_queue;
     };
 
     explicit RenderExecutor(Renderer& renderer);
+    ~RenderExecutor();
 
     void start();
     void stop();
@@ -45,7 +47,7 @@ class RenderExecutor : public NonCopyable, public NonMovable {
     Submitter createSubmitter();
 
    private:
-    Queue m_queue;
+    std::shared_ptr<Queue> m_queue;
     DispatcherThread m_runner;
 };
 

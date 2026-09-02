@@ -11,6 +11,10 @@ class Renderer : public NonCopyable, public NonMovable {
    public:
     explicit Renderer(const Config& config, RenderDevice& device);
 
+    bool hasPendingWork() const;
+    void tick();
+    void flush();
+
    private:
     Config m_config;
     RenderDevice& m_device;

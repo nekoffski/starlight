@@ -1,11 +1,16 @@
 #pragma once
 
+#include <future>
 #include <variant>
 
 namespace sl {
 
-struct RCNoop {};
+struct RendererNoop {};
 
-using RendererCommand = std::variant<RCNoop>;
+struct RendererFlush {
+    std::promise<void> completion;
+};
+
+using RendererCommand = std::variant<RendererNoop, RendererFlush>;
 
 }  // namespace sl
