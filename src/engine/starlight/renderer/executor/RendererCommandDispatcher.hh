@@ -13,10 +13,11 @@ class RendererCommandDispatcher : public NonCopyable, public NonMovable {
 
     void dispatch(RendererCommand command);
 
-   private:
-    void dispatch(RendererNoop command);
-    void dispatch(RendererFlush command);
+    void operator()(RendererNoop command);
+    void operator()(RendererFlush command);
+    void operator()(RendererCreateSurfaceOutput command);
 
+   private:
     Renderer& m_renderer;
 };
 

@@ -9,6 +9,8 @@ enum class ErrorCode {
     fileSystemError = 1,
     invalidArgument = 2,
     rendererCommandRejected = 3,
+    backendMismatch = 4,
+    surfaceCreationFailed = 5,
 };
 
 }  // namespace sl

@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "Metal.hh"
+#include "MetalResourcePool.hh"
 #include "starlight/core/Config.hh"
 #include "starlight/renderer/rhi/RenderDevice.hh"
 
@@ -18,10 +19,19 @@ class MetalDevice : public RenderDevice {
     static std::unique_ptr<MetalDevice> create(const Config& config);
 
    private:
-    Config m_config;
+    Result<SurfaceHandle> createSurface(
+        std::shared_ptr<RenderSurfaceProvider> provider
+    ) override {
+        return m_resourcePool.createSurface(std::move(provider));
+    }
 
-    MTL::Device* m_device{nullptr};
-    MTL::CommandQueue* m_queue{nullptr};
+    void destroySurface(SurfaceHandle handle) override {
+        m_resourcePool.destroySurface(handle);
+    }
+
+    Config m_config;
+    MetalContext m_ctx;
+    MetalResourcePool m_resourcePool;
 };
 
 }  // namespace sl

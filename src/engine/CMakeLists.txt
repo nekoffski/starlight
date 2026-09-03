@@ -8,6 +8,7 @@ add_library(starlight STATIC
     "starlight/core/Profiler.cpp"
     "starlight/core/Random.cpp"
     "starlight/core/String.cpp"
+    "starlight/core/Id.cpp"
     # -- renderer
     "starlight/renderer/RendererProxy.cpp"
     "starlight/renderer/RenderingSystem.cpp"
@@ -16,6 +17,7 @@ add_library(starlight STATIC
     "starlight/renderer/executor/RendererCommandDispatcher.cpp"
     # -- platform
     "starlight/platform/Platform.cpp"
+    "starlight/platform/sdl/SDLWindow.cpp"
     # -- runtime
     "starlight/runtime/Thread.cpp"
 )
@@ -45,12 +47,18 @@ if (APPLE)
 
     target_sources(starlight
         PRIVATE
-            "starlight/platform/metal/MetalDevice.cpp"
             "starlight/platform/metal/Metal.cpp"
+            "starlight/platform/metal/MetalDevice.cpp"
+            "starlight/platform/metal/MetalResourcePool.cpp"
+    )
+
+    target_compile_definitions(starlight PUBLIC
+        SL_PLATFORM_DARWIN=1
+        SL_USE_METAL=1
     )
 
     target_link_libraries(starlight
-        PRIVATE
+        PUBLIC
             metal-cpp::metal-cpp
     )
 endif()
