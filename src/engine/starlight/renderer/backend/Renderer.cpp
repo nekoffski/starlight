@@ -21,7 +21,7 @@ bool Renderer::hasPendingWork() const { return false; }
 Result<RenderOutput> Renderer::createOutput(
     std::shared_ptr<RenderSurfaceProvider> surfaceProvider
 ) {
-    auto surface = m_device.createSurface(std::move(surfaceProvider));
+    auto surface = m_device.attachSurface(std::move(surfaceProvider));
 
     if (not surface) {
         return Error::unexpected(

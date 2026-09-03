@@ -5,7 +5,7 @@ namespace sl {
 MetalResourcePool::MetalResourcePool(const Config&, MetalContext& ctx)
     : m_ctx(ctx) {}
 
-Result<SurfaceHandle> MetalResourcePool::createSurface(
+Result<SurfaceHandle> MetalResourcePool::attachSurface(
     std::shared_ptr<RenderSurfaceProvider> provider
 ) {
     auto metalProvider =
@@ -18,7 +18,7 @@ Result<SurfaceHandle> MetalResourcePool::createSurface(
         );
     }
 
-    auto layer = metalProvider->createLayer();
+    auto layer = metalProvider->getLayer();
     SurfaceHandle handle{m_idLake.acquire<SurfaceHandle>()};
 
     m_surfaces.emplace(
@@ -26,13 +26,6 @@ Result<SurfaceHandle> MetalResourcePool::createSurface(
     );
 
     return handle;
-}
-
-void MetalResourcePool::destroySurface(SurfaceHandle handle) {
-    if (auto it = m_surfaces.find(handle); it != m_surfaces.end()) {
-        m_idLake.release<SurfaceHandle>(handle.id);
-        m_surfaces.erase(it);
-    }
 }
 
 }  // namespace sl

@@ -4,7 +4,7 @@
 
 namespace sl {
 
-SDLWindow::SDLWindow(const Config& config) {
+SDLWindowBase::SDLWindowBase(const Config& config) {
     if (s_windowCount.fetch_add(1) == 0) {
         log::expect(
             SDL_Init(SDL_INIT_VIDEO) > 0, "Could not initialize SDL: {}",
@@ -20,7 +20,7 @@ SDLWindow::SDLWindow(const Config& config) {
     log::trace("SDLWindow created");
 }
 
-SDLWindow::~SDLWindow() {
+SDLWindowBase::~SDLWindowBase() {
     if (m_window) {
         SDL_DestroyWindow(m_window);
     }
@@ -34,15 +34,27 @@ SDLWindow::~SDLWindow() {
 
 #if defined(SL_USE_METAL)
 
-CA::MetalLayer* SDLWindow::createLayer() {
-    return reinterpret_cast<CA::MetalLayer*>(SDL_Metal_GetLayer(m_window));
+SDLMetalWindow::SDLMetalWindow(const Config& config) : SDLWindowBase(config) {
+    m_metalView = SDL_Metal_CreateView(m_window);
+    log::expect(
+        m_metalView != nullptr, "Could not create Metal view: {}",
+        SDL_GetError()
+    );
+
+    m_metalLayer =
+        reinterpret_cast<CA::MetalLayer*>(SDL_Metal_GetLayer(m_metalView));
+    log::expect(
+        m_metalLayer != nullptr, "Could not get Metal layer: {}", SDL_GetError()
+    );
 }
 
-void SDLWindow::destroyLater(CA::MetalLayer* layer) {
-    if (layer) {
-        SDL_Metal_DestroyView(reinterpret_cast<SDL_MetalView>(layer));
+SDLMetalWindow::~SDLMetalWindow() {
+    if (m_metalView) {
+        SDL_Metal_DestroyView(m_metalView);
     }
 }
+
+CA::MetalLayer* SDLMetalWindow::getLayer() { return m_metalLayer; }
 
 #else
 #error "Unsupported platform"

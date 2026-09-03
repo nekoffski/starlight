@@ -7,8 +7,7 @@ namespace sl {
 
 class MetalRenderSurfaceProvider : public RenderSurfaceProvider {
    public:
-    virtual CA::MetalLayer* createLayer() = 0;
-    virtual void destroyLater(CA::MetalLayer* layer) = 0;
+    virtual CA::MetalLayer* getLayer() = 0;
 };
 
 }  // namespace sl

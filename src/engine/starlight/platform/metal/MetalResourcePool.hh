@@ -20,10 +20,9 @@ class MetalResourcePool : public NonCopyable, public NonMovable {
    public:
     explicit MetalResourcePool(const Config& config, MetalContext& ctx);
 
-    Result<SurfaceHandle> createSurface(
+    Result<SurfaceHandle> attachSurface(
         std::shared_ptr<RenderSurfaceProvider> provider
     );
-    void destroySurface(SurfaceHandle handle);
 
    private:
     IdLake m_idLake;

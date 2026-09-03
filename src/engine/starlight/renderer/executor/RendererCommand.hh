@@ -17,7 +17,7 @@ struct RendererFlush {
 };
 
 struct RendererCreateSurfaceOutput {
-    std::shared_ptr<RenderSurfaceProvider> window;
+    std::shared_ptr<RenderSurfaceProvider> surfaceProvider;
     std::promise<Result<RenderOutput>> completion;
 };
 

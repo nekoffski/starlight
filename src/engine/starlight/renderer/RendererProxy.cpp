@@ -19,7 +19,7 @@ Result<void> RendererProxy::flushRenderer() {
 Result<RenderOutput> RendererProxy::createRenderOutput(
     std::shared_ptr<RenderSurfaceProvider> window
 ) {
-    RendererCreateSurfaceOutput cmd;
+    RendererCreateSurfaceOutput cmd{std::move(window)};
     auto completion = cmd.completion.get_future();
 
     if (not m_submitter.submit(std::move(cmd))) {

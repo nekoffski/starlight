@@ -19,14 +19,14 @@ class MetalDevice : public RenderDevice {
     static std::unique_ptr<MetalDevice> create(const Config& config);
 
    private:
-    Result<SurfaceHandle> createSurface(
+    Result<SurfaceHandle> attachSurface(
         std::shared_ptr<RenderSurfaceProvider> provider
     ) override {
-        return m_resourcePool.createSurface(std::move(provider));
+        return m_resourcePool.attachSurface(std::move(provider));
     }
 
-    void destroySurface(SurfaceHandle handle) override {
-        m_resourcePool.destroySurface(handle);
+    void destroySurface(SurfaceHandle) override {
+        // noop for metal, no renderer involved in creating surface
     }
 
     Config m_config;

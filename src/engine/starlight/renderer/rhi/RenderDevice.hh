@@ -11,7 +11,7 @@ class RenderDevice : public NonCopyable, public NonMovable {
    public:
     virtual ~RenderDevice() = default;
 
-    virtual Result<SurfaceHandle> createSurface(
+    virtual Result<SurfaceHandle> attachSurface(
         std::shared_ptr<RenderSurfaceProvider> provider
     ) = 0;
     virtual void destroySurface(SurfaceHandle handle) = 0;

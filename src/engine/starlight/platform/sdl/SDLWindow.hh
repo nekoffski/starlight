@@ -18,22 +18,44 @@ using RenderSurfaceProviderImpl = sl::MetalRenderSurfaceProvider;
 
 namespace sl {
 
-class SDLWindow : public RenderSurfaceProviderImpl {
+class SDLWindowBase : public virtual NonCopyable, public virtual NonMovable {
    public:
-    explicit SDLWindow(const Config& config);
-    ~SDLWindow();
+    explicit SDLWindowBase(const Config& config);
+    ~SDLWindowBase();
 
-   private:
-#if defined(SL_USE_METAL)
-    CA::MetalLayer* createLayer() override;
-    void destroyLater(CA::MetalLayer* layer) override;
-#else
-#error "Unsupported platform"
-#endif
-
+   protected:
     SDL_Window* m_window{nullptr};
 
     inline static std::atomic<u8> s_windowCount{0};
 };
+
+#if defined(SL_USE_METAL)
+
+class SDLMetalWindow : public SDLWindowBase, public MetalRenderSurfaceProvider {
+   public:
+    explicit SDLMetalWindow(const Config& config);
+    ~SDLMetalWindow();
+
+    CA::MetalLayer* getLayer() override;
+
+   private:
+    SDL_MetalView m_metalView{nullptr};
+    CA::MetalLayer* m_metalLayer{nullptr};
+};
+
+// class SDLWindow : public RenderSurfaceProviderImpl {
+//    public:
+//     explicit SDLWindow(const Config& config);
+//     ~SDLWindow();
+
+//    private:
+
+// };
+
+using SDLWindow = SDLMetalWindow;
+
+#else
+#error "Unsupported platform"
+#endif
 
 }  // namespace sl

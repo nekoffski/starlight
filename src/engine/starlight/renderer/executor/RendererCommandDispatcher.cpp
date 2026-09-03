@@ -19,9 +19,7 @@ void RendererCommandDispatcher::operator()(RendererFlush command) {
 void RendererCommandDispatcher::operator()(
     RendererCreateSurfaceOutput command
 ) {
-    command.completion.set_value(
-        Error::unexpected(ErrorCode::backendMismatch, "wtf")
-    );
+    command.completion.set_value(m_renderer.createOutput(command.surfaceProvider));
 }
 
 }  // namespace sl
