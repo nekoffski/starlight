@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RenderOutput.hh"
+#include "RenderRequest.hh"
 #include "starlight/core/Concepts.hh"
 #include "starlight/core/Config.hh"
 #include "starlight/core/Core.hh"
@@ -16,6 +17,8 @@ class Renderer : public NonCopyable, public NonMovable {
     bool hasPendingWork() const;
     void tick();
     void flush();
+
+    Result<void> submit(const RenderRequest& request);
 
     Result<RenderOutput> createOutput(
         std::shared_ptr<RenderSurfaceProvider> surfaceProvider

@@ -28,10 +28,12 @@ RenderExecutor::DispatcherThread::DispatcherThread(
 
 void RenderExecutor::DispatcherThread::run() {
     for (;;) {
-        if (auto command = m_queue.pop(); not command) [[unlikely]] {
+        if (m_queue.closed()) {
             log::info("renderer command queue has been closed");
             break;
-        } else {
+        }
+
+        if (auto command = m_queue.tryPop(); command) [[likely]] {
             m_dispatcher.dispatch(std::move(*command));
         }
 

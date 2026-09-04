@@ -1,6 +1,7 @@
 #pragma once
 
 #include "backend/RenderOutput.hh"
+#include "backend/RenderRequest.hh"
 #include "executor/RenderExecutor.hh"
 #include "rhi/RenderSurfaceProvider.hh"
 #include "starlight/core/Core.hh"
@@ -17,6 +18,8 @@ class RendererProxy {
     Result<RenderOutput> createRenderOutput(
         std::shared_ptr<RenderSurfaceProvider> window
     );
+
+    Result<void> submit(const RenderRequest& request);
 
    private:
     explicit RendererProxy(RenderExecutor::Submitter submitter);

@@ -6,6 +6,7 @@
 
 #include "starlight/core/Error.hh"
 #include "starlight/renderer/backend/RenderOutput.hh"
+#include "starlight/renderer/backend/RenderRequest.hh"
 #include "starlight/renderer/rhi/RenderSurfaceProvider.hh"
 
 namespace sl {
@@ -21,7 +22,12 @@ struct RendererCreateSurfaceOutput {
     std::promise<Result<RenderOutput>> completion;
 };
 
-using RendererCommand =
-    std::variant<RendererNoop, RendererFlush, RendererCreateSurfaceOutput>;
+struct RendererSubmit {
+    std::promise<Result<void>> completion;
+    RenderRequest request;
+};
+
+using RendererCommand = std::variant<
+    RendererNoop, RendererFlush, RendererCreateSurfaceOutput, RendererSubmit>;
 
 }  // namespace sl

@@ -19,7 +19,13 @@ void RendererCommandDispatcher::operator()(RendererFlush command) {
 void RendererCommandDispatcher::operator()(
     RendererCreateSurfaceOutput command
 ) {
-    command.completion.set_value(m_renderer.createOutput(command.surfaceProvider));
+    command.completion.set_value(
+        m_renderer.createOutput(command.surfaceProvider)
+    );
+}
+
+void RendererCommandDispatcher::operator()(RendererSubmit command) {
+    command.completion.set_value(m_renderer.submit(command.request));
 }
 
 }  // namespace sl

@@ -16,6 +16,12 @@ void Renderer::flush() {
     }
 }
 
+Result<void> Renderer::submit(const RenderRequest& request) {
+    return Error::unexpected(
+        ErrorCode::tooManyFramesInFlight, "Too many frames in flight"
+    );
+}
+
 bool Renderer::hasPendingWork() const { return false; }
 
 Result<RenderOutput> Renderer::createOutput(

@@ -1,10 +1,12 @@
 #include "SDLWindow.hh"
 
 #include "starlight/core/Log.hh"
+#include "starlight/event/Events.hh"
 
 namespace sl {
 
-SDLWindowBase::SDLWindowBase(const Config& config) {
+SDLWindowBase::SDLWindowBase(const Config& config, EventBus bus)
+    : m_bus(std::move(bus)) {
     if (s_windowCount.fetch_add(1) == 0) {
         log::expect(
             SDL_Init(SDL_INIT_VIDEO) > 0, "Could not initialize SDL: {}",
@@ -32,9 +34,22 @@ SDLWindowBase::~SDLWindowBase() {
     log::trace("SDLWindow destroyed");
 }
 
+void SDLWindowBase::pollEvents(u8 maxPolledEvents) {
+    SDL_Event ev;
+
+    for (u8 i = 0; i < maxPolledEvents && SDL_PollEvent(&ev); ++i) {
+        switch (ev.type) {
+            case SDL_EVENT_QUIT:
+                m_bus.post<QuitRequestedEvent>("SDL Window quit requested");
+                break;
+        }
+    }
+}
+
 #if defined(SL_USE_METAL)
 
-SDLMetalWindow::SDLMetalWindow(const Config& config) : SDLWindowBase(config) {
+SDLMetalWindow::SDLMetalWindow(const Config& config, EventBus bus)
+    : SDLWindowBase(config, std::move(bus)) {
     m_metalView = SDL_Metal_CreateView(m_window);
     log::expect(
         m_metalView != nullptr, "Could not create Metal view: {}",

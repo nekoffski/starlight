@@ -8,11 +8,14 @@
 
 namespace sl {
 
-class EventBus : public NonCopyable, public NonMovable {
+class EventBus : public NonCopyable {
     friend class EventSystem;
 
    public:
     ~EventBus();
+
+    EventBus(EventBus&& oth);
+    EventBus& operator=(EventBus& oth) = delete;
 
     template <typename T>
     void on(MoveOnlyFunction<void(const T&)> callback) {

@@ -11,6 +11,7 @@ enum class ErrorCode {
     rendererCommandRejected = 3,
     backendMismatch = 4,
     surfaceCreationFailed = 5,
+    tooManyFramesInFlight = 6,
 };
 
 }  // namespace sl

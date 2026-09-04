@@ -32,6 +32,20 @@ Result<RenderOutput> RendererProxy::createRenderOutput(
     return completion.get();
 }
 
+Result<void> RendererProxy::submit(const RenderRequest& request) {
+    RendererSubmit cmd;
+    cmd.request = request;
+    auto completion = cmd.completion.get_future();
+
+    if (not m_submitter.submit(std::move(cmd))) {
+        return Error::unexpected(
+            ErrorCode::rendererCommandRejected,
+            "Could not submit renderer submit command"
+        );
+    }
+    return completion.get();
+}
+
 RendererProxy::RendererProxy(RenderExecutor::Submitter submitter)
     : m_submitter(submitter) {}
 

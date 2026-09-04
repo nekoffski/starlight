@@ -16,6 +16,7 @@ class RendererCommandDispatcher : public NonCopyable, public NonMovable {
     void operator()(RendererNoop command);
     void operator()(RendererFlush command);
     void operator()(RendererCreateSurfaceOutput command);
+    void operator()(RendererSubmit command);
 
    private:
     Renderer& m_renderer;
