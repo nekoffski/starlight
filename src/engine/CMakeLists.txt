@@ -9,6 +9,10 @@ add_library(starlight STATIC
     "starlight/core/Random.cpp"
     "starlight/core/String.cpp"
     "starlight/core/Id.cpp"
+    # -- event
+    "starlight/event/EventBus.cpp"
+    "starlight/event/EventSystem.cpp"
+    "starlight/event/details/EventBroker.cpp"
     # -- renderer
     "starlight/renderer/RendererProxy.cpp"
     "starlight/renderer/RenderingSystem.cpp"
@@ -65,4 +69,8 @@ endif()
 
 if (SL_ENABLE_PROFILING)
     target_compile_definitions(starlight PRIVATE SL_ENABLE_PROFILING=1)
+endif()
+
+if (BUILD_TESTING)
+    add_subdirectory(tests)
 endif()

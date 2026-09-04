@@ -87,12 +87,18 @@ class MoveOnlyFunction<ReturnType(ArgumentTypes...)> {
         return static_cast<bool>(m_callable);
     }
 
-    ReturnType operator()(ArgumentTypes... arguments) {
+    ReturnType operator()(ArgumentTypes... arguments) const {
         if (not m_callable) {
             throw std::bad_function_call{};
         }
 
-        return m_callable->invoke(std::forward<ArgumentTypes>(arguments)...);
+        if constexpr (std::is_void_v<ReturnType>) {
+            m_callable->invoke(std::forward<ArgumentTypes>(arguments)...);
+        } else {
+            return m_callable->invoke(
+                std::forward<ArgumentTypes>(arguments)...
+            );
+        }
     }
 
    private:
