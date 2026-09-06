@@ -36,6 +36,7 @@ find_package(stduuid CONFIG REQUIRED)
 find_package(GTest CONFIG REQUIRED)
 find_package(stb CONFIG REQUIRED)
 find_package(SDL3 CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
 
 target_link_libraries(starlight
     PUBLIC
@@ -44,6 +45,7 @@ target_link_libraries(starlight
         stduuid::stduuid
         stb::stb
         sdl::sdl
+        glm::glm
 )
 
 if (APPLE)

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <queue>
+
 #include "RenderOutput.hh"
 #include "RenderRequest.hh"
 #include "starlight/core/Concepts.hh"
@@ -14,8 +16,7 @@ class Renderer : public NonCopyable, public NonMovable {
    public:
     explicit Renderer(const Config& config, RenderDevice& device);
 
-    bool hasPendingWork() const;
-    void tick();
+    bool tick();
     void flush();
 
     Result<void> submit(const RenderRequest& request);
@@ -26,8 +27,13 @@ class Renderer : public NonCopyable, public NonMovable {
     void destroyOutput(RenderOutput output);
 
    private:
+    u64 frameIndex() const;
+
     Config m_config;
     RenderDevice& m_device;
+
+    std::queue<RenderRequest> m_pendingRequests;
+    u64 m_frameNumber;
 };
 
 }  // namespace sl

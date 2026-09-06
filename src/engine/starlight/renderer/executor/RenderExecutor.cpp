@@ -36,10 +36,7 @@ void RenderExecutor::DispatcherThread::run() {
         if (auto command = m_queue.tryPop(); command) [[likely]] {
             m_dispatcher.dispatch(std::move(*command));
         }
-
-        if (m_renderer.hasPendingWork()) [[likely]] {
-            m_renderer.tick();
-        }
+        m_renderer.tick();
     }
     m_renderer.flush();
 }

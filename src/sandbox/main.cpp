@@ -25,6 +25,8 @@ int main() {
 
     auto proxy = rs.createRendererProxy();
     auto mainBus = es.createBus();
+    auto output = proxy.createRenderOutput(window);
+    log::expect(output);
 
     std::atomic_bool running{true};
 
@@ -37,7 +39,11 @@ int main() {
         window->pollEvents();
         es.dispatch();
 
-        RenderRequest req;
+        RenderRequest req{
+            .views = {
+                RenderView{.output = *output},
+            }
+        };
 
         if (auto res = proxy.submit(req); not res) {
             if (res.error().code() == ErrorCode::tooManyFramesInFlight) {

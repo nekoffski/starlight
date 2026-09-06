@@ -8,21 +8,25 @@ namespace sl {
 Renderer::Renderer(const Config& config, RenderDevice& device)
     : m_config(config), m_device(device) {}
 
-void Renderer::tick() {}
+bool Renderer::tick() { return false; }
 
 void Renderer::flush() {
-    while (hasPendingWork()) {
-        tick();
+    for (;;) {
+        if (not tick()) {
+            break;
+        }
     }
 }
 
 Result<void> Renderer::submit(const RenderRequest& request) {
-    return Error::unexpected(
-        ErrorCode::tooManyFramesInFlight, "Too many frames in flight"
-    );
+    if (m_pendingRequests.size() >= m_config.renderer.maxFramesInFlight) {
+        return Error::unexpected(
+            ErrorCode::tooManyFramesInFlight, "Too many frames in flight"
+        );
+    }
+    m_pendingRequests.push(request);
+    return {};
 }
-
-bool Renderer::hasPendingWork() const { return false; }
 
 Result<RenderOutput> Renderer::createOutput(
     std::shared_ptr<RenderSurfaceProvider> surfaceProvider
@@ -51,6 +55,10 @@ void Renderer::destroyOutput(RenderOutput output) {
         },
         output
     );
+}
+
+u64 Renderer::frameIndex() const {
+    return m_frameNumber % m_config.renderer.maxFramesInFlight;
 }
 
 }  // namespace sl
