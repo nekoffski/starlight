@@ -28,4 +28,13 @@ Result<SurfaceHandle> MetalResourcePool::attachSurface(
     return handle;
 }
 
+Result<CA::MetalLayer*> MetalResourcePool::getSurface(SurfaceHandle handle) {
+    if (auto it = m_surfaces.find(handle); it != m_surfaces.end()) {
+        return it->second.surface;
+    }
+    return Error::unexpected(
+        ErrorCode::invalidArgument, "Invalid surface handle"
+    );
+}
+
 }  // namespace sl

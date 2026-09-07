@@ -143,10 +143,16 @@ class GuardCall : public NonCopyable, public NonMovable {
     GuardCall(Callback&& callback)
         : m_callback(std::forward<Callback>(callback)) {}
 
-    ~GuardCall() { m_callback(); }
+    ~GuardCall() {
+        if (not m_dismissed) {
+            m_callback();
+        }
+    }
+    void dismiss() { m_dismissed = true; }
 
    private:
-    std::function<void()> m_callback;
+    bool m_dismissed{false};
+    MoveOnlyFunction<void()> m_callback;
 };
 
 template <typename F>

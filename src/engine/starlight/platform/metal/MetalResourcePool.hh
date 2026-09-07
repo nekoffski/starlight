@@ -24,6 +24,8 @@ class MetalResourcePool : public NonCopyable, public NonMovable {
         std::shared_ptr<RenderSurfaceProvider> provider
     );
 
+    Result<CA::MetalLayer*> getSurface(SurfaceHandle handle);
+
    private:
     IdLake m_idLake;
     MetalContext& m_ctx;

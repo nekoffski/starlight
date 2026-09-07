@@ -46,9 +46,9 @@ int main() {
         };
 
         if (auto res = proxy.submit(req); not res) {
-            if (res.error().code() == ErrorCode::tooManyFramesInFlight) {
+            if (res.error().code() == ErrorCode::tooManyFrameRequests) {
                 log::debug(
-                    "Too many frames in flight, waiting for renderer to catch "
+                    "Too many frame requests, waiting for renderer to catch "
                     "up..."
                 );
                 std::this_thread::sleep_for(50ms);

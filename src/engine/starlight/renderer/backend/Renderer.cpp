@@ -8,7 +8,13 @@ namespace sl {
 Renderer::Renderer(const Config& config, RenderDevice& device)
     : m_config(config), m_device(device) {}
 
-bool Renderer::tick() { return false; }
+bool Renderer::tick() {
+    if (m_pendingRequests.empty()) {
+        return false;
+    }
+    tryToSubmitFrame();
+    return true;
+}
 
 void Renderer::flush() {
     for (;;) {
@@ -21,7 +27,7 @@ void Renderer::flush() {
 Result<void> Renderer::submit(const RenderRequest& request) {
     if (m_pendingRequests.size() >= m_config.renderer.maxFramesInFlight) {
         return Error::unexpected(
-            ErrorCode::tooManyFramesInFlight, "Too many frames in flight"
+            ErrorCode::tooManyFrameRequests, "Too many frame requests"
         );
     }
     m_pendingRequests.push(request);
@@ -59,6 +65,30 @@ void Renderer::destroyOutput(RenderOutput output) {
 
 u64 Renderer::frameIndex() const {
     return m_frameNumber % m_config.renderer.maxFramesInFlight;
+}
+
+void Renderer::tryToSubmitFrame() {
+    const auto& request = m_pendingRequests.front();
+
+    auto res = m_device.trySubmitFrame([&](RenderFrameRecorder& context) {
+        return recordFrame(context, request);
+    });
+
+    if (not res) [[unlikely]] {
+        if (res.error().code() != ErrorCode::tooManyFramesInFlight) [[likely]] {
+            log::error("Failed to record frame: {}", res.error().message());
+        }
+        return;
+    }
+
+    m_pendingRequests.pop();
+    m_frameNumber++;
+}
+
+Result<void> Renderer::recordFrame(
+    RenderFrameRecorder& context, const RenderRequest& request
+) {
+    return {};
 }
 
 }  // namespace sl

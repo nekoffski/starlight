@@ -29,11 +29,17 @@ class Renderer : public NonCopyable, public NonMovable {
    private:
     u64 frameIndex() const;
 
+    void tryToSubmitFrame();
+
+    Result<void> recordFrame(
+        RenderFrameRecorder& context, const RenderRequest& request
+    );
+
     Config m_config;
     RenderDevice& m_device;
 
     std::queue<RenderRequest> m_pendingRequests;
-    u64 m_frameNumber;
+    u64 m_frameNumber{0u};
 };
 
 }  // namespace sl
