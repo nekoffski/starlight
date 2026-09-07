@@ -18,6 +18,9 @@ RendererProxy RenderingSystem::createRendererProxy() {
     return RendererProxy{m_renderExecutor.createSubmitter()};
 }
 
-void RenderingSystem::stop() { m_renderExecutor.stop(); }
+void RenderingSystem::stop() {
+    m_renderExecutor.stop();
+    m_renderDevice->waitIdle();
+}
 
 }  // namespace sl

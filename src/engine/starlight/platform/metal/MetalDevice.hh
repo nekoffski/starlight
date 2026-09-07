@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "Metal.hh"
-#include "MetalRenderFrameFence.hh"
+#include "MetalRenderFrameLatch.hh"
 #include "MetalRenderFrameRecorder.hh"
 #include "MetalResourcePool.hh"
 #include "starlight/core/Config.hh"
@@ -32,13 +32,15 @@ class MetalDevice : public RenderDevice {
         // noop for metal, no renderer involved in creating surface
     }
 
+    void waitIdle() override;
+
     Result<void> trySubmitFrame(RecordFrame callback) override;
 
     Config m_config;
     MetalContext m_ctx;
     MetalResourcePool m_resourcePool;
 
-    std::vector<std::unique_ptr<MetalRenderFrameFence>> m_frames;
+    std::vector<std::unique_ptr<MetalRenderFrameLatch>> m_frames;
     u8 m_nextFrameSlot{0u};
 };
 

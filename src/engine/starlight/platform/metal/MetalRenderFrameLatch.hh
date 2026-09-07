@@ -8,7 +8,7 @@
 
 namespace sl {
 
-class MetalRenderFrameFence : public NonCopyable, public NonMovable {
+class MetalRenderFrameLatch : public NonCopyable, public NonMovable {
    public:
     bool tryAcquire();
     void release();

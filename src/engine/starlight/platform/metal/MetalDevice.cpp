@@ -6,8 +6,8 @@ MetalDevice::MetalDevice(const Config& config, Guard guard)
     : m_config(config), m_resourcePool(config, m_ctx) {
     log::trace("MetalDevice created");
 
-    for (u8 i = 0; i < m_config.renderer.maxFramesInFlight; ++i) {
-        m_frames.push_back(std::make_unique<MetalRenderFrameFence>());
+    for (u64 i = 0u; i < m_config.renderer.maxFramesInFlight; ++i) {
+        m_frames.push_back(std::make_unique<MetalRenderFrameLatch>());
     }
 }
 
@@ -17,16 +17,18 @@ std::unique_ptr<MetalDevice> MetalDevice::create(const Config& config) {
     return std::make_unique<MetalDevice>(config, Guard{});
 }
 
-Result<void> MetalDevice::trySubmitFrame(RecordFrame record) {
-    auto& fence = m_frames[m_nextFrameSlot];
+void MetalDevice::waitIdle() {}
 
-    if (not fence->tryAcquire()) {
+Result<void> MetalDevice::trySubmitFrame(RecordFrame record) {
+    auto& latch = m_frames[m_nextFrameSlot];
+
+    if (not latch->tryAcquire()) {
         return Error::unexpected(
             ErrorCode::tooManyFramesInFlight, "Frame context is busy"
         );
     }
 
-    GuardCall fenceReleaser{[&]() { fence->release(); }};
+    GuardCall latchReleaser{[&]() { latch->release(); }};
 
     auto* commandBuffer = m_ctx.commandQueue().commandBuffer();
 
@@ -36,20 +38,18 @@ Result<void> MetalDevice::trySubmitFrame(RecordFrame record) {
         );
     }
 
-    MetalRenderFrameRecorder recorder{
-        m_resourcePool, commandBuffer, m_nextFrameSlot
-    };
+    MetalRenderFrameRecorder recorder{m_resourcePool, commandBuffer};
 
     if (auto res = record(recorder); not res) {
         return Error::unexpected(res.error());
     }
 
     commandBuffer->addCompletedHandler(
-        [fence = fence.get()](MTL::CommandBuffer*) { fence->release(); }
+        [latch = latch.get()](MTL::CommandBuffer*) { latch->release(); }
     );
     commandBuffer->commit();
 
-    fenceReleaser.dismiss();
+    latchReleaser.dismiss();
     m_nextFrameSlot =
         (m_nextFrameSlot + 1) % m_config.renderer.maxFramesInFlight;
 

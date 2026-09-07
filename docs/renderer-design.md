@@ -124,11 +124,6 @@ The first implementation does not need transient aliasing or pass merging. It on
 ## Frame submission interface
 
 ```cpp
-enum class SubmitStatus {
-    submitted,
-    busy,
-};
-
 using RecordFrame =
     MoveOnlyFunction<Result<void>(RenderFrameRecorder&)>;
 
@@ -136,14 +131,14 @@ class RenderDevice {
    public:
     virtual ~RenderDevice() = default;
 
-    virtual Result<SubmitStatus> trySubmitFrame(RecordFrame record) = 0;
+    virtual Result<void> trySubmitFrame(RecordFrame record) = 0;
     virtual Result<void> waitIdle() = 0;
 
     // Resource creation and destruction methods.
 };
 ```
 
-`busy` is normal backpressure rather than an error. A successful submission returns after native queue submission, not after GPU completion.
+If no frame slot is available, submission returns `ErrorCode::tooManyFramesInFlight`. The renderer keeps the pending request and retries it later. A successful submission returns after native queue submission, not after GPU completion.
 
 The recording callback returns `Result<void>` so resource lookup, surface acquisition, encoder creation, and validation failures can abort recording safely.
 
@@ -415,7 +410,7 @@ If the surface is unavailable, texture passes may still execute and the surface 
 ### Metal
 
 ```cpp
-struct MetalRenderFrameFence {
+struct MetalRenderFrameLatch {
     std::atomic_bool available{true};
 
     // Add when required:
@@ -450,7 +445,7 @@ The Vulkan adapter resets the command pool only after the slot fence signals. Pr
 MetalDevice
     MetalContext
     MetalResourcePool
-    vector<MetalRenderFrameFence>
+    vector<MetalRenderFrameLatch>
 
 MetalRenderFrameRecorder
     MTLCommandBuffer*

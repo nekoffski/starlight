@@ -21,6 +21,8 @@ class RenderDevice : public NonCopyable, public NonMovable {
     virtual void destroySurface(SurfaceHandle handle) = 0;
 
     virtual Result<void> trySubmitFrame(RecordFrame callback) = 0;
+
+    virtual void waitIdle() = 0;
 };
 
 }  // namespace sl

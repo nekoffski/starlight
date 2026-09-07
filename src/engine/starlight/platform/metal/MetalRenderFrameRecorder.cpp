@@ -3,11 +3,8 @@
 namespace sl {
 
 MetalRenderFrameRecorder::MetalRenderFrameRecorder(
-    MetalResourcePool& resourcePool, MTL::CommandBuffer* commandBuffer,
-    u8 frameSlot
+    MetalResourcePool& resourcePool, MTL::CommandBuffer* commandBuffer
 )
-    : m_resourcePool(resourcePool),
-      m_commandBuffer(commandBuffer),
-      m_frameSlot(frameSlot) {}
+    : m_resourcePool(resourcePool), m_commandBuffer(commandBuffer) {}
 
 }  // namespace sl
