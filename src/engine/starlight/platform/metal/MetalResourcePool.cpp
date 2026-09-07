@@ -19,6 +19,8 @@ Result<SurfaceHandle> MetalResourcePool::attachSurface(
     }
 
     auto layer = metalProvider->getLayer();
+    layer->setDevice(&m_ctx.device());
+
     SurfaceHandle handle{m_idLake.acquire<SurfaceHandle>()};
 
     m_surfaces.emplace(

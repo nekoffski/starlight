@@ -86,8 +86,47 @@ void Renderer::tryToSubmitFrame() {
 }
 
 Result<void> Renderer::recordFrame(
-    RenderFrameRecorder& context, const RenderRequest& request
+    RenderFrameRecorder& recorder, const RenderRequest& request
 ) {
+    for (const auto& view : request.views) {
+        const auto* surface = std::get_if<SurfaceRenderOutput>(&view.output);
+
+        if (not surface) {
+            // not supported yet
+            continue;
+        }
+
+        auto image = recorder.acquireSurface(surface->handle);
+
+        if (not image) {
+            if (image.error().code() != ErrorCode::renderSurfaceNotDrawable) {
+                log::warn(
+                    "Failed to acquire surface: {}", image.error().message()
+                );
+                continue;
+            }
+            return Error::unexpected(image.error());
+        }
+
+        ColorAttachment attachment{
+            .image = image.value(),
+            .loadOp = LoadOp::clear,
+            .storeOp = StoreOp::store,
+            .clearColor = request.clearColor
+        };
+
+        RenderPassDescription pass{
+            .label = "Main Pass", .colorAttachments = std::span(&attachment, 1)
+        };
+
+        auto res = recorder.renderPass(
+            [](RenderPassEncoder&) -> Result<void> { return {}; }, pass
+        );
+
+        if (not res) {
+            return Error::unexpected(res.error());
+        }
+    }
     return {};
 }
 

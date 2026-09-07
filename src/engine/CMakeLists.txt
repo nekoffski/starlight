@@ -58,6 +58,7 @@ if (APPLE)
             "starlight/platform/metal/MetalResourcePool.cpp"
             "starlight/platform/metal/MetalRenderFrameLatch.cpp"
             "starlight/platform/metal/MetalRenderFrameRecorder.cpp"
+            "starlight/platform/metal/MetalRenderPass.cpp"
     )
 
     target_compile_definitions(starlight PUBLIC

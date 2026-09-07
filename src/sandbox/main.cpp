@@ -40,9 +40,11 @@ int main() {
         es.dispatch();
 
         RenderRequest req{
-            .views = {
-                RenderView{.output = *output},
-            }
+            .views =
+                {
+                    RenderView{.output = *output},
+                },
+            .clearColor = {0.3f, 0.0f, 0.0f, 1.0f}
         };
 
         if (auto res = proxy.submit(req); not res) {

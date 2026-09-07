@@ -15,6 +15,10 @@ struct RenderResourceHandle : HandleBase<ResourceType, T> {
 using SurfaceHandle = RenderResourceHandle<ResourceType::surface>;
 using TextureHandle = RenderResourceHandle<ResourceType::texture>;
 
+struct RenderFrameSurfaceImage {
+    u64 token;
+};
+
 }  // namespace sl
 
 template <sl::ResourceType T>

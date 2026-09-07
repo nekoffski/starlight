@@ -47,6 +47,7 @@ Result<void> MetalDevice::trySubmitFrame(RecordFrame record) {
     commandBuffer->addCompletedHandler(
         [latch = latch.get()](MTL::CommandBuffer*) { latch->release(); }
     );
+    recorder.schedulePresentations();
     commandBuffer->commit();
 
     latchReleaser.dismiss();
