@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <numeric>
 
-#include "Scope.hh"
+#include "Functional.hh"
 
 namespace sl {
 
@@ -35,7 +35,7 @@ ProfilerEvents& Profiler::threadEvents() {
 
 ProfilerSummary Profiler::generateSummary() {
     std::lock_guard lock{m_mutex};
-    ON_SCOPE_EXIT { clear(); };
+    DEFER { clear(); };
     return ProfilerSummary{m_threads};
 }
 

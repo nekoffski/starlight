@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "Concepts.hh"
+#include "Macros.hh"
 
 namespace sl {
 
@@ -123,6 +124,8 @@ std::vector<T> operator|(R&& r, ToImpl<T>) {
     return out;
 }
 
+struct DeferCallEntry {};
+
 }  // namespace details
 
 template <typename T>
@@ -135,15 +138,15 @@ struct Overloader : Ts... {
     using Ts::operator()...;
 };
 
-class GuardCall : public NonCopyable, public NonMovable {
+class DeferCall : public NonCopyable, public NonMovable {
    public:
-    GuardCall() : m_callback([]() {}) {}
+    DeferCall() : m_callback([]() {}) {}
 
     template <typename Callback>
-    GuardCall(Callback&& callback)
+    DeferCall(Callback&& callback)
         : m_callback(std::forward<Callback>(callback)) {}
 
-    ~GuardCall() {
+    ~DeferCall() {
         if (not m_dismissed) {
             m_callback();
         }
@@ -154,6 +157,12 @@ class GuardCall : public NonCopyable, public NonMovable {
     bool m_dismissed{false};
     MoveOnlyFunction<void()> m_callback;
 };
+
+constexpr DeferCall operator+(
+    details::DeferCallEntry, MoveOnlyFunction<void()> callback
+) {
+    return DeferCall{std::move(callback)};
+}
 
 template <typename F>
     requires std::is_invocable_v<F>
@@ -183,3 +192,8 @@ constexpr auto lazyEvaluate(F&& f) {
 #define LAZY_EVALUATE(expr) lazyEvaluate([&]() { return (expr); })
 
 }  // namespace sl
+
+#define DEFER \
+    auto ANONYMOUS_VAR(SCOPE_EXIT) = sl::details::DeferCallEntry{} + [&]()
+
+#define NAMED_DEFER(name) auto name = sl::details::DeferCallEntry{} + [&]()

@@ -149,7 +149,7 @@ class RenderFrameRecorder {
    public:
     virtual ~RenderFrameRecorder() = default;
 
-    virtual Result<Opt<FrameSurfaceImage>> acquireSurface(
+    virtual Result<FrameSurfaceImage> acquireSurface(
         SurfaceHandle surface
     ) = 0;
 
@@ -174,7 +174,7 @@ class RenderFrameRecorder {
 
 Pass callbacks enforce valid encoder lifetimes. Only one pass encoder may be active at a time.
 
-`FrameSurfaceImage` is opaque and valid only during its frame-recording callback. Acquiring one means it will be presented after successful submission. `nullopt` means that the surface is temporarily unavailable and can be skipped without failing texture work.
+`FrameSurfaceImage` is opaque and valid only during its frame-recording callback. Acquiring one means it will be presented after successful submission. A temporarily unavailable surface returns `ErrorCode::renderSurfaceNotDrawable`. The renderer consumes that error locally and skips the affected surface pass without failing texture work or retrying the entire request. Other acquisition errors abort frame recording.
 
 ## Attachments and clearing
 
@@ -403,7 +403,7 @@ present pass: reads scene texture, writes acquired surface image
 
 The graph dependency causes the backend to synchronize the write-to-read transition.
 
-If the surface is unavailable, texture passes may still execute and the surface pass may be skipped.
+If surface acquisition returns `ErrorCode::renderSurfaceNotDrawable`, texture passes may still execute and the surface pass is skipped.
 
 ## Backend frame contexts
 

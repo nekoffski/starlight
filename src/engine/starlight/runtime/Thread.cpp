@@ -4,7 +4,6 @@
 
 #include "starlight/core/Log.hh"
 #include "starlight/core/Profiler.hh"
-#include "starlight/core/Scope.hh"
 
 namespace sl {
 

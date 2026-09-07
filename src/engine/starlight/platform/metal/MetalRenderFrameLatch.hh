@@ -13,6 +13,8 @@ class MetalRenderFrameLatch : public NonCopyable, public NonMovable {
     bool tryAcquire();
     void release();
 
+    void wait();
+
    private:
     std::atomic<bool> m_available{true};
 };

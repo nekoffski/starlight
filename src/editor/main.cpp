@@ -2,8 +2,8 @@
 #include <SDL3/SDL.h>
 
 #include "starlight/core/Core.hh"
+#include "starlight/core/Functional.hh"
 #include "starlight/core/Log.hh"
-#include "starlight/core/Scope.hh"
 
 int main() {
     using namespace sl;
@@ -18,7 +18,7 @@ int main() {
     auto window = SDL_CreateWindow("Starlight", 800, 600, 0);
     log::expect(window, "Could not create window");
 
-    ON_SCOPE_EXIT {
+    DEFER {
         SDL_DestroyWindow(window);
         SDL_Quit();
     };

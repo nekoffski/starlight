@@ -69,6 +69,7 @@ u64 Renderer::frameIndex() const {
 
 void Renderer::tryToSubmitFrame() {
     const auto& request = m_pendingRequests.front();
+    NAMED_DEFER(requestDropper) { m_pendingRequests.pop(); };
 
     auto res = m_device.trySubmitFrame([&](RenderFrameRecorder& context) {
         return recordFrame(context, request);
@@ -77,11 +78,11 @@ void Renderer::tryToSubmitFrame() {
     if (not res) [[unlikely]] {
         if (res.error().code() != ErrorCode::tooManyFramesInFlight) [[likely]] {
             log::error("Failed to record frame: {}", res.error().message());
+        } else {
+            requestDropper.dismiss();
         }
         return;
     }
-
-    m_pendingRequests.pop();
     m_frameNumber++;
 }
 
@@ -99,7 +100,7 @@ Result<void> Renderer::recordFrame(
         auto image = recorder.acquireSurface(surface->handle);
 
         if (not image) {
-            if (image.error().code() != ErrorCode::renderSurfaceNotDrawable) {
+            if (image.error().code() == ErrorCode::renderSurfaceNotDrawable) {
                 log::warn(
                     "Failed to acquire surface: {}", image.error().message()
                 );

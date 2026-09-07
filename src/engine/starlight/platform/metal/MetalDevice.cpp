@@ -17,7 +17,11 @@ std::unique_ptr<MetalDevice> MetalDevice::create(const Config& config) {
     return std::make_unique<MetalDevice>(config, Guard{});
 }
 
-void MetalDevice::waitIdle() {}
+void MetalDevice::waitIdle() {
+    for (const auto& latch : m_frames) {
+        latch->wait();
+    }
+}
 
 Result<void> MetalDevice::trySubmitFrame(RecordFrame record) {
     auto& latch = m_frames[m_nextFrameSlot];
@@ -28,7 +32,10 @@ Result<void> MetalDevice::trySubmitFrame(RecordFrame record) {
         );
     }
 
-    GuardCall latchReleaser{[&]() { latch->release(); }};
+    auto* autoreleasePool = NS::AutoreleasePool::alloc()->init();
+
+    NAMED_DEFER(latchReleaser) { latch->release(); };
+    NAMED_DEFER(poolReleaser) { autoreleasePool->release(); };
 
     auto* commandBuffer = m_ctx.commandQueue().commandBuffer();
 
