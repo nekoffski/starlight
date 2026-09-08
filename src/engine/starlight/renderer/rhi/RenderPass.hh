@@ -5,6 +5,8 @@
 #include "RenderResource.hh"
 #include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
+#include "starlight/core/Error.hh"
+#include "starlight/core/Functional.hh"
 #include "starlight/math/Math.hh"
 
 namespace sl {
@@ -28,5 +30,7 @@ class RenderPassEncoder : public NonCopyable, public NonMovable {
    public:
     virtual ~RenderPassEncoder() = default;
 };
+
+using RenderPassCallback = MoveOnlyFunction<Result<void>(RenderPassEncoder&)>;
 
 }  // namespace sl

@@ -9,6 +9,7 @@ add_library(starlight STATIC
     "starlight/core/Random.cpp"
     "starlight/core/String.cpp"
     "starlight/core/Id.cpp"
+    "starlight/core/Config.cpp"
     # -- event
     "starlight/event/EventBus.cpp"
     "starlight/event/EventSystem.cpp"
@@ -17,6 +18,7 @@ add_library(starlight STATIC
     "starlight/renderer/RendererProxy.cpp"
     "starlight/renderer/RenderingSystem.cpp"
     "starlight/renderer/backend/Renderer.cpp"
+    "starlight/renderer/backend/RenderGraph.cpp"
     "starlight/renderer/executor/RenderExecutor.cpp"
     "starlight/renderer/executor/RendererCommandDispatcher.cpp"
     # -- platform

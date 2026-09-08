@@ -1,5 +1,6 @@
 #include "Renderer.hh"
 
+#include "RenderGraph.hh"
 #include "starlight/core/Functional.hh"
 #include "starlight/renderer/rhi/RenderResource.hh"
 
@@ -87,6 +88,8 @@ void Renderer::tryToSubmitFrame() {
 Result<void> Renderer::recordFrame(
     RenderFrameRecorder& recorder, const RenderRequest& request
 ) {
+    RenderGraph graph;
+
     for (const auto& view : request.views) {
         ColorAttachment attachment{
             .target = view.target,
@@ -99,19 +102,12 @@ Result<void> Renderer::recordFrame(
             .label = "Main Pass", .colorAttachments = std::span(&attachment, 1)
         };
 
-        auto res = recorder.renderPass(
-            [](RenderPassEncoder&) -> Result<void> { return {}; }, pass
-        );
-
-        if (not res) {
-            if (res.error().code() == ErrorCode::renderSurfaceNotDrawable) {
-                continue;
-            }
-
-            return Error::unexpected(res.error());
-        }
+        graph.addRenderPass(pass, [](RenderPassEncoder&) -> Result<void> {
+            return {};
+        });
     }
-    return {};
+
+    return graph.record(recorder);
 }
 
 }  // namespace sl

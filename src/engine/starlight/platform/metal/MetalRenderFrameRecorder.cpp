@@ -57,7 +57,7 @@ Result<MTL::Texture*> MetalRenderFrameRecorder::resolveTarget(
 }
 
 Result<void> MetalRenderFrameRecorder::renderPass(
-    RenderPassCallback record, const RenderPassDescription& description
+    const RenderPassDescription& description, const RenderPassCallback& record
 ) {
     auto* renderPass = MTL::RenderPassDescriptor::renderPassDescriptor();
 

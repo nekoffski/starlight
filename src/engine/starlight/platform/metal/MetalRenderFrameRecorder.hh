@@ -20,7 +20,8 @@ class MetalRenderFrameRecorder : public RenderFrameRecorder {
     );
 
     Result<void> renderPass(
-        RenderPassCallback callback, const RenderPassDescription& description
+        const RenderPassDescription& description,
+        const RenderPassCallback& record
     ) override;
 
     void schedulePresentations();

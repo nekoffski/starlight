@@ -41,7 +41,7 @@ class MetalDevice : public RenderDevice {
     MetalResourcePool m_resourcePool;
 
     std::vector<std::unique_ptr<MetalRenderFrameLatch>> m_frames;
-    u8 m_nextFrameSlot{0u};
+    u64 m_nextFrameSlot{0u};
 };
 
 }  // namespace sl
