@@ -15,10 +15,6 @@ class RenderFrameRecorder : public NonCopyable, public NonMovable {
 
     virtual ~RenderFrameRecorder() = default;
 
-    virtual Result<RenderFrameSurfaceImage> acquireSurface(
-        SurfaceHandle handle
-    ) = 0;
-
     virtual Result<void> renderPass(
         RenderPassCallback callback, const RenderPassDescription& description
     ) = 0;

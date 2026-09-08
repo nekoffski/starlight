@@ -13,7 +13,7 @@ enum class LoadOp { load, clear, discard };
 enum class StoreOp { store, discard };
 
 struct ColorAttachment {
-    RenderFrameSurfaceImage image;
+    RenderTarget target;
     LoadOp loadOp{LoadOp::load};
     StoreOp storeOp{StoreOp::store};
     Vec4f clearColor;

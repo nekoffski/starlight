@@ -25,8 +25,8 @@ int main() {
 
     auto proxy = rs.createRendererProxy();
     auto mainBus = es.createBus();
-    auto output = proxy.createRenderOutput(window);
-    log::expect(output);
+    auto target = proxy.createRenderTarget(window);
+    log::expect(target);
 
     std::atomic_bool running{true};
 
@@ -42,7 +42,7 @@ int main() {
         RenderRequest req{
             .views =
                 {
-                    RenderView{.output = *output},
+                    RenderView{.target = *target},
                 },
             .clearColor = {0.3f, 0.0f, 0.0f, 1.0f}
         };

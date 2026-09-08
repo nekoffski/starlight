@@ -9,16 +9,22 @@ MetalRenderFrameRecorder::MetalRenderFrameRecorder(
 )
     : m_resourcePool(resourcePool), m_commandBuffer(commandBuffer) {}
 
-Result<RenderFrameSurfaceImage> MetalRenderFrameRecorder::acquireSurface(
+Result<CA::MetalDrawable*> MetalRenderFrameRecorder::acquireSurface(
     SurfaceHandle handle
 ) {
+    for (const auto& acquired : m_acquiredSurfaces) {
+        if (acquired.handle == handle) {
+            return acquired.drawable;
+        }
+    }
+
     auto layer = m_resourcePool.getSurface(handle);
 
     if (not layer) {
         return Error::unexpected(layer.error());
     }
 
-    auto* drawable = layer.value()->nextDrawable();
+    auto* drawable = (*layer)->nextDrawable();
 
     if (not drawable) {
         return Error::unexpected(
@@ -28,7 +34,26 @@ Result<RenderFrameSurfaceImage> MetalRenderFrameRecorder::acquireSurface(
     }
 
     m_acquiredSurfaces.push_back({handle, drawable});
-    return RenderFrameSurfaceImage{.token = m_acquiredSurfaces.size() - 1};
+    return drawable;
+}
+
+Result<MTL::Texture*> MetalRenderFrameRecorder::resolveTarget(
+    const RenderTarget& target
+) {
+    if (const auto* surface = std::get_if<SurfaceHandle>(&target)) {
+        auto drawable = acquireSurface(*surface);
+
+        if (not drawable) {
+            return Error::unexpected(drawable.error());
+        }
+
+        return (*drawable)->texture();
+    }
+
+    return Error::unexpected(
+        ErrorCode::renderEncodingFailed,
+        "Metal texture render targets are not supported"
+    );
 }
 
 Result<void> MetalRenderFrameRecorder::renderPass(
@@ -38,14 +63,18 @@ Result<void> MetalRenderFrameRecorder::renderPass(
 
     for (u32 index = 0u; index < description.colorAttachments.size(); ++index) {
         const auto& source = description.colorAttachments[index];
+        auto texture = resolveTarget(source.target);
 
-        auto* drawable = m_acquiredSurfaces[source.image.token].drawable;
-        auto* target = renderPass->colorAttachments()->object(index);
+        if (not texture) {
+            return Error::unexpected(texture.error());
+        }
 
-        target->setTexture(drawable->texture());
-        target->setLoadAction(toMetal(source.loadOp));
-        target->setStoreAction(toMetal(source.storeOp));
-        target->setClearColor(
+        auto* attachment = renderPass->colorAttachments()->object(index);
+
+        attachment->setTexture(*texture);
+        attachment->setLoadAction(toMetal(source.loadOp));
+        attachment->setStoreAction(toMetal(source.storeOp));
+        attachment->setClearColor(
             MTL::ClearColor{
                 source.clearColor.r, source.clearColor.g, source.clearColor.b,
                 source.clearColor.a

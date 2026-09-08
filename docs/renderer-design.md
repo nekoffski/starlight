@@ -20,9 +20,8 @@ The initial implementation uses one graphics-capable queue. Multiple queues, asy
 ```text
 RendererProxy
     -> Renderer
-        -> RenderGraphBuilder
-        -> RenderGraph compiler
-        -> compiled passes
+        -> frame-local RenderGraph
+        -> ordered passes
             -> RenderDevice::trySubmitFrame()
                 -> RenderFrameRecorder
                     -> render / compute / copy pass encoders
@@ -35,14 +34,14 @@ The modules own the following responsibilities.
 - Accepts and queues `RenderRequest`s.
 - Owns the logical frame number.
 - Converts requests and scene data into a render graph.
-- Compiles graph dependencies and resource lifetimes.
+- Compiles graph dependencies when passes begin sharing resources.
 - Chooses pass order.
 - Issues RHI commands for compiled passes.
 - Owns texture buffering policy when stable per-frame texture results are required.
 
 ### Render graph
 
-- Represents render, compute, and copy passes as first-class nodes.
+- Represents passes as first-class nodes over persistent RHI handles.
 - Records resource reads, writes, attachments, load/store operations, and dependencies.
 - Detects invalid dependency cycles.
 - Determines pass order and resource transitions.
@@ -87,39 +86,56 @@ This gives the renderer enough information to build a graph while allowing each 
 
 ## Render graph shape
 
-The intended renderer-facing shape is approximately:
+The initial graph uses existing `TextureHandle` and `SurfaceHandle` values directly. It does not add graph-local image wrappers or a public builder/compiler hierarchy.
 
 ```cpp
+struct GraphRenderPass {
+    Str label;
+    std::vector<ColorAttachment> colors;
+    std::vector<TextureHandle> reads;
+    RenderFrameRecorder::RenderPassCallback record;
+};
+
+class RenderGraph {
+   public:
+    void addRenderPass(GraphRenderPass pass);
+    Result<void> record(RenderFrameRecorder& recorder);
+
+   private:
+    std::vector<GraphRenderPass> m_passes;
+};
+
 RenderGraph graph;
 
-graph.addRenderPass(
-    "scene",
-    [&](RenderPassBuilder& pass) {
-        pass.writeColor(sceneColor, LoadOp::clear, StoreOp::store, clearColor);
-        pass.writeDepth(sceneDepth, LoadOp::clear, StoreOp::discard, 1.0f);
-        pass.read(sceneBuffers, ResourceAccess::uniformRead);
-        pass.read(materialTextures, ResourceAccess::sampledRead);
-    },
-    [&](RenderPassEncoder& encoder, const PassResources& resources) {
-        // Bind pipelines and resources, then issue draws.
-    }
-);
+graph.addRenderPass({
+    .label = "scene",
+    .colors = {{
+        .target = sceneTexture,
+        .loadOp = LoadOp::clear,
+        .storeOp = StoreOp::store,
+        .clearColor = clearColor,
+    }},
+    .record = recordScene,
+});
 
-graph.addRenderPass(
-    "present",
-    [&](RenderPassBuilder& pass) {
-        pass.read(sceneColor, ResourceAccess::sampledRead);
-        pass.writeColor(surfaceOutput, LoadOp::discard, StoreOp::store);
+graph.addRenderPass({
+    .label = "present",
+    .colors = {{
+        .target = surface,
+        .loadOp = LoadOp::discard,
+        .storeOp = StoreOp::store,
+    }},
+    .reads = {sceneTexture},
+    .record = [sceneTexture](RenderPassEncoder& encoder) -> Result<void> {
+        // Bind sceneTexture and draw a fullscreen triangle.
+        return {};
     },
-    [&](RenderPassEncoder& encoder, const PassResources& resources) {
-        // Composite sceneColor into the acquired surface image.
-    }
-);
+});
 ```
 
-The builder declares what a pass uses. The execution callback records how the pass performs its work. The graph compiler uses the declarations to order passes and generate backend-independent resource transitions.
+Color attachments declare writes and `reads` declares sampled texture dependencies. The execution callback records how the pass performs its work. The first implementation records passes in insertion order. Stable topological ordering is added with the first real multi-pass dependency.
 
-The first implementation does not need transient aliasing or pass merging. It only needs dependency ordering and correct usage transitions.
+The renderer owns intermediate textures, including any ring required for stable frames-in-flight results, so callbacks can capture concrete `TextureHandle`s. A graph-local image handle and resource resolver are added only when the graph itself creates transient textures. Transient aliasing and pass merging remain deferred.
 
 ## Frame submission interface
 
@@ -132,7 +148,7 @@ class RenderDevice {
     virtual ~RenderDevice() = default;
 
     virtual Result<void> trySubmitFrame(RecordFrame record) = 0;
-    virtual Result<void> waitIdle() = 0;
+    virtual void waitIdle() = 0;
 
     // Resource creation and destruction methods.
 };
@@ -147,42 +163,28 @@ The recording callback returns `Result<void>` so resource lookup, surface acquis
 ```cpp
 class RenderFrameRecorder {
    public:
+    using RenderPassCallback =
+        MoveOnlyFunction<Result<void>(RenderPassEncoder&)>;
+
     virtual ~RenderFrameRecorder() = default;
 
-    virtual Result<FrameSurfaceImage> acquireSurface(
-        SurfaceHandle surface
-    ) = 0;
-
     virtual Result<void> renderPass(
-        const RenderPassDesc&,
-        MoveOnlyFunction<Result<void>(RenderPassEncoder&)>
+        RenderPassCallback callback,
+        const RenderPassDescription& description
     ) = 0;
-
-    virtual Result<void> computePass(
-        const ComputePassDesc&,
-        MoveOnlyFunction<Result<void>(ComputePassEncoder&)>
-    ) = 0;
-
-    virtual Result<void> copyPass(
-        const CopyPassDesc&,
-        MoveOnlyFunction<Result<void>(CopyPassEncoder&)>
-    ) = 0;
-
-    virtual u32 inFlightIndex() const = 0;
 };
 ```
 
-Pass callbacks enforce valid encoder lifetimes. Only one pass encoder may be active at a time.
+Pass callbacks enforce valid encoder lifetimes. Only one pass encoder may be active at a time. Compute and copy pass methods are added when those pass types are implemented.
 
-`FrameSurfaceImage` is opaque and valid only during its frame-recording callback. Acquiring one means it will be presented after successful submission. A temporarily unavailable surface returns `ErrorCode::renderSurfaceNotDrawable`. The renderer consumes that error locally and skips the affected surface pass without failing texture work or retrying the entire request. Other acquisition errors abort frame recording.
+Surface acquisition is not exposed through this interface. A `SurfaceHandle` is supplied as a render-pass attachment. The backend resolves it immediately before creating the native pass encoder, acquires or reuses one frame-local drawable, and remembers it for presentation. `ErrorCode::renderSurfaceNotDrawable` skips only the affected surface pass; other errors abort frame recording.
 
 ## Attachments and clearing
 
 Clearing is an attachment load operation, not a `clearSurface()` or `clearTexture()` command.
 
 ```cpp
-using AttachmentView =
-    std::variant<TextureViewHandle, FrameSurfaceImage>;
+using RenderTarget = std::variant<SurfaceHandle, TextureHandle>;
 
 enum class LoadOp {
     load,
@@ -196,15 +198,14 @@ enum class StoreOp {
 };
 
 struct ColorAttachment {
-    AttachmentView view;
-    Opt<AttachmentView> resolve;
+    RenderTarget target;
     LoadOp loadOp{LoadOp::load};
     StoreOp storeOp{StoreOp::store};
     Vec4f clearColor{};
 };
 
 struct DepthStencilAttachment {
-    AttachmentView view;
+    TextureHandle target;
     LoadOp depthLoadOp{LoadOp::load};
     StoreOp depthStoreOp{StoreOp::store};
     f32 clearDepth{1.0f};
@@ -213,13 +214,15 @@ struct DepthStencilAttachment {
     u32 clearStencil{0};
 };
 
-struct RenderPassDesc {
+struct RenderPassDescription {
     Str label;
-    std::span<const ColorAttachment> colors;
+    std::span<const ColorAttachment> colorAttachments;
     Opt<DepthStencilAttachment> depthStencil;
     std::span<const ResourceUse> resources;
 };
 ```
+
+`TextureHandle` initially means the full texture. Introduce texture-view handles only when rendering to individual mip levels, array layers, or reinterpreted formats is implemented.
 
 An empty render-pass callback with a color attachment using `LoadOp::clear` is the first end-to-end rendering milestone.
 
@@ -376,34 +379,34 @@ The Vulkan adapter translates state changes into synchronization2 barriers and i
 
 Dependencies within one pass that require a barrier should initially be represented as two passes. An explicit intra-pass barrier command can be added later if profiling demonstrates a need.
 
-## Output behavior
+## Render-target behavior
 
 ### Surface output
 
-- The frame recorder acquires one temporary image from the surface.
-- The image becomes a render attachment.
+- A `SurfaceHandle` is used directly as a render attachment.
+- The backend recorder lazily acquires or reuses one native surface image when the pass begins.
 - Successful frame submission schedules presentation.
 - Frame-slot completion and presentation-image availability are tracked separately.
 
 ### Texture output
 
-- A texture view is used directly as a render attachment.
+- A `TextureHandle` is used directly as a render attachment.
 - It is never acquired or presented.
 - Repeated writes to one texture produce latest-result semantics.
-- If each in-flight frame needs a stable result, the renderer owns a ring of textures and selects one using `inFlightIndex()`.
+- If each in-flight frame needs a stable result, the renderer owns a ring of textures and selects one using its frame index.
 
 ### Texture followed by surface
 
 The graph represents this as two passes:
 
 ```text
-scene pass:   writes scene texture
-present pass: reads scene texture, writes acquired surface image
+scene pass:   writes scene texture target
+present pass: reads scene texture, writes surface target
 ```
 
 The graph dependency causes the backend to synchronize the write-to-read transition.
 
-If surface acquisition returns `ErrorCode::renderSurfaceNotDrawable`, texture passes may still execute and the surface pass is skipped.
+If `RenderFrameRecorder::renderPass()` returns `ErrorCode::renderSurfaceNotDrawable`, texture passes may still execute and the surface pass is skipped.
 
 ## Backend frame contexts
 
@@ -463,7 +466,7 @@ MetalCopyPassEncoder
     MTLBlitCommandEncoder*
 ```
 
-`MetalRenderFrameRecorder::renderPass()` translates the attachment description, creates an `MTLRenderCommandEncoder`, invokes the graphics callback, and always ends encoding.
+`MetalRenderFrameRecorder::renderPass()` resolves texture targets directly and surface targets through a private drawable-acquisition helper. It reuses a drawable when multiple passes target the same surface, creates an `MTLRenderCommandEncoder`, invokes the graphics callback, and always ends encoding. After all frame recording succeeds, `MetalDevice` schedules every acquired drawable for presentation and commits the command buffer.
 
 ## Vulkan adapter shape
 
@@ -481,34 +484,27 @@ VulkanRenderFrameRecorder
 
 The initial Vulkan baseline is Vulkan 1.3 dynamic rendering, synchronization2, `vkQueueSubmit2`, and one primary command buffer per frame slot.
 
-## Required correctness work in the current implementation
+## Remaining correctness work
 
 Before extending command recording:
 
-1. Correct `MetalResourcePool::getSurface()` so a found iterator is returned and `end()` is never dereferenced.
-2. Make the recording callback return `Result<void>`.
-3. Release an acquired frame slot on every pre-commit failure path.
-4. Make `MetalDevice` wait for completion callbacks before destroying frame contexts.
-5. Add an autorelease pool around Metal work performed by the render thread.
-6. Validate `maxFramesInFlight > 0` and use `size_t` for slot indexing.
-7. Make renderer flush drain pending requests and then wait for GPU completion.
-8. Implement actual surface destruction and deferred native-resource release.
-9. Handle layer device, pixel format, drawable size, resize, and unavailable drawables.
+1. Validate `maxFramesInFlight > 0` and use `size_t` for slot indexing.
+2. Implement actual surface destruction and deferred native-resource release.
+3. Configure surface pixel format and drawable size, then update drawable size on resize.
 
 ## Implementation plan
 
 1. Correct current frame-submission and lifetime behavior.
-2. Add `acquireSurface()` and frame-local `FrameSurfaceImage`.
-3. Add scoped `renderPass()` and attachment load/store operations.
-4. Render an empty pass that clears and presents a surface.
-5. Introduce the minimal render graph with pass/resource declarations and topological ordering.
-6. Add buffers, texture views, shaders, graphics pipelines, bind groups, and basic drawing.
-7. Add texture outputs and a texture-to-surface two-pass graph.
-8. Add uploads and copy passes.
-9. Add semantic resource-state tracking and Vulkan synchronization2 translation.
-10. Add depth/stencil, MSAA, and resolve attachments.
-11. Add compute passes.
-12. Add timestamps, debug labels, indirect commands, and deferred destruction.
+2. Add persistent `RenderTarget` attachments and resolve surfaces privately inside the backend recorder.
+3. Render an empty scoped pass that clears and presents a surface.
+4. Introduce the minimal frame-local render graph and record passes in insertion order.
+5. Add texture resources and a texture-to-surface two-pass graph, then add stable topological ordering.
+6. Add buffers, shaders, graphics pipelines, bind groups, and basic drawing.
+7. Add uploads and copy passes.
+8. Add semantic resource-state tracking and Vulkan synchronization2 translation.
+9. Add depth/stencil, MSAA, and resolve attachments.
+10. Add compute passes.
+11. Add timestamps, debug labels, indirect commands, and deferred destruction.
 
 ## Deferred features
 

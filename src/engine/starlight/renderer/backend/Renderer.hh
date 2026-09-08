@@ -2,7 +2,6 @@
 
 #include <queue>
 
-#include "RenderOutput.hh"
 #include "RenderRequest.hh"
 #include "starlight/core/Concepts.hh"
 #include "starlight/core/Config.hh"
@@ -21,10 +20,10 @@ class Renderer : public NonCopyable, public NonMovable {
 
     Result<void> submit(const RenderRequest& request);
 
-    Result<RenderOutput> createOutput(
+    Result<RenderTarget> createTarget(
         std::shared_ptr<RenderSurfaceProvider> surfaceProvider
     );
-    void destroyOutput(RenderOutput output);
+    void destroyTarget(RenderTarget target);
 
    private:
     u64 frameIndex() const;

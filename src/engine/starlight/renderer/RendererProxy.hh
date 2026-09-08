@@ -1,6 +1,5 @@
 #pragma once
 
-#include "backend/RenderOutput.hh"
 #include "backend/RenderRequest.hh"
 #include "executor/RenderExecutor.hh"
 #include "rhi/RenderSurfaceProvider.hh"
@@ -15,7 +14,7 @@ class RendererProxy {
    public:
     Result<void> flushRenderer();
 
-    Result<RenderOutput> createRenderOutput(
+    Result<RenderTarget> createRenderTarget(
         std::shared_ptr<RenderSurfaceProvider> window
     );
 

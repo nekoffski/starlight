@@ -4,11 +4,12 @@
 
 #include "starlight/core/Core.hh"
 #include "starlight/math/Math.hh"
+#include "starlight/renderer/rhi/RenderResource.hh"
 
 namespace sl {
 
 struct RenderView {
-    RenderOutput output;
+    RenderTarget target;
 };
 
 struct RenderRequest {

@@ -17,10 +17,10 @@ void RendererCommandDispatcher::operator()(RendererFlush command) {
 }
 
 void RendererCommandDispatcher::operator()(
-    RendererCreateSurfaceOutput command
+    RendererCreateSurfaceTarget command
 ) {
     command.completion.set_value(
-        m_renderer.createOutput(command.surfaceProvider)
+        m_renderer.createTarget(command.surfaceProvider)
     );
 }
 

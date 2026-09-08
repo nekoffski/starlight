@@ -34,7 +34,7 @@ Result<void> Renderer::submit(const RenderRequest& request) {
     return {};
 }
 
-Result<RenderOutput> Renderer::createOutput(
+Result<RenderTarget> Renderer::createTarget(
     std::shared_ptr<RenderSurfaceProvider> surfaceProvider
 ) {
     auto surface = m_device.attachSurface(std::move(surfaceProvider));
@@ -46,20 +46,18 @@ Result<RenderOutput> Renderer::createOutput(
         );
     }
 
-    return SurfaceRenderOutput{*surface};
+    return RenderTarget{*surface};
 }
 
-void Renderer::destroyOutput(RenderOutput output) {
+void Renderer::destroyTarget(RenderTarget target) {
     std::visit(
         Overloader{
-            [&](SurfaceRenderOutput& surfaceOutput) {
-                m_device.destroySurface(surfaceOutput.handle);
-            },
-            [&](TextureRenderOutput&) {
+            [&](SurfaceHandle surface) { m_device.destroySurface(surface); },
+            [&](TextureHandle) {
                 log::panic("Destroying texture render output is not supported");
             }
         },
-        output
+        target
     );
 }
 
@@ -90,27 +88,8 @@ Result<void> Renderer::recordFrame(
     RenderFrameRecorder& recorder, const RenderRequest& request
 ) {
     for (const auto& view : request.views) {
-        const auto* surface = std::get_if<SurfaceRenderOutput>(&view.output);
-
-        if (not surface) {
-            // not supported yet
-            continue;
-        }
-
-        auto image = recorder.acquireSurface(surface->handle);
-
-        if (not image) {
-            if (image.error().code() == ErrorCode::renderSurfaceNotDrawable) {
-                log::warn(
-                    "Failed to acquire surface: {}", image.error().message()
-                );
-                continue;
-            }
-            return Error::unexpected(image.error());
-        }
-
         ColorAttachment attachment{
-            .image = image.value(),
+            .target = view.target,
             .loadOp = LoadOp::clear,
             .storeOp = StoreOp::store,
             .clearColor = request.clearColor
@@ -125,6 +104,10 @@ Result<void> Renderer::recordFrame(
         );
 
         if (not res) {
+            if (res.error().code() == ErrorCode::renderSurfaceNotDrawable) {
+                continue;
+            }
+
             return Error::unexpected(res.error());
         }
     }

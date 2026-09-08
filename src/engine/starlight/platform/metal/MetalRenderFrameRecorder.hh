@@ -8,19 +8,16 @@
 namespace sl {
 
 class MetalRenderFrameRecorder : public RenderFrameRecorder {
-   public:
+   private:
     struct AcquiredSurface {
         SurfaceHandle handle;
         CA::MetalDrawable* drawable;
     };
 
+   public:
     explicit MetalRenderFrameRecorder(
         MetalResourcePool& resourcePool, MTL::CommandBuffer* commandBuffer
     );
-
-    Result<RenderFrameSurfaceImage> acquireSurface(
-        SurfaceHandle handle
-    ) override;
 
     Result<void> renderPass(
         RenderPassCallback callback, const RenderPassDescription& description
@@ -29,6 +26,9 @@ class MetalRenderFrameRecorder : public RenderFrameRecorder {
     void schedulePresentations();
 
    private:
+    Result<CA::MetalDrawable*> acquireSurface(SurfaceHandle handle);
+    Result<MTL::Texture*> resolveTarget(const RenderTarget& target);
+
     MetalResourcePool& m_resourcePool;
     MTL::CommandBuffer* m_commandBuffer;
     std::vector<AcquiredSurface> m_acquiredSurfaces;

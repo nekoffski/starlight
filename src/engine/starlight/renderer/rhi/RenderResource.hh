@@ -1,5 +1,7 @@
 #pragma once
 
+#include <variant>
+
 #include "starlight/core/Core.hh"
 #include "starlight/core/Handle.hh"
 
@@ -15,9 +17,7 @@ struct RenderResourceHandle : HandleBase<ResourceType, T> {
 using SurfaceHandle = RenderResourceHandle<ResourceType::surface>;
 using TextureHandle = RenderResourceHandle<ResourceType::texture>;
 
-struct RenderFrameSurfaceImage {
-    u64 token;
-};
+using RenderTarget = std::variant<SurfaceHandle, TextureHandle>;
 
 }  // namespace sl
 
