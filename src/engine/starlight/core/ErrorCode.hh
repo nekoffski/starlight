@@ -15,6 +15,8 @@ enum class ErrorCode {
     tooManyFramesInFlight = 7,
     renderEncodingFailed = 8,
     renderSurfaceNotDrawable = 9,
+    jsonParsingError = 10,
+    fileNotFound = 11,
 };
 
 }  // namespace sl

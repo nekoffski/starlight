@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core.hh"
+#include "FileSystem.hh"
 #include "Log.hh"
 
 namespace sl {
@@ -8,6 +9,11 @@ namespace sl {
 struct Config {
     struct Log {
         log::Level level{log::Level::trace};
+    };
+
+    struct Paths {
+        Path cwd{Path::cwd()};
+        Path assets{Path::join(cwd, "assets")};
     };
 
     struct Renderer {
@@ -20,6 +26,7 @@ struct Config {
 
     Log log;
     Renderer renderer;
+    Paths paths;
 };
 
 }  // namespace sl

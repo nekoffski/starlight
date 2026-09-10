@@ -14,7 +14,7 @@ SDLWindowBase::SDLWindowBase(const Config& config, EventBus bus)
         );
     }
 
-    m_window = SDL_CreateWindow("Starlight", 800, 600, 0);
+    m_window = SDL_CreateWindow("Starlight", 800, 600, SDL_WINDOW_RESIZABLE);
     log::expect(
         m_window != nullptr, "Could not create window: {}", SDL_GetError()
     );
@@ -41,6 +41,12 @@ void SDLWindowBase::pollEvents(u8 maxPolledEvents) {
         switch (ev.type) {
             case SDL_EVENT_QUIT:
                 m_bus.post<QuitRequestedEvent>("SDL Window quit requested");
+                break;
+            case SDL_EVENT_WINDOW_RESIZED:
+                m_bus.post<WindowResizedEvent>(
+                    static_cast<u32>(ev.window.data1),
+                    static_cast<u32>(ev.window.data2)
+                );
                 break;
         }
     }

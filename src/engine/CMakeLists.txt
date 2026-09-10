@@ -1,5 +1,9 @@
 
 add_library(starlight STATIC
+    # -- asset
+    "starlight/asset/AssetSystem.cpp"
+    "starlight/asset/Shader.cpp"
+    "starlight/asset/loaders/ShaderLoader.cpp"
     # -- core
     "starlight/core/Core.cpp"
     "starlight/core/Error.cpp"
@@ -10,6 +14,7 @@ add_library(starlight STATIC
     "starlight/core/String.cpp"
     "starlight/core/Id.cpp"
     "starlight/core/Config.cpp"
+    "starlight/core/Json.cpp"
     # -- event
     "starlight/event/EventBus.cpp"
     "starlight/event/EventSystem.cpp"
@@ -39,6 +44,8 @@ find_package(GTest CONFIG REQUIRED)
 find_package(stb CONFIG REQUIRED)
 find_package(SDL3 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
+
 
 target_link_libraries(starlight
     PUBLIC
@@ -48,6 +55,7 @@ target_link_libraries(starlight
         stb::stb
         sdl::sdl
         glm::glm
+        nlohmann_json::nlohmann_json
 )
 
 if (APPLE)

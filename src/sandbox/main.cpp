@@ -1,6 +1,8 @@
 
+#include "starlight/asset/AssetSystem.hh"
 #include "starlight/core/Config.hh"
 #include "starlight/core/Core.hh"
+#include "starlight/core/FileSystem.hh"
 #include "starlight/core/Log.hh"
 #include "starlight/core/Time.hh"
 #include "starlight/event/EventSystem.hh"
@@ -15,13 +17,14 @@ int main() {
     Config cfg;
 
     log::init(log::LoggerOptions{.level = cfg.log.level});
-    log::info("Hello world!");
+    log::info("Hello world! {}", Path::cwd().str());
 
     Platform::logInfo();
     EventSystem es;
 
     auto window = std::make_shared<SDLWindow>(cfg, es.createBus());
     RenderingSystem rs{cfg};
+    AssetSystem as{cfg, rs.createRendererProxy()};
 
     auto proxy = rs.createRendererProxy();
     auto mainBus = es.createBus();
@@ -35,6 +38,12 @@ int main() {
         running = false;
     });
 
+    mainBus.on<WindowResizedEvent>([&](const auto& event) {
+        log::info("Window resized: {}x{}", event.width, event.height);
+    });
+
+    auto shader = as.loadShader("shaders/triangle.metallib");
+
     while (running) {
         window->pollEvents();
         es.dispatch();
@@ -44,7 +53,7 @@ int main() {
                 {
                     RenderView{.target = *target},
                 },
-            .clearColor = {0.3f, 0.0f, 0.0f, 1.0f}
+            .clearColor = {0.2f, 0.2f, 0.6f, 1.1f}
         };
 
         if (auto res = proxy.submit(req); not res) {
@@ -55,9 +64,7 @@ int main() {
                 );
                 std::this_thread::sleep_for(50ms);
             } else {
-                log::error(
-                    "Failed to submit render request: {}", res.error().message()
-                );
+                log::error("Failed to submit render request: {}", res.error());
                 break;
             }
         }

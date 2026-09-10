@@ -43,7 +43,7 @@ Result<RenderTarget> Renderer::createTarget(
     if (not surface) {
         return Error::unexpected(
             ErrorCode::surfaceCreationFailed,
-            "Failed to create render surface: {}", surface.error().message()
+            "Failed to create render surface: {}", surface.error()
         );
     }
 
@@ -76,7 +76,7 @@ void Renderer::tryToSubmitFrame() {
 
     if (not res) [[unlikely]] {
         if (res.error().code() != ErrorCode::tooManyFramesInFlight) [[likely]] {
-            log::error("Failed to record frame: {}", res.error().message());
+            log::error("Failed to record frame: {}", res.error());
         } else {
             requestDropper.dismiss();
         }

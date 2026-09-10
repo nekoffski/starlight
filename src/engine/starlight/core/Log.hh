@@ -137,7 +137,7 @@ void expect(
             details::FormatWithLocation{
                 "Unexpected error: Error code: {}, message: {}", location
             },
-            fmt::underlying(r.error().code()), r.error().message()
+            fmt::underlying(r.error().code()), r.error()
         );
     }
 }

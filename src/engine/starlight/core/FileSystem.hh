@@ -30,6 +30,7 @@ class Path {
     Path parent() const;
 
     static Path join(const Path& base, const Path& relative);
+    static Path cwd();
 
     bool endsWith(const Str& suffix) const;
     void append(const Str& suffix);
@@ -37,6 +38,8 @@ class Path {
    private:
     Str m_path;
 };
+
+Path operator+(const Path& lhs, const Str& suffix);
 
 class File {
    public:
@@ -48,7 +51,7 @@ class File {
     Result<void> write(const Str& content);
     Result<Str> read() const;
     Result<std::vector<Str>> readLines() const;
-    Result<std::vector<u32>> readBinary() const;
+    Result<std::vector<Byte>> readBinary() const;
 
     Result<void> remove();
 

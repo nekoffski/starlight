@@ -25,6 +25,8 @@ Path Path::join(const Path& base, const Path& relative) {
     return Path{fs::path(base.str()) / fs::path(relative.str())};
 }
 
+Path Path::cwd() { return Path{fs::current_path().string()}; }
+
 bool Path::endsWith(const Str& suffix) const {
     if (suffix.size() > m_path.size()) [[unlikely]] {
         return false;
@@ -91,7 +93,7 @@ Result<std::vector<Str>> File::readLines() const {
     return lines;
 }
 
-Result<std::vector<u32>> File::readBinary() const {
+Result<std::vector<Byte>> File::readBinary() const {
     std::ifstream file(m_path.str(), std::ios::binary | std::ios::ate);
     if (not file.is_open()) {
         return Error::unexpected(
@@ -100,14 +102,14 @@ Result<std::vector<u32>> File::readBinary() const {
         );
     }
     auto size = file.tellg();
-    if (size % sizeof(u32) != 0) {
+    if (size % sizeof(Byte) != 0) {
         return Error::unexpected(
             ErrorCode::invalidArgument,
-            "File '{}' size is not a multiple of 4 bytes", m_path.str()
+            "File '{}' size is not a multiple of 1 byte", m_path.str()
         );
     }
     file.seekg(0);
-    std::vector<u32> buffer(static_cast<std::size_t>(size) / sizeof(u32));
+    std::vector<Byte> buffer(static_cast<std::size_t>(size) / sizeof(Byte));
     file.read(reinterpret_cast<char*>(buffer.data()), size);
     return buffer;
 }
@@ -197,6 +199,10 @@ Result<void> Directory::touch(const Path& name) {
         );
     }
     return {};
+}
+
+Path operator+(const Path& lhs, const Str& suffix) {
+    return Path{lhs.str() + suffix};
 }
 
 }  // namespace sl

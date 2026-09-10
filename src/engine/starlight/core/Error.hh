@@ -1,6 +1,7 @@
 #pragma once
 
 #include <fmt/core.h>
+#include <fmt/format.h>
 
 #include <expected>
 #include <optional>
@@ -46,3 +47,17 @@ template <typename T>
 using Result = std::expected<T, Error>;
 
 }  // namespace sl
+
+template <>
+class fmt::formatter<sl::Error> {
+   public:
+    constexpr auto parse(format_parse_context& ctx) { return ctx.begin(); }
+
+    template <typename Context>
+    constexpr auto format(const sl::Error& error, Context& ctx) const {
+        return fmt::format_to(
+            ctx.out(), "code: {}, details: '{}'", fmt::underlying(error.code()),
+            error.message()
+        );
+    }
+};

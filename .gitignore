@@ -48,3 +48,10 @@ bench-logs
 .codex
 
 .pytest_cache
+
+
+# Shaders output
+
+*.spv
+*.metal
+*.metal*

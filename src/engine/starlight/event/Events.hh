@@ -8,4 +8,9 @@ struct QuitRequestedEvent {
     Str reason{"No reason specified"};
 };
 
+struct WindowResizedEvent {
+    u32 width;
+    u32 height;
+};
+
 }  // namespace sl
