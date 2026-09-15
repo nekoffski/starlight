@@ -43,6 +43,7 @@ int main() {
     });
 
     auto shader = as.loadShader("shaders/triangle.metallib");
+    log::expect(shader);
 
     while (running) {
         window->pollEvents();

@@ -14,7 +14,8 @@ namespace sl {
 class Error {
    public:
     explicit Error(
-        ErrorCode code, const std::string& message = "No details provided"
+        ErrorCode code = ErrorCode::noError,
+        const std::string& message = "No details provided"
     );
 
     template <typename... Args>
@@ -26,6 +27,8 @@ class Error {
 
     ErrorCode code() const;
     const std::string& message() const;
+
+    bool valid() const { return m_code != ErrorCode::noError; }
 
     template <typename... Args>
     static std::unexpected<Error> unexpected(

@@ -14,6 +14,7 @@ add_library(starlight STATIC
     "starlight/core/String.cpp"
     "starlight/core/Id.cpp"
     "starlight/core/Config.cpp"
+    "starlight/core/Handle.cpp"
     "starlight/core/Json.cpp"
     # -- event
     "starlight/event/EventBus.cpp"
@@ -26,6 +27,7 @@ add_library(starlight STATIC
     "starlight/renderer/backend/RenderGraph.cpp"
     "starlight/renderer/executor/RenderExecutor.cpp"
     "starlight/renderer/executor/RendererCommandDispatcher.cpp"
+    "starlight/renderer/rhi/Shader.cpp"
     # -- platform
     "starlight/platform/Platform.cpp"
     "starlight/platform/sdl/SDLWindow.cpp"

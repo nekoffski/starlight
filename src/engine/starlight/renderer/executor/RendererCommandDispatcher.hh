@@ -17,6 +17,8 @@ class RendererCommandDispatcher : public NonCopyable, public NonMovable {
     void operator()(RendererFlush command);
     void operator()(RendererCreateSurfaceTarget command);
     void operator()(RendererSubmit command);
+    void operator()(RendererCreateShader command);
+    void operator()(RendererDestroyShader command);
 
    private:
     Renderer& m_renderer;

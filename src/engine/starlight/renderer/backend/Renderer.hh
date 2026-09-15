@@ -8,6 +8,7 @@
 #include "starlight/core/Core.hh"
 #include "starlight/renderer/rhi/RenderDevice.hh"
 #include "starlight/renderer/rhi/RenderSurfaceProvider.hh"
+#include "starlight/renderer/rhi/Shader.hh"
 
 namespace sl {
 
@@ -24,6 +25,9 @@ class Renderer : public NonCopyable, public NonMovable {
         std::shared_ptr<RenderSurfaceProvider> surfaceProvider
     );
     void destroyTarget(RenderTarget target);
+
+    Result<ShaderHandle> createShader(const ShaderDescription& description);
+    void destroyShader(ShaderHandle handle);
 
    private:
     u64 frameIndex() const;

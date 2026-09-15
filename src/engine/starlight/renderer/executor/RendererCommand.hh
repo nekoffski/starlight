@@ -7,6 +7,7 @@
 #include "starlight/core/Error.hh"
 #include "starlight/renderer/backend/RenderRequest.hh"
 #include "starlight/renderer/rhi/RenderSurfaceProvider.hh"
+#include "starlight/renderer/rhi/Shader.hh"
 
 namespace sl {
 
@@ -26,7 +27,17 @@ struct RendererSubmit {
     RenderRequest request;
 };
 
+struct RendererCreateShader {
+    ShaderDescription description;
+    std::promise<Result<ShaderHandle>> completion;
+};
+
+struct RendererDestroyShader {
+    ShaderHandle handle;
+};
+
 using RendererCommand = std::variant<
-    RendererNoop, RendererFlush, RendererCreateSurfaceTarget, RendererSubmit>;
+    RendererNoop, RendererFlush, RendererCreateSurfaceTarget, RendererSubmit,
+    RendererCreateShader, RendererDestroyShader>;
 
 }  // namespace sl

@@ -17,6 +17,9 @@ enum class ErrorCode {
     renderSurfaceNotDrawable = 9,
     jsonParsingError = 10,
     fileNotFound = 11,
+    shaderParsingError = 12,
+    invalidFuture = 13,
+    notImplemented = 1337,
 };
 
 }  // namespace sl

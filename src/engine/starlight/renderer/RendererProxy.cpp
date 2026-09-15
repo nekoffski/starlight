@@ -2,6 +2,36 @@
 
 namespace sl {
 
+Result<std::future<Result<ShaderHandle>>> RendererProxy::createShaderAsync(
+    const ShaderDescription& description
+) {
+    RendererCreateShader cmd{description};
+    auto completion = cmd.completion.get_future();
+
+    if (not m_submitter.submit(std::move(cmd))) {
+        return Error::unexpected(
+            ErrorCode::rendererCommandRejected,
+            "Could not submit renderer create shader command"
+        );
+    }
+
+    return completion;
+}
+
+Result<ShaderHandle> RendererProxy::createShader(
+    const ShaderDescription& description
+) {
+    std::future<Result<ShaderHandle>> future;
+
+    if (auto future = createShaderAsync(description); future) {
+        return future->get();
+    } else {
+        return Error::unexpected(future.error());
+    }
+}
+
+void RendererProxy::destroyShader(ShaderHandle handle) {}
+
 Result<void> RendererProxy::flushRenderer() {
     RendererFlush cmd;
     auto completion = cmd.completion.get_future();

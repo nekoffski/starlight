@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Shader.hh"
 #include "starlight/core/Concepts.hh"
 #include "starlight/core/Config.hh"
 #include "starlight/core/Core.hh"
@@ -13,7 +14,7 @@ class AssetSystem : public NonCopyable, public NonMovable {
    public:
     explicit AssetSystem(const Config& cfg, RendererProxy proxy);
 
-    Result<std::shared_ptr<ShaderDescription>> loadShader(const Path& path);
+    Result<ShaderRef> loadShader(const Path& path);
 
    private:
     Config m_cfg;

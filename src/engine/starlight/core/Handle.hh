@@ -5,7 +5,9 @@
 namespace sl {
 
 struct HandleKey {
-    u32 id{std::numeric_limits<u32>::max()};
+    static constexpr u32 InvalidHandle = std::numeric_limits<u32>::max();
+
+    u32 id{InvalidHandle};
     u32 generation{0u};
 
     constexpr HandleKey() = default;
@@ -18,6 +20,9 @@ struct HandleKey {
         return id < other.id ||
                (id == other.id && generation < other.generation);
     }
+
+    void invalidate();
+    bool valid() const;
 };
 
 template <typename T, T Type>

@@ -28,4 +28,12 @@ void RendererCommandDispatcher::operator()(RendererSubmit command) {
     command.completion.set_value(m_renderer.submit(command.request));
 }
 
+void RendererCommandDispatcher::operator()(RendererCreateShader command) {
+    command.completion.set_value(m_renderer.createShader(command.description));
+}
+
+void RendererCommandDispatcher::operator()(RendererDestroyShader command) {
+    m_renderer.destroyShader(command.handle);
+}
+
 }  // namespace sl

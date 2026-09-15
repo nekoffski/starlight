@@ -8,18 +8,22 @@ namespace sl {
 AssetSystem::AssetSystem(const Config& cfg, RendererProxy proxy)
     : m_cfg(cfg), m_proxy(proxy) {}
 
-Result<std::shared_ptr<ShaderDescription>> AssetSystem::loadShader(
-    const Path& path
-) {
+Result<ShaderRef> AssetSystem::loadShader(const Path& path) {
     const auto fullPath = Path::join(m_cfg.paths.assets, path);
     const auto description = ShaderLoader::loadShaderDescription(fullPath);
 
     if (not description) {
         log::warn("Could not load shader description: {}", description.error());
-        return nullptr;
+        return Error::unexpected(description.error());
     }
 
-    return std::shared_ptr<ShaderDescription>();
+    ShaderRef shader{m_proxy, description.value()};
+
+    if (shader.state() == BackendResourceState::failed) {
+        return Error::unexpected(shader.error());
+    }
+
+    return shader;
 }
 
 }  // namespace sl
