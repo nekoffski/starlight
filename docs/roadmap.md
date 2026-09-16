@@ -8,7 +8,7 @@
 
 ## Runtime/Threading
 
-- [ ] implement simple reactor
+- [ ] implement reactor (make it robust, not a simple busy-loop)
 - [ ] thread pool
 
 ## Backlog
@@ -21,5 +21,5 @@
 ### Adhoc improvements
 
 - [ ] use some dedicated lease type instead of shared pointer to avoid double unwrap when returning Result<..>
-- [ ] flat map
+- [x] flat map
 
