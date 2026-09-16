@@ -33,6 +33,7 @@ add_library(starlight STATIC
     "starlight/platform/sdl/SDLWindow.cpp"
     # -- runtime
     "starlight/runtime/Thread.cpp"
+    "starlight/runtime/EventLoop.cpp"
 )
 
 target_include_directories(starlight

@@ -46,7 +46,7 @@ class FlatMap : public NonCopyable, public NonMovable {
 
     bool has(const Key& k) const { return find(k) != nullptr; }
 
-    auto find(this auto&& self, const Key& key) {
+    auto* find(this auto&& self, const Key& key) {
         auto it = std::ranges::find(self.m_records, key, &Record::k);
         return it == self.m_records.end() ? nullptr : &it->v;
     }
@@ -63,10 +63,8 @@ class FlatMap : public NonCopyable, public NonMovable {
 
     void forEach(this auto&& self, auto&& cb)
         requires requires {
-            cb(
-                std::as_const(self.m_records.front().k),
-                self.m_records.front().v
-            );
+            cb(std::as_const(self.m_records.front().k),
+               self.m_records.front().v);
         }
     {
         for (auto& record : self.m_records) {

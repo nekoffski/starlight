@@ -17,7 +17,7 @@ Result<ShaderRef> AssetSystem::loadShader(const Path& path) {
         return Error::unexpected(description.error());
     }
 
-    ShaderRef shader{m_proxy, description.value()};
+    ShaderRef shader{m_proxy, description.value(), m_eventLoop};
 
     if (shader.state() == BackendResourceState::failed) {
         return Error::unexpected(shader.error());

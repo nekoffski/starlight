@@ -13,7 +13,7 @@ class RandomEngine : public Singleton<RandomEngine> {
    public:
     explicit RandomEngine();
 
-    std::string uuid();
+    Str uuid();
 
    private:
     std::mt19937 m_engine;

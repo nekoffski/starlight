@@ -7,6 +7,7 @@
 #include "starlight/core/FileSystem.hh"
 #include "starlight/renderer/RendererProxy.hh"
 #include "starlight/renderer/rhi/Shader.hh"
+#include "starlight/runtime/EventLoop.hh"
 
 namespace sl {
 
@@ -19,6 +20,7 @@ class AssetSystem : public NonCopyable, public NonMovable {
    private:
     Config m_cfg;
     RendererProxy m_proxy;
+    EventLoop m_eventLoop{"AssetSystemEventLoop"};
 };
 
 }  // namespace sl
