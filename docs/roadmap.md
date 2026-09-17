@@ -20,6 +20,7 @@
 
 ### Adhoc improvements
 
-- [ ] use some dedicated lease type instead of shared pointer to avoid double unwrap when returning Result<..>
+- [x] use some dedicated lease type instead of shared pointer to avoid double unwrap when returning Result<..>
 - [x] flat map
+- [ ] validate shader lifecycle (we should probably destroy old handle on reload)
 

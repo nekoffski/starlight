@@ -41,6 +41,8 @@ class Error {
 
     static std::optional<Error> empty();
 
+    void reset();
+
    private:
     ErrorCode m_code;
     std::string m_message;

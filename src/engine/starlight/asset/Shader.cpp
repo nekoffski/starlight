@@ -25,6 +25,21 @@ ShaderImpl::~ShaderImpl() {
     }
 }
 
+void ShaderImpl::waitForDevice() {
+    for (;;) {
+        {
+            // TODO: add CV + mutex instead of busy waiting here
+            std::shared_lock lk{m_mutex};
+            if (m_state != BackendResourceState::queued) {
+                break;
+            }
+        }
+        std::this_thread::sleep_for(150ms);
+    }
+}
+
+void ShaderImpl::requestUpdate() { requestDevice(); }
+
 void ShaderImpl::requestDevice() {
     std::unique_lock lk{m_mutex};
 
@@ -36,17 +51,35 @@ void ShaderImpl::requestDevice() {
         return;
     }
 
+    m_error.reset();
+    m_state = BackendResourceState::queued;
+
     if (m_eventLoopCall) {
         m_eventLoop.remove(*m_eventLoopCall);
     }
 
     m_eventLoopCall = m_eventLoop.schedule<PollingEventLoopCall>(
         [&, future = std::move(future.value())]() mutable {
-            if (future.valid() && futureReady(future)) {
-                m_eventLoopCall.reset();  // is it a race??
-                return true;
+            if (not futureReady(future)) {
+                return false;
             }
-            return false;
+
+            std::unique_lock lk{m_mutex};
+
+            if (auto maybeShaderHandle = future.get(); maybeShaderHandle) {
+                m_handle = maybeShaderHandle.value();
+                m_state = BackendResourceState::created;
+            } else {
+                log::warn(
+                    "Backend request to create shader failed: {}",
+                    maybeShaderHandle.error()
+                );
+                m_error = maybeShaderHandle.error();
+                m_state = BackendResourceState::failed;
+            }
+
+            m_eventLoopCall.reset();
+            return true;
         }
     );
 }

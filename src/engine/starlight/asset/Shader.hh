@@ -39,6 +39,9 @@ class ShaderImpl : public NonCopyable, public NonMovable {
         return m_error;
     }
 
+    void waitForDevice();
+    void requestUpdate();
+
    private:
     void requestDevice();
 
@@ -64,7 +67,11 @@ class ShaderRef : public Ref<detail::ShaderImpl> {
 
     ShaderHandle handle() const { return data().handle(); }
     BackendResourceState state() const { return data().state(); }
+
+    void requestUpdate() { data().requestUpdate(); }
+
     Error error() const { return data().error(); }
+    void waitForDevice() { data().waitForDevice(); }
 };
 
 }  // namespace sl

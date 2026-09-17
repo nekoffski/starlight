@@ -19,6 +19,7 @@ enum class ErrorCode {
     fileNotFound = 11,
     shaderParsingError = 12,
     invalidFuture = 13,
+    metalError = 14,
     notImplemented = 1337,
 };
 

@@ -65,13 +65,11 @@ void Renderer::destroyTarget(RenderTarget target) {
 Result<ShaderHandle> Renderer::createShader(
     const ShaderDescription& description
 ) {
-    return Error::unexpected(
-        ErrorCode::notImplemented, "Shader creation is not implemented"
-    );
+    return m_device.createShader(description);
 }
 
 void Renderer::destroyShader(ShaderHandle handle) {
-    // m_device.destroyShader(handle);
+    m_device.destroyShader(handle);
 }
 
 u64 Renderer::frameIndex() const {

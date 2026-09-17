@@ -30,7 +30,17 @@ Result<ShaderHandle> RendererProxy::createShader(
     }
 }
 
-void RendererProxy::destroyShader(ShaderHandle handle) {}
+Result<void> RendererProxy::destroyShader(ShaderHandle handle) {
+    RendererDestroyShader cmd{handle};
+
+    if (not m_submitter.submit(std::move(cmd))) {
+        return Error::unexpected(
+            ErrorCode::rendererCommandRejected,
+            "Could not submit renderer destroy shader command"
+        );
+    }
+    return {};
+}
 
 Result<void> RendererProxy::flushRenderer() {
     RendererFlush cmd;

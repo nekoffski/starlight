@@ -10,7 +10,7 @@
 namespace sl {
 
 template <typename Key, typename Value>
-class FlatMap : public NonCopyable, public NonMovable {
+class FlatMap : public NonCopyable {
     struct Record {
         template <typename... Args>
             requires std::is_constructible_v<Value, Args...>
@@ -25,6 +25,9 @@ class FlatMap : public NonCopyable, public NonMovable {
     explicit FlatMap(u64 initialCapacity = 0u) {
         m_records.reserve(initialCapacity);
     }
+
+    FlatMap(FlatMap&& other) noexcept = default;
+    FlatMap& operator=(FlatMap&& other) noexcept = default;
 
     template <typename... Args>
         requires std::constructible_from<Value, Args&&...>
@@ -69,6 +72,14 @@ class FlatMap : public NonCopyable, public NonMovable {
     {
         for (auto& record : self.m_records) {
             cb(std::as_const(record.k), record.v);
+        }
+    }
+
+    void forEach(this auto&& self, auto&& cb)
+        requires requires { cb(self.m_records.front().v); }
+    {
+        for (auto& record : self.m_records) {
+            cb(record.v);
         }
     }
 

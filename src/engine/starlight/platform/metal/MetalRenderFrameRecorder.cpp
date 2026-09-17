@@ -21,10 +21,12 @@ Result<CA::MetalDrawable*> MetalRenderFrameRecorder::acquireSurface(
     auto layer = m_resourcePool.getSurface(handle);
 
     if (not layer) {
-        return Error::unexpected(layer.error());
+        return Error::unexpected(
+            ErrorCode::invalidArgument, "Surface not found"
+        );
     }
 
-    auto* drawable = (*layer)->nextDrawable();
+    auto* drawable = layer->nextDrawable();
 
     if (not drawable) {
         return Error::unexpected(

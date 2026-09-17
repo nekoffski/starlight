@@ -15,4 +15,9 @@ std::unexpected<Error> Error::unexpected(const Error& error) {
 
 std::optional<Error> Error::empty() { return {}; }
 
+void Error::reset() {
+    m_code = ErrorCode::noError;
+    m_message.clear();
+}
+
 }  // namespace sl

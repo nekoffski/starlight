@@ -30,13 +30,40 @@ Result<SurfaceHandle> MetalResourcePool::attachSurface(
     return handle;
 }
 
-Result<CA::MetalLayer*> MetalResourcePool::getSurface(SurfaceHandle handle) {
+CA::MetalLayer* MetalResourcePool::getSurface(SurfaceHandle handle) {
     if (auto it = m_surfaces.find(handle); it != m_surfaces.end()) {
         return it->second.surface;
     }
-    return Error::unexpected(
-        ErrorCode::invalidArgument, "Invalid surface handle"
-    );
+    return nullptr;
+}
+
+void MetalResourcePool::destroySurface(SurfaceHandle handle) {
+    m_surfaces.erase(handle);
+}
+
+Result<ShaderHandle> MetalResourcePool::createShader(
+    const ShaderDescription& description
+) {
+    auto maybeShader = MetalShader::create(m_ctx, description);
+
+    if (not maybeShader) {
+        return Error::unexpected(maybeShader.error());
+    }
+
+    ShaderHandle handle{m_idLake.acquire<ShaderHandle>()};
+    m_shaders.emplace(std::make_pair(handle, std::move(maybeShader.value())));
+    return handle;
+}
+
+void MetalResourcePool::destroyShader(ShaderHandle handle) {
+    m_shaders.erase(handle);
+}
+
+MetalShader* MetalResourcePool::getShader(ShaderHandle handle) {
+    if (auto it = m_shaders.find(handle); it != m_shaders.end()) {
+        return it->second.get();
+    }
+    return nullptr;
 }
 
 }  // namespace sl

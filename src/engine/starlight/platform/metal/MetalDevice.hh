@@ -28,8 +28,18 @@ class MetalDevice : public RenderDevice {
         return m_resourcePool.attachSurface(std::move(provider));
     }
 
-    void destroySurface(SurfaceHandle) override {
-        // noop for metal, no renderer involved in creating surface
+    Result<ShaderHandle> createShader(
+        const ShaderDescription& description
+    ) override {
+        return m_resourcePool.createShader(description);
+    }
+
+    void destroyShader(ShaderHandle handle) override {
+        m_resourcePool.destroyShader(handle);
+    }
+
+    void destroySurface(SurfaceHandle handle) override {
+        m_resourcePool.destroySurface(handle);
     }
 
     void waitIdle() override;

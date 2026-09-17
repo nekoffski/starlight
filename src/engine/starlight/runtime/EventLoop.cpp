@@ -4,13 +4,16 @@
 
 namespace sl {
 
-EventLoop::EventLoop(const Str& name) : Thread(name) {}
+EventLoop::EventLoop(const Str& name) : Thread(name) { start(); }
 
 EventLoop::~EventLoop() { stop(); }
 
 void EventLoop::stop() { m_running = false; }
 
-void EventLoop::remove(const Tag<Str>& uuid) { m_calls.remove(uuid.get()); }
+void EventLoop::remove(const Tag<Str>& uuid) {
+    std::unique_lock lk{m_callsMutex};
+    m_calls.remove(uuid.get());
+}
 
 Tag<Str> EventLoop::scheduleImpl(std::unique_ptr<EventLoopCall> call) {
     const auto uuid = RandomEngine::get().uuid();

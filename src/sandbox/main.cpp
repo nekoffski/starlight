@@ -45,6 +45,8 @@ int main() {
     auto shader = as.loadShader("shaders/triangle.metallib");
     log::expect(shader);
 
+    shader->waitForDevice();
+
     while (running) {
         window->pollEvents();
         es.dispatch();

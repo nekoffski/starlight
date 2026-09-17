@@ -24,7 +24,7 @@ class RendererProxy {
     );
     Result<ShaderHandle> createShader(const ShaderDescription& description);
 
-    void destroyShader(ShaderHandle handle);
+    Result<void> destroyShader(ShaderHandle handle);
 
     Result<void> submit(const RenderRequest& request);
 

@@ -72,6 +72,7 @@ if (APPLE)
             "starlight/platform/metal/MetalRenderFrameLatch.cpp"
             "starlight/platform/metal/MetalRenderFrameRecorder.cpp"
             "starlight/platform/metal/MetalRenderPass.cpp"
+            "starlight/platform/metal/MetalShader.cpp"
     )
 
     target_compile_definitions(starlight PUBLIC
@@ -83,6 +84,8 @@ if (APPLE)
         PUBLIC
             metal-cpp::metal-cpp
     )
+
+    target_compile_options(starlight PRIVATE -fblocks)
 endif()
 
 if (SL_ENABLE_PROFILING)

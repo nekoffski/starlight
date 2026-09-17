@@ -3,6 +3,7 @@
 #include "RenderFrameRecorder.hh"
 #include "RenderResource.hh"
 #include "RenderSurfaceProvider.hh"
+#include "Shader.hh"
 #include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/core/Functional.hh"
@@ -19,6 +20,11 @@ class RenderDevice : public NonCopyable, public NonMovable {
         std::shared_ptr<RenderSurfaceProvider> provider
     ) = 0;
     virtual void destroySurface(SurfaceHandle handle) = 0;
+
+    virtual Result<ShaderHandle> createShader(
+        const ShaderDescription& description
+    ) = 0;
+    virtual void destroyShader(ShaderHandle handle) = 0;
 
     virtual Result<void> trySubmitFrame(RecordFrame callback) = 0;
 
