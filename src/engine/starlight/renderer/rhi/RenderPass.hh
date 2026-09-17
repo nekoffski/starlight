@@ -29,6 +29,9 @@ struct RenderPassDescription {
 class RenderPassEncoder : public NonCopyable, public NonMovable {
    public:
     virtual ~RenderPassEncoder() = default;
+
+    virtual Result<void> setPipeline(GraphicsPipelineHandle pipeline) = 0;
+    virtual void draw(u32 vertexCount) = 0;
 };
 
 using RenderPassCallback = MoveOnlyFunction<Result<void>(RenderPassEncoder&)>;

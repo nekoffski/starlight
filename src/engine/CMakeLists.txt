@@ -73,6 +73,7 @@ if (APPLE)
             "starlight/platform/metal/MetalRenderFrameRecorder.cpp"
             "starlight/platform/metal/MetalRenderPass.cpp"
             "starlight/platform/metal/MetalShader.cpp"
+            "starlight/platform/metal/MetalGraphicsPipeline.cpp"
     )
 
     target_compile_definitions(starlight PUBLIC

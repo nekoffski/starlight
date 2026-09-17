@@ -66,4 +66,43 @@ MetalShader* MetalResourcePool::getShader(ShaderHandle handle) {
     return nullptr;
 }
 
+Result<GraphicsPipelineHandle> MetalResourcePool::createGraphicsPipeline(
+    const GraphicsPipelineDescription& description
+) {
+    auto shader = getShader(description.shader);
+
+    if (not shader) {
+        return Error::unexpected(
+            ErrorCode::invalidArgument, "Invalid shader handle"
+        );
+    }
+
+    auto maybePipeline =
+        MetalGraphicsPipeline::create(m_ctx, *shader, description);
+
+    if (not maybePipeline) {
+        return Error::unexpected(maybePipeline.error());
+    }
+
+    GraphicsPipelineHandle handle{m_idLake.acquire<GraphicsPipelineHandle>()};
+    m_graphicsPipelines.emplace(
+        std::make_pair(handle, std::move(maybePipeline.value()))
+    );
+    return handle;
+}
+
+void MetalResourcePool::destroyGraphicsPipeline(GraphicsPipelineHandle handle) {
+    m_graphicsPipelines.erase(handle);
+}
+
+MetalGraphicsPipeline* MetalResourcePool::getGraphicsPipeline(
+    GraphicsPipelineHandle handle
+) {
+    if (auto it = m_graphicsPipelines.find(handle);
+        it != m_graphicsPipelines.end()) {
+        return it->second.get();
+    }
+    return nullptr;
+}
+
 }  // namespace sl

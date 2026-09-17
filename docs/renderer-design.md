@@ -20,6 +20,8 @@ The initial implementation uses one graphics-capable queue. Multiple queues, asy
 ```text
 RendererProxy
     -> Renderer
+        -> prepare scene items for each view/pass
+            -> resolve persistent graphics pipelines
         -> frame-local RenderGraph
         -> ordered passes
             -> RenderDevice::trySubmitFrame()
@@ -33,7 +35,10 @@ The modules own the following responsibilities.
 
 - Accepts and queues `RenderRequest`s.
 - Owns the logical frame number.
-- Converts requests and scene data into a render graph.
+- Converts requests and scene data into prepared draws, then into a render graph.
+- Derives portable pipeline descriptions from shader, geometry, material, and
+  render-target compatibility state.
+- Owns the logical graphics-pipeline cache and pipeline lifetime policy.
 - Compiles graph dependencies when passes begin sharing resources.
 - Chooses pass order.
 - Issues RHI commands for compiled passes.
@@ -62,6 +67,151 @@ The modules own the following responsibilities.
 - Translate RHI descriptors and commands to native objects and commands.
 - Own native resource pools, command buffers, encoders, queues, fences, semaphores, swapchains, and drawables.
 - Handle resize, surface unavailability, device errors, and deferred destruction.
+
+## Scene preparation and pipeline ownership
+
+Application-facing code submits scene intent and views. It does not create or
+own graphics pipelines. The temporary triangle-facing scene shape is allowed to
+be small:
+
+```cpp
+struct RenderItem {
+    u32 vertices;
+    ShaderHandle shader;
+};
+```
+
+This is scaffolding, not the final scene model. When meshes and materials exist,
+the durable shape is closer to:
+
+```cpp
+struct RenderItem {
+    MeshHandle mesh;
+    MaterialHandle material;
+    Mat4f transform;
+};
+```
+
+Before building the frame graph, the renderer resolves the state needed to draw
+each visible item in the pass that will consume it:
+
+```text
+scene item
+    mesh       -> vertex layout and topology
+    material   -> shader variant and fixed render state
+    graph pass -> attachment formats and sample count
+        -> GraphicsPipelineDescription
+        -> resolve cached GraphicsPipelineHandle
+        -> pipeline handle and draw arguments
+```
+
+For the first triangle, the graph callback can capture the resolved pipeline
+handle and vertex count directly. Introduce a private, frame-local
+`PreparedDraw` only when several draw sites need to carry the same pipeline,
+buffer, binding, and draw-range data. Render-graph callbacks consume already
+resolved state; they do not select or compile pipelines.
+
+Pipeline creation is not exposed through `RendererProxy`. The renderer already
+runs on the render thread and calls `RenderDevice` directly. Shader creation is
+different: the asset system requests it through `RendererProxy` because shader
+assets originate outside the renderer thread.
+
+Preparation begins as private `Renderer` code, not as a new interface or class.
+Extract a dedicated preparation or pipeline-cache module only when the renderer
+contains enough policy to make that separation useful.
+
+## Graphics pipeline model
+
+A graphics pipeline is a persistent RHI resource. Reuse the existing
+`GraphicsPipelineHandle`. Split graphics and compute handles only if supporting compute
+pipelines makes the shared handle ambiguous in real code.
+
+The renderer and RHI share one canonical, backend-independent description. The
+initial triangle needs only the shader and its single color-target format:
+
+```cpp
+struct GraphicsPipelineDescription {
+    TextureFormat format;
+    ShaderHandle shader;
+
+    bool operator==(const GraphicsPipelineDescription&) const = default;
+};
+```
+
+The description itself is the logical cache identity. Do not maintain a second
+partial `PipelineKey`, which could drift from creation state. It owns its values;
+it must not contain non-owning spans or references when retained by the cache.
+
+As corresponding renderer features are implemented, the description grows by
+adding these groups:
+
+```text
+GraphicsPipelineDescription
+    shader program / selected variant
+    vertex-buffer layouts and attributes
+    primitive and rasterization state
+    multiple color-target formats, blending, and write masks
+    optional depth/stencil format and state
+    multisample state
+    binding layout, only if shader reflection is no longer sufficient
+```
+
+Do not add those types before their feature exists. Keeping the creation
+interface descriptor-based allows fields to be added without growing an
+argument list:
+
+```cpp
+class RenderDevice {
+   public:
+    virtual Result<GraphicsPipelineHandle> createGraphicsPipeline(
+        const GraphicsPipelineDescription& description
+    ) = 0;
+
+    virtual void destroyGraphicsPipeline(
+        GraphicsPipelineHandle pipeline
+    ) = 0;
+};
+```
+
+The renderer initially resolves pipelines with a private function and the
+existing linear `FlatMap`:
+
+```cpp
+Result<GraphicsPipelineHandle> resolveGraphicsPipeline(
+    const GraphicsPipelineDescription& description
+);
+
+FlatMap<GraphicsPipelineDescription, GraphicsPipelineHandle> m_graphicsPipelines;
+```
+
+Keep created pipelines until renderer shutdown for the initial implementation.
+This avoids eviction and destruction of resources referenced by in-flight work.
+Add dependency tracking, hot-reload invalidation, deferred destruction, a hash
+map, disk caches, and asynchronous compilation only when required.
+
+The description contains compatibility state, not scene or frame identity:
+
+- no `MeshHandle`, `MaterialHandle`, texture handle, or surface handle;
+- no distinction between surface and texture outputs;
+- no frame, view, or pass identifier;
+- no bound resources or transforms;
+- no viewport, scissor, blend constant, stencil reference, or depth bias when
+  those remain dynamic encoder commands.
+
+Surface and texture targets with the same attachment formats and sample count
+share a pipeline. The initial descriptor has one color format and implicitly
+uses one sample. The renderer therefore needs portable format metadata for its
+targets; it must not inspect native drawables or Vulkan images to derive it.
+For now the renderer uses the single supported `TextureFormat::bgra8unorm`,
+which must match the format configured on the Metal surface. When formats
+become configurable, the renderer retains the format selected during target
+creation; it does not query it back from the backend.
+
+On Metal, one logical `MetalGraphicsPipeline` may own an
+`MTLRenderPipelineState`, an `MTLDepthStencilState`, and portable values applied
+dynamically by the encoder. On Vulkan it may map primarily to `VkPipeline` plus
+its compatible layout. One RHI handle represents the complete logical state
+bundle, not necessarily exactly one native object.
 
 ## Render-pass decision
 
@@ -283,7 +433,7 @@ class RenderPassEncoder {
 ```cpp
 class ComputePassEncoder {
    public:
-    virtual void setPipeline(ComputePipelineHandle) = 0;
+    virtual void setPipeline(ComputeGraphicsPipelineHandle) = 0;
     virtual void setBindGroup(
         u32 index,
         BindGroupHandle,
@@ -329,7 +479,10 @@ The RHI requires generational handles for:
 - compute pipelines;
 - timestamp pools.
 
-Resource creation uses immutable descriptors where practical. Graphics pipeline descriptions include shaders, vertex layouts, rasterization, depth/stencil, blending, attachment formats, and sample count.
+Resource creation uses immutable descriptors where practical. The first
+graphics-pipeline description contains only its shader and one color format. It
+grows to include vertex layouts, rasterization, depth/stencil, blending,
+multiple attachment formats, and sample count only as those features are added.
 
 Bindings use immutable bind groups:
 
@@ -494,17 +647,31 @@ Before extending command recording:
 
 ## Implementation plan
 
-1. Correct current frame-submission and lifetime behavior.
-2. Add persistent `RenderTarget` attachments and resolve surfaces privately inside the backend recorder.
-3. Render an empty scoped pass that clears and presents a surface.
-4. Introduce the minimal frame-local render graph and record passes in insertion order.
-5. Add texture resources and a texture-to-surface two-pass graph, then add stable topological ordering.
-6. Add buffers, shaders, graphics pipelines, bind groups, and basic drawing.
-7. Add uploads and copy passes.
-8. Add semantic resource-state tracking and Vulkan synchronization2 translation.
-9. Add depth/stencil, MSAA, and resolve attachments.
-10. Add compute passes.
-11. Add timestamps, debug labels, indirect commands, and deferred destruction.
+1. Close the remaining frame, surface-format, resize, and resource-lifetime
+   correctness gaps listed above. Explicitly configure Metal surfaces as
+   `bgra8unorm` so they match the initial pipeline description.
+2. Reuse the existing `GraphicsPipelineHandle`; add the current minimal
+   `GraphicsPipelineDescription` and RHI create/destroy methods.
+3. Implement `MetalGraphicsPipeline` and store it in `MetalResourcePool`.
+   Validate the shader stages and set the Metal color format from the portable
+   description.
+4. Add only `RenderPassEncoder::setPipeline()` and `draw()`; leave the other
+   encoder commands until a feature uses them.
+5. In private `Renderer` code, resolve the description through the existing
+   `FlatMap` before adding the graph pass. Capture the pipeline handle and
+   vertex count in the callback and render the triangle.
+6. Add vertex and index buffers, then replace the temporary vertex-count scene
+   item with mesh/material-driven preparation.
+7. Add texture resources and a texture-to-surface two-pass graph, followed by
+   stable topological ordering and portable resource transitions.
+8. Add reflected resource bindings and uploads when the first shader consumes
+   external data.
+9. Add depth/stencil, blending, MSAA, and multiple render targets one feature at
+   a time, extending the pipeline description with the required state.
+10. Add the Vulkan implementation against the same RHI descriptions and
+    encoder contract.
+11. Add compute, timestamps, indirect commands, and advanced lifetime/cache
+    policies only when renderer features require them.
 
 ## Deferred features
 
@@ -516,6 +683,31 @@ Before extending command recording:
 - Metal argument-buffer optimization.
 - Transient resource aliasing and pass merging.
 - Mesh shaders and ray tracing.
+
+## Architecture validation
+
+The selected boundary matches established renderer designs without requiring
+their full machinery:
+
+- Filament accepts a scene through a `View` and keeps command and pipeline work
+  behind `Renderer`. This supports keeping pipeline creation out of the public
+  scene API.
+- Bevy prepares render items, specializes a pipeline using target format and
+  mesh state, and records the cached pipeline ID later in a render pass. This
+  supports resolving a pipeline before graph-pass recording.
+- wgpu creates an immutable render pipeline from one descriptor and describes
+  render passes separately. This supports the descriptor-based RHI seam and
+  the separation between persistent pipelines and transient passes.
+- bgfx exposes program/state submission directly because it is a low-level
+  rendering library. Starlight is choosing the higher-level scene-renderer
+  boundary instead, so copying that public API would leak RHI policy upward.
+
+The architecture is not overengineered if preparation stays as private
+`Renderer` code and the cache begins as a linear collection. Do not add a
+public pipeline API, `PipelineRecipe`, `PreparedFrame`, standalone cache class,
+hashing, eviction, asynchronous compilation, or a complete speculative state
+model now. The stable seam is the descriptor passed from `Renderer` to
+`RenderDevice`; its fields are expected to grow with implemented features.
 
 ## References
 
@@ -530,3 +722,7 @@ Before extending command recording:
 - [Khronos: synchronization2](https://docs.vulkan.org/guide/latest/extensions/VK_KHR_synchronization2.html)
 - [Khronos: descriptor sets](https://docs.vulkan.org/spec/latest/chapters/descriptorsets.html)
 - [Khronos: swapchain semaphore reuse](https://docs.vulkan.org/guide/latest/swapchain_semaphore_reuse.html)
+- [Filament: `Renderer` and `View` boundary](https://github.com/google/filament/blob/main/filament/include/filament/Renderer.h)
+- [Bevy: manual mesh pipeline preparation and specialization](https://github.com/bevyengine/bevy/blob/main/examples/2d/mesh2d_manual.rs)
+- [wgpu: render-pipeline descriptor implementation](https://github.com/gfx-rs/wgpu/blob/trunk/wgpu-core/src/pipeline.rs)
+- [bgfx: explicit low-level program/state submission](https://github.com/bkaradzic/bgfx/blob/master/examples/06-bump/bump.cpp)

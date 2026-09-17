@@ -95,6 +95,25 @@ void Renderer::tryToSubmitFrame() {
     m_frameNumber++;
 }
 
+Result<GraphicsPipelineHandle> Renderer::resolveGraphicsPipeline(
+    const GraphicsPipelineDescription& description
+) {
+    if (auto pipeline = m_graphicsPipelines.find(description); pipeline) {
+        return *pipeline;
+    }
+
+    auto maybePipeline = m_device.createGraphicsPipeline(description);
+
+    if (not maybePipeline) {
+        return Error::unexpected(
+            ErrorCode::deviceOperationFailed,
+            "Failed to create graphics pipeline: {}", maybePipeline.error()
+        );
+    }
+
+    return m_graphicsPipelines.emplace(description, *maybePipeline);
+}
+
 Result<void> Renderer::recordFrame(
     RenderFrameRecorder& recorder, const RenderRequest& request
 ) {
@@ -112,9 +131,26 @@ Result<void> Renderer::recordFrame(
             .label = "Main Pass", .colorAttachments = std::span(&attachment, 1)
         };
 
-        graph.addRenderPass(pass, [](RenderPassEncoder&) -> Result<void> {
-            return {};
-        });
+        graph.addRenderPass(
+            pass, [&](RenderPassEncoder& encoder) -> Result<void> {
+                for (const auto& renderable : request.scene.items) {
+                    GraphicsPipelineDescription description{
+                        .format = TextureFormat::bgra8unorm,
+                        .shader = renderable.shader
+                    };
+
+                    auto pipeline = resolveGraphicsPipeline(description);
+
+                    if (not pipeline) [[unlikely]] {
+                        return Error::unexpected(pipeline.error());
+                    }
+
+                    encoder.setPipeline(*pipeline);
+                    encoder.draw(renderable.vertexCount);
+                }
+                return {};
+            }
+        );
     }
 
     return graph.record(recorder);

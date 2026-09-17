@@ -22,4 +22,6 @@ class MetalContext : public NonCopyable, public NonMovable {
     MTL::CommandQueue* m_queue{nullptr};
 };
 
+Str parseMetalError(NS::Error* error);
+
 }  // namespace sl

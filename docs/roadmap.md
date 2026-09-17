@@ -17,6 +17,7 @@
 
 - [ ] use lock-less queue for renderer requests
 - [ ] interface for destroying surface
+- [ ] improve pipeline cache
 
 ### Adhoc improvements
 

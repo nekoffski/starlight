@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GraphicsPipeline.hh"
 #include "RenderFrameRecorder.hh"
 #include "RenderResource.hh"
 #include "RenderSurfaceProvider.hh"
@@ -25,6 +26,11 @@ class RenderDevice : public NonCopyable, public NonMovable {
         const ShaderDescription& description
     ) = 0;
     virtual void destroyShader(ShaderHandle handle) = 0;
+
+    virtual Result<GraphicsPipelineHandle> createGraphicsPipeline(
+        const GraphicsPipelineDescription& description
+    ) = 0;
+    virtual void destroyGraphicsPipeline(GraphicsPipelineHandle handle) = 0;
 
     virtual Result<void> trySubmitFrame(RecordFrame callback) = 0;
 

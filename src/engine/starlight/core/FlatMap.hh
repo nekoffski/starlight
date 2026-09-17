@@ -49,7 +49,7 @@ class FlatMap : public NonCopyable {
 
     bool has(const Key& k) const { return find(k) != nullptr; }
 
-    auto* find(this auto&& self, const Key& key) {
+    auto find(this auto&& self, const Key& key) {
         auto it = std::ranges::find(self.m_records, key, &Record::k);
         return it == self.m_records.end() ? nullptr : &it->v;
     }

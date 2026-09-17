@@ -41,4 +41,18 @@ MTL::Device& MetalContext::device() { return *m_device; }
 
 MTL::CommandQueue& MetalContext::commandQueue() { return *m_queue; }
 
+Str parseMetalError(NS::Error* error) {
+    if (not error) {
+        return "Unknown Metal error";
+    }
+
+    auto* description = error->localizedDescription();
+
+    if (not description) {
+        return "Unknown Metal error";
+    }
+
+    return Str{description->utf8String()};
+}
+
 }  // namespace sl

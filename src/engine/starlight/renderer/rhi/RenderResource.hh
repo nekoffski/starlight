@@ -7,7 +7,7 @@
 
 namespace sl {
 
-enum class ResourceType { surface, texture, shader, pipeline };
+enum class ResourceType { surface, texture, shader, graphicsPipeline };
 
 template <ResourceType T>
 struct RenderResourceHandle : HandleBase<ResourceType, T> {
@@ -17,7 +17,8 @@ struct RenderResourceHandle : HandleBase<ResourceType, T> {
 using SurfaceHandle = RenderResourceHandle<ResourceType::surface>;
 using TextureHandle = RenderResourceHandle<ResourceType::texture>;
 using ShaderHandle = RenderResourceHandle<ResourceType::shader>;
-using PipelineHandle = RenderResourceHandle<ResourceType::pipeline>;
+using GraphicsPipelineHandle =
+    RenderResourceHandle<ResourceType::graphicsPipeline>;
 
 using RenderTarget = std::variant<SurfaceHandle, TextureHandle>;
 

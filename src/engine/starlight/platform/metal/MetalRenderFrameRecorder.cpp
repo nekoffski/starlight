@@ -93,7 +93,7 @@ Result<void> MetalRenderFrameRecorder::renderPass(
         );
     }
 
-    MetalRenderPassEncoder encoder{nativeEncoder};
+    MetalRenderPassEncoder encoder{m_resourcePool, nativeEncoder};
     return record(encoder);
 }
 

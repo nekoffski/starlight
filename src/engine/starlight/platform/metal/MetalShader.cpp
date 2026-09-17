@@ -8,24 +8,6 @@
 
 namespace sl {
 
-namespace {
-
-Str parseMetalError(NS::Error* error) {
-    if (not error) {
-        return "Unknown Metal error";
-    }
-
-    auto* description = error->localizedDescription();
-
-    if (not description) {
-        return "Unknown Metal error";
-    }
-
-    return Str{description->utf8String()};
-}
-
-}  // namespace
-
 Result<std::unique_ptr<MetalShader>> MetalShader::create(
     MetalContext& ctx, const ShaderDescription& description
 ) {
@@ -92,6 +74,11 @@ Result<std::unique_ptr<MetalShader>> MetalShader::create(
     return std::make_unique<MetalShader>(
         library, std::move(functions), Guard{}
     );
+}
+
+MTL::Function* MetalShader::function(ShaderStage stage) {
+    auto** result = m_functions.find(stage);
+    return result ? *result : nullptr;
 }
 
 MetalShader::~MetalShader() {

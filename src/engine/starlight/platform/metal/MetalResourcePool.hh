@@ -3,6 +3,7 @@
 #include <unordered_map>
 
 #include "Metal.hh"
+#include "MetalGraphicsPipeline.hh"
 #include "MetalRenderSurfaceProvider.hh"
 #include "MetalShader.hh"
 #include "starlight/core/Concepts.hh"
@@ -32,12 +33,21 @@ class MetalResourcePool : public NonCopyable, public NonMovable {
     void destroyShader(ShaderHandle handle);
     MetalShader* getShader(ShaderHandle handle);
 
+    Result<GraphicsPipelineHandle> createGraphicsPipeline(
+        const GraphicsPipelineDescription& description
+    );
+    void destroyGraphicsPipeline(GraphicsPipelineHandle handle);
+    MetalGraphicsPipeline* getGraphicsPipeline(GraphicsPipelineHandle handle);
+
    private:
     IdLake m_idLake;
     MetalContext& m_ctx;
 
     std::unordered_map<SurfaceHandle, SurfaceWrapper> m_surfaces;
     std::unordered_map<ShaderHandle, std::unique_ptr<MetalShader>> m_shaders;
+    std::unordered_map<
+        GraphicsPipelineHandle, std::unique_ptr<MetalGraphicsPipeline>>
+        m_graphicsPipelines;
 };
 
 }  // namespace sl

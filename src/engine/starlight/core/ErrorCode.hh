@@ -20,6 +20,7 @@ enum class ErrorCode {
     shaderParsingError = 12,
     invalidFuture = 13,
     metalError = 14,
+    deviceOperationFailed = 15,
     notImplemented = 1337,
 };
 

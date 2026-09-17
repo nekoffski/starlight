@@ -47,17 +47,20 @@ int main() {
 
     shader->waitForDevice();
 
+    RenderRequest req{
+        .scene =
+            RenderScene{
+                .items = {RenderItem{
+                    .vertexCount = 3, .shader = shader->handle()
+                }}
+            },
+        .views = {RenderView{.target = *target}},
+        .clearColor = {0.2f, 0.2f, 0.6f, 1.1f}
+    };
+
     while (running) {
         window->pollEvents();
         es.dispatch();
-
-        RenderRequest req{
-            .views =
-                {
-                    RenderView{.target = *target},
-                },
-            .clearColor = {0.2f, 0.2f, 0.6f, 1.1f}
-        };
 
         if (auto res = proxy.submit(req); not res) {
             if (res.error().code() == ErrorCode::tooManyFrameRequests) {

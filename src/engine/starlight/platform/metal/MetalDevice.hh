@@ -34,6 +34,16 @@ class MetalDevice : public RenderDevice {
         return m_resourcePool.createShader(description);
     }
 
+    Result<GraphicsPipelineHandle> createGraphicsPipeline(
+        const GraphicsPipelineDescription& description
+    ) override {
+        return m_resourcePool.createGraphicsPipeline(description);
+    }
+
+    void destroyGraphicsPipeline(GraphicsPipelineHandle handle) override {
+        m_resourcePool.destroyGraphicsPipeline(handle);
+    }
+
     void destroyShader(ShaderHandle handle) override {
         m_resourcePool.destroyShader(handle);
     }

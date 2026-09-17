@@ -20,6 +20,8 @@ class MetalShader : public NonCopyable, public NonMovable {
         MetalContext& ctx, const ShaderDescription& description
     );
 
+    MTL::Function* function(ShaderStage stage);
+
     explicit MetalShader(MTL::Library* library, Functions&& functions, Guard);
     ~MetalShader();
 
