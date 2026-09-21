@@ -709,6 +709,70 @@ hashing, eviction, asynchronous compilation, or a complete speculative state
 model now. The stable seam is the descriptor passed from `Renderer` to
 `RenderDevice`; its fields are expected to grow with implemented features.
 
+## Buffer resource contract research
+
+The asset system requests preparation of logical render resources. It does not
+allocate GPU memory, select heaps or memory types, manage staging buffers, or
+choose dedicated versus suballocated storage.
+
+The stable ownership flow is:
+
+```text
+asset loader
+    -> CPU mesh data
+    -> RendererProxy::uploadMeshAsync(move(upload))
+    -> renderer-owned MeshHandle
+    -> internal DeviceBufferHandle values
+    -> backend-private allocation and upload
+```
+
+The public asset-to-renderer operation should be atomic at mesh granularity.
+One failed vertex or index upload fails the mesh and rolls back its already
+created buffers. `DeviceBufferHandle` remains an internal renderer/RHI concept;
+the asset system should not coordinate several buffer futures or expose partial
+mesh readiness.
+
+At the RHI seam, a buffer handle denotes a logical byte resource, not
+necessarily one native allocation. Today it may map to a dedicated
+`MTL::Buffer`. Later it may resolve to a backing buffer, base offset, and size
+inside a Metal heap or Vulkan allocator without changing mesh or encoder
+interfaces. Encoder offsets are relative to that logical resource.
+
+A successful upload means the returned mesh handle is safe to reference from
+later renderer submissions. It does not require the GPU copy to have completed.
+The backend must copy caller-owned bytes into backend-owned memory before the
+request returns and order any pending transfer before the first consuming draw.
+Native destruction is likewise deferred until earlier GPU submissions no
+longer reference the allocation.
+
+This shape is supported by existing systems:
+
+- Metal provides both direct buffer initialization by copying caller bytes and
+  heap-backed buffer creation, so physical placement is an implementation
+  choice rather than asset metadata.
+- Vulkan separates buffers, memory allocation, staging copies, and transfer
+  synchronization; exposing those choices to asset loaders would leak backend
+  policy.
+- wgpu exposes logical buffers and queue writes. `write_buffer` copies caller
+  data into staging immediately while GPU execution begins with a later queue
+  submission.
+- bgfx returns logical resource handles immediately and defers the actual
+  creation/upload commands to its render thread before dependent draws.
+- Filament creates logical vertex/index resources separately from supplying
+  their buffer data, and its asset loader transfers owned data through buffer
+  descriptors and completion callbacks.
+- Bevy keeps CPU source assets separate from prepared render assets. Its fully
+  demand-driven extraction/preparation system is a possible later evolution,
+  but would add asset IDs, versioning, retry scheduling, and cache eviction that
+  Starlight does not yet need.
+
+Therefore the initial implementation may keep
+`RenderDevice::createBuffer(description-with-owned-bytes)` as a convenience for
+immutable static data, provided it preserves the readiness and deferred-release
+contract above. If dynamic updates or upload batching become real requirements,
+split internal allocation from `writeBuffer()` without changing the external
+mesh-upload interface.
+
 ## References
 
 - [Apple: setting up a command structure](https://developer.apple.com/documentation/Metal/setting-up-a-command-structure)
@@ -726,3 +790,13 @@ model now. The stable seam is the descriptor passed from `Renderer` to
 - [Bevy: manual mesh pipeline preparation and specialization](https://github.com/bevyengine/bevy/blob/main/examples/2d/mesh2d_manual.rs)
 - [wgpu: render-pipeline descriptor implementation](https://github.com/gfx-rs/wgpu/blob/trunk/wgpu-core/src/pipeline.rs)
 - [bgfx: explicit low-level program/state submission](https://github.com/bkaradzic/bgfx/blob/master/examples/06-bump/bump.cpp)
+- [Apple: `MTLBuffer` creation and storage](https://developer.apple.com/documentation/metal/mtlbuffer)
+- [Apple: heap-backed buffer creation](https://developer.apple.com/documentation/metal/mtlheap/makebuffer%28length%3Aoptions%3A%29)
+- [Khronos: staging vertex data into device-local memory](https://docs.vulkan.org/tutorial/latest/04_Vertex_buffers/02_Staging_buffer.html)
+- [Khronos: buffer-upload synchronization examples](https://docs.vulkan.org/guide/latest/synchronization_examples.html)
+- [wgpu: buffer initialization and upload paths](https://docs.rs/wgpu/latest/wgpu/struct.Buffer.html)
+- [wgpu: queue-write ordering and staging semantics](https://docs.rs/wgpu/latest/wgpu/struct.Queue.html#method.write_buffer)
+- [bgfx: deferred resource API](https://bkaradzic.github.io/bgfx/internals.html#resource-api)
+- [Filament: vertex-buffer data upload](https://github.com/google/filament/blob/main/filament/src/VertexBuffer.cpp)
+- [Filament: glTF resource upload path](https://github.com/google/filament/blob/main/libs/gltfio/src/ResourceLoader.cpp)
+- [Bevy: CPU-to-render asset preparation](https://docs.rs/bevy/latest/bevy/render/render_asset/trait.RenderAsset.html)

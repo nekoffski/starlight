@@ -4,6 +4,7 @@ add_library(starlight STATIC
     "starlight/asset/AssetSystem.cpp"
     "starlight/asset/Shader.cpp"
     "starlight/asset/loaders/ShaderLoader.cpp"
+    "starlight/asset/Mesh.cpp"
     # -- core
     "starlight/core/Core.cpp"
     "starlight/core/Error.cpp"
@@ -74,6 +75,7 @@ if (APPLE)
             "starlight/platform/metal/MetalRenderPass.cpp"
             "starlight/platform/metal/MetalShader.cpp"
             "starlight/platform/metal/MetalGraphicsPipeline.cpp"
+            "starlight/platform/metal/MetalBuffer.cpp"
     )
 
     target_compile_definitions(starlight PUBLIC

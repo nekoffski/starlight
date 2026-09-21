@@ -52,6 +52,16 @@ class MetalDevice : public RenderDevice {
         m_resourcePool.destroySurface(handle);
     }
 
+    Result<DeviceBufferHandle> createBuffer(
+        const DeviceBufferDescription& description
+    ) override {
+        return m_resourcePool.createBuffer(description);
+    }
+
+    void destroyBuffer(DeviceBufferHandle handle) override {
+        m_resourcePool.destroyBuffer(handle);
+    }
+
     void waitIdle() override;
 
     Result<void> trySubmitFrame(RecordFrame callback) override;

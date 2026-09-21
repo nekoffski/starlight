@@ -1,5 +1,6 @@
 #pragma once
 
+#include "DeviceBuffer.hh"
 #include "GraphicsPipeline.hh"
 #include "RenderFrameRecorder.hh"
 #include "RenderResource.hh"
@@ -31,6 +32,11 @@ class RenderDevice : public NonCopyable, public NonMovable {
         const GraphicsPipelineDescription& description
     ) = 0;
     virtual void destroyGraphicsPipeline(GraphicsPipelineHandle handle) = 0;
+
+    virtual Result<DeviceBufferHandle> createBuffer(
+        const DeviceBufferDescription& description
+    ) = 0;
+    virtual void destroyBuffer(DeviceBufferHandle handle) = 0;
 
     virtual Result<void> trySubmitFrame(RecordFrame callback) = 0;
 

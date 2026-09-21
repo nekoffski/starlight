@@ -145,7 +145,10 @@ Result<void> Renderer::recordFrame(
                         return Error::unexpected(pipeline.error());
                     }
 
-                    encoder.setPipeline(*pipeline);
+                    if (auto res = encoder.setPipeline(*pipeline); not res) {
+                        return Error::unexpected(res.error());
+                    }
+
                     encoder.draw(renderable.vertexCount);
                 }
                 return {};

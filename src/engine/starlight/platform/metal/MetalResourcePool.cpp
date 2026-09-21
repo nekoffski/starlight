@@ -20,6 +20,9 @@ Result<SurfaceHandle> MetalResourcePool::attachSurface(
 
     auto layer = metalProvider->getLayer();
     layer->setDevice(&m_ctx.device());
+    layer->setPixelFormat(
+        MTL::PixelFormatBGRA8Unorm
+    );  // TODO: make it configurable
 
     SurfaceHandle handle{m_idLake.acquire<SurfaceHandle>()};
 
@@ -100,6 +103,31 @@ MetalGraphicsPipeline* MetalResourcePool::getGraphicsPipeline(
 ) {
     if (auto it = m_graphicsPipelines.find(handle);
         it != m_graphicsPipelines.end()) {
+        return it->second.get();
+    }
+    return nullptr;
+}
+
+Result<DeviceBufferHandle> MetalResourcePool::createBuffer(
+    const DeviceBufferDescription& description
+) {
+    auto maybeBuffer = MetalBuffer::create(m_ctx, description);
+
+    if (not maybeBuffer) {
+        return Error::unexpected(maybeBuffer.error());
+    }
+
+    DeviceBufferHandle handle{m_idLake.acquire<DeviceBufferHandle>()};
+    m_buffers.emplace(std::make_pair(handle, std::move(maybeBuffer.value())));
+    return handle;
+}
+
+void MetalResourcePool::destroyBuffer(DeviceBufferHandle handle) {
+    m_buffers.erase(handle);
+}
+
+MetalBuffer* MetalResourcePool::getBuffer(DeviceBufferHandle handle) {
+    if (auto it = m_buffers.find(handle); it != m_buffers.end()) {
         return it->second.get();
     }
     return nullptr;

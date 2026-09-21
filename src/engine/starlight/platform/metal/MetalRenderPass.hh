@@ -11,10 +11,10 @@ class MetalRenderPassEncoder : public RenderPassEncoder {
     explicit MetalRenderPassEncoder(
         MetalResourcePool& resourcePool, MTL::RenderCommandEncoder* encoder
     );
-    ~MetalRenderPassEncoder();
+    ~MetalRenderPassEncoder() override;
 
-    Result<void> setPipeline(GraphicsPipelineHandle pipeline);
-    void draw(u32 vertexCount);
+    Result<void> setPipeline(GraphicsPipelineHandle pipeline) override;
+    void draw(u32 vertexCount) override;
 
    private:
     MetalResourcePool& m_resourcePool;

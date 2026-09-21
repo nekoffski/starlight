@@ -3,6 +3,7 @@
 #include <unordered_map>
 
 #include "Metal.hh"
+#include "MetalBuffer.hh"
 #include "MetalGraphicsPipeline.hh"
 #include "MetalRenderSurfaceProvider.hh"
 #include "MetalShader.hh"
@@ -39,6 +40,12 @@ class MetalResourcePool : public NonCopyable, public NonMovable {
     void destroyGraphicsPipeline(GraphicsPipelineHandle handle);
     MetalGraphicsPipeline* getGraphicsPipeline(GraphicsPipelineHandle handle);
 
+    Result<DeviceBufferHandle> createBuffer(
+        const DeviceBufferDescription& description
+    );
+    void destroyBuffer(DeviceBufferHandle handle);
+    MetalBuffer* getBuffer(DeviceBufferHandle handle);
+
    private:
     IdLake m_idLake;
     MetalContext& m_ctx;
@@ -48,6 +55,8 @@ class MetalResourcePool : public NonCopyable, public NonMovable {
     std::unordered_map<
         GraphicsPipelineHandle, std::unique_ptr<MetalGraphicsPipeline>>
         m_graphicsPipelines;
+    std::unordered_map<DeviceBufferHandle, std::unique_ptr<MetalBuffer>>
+        m_buffers;
 };
 
 }  // namespace sl

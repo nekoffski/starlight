@@ -17,30 +17,6 @@ std::vector<std::string> split(
     return result;
 }
 
-std::string nameFromPath(const std::string& path, NameExtractionMode mode) {
-    const auto begin = path.find_last_of('/') + 1;
-    const auto end = mode == NameExtractionMode::withExtension
-                         ? path.npos
-                         : (mode == NameExtractionMode::withoutFullExtension
-                                ? path.find_first_of('.')
-                                : path.find_last_of('.'));
-    return path.substr(begin, end - begin);
-}
-
-std::optional<std::string> extensionFromPath(
-    const std::string& path, ExtensionExtractionMode mode
-) {
-    const auto name = nameFromPath(path, NameExtractionMode::withExtension);
-    const auto begin = mode == ExtensionExtractionMode::full
-                           ? name.find_first_of('.')
-                           : name.find_last_of('.');
-
-    if (begin != path.npos) {
-        return name.substr(begin);
-    }
-    return {};
-}
-
 std::string toBinaryString(CBytesView bytes) {
     std::string result;
     result.reserve(bytes.size() * 8);
