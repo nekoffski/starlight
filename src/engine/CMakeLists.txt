@@ -24,8 +24,8 @@ add_library(starlight STATIC
     # -- renderer
     "starlight/renderer/RendererProxy.cpp"
     "starlight/renderer/RenderingSystem.cpp"
-    "starlight/renderer/backend/Renderer.cpp"
-    "starlight/renderer/backend/RenderGraph.cpp"
+    "starlight/renderer/frontend/Renderer.cpp"
+    "starlight/renderer/frontend/RenderGraph.cpp"
     "starlight/renderer/executor/RenderExecutor.cpp"
     "starlight/renderer/executor/RendererCommandDispatcher.cpp"
     "starlight/renderer/rhi/Shader.cpp"

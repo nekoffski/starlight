@@ -6,7 +6,7 @@
 #include "RendererCommandDispatcher.hh"
 #include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
-#include "starlight/renderer/backend/Renderer.hh"
+#include "starlight/renderer/frontend/Renderer.hh"
 #include "starlight/runtime/Thread.hh"
 #include "starlight/runtime/ThreadSafeQueue.hh"
 

@@ -2,6 +2,7 @@
 
 #include <queue>
 
+#include "Primitive.hh"
 #include "RenderRequest.hh"
 #include "starlight/core/Concepts.hh"
 #include "starlight/core/Config.hh"

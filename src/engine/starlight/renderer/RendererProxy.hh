@@ -1,6 +1,6 @@
 #pragma once
 
-#include "backend/RenderRequest.hh"
+#include "frontend/RenderRequest.hh"
 #include "executor/RenderExecutor.hh"
 #include "rhi/RenderSurfaceProvider.hh"
 #include "rhi/Shader.hh"

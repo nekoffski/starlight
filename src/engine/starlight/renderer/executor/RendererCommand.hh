@@ -5,7 +5,7 @@
 #include <variant>
 
 #include "starlight/core/Error.hh"
-#include "starlight/renderer/backend/RenderRequest.hh"
+#include "starlight/renderer/frontend/RenderRequest.hh"
 #include "starlight/renderer/rhi/RenderSurfaceProvider.hh"
 #include "starlight/renderer/rhi/Shader.hh"
 

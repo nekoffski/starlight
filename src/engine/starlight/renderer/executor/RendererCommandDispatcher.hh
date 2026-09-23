@@ -3,7 +3,7 @@
 #include "RendererCommand.hh"
 #include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
-#include "starlight/renderer/backend/Renderer.hh"
+#include "starlight/renderer/frontend/Renderer.hh"
 
 namespace sl {
 

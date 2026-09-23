@@ -1,7 +1,7 @@
 #pragma once
 
 #include "RendererProxy.hh"
-#include "backend/Renderer.hh"
+#include "frontend/Renderer.hh"
 #include "executor/RenderExecutor.hh"
 #include "rhi/RenderDevice.hh"
 #include "starlight/core/Concepts.hh"
