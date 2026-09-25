@@ -77,6 +77,8 @@ SDLMetalWindow::~SDLMetalWindow() {
 
 CA::MetalLayer* SDLMetalWindow::getLayer() { return m_metalLayer; }
 
+#elif defined(SL_USE_VULKAN)
+
 #else
 #error "Unsupported platform"
 #endif

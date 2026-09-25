@@ -11,7 +11,8 @@
 #if defined(SL_USE_METAL)
 #include "starlight/platform/metal/MetalRenderSurfaceProvider.hh"
 
-using RenderSurfaceProviderImpl = sl::MetalRenderSurfaceProvider;
+#elif defined(SL_USE_VULKAN)
+#include "starlight/platform/vulkan/VulkanRenderSurfaceProvider.hh"
 
 #else
 #error "Unsupported platform"
@@ -48,6 +49,18 @@ class SDLMetalWindow : public SDLWindowBase, public MetalRenderSurfaceProvider {
 };
 
 using SDLWindow = SDLMetalWindow;
+
+#elif defined(SL_USE_VULKAN)
+
+class SDLVulkanWindow : public SDLWindowBase,
+                        public VulkanRenderSurfaceProvider {
+   public:
+    explicit SDLVulkanWindow(const Config& config, EventBus bus)
+        : SDLWindowBase(config, std::move(bus)) {}
+    ~SDLVulkanWindow() {}
+};
+
+using SDLWindow = SDLVulkanWindow;
 
 #else
 #error "Unsupported platform"

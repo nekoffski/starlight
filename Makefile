@@ -1,18 +1,25 @@
-.PHONY: all build build-release build-debug test clean fmt fmt-check gen
+.PHONY: all bootstrap require-bootstrap build build-release build-debug test clean fmt fmt-check gen
 
 CLANG_FORMAT ?= clang-format
+BOOTSTRAP_PROFILE := .starlight/bootstrap.profile
 
 all: build
 
 build: build-release
 
-build-release:
-	conan install . --build=missing -s build_type=Release
+bootstrap:
+	python3 bin/bootstrap.py
+
+require-bootstrap:
+	@test -f $(BOOTSTRAP_PROFILE) || { echo "Run make bootstrap first (or CXX=/path/to/compiler make bootstrap)" >&2; exit 1; }
+
+build-release: require-bootstrap
+	conan install . --build=missing -pr:a $(BOOTSTRAP_PROFILE) -s build_type=Release
 	cmake --preset conan-release
 	cmake --build --preset conan-release
 
-build-debug:
-	conan install . --build=missing -s build_type=Debug
+build-debug: require-bootstrap
+	conan install . --build=missing -pr:a $(BOOTSTRAP_PROFILE) -s build_type=Debug
 	cmake --preset conan-debug
 	cmake --build --preset conan-debug
 
@@ -27,4 +34,4 @@ test: build-debug
 	ctest --preset conan-debug --output-on-failure
 
 clean:
-	rm -rf build CMakeUserPresets.json
+	rm -rf build CMakeUserPresets.json .starlight

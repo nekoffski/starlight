@@ -91,6 +91,30 @@ if (APPLE)
     target_compile_options(starlight PRIVATE -fblocks)
 endif()
 
+if (LINUX)
+
+    target_sources(starlight
+        PRIVATE
+            "starlight/platform/vulkan/Vulkan.cpp"
+            # "starlight/platform/vulkan/VulkanDevice.cpp"
+            # "starlight/platform/vulkan/VulkanResourcePool.cpp"
+            # "starlight/platform/vulkan/VulkanRenderFrameLatch.cpp"
+            # "starlight/platform/vulkan/VulkanRenderFrameRecorder.cpp"
+            # "starlight/platform/vulkan/VulkanRenderPass.cpp"
+            # "starlight/platform/vulkan/VulkanShader.cpp"
+            # "starlight/platform/vulkan/VulkanGraphicsPipeline.cpp"
+            # "starlight/platform/vulkan/VulkanBuffer.cpp"
+    )
+
+    target_compile_definitions(starlight PUBLIC
+        SL_PLATFORM_LINUX=1
+        SL_USE_VULKAN=1
+    )
+
+    target_compile_options(starlight PRIVATE -pthread)
+
+endif()
+
 if (SL_ENABLE_PROFILING)
     target_compile_definitions(starlight PRIVATE SL_ENABLE_PROFILING=1)
 endif()

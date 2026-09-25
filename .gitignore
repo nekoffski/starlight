@@ -1,6 +1,7 @@
 # Build
 build/
 cmake-build-*/
+.starlight/
 
 # Conan
 CMakeUserPresets.json

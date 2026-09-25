@@ -13,6 +13,7 @@ Str shaderStageToStr(ShaderStage stage) {
         case ShaderStage::geometry:
             return "geometry";
     }
+    std::unreachable();
 }
 
 Result<ShaderStage> shaderStageFromString(const Str& str) {
