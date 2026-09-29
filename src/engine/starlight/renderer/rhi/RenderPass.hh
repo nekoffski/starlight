@@ -31,7 +31,11 @@ class RenderPassEncoder : public NonCopyable, public NonMovable {
     virtual ~RenderPassEncoder() = default;
 
     virtual Result<void> setPipeline(GraphicsPipelineHandle pipeline) = 0;
+    virtual Result<void> setVertexBuffer(const DeviceBufferSlice& slice) = 0;
+    virtual Result<void> setIndexBuffer(const DeviceBufferSlice& slice) = 0;
+
     virtual void draw(u32 vertexCount) = 0;
+    virtual void drawIndexed(u32 indexCount, u32 instanceCount = 1) = 0;
 };
 
 using RenderPassCallback = MoveOnlyFunction<Result<void>(RenderPassEncoder&)>;

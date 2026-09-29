@@ -5,6 +5,7 @@
 #include <variant>
 
 #include "starlight/core/Error.hh"
+#include "starlight/renderer/frontend/Primitive.hh"
 #include "starlight/renderer/frontend/RenderRequest.hh"
 #include "starlight/renderer/rhi/RenderSurfaceProvider.hh"
 #include "starlight/renderer/rhi/Shader.hh"
@@ -36,8 +37,18 @@ struct RendererDestroyShader {
     ShaderHandle handle;
 };
 
+struct RendererUploadPrimitive {
+    PrimitiveUploadData description;
+    std::promise<Result<Primitive>> completion;
+};
+
+struct RendererFreePrimitive {
+    Primitive primitive;
+};
+
 using RendererCommand = std::variant<
     RendererNoop, RendererFlush, RendererCreateSurfaceTarget, RendererSubmit,
-    RendererCreateShader, RendererDestroyShader>;
+    RendererCreateShader, RendererDestroyShader, RendererUploadPrimitive,
+    RendererFreePrimitive>;
 
 }  // namespace sl

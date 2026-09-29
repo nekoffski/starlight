@@ -29,6 +29,11 @@ using DeviceBufferHandle = RenderResourceHandle<ResourceType::deviceBuffer>;
 
 using RenderTarget = std::variant<SurfaceHandle, TextureHandle>;
 
+struct DeviceBufferSlice {
+    DeviceBufferHandle handle;
+    u32 offset;
+};
+
 }  // namespace sl
 
 template <sl::ResourceType T>

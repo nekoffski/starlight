@@ -13,7 +13,7 @@ Build a renderer that:
 - supports multiple frames in flight;
 - uses Metal and Vulkan adapters without exposing native objects to the renderer.
 
-The initial implementation uses one graphics-capable queue. Multiple queues, async compute, parallel recording, bindless resources, mesh shaders, and ray tracing are deferred until a concrete renderer feature needs them.
+The initial implementation uses one graphics-capable queue. Multiple queues, async compute, parallel recording, mesh shaders, and ray tracing are deferred until a concrete renderer feature needs them. The preferred scalable shader-resource design uses hybrid binding; see [shader parameters and resource binding](shader-resource-research.md) for capability gates and implementation increments.
 
 ## Module ownership
 
@@ -497,9 +497,120 @@ enum class BindingType {
 };
 ```
 
-Vulkan maps bind groups to descriptor sets. Metal initially expands them into ordinary buffer, texture, and sampler binding calls. Metal argument buffers can later replace that implementation without changing the interface.
+Logical bind groups lower through the target-specific reflected shader ABI.
+Vulkan initially uses descriptor sets; Metal uses direct bindings or argument
+buffers to match the compiled declarations. A Slang `ParameterBlock` containing
+resources can require an argument buffer, so expanding it into individual
+resource calls requires a corresponding shader variant. Hybrid binding,
+uniform packing, indexed resource tables, and an optional Vulkan descriptor-heap
+path are detailed in [shader parameters and resource binding](shader-resource-research.md).
 
 Shader compilation and cross-compilation belong to the asset pipeline, not command recording. The RHI receives backend-compatible compiled shader payloads and exposes them through `ShaderHandle`.
+
+### Bind groups, update frequency, and bindless selection
+
+This section records the proposed shader-parameter contract; these interfaces
+are not implemented yet. A bind-group layout describes expected bindings and
+their types. A bind group supplies actual buffer slices, textures, samplers,
+or resource arrays for that layout. `frameGroup`, `sceneGroup`, and
+`resourceGroup` are all instances represented by `BindGroupHandle`, with
+different layouts and contents. Their names describe their purpose, not
+different RHI types. Recording validates compatibility with the pipeline's
+layout. The group index in `setBindGroup` is a frontend pipeline-layout index;
+backend lowering resolves its native binding representation.
+
+Keep three decisions separate:
+
+| Decision | Owner | Example |
+| --- | --- | --- |
+| Field types, offsets, and bindings | Shader declarations and target reflection | A model matrix is a `float4x4` |
+| Storage and upload strategy | Renderer policy | Model records live in a structured buffer |
+| When values change | Application changes tracked by the renderer | Moving an object updates its transform |
+
+Reflection does not infer update frequency. Setting a value, uploading it,
+and binding the prepared resources are separate operations. Immutable bind
+groups do not imply that their referenced buffers never change; buffer writes
+must obey submission lifetime and synchronization rules.
+
+The conventional path retains the familiar frame/pass, material, and object
+frequencies. Bind frame/pass parameters once, bind a material when it changes,
+and select an object's constant-buffer slice for each draw. Vulkan can use
+dynamic offsets where the compiled layout supports them. Frame and pass can
+share a group or remain separate when their reuse differs.
+
+The preferred scalable path changes selection, while preserving those logical
+update frequencies:
+
+| Logical role | Bound contents | Shader selection |
+| --- | --- | --- |
+| Frame/view and pass | Buffer-backed constants and explicit pass resources | Named fields/resources |
+| Scene | Object-record and material-record buffer slices | Object/material indices |
+| Resources | Typed texture and sampler arrays | Indices stored in material records |
+| Draw | Small object/material indices and flags | Immediate draw parameters |
+
+The scene group has a binding for each record buffer, not a binding for every
+object or material. The resource group binds tables rather than a particular
+material's textures. Scene buffers and resource tables may share a group if
+the program layout supports it; these roles do not mandate a fixed number of
+native descriptor sets.
+
+```text
+draw.objectIndex   -> objects[index]   -> model matrix
+draw.materialIndex -> materials[index] -> color, flags, texture/sampler indices
+                                      -> resources.textures[textureIndex]
+                                      -> resources.samplers[samplerIndex]
+```
+
+Bindless still binds the resource tables. It moves individual resource
+selection from CPU binding commands to shader indexing. Indexed object and
+material records are ordinary buffer access; texture/sampler table selection
+is the bindless part. A bounded table qualifies. Ordinary frame/pass bindings
+plus bindless material resources form the hybrid design.
+
+### Parameter authoring and draw data
+
+The user-facing parameter/material interface accepts typed matrices, colors,
+flags, and engine resource handles. It resolves names once into layout-qualified
+field IDs, packs values using target reflection, and prepares frame-safe
+bindings. The RHI bind group supplies those prepared resources; it does not
+interpret camera or material semantics. Users assign a texture handle to a
+material, and the renderer owns table-slot allocation and writes the resulting
+index into the GPU record. Native descriptor bytes and table indices are not
+application-facing resource handles.
+
+General reflected parameter groups support user-defined shaders. Indexed
+materials initially opt into a specified material-record schema; arbitrary
+reflected blocks do not automatically fit that schema. Conventional and
+bindless shader variants can expose the same logical material parameters,
+but require their own reflected native layouts.
+
+`DrawData` is a small logical block containing object/material indices and
+flags. A proposed `setDrawData` encoder operation lowers to Vulkan push
+constants on the descriptor-set path, or Metal copied bytes/buffer slices.
+Its layout, size, and stage visibility belong to the shader artifact and
+pipeline layout. The optional Vulkan descriptor-heap path uses its push-data
+mechanism instead. Large transforms and material records remain in buffers.
+
+### Storage and update lifetime
+
+Start with CPU-owned frame, object, and material values plus GPU versions
+associated with reusable frame slots. A slot becomes writable only after its
+previous GPU work completes. Frame uploads and recorded parameter snapshots
+remain valid through completion; persistent texture allocations need not be
+duplicated with each frame's table version.
+
+Frame/view values are prepared for each view; object records change when
+transforms or object values change; material records change through material
+setters. Resource-table contents change when resources are registered,
+replaced, or removed. Draw selectors are recorded per draw. Thus a group can
+stay bound while its records are selected at per-object frequency.
+
+Initially upload all active records into each reusable frame slot. If selective
+uploads become useful, track the CPU record version and uploaded version for
+each frame slot. A single dirty flag cleared after updating one slot leaves
+other slots stale. Bindless slots additionally require deferred recycling
+until live CPU references and pending GPU submissions release their old use;
+material indices and the bound table version must agree.
 
 ## Resource synchronization
 
@@ -679,7 +790,7 @@ Before extending command recording:
 - Async compute.
 - Secondary Vulkan command buffers and parallel Metal encoders.
 - Serializable command bytecode and capture/replay.
-- Bindless resources and descriptor buffers.
+- Unbounded universal bindless heaps; the bounded hybrid resource-table path is planned in [shader-resource-research.md](shader-resource-research.md).
 - Metal argument-buffer optimization.
 - Transient resource aliasing and pass merging.
 - Mesh shaders and ray tracing.
@@ -773,6 +884,155 @@ contract above. If dynamic updates or upload batching become real requirements,
 split internal allocation from `writeBuffer()` without changing the external
 mesh-upload interface.
 
+## Shader reflection and vertex data design
+
+Decision recorded: 2026-09-29. This is the agreed implementation direction;
+the types below are a design sketch, not implemented declarations.
+
+The shader describes its required inputs, the primitive describes its stored
+bytes, and pipeline creation matches the two. Slang reflection supplies the
+shader interface; it cannot infer the byte offsets, strides, storage formats,
+or streams of user-provided geometry.
+
+### Portable interface and ownership
+
+Extend the existing shader, primitive, pipeline, and encoder descriptions:
+
+```cpp
+struct VertexAttribute {
+    Semantic semantic;       // name and index, e.g. POSITION0 or TEXCOORD1
+    VertexFormat format;     // storage format, e.g. float32x3
+    u32 stream;
+    u32 offset;
+};
+
+struct VertexStreamLayout {
+    u32 stride;
+    InputRate rate;          // per vertex initially; per instance when needed
+};
+
+struct VertexLayout {
+    std::vector<VertexStreamLayout> streams;
+    std::vector<VertexAttribute> attributes;
+};
+
+struct ShaderVertexInput {
+    Semantic semantic;
+    ShaderValueType type;    // type expected by the shader
+    u32 location;            // reflected from this target's compiled artifact
+};
+```
+
+- `PrimitiveUploadData` supplies owned bytes for each stream and a
+  `VertexLayout`. Owned bytes survive submission to the renderer thread. A
+  small typed helper can describe C++ structs with `sizeof` and `offsetof`.
+- Uploaded primitives retain their layout alongside buffer handles and draw
+  ranges. Buffer handles and buffer-slice offsets are not layout identity.
+- `ShaderLoader` parses the selected vertex entry point's
+  `scope.parameters` into `ShaderModuleDescription`. Prefer the scope
+  representation in Slang JSON 1.1; do not also traverse its legacy duplicate
+  `parameters` array. Flatten supported structs and reject unsupported input
+  shapes explicitly.
+- Data-driven vertex inputs declare explicit semantics such as `POSITION0`.
+  Match the semantic name and index; an omitted JSON `semanticIndex` means
+  zero. System inputs such as `SV_VertexID` require no vertex attribute.
+- Reflection belongs to the compiled target artifact. Keep Metal and SPIR-V
+  reflection paired with their respective binaries, generated in the same
+  build step. Numeric locations are not persistent semantic identities.
+
+### Matching, validation, and pipeline identity
+
+Use one shared pure function to match reflected shader requirements against
+the primitive layout. Its result describes each consumed attribute using
+shader location, storage format, logical stream, and byte offset, together
+with the required stream strides and input rates.
+
+Extra primitive attributes are allowed. Missing or incompatible required
+attributes produce an error naming the semantic and expected type. Validate
+duplicate semantics and locations, stream references, byte extents, and
+upload sizes. Storage format and shader type remain separate: normalized
+integer storage can feed floating-point shader inputs when supported. Start
+with the formats actually used and add explicit compatibility rules as needed.
+
+`GraphicsPipelineDescription` owns a `VertexLayout` value alongside shader
+and target compatibility state. Its existing equality-based cache identity
+therefore distinguishes physical layouts while allowing different meshes
+with the same layout to share pipelines. Do not retain spans into upload data
+or put buffer handles in the pipeline key.
+
+Keep compilation and matching out of draw-command recording where possible:
+resolve pipeline state before recording the graph callback. No public pipeline
+creation interface or separate shader-system class is needed.
+
+### Metal and Vulkan adapters
+
+| Portable description | Metal | Vulkan |
+| --- | --- | --- |
+| Shader input location | `MTLVertexDescriptor.attributes[location]` | `VkVertexInputAttributeDescription.location` |
+| Storage format and offset | Vertex attribute descriptor | Vertex attribute description |
+| Stream stride and input rate | Vertex buffer layout descriptor | Vertex input binding description |
+| Logical stream binding | Map to a native vertex-stage buffer slot | Vertex buffer binding number |
+
+Change `RenderPassEncoder::setVertexBuffer` to accept a logical stream number
+and `DeviceBufferSlice`. The Metal pipeline retains a logical-to-native slot
+mapping; the encoder applies it when binding buffers. Vulkan can normally use
+the logical stream number directly.
+
+Metal vertex data and other vertex-stage buffer arguments share the buffer
+argument table. The Metal adapter must choose geometry slots that do not
+overlap reflected constant/storage/argument-buffer bindings. Reflect occupied
+resource slots, allocate free geometry slots at pipeline creation, and reject
+layouts that exceed backend limits. Keep this native allocation private to
+the adapter; user geometry must not encode Metal buffer indices.
+
+### Validation evidence and design corrections
+
+During the 2026-09-25 investigation, local Slang probes with `POSITION0`,
+`NORMAL0`, and `TEXCOORD0` compiled to Metal and SPIR-V. Both reflection outputs
+reported input locations 0, 1, and 2; the generated Metal attributes matched.
+A second probe confirmed that `TEXCOORD1` carries `semanticIndex: 1`, while
+index zero was omitted.
+
+A probe containing vertex inputs and a constant buffer emitted Metal
+`[[attribute(0)]]` and `[[buffer(0)]]` in the same vertex function. Since the
+descriptor's `bufferIndex` references the same buffer table, assigning geometry
+to native slot zero would overlap that resource. Its reflection also differed
+by target: Metal reported `constantBuffer`, while SPIR-V reported
+`descriptorTableSlot`. These were compiler/reflection checks, not Vulkan
+rendering tests; Vulkan runtime behavior remains to be verified.
+
+The initial proposal was incomplete about numeric-location identity and
+Metal resource-slot overlap. Semantic matching plus private native slot
+allocation addresses both. A shader-only layout generator would still need
+an imposed packing convention or mesh repacking, so it does not satisfy the
+goal of flexible user-provided bytes.
+
+### Implementation order
+
+1. Add portable vertex layouts and owned stream uploads, supporting the
+   formats currently used.
+2. Retain and validate vertex input reflection from the existing Slang JSON;
+   make binary and metadata generation one shader build step.
+3. Add the shared matcher, extend the pipeline key, and implement Metal
+   descriptor translation and stream binding. Verify an input-free
+   `SV_VertexID` shader, position-only input, multiple attributes, two physical
+   layouts for the same shader, and a missing required attribute.
+4. Implement the equivalent Vulkan vertex input translation and verify the
+   same cases with Vulkan validation enabled.
+5. Extend resource reflection and material data when the first uniforms or
+   textures are consumed. Preserve the same pattern: reflected requirements,
+   user-provided values, and target-specific binding inside the adapter.
+
+Use the existing JSON dependency and offline Slang compiler. A runtime Slang
+compiler dependency, generic material property system, and broad format table
+are deferred until concrete features need them.
+
+This follows the separation demonstrated by
+[wgpu vertex buffer layouts](https://wgpu.rs/doc/wgpu/struct.VertexBufferLayout.html)
+and [Bevy mesh pipeline specialization](https://bevy.org/examples-webgpu/shaders/specialized-mesh-pipeline/):
+geometry supplies its physical layout, and pipeline preparation selects the
+attributes required by the shader.
+
 ## References
 
 - [Apple: setting up a command structure](https://developer.apple.com/documentation/Metal/setting-up-a-command-structure)
@@ -800,3 +1060,8 @@ mesh-upload interface.
 - [Filament: vertex-buffer data upload](https://github.com/google/filament/blob/main/filament/src/VertexBuffer.cpp)
 - [Filament: glTF resource upload path](https://github.com/google/filament/blob/main/libs/gltfio/src/ResourceLoader.cpp)
 - [Bevy: CPU-to-render asset preparation](https://docs.rs/bevy/latest/bevy/render/render_asset/trait.RenderAsset.html)
+- [Slang: reflection API and JSON scopes](https://docs.shader-slang.org/en/stable/external/slang/docs/user-guide/09-reflection.html)
+- [Slang: Metal entry-point transformations](https://docs.shader-slang.org/en/stable/external/slang/docs/user-guide/a2-02-metal-target-specific.html)
+- [Apple: vertex attribute descriptors](https://developer.apple.com/documentation/metal/mtlvertexattributedescriptor)
+- [Apple: vertex attribute buffer indices](https://developer.apple.com/documentation/metal/mtlvertexattributedescriptor/bufferindex)
+- [Khronos: fixed-function vertex input](https://docs.vulkan.org/spec/latest/chapters/fxvertex.html)

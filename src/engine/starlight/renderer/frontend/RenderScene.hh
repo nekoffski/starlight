@@ -2,13 +2,14 @@
 
 #include <vector>
 
+#include "Primitive.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/renderer/rhi/Shader.hh"
 
 namespace sl {
 
 struct RenderItem {
-    u32 vertexCount;
+    std::vector<Primitive> primitives;
     ShaderHandle shader;
 };
 

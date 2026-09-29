@@ -1,7 +1,7 @@
 #pragma once
 
-#include "frontend/RenderRequest.hh"
 #include "executor/RenderExecutor.hh"
+#include "frontend/RenderRequest.hh"
 #include "rhi/RenderSurfaceProvider.hh"
 #include "rhi/Shader.hh"
 #include "starlight/core/Core.hh"
@@ -13,6 +13,12 @@ class RendererProxy {
     friend class RenderingSystem;
 
    public:
+    Result<Primitive> uploadPrimitive(const PrimitiveUploadData& description);
+    Result<std::future<Result<Primitive>>> uploadPrimitiveAsync(
+        const PrimitiveUploadData& description
+    );
+    Result<void> freePrimitive(Primitive primitive);
+
     Result<void> flushRenderer();
 
     Result<RenderTarget> createRenderTarget(

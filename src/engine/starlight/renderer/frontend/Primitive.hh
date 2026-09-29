@@ -16,9 +16,9 @@ struct PrimitiveUploadData {
 struct Primitive {
     DeviceBufferHandle vertexBuffer;
     DeviceBufferHandle indexBuffer;
-    u64 vertexBufferOffset;
-    u64 indexBufferOffset;
-    u64 indexCount;
+    u32 vertexBufferOffset;
+    u32 indexBufferOffset;
+    u32 indexCount;
 };
 
 }  // namespace sl

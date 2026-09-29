@@ -1,6 +1,7 @@
 #include "MetalGraphicsPipeline.hh"
 
 #include "starlight/core/Functional.hh"
+#include "starlight/math/Vertex.hh"
 
 namespace sl {
 
@@ -32,6 +33,16 @@ Result<std::unique_ptr<MetalGraphicsPipeline>> MetalGraphicsPipeline::create(
 
     descriptor->setVertexFunction(vertexStage);
     descriptor->setFragmentFunction(fragmentStage);
+
+    // TEMPORARY
+    auto* layout = MTL::VertexDescriptor::vertexDescriptor();
+    auto* position = layout->attributes()->object(0);
+    position->setFormat(MTL::VertexFormatFloat3);
+    position->setOffset(offsetof(Vertex3, position));
+    position->setBufferIndex(0);
+    layout->layouts()->object(0)->setStride(sizeof(Vertex3));
+    descriptor->setVertexDescriptor(layout);
+    // --
 
     descriptor->colorAttachments()->object(0)->setPixelFormat(
         MTL::PixelFormatBGRA8Unorm

@@ -6,6 +6,24 @@
 
 namespace sl {
 
+namespace {
+
+Bytes toBytes(std::span<const Vertex3> vertices) {
+    Bytes bytes;
+    bytes.resize(vertices.size() * sizeof(Vertex3));
+    std::memcpy(bytes.data(), vertices.data(), bytes.size());
+    return bytes;
+}
+
+Bytes toBytes(std::span<const u32> indices) {
+    Bytes bytes;
+    bytes.resize(indices.size() * sizeof(u32));
+    std::memcpy(bytes.data(), indices.data(), bytes.size());
+    return bytes;
+}
+
+}  // namespace
+
 Renderer::Renderer(const Config& config, RenderDevice& device)
     : m_config(config), m_device(device) {}
 
@@ -23,6 +41,53 @@ void Renderer::flush() {
             break;
         }
     }
+}
+
+Result<Primitive> Renderer::uploadPrimitive(
+    const PrimitiveUploadData& description
+) {
+    DeviceBufferDescription vertexBufferDescription{
+        .usage = DeviceBufferUsage::vertexBuffer,
+        .bytes = toBytes(description.vertices)
+    };
+
+    auto vertexBuffer = m_device.createBuffer(vertexBufferDescription);
+
+    if (not vertexBuffer) {
+        return Error::unexpected(
+            ErrorCode::deviceOperationFailed,
+            "Failed to create vertex buffer: {}", vertexBuffer.error()
+        );
+    }
+
+    DeviceBufferDescription indexBufferDescription{
+        .usage = DeviceBufferUsage::indexBuffer,
+        .bytes = toBytes(description.indices)
+    };
+
+    auto indexBuffer = m_device.createBuffer(indexBufferDescription);
+
+    if (not indexBuffer) {
+        m_device.destroyBuffer(*vertexBuffer);
+
+        return Error::unexpected(
+            ErrorCode::deviceOperationFailed,
+            "Failed to create index buffer: {}", indexBuffer.error()
+        );
+    }
+
+    return Primitive{
+        .vertexBuffer = *vertexBuffer,
+        .indexBuffer = *indexBuffer,
+        .vertexBufferOffset = 0,
+        .indexBufferOffset = 0,
+        .indexCount = static_cast<u32>(description.indices.size())
+    };
+}
+
+void Renderer::freePrimitive(Primitive primitive) {
+    m_device.destroyBuffer(primitive.indexBuffer);
+    m_device.destroyBuffer(primitive.vertexBuffer);
 }
 
 Result<void> Renderer::submit(const RenderRequest& request) {
@@ -46,7 +111,6 @@ Result<RenderTarget> Renderer::createTarget(
             "Failed to create render surface: {}", surface.error()
         );
     }
-
     return RenderTarget{*surface};
 }
 
@@ -149,7 +213,18 @@ Result<void> Renderer::recordFrame(
                         return Error::unexpected(res.error());
                     }
 
-                    encoder.draw(renderable.vertexCount);
+                    for (const auto& primitive : renderable.primitives) {
+                        encoder.setVertexBuffer({
+                            .handle = primitive.vertexBuffer,
+                            .offset = primitive.vertexBufferOffset,
+                        });
+
+                        encoder.setIndexBuffer({
+                            .handle = primitive.indexBuffer,
+                            .offset = primitive.indexBufferOffset,
+                        });
+                        encoder.drawIndexed(primitive.indexCount);
+                    }
                 }
                 return {};
             }

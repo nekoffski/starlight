@@ -7,8 +7,13 @@ namespace sl {
 
 struct Vertex3 {
     Vec3f position;
-    Vec3f normal;
-    Vec2f texCoord;
+    // Vec3f normal;
+    // Vec2f texCoord;
+
+
+
+
+    
 };
 
 }  // namespace sl

@@ -32,6 +32,9 @@ class Renderer : public NonCopyable, public NonMovable {
     Result<ShaderHandle> createShader(const ShaderDescription& description);
     void destroyShader(ShaderHandle handle);
 
+    Result<Primitive> uploadPrimitive(const PrimitiveUploadData& description);
+    void freePrimitive(Primitive primitive);
+
    private:
     u64 frameIndex() const;
 

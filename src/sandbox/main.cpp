@@ -42,16 +42,26 @@ int main() {
         log::info("Window resized: {}x{}", event.width, event.height);
     });
 
-    auto shader = as.loadShader("shaders/triangle.metallib");
+    auto shader = as.loadShader("shaders/simple.metallib");
     log::expect(shader);
 
     shader->waitForDevice();
+
+    PrimitiveUploadData primitiveData{
+        .vertices =
+            {Vertex3{{0.0f, 0.5f, 0.0f}}, Vertex3{{-0.5f, -0.5f, 0.0f}},
+             Vertex3{{0.5f, -0.5f, 0.0f}}},
+        .indices = {0, 1, 2}
+    };
+
+    auto primitive = proxy.uploadPrimitive(primitiveData);
+    log::expect(primitive);
 
     RenderRequest req{
         .scene =
             RenderScene{
                 .items = {RenderItem{
-                    .vertexCount = 3, .shader = shader->handle()
+                    .primitives = {*primitive}, .shader = shader->handle()
                 }}
             },
         .views = {RenderView{.target = *target}},

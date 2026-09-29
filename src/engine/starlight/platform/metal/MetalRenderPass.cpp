@@ -30,6 +30,52 @@ void MetalRenderPassEncoder::draw(u32 vertexCount) {
     );
 }
 
+void MetalRenderPassEncoder::drawIndexed(u32 indexCount, u32 instanceCount) {
+    u64 indexBufferOffset = 0u;
+    MTL::Buffer* indexBuffer = nullptr;
+
+    if (m_indexBuffer) {
+        indexBuffer = &m_indexBuffer->buffer->handle();
+        indexBufferOffset = m_indexBuffer->offset;
+    }
+
+    m_encoder->drawIndexedPrimitives(
+        MTL::PrimitiveType::PrimitiveTypeTriangle, indexCount,
+        MTL::IndexType::IndexTypeUInt32, indexBuffer, indexBufferOffset,
+        instanceCount
+    );
+}
+
+Result<void> MetalRenderPassEncoder::setVertexBuffer(
+    const DeviceBufferSlice& slice
+) {
+    auto* vertexBuffer = m_resourcePool.getBuffer(slice.handle);
+
+    if (not vertexBuffer) {
+        return Error::unexpected(
+            ErrorCode::invalidArgument, "Invalid vertex buffer handle"
+        );
+    }
+
+    m_encoder->setVertexBuffer(&vertexBuffer->handle(), slice.offset, 0);
+    return {};
+}
+
+Result<void> MetalRenderPassEncoder::setIndexBuffer(
+    const DeviceBufferSlice& slice
+) {
+    auto* indexBuffer = m_resourcePool.getBuffer(slice.handle);
+
+    if (not indexBuffer) {
+        return Error::unexpected(
+            ErrorCode::invalidArgument, "Invalid index buffer handle"
+        );
+    }
+
+    m_indexBuffer.emplace(indexBuffer, slice.offset);
+    return {};
+}
+
 MTL::LoadAction toMetal(LoadOp op) {
     switch (op) {
         case LoadOp::load:

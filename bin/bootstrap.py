@@ -47,7 +47,7 @@ def compiler_info(executable):
     fail(f"unsupported compiler: {first_line}")
 
 
-def matching_c_compiler(cxx):
+def matching_c_compiler(cxx, family):
     if "CC" in os.environ:
         return find_executable(os.environ["CC"])
     name = cxx.name
@@ -56,7 +56,7 @@ def matching_c_compiler(cxx):
     elif name.startswith("clang++"):
         name = "clang" + name[7:]
     elif name == "c++":
-        name = "cc"
+        name = "clang" if family == "Apple Clang" else "cc"
     else:
         fail(f"cannot infer the C compiler for {cxx}; set CC explicitly")
     candidate = cxx.with_name(name)
@@ -111,7 +111,7 @@ def main():
         hint = "Xcode 16.3+" if family == "Apple Clang" else f"{family} {minimum}+"
         fail(f"{version} is too old; use {hint} and rerun make bootstrap")
 
-    cc = matching_c_compiler(cxx)
+    cc = matching_c_compiler(cxx, family)
     c_family, c_major, _ = compiler_info(cc)
     if (c_family, c_major) != (family, major):
         fail(f"CC ({cc}) must match CXX ({cxx}) in compiler family and major version")

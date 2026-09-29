@@ -2,6 +2,44 @@
 
 namespace sl {
 
+Result<Primitive> RendererProxy::uploadPrimitive(
+    const PrimitiveUploadData& description
+) {
+    if (auto future = uploadPrimitiveAsync(description); future) {
+        return future->get();
+    } else {
+        return Error::unexpected(future.error());
+    }
+}
+
+Result<std::future<Result<Primitive>>> RendererProxy::uploadPrimitiveAsync(
+    const PrimitiveUploadData& description
+) {
+    RendererUploadPrimitive cmd{description};
+    auto completion = cmd.completion.get_future();
+
+    if (not m_submitter.submit(std::move(cmd))) {
+        return Error::unexpected(
+            ErrorCode::rendererCommandRejected,
+            "Could not submit renderer upload primitive command"
+        );
+    }
+
+    return completion;
+}
+
+Result<void> RendererProxy::freePrimitive(Primitive primitive) {
+    RendererFreePrimitive cmd{primitive};
+
+    if (not m_submitter.submit(std::move(cmd))) {
+        return Error::unexpected(
+            ErrorCode::rendererCommandRejected,
+            "Could not submit renderer free primitive command"
+        );
+    }
+    return {};
+}
+
 Result<std::future<Result<ShaderHandle>>> RendererProxy::createShaderAsync(
     const ShaderDescription& description
 ) {
@@ -21,8 +59,6 @@ Result<std::future<Result<ShaderHandle>>> RendererProxy::createShaderAsync(
 Result<ShaderHandle> RendererProxy::createShader(
     const ShaderDescription& description
 ) {
-    std::future<Result<ShaderHandle>> future;
-
     if (auto future = createShaderAsync(description); future) {
         return future->get();
     } else {
