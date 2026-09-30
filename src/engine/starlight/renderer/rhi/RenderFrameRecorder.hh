@@ -1,11 +1,11 @@
 #pragma once
 
 #include "RenderPass.hh"
-#include "RenderResource.hh"
 #include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/core/Error.hh"
 #include "starlight/core/Functional.hh"
+#include "starlight/renderer/core/RenderResource.hh"
 
 namespace sl {
 

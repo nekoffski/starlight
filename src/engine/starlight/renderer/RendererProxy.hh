@@ -1,9 +1,9 @@
 #pragma once
 
+#include "core/Shader.hh"
 #include "executor/RenderExecutor.hh"
 #include "frontend/RenderRequest.hh"
 #include "rhi/RenderSurfaceProvider.hh"
-#include "rhi/Shader.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/core/Error.hh"
 

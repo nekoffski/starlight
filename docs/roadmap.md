@@ -1,27 +1,13 @@
-## Roadmap
+# Roadmap
 
 ## Renderer
 
 - [ ] separate renderer thread architeture, main thread communicates via commands
 - [ ] slang shader lang support
+- [ ] mixed bindless shader model
+- [ ] gpu-driven rendering
 
+## Cross-plaform
 
-## Runtime/Threading
-
-- [ ] implement reactor (make it robust, not a simple busy-loop)
-- [ ] thread pool
-
-## Backlog
-
-### Renderer
-
-- [ ] use lock-less queue for renderer requests
-- [ ] interface for destroying surface
-- [ ] improve pipeline cache
-
-### Adhoc improvements
-
-- [x] use some dedicated lease type instead of shared pointer to avoid double unwrap when returning Result<..>
-- [x] flat map
-- [ ] validate shader lifecycle (we should probably destroy old handle on reload)
-- [ ] signal handler
+- [ ] metal support
+- [ ] vulkan support

@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "Primitive.hh"
 #include "starlight/core/Core.hh"
-#include "starlight/renderer/rhi/Shader.hh"
+#include "starlight/renderer/core/Primitive.hh"
+#include "starlight/renderer/core/Shader.hh"
 
 namespace sl {
 

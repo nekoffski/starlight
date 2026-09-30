@@ -2,16 +2,16 @@
 
 #include <queue>
 
-#include "Primitive.hh"
 #include "RenderRequest.hh"
 #include "starlight/core/Concepts.hh"
 #include "starlight/core/Config.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/core/FlatMap.hh"
+#include "starlight/renderer/core/Primitive.hh"
+#include "starlight/renderer/core/Shader.hh"
 #include "starlight/renderer/rhi/GraphicsPipeline.hh"
 #include "starlight/renderer/rhi/RenderDevice.hh"
 #include "starlight/renderer/rhi/RenderSurfaceProvider.hh"
-#include "starlight/renderer/rhi/Shader.hh"
 
 namespace sl {
 

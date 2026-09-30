@@ -6,7 +6,7 @@
 #include "starlight/core/Core.hh"
 #include "starlight/core/FileSystem.hh"
 #include "starlight/renderer/RendererProxy.hh"
-#include "starlight/renderer/rhi/Shader.hh"
+#include "starlight/renderer/core/Shader.hh"
 #include "starlight/runtime/EventLoop.hh"
 
 namespace sl {

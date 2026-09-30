@@ -3,12 +3,12 @@
 #include "DeviceBuffer.hh"
 #include "GraphicsPipeline.hh"
 #include "RenderFrameRecorder.hh"
-#include "RenderResource.hh"
 #include "RenderSurfaceProvider.hh"
-#include "Shader.hh"
 #include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/core/Functional.hh"
+#include "starlight/renderer/core/RenderResource.hh"
+#include "starlight/renderer/core/Shader.hh"
 
 namespace sl {
 

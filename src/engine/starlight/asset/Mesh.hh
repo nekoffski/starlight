@@ -1,7 +1,7 @@
 #pragma once
 
 #include "starlight/core/Core.hh"
-#include "starlight/renderer/frontend/Primitive.hh"
+#include "starlight/renderer/core/Primitive.hh"
 
 namespace sl {
 

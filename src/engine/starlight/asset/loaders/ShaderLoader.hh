@@ -3,7 +3,7 @@
 #include "starlight/core/Concepts.hh"
 #include "starlight/core/Error.hh"
 #include "starlight/core/FileSystem.hh"
-#include "starlight/renderer/rhi/Shader.hh"
+#include "starlight/renderer/core/Shader.hh"
 
 namespace sl {
 

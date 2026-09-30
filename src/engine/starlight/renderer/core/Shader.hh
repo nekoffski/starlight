@@ -11,6 +11,8 @@ namespace sl {
 
 enum class ShaderStage { vertex, fragment, compute, geometry };
 
+struct VertexLayout {};
+
 struct ShaderModuleDescription {
     ShaderStage stage;
     Str entryPoint;

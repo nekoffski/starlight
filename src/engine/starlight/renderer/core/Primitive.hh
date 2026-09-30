@@ -4,7 +4,8 @@
 
 #include "starlight/core/Core.hh"
 #include "starlight/math/Vertex.hh"
-#include "starlight/renderer/rhi/RenderResource.hh"
+#include "starlight/renderer/core/RenderResource.hh"
+#include "starlight/renderer/core/Shader.hh"
 
 namespace sl {
 

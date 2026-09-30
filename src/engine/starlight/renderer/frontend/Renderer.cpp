@@ -2,7 +2,7 @@
 
 #include "RenderGraph.hh"
 #include "starlight/core/Functional.hh"
-#include "starlight/renderer/rhi/RenderResource.hh"
+#include "starlight/renderer/core/RenderResource.hh"
 
 namespace sl {
 

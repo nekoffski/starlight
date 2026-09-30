@@ -1,7 +1,7 @@
 #pragma once
 
-#include "RenderResource.hh"
-#include "Texture.hh"
+#include "starlight/renderer/core/RenderResource.hh"
+#include "starlight/renderer/core/Texture.hh"
 
 namespace sl {
 

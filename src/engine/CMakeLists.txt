@@ -22,13 +22,14 @@ add_library(starlight STATIC
     "starlight/event/EventSystem.cpp"
     "starlight/event/details/EventBroker.cpp"
     # -- renderer
+    "starlight/renderer/core/Shader.cpp"
+    "starlight/renderer/core/Primitive.cpp"
     "starlight/renderer/RendererProxy.cpp"
     "starlight/renderer/RenderingSystem.cpp"
     "starlight/renderer/frontend/Renderer.cpp"
     "starlight/renderer/frontend/RenderGraph.cpp"
     "starlight/renderer/executor/RenderExecutor.cpp"
     "starlight/renderer/executor/RendererCommandDispatcher.cpp"
-    "starlight/renderer/rhi/Shader.cpp"
     # -- platform
     "starlight/platform/Platform.cpp"
     "starlight/platform/sdl/SDLWindow.cpp"
