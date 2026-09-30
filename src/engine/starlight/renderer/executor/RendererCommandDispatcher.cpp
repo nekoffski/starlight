@@ -36,14 +36,14 @@ void RendererCommandDispatcher::operator()(RendererDestroyShader command) {
     m_renderer.destroyShader(command.handle);
 }
 
-void RendererCommandDispatcher::operator()(RendererUploadPrimitive command) {
+void RendererCommandDispatcher::operator()(RendererCreatePrimitive command) {
     command.completion.set_value(
-        m_renderer.uploadPrimitive(command.description)
+        m_renderer.createPrimitive(command.description)
     );
 }
 
-void RendererCommandDispatcher::operator()(RendererFreePrimitive command) {
-    m_renderer.freePrimitive(command.primitive);
+void RendererCommandDispatcher::operator()(RendererDestroyPrimitive command) {
+    m_renderer.destroyPrimitive(command.primitive);
 }
 
 }  // namespace sl

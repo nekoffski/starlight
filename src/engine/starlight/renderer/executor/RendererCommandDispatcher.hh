@@ -19,8 +19,8 @@ class RendererCommandDispatcher : public NonCopyable, public NonMovable {
     void operator()(RendererSubmit command);
     void operator()(RendererCreateShader command);
     void operator()(RendererDestroyShader command);
-    void operator()(RendererUploadPrimitive command);
-    void operator()(RendererFreePrimitive command);
+    void operator()(RendererCreatePrimitive command);
+    void operator()(RendererDestroyPrimitive command);
 
    private:
     Renderer& m_renderer;

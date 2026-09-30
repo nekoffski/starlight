@@ -6,7 +6,7 @@
 namespace sl {
 
 struct MeshPart {
-    Primitive primitive;
+    PrimitiveHandle primitive;
     // materialId
 };
 

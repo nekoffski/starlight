@@ -3,6 +3,7 @@
 #include <queue>
 
 #include "RenderRequest.hh"
+#include "RendererResourcePool.hh"
 #include "starlight/core/Concepts.hh"
 #include "starlight/core/Config.hh"
 #include "starlight/core/Core.hh"
@@ -29,11 +30,20 @@ class Renderer : public NonCopyable, public NonMovable {
     );
     void destroyTarget(RenderTarget target);
 
-    Result<ShaderHandle> createShader(const ShaderDescription& description);
-    void destroyShader(ShaderHandle handle);
+    Result<ShaderHandle> createShader(const ShaderDescription& description) {
+        return m_device.createShader(description);
+    }
+    void destroyShader(ShaderHandle handle) { m_device.destroyShader(handle); }
 
-    Result<Primitive> uploadPrimitive(const PrimitiveUploadData& description);
-    void freePrimitive(Primitive primitive);
+    Result<PrimitiveHandle> createPrimitive(
+        const PrimitiveUploadData& description
+    ) {
+        return m_resourcePool.createPrimitive(description);
+    }
+
+    void destroyPrimitive(PrimitiveHandle handle) {
+        m_resourcePool.destroyPrimitive(handle);
+    }
 
    private:
     u64 frameIndex() const;
@@ -56,6 +66,8 @@ class Renderer : public NonCopyable, public NonMovable {
 
     FlatMap<GraphicsPipelineDescription, GraphicsPipelineHandle>  // TODO: fixme
         m_graphicsPipelines;
+
+    RendererResourcePool m_resourcePool;
 };
 
 }  // namespace sl

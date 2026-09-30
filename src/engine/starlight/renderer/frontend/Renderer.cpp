@@ -6,26 +6,8 @@
 
 namespace sl {
 
-namespace {
-
-Bytes toBytes(std::span<const Vertex3> vertices) {
-    Bytes bytes;
-    bytes.resize(vertices.size() * sizeof(Vertex3));
-    std::memcpy(bytes.data(), vertices.data(), bytes.size());
-    return bytes;
-}
-
-Bytes toBytes(std::span<const u32> indices) {
-    Bytes bytes;
-    bytes.resize(indices.size() * sizeof(u32));
-    std::memcpy(bytes.data(), indices.data(), bytes.size());
-    return bytes;
-}
-
-}  // namespace
-
 Renderer::Renderer(const Config& config, RenderDevice& device)
-    : m_config(config), m_device(device) {}
+    : m_config(config), m_device(device), m_resourcePool(config, device) {}
 
 bool Renderer::tick() {
     if (m_pendingRequests.empty()) {
@@ -41,53 +23,6 @@ void Renderer::flush() {
             break;
         }
     }
-}
-
-Result<Primitive> Renderer::uploadPrimitive(
-    const PrimitiveUploadData& description
-) {
-    DeviceBufferDescription vertexBufferDescription{
-        .usage = DeviceBufferUsage::vertexBuffer,
-        .bytes = toBytes(description.vertices)
-    };
-
-    auto vertexBuffer = m_device.createBuffer(vertexBufferDescription);
-
-    if (not vertexBuffer) {
-        return Error::unexpected(
-            ErrorCode::deviceOperationFailed,
-            "Failed to create vertex buffer: {}", vertexBuffer.error()
-        );
-    }
-
-    DeviceBufferDescription indexBufferDescription{
-        .usage = DeviceBufferUsage::indexBuffer,
-        .bytes = toBytes(description.indices)
-    };
-
-    auto indexBuffer = m_device.createBuffer(indexBufferDescription);
-
-    if (not indexBuffer) {
-        m_device.destroyBuffer(*vertexBuffer);
-
-        return Error::unexpected(
-            ErrorCode::deviceOperationFailed,
-            "Failed to create index buffer: {}", indexBuffer.error()
-        );
-    }
-
-    return Primitive{
-        .vertexBuffer = *vertexBuffer,
-        .indexBuffer = *indexBuffer,
-        .vertexBufferOffset = 0,
-        .indexBufferOffset = 0,
-        .indexCount = static_cast<u32>(description.indices.size())
-    };
-}
-
-void Renderer::freePrimitive(Primitive primitive) {
-    m_device.destroyBuffer(primitive.indexBuffer);
-    m_device.destroyBuffer(primitive.vertexBuffer);
 }
 
 Result<void> Renderer::submit(const RenderRequest& request) {
@@ -124,16 +59,6 @@ void Renderer::destroyTarget(RenderTarget target) {
         },
         target
     );
-}
-
-Result<ShaderHandle> Renderer::createShader(
-    const ShaderDescription& description
-) {
-    return m_device.createShader(description);
-}
-
-void Renderer::destroyShader(ShaderHandle handle) {
-    m_device.destroyShader(handle);
 }
 
 u64 Renderer::frameIndex() const {
@@ -213,17 +138,27 @@ Result<void> Renderer::recordFrame(
                         return Error::unexpected(res.error());
                     }
 
-                    for (const auto& primitive : renderable.primitives) {
+                    for (const auto& primitiveHandle : renderable.primitives) {
+                        const auto& primitive =
+                            m_resourcePool.getPrimitive(primitiveHandle);
+
+                        if (not primitive) {
+                            return Error::unexpected(
+                                ErrorCode::invalidArgument,
+                                "Invalid primitive handle"
+                            );
+                        }
+
                         encoder.setVertexBuffer({
-                            .handle = primitive.vertexBuffer,
-                            .offset = primitive.vertexBufferOffset,
+                            .handle = primitive->vertexBuffer,
+                            .offset = primitive->vertexBufferOffset,
                         });
 
                         encoder.setIndexBuffer({
-                            .handle = primitive.indexBuffer,
-                            .offset = primitive.indexBufferOffset,
+                            .handle = primitive->indexBuffer,
+                            .offset = primitive->indexBufferOffset,
                         });
-                        encoder.drawIndexed(primitive.indexCount);
+                        encoder.drawIndexed(primitive->indexCount);
                     }
                 }
                 return {};

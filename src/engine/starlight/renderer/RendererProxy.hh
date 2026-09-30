@@ -13,11 +13,13 @@ class RendererProxy {
     friend class RenderingSystem;
 
    public:
-    Result<Primitive> uploadPrimitive(const PrimitiveUploadData& description);
-    Result<std::future<Result<Primitive>>> uploadPrimitiveAsync(
+    Result<PrimitiveHandle> createPrimitive(
         const PrimitiveUploadData& description
     );
-    Result<void> freePrimitive(Primitive primitive);
+    Result<std::future<Result<PrimitiveHandle>>> createPrimitiveAsync(
+        const PrimitiveUploadData& description
+    );
+    Result<void> destroyPrimitive(PrimitiveHandle primitive);
 
     Result<void> flushRenderer();
 

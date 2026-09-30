@@ -12,7 +12,8 @@ enum class ResourceType {
     texture,
     shader,
     graphicsPipeline,
-    deviceBuffer
+    deviceBuffer,
+    primitive
 };
 
 template <ResourceType T>
@@ -26,6 +27,7 @@ using ShaderHandle = RenderResourceHandle<ResourceType::shader>;
 using GraphicsPipelineHandle =
     RenderResourceHandle<ResourceType::graphicsPipeline>;
 using DeviceBufferHandle = RenderResourceHandle<ResourceType::deviceBuffer>;
+using PrimitiveHandle = RenderResourceHandle<ResourceType::primitive>;
 
 using RenderTarget = std::variant<SurfaceHandle, TextureHandle>;
 

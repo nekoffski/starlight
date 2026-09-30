@@ -47,14 +47,14 @@ int main() {
 
     shader->waitForDevice();
 
-    PrimitiveUploadData primitiveData{
-        .vertices =
-            {Vertex3{{0.0f, 0.5f, 0.0f}}, Vertex3{{-0.5f, -0.5f, 0.0f}},
-             Vertex3{{0.5f, -0.5f, 0.0f}}},
-        .indices = {0, 1, 2}
-    };
+    auto primitiveData = PrimitiveUploadDataBuilder<Vertex3>{}
+                             .addVertex(Vec3f{0.0f, 0.5f, 0.0f})
+                             .addVertex(Vec3f{-0.5f, -0.5f, 0.0f})
+                             .addVertex(Vec3f{0.5f, -0.5f, 0.0f})
+                             .addIndices({0, 1, 2})
+                             .build();
 
-    auto primitive = proxy.uploadPrimitive(primitiveData);
+    auto primitive = proxy.createPrimitive(primitiveData);
     log::expect(primitive);
 
     RenderRequest req{

@@ -2,20 +2,19 @@
 
 namespace sl {
 
-Result<Primitive> RendererProxy::uploadPrimitive(
+Result<PrimitiveHandle> RendererProxy::createPrimitive(
     const PrimitiveUploadData& description
 ) {
-    if (auto future = uploadPrimitiveAsync(description); future) {
+    if (auto future = createPrimitiveAsync(description); future) {
         return future->get();
     } else {
         return Error::unexpected(future.error());
     }
 }
 
-Result<std::future<Result<Primitive>>> RendererProxy::uploadPrimitiveAsync(
-    const PrimitiveUploadData& description
-) {
-    RendererUploadPrimitive cmd{description};
+Result<std::future<Result<PrimitiveHandle>>>
+RendererProxy::createPrimitiveAsync(const PrimitiveUploadData& description) {
+    RendererCreatePrimitive cmd{description};
     auto completion = cmd.completion.get_future();
 
     if (not m_submitter.submit(std::move(cmd))) {
@@ -28,13 +27,13 @@ Result<std::future<Result<Primitive>>> RendererProxy::uploadPrimitiveAsync(
     return completion;
 }
 
-Result<void> RendererProxy::freePrimitive(Primitive primitive) {
-    RendererFreePrimitive cmd{primitive};
+Result<void> RendererProxy::destroyPrimitive(PrimitiveHandle primitive) {
+    RendererDestroyPrimitive cmd{primitive};
 
     if (not m_submitter.submit(std::move(cmd))) {
         return Error::unexpected(
             ErrorCode::rendererCommandRejected,
-            "Could not submit renderer free primitive command"
+            "Could not submit renderer destroy primitive command"
         );
     }
     return {};
