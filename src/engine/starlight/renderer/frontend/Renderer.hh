@@ -33,6 +33,7 @@ class Renderer : public NonCopyable, public NonMovable {
     Result<ShaderHandle> createShader(const ShaderDescription& description) {
         return m_device.createShader(description);
     }
+
     void destroyShader(ShaderHandle handle) { m_device.destroyShader(handle); }
 
     Result<PrimitiveHandle> createPrimitive(
@@ -56,6 +57,10 @@ class Renderer : public NonCopyable, public NonMovable {
 
     Result<void> recordFrame(
         RenderFrameRecorder& context, const RenderRequest& request
+    );
+
+    Result<void> validatePipelineLayout(
+        const GraphicsPipelineDescription& description
     );
 
     Config m_config;

@@ -72,7 +72,7 @@ Result<std::unique_ptr<MetalShader>> MetalShader::create(
     libraryReleaser.dismiss();
 
     return std::make_unique<MetalShader>(
-        library, std::move(functions), Guard{}
+        library, std::move(functions), description, Guard{}
     );
 }
 
@@ -86,7 +86,12 @@ MetalShader::~MetalShader() {
     m_library->release();
 }
 
-MetalShader::MetalShader(MTL::Library* library, Functions&& functions, Guard)
-    : m_library(library), m_functions(std::move(functions)) {}
+MetalShader::MetalShader(
+    MTL::Library* library, Functions&& functions,
+    const ShaderDescription& description, Guard
+)
+    : m_library(library),
+      m_functions(std::move(functions)),
+      m_description(description) {}
 
 }  // namespace sl

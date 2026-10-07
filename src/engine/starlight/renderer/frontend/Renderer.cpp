@@ -123,9 +123,29 @@ Result<void> Renderer::recordFrame(
         graph.addRenderPass(
             pass, [&](RenderPassEncoder& encoder) -> Result<void> {
                 for (const auto& renderable : request.scene.items) {
+                    const auto* shaderDescription =
+                        m_device.getShaderDescription(renderable.shader);
+
+                    // TODO: refactor
+
+                    if (not shaderDescription) {
+                        return Error::unexpected(
+                            ErrorCode::invalidArgument, "Invalid shader handle"
+                        );
+                    }
+
+                    const auto& vertexLayout = shaderDescription->vertexLayout;
+
+                    if (not vertexLayout.has_value()) {
+                        return Error::unexpected(
+                            ErrorCode::invalidArgument,
+                            "Shader does not have a vertex layout"
+                        );
+                    }
+
                     GraphicsPipelineDescription description{
                         .format = TextureFormat::bgra8unorm,
-                        .shader = renderable.shader
+                        .shader = renderable.shader,
                     };
 
                     auto pipeline = resolveGraphicsPipeline(description);
@@ -146,6 +166,14 @@ Result<void> Renderer::recordFrame(
                             return Error::unexpected(
                                 ErrorCode::invalidArgument,
                                 "Invalid primitive handle"
+                            );
+                        }
+
+                        if (primitive->vertexLayout != *vertexLayout) {
+                            return Error::unexpected(
+                                ErrorCode::invalidArgument,
+                                "Primitive vertex layout does not match shader "
+                                "vertex layout"
                             );
                         }
 

@@ -22,12 +22,18 @@ class MetalShader : public NonCopyable, public NonMovable {
 
     MTL::Function* function(ShaderStage stage);
 
-    explicit MetalShader(MTL::Library* library, Functions&& functions, Guard);
+    explicit MetalShader(
+        MTL::Library* library, Functions&& functions,
+        const ShaderDescription& description,  Guard
+    );
     ~MetalShader();
+
+    const ShaderDescription& description() const { return m_description; }
 
    private:
     MTL::Library* m_library;
     Functions m_functions;
+    ShaderDescription m_description;
 };
 
 }  // namespace sl

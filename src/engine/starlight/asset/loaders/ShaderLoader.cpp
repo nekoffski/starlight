@@ -14,10 +14,13 @@ class LoadHelper : public NonMovable, public NonCopyable {
     ) &&;
 
    private:
-    Result<ShaderModuleDescription> loadModule(const Json& metadata);
+    Result<void> loadModule(const Json& metadata);
+    Result<void> parseVertexInput(const Json& metadata);
 
     ShaderDescription m_shaderDescription;
 };
+
+// Result<DataField> slangToInternalType(const Json& type) { return {}; }
 
 }  // namespace
 
@@ -75,10 +78,8 @@ Result<ShaderDescription> LoadHelper::load(
     }
 
     for (const auto& entrypoint : entrypoints.value()) {
-        if (auto module = loadModule(entrypoint); module) {
-            m_shaderDescription.stages[module->stage] = *module;
-        } else {
-            return Error::unexpected(module.error());
+        if (auto res = loadModule(entrypoint); not res) {
+            return Error::unexpected(res.error());
         }
     }
 
@@ -86,7 +87,7 @@ Result<ShaderDescription> LoadHelper::load(
     return std::move(m_shaderDescription);
 }
 
-Result<ShaderModuleDescription> LoadHelper::loadModule(const Json& metadata) {
+Result<void> LoadHelper::loadModule(const Json& metadata) {
     ShaderModuleDescription shaderModule;
 
     auto stageStr = metadata.find("stage");
@@ -108,6 +109,21 @@ Result<ShaderModuleDescription> LoadHelper::loadModule(const Json& metadata) {
 
     shaderModule.stage = *stage;
 
+    if (shaderModule.stage == ShaderStage::vertex) {
+        auto parameters = metadata.find("parameters");
+
+        if (parameters == metadata.end() || not parameters->is_array()) {
+            return Error::unexpected(
+                ErrorCode::shaderParsingError,
+                "Shader module is missing required field: 'parameters'"
+            );
+        }
+
+        if (auto res = parseVertexInput(*parameters); not res) {
+            return Error::unexpected(res.error());
+        }
+    }
+
     auto entryPoint = metadata.find("name");
 
     if (entryPoint == metadata.end() || not entryPoint->is_string()) {
@@ -117,8 +133,97 @@ Result<ShaderModuleDescription> LoadHelper::loadModule(const Json& metadata) {
     }
 
     shaderModule.entryPoint = entryPoint.value();
+    m_shaderDescription.stages[shaderModule.stage] = shaderModule;
+    return {};
+}
 
-    return shaderModule;
+namespace {
+
+Result<ValueType> parseValueType(const Json& type) {
+    auto kind = type.find("kind");
+
+    if (kind == type.end() || not kind->is_string()) {
+        return Error::unexpected(
+            ErrorCode::shaderParsingError, "Invalid value type kind"
+        );
+    }
+
+    if (kind.value() == "vector") {
+        auto elementCountObj = type.find("elementCount");
+
+        if (elementCountObj == type.end() || not elementCountObj->is_number()) {
+            return Error::unexpected(
+                ErrorCode::shaderParsingError, "Invalid vector element count"
+            );
+        }
+
+        auto elementType = type.find("elementType");
+
+        if (elementType == type.end() || not elementType->is_object()) {
+            return Error::unexpected(
+                ErrorCode::shaderParsingError, "Invalid vector element type"
+            );
+        }
+
+        auto scalarType = elementType->find("scalarType");
+
+        if (scalarType == elementType->end() || not scalarType->is_string()) {
+            return Error::unexpected(
+                ErrorCode::shaderParsingError,
+                "Invalid vector element scalar type"
+            );
+        }
+
+        if (scalarType.value() == "float32") {
+            switch (elementCountObj->get<int>()) {
+                case 3:
+                    return ValueType::f32_3x1;
+                case 4:
+                    return ValueType::f32_4x1;
+                default:
+                    return Error::unexpected(
+                        ErrorCode::shaderParsingError,
+                        "Invalid vector element count for float32 type"
+                    );
+            }
+        }
+    }
+
+    return Error::unexpected(
+        ErrorCode::shaderParsingError, "Unhandled value type kind: {}",
+        kind.value().dump()
+    );
+}
+
+}  // namespace
+
+Result<void> LoadHelper::parseVertexInput(const Json& parameters) {
+    VertexLayout layout;
+
+    for (const auto& parameter : parameters) {
+        if (auto binding = parameter.find("binding");
+            binding == parameter.end()) {
+            continue;
+        }
+
+        auto type = parameter.find("type");
+
+        if (type == parameter.end() || not type->is_object()) {
+            return Error::unexpected(
+                ErrorCode::shaderParsingError, "Invalid vertex input type"
+            );
+        }
+
+        if (auto internalType = parseValueType(*type); not internalType) {
+            return Error::unexpected(internalType.error());
+        } else {
+            layout.push_back(*internalType);
+        }
+    }
+
+    log::debug("Shader layout: {}", vertexLayoutToString(layout));
+    m_shaderDescription.vertexLayout = std::move(layout);
+    return {};
 }
 
 }  // namespace

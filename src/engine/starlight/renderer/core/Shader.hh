@@ -3,6 +3,7 @@
 #include <unordered_map>
 
 #include "RenderResource.hh"
+#include "ShaderDataLayout.hh"
 #include "starlight/core/Concepts.hh"
 #include "starlight/core/Enum.hh"
 #include "starlight/core/Error.hh"
@@ -10,8 +11,6 @@
 namespace sl {
 
 enum class ShaderStage { vertex, fragment, compute, geometry };
-
-struct VertexLayout {};
 
 struct ShaderModuleDescription {
     ShaderStage stage;
@@ -21,6 +20,7 @@ struct ShaderModuleDescription {
 struct ShaderDescription {
     std::unordered_map<ShaderStage, ShaderModuleDescription> stages;
     std::vector<Byte> byteCode;
+    Opt<VertexLayout> vertexLayout;
 };
 
 SL_BIT_ENUM(ShaderStage);

@@ -34,6 +34,10 @@ class MetalDevice : public RenderDevice {
         return m_resourcePool.createShader(description);
     }
 
+    const ShaderDescription* getShaderDescription(
+        ShaderHandle handle
+    ) const override;
+
     Result<GraphicsPipelineHandle> createGraphicsPipeline(
         const GraphicsPipelineDescription& description
     ) override {

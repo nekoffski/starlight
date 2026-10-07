@@ -32,7 +32,11 @@ class MetalResourcePool : public NonCopyable, public NonMovable {
 
     Result<ShaderHandle> createShader(const ShaderDescription& description);
     void destroyShader(ShaderHandle handle);
-    MetalShader* getShader(ShaderHandle handle);
+
+    auto getShader(this auto&& self, ShaderHandle handle) {
+        auto it = self.m_shaders.find(handle);
+        return it != self.m_shaders.end() ? &*it->second : nullptr;
+    }
 
     Result<GraphicsPipelineHandle> createGraphicsPipeline(
         const GraphicsPipelineDescription& description

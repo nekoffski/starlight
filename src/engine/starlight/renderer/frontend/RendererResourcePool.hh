@@ -10,6 +10,7 @@
 namespace sl {
 
 struct Primitive {
+    VertexLayout vertexLayout;
     DeviceBufferHandle vertexBuffer;
     DeviceBufferHandle indexBuffer;
     u32 vertexBufferOffset;
@@ -31,7 +32,9 @@ class RendererResourcePool : public NonCopyable, public NonMovable {
     Config m_config;
     RenderDevice& m_device;
     IdLake m_idLake;
+
     std::unordered_map<PrimitiveHandle, Primitive> m_primitives;
+    std::unordered_map<ShaderHandle, ShaderDescription> m_shaderDescriptions;
 };
 
 }  // namespace sl

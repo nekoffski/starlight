@@ -17,6 +17,13 @@ std::unique_ptr<MetalDevice> MetalDevice::create(const Config& config) {
     return std::make_unique<MetalDevice>(config, Guard{});
 }
 
+const ShaderDescription* MetalDevice::getShaderDescription(
+    ShaderHandle handle
+) const {
+    const auto* shader = m_resourcePool.getShader(handle);
+    return shader ? &shader->description() : nullptr;
+}
+
 void MetalDevice::waitIdle() {
     for (const auto& latch : m_frames) {
         latch->wait();

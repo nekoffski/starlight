@@ -62,13 +62,6 @@ void MetalResourcePool::destroyShader(ShaderHandle handle) {
     m_shaders.erase(handle);
 }
 
-MetalShader* MetalResourcePool::getShader(ShaderHandle handle) {
-    if (auto it = m_shaders.find(handle); it != m_shaders.end()) {
-        return it->second.get();
-    }
-    return nullptr;
-}
-
 Result<GraphicsPipelineHandle> MetalResourcePool::createGraphicsPipeline(
     const GraphicsPipelineDescription& description
 ) {

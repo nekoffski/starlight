@@ -3,13 +3,15 @@
 #include <vector>
 
 #include "starlight/core/Core.hh"
-#include "starlight/math/Vertex.hh"
 #include "starlight/renderer/core/RenderResource.hh"
 #include "starlight/renderer/core/Shader.hh"
+#include "starlight/renderer/core/ShaderDataLayout.hh"
+#include "starlight/renderer/core/Vertex.hh"
 
 namespace sl {
 
 struct PrimitiveUploadData {
+    VertexLayout vertexLayout;
     Bytes vertexData;
     Bytes indexData;
     u32 vertexCount;
@@ -17,6 +19,9 @@ struct PrimitiveUploadData {
 };
 
 template <typename T>
+    requires requires {
+        { T::layout() } -> std::same_as<VertexLayout>;
+    }
 class PrimitiveUploadDataBuilder {
    public:
     template <typename... Args>
@@ -44,6 +49,7 @@ class PrimitiveUploadDataBuilder {
     PrimitiveUploadData build() {
         PrimitiveUploadData data;
 
+        data.vertexLayout = T::layout();
         data.indexCount = m_indices.size();
         data.vertexCount = m_vertices.size();
 

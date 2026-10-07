@@ -27,6 +27,9 @@ class RenderDevice : public NonCopyable, public NonMovable {
         const ShaderDescription& description
     ) = 0;
     virtual void destroyShader(ShaderHandle handle) = 0;
+    virtual const ShaderDescription* getShaderDescription(
+        ShaderHandle handle
+    ) const = 0;
 
     virtual Result<GraphicsPipelineHandle> createGraphicsPipeline(
         const GraphicsPipelineDescription& description

@@ -43,6 +43,7 @@ Result<PrimitiveHandle> RendererResourcePool::createPrimitive(
     PrimitiveHandle handle{m_idLake.acquire<Primitive>()};
 
     Primitive primitive{
+        .vertexLayout = description.vertexLayout,
         .vertexBuffer = *vertexBuffer,
         .indexBuffer = *indexBuffer,
         .vertexBufferOffset = 0,

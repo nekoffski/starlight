@@ -1,7 +1,7 @@
 #include "MetalGraphicsPipeline.hh"
 
 #include "starlight/core/Functional.hh"
-#include "starlight/math/Vertex.hh"
+#include "starlight/renderer/core/Vertex.hh"
 
 namespace sl {
 
