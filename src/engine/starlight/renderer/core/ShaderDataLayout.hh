@@ -7,7 +7,7 @@
 
 namespace sl {
 
-enum class ValueType {
+enum class DataFormat {
     u8,
     u16,
     u32,
@@ -18,10 +18,15 @@ enum class ValueType {
     f32_4x4,
 };
 
-Str valueTypeToString(const ValueType& type);
+using VertexLayout = std::vector<DataFormat>;
 
-using VertexLayout = std::vector<ValueType>;
+class LayoutHelper {
+   public:
+    static u64 calculateStride(const VertexLayout& layout);
+    static u64 formatSize(DataFormat format);
+};
 
 Str vertexLayoutToString(const VertexLayout& layout);
+Str dataFormatToString(DataFormat format);
 
 }  // namespace sl

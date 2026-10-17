@@ -4,10 +4,10 @@ struct VertexOutput {
 };
 
 [shader("vertex")]
-VertexOutput vertexMain(float3 position) {
+VertexOutput vertexMain(float3 position, float3 color) {
     VertexOutput output;
     output.position = float4(position, 1.0);
-    output.color = float3(1.0, 0.0, 0.0);
+    output.color = color;
     return output;
 }
 

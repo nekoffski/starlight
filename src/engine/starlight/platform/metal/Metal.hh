@@ -6,6 +6,7 @@
 
 #include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
+#include "starlight/renderer/core/ShaderDataLayout.hh"
 
 namespace sl {
 
@@ -23,5 +24,6 @@ class MetalContext : public NonCopyable, public NonMovable {
 };
 
 Str parseMetalError(NS::Error* error);
+MTL::VertexFormat toMetal(const DataFormat& type);
 
 }  // namespace sl

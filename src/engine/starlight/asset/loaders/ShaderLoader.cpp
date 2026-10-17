@@ -20,8 +20,6 @@ class LoadHelper : public NonMovable, public NonCopyable {
     ShaderDescription m_shaderDescription;
 };
 
-// Result<DataField> slangToInternalType(const Json& type) { return {}; }
-
 }  // namespace
 
 Result<ShaderDescription> ShaderLoader::loadShaderDescription(
@@ -139,7 +137,7 @@ Result<void> LoadHelper::loadModule(const Json& metadata) {
 
 namespace {
 
-Result<ValueType> parseValueType(const Json& type) {
+Result<DataFormat> parseDataFormat(const Json& type) {
     auto kind = type.find("kind");
 
     if (kind == type.end() || not kind->is_string()) {
@@ -177,9 +175,9 @@ Result<ValueType> parseValueType(const Json& type) {
         if (scalarType.value() == "float32") {
             switch (elementCountObj->get<int>()) {
                 case 3:
-                    return ValueType::f32_3x1;
+                    return DataFormat::f32_3x1;
                 case 4:
-                    return ValueType::f32_4x1;
+                    return DataFormat::f32_4x1;
                 default:
                     return Error::unexpected(
                         ErrorCode::shaderParsingError,
@@ -214,7 +212,7 @@ Result<void> LoadHelper::parseVertexInput(const Json& parameters) {
             );
         }
 
-        if (auto internalType = parseValueType(*type); not internalType) {
+        if (auto internalType = parseDataFormat(*type); not internalType) {
             return Error::unexpected(internalType.error());
         } else {
             layout.push_back(*internalType);

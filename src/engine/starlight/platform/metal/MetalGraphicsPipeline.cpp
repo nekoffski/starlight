@@ -5,6 +5,41 @@
 
 namespace sl {
 
+namespace {
+
+Result<void> setVertexDescriptor(
+    const VertexLayout& layoutDescription,
+    MTL::RenderPipelineDescriptor* descriptor
+) {
+    auto* layout = MTL::VertexDescriptor::vertexDescriptor();
+    auto stride = LayoutHelper::calculateStride(layoutDescription);
+
+    // single buffer as for now
+    layout->layouts()->object(0)->setStride(stride);
+
+    u64 offset = 0u;
+
+    for (u64 i = 0; i < layoutDescription.size(); ++i) {
+        auto* attribute = layout->attributes()->object(i);
+        const auto size = LayoutHelper::formatSize(layoutDescription[i]);
+
+        attribute->setFormat(toMetal(layoutDescription[i]));
+        attribute->setOffset(offset);
+        attribute->setBufferIndex(0u);
+
+        descriptor->colorAttachments()->object(i)->setPixelFormat(
+            MTL::PixelFormatBGRA8Unorm
+        );
+
+        offset += size;
+    }
+
+    descriptor->setVertexDescriptor(layout);
+    return {};
+}
+
+}  // namespace
+
 Result<std::unique_ptr<MetalGraphicsPipeline>> MetalGraphicsPipeline::create(
     MetalContext& ctx, MetalShader& shader,
     const GraphicsPipelineDescription& description
@@ -34,19 +69,21 @@ Result<std::unique_ptr<MetalGraphicsPipeline>> MetalGraphicsPipeline::create(
     descriptor->setVertexFunction(vertexStage);
     descriptor->setFragmentFunction(fragmentStage);
 
-    // TEMPORARY
-    auto* layout = MTL::VertexDescriptor::vertexDescriptor();
-    auto* position = layout->attributes()->object(0);
-    position->setFormat(MTL::VertexFormatFloat3);
-    position->setOffset(offsetof(Vertex3, position));
-    position->setBufferIndex(0);
-    layout->layouts()->object(0)->setStride(sizeof(Vertex3));
-    descriptor->setVertexDescriptor(layout);
-    // --
+    auto& layoutDescription = shader.description().vertexLayout;
 
-    descriptor->colorAttachments()->object(0)->setPixelFormat(
-        MTL::PixelFormatBGRA8Unorm
-    );
+    if (not layoutDescription.has_value()) [[unlikely]] {
+        return Error::unexpected(
+            ErrorCode::invalidArgument, "Vertex layout is not specified"
+        );
+    }
+
+    if (auto r = setVertexDescriptor(layoutDescription.value(), descriptor);
+        not r) [[unlikely]] {
+        return Error::unexpected(
+            ErrorCode::invalidArgument,
+            "Failed to create vertex descriptor: {}", r.error()
+        );
+    }
 
     NS::Error* error = nullptr;
     auto* pipelineState =

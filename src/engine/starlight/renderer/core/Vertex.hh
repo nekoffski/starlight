@@ -8,7 +8,7 @@ namespace sl {
 
 struct Vertex3 {
     Vec3f position;
-    // Vec3f normal;
+    Vec3f normal;
     // Vec2f texCoord;
 
     static VertexLayout layout();
