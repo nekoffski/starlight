@@ -21,7 +21,7 @@ Result<void> setVertexDescriptor(
 
     for (u64 i = 0; i < layoutDescription.size(); ++i) {
         auto* attribute = layout->attributes()->object(i);
-        const auto size = LayoutHelper::formatSize(layoutDescription[i]);
+        const auto size = LayoutHelper::valueTypeSize(layoutDescription[i]);
 
         attribute->setFormat(toMetal(layoutDescription[i]));
         attribute->setOffset(offset);

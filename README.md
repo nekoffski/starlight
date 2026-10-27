@@ -1,6 +1,6 @@
 # Building Starlight
 
-Install Python 3, Conan 2, and CMake 3.23 or newer. The C++ compiler must be
+Install Python 3, Conan 2, and CMake 3.25 or newer. The C++ compiler must be
 GCC 14+, Clang 18+, or Apple Clang 17+ (Xcode 16.3+).
 
 On a new machine, select a compiler once:
@@ -24,4 +24,11 @@ make build-release
 
 The build target installs Conan dependencies and generates the CMake preset.
 When switching compilers, run `make clean`, then bootstrap again with the new
-compiler. `make clean` keeps the saved compiler profile.
+compiler. `make clean` also removes the saved compiler profile, so bootstrap again
+after cleaning.
+
+Run `make test` to build Debug and run the GoogleTest suite through CTest.
+Run `make fmt-check` to check tracked C++ files with `.clang-format`.
+
+See [repository knowledge](docs/README.md) for implementation documentation and
+[AGENTS.md](AGENTS.md) for coding-agent instructions.

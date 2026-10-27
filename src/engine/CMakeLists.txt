@@ -5,6 +5,7 @@ add_library(starlight STATIC
     "starlight/asset/Shader.cpp"
     "starlight/asset/loaders/ShaderLoader.cpp"
     "starlight/asset/Mesh.cpp"
+    "starlight/asset/Texture.cpp"
     # -- core
     "starlight/core/Core.cpp"
     "starlight/core/Error.cpp"

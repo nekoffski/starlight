@@ -21,6 +21,7 @@ struct ShaderDescription {
     std::unordered_map<ShaderStage, ShaderModuleDescription> stages;
     std::vector<Byte> byteCode;
     Opt<VertexLayout> vertexLayout;
+    std::vector<ShaderUniform> uniforms;
 };
 
 SL_BIT_ENUM(ShaderStage);

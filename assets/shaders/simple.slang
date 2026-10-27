@@ -1,7 +1,16 @@
+
+
 struct VertexOutput {
     float4 position : SV_Position;
     float3 color : COLOR0;
 };
+
+struct Uniforms {
+    float4 color;
+    float4 padding;
+};
+
+ParameterBlock<Uniforms> uniforms;
 
 [shader("vertex")]
 VertexOutput vertexMain(float3 position, float3 color) {

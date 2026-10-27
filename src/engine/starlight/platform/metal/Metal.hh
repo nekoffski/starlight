@@ -24,6 +24,6 @@ class MetalContext : public NonCopyable, public NonMovable {
 };
 
 Str parseMetalError(NS::Error* error);
-MTL::VertexFormat toMetal(const DataFormat& type);
+MTL::VertexFormat toMetal(const ValueType& type);
 
 }  // namespace sl

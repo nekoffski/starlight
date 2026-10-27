@@ -4,6 +4,10 @@ This document describes the renderer as it is implemented now. The sandbox in
 [`src/sandbox/main.cpp`](../src/sandbox/main.cpp) shows the complete path from a
 window, shader, and primitive to a submitted frame.
 
+Follow the [knowledge maintenance policy](README.md#maintaining-knowledge-nodes):
+no ADRs; update this node from code during development, without speculative
+features or interfaces.
+
 ## How a frame moves through the system
 
 ```mermaid
@@ -30,22 +34,27 @@ means the renderer accepted the request, not that the GPU finished it.
 ## Resources used by a scene
 
 - **Shader:** `ShaderLoader` reads compiled shader bytes and adjacent JSON
-  metadata with entry point names and stages. Shader assets ask the proxy to
+  metadata with entry point names, stages, vertex inputs, and uniforms. Shader
+  assets ask the proxy to
   create a device shader. The Metal implementation loads the bytes as a Metal
   library and looks up those entry points.
-- **Primitive:** `PrimitiveUploadData` contains `Vertex3` positions and `u32`
-  indices. Upload creates one Metal buffer for each, copies the bytes into
-  shared storage, and returns their handles, offsets, and index count. The
-  caller can later free both buffers through the proxy.
+- **Primitive:** `PrimitiveUploadData` contains vertex layout, vertex and index
+  bytes, and counts. `PrimitiveUploadDataBuilder<Vertex3>` packs position and
+  normal vectors with `u32` indices. Upload creates a buffer for each byte array
+  and returns a primitive handle; the resource pool stores the layout, buffer
+  handles, offsets, and index count. The caller can later destroy the primitive
+  through the proxy.
 - **Target:** The application creates a target from a surface provider, such as
-  `SDLMetalWindow`. The Metal device attaches its `CAMetalLayer` and sets its
+  `SDLWindow`. The Metal device attaches its `CAMetalLayer` and sets its
   pixel format to `BGRA8Unorm`.
 - **Pipeline:** The renderer caches a graphics pipeline by shader handle and
   color format. On the first use of a pair, it asks the device to create the
   pipeline; later draws reuse its handle. The current renderer always requests
   `bgra8unorm`. Metal requires vertex and fragment shader functions and sets a
-  fixed vertex layout: a `float3` position from `Vertex3` in vertex buffer slot
-  zero. The renderer has no pipeline eviction or shader-change invalidation.
+  vertex descriptor from the shader's reflected layout, with attributes packed
+  in vertex buffer slot zero. The renderer rejects primitives whose layout does
+  not match the shader. The renderer has no pipeline eviction or shader-change
+  invalidation.
 
 `RenderTarget` can hold either a surface or texture handle, but this path
 currently creates and renders to surfaces only. The Metal recorder returns an
@@ -112,6 +121,18 @@ finish.
 The implemented backend is Metal. `Platform::createRenderDevice()` selects it
 for Metal builds; the Vulkan branch has no device implementation. The renderer
 has no compute or copy passes, render graph dependency tracking, texture
-outputs, material bindings, depth attachments, or dynamic vertex layouts. The
-current `Vertex3` contains only a position, and the Metal pipeline uses that
-layout directly rather than matching shader input reflection.
+outputs, material bindings, or depth attachments. The current `Vertex3` contains
+position and normal vectors. Vertex input reflection currently accepts `float32`
+vectors of three or four elements.
+
+## Source references
+
+- [ShaderLoader](../src/engine/starlight/asset/loaders/ShaderLoader.cpp) and
+  [Vertex3](../src/engine/starlight/renderer/core/Vertex.hh)
+- [Primitive upload data](../src/engine/starlight/renderer/core/Primitive.hh) and
+  [RendererResourcePool](../src/engine/starlight/renderer/frontend/RendererResourcePool.cpp)
+- [Renderer](../src/engine/starlight/renderer/frontend/Renderer.cpp) and
+  [RenderGraph](../src/engine/starlight/renderer/frontend/RenderGraph.cpp)
+- [MetalGraphicsPipeline](../src/engine/starlight/platform/metal/MetalGraphicsPipeline.cpp),
+  [MetalDevice](../src/engine/starlight/platform/metal/MetalDevice.cpp), and
+  [MetalRenderFrameRecorder](../src/engine/starlight/platform/metal/MetalRenderFrameRecorder.cpp)

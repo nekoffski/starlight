@@ -4,8 +4,8 @@ namespace sl {
 
 VertexLayout Vertex3::layout() {
     return VertexLayout{
-        DataFormat::f32_3x1,
-        DataFormat::f32_3x1,
+        ValueType::f32_3x1,
+        ValueType::f32_3x1,
     };
 }
 

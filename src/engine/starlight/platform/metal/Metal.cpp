@@ -55,9 +55,9 @@ Str parseMetalError(NS::Error* error) {
     return Str{description->utf8String()};
 }
 
-MTL::VertexFormat toMetal(const DataFormat& type) {
+MTL::VertexFormat toMetal(const ValueType& type) {
     switch (type) {
-        case DataFormat::f32_3x1:
+        case ValueType::f32_3x1:
             return MTL::VertexFormatFloat3;
         default:
             log::panic("Unsupported vertex type: {}", static_cast<int>(type));

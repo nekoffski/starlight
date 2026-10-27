@@ -16,6 +16,7 @@ class LoadHelper : public NonMovable, public NonCopyable {
    private:
     Result<void> loadModule(const Json& metadata);
     Result<void> parseVertexInput(const Json& metadata);
+    Result<void> parseUniforms(const Json& metadata);
 
     ShaderDescription m_shaderDescription;
 };
@@ -81,6 +82,16 @@ Result<ShaderDescription> LoadHelper::load(
         }
     }
 
+    if (auto globalScope = metadata.find("globalScope");
+        globalScope != metadata.end() && globalScope->is_object()) {
+        if (auto parameters = globalScope->find("parameters");
+            parameters != globalScope->end() && parameters->is_array()) {
+            if (auto res = parseUniforms(*parameters); not res) {
+                return Error::unexpected(res.error());
+            }
+        }
+    }
+
     m_shaderDescription.byteCode = std::move(data);
     return std::move(m_shaderDescription);
 }
@@ -137,7 +148,7 @@ Result<void> LoadHelper::loadModule(const Json& metadata) {
 
 namespace {
 
-Result<DataFormat> parseDataFormat(const Json& type) {
+Result<ValueType> parseValueType(const Json& type) {
     auto kind = type.find("kind");
 
     if (kind == type.end() || not kind->is_string()) {
@@ -175,9 +186,9 @@ Result<DataFormat> parseDataFormat(const Json& type) {
         if (scalarType.value() == "float32") {
             switch (elementCountObj->get<int>()) {
                 case 3:
-                    return DataFormat::f32_3x1;
+                    return ValueType::f32_3x1;
                 case 4:
-                    return DataFormat::f32_4x1;
+                    return ValueType::f32_4x1;
                 default:
                     return Error::unexpected(
                         ErrorCode::shaderParsingError,
@@ -212,7 +223,7 @@ Result<void> LoadHelper::parseVertexInput(const Json& parameters) {
             );
         }
 
-        if (auto internalType = parseDataFormat(*type); not internalType) {
+        if (auto internalType = parseValueType(*type); not internalType) {
             return Error::unexpected(internalType.error());
         } else {
             layout.push_back(*internalType);
@@ -221,6 +232,51 @@ Result<void> LoadHelper::parseVertexInput(const Json& parameters) {
 
     log::debug("Shader layout: {}", vertexLayoutToString(layout));
     m_shaderDescription.vertexLayout = std::move(layout);
+    return {};
+}
+
+Result<void> LoadHelper::parseUniforms(const Json& metadata) {
+    for (const auto& parameter : metadata) {
+        ShaderUniform uniform;
+
+        auto name = parameter.find("name");
+
+        if (name == parameter.end() || not name->is_string()) {
+            return Error::unexpected(
+                ErrorCode::shaderParsingError, "Invalid uniform name"
+            );
+        }
+
+        auto binding = parameter.find("binding");
+
+        if (binding == parameter.end() || not binding->is_object()) {
+            return Error::unexpected(
+                ErrorCode::shaderParsingError, "Invalid uniform binding"
+            );
+        }
+
+        auto index = binding->find("index");
+
+        if (index == binding->end() || not index->is_number()) {
+            return Error::unexpected(
+                ErrorCode::shaderParsingError, "Invalid uniform index"
+            );
+        }
+
+        auto elementVarLayout = parameter["type"]["elementVarLayout"];
+        auto size = elementVarLayout["type"]["sizes"][0]["value"];
+
+        uniform.size = size;
+        uniform.name = name.value();
+        uniform.binding = index.value();
+
+        m_shaderDescription.uniforms.push_back(uniform);
+
+        log::debug(
+            "Parsed uniform: {}, binding={}, size={}", uniform.name,
+            uniform.binding, uniform.size
+        );
+    }
     return {};
 }
 
