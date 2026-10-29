@@ -20,14 +20,18 @@ flowchart LR
     RHI --> Metal[Metal device, encoders, and surfaces]
 ```
 
-`RenderingSystem` creates the `RenderDevice`, `Renderer`, and `RenderExecutor`.
+`RenderingSystem` creates the `RenderDevice`, `Renderer`, and `RenderExecutor`
+on its constructing thread, then starts the executor.
 The proxy puts commands on the executor's thread-safe queue. The executor
 dispatches commands and calls `Renderer::tick()` on its own thread. This keeps
-GPU resource creation and frame recording on the render thread.
+resource operations requested through the proxy and frame recording on the
+render thread. See [Renderer messaging](renderer-messaging.md) for the exact
+ownership and completion boundaries.
 
 The application submits a `RenderRequest` containing a `RenderScene`, one or
-more `RenderView`s, and a clear color. Each scene item has a shader handle and a
-list of uploaded primitives. Each view names a render target. The request is
+more `RenderView`s, and a clear color. Each scene item has a shader handle, uploaded primitive handles, and named
+parameter blocks. The request also declares the textures and samplers that its
+shaders may access, including indirect accesses. Each view names a render target. The request is
 copied into the renderer's pending queue; successful `RendererProxy::submit()`
 means the renderer accepted the request, not that the GPU finished it.
 
@@ -35,9 +39,8 @@ means the renderer accepted the request, not that the GPU finished it.
 
 - **Shader:** `ShaderLoader` reads compiled shader bytes and adjacent JSON
   metadata with entry point names, stages, vertex inputs, and uniforms. Shader
-  assets ask the proxy to
-  create a device shader. The Metal implementation loads the bytes as a Metal
-  library and looks up those entry points.
+  assets ask the proxy to create a device shader. The Metal implementation loads
+  the bytes as a Metal library and looks up those entry points.
 - **Primitive:** `PrimitiveUploadData` contains vertex layout, vertex and index
   bytes, and counts. `PrimitiveUploadDataBuilder<Vertex3>` packs position and
   normal vectors with `u32` indices. Upload creates a buffer for each byte array
@@ -52,21 +55,33 @@ means the renderer accepted the request, not that the GPU finished it.
   pipeline; later draws reuse its handle. The current renderer always requests
   `bgra8unorm`. Metal requires vertex and fragment shader functions and sets a
   vertex descriptor from the shader's reflected layout, with attributes packed
-  in vertex buffer slot zero. The renderer rejects primitives whose layout does
+  in reserved Metal vertex buffer slot 30. The renderer rejects primitives whose layout does
   not match the shader. The renderer has no pipeline eviction or shader-change
   invalidation.
 
-`RenderTarget` can hold either a surface or texture handle, but this path
-currently creates and renders to surfaces only. The Metal recorder returns an
-error for a texture target. There is no texture creation or sampled texture
-binding in the current `RenderDevice` interface.
+- **Texture and sampler:** The proxy creates immutable 2D RGBA8 textures from
+  owned pixel bytes, and separate reusable nearest/linear, repeat/clamp samplers.
+  Handles identify stable shader table indices; generations reject stale CPU
+  references after release and reuse. Each table has at most 64 entries; texture
+  allocation also respects `Config::Renderer::maxTextures`.
+- **Shader parameters:** Scene items carry named byte blocks. Metal binds them
+  by reflected location and size. It builds a separate immutable argument-table
+  snapshot for each draw item from the frame's declared resources and marks
+  textures resident for vertex and fragment access. This path requires Metal 3.
+
+`RenderTarget` can hold either a surface or texture handle, but this path still
+renders to surfaces only. Sampling textures does not implement texture render
+targets; the Metal recorder continues to reject those.
+
+See [Shader pipeline](shader-pipeline.md) for the table layout, reflection
+limits, and the sandbox's generated texture coordinates.
 
 ## Recording a request
 
 For each view, `Renderer::recordFrame()` adds one color pass named `Main Pass`.
 Its attachment uses the request's clear color, `LoadOp::clear`, and
 `StoreOp::store`. Every pass draws all scene items; a view does not filter the
-scene. For each item, the pass resolves its pipeline, binds it, then binds each
+scene. For each item, the pass resolves its pipeline, binds it and the item's shader parameters/resource tables, then binds each
 primitive's vertex and index buffers and calls `drawIndexed()` with its index
 count. Metal currently draws triangles with 32-bit indices.
 
@@ -121,9 +136,16 @@ finish.
 The implemented backend is Metal. `Platform::createRenderDevice()` selects it
 for Metal builds; the Vulkan branch has no device implementation. The renderer
 has no compute or copy passes, render graph dependency tracking, texture
-outputs, material bindings, or depth attachments. The current `Vertex3` contains
-position and normal vectors. Vertex input reflection currently accepts `float32`
-vectors of three or four elements.
+outputs, a material system, or depth attachments. Sampled textures have one mip
+level, initial upload only, and linear RGBA8 storage (no sRGB conversion).
+The current `Vertex3` contains position and normal vectors; the demo derives UVs
+from position rather than adding a vertex format. Vertex input reflection
+currently accepts `float32` vectors of three or four elements.
+
+Texture/sampler destruction drains pending frame requests and waits for GPU
+idle before reclaiming resources or slots. This is deliberately blocking;
+there is no deferred retirement queue. Other existing resource destroy paths
+have not acquired this lifetime guarantee. See [Renderer messaging](renderer-messaging.md).
 
 ## Source references
 

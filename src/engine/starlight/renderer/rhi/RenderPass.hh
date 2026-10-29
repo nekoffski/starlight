@@ -8,6 +8,8 @@
 #include "starlight/core/Functional.hh"
 #include "starlight/math/Math.hh"
 #include "starlight/renderer/core/RenderResource.hh"
+#include "starlight/renderer/core/Shader.hh"
+#include "starlight/renderer/core/Texture.hh"
 
 namespace sl {
 
@@ -33,6 +35,12 @@ class RenderPassEncoder : public NonCopyable, public NonMovable {
     virtual Result<void> setPipeline(GraphicsPipelineHandle pipeline) = 0;
     virtual Result<void> setVertexBuffer(const DeviceBufferSlice& slice) = 0;
     virtual Result<void> setIndexBuffer(const DeviceBufferSlice& slice) = 0;
+
+    virtual Result<void> setShaderParameters(
+        const ShaderDescription& shader,
+        std::span<const ShaderParameterBlock> parameters,
+        const ShaderResourceDependencies& resources
+    ) = 0;
 
     virtual void draw(u32 vertexCount) = 0;
     virtual void drawIndexed(u32 indexCount, u32 instanceCount = 1) = 0;

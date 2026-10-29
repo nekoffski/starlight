@@ -17,3 +17,13 @@ add_starlight_test(starlight-runtime-tests
 add_starlight_test(starlight-core-tests
     "core/FlatMap.test.cpp"
 )
+
+add_starlight_test(starlight-renderer-tests
+    "renderer/Textures.test.cpp"
+)
+
+if (APPLE)
+    add_starlight_test(starlight-metal-texture-tests
+        "renderer/MetalTextures.test.cpp"
+    )
+endif()

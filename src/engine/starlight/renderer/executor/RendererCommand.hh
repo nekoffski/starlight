@@ -46,9 +46,28 @@ struct RendererDestroyPrimitive {
     PrimitiveHandle primitive;
 };
 
+struct RendererCreateTexture {
+    TextureUploadData description;
+    std::promise<Result<TextureHandle>> completion;
+};
+
+struct RendererDestroyTexture {
+    TextureHandle handle;
+};
+
+struct RendererCreateSampler {
+    SamplerDescription description;
+    std::promise<Result<SamplerHandle>> completion;
+};
+
+struct RendererDestroySampler {
+    SamplerHandle handle;
+};
+
 using RendererCommand = std::variant<
     RendererNoop, RendererFlush, RendererCreateSurfaceTarget, RendererSubmit,
     RendererCreateShader, RendererDestroyShader, RendererCreatePrimitive,
-    RendererDestroyPrimitive>;
+    RendererDestroyPrimitive, RendererCreateTexture, RendererDestroyTexture,
+    RendererCreateSampler, RendererDestroySampler>;
 
 }  // namespace sl

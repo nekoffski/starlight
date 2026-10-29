@@ -1,5 +1,6 @@
 
 #include "starlight/asset/AssetSystem.hh"
+#include "starlight/asset/Texture.hh"
 #include "starlight/core/Config.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/core/FileSystem.hh"
@@ -58,15 +59,36 @@ int main() {
     auto primitive = proxy.createPrimitive(primitiveData);
     log::expect(primitive);
 
+    auto checkerboard = makeCheckerboard(64, 8);
+    log::expect(checkerboard);
+    auto texture = proxy.createTexture(*checkerboard);
+    log::expect(texture);
+    auto sampler = proxy.createSampler({});
+    log::expect(sampler);
+    DEFER {
+        proxy.destroyTexture(*texture);
+        proxy.destroySampler(*sampler);
+    };
+
+    // Shader table indices are logical resource IDs, not native Metal bindings.
+    const std::array<u32, 4> drawParameters{texture->id, sampler->id, 0, 0};
+    Bytes parameterBytes(sizeof(drawParameters));
+    std::memcpy(
+        parameterBytes.data(), drawParameters.data(), parameterBytes.size()
+    );
+
     RenderRequest req{
         .scene =
             RenderScene{
                 .items = {RenderItem{
-                    .primitives = {*primitive}, .shader = shader->handle()
+                    .primitives = {*primitive},
+                    .shader = shader->handle(),
+                    .parameters = {{"draw", std::move(parameterBytes)}}
                 }}
             },
         .views = {RenderView{.target = *target}},
-        .clearColor = {0.2f, 0.2f, 0.6f, 1.1f}
+        .clearColor = {0.2f, 0.2f, 0.6f, 1.0f},
+        .resources = {.textures = {*texture}, .samplers = {*sampler}}
     };
 
     while (running) {

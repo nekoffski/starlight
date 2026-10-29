@@ -32,3 +32,21 @@ Run `make fmt-check` to check tracked C++ files with `.clang-format`.
 
 See [repository knowledge](docs/README.md) for implementation documentation and
 [AGENTS.md](AGENTS.md) for coding-agent instructions.
+
+## Sandbox shaders
+
+Before running the sandbox from the repository root, compile its shader assets:
+
+```sh
+bash bin/compile_shaders.sh assets/shaders
+./build/Debug/src/sandbox/starlight-sandbox
+```
+
+This step needs `slangc` in `PATH` and, on macOS, the Xcode Metal Toolchain.
+If `xcrun metal --version` reports a missing toolchain, install it using
+`xcodebuild -downloadComponent MetalToolchain`. If lookup remains stale after
+installation, run `xcrun --kill-cache` and retry `xcrun metal --version`.
+Shader outputs are ignored and
+must be regenerated when sources change. The sandbox samples a procedural
+checkerboard through the Metal 3 indexed texture/sampler path; Vulkan rendering
+is not implemented.

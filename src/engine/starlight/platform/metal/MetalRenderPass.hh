@@ -23,6 +23,12 @@ class MetalRenderPassEncoder : public RenderPassEncoder {
     Result<void> setVertexBuffer(const DeviceBufferSlice& slice) override;
     Result<void> setIndexBuffer(const DeviceBufferSlice& slice) override;
 
+    Result<void> setShaderParameters(
+        const ShaderDescription& shader,
+        std::span<const ShaderParameterBlock> parameters,
+        const ShaderResourceDependencies& resources
+    ) override;
+
     void draw(u32 vertexCount) override;
     void drawIndexed(u32 indexCount, u32 instanceCount = 1) override;
 

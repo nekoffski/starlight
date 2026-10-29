@@ -15,7 +15,7 @@ Result<void> setVertexDescriptor(
     auto stride = LayoutHelper::calculateStride(layoutDescription);
 
     // single buffer as for now
-    layout->layouts()->object(0)->setStride(stride);
+    layout->layouts()->object(metalVertexBufferIndex)->setStride(stride);
 
     u64 offset = 0u;
 
@@ -25,15 +25,14 @@ Result<void> setVertexDescriptor(
 
         attribute->setFormat(toMetal(layoutDescription[i]));
         attribute->setOffset(offset);
-        attribute->setBufferIndex(0u);
-
-        descriptor->colorAttachments()->object(i)->setPixelFormat(
-            MTL::PixelFormatBGRA8Unorm
-        );
+        attribute->setBufferIndex(metalVertexBufferIndex);
 
         offset += size;
     }
 
+    descriptor->colorAttachments()->object(0)->setPixelFormat(
+        MTL::PixelFormatBGRA8Unorm
+    );
     descriptor->setVertexDescriptor(layout);
     return {};
 }

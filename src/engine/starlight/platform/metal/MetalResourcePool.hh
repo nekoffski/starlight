@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <unordered_map>
 
 #include "Metal.hh"
@@ -50,7 +51,34 @@ class MetalResourcePool : public NonCopyable, public NonMovable {
     void destroyBuffer(DeviceBufferHandle handle);
     MetalBuffer* getBuffer(DeviceBufferHandle handle);
 
+    Result<TextureHandle> createTexture(const TextureUploadData& data);
+    void destroyTexture(TextureHandle handle);
+    MTL::Texture* getTexture(TextureHandle handle) const;
+
+    Result<SamplerHandle> createSampler(const SamplerDescription& description);
+    void destroySampler(SamplerHandle handle);
+    MTL::SamplerState* getSampler(SamplerHandle handle) const;
+
+    Result<void> validateResources(
+        const ShaderResourceDependencies& resources
+    ) const;
+
    private:
+    template <typename T>
+    struct ResourceEntry {
+        NS::SharedPtr<T> resource;
+        u32 generation{0};
+    };
+
+    using TextureTable =
+        std::array<ResourceEntry<MTL::Texture>, resourceTableCapacity>;
+    using SamplerTable =
+        std::array<ResourceEntry<MTL::SamplerState>, resourceTableCapacity>;
+
+    TextureTable m_textures;
+    SamplerTable m_samplers;
+    u32 m_maxTextures;
+
     IdLake m_idLake;
     MetalContext& m_ctx;
 

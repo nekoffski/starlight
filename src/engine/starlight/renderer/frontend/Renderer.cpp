@@ -31,6 +31,10 @@ Result<void> Renderer::submit(const RenderRequest& request) {
             ErrorCode::tooManyFrameRequests, "Too many frame requests"
         );
     }
+    const auto validation = m_device.validateResources(request.resources);
+    if (not validation) {
+        return validation;
+    }
     m_pendingRequests.push(request);
     return {};
 }
@@ -59,6 +63,19 @@ void Renderer::destroyTarget(RenderTarget target) {
         },
         target
     );
+}
+
+// shortcut: GPU-idle release stalls; defer retirement when resources churn.
+void Renderer::destroyTexture(TextureHandle handle) {
+    flush();
+    m_device.waitIdle();
+    m_device.destroyTexture(handle);
+}
+
+void Renderer::destroySampler(SamplerHandle handle) {
+    flush();
+    m_device.waitIdle();
+    m_device.destroySampler(handle);
 }
 
 u64 Renderer::frameIndex() const {
@@ -127,7 +144,6 @@ Result<void> Renderer::recordFrame(
                         m_device.getShaderDescription(renderable.shader);
 
                     // TODO: refactor
-
                     if (not shaderDescription) {
                         return Error::unexpected(
                             ErrorCode::invalidArgument, "Invalid shader handle"
@@ -158,6 +174,14 @@ Result<void> Renderer::recordFrame(
                         return Error::unexpected(res.error());
                     }
 
+                    const auto parameterBinding = encoder.setShaderParameters(
+                        *shaderDescription, renderable.parameters,
+                        request.resources
+                    );
+                    if (not parameterBinding) {
+                        return parameterBinding;
+                    }
+
                     for (const auto& primitiveHandle : renderable.primitives) {
                         const auto& primitive =
                             m_resourcePool.getPrimitive(primitiveHandle);
@@ -177,15 +201,21 @@ Result<void> Renderer::recordFrame(
                             );
                         }
 
-                        encoder.setVertexBuffer({
+                        const auto vertexBinding = encoder.setVertexBuffer({
                             .handle = primitive->vertexBuffer,
                             .offset = primitive->vertexBufferOffset,
                         });
+                        if (not vertexBinding) {
+                            return vertexBinding;
+                        }
 
-                        encoder.setIndexBuffer({
+                        const auto indexBinding = encoder.setIndexBuffer({
                             .handle = primitive->indexBuffer,
                             .offset = primitive->indexBufferOffset,
                         });
+                        if (not indexBinding) {
+                            return indexBinding;
+                        }
                         encoder.drawIndexed(primitive->indexCount);
                     }
                 }

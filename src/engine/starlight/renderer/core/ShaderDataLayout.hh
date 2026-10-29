@@ -42,6 +42,28 @@ class LayoutHelper {
 Str vertexLayoutToString(const VertexLayout& layout);
 Str valueTypeToString(ValueType format);
 
+enum class ShaderResourceKind { texture, sampler };
+
+struct ShaderResourceArray {
+    ShaderResourceKind kind;
+    u32 count;
+    u32 offset;
+    u32 stride;
+    u32 binding;
+};
+
+struct ShaderResourceTable {
+    Str name;
+    u32 binding;
+    u32 size;
+    std::vector<ShaderResourceArray> arrays;
+};
+
+struct ShaderParameterBlock {
+    Str name;
+    Bytes bytes;
+};
+
 struct ShaderUniform {
     u64 binding;
     u64 size;

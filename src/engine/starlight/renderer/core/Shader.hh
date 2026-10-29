@@ -22,6 +22,7 @@ struct ShaderDescription {
     std::vector<Byte> byteCode;
     Opt<VertexLayout> vertexLayout;
     std::vector<ShaderUniform> uniforms;
+    std::vector<ShaderResourceTable> resourceTables;
 };
 
 SL_BIT_ENUM(ShaderStage);

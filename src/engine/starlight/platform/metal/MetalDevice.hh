@@ -66,6 +66,28 @@ class MetalDevice : public RenderDevice {
         m_resourcePool.destroyBuffer(handle);
     }
 
+    Result<TextureHandle> createTexture(
+        const TextureUploadData& data
+    ) override {
+        return m_resourcePool.createTexture(data);
+    }
+    void destroyTexture(TextureHandle handle) override {
+        m_resourcePool.destroyTexture(handle);
+    }
+    Result<SamplerHandle> createSampler(
+        const SamplerDescription& description
+    ) override {
+        return m_resourcePool.createSampler(description);
+    }
+    void destroySampler(SamplerHandle handle) override {
+        m_resourcePool.destroySampler(handle);
+    }
+    Result<void> validateResources(
+        const ShaderResourceDependencies& resources
+    ) const override {
+        return m_resourcePool.validateResources(resources);
+    }
+
     void waitIdle() override;
 
     Result<void> trySubmitFrame(RecordFrame callback) override;

@@ -14,7 +14,7 @@ command -v slangc >/dev/null || {
 
 case "$(uname -s)" in
     Darwin)
-        if ! xcrun -sdk macosx --find metal >/dev/null 2>&1; then
+        if ! xcrun -sdk macosx metal --version >/dev/null 2>&1; then
             echo "Apple Metal compiler not found; install/select Xcode and its Metal Toolchain" >&2
             exit 1
         fi

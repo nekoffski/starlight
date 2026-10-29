@@ -21,6 +21,18 @@ class RendererProxy {
     );
     Result<void> destroyPrimitive(PrimitiveHandle primitive);
 
+    Result<TextureHandle> createTexture(const TextureUploadData& description);
+    Result<std::future<Result<TextureHandle>>> createTextureAsync(
+        const TextureUploadData& description
+    );
+    Result<void> destroyTexture(TextureHandle handle);
+
+    Result<SamplerHandle> createSampler(const SamplerDescription& description);
+    Result<std::future<Result<SamplerHandle>>> createSamplerAsync(
+        const SamplerDescription& description
+    );
+    Result<void> destroySampler(SamplerHandle handle);
+
     Result<void> flushRenderer();
 
     Result<RenderTarget> createRenderTarget(

@@ -1,7 +1,11 @@
 #include "ShaderLoader.hh"
 
+#include <algorithm>
+#include <unordered_set>
+
 #include "starlight/core/Json.hh"
 #include "starlight/core/Log.hh"
+#include "starlight/renderer/core/Texture.hh"
 
 namespace sl {
 
@@ -236,45 +240,96 @@ Result<void> LoadHelper::parseVertexInput(const Json& parameters) {
 }
 
 Result<void> LoadHelper::parseUniforms(const Json& metadata) {
-    for (const auto& parameter : metadata) {
-        ShaderUniform uniform;
-
-        auto name = parameter.find("name");
-
-        if (name == parameter.end() || not name->is_string()) {
-            return Error::unexpected(
-                ErrorCode::shaderParsingError, "Invalid uniform name"
-            );
+    try {
+        const auto number = [](const Json& value) -> u32 {
+            if (not value.is_number_unsigned() ||
+                value.get<u64>() > std::numeric_limits<u32>::max()) {
+                throw std::runtime_error(
+                    "Expected a non-negative 32-bit layout value"
+                );
+            }
+            return value.get<u32>();
+        };
+        std::unordered_set<Str> names;
+        for (const auto& parameter : metadata) {
+            const auto name = parameter.at("name").get<Str>();
+            if (name.empty() || not names.insert(name).second) {
+                throw std::runtime_error(
+                    "Empty or duplicate shader parameter name"
+                );
+            }
+            const auto binding = number(parameter.at("binding").at("index"));
+            const auto& type = parameter.at("type");
+            const auto kind = type.at("kind").get<Str>();
+            if (kind != "constantBuffer" && kind != "parameterBlock") {
+                throw std::runtime_error(
+                    "Only constant buffers and resource parameter blocks are "
+                    "supported"
+                );
+            }
+            const auto& element = type.at("elementVarLayout").at("type");
+            u32 size = 0;
+            for (const auto& entry : element.at("sizes")) {
+                if (entry.at("kind") == "uniform") {
+                    size = number(entry.at("value"));
+                }
+            }
+            const auto& fields = element.at("fields");
+            if (not fields.is_array()) {
+                throw std::runtime_error("Invalid block fields");
+            }
+            const bool resourceTable =
+                std::ranges::any_of(fields, [](const auto& field) {
+                    return field.at("type").at("kind") == "array";
+                });
+            if (not resourceTable) {
+                if (size == 0) {
+                    throw std::runtime_error("Empty uniform block");
+                }
+                m_shaderDescription.uniforms.push_back({binding, size, name});
+                continue;
+            }
+            ShaderResourceTable table{name, binding, size, {}};
+            for (const auto& field : fields) {
+                const auto& array = field.at("type");
+                if (array.at("kind") != "array") {
+                    throw std::runtime_error(
+                        "Resource tables must contain only arrays"
+                    );
+                }
+                const auto& resource = array.at("elementType");
+                ShaderResourceKind resourceKind;
+                if (resource.at("kind") == "resource" &&
+                    resource.at("baseShape") == "texture2D" &&
+                    resource.value("access", Str("read")) == "read") {
+                    resourceKind = ShaderResourceKind::texture;
+                } else if (resource.at("kind") == "samplerState") {
+                    resourceKind = ShaderResourceKind::sampler;
+                } else {
+                    throw std::runtime_error(
+                        "Unsupported resource table element"
+                    );
+                }
+                const auto count = number(array.at("elementCount"));
+                if (count == 0 || count > resourceTableCapacity) {
+                    throw std::runtime_error(
+                        "Unsupported resource table capacity"
+                    );
+                }
+                const auto& location = field.at("binding");
+                table.arrays.push_back(
+                    {resourceKind, count,
+                     number(location.value("offset", Json(0u))),
+                     number(array.value("uniformStride", Json(0u))),
+                     number(location.value("index", Json(0u)))}
+                );
+            }
+            m_shaderDescription.resourceTables.push_back(std::move(table));
         }
-
-        auto binding = parameter.find("binding");
-
-        if (binding == parameter.end() || not binding->is_object()) {
-            return Error::unexpected(
-                ErrorCode::shaderParsingError, "Invalid uniform binding"
-            );
-        }
-
-        auto index = binding->find("index");
-
-        if (index == binding->end() || not index->is_number()) {
-            return Error::unexpected(
-                ErrorCode::shaderParsingError, "Invalid uniform index"
-            );
-        }
-
-        auto elementVarLayout = parameter["type"]["elementVarLayout"];
-        auto size = elementVarLayout["type"]["sizes"][0]["value"];
-
-        uniform.size = size;
-        uniform.name = name.value();
-        uniform.binding = index.value();
-
-        m_shaderDescription.uniforms.push_back(uniform);
-
-        log::debug(
-            "Parsed uniform: {}, binding={}, size={}", uniform.name,
-            uniform.binding, uniform.size
+    } catch (const std::exception& error) {
+        return Error::unexpected(
+            ErrorCode::shaderParsingError,
+            "Invalid shader parameter layout: {}", error.what()
         );
     }
     return {};

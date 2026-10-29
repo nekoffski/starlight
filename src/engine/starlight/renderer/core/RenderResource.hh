@@ -10,6 +10,7 @@ namespace sl {
 enum class ResourceType {
     surface,
     texture,
+    sampler,
     shader,
     graphicsPipeline,
     deviceBuffer,
@@ -23,6 +24,7 @@ struct RenderResourceHandle : HandleBase<ResourceType, T> {
 
 using SurfaceHandle = RenderResourceHandle<ResourceType::surface>;
 using TextureHandle = RenderResourceHandle<ResourceType::texture>;
+using SamplerHandle = RenderResourceHandle<ResourceType::sampler>;
 using ShaderHandle = RenderResourceHandle<ResourceType::shader>;
 using GraphicsPipelineHandle =
     RenderResourceHandle<ResourceType::graphicsPipeline>;

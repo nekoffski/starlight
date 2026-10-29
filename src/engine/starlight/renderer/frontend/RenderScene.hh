@@ -11,6 +11,7 @@ namespace sl {
 struct RenderItem {
     std::vector<PrimitiveHandle> primitives;
     ShaderHandle shader;
+    std::vector<ShaderParameterBlock> parameters;
 };
 
 struct RenderScene {

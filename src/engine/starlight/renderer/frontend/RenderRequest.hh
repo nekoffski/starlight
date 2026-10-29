@@ -5,6 +5,7 @@
 #include "starlight/core/Core.hh"
 #include "starlight/math/Math.hh"
 #include "starlight/renderer/core/RenderResource.hh"
+#include "starlight/renderer/core/Texture.hh"
 #include "starlight/renderer/frontend/RenderScene.hh"
 
 namespace sl {
@@ -17,6 +18,7 @@ struct RenderRequest {
     RenderScene scene;
     std::vector<RenderView> views;
     Vec4f clearColor{1.0f};
+    ShaderResourceDependencies resources;
 };
 
 }  // namespace sl

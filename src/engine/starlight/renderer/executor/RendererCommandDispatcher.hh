@@ -13,6 +13,10 @@ class RendererCommandDispatcher : public NonCopyable, public NonMovable {
 
     void dispatch(RendererCommand command);
 
+    void operator()(RendererCreateTexture command);
+    void operator()(RendererDestroyTexture command);
+    void operator()(RendererCreateSampler command);
+    void operator()(RendererDestroySampler command);
     void operator()(RendererNoop command);
     void operator()(RendererFlush command);
     void operator()(RendererCreateSurfaceTarget command);

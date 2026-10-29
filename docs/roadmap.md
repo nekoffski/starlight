@@ -14,6 +14,10 @@ policy (including no ADRs), see [Maintaining knowledge nodes](README.md#maintain
 - **Metal:** [MetalDevice](../src/engine/starlight/platform/metal/MetalDevice.cpp)
   implements the render device selected by
   [Platform](../src/engine/starlight/platform/Platform.cpp) for Metal builds.
+- **Sampled textures:** [RendererProxy](../src/engine/starlight/renderer/RendererProxy.cpp)
+  creates immutable RGBA8 textures and separate samplers. Metal uses indexed
+  resource tables plus explicit parameter blocks; the sandbox uploads a procedural
+  checkerboard. See [Shader pipeline](shader-pipeline.md) for limits.
 - **Vulkan:** source files exist in
   [platform/vulkan](../src/engine/starlight/platform/vulkan/), but
   `Platform::createRenderDevice()` returns null in the Vulkan branch.

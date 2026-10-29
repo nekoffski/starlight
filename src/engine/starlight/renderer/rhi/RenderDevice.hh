@@ -43,6 +43,18 @@ class RenderDevice : public NonCopyable, public NonMovable {
 
     virtual Result<void> trySubmitFrame(RecordFrame callback) = 0;
 
+    virtual Result<TextureHandle> createTexture(
+        const TextureUploadData& data
+    ) = 0;
+    virtual void destroyTexture(TextureHandle handle) = 0;
+    virtual Result<SamplerHandle> createSampler(
+        const SamplerDescription& description
+    ) = 0;
+    virtual void destroySampler(SamplerHandle handle) = 0;
+    virtual Result<void> validateResources(
+        const ShaderResourceDependencies& resources
+    ) const = 0;
+
     virtual void waitIdle() = 0;
 };
 

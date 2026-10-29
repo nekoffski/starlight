@@ -30,6 +30,15 @@ class Renderer : public NonCopyable, public NonMovable {
     );
     void destroyTarget(RenderTarget target);
 
+    Result<TextureHandle> createTexture(const TextureUploadData& data) {
+        return m_device.createTexture(data);
+    }
+    Result<SamplerHandle> createSampler(const SamplerDescription& description) {
+        return m_device.createSampler(description);
+    }
+    void destroyTexture(TextureHandle handle);
+    void destroySampler(SamplerHandle handle);
+
     Result<ShaderHandle> createShader(const ShaderDescription& description) {
         return m_device.createShader(description);
     }
