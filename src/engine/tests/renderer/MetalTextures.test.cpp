@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "starlight/asset/Texture.hh"
+#include "starlight/math/Math.hh"
 #include "starlight/platform/metal/MetalRenderPass.hh"
 
 namespace {
@@ -52,9 +53,9 @@ TEST(MetalTextures, SamplesNonzeroIndicesAndRejectsStaleHandles) {
         struct Resources { array<texture2d<float>, 2> textures; array<sampler, 2> samplers; };
         struct Params { uint textureIndex; uint samplerIndex; uint2 padding; };
         struct Output { float4 position [[position]]; float2 uv; };
-        vertex Output vertexMain(uint id [[vertex_id]]) {
+        vertex Output vertexMain(uint id [[vertex_id]], constant float4x4& transform [[buffer(2)]]) {
             const float2 positions[3] = {float2(-1,-1),float2(3,-1),float2(-1,3)};
-            return {float4(positions[id],0,1),positions[id] * 0.5 + 0.5};
+            return {transform * float4(positions[id],0,1),positions[id] * 0.5 + 0.5};
         }
         fragment float4 fragmentMain(Output input [[stage_in]],
             constant Resources& resources [[buffer(0)]], constant Params& draw [[buffer(1)]]) {
@@ -97,6 +98,9 @@ TEST(MetalTextures, SamplesNonzeroIndicesAndRejectsStaleHandles) {
     auto* pass = MTL::RenderPassDescriptor::renderPassDescriptor();
     pass->colorAttachments()->object(0)->setTexture(target.get());
     pass->colorAttachments()->object(0)->setLoadAction(MTL::LoadActionClear);
+    pass->colorAttachments()->object(0)->setClearColor(
+        MTL::ClearColor{0, 0, 0, 0}
+    );
     pass->colorAttachments()->object(0)->setStoreAction(MTL::StoreActionStore);
     auto* commandBuffer = context.commandQueue().commandBuffer();
     auto* nativeEncoder = commandBuffer->renderCommandEncoder(pass);
@@ -104,6 +108,7 @@ TEST(MetalTextures, SamplesNonzeroIndicesAndRejectsStaleHandles) {
     nativeEncoder->setRenderPipelineState(pipeline.get());
     sl::ShaderDescription shader;
     shader.uniforms.push_back({1, 16, "draw"});
+    shader.uniforms.push_back({2, sizeof(sl::Mat4f), "transform"});
     shader.resourceTables.push_back(
         {"resources",
          0,
@@ -112,13 +117,15 @@ TEST(MetalTextures, SamplesNonzeroIndicesAndRejectsStaleHandles) {
           {sl::ShaderResourceKind::sampler, 2, 16, 8, 0}}}
     );
     const std::array<sl::u32, 4> indices{texture->id, sampler->id, 0, 0};
-    sl::ShaderParameterBlock parameters{"draw", sl::Bytes(sizeof(indices))};
-    std::memcpy(parameters.bytes.data(), indices.data(), sizeof(indices));
+    std::array parameters{
+        sl::ShaderParameterBlock::fromValue("draw", indices),
+        sl::ShaderParameterBlock::fromValue("transform", sl::Mat4f{1.0f}),
+    };
     sl::ShaderResourceDependencies usage{{*texture}, {*sampler}};
     {
         sl::MetalRenderPassEncoder encoder{resources, nativeEncoder};
         EXPECT_FALSE(encoder.setShaderParameters(shader, {}, usage));
-        const auto blocks = std::span(&parameters, 1);
+        const auto blocks = std::span(parameters);
         auto invalidShader = shader;
         invalidShader.uniforms.front().binding = sl::metalVertexBufferIndex;
         EXPECT_FALSE(encoder.setShaderParameters(invalidShader, blocks, usage));
@@ -160,6 +167,34 @@ TEST(MetalTextures, SamplesNonzeroIndicesAndRejectsStaleHandles) {
     EXPECT_NE(pixels[0], pixels[8]);
     EXPECT_EQ(pixels[0], pixels[40]);
     EXPECT_EQ(pixels[3], sl::Byte(255));
+    const auto translation =
+        glm::translate(sl::Mat4f{1.0f}, sl::Vec3f{0.5f, 0.0f, 0.0f});
+    const auto modelToClip =
+        glm::scale(translation, sl::Vec3f{0.5f, 0.5f, 1.0f});
+    parameters.back() =
+        sl::ShaderParameterBlock::fromValue("transform", modelToClip);
+    auto* transformedCommands = context.commandQueue().commandBuffer();
+    auto* transformedEncoder = transformedCommands->renderCommandEncoder(pass);
+    ASSERT_NE(transformedEncoder, nullptr);
+    transformedEncoder->setRenderPipelineState(pipeline.get());
+    {
+        sl::MetalRenderPassEncoder encoder{resources, transformedEncoder};
+        const auto bound =
+            encoder.setShaderParameters(shader, parameters, usage);
+        ASSERT_TRUE(bound) << bound.error().message();
+        encoder.draw(3);
+    }
+    transformedCommands->commit();
+    transformedCommands->waitUntilCompleted();
+    ASSERT_EQ(transformedCommands->status(), MTL::CommandBufferStatusCompleted);
+    target->getBytes(pixels.data(), 16, MTL::Region(0, 0, 4, 4), 0);
+    const auto alphaAt = [&](size_t x, size_t y) {
+        return pixels[(y * image->width + x) * sl::rgba8BytesPerPixel + 3];
+    };
+    EXPECT_EQ(alphaAt(1, 1), 0);
+    EXPECT_EQ(alphaAt(2, 1), 255);
+    EXPECT_EQ(alphaAt(2, 3), 0);
+
     resources.destroyTexture(*texture);
     resources.destroySampler(*sampler);
     EXPECT_FALSE(resources.validateResources(usage));

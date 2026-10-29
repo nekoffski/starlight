@@ -18,6 +18,9 @@ policy (including no ADRs), see [Maintaining knowledge nodes](README.md#maintain
   creates immutable RGBA8 textures and separate samplers. Metal uses indexed
   resource tables plus explicit parameter blocks; the sandbox uploads a procedural
   checkerboard. See [Shader pipeline](shader-pipeline.md) for limits.
+- **Transforms:** [Shader parameter blocks](../src/engine/starlight/renderer/core/ShaderDataLayout.hh)
+  copy typed values into owned bytes. The sandbox updates a `Mat4f` per frame;
+  [simple.slang](../assets/shaders/simple.slang) applies it to vertex positions.
 - **Vulkan:** source files exist in
   [platform/vulkan](../src/engine/starlight/platform/vulkan/), but
   `Platform::createRenderDevice()` returns null in the Vulkan branch.

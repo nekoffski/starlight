@@ -1,11 +1,13 @@
 #include <gtest/gtest.h>
 
+#include <array>
 #include <chrono>
 #include <filesystem>
 #include <fstream>
 
 #include "starlight/asset/Texture.hh"
 #include "starlight/asset/loaders/ShaderLoader.hh"
+#include "starlight/math/Math.hh"
 #include "starlight/renderer/frontend/Renderer.hh"
 
 namespace {
@@ -24,6 +26,23 @@ TEST(Checkerboard, AlternatesCellsWithOpaqueRgbaPixels) {
     EXPECT_FALSE(sl::makeCheckerboard(0, 2));
     EXPECT_FALSE(sl::makeCheckerboard(4, 0));
     EXPECT_FALSE(sl::makeCheckerboard(16385, 1));
+}
+
+TEST(ShaderParameters, OwnsColumnMajorMatrixCopy) {
+    auto matrix =
+        glm::translate(sl::Mat4f{1.0f}, sl::Vec3f{0.25f, -0.5f, 0.75f});
+    const auto block = sl::ShaderParameterBlock::fromValue("transform", matrix);
+    matrix = sl::Mat4f{0.0f};
+
+    std::array<sl::f32, 16> values;
+    ASSERT_EQ(block.bytes.size(), sizeof(values));
+    std::memcpy(values.data(), block.bytes.data(), sizeof(values));
+    EXPECT_EQ(block.name, "transform");
+    EXPECT_FLOAT_EQ(values[0], 1.0f);
+    EXPECT_FLOAT_EQ(values[12], 0.25f);
+    EXPECT_FLOAT_EQ(values[13], -0.5f);
+    EXPECT_FLOAT_EQ(values[14], 0.75f);
+    EXPECT_FLOAT_EQ(values[15], 1.0f);
 }
 
 // Keep one frame pending so destruction must handle both CPU and GPU lifetime.

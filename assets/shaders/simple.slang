@@ -12,6 +12,11 @@ struct DrawParameters {
 };
 ConstantBuffer<DrawParameters> draw;
 
+struct TransformParameters {
+    float4x4 modelToClip;
+};
+ConstantBuffer<TransformParameters> transform;
+
 struct VertexOutput {
     float4 position : SV_Position;
     float2 uv : TEXCOORD0;
@@ -20,7 +25,7 @@ struct VertexOutput {
 [shader("vertex")]
 VertexOutput vertexMain(float3 position, float3 color) {
     VertexOutput output;
-    output.position = float4(position, 1.0);
+    output.position = mul(transform.modelToClip, float4(position, 1.0));
     output.uv = position.xy + 0.5;
     return output;
 }

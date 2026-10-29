@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstring>
+#include <type_traits>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -62,6 +65,14 @@ struct ShaderResourceTable {
 struct ShaderParameterBlock {
     Str name;
     Bytes bytes;
+
+    template <typename T>
+        requires std::is_trivially_copyable_v<T>
+    static ShaderParameterBlock fromValue(Str name, const T& value) {
+        Bytes bytes(sizeof(T));
+        std::memcpy(bytes.data(), &value, sizeof(T));
+        return {std::move(name), std::move(bytes)};
+    }
 };
 
 struct ShaderUniform {

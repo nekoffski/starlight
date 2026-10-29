@@ -36,7 +36,7 @@ while IFS= read -r -d '' shader; do
     output="${shader%.slang}.${extension}"
     reflection="${output}.json"
     echo "Compiling $shader -> $output, $reflection"
-    slangc "$shader" "${target_args[@]}" -o "$output" \
+    slangc "$shader" "${target_args[@]}" -matrix-layout-column-major -o "$output" \
         -reflection-json "$reflection"
     ((count += 1))
 done < <(find "$1" -type f -name '*.slang' -print0)

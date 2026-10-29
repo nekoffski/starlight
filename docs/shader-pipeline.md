@@ -9,6 +9,7 @@ update descriptions from code as development changes it.
 [`bin/compile_shaders.sh`](../bin/compile_shaders.sh) compiles Slang sources in a
 supplied directory to `metallib` on macOS or SPIR-V (`spirv_1_5`) on Linux/the
 script's Windows shell branches, with adjacent `<compiled-file>.json` reflection.
+The script explicitly selects column-major matrix layout to match GLM.
 It is separate from Makefile builds. Metal compilation requires the Xcode Metal
 Toolchain; script target branches do not establish engine backend support.
 
@@ -41,7 +42,31 @@ descriptor bindings/groups. They are not interchangeable layouts.
 Callers provide named `ShaderParameterBlock` byte arrays, matched against the
 shader's reflected names and sizes. They must pack bytes for the compiled
 target. `LayoutHelper` sums value sizes; it is not a portable uniform-layout
-packer. The demo's explicitly padded four-`uint` block is 16 bytes on both targets.
+packer. `ShaderParameterBlock::fromValue(name, value)` copies a trivially copyable
+C++ value into an owned block; it does not repack fields or transpose matrices.
+The demo's padded four-`uint` draw block is 16 bytes, and its separate transform
+block containing one `float4x4` is 64 bytes on Metal and SPIR-V.
+
+## Transform matrices
+
+The sandbox supplies a GLM `Mat4f` as the named `transform` block:
+
+```cpp
+auto block = ShaderParameterBlock::fromValue("transform", modelToClip);
+```
+
+[`simple.slang`](../assets/shaders/simple.slang) declares a
+`ConstantBuffer<TransformParameters>` with a `float4x4 modelToClip` member and
+computes `mul(transform.modelToClip, float4(position, 1.0))` in the vertex shader.
+GLM stores matrix columns contiguously, matching the explicit shader compilation
+layout. No CPU transpose or backend-specific transform command is involved.
+The sandbox replaces the matrix block each frame with a rotation built from
+elapsed time. Frame submission owns a copy, so subsequent updates do not mutate
+already accepted requests. UV coordinates remain based on object-space position.
+
+This path establishes 4x4 matrix transfer. Other aggregate layouts still need
+caller-supplied padding compatible with target reflection; there is no automatic
+uniform packing, camera system, or separate model/view/projection API.
 
 ## Mixed resource binding
 
@@ -90,7 +115,8 @@ normal `float3` fields. The [sandbox](../src/sandbox/main.cpp) preserves its
 existing triangle data; the shader's second input remains named `color` but is
 unused. UV coordinates are generated from position. The sandbox uploads a
 checkerboard from [`asset/Texture.cpp`](../src/engine/starlight/asset/Texture.cpp),
-creates a sampler, supplies both indices in `draw`, and declares both resources.
+creates a sampler, supplies both indices in `draw`, supplies the per-item matrix
+in `transform`, and declares both resources.
 
 [`ShaderRef`](../src/engine/starlight/asset/Shader.cpp) retains its current asset
 behavior: an event loop polls asynchronous creation, `waitForDevice()` polls the
@@ -102,10 +128,13 @@ support does not redesign these asset ownership rules.
 ## Checks
 
 [`Textures.test.cpp`](../src/engine/tests/renderer/Textures.test.cpp) covers CPU
-checkerboard output, pending-frame retirement order, and Metal/SPIR-V-style
+checkerboard output, owned column-major matrix copies, pending-frame retirement
+order, and Metal/SPIR-V-style
 reflection parsing and malformed-input rejection.
 [`MetalTextures.test.cpp`](../src/engine/tests/renderer/MetalTextures.test.cpp)
 uses a small independent MSL fixture to sample a checkerboard offscreen through
 the production table encoder at nonzero indices and reject stale handles after
-slot reuse. It skips when no Metal 3 device is accessible; it does not exercise
+slot reuse. It also binds a translated/scaled GLM matrix in the vertex stage
+and checks both covered and cleared pixels to detect matrix-layout mistakes.
+It skips when no Metal 3 device is accessible; it does not exercise
 the sandbox's Slang-to-metallib compilation.

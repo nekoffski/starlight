@@ -8,6 +8,7 @@
 #include "starlight/core/Time.hh"
 #include "starlight/event/EventSystem.hh"
 #include "starlight/event/Events.hh"
+#include "starlight/math/Math.hh"
 #include "starlight/platform/Platform.hh"
 #include "starlight/platform/sdl/SDLWindow.hh"
 #include "starlight/renderer/RenderingSystem.hh"
@@ -72,10 +73,6 @@ int main() {
 
     // Shader table indices are logical resource IDs, not native Metal bindings.
     const std::array<u32, 4> drawParameters{texture->id, sampler->id, 0, 0};
-    Bytes parameterBytes(sizeof(drawParameters));
-    std::memcpy(
-        parameterBytes.data(), drawParameters.data(), parameterBytes.size()
-    );
 
     RenderRequest req{
         .scene =
@@ -83,7 +80,15 @@ int main() {
                 .items = {RenderItem{
                     .primitives = {*primitive},
                     .shader = shader->handle(),
-                    .parameters = {{"draw", std::move(parameterBytes)}}
+                    .parameters =
+                        {
+                            ShaderParameterBlock::fromValue(
+                                "draw", drawParameters
+                            ),
+                            ShaderParameterBlock::fromValue(
+                                "transform", Mat4f{1.0f}
+                            ),
+                        }
                 }}
             },
         .views = {RenderView{.target = *target}},
@@ -91,9 +96,17 @@ int main() {
         .resources = {.textures = {*texture}, .samplers = {*sampler}}
     };
 
+    const auto animationStart = Clock::now();
     while (running) {
         window->pollEvents();
         es.dispatch();
+
+        const auto elapsed =
+            std::chrono::duration<f32>(Clock::now() - animationStart).count();
+        const auto modelToClip =
+            glm::rotate(Mat4f{1.0f}, elapsed, Vec3f{0.0f, 0.0f, 1.0f});
+        req.scene.items.front().parameters.back() =
+            ShaderParameterBlock::fromValue("transform", modelToClip);
 
         if (auto res = proxy.submit(req); not res) {
             if (res.error().code() == ErrorCode::tooManyFrameRequests) {

@@ -30,7 +30,8 @@ ownership and completion boundaries.
 
 The application submits a `RenderRequest` containing a `RenderScene`, one or
 more `RenderView`s, and a clear color. Each scene item has a shader handle, uploaded primitive handles, and named
-parameter blocks. The request also declares the textures and samplers that its
+parameter blocks, including the sandbox's model-to-clip transform matrix.
+The request also declares the textures and samplers that its
 shaders may access, including indirect accesses. Each view names a render target. The request is
 copied into the renderer's pending queue; successful `RendererProxy::submit()`
 means the renderer accepted the request, not that the GPU finished it.

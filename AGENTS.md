@@ -103,6 +103,9 @@ its compiler profile; bootstrap again afterward.
   small as possible: reuse the existing command path, add only the agreed
   capabilities, and avoid unrelated refactors or a general resource framework.
   Small scope must still preserve validation and correct resource lifetime.
+- Matrix parameters use GLM `Mat4f` with explicit column-major shader compilation
+  and `mul(matrix, vector)`. Preserve agreement between CPU and shader layouts;
+  `ShaderParameterBlock::fromValue` copies bytes without packing or transposing.
 - The asset module is due for a separate redesign, including asset ownership.
   Prioritize the renderer messaging contract over the shape of asset wrappers
   and helpers; do not make that contract depend on the current `ShaderRef` model.
