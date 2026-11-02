@@ -68,13 +68,87 @@ This path establishes 4x4 matrix transfer. Other aggregate layouts still need
 caller-supplied padding compatible with target reflection; there is no automatic
 uniform packing, camera system, or separate model/view/projection API.
 
+## CPU materials and draw preparation
+
+[`RendererProxy::getShaderInterface()`](../src/engine/starlight/renderer/RendererProxy.cpp)
+queries an existing shader on the render thread. It returns an owned
+[`ShaderInterface`](../src/engine/starlight/renderer/core/Shader.hh) snapshot:
+the concrete shader handle and ordinary parameter block names/sizes. Native
+binding locations and resource-table layouts remain in the backend description.
+The snapshot neither retains the GPU shader nor follows asset shader updates.
+
+[`Material`](../src/engine/starlight/renderer/shading/Material.hh) is a CPU value
+that captures this interface and a `ShaderParameters` value: named blocks plus
+explicit texture/sampler dependencies. Construction validates the supplied
+blocks against the captured layout. Supplied blocks are material-owned; the
+remaining shader blocks must be provided by each draw. Names do not imply scope:
+the demo's `draw` texture-index block belongs to its material, while `transform`
+is supplied per draw.
+
+[`MaterialBuilder`](../src/engine/starlight/renderer/shading/MaterialBuilder.hh)
+provides fluent construction from an owned shader-interface snapshot. It adds
+named blocks and explicit texture/sampler dependencies, then delegates `build()`
+to `Material::create()` for validation. Each build copies an independent material
+value; extending the builder does not change earlier materials. The typed
+`addParameter()` overload uses `ShaderParameterBlock::fromValue()` without
+repacking data. Dependency methods do not write shader indices into blocks.
+
+Materials expose read-only access to their captured interface and parameters;
+they do not accept or compose draw inputs.
+
+[`RenderRequestBuilder`](../src/engine/starlight/renderer/frontend/RenderRequestBuilder.hh)
+collects views, a clear color, and `MaterialDraw` descriptions through fluent
+`addView()`, `setClearColor()`, and `addDraw()` calls. The builder owns the
+primitive handles, draw parameter bytes, and dependency declarations it collects;
+changing or destroying the original draw description does not change them.
+Only the material is borrowed. Its owner must keep it alive and at a stable
+address through every `build()` using that draw, including later builds if the
+builder is retained. Material access must not race with modification/destruction.
+
+`addDraw()` only collects inputs. `build() const` reads current material values,
+combines them with the collected draw blocks, and returns an owned
+`Result<RenderRequest>`. It rejects unknown names, wrong sizes, missing blocks,
+and duplicate names, including attempts to replace a material-owned block.
+Validation is at block granularity; it does not inspect fields, pack bytes,
+or infer resource use. Material and draw declarations must include every
+resource their bytes can select, including indirect candidates.
+
+Block validation is shared with material construction through
+[`validateShaderParameterBlocks()`](../src/engine/starlight/renderer/core/Shader.cpp).
+Material construction validates its own subset; building a request additionally
+requires every shader block to be supplied. A failed build returns no partial
+request and leaves the builder inputs unchanged. Builds can be repeated without
+consuming the builder. A material value replaced before a later build is read
+again; previously built requests remain unchanged and contain no material refs.
+
+[`RenderRequestBuilder::build()`](../src/engine/starlight/renderer/frontend/RenderRequestBuilder.cpp)
+combines material, draw, and frame dependencies, deduplicating complete handles
+including their generations. An optional existing request can seed the builder;
+its raw items are preserved and keep their render-thread block validation.
+Dependency merging uses temporary hash sets while preserving first-seen order
+in the returned vectors. Layout/block name checks also use temporary sets.
+The resulting request owns all bytes and dependencies and uses the existing
+submission path; there are no material commands or GPU material handles.
+Request assembly belongs to the renderer frontend; the material module has no
+dependency on render requests. A successful build does not prove GPU resource
+liveness or renderer acceptance; render-thread validation still applies.
+
+Materials do not own shaders, textures, samplers, or primitives. External owners
+must keep handles usable for subsequent submissions. Backend validation still
+checks live resources and actual bindings. Previously accepted frames retain
+the existing texture/sampler retirement guarantee, not an extended shader or
+primitive lifetime guarantee. Replacing a material value affects subsequent
+preparation; already prepared requests remain unchanged. Using a replacement
+shader requires constructing a material with that shader's interface.
+
 ## Mixed resource binding
 
 [`simple.slang`](../assets/shaders/simple.slang) declares a
 `ParameterBlock<Resources>` with arrays of 64 textures and 64 samplers, and a
 separate `ConstantBuffer<DrawParameters>`. Draw parameters select table entries
 by logical resource index. This is bounded indexed resource access, rather than
-an unlimited descriptor heap or an implemented material system.
+an unlimited descriptor heap. CPU materials prepare these same blocks and
+dependencies; they do not change native resource-table binding.
 
 [`RenderItem`](../src/engine/starlight/renderer/frontend/RenderScene.hh) holds
 named parameter bytes. The whole frame declares texture/sampler dependencies;
@@ -115,8 +189,9 @@ normal `float3` fields. The [sandbox](../src/sandbox/main.cpp) preserves its
 existing triangle data; the shader's second input remains named `color` but is
 unused. UV coordinates are generated from position. The sandbox uploads a
 checkerboard from [`asset/Texture.cpp`](../src/engine/starlight/asset/Texture.cpp),
-creates a sampler, supplies both indices in `draw`, supplies the per-item matrix
-in `transform`, and declares both resources.
+creates a sampler, and puts both indices and dependencies in one CPU material.
+Two instances of the same primitive share that material and supply separate
+rotating, translated/scaled matrices in `transform`.
 
 [`ShaderRef`](../src/engine/starlight/asset/Shader.cpp) retains its current asset
 behavior: an event loop polls asynchronous creation, `waitForDevice()` polls the
@@ -127,6 +202,11 @@ support does not redesign these asset ownership rules.
 
 ## Checks
 
+[`Materials.test.cpp`](../src/engine/tests/renderer/Materials.test.cpp) covers
+material/draw block validation, dependency union, and independent owned draw
+snapshots. The shader-interface test in
+[`Textures.test.cpp`](../src/engine/tests/renderer/Textures.test.cpp) checks the
+command reply's copied metadata and invalid handles.
 [`Textures.test.cpp`](../src/engine/tests/renderer/Textures.test.cpp) covers CPU
 checkerboard output, owned column-major matrix copies, pending-frame retirement
 order, and Metal/SPIR-V-style
@@ -134,7 +214,8 @@ reflection parsing and malformed-input rejection.
 [`MetalTextures.test.cpp`](../src/engine/tests/renderer/MetalTextures.test.cpp)
 uses a small independent MSL fixture to sample a checkerboard offscreen through
 the production table encoder at nonzero indices and reject stale handles after
-slot reuse. It also binds a translated/scaled GLM matrix in the vertex stage
+slot reuse. It uses CPU material preparation for its parameters and dependencies
+and also binds a translated/scaled GLM matrix in the vertex stage
 and checks both covered and cleared pixels to detect matrix-layout mistakes.
 It skips when no Metal 3 device is accessible; it does not exercise
 the sandbox's Slang-to-metallib compilation.

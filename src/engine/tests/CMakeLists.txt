@@ -20,6 +20,7 @@ add_starlight_test(starlight-core-tests
 
 add_starlight_test(starlight-renderer-tests
     "renderer/Textures.test.cpp"
+    "renderer/Materials.test.cpp"
 )
 
 if (APPLE)

@@ -19,8 +19,15 @@ policy (including no ADRs), see [Maintaining knowledge nodes](README.md#maintain
   resource tables plus explicit parameter blocks; the sandbox uploads a procedural
   checkerboard. See [Shader pipeline](shader-pipeline.md) for limits.
 - **Transforms:** [Shader parameter blocks](../src/engine/starlight/renderer/core/ShaderDataLayout.hh)
-  copy typed values into owned bytes. The sandbox updates a `Mat4f` per frame;
+  copy typed values into owned bytes. The sandbox updates a `Mat4f` per item/frame;
   [simple.slang](../assets/shaders/simple.slang) applies it to vertex positions.
+- **CPU materials:** [Material](../src/engine/starlight/renderer/shading/Material.cpp)
+  validates and stores shared blocks. Frontend
+  [request building](../src/engine/starlight/renderer/frontend/RenderRequestBuilder.cpp)
+  collects owned draw descriptions and composes material/draw blocks and declared
+  dependencies at build time, before queueing.
+  Two sandbox triangle instances
+  share one checkerboard material. GPU handles remain non-owning.
 - **Vulkan:** source files exist in
   [platform/vulkan](../src/engine/starlight/platform/vulkan/), but
   `Platform::createRenderDevice()` returns null in the Vulkan branch.

@@ -26,11 +26,13 @@ add_library(starlight STATIC
     "starlight/renderer/core/Shader.cpp"
     "starlight/renderer/core/Vertex.cpp"
     "starlight/renderer/core/ShaderDataLayout.cpp"
+    "starlight/renderer/shading/Material.cpp"
     "starlight/renderer/RendererProxy.cpp"
     "starlight/renderer/RenderingSystem.cpp"
     "starlight/renderer/frontend/Renderer.cpp"
     "starlight/renderer/frontend/RendererResourcePool.cpp"
     "starlight/renderer/frontend/RenderGraph.cpp"
+    "starlight/renderer/frontend/RenderRequestBuilder.cpp"
     "starlight/renderer/executor/RenderExecutor.cpp"
     "starlight/renderer/executor/RendererCommandDispatcher.cpp"
     # -- platform

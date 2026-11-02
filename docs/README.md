@@ -8,7 +8,7 @@ These knowledge nodes describe the code currently in this repository:
 - [Renderer messaging](renderer-messaging.md): payload ownership, replies,
   resource lifetime, and shutdown behavior in the current command path.
 - [Shader pipeline](shader-pipeline.md): compilation, reflection, vertex layout,
-  asset wrappers, and indexed texture/sampler binding.
+  CPU materials, asset wrappers, and indexed texture/sampler binding.
 - [Renderer language](CONTEXT.md): glossary for the implemented renderer concepts.
 - [Implementation status](roadmap.md): source-backed renderer and platform
   status. The filename is retained from the earlier roadmap.

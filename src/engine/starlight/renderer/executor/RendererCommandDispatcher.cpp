@@ -36,6 +36,10 @@ void RendererCommandDispatcher::operator()(RendererDestroyShader command) {
     m_renderer.destroyShader(command.handle);
 }
 
+void RendererCommandDispatcher::operator()(RendererGetShaderInterface command) {
+    command.completion.set_value(m_renderer.getShaderInterface(command.handle));
+}
+
 void RendererCommandDispatcher::operator()(RendererCreatePrimitive command) {
     command.completion.set_value(
         m_renderer.createPrimitive(command.description)

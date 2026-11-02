@@ -34,6 +34,7 @@ separate pending-frame queue is bounded by `maxFramesInFlight`.
 | Async shader/primitive/texture/sampler creation | `Result<future<Result<Handle>>>`: outer result means queue acceptance; future reports render-thread creation success/failure. |
 | Synchronous creation | `Result<Handle>`: waits for the same creation future, rather than GPU frame completion. |
 | Surface target creation | Waits for the render-thread attach operation. |
+| `getShaderInterface()` | Waits for a copied shader handle and ordinary block names/sizes from the render thread; invalid handles return an error. Does not retain the shader or wait for GPU completion. |
 | Frame submission | Waits for acceptance/rejection by `Renderer::submit()`. Later frame errors are logged without a reply to this caller. |
 | Resource destruction | Reports command acceptance; no destruction acknowledgement. Texture/sampler commands perform the blocking retirement described below. |
 | `flushRenderer()` | Waits for pending frame requests to be submitted or dropped. It does not call `waitIdle()`. |
@@ -50,6 +51,16 @@ access, including every possible candidate selected through GPU data. The caller
 the renderer cannot infer dependencies from arbitrary parameter bytes or shader
 code. Shader indices must address declared resources within reflected array
 bounds; absent entries in a table snapshot are zero.
+
+For the CPU material path, callers declare dependencies alongside material and
+draw parameters. The frontend's
+[`RenderRequestBuilder::build()`](../src/engine/starlight/renderer/frontend/RenderRequestBuilder.cpp)
+combines these with existing frame
+dependencies before submission. Collection owns draw bytes and handles but
+borrows materials until each build; successful builds own their snapshot data.
+Raw requests still require complete manual
+declarations. Handles stored by materials are non-owning, and preparation does
+not prove GPU resource liveness; render-thread validation remains authoritative.
 
 [`Renderer::submit()`](../src/engine/starlight/renderer/frontend/Renderer.cpp)
 validates declared handle IDs/generations before accepting a request. A busy

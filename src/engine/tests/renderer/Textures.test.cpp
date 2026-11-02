@@ -8,6 +8,7 @@
 #include "starlight/asset/Texture.hh"
 #include "starlight/asset/loaders/ShaderLoader.hh"
 #include "starlight/math/Math.hh"
+#include "starlight/renderer/executor/RendererCommandDispatcher.hh"
 #include "starlight/renderer/frontend/Renderer.hh"
 
 namespace {
@@ -51,6 +52,8 @@ class BusyDevice : public sl::RenderDevice {
     bool alive{true};
     bool busy{true};
     std::vector<std::string> events;
+    sl::ShaderHandle shader{7, 2};
+    sl::ShaderDescription shaderDescription;
 
     sl::Result<void> trySubmitFrame(RecordFrame) override {
         EXPECT_TRUE(alive);
@@ -91,9 +94,9 @@ class BusyDevice : public sl::RenderDevice {
     }
     void destroyShader(sl::ShaderHandle) override {}
     const sl::ShaderDescription* getShaderDescription(
-        sl::ShaderHandle
+        sl::ShaderHandle handle
     ) const override {
-        return nullptr;
+        return handle == shader ? &shaderDescription : nullptr;
     }
     sl::Result<sl::GraphicsPipelineHandle> createGraphicsPipeline(
         const sl::GraphicsPipelineDescription&
@@ -121,6 +124,28 @@ class BusyDevice : public sl::RenderDevice {
         events.push_back("destroy sampler");
     }
 };
+
+TEST(ShaderInterface, CopiesShaderLayoutThroughTheCommandPath) {
+    BusyDevice device;
+    device.shaderDescription.uniforms = {
+        {.binding = 9, .size = sizeof(sl::Mat4f), .name = "transform"}
+    };
+    sl::Renderer renderer{{}, device};
+    sl::RendererCommandDispatcher dispatcher{renderer};
+    sl::RendererGetShaderInterface command{device.shader};
+    auto completion = command.completion.get_future();
+    dispatcher.dispatch(std::move(command));
+    auto interface = completion.get();
+    ASSERT_TRUE(interface);
+    EXPECT_EQ(interface->handle, device.shader);
+    ASSERT_EQ(interface->parameters.size(), 1);
+    EXPECT_EQ(interface->parameters.front().name, "transform");
+    EXPECT_EQ(interface->parameters.front().size, sizeof(sl::Mat4f));
+
+    device.shaderDescription.uniforms.clear();
+    EXPECT_EQ(interface->parameters.size(), 1);
+    EXPECT_FALSE(renderer.getShaderInterface(sl::ShaderHandle{7, 1}));
+}
 
 TEST(TextureLifetime, DrainsAcceptedFramesAndWaitsBeforeRelease) {
     BusyDevice device;

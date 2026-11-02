@@ -77,6 +77,18 @@ Result<void> RendererProxy::destroyShader(ShaderHandle handle) {
     return {};
 }
 
+Result<ShaderInterface> RendererProxy::getShaderInterface(ShaderHandle handle) {
+    RendererGetShaderInterface command{handle};
+    auto completion = command.completion.get_future();
+    if (not m_submitter.submit(std::move(command))) {
+        return Error::unexpected(
+            ErrorCode::rendererCommandRejected,
+            "Renderer shader interface command rejected"
+        );
+    }
+    return completion.get();
+}
+
 Result<void> RendererProxy::flushRenderer() {
     RendererFlush cmd;
     auto completion = cmd.completion.get_future();

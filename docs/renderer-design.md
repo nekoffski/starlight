@@ -36,6 +36,18 @@ shaders may access, including indirect accesses. Each view names a render target
 copied into the renderer's pending queue; successful `RendererProxy::submit()`
 means the renderer accepted the request, not that the GPU finished it.
 
+The optional CPU
+[`RenderRequestBuilder`](../src/engine/starlight/renderer/frontend/RenderRequestBuilder.hh)
+collects draw descriptions and builds those same requests before queueing.
+[`Materials`](../src/engine/starlight/renderer/shading/Material.hh) hold validated
+reusable shader blocks and declared resources and expose read-only access to
+that data; draws supply the remaining blocks. The builder copies draw inputs
+when added and borrows materials until each build. Building validates
+block names/sizes/completeness and combines dependencies into an owned request.
+The sandbox uses two instances of one primitive with a shared checkerboard
+material and separate transforms. See [Shader pipeline](shader-pipeline.md)
+for the material contract and its non-owning resource handles.
+
 ## Resources used by a scene
 
 - **Shader:** `ShaderLoader` reads compiled shader bytes and adjacent JSON
@@ -137,7 +149,9 @@ finish.
 The implemented backend is Metal. `Platform::createRenderDevice()` selects it
 for Metal builds; the Vulkan branch has no device implementation. The renderer
 has no compute or copy passes, render graph dependency tracking, texture
-outputs, a material system, or depth attachments. Sampled textures have one mip
+outputs, lighting, or depth attachments. Materials are CPU parameter values,
+not a surface shading model, GPU material table, or pass-specific shader system.
+Sampled textures have one mip
 level, initial upload only, and linear RGBA8 storage (no sRGB conversion).
 The current `Vertex3` contains position and normal vectors; the demo derives UVs
 from position rather than adding a vertex format. Vertex input reflection

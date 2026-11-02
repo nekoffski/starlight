@@ -44,6 +44,8 @@ class RendererProxy {
     );
     Result<ShaderHandle> createShader(const ShaderDescription& description);
 
+    Result<ShaderInterface> getShaderInterface(ShaderHandle handle);
+
     Result<void> destroyShader(ShaderHandle handle);
 
     Result<void> submit(const RenderRequest& request);

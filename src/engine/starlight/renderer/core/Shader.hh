@@ -1,5 +1,6 @@
 #pragma once
 
+#include <span>
 #include <unordered_map>
 
 #include "RenderResource.hh"
@@ -24,6 +25,23 @@ struct ShaderDescription {
     std::vector<ShaderUniform> uniforms;
     std::vector<ShaderResourceTable> resourceTables;
 };
+
+struct ShaderParameterLayout {
+    Str name;
+    u64 size{0};
+};
+
+// An owned layout snapshot for one shader; it does not retain the GPU resource.
+struct ShaderInterface {
+    ShaderHandle handle;
+    std::vector<ShaderParameterLayout> parameters;
+};
+
+// Validates a subset of blocks against an already validated layout.
+Result<void> validateShaderParameterBlocks(
+    std::span<const ShaderParameterLayout> layout,
+    std::span<const ShaderParameterBlock> blocks
+);
 
 SL_BIT_ENUM(ShaderStage);
 

@@ -42,3 +42,22 @@ that occupy the same index.
 **Shader parameter block**:
 A named block of bytes supplied for a draw item, matching a compiled shader's
 reflected parameter name and size.
+
+**Shader interface**:
+An owned snapshot of one device shader handle and its ordinary parameter block
+names and sizes. It does not retain or follow replacement shaders.
+
+**Material**:
+A CPU value combining a shader interface, reusable named blocks, and declared
+resource dependencies. Its blocks have distinct ownership from draw blocks;
+its GPU handles are non-owning.
+
+**Material draw**:
+A frontend description of primitives and draw-specific parameters/dependencies,
+with a non-owning material reference. The caller keeps the material alive through
+every request build using the description.
+
+**Render request builder**:
+Collects owned draw descriptions and view settings. At build time it reads
+borrowed materials, validates/combines parameter blocks and dependencies, and
+produces an owned render request with no material references.

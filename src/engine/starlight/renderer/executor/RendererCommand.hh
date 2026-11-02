@@ -37,6 +37,11 @@ struct RendererDestroyShader {
     ShaderHandle handle;
 };
 
+struct RendererGetShaderInterface {
+    ShaderHandle handle;
+    std::promise<Result<ShaderInterface>> completion;
+};
+
 struct RendererCreatePrimitive {
     PrimitiveUploadData description;
     std::promise<Result<PrimitiveHandle>> completion;
@@ -68,6 +73,6 @@ using RendererCommand = std::variant<
     RendererNoop, RendererFlush, RendererCreateSurfaceTarget, RendererSubmit,
     RendererCreateShader, RendererDestroyShader, RendererCreatePrimitive,
     RendererDestroyPrimitive, RendererCreateTexture, RendererDestroyTexture,
-    RendererCreateSampler, RendererDestroySampler>;
+    RendererCreateSampler, RendererDestroySampler, RendererGetShaderInterface>;
 
 }  // namespace sl

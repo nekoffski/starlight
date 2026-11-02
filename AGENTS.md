@@ -25,9 +25,10 @@ Starlight is a C++23 game engine built with CMake and Conan 2. Start with
 - `src/engine/starlight/`: engine library. `core/` has shared utilities,
   `runtime/` threading and queues, `event/` event dispatch, and `asset/` assets
   and loaders.
-- `src/engine/starlight/renderer/`: `frontend/` handles requests and graphs,
-  `executor/` dispatches render-thread commands, `rhi/` defines device interfaces,
-  and `core/` contains resource descriptions and handles.
+- `src/engine/starlight/renderer/`: `frontend/` handles draw preparation, requests,
+  and graphs, `executor/` dispatches render-thread commands, `rhi/` defines device interfaces,
+  `core/` contains resource descriptions and handles, and `shading/` stores
+  validated CPU material data.
 - `src/engine/starlight/platform/`: SDL windows and backend code. Metal has a
   device implementation; Vulkan device selection currently returns null.
 - `src/sandbox/main.cpp`: engine rendering example. `src/editor/main.cpp` is
@@ -59,6 +60,11 @@ its compiler profile; bootstrap again afterward.
   focused, and preserve unrelated working-tree edits.
 - Match surrounding C++ conventions: `.hh` headers, `.cpp` sources, namespace
   `sl`, and `.clang-format` (Google base, four-space indentation).
+- Use the [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
+  as the code-quality baseline. Use
+  [GoF design patterns](https://www.informit.com/store/design-patterns-elements-of-reusable-object-oriented-9780201633610)
+  to assess responsibilities and coupling; introduce a pattern only when it
+  solves a concrete problem.
 - Optimize for human review: use lowerCamelCase for constants and plain
   `constexpr` unless shared object identity requires `inline`. Name non-obvious
   limits, explain reserved indices, and give complex predicates meaningful names.
@@ -66,7 +72,8 @@ its compiler profile; bootstrap again afterward.
   work; keep method groups and adjacent type/command declarations separated by
   blank lines. Use named types for repeated or long container declarations.
 - If a function call in an `if` initializer spans multiple lines, evaluate it
-  first into a descriptively named variable, then check that variable in `if`.
+  first into a variable, then check that variable in `if`. Use `r` for status-only
+  results such as `Result<void>`; use descriptive names for results carrying values.
 - Do not use output parameters. Return values directly, or use `Result<T>` for
   fallible operations; return updated state instead of mutating a caller's output
   argument. Keep required native API output parameters confined to the backend.

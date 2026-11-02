@@ -43,6 +43,8 @@ class Renderer : public NonCopyable, public NonMovable {
         return m_device.createShader(description);
     }
 
+    Result<ShaderInterface> getShaderInterface(ShaderHandle handle) const;
+
     void destroyShader(ShaderHandle handle) { m_device.destroyShader(handle); }
 
     Result<PrimitiveHandle> createPrimitive(

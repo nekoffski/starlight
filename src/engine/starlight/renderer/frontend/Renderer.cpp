@@ -31,9 +31,9 @@ Result<void> Renderer::submit(const RenderRequest& request) {
             ErrorCode::tooManyFrameRequests, "Too many frame requests"
         );
     }
-    const auto validation = m_device.validateResources(request.resources);
-    if (not validation) {
-        return validation;
+    const auto r = m_device.validateResources(request.resources);
+    if (not r) {
+        return r;
     }
     m_pendingRequests.push(request);
     return {};
@@ -86,13 +86,13 @@ void Renderer::tryToSubmitFrame() {
     const auto& request = m_pendingRequests.front();
     NAMED_DEFER(requestDropper) { m_pendingRequests.pop(); };
 
-    auto res = m_device.trySubmitFrame([&](RenderFrameRecorder& context) {
+    const auto r = m_device.trySubmitFrame([&](RenderFrameRecorder& context) {
         return recordFrame(context, request);
     });
 
-    if (not res) [[unlikely]] {
-        if (res.error().code() != ErrorCode::tooManyFramesInFlight) [[likely]] {
-            log::error("Failed to record frame: {}", res.error());
+    if (not r) [[unlikely]] {
+        if (r.error().code() != ErrorCode::tooManyFramesInFlight) [[likely]] {
+            log::error("Failed to record frame: {}", r.error());
         } else {
             requestDropper.dismiss();
         }
@@ -118,6 +118,24 @@ Result<GraphicsPipelineHandle> Renderer::resolveGraphicsPipeline(
     }
 
     return m_graphicsPipelines.emplace(description, *maybePipeline);
+}
+
+Result<ShaderInterface> Renderer::getShaderInterface(
+    ShaderHandle handle
+) const {
+    const auto* description = m_device.getShaderDescription(handle);
+    if (not description) {
+        return Error::unexpected(
+            ErrorCode::invalidArgument, "Invalid shader handle"
+        );
+    }
+
+    ShaderInterface interface{.handle = handle};
+    interface.parameters.reserve(description->uniforms.size());
+    for (const auto& uniform : description->uniforms) {
+        interface.parameters.push_back({uniform.name, uniform.size});
+    }
+    return interface;
 }
 
 Result<void> Renderer::recordFrame(
@@ -170,16 +188,16 @@ Result<void> Renderer::recordFrame(
                         return Error::unexpected(pipeline.error());
                     }
 
-                    if (auto res = encoder.setPipeline(*pipeline); not res) {
-                        return Error::unexpected(res.error());
+                    if (auto r = encoder.setPipeline(*pipeline); not r) {
+                        return Error::unexpected(r.error());
                     }
 
-                    const auto parameterBinding = encoder.setShaderParameters(
+                    auto r = encoder.setShaderParameters(
                         *shaderDescription, renderable.parameters,
                         request.resources
                     );
-                    if (not parameterBinding) {
-                        return parameterBinding;
+                    if (not r) {
+                        return r;
                     }
 
                     for (const auto& primitiveHandle : renderable.primitives) {
@@ -201,20 +219,20 @@ Result<void> Renderer::recordFrame(
                             );
                         }
 
-                        const auto vertexBinding = encoder.setVertexBuffer({
+                        r = encoder.setVertexBuffer({
                             .handle = primitive->vertexBuffer,
                             .offset = primitive->vertexBufferOffset,
                         });
-                        if (not vertexBinding) {
-                            return vertexBinding;
+                        if (not r) {
+                            return r;
                         }
 
-                        const auto indexBinding = encoder.setIndexBuffer({
+                        r = encoder.setIndexBuffer({
                             .handle = primitive->indexBuffer,
                             .offset = primitive->indexBufferOffset,
                         });
-                        if (not indexBinding) {
-                            return indexBinding;
+                        if (not r) {
+                            return r;
                         }
                         encoder.drawIndexed(primitive->indexCount);
                     }

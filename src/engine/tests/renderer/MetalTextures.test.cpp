@@ -3,6 +3,8 @@
 #include "starlight/asset/Texture.hh"
 #include "starlight/math/Math.hh"
 #include "starlight/platform/metal/MetalRenderPass.hh"
+#include "starlight/renderer/frontend/RenderRequestBuilder.hh"
+#include "starlight/renderer/shading/Material.hh"
 
 namespace {
 
@@ -117,15 +119,33 @@ TEST(MetalTextures, SamplesNonzeroIndicesAndRejectsStaleHandles) {
           {sl::ShaderResourceKind::sampler, 2, 16, 8, 0}}}
     );
     const std::array<sl::u32, 4> indices{texture->id, sampler->id, 0, 0};
-    std::array parameters{
-        sl::ShaderParameterBlock::fromValue("draw", indices),
-        sl::ShaderParameterBlock::fromValue("transform", sl::Mat4f{1.0f}),
+    const auto material = sl::Material::create(
+        {
+            .handle = sl::ShaderHandle{0},
+            .parameters =
+                {{"draw", sizeof(indices)}, {"transform", sizeof(sl::Mat4f)}},
+        },
+        {
+            .blocks = {sl::ShaderParameterBlock::fromValue("draw", indices)},
+            .resources = {{*texture}, {*sampler}},
+        }
+    );
+    ASSERT_TRUE(material);
+    sl::MaterialDraw draw{
+        .material = *material,
+        .parameters = {
+            .blocks = {sl::ShaderParameterBlock::fromValue(
+                "transform", sl::Mat4f{1.0f}
+            )}
+        },
     };
-    sl::ShaderResourceDependencies usage{{*texture}, {*sampler}};
+    const auto request = sl::RenderRequestBuilder{}.addDraw(draw).build();
+    ASSERT_TRUE(request);
+    const auto& usage = request->resources;
     {
         sl::MetalRenderPassEncoder encoder{resources, nativeEncoder};
         EXPECT_FALSE(encoder.setShaderParameters(shader, {}, usage));
-        const auto blocks = std::span(parameters);
+        const auto blocks = std::span(request->scene.items.front().parameters);
         auto invalidShader = shader;
         invalidShader.uniforms.front().binding = sl::metalVertexBufferIndex;
         EXPECT_FALSE(encoder.setShaderParameters(invalidShader, blocks, usage));
@@ -153,8 +173,8 @@ TEST(MetalTextures, SamplesNonzeroIndicesAndRejectsStaleHandles) {
         invalidShader.resourceTables.front().arrays.front().count = texture->id;
         EXPECT_FALSE(encoder.setShaderParameters(invalidShader, blocks, usage));
 
-        auto result = encoder.setShaderParameters(shader, blocks, usage);
-        ASSERT_TRUE(result) << result.error().message();
+        const auto r = encoder.setShaderParameters(shader, blocks, usage);
+        ASSERT_TRUE(r) << r.error().message();
         encoder.draw(3);
     }
     commandBuffer->commit();
@@ -171,17 +191,22 @@ TEST(MetalTextures, SamplesNonzeroIndicesAndRejectsStaleHandles) {
         glm::translate(sl::Mat4f{1.0f}, sl::Vec3f{0.5f, 0.0f, 0.0f});
     const auto modelToClip =
         glm::scale(translation, sl::Vec3f{0.5f, 0.5f, 1.0f});
-    parameters.back() =
+    draw.parameters.blocks.front() =
         sl::ShaderParameterBlock::fromValue("transform", modelToClip);
+    const auto transformedRequest =
+        sl::RenderRequestBuilder{}.addDraw(draw).build();
+    ASSERT_TRUE(transformedRequest);
     auto* transformedCommands = context.commandQueue().commandBuffer();
     auto* transformedEncoder = transformedCommands->renderCommandEncoder(pass);
     ASSERT_NE(transformedEncoder, nullptr);
     transformedEncoder->setRenderPipelineState(pipeline.get());
     {
         sl::MetalRenderPassEncoder encoder{resources, transformedEncoder};
-        const auto bound =
-            encoder.setShaderParameters(shader, parameters, usage);
-        ASSERT_TRUE(bound) << bound.error().message();
+        const auto r = encoder.setShaderParameters(
+            shader, transformedRequest->scene.items.front().parameters,
+            transformedRequest->resources
+        );
+        ASSERT_TRUE(r) << r.error().message();
         encoder.draw(3);
     }
     transformedCommands->commit();
