@@ -17,7 +17,7 @@ resource dependencies. Handles in that copy do not themselves own GPU objects.
 
 [`RendererCommand`](../src/engine/starlight/renderer/executor/RendererCommand.hh)
 is a variant of payloads and promises. Submitters reference the shared
-[`ThreadSafeQueue`](../src/engine/starlight/runtime/ThreadSafeQueue.hh) weakly and
+[`kc::ThreadSafeQueue`](../external/kcore/include/kcore/runtime/ThreadSafeQueue.hh) weakly and
 move commands into it. Missing/closed queues reject submission. Queue insertion
 is mutex-serialized; concurrent callers have no additional ordering protocol.
 

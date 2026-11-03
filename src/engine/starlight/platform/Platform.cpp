@@ -1,6 +1,6 @@
 #include "Platform.hh"
 
-#include "starlight/core/Log.hh"
+#include "starlight/core/Core.hh"
 
 #if defined(SL_USE_METAL)
 #include "metal/MetalDevice.hh"

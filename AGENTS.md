@@ -22,9 +22,11 @@ Starlight is a C++23 game engine built with CMake and Conan 2. Start with
 
 ## Repository map
 
-- `src/engine/starlight/`: engine library. `core/` has shared utilities,
-  `runtime/` threading and queues, `event/` event dispatch, and `asset/` assets
-  and loaders.
+- `external/kcore/`: shared utilities, containers, filesystem, threading, queues,
+  logging, and profiling. Both Starlight and Anchor consume kcore `main`.
+- `src/engine/starlight/`: engine library. `core/` has foundational aliases,
+  engine configuration and error codes; `runtime/` has the polling event loop,
+  `event/` event dispatch, and `asset/` assets and loaders.
 - `src/engine/starlight/renderer/`: `frontend/` handles draw preparation, requests,
   and graphs, `executor/` dispatches render-thread commands, `rhi/` defines device interfaces,
   `core/` contains resource descriptions and handles, and `shading/` stores
@@ -42,6 +44,7 @@ Starlight is a C++23 game engine built with CMake and Conan 2. Start with
 Run from the repository root:
 
 ```sh
+git submodule update --init --remote external/kcore
 make bootstrap       # Once per compiler setup; CXX can select the compiler
 make build-debug     # Installs Conan dependencies, configures, builds
 make build-release
@@ -60,6 +63,10 @@ its compiler profile; bootstrap again afterward.
   focused, and preserve unrelated working-tree edits.
 - Match surrounding C++ conventions: `.hh` headers, `.cpp` sources, namespace
   `sl`, and `.clang-format` (Google base, four-space indentation).
+- Reuse kcore's current APIs instead of restoring duplicated utilities. Access
+  logging as `log::` through `core/Core.hh`. Generic errors use `kc::ErrorCode`;
+  engine/backend errors use Starlight's own `std::error_category`. Preserve
+  categories when propagating errors. Ask before moving new facilities to kcore.
 - Use the [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
   as the code-quality baseline. Use
   [GoF design patterns](https://www.informit.com/store/design-patterns-elements-of-reusable-object-oriented-9780201633610)

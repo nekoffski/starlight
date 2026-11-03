@@ -1,0 +1,4 @@
+[submodule "external/kcore"]
+	path = external/kcore
+	url = https://github.com/nekoffski/kcore.git
+	branch = main

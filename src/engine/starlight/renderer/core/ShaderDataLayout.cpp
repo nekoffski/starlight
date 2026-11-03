@@ -1,8 +1,7 @@
 #include "ShaderDataLayout.hh"
 
+#include <kcore/Functional.hh>
 #include <unordered_map>
-
-#include "starlight/core/Functional.hh"
 
 namespace sl {
 
@@ -54,7 +53,7 @@ u64 LayoutHelper::structTypeSize(const StructType& type) { return type.size(); }
 
 u64 LayoutHelper::dataTypeSize(const DataType& type) {
     return std::visit(
-        Overloader{
+        kc::Overloader{
             [](const ValueType& value) {
                 return LayoutHelper::valueTypeSize(value);
             },

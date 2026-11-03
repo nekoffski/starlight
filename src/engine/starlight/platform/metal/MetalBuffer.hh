@@ -1,13 +1,14 @@
 #pragma once
 
+#include <kcore/Concepts.hh>
+
 #include "Metal.hh"
-#include "starlight/core/Concepts.hh"
 #include "starlight/core/Error.hh"
 #include "starlight/renderer/rhi/DeviceBuffer.hh"
 
 namespace sl {
 
-class MetalBuffer : public NonCopyable, public NonMovable {
+class MetalBuffer : public kc::NonCopyable, public kc::NonMovable {
     struct Guard {};
 
    public:

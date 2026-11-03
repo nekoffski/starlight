@@ -54,7 +54,7 @@ Result<ShaderParameters> prepareParameters(
         );
         if (block == parameters.blocks.end()) {
             return Error::unexpected(
-                ErrorCode::invalidArgument,
+                kc::ErrorCode::invalidArgument,
                 "Missing shader parameter block: {}", parameter.name
             );
         }

@@ -1,12 +1,12 @@
 #pragma once
 
+#include <kcore/Concepts.hh>
+#include <kcore/Ref.hh>
 #include <shared_mutex>
 
 #include "Asset.hh"
-#include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/core/Error.hh"
-#include "starlight/core/Ref.hh"
 #include "starlight/renderer/RendererProxy.hh"
 #include "starlight/renderer/core/Shader.hh"
 #include "starlight/runtime/EventLoop.hh"
@@ -15,7 +15,7 @@ namespace sl {
 
 namespace detail {
 
-class ShaderImpl : public NonCopyable, public NonMovable {
+class ShaderImpl : public kc::NonCopyable, public kc::NonMovable {
    public:
     explicit ShaderImpl(
         RendererProxy& proxy, const ShaderDescription& description,
@@ -58,7 +58,7 @@ class ShaderImpl : public NonCopyable, public NonMovable {
 
 }  // namespace detail
 
-class ShaderRef : public Ref<detail::ShaderImpl> {
+class ShaderRef : public kc::Ref<detail::ShaderImpl> {
    public:
     explicit ShaderRef(
         RendererProxy& proxy, const ShaderDescription& description,

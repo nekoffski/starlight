@@ -1,13 +1,11 @@
 #pragma once
 
-#include "Core.hh"
+#include <system_error>
+#include <type_traits>
 
 namespace sl {
 
 enum class ErrorCode {
-    noError = 0,
-    fileSystemError = 1,
-    invalidArgument = 2,
     rendererCommandRejected = 3,
     backendMismatch = 4,
     surfaceCreationFailed = 5,
@@ -15,8 +13,6 @@ enum class ErrorCode {
     tooManyFramesInFlight = 7,
     renderEncodingFailed = 8,
     renderSurfaceNotDrawable = 9,
-    jsonParsingError = 10,
-    fileNotFound = 11,
     shaderParsingError = 12,
     invalidFuture = 13,
     metalError = 14,
@@ -24,4 +20,10 @@ enum class ErrorCode {
     notImplemented = 1337,
 };
 
+const std::error_category& errorCategory() noexcept;
+std::error_code make_error_code(ErrorCode code) noexcept;
+
 }  // namespace sl
+
+template <>
+struct std::is_error_code_enum<sl::ErrorCode> : std::true_type {};

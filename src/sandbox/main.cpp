@@ -1,10 +1,10 @@
 
+#include <kcore/io/FileSystem.hh>
+
 #include "starlight/asset/AssetSystem.hh"
 #include "starlight/asset/Texture.hh"
 #include "starlight/core/Config.hh"
 #include "starlight/core/Core.hh"
-#include "starlight/core/FileSystem.hh"
-#include "starlight/core/Log.hh"
 #include "starlight/core/Time.hh"
 #include "starlight/event/EventSystem.hh"
 #include "starlight/event/Events.hh"
@@ -20,8 +20,11 @@ using namespace sl;
 int main() {
     Config cfg;
 
-    log::init(log::LoggerOptions{.level = cfg.log.level});
-    log::info("Hello world! {}", Path::cwd().str());
+    log::init({
+        .level = cfg.log.level,
+        .formatPattern = "%^[%d-%m-%Y %T] [Th: %t] %-7l [starlight]: %v %$",
+    });
+    log::info("Hello world! {}", kc::Path::cwd().str());
 
     Platform::logInfo();
     EventSystem es;
@@ -68,7 +71,7 @@ int main() {
     log::expect(texture);
     auto sampler = proxy.createSampler({});
     log::expect(sampler);
-    DEFER {
+    KCORE_DEFER {
         proxy.destroyTexture(*texture);
         proxy.destroySampler(*sampler);
     };

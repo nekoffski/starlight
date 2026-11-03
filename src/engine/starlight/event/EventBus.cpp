@@ -13,6 +13,7 @@ EventBus::EventBus(EventBus&& oth)
       m_uuid(std::exchange(oth.m_uuid, Str{})) {}
 
 EventBus::EventBus(std::shared_ptr<details::EventBroker> eventBroker)
-    : m_uuid(RandomEngine::get().uuid()), m_broker(std::move(eventBroker)) {}
+    : m_uuid(kc::RandomEngine::get().uuid()),
+      m_broker(std::move(eventBroker)) {}
 
 }  // namespace sl

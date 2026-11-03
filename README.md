@@ -3,6 +3,17 @@
 Install Python 3, Conan 2, and CMake 3.25 or newer. The C++ compiler must be
 GCC 14+, Clang 18+, or Apple Clang 17+ (Xcode 16.3+).
 
+Initialize or refresh the shared [kcore](https://github.com/nekoffski/kcore)
+submodule from `main` before building:
+
+```sh
+git submodule update --init --remote external/kcore
+```
+
+CMake builds `kcore::kcore` with Starlight. Conan provides its dependencies,
+including YAML and glob support. Validate changes against kcore `main` in both
+Starlight and Anchor, then record the tested submodule revision.
+
 On a new machine, select a compiler once:
 
 ```sh
@@ -29,6 +40,13 @@ after cleaning.
 
 Run `make test` to build Debug and run the GoogleTest suite through CTest.
 Run `make fmt-check` to check tracked C++ files with `.clang-format`.
+
+Debug tests include kcore's suite by default. Set `KCORE_BUILD_TESTS=OFF` when
+configuring CMake to exclude it. Profiling uses kcore's option:
+
+```sh
+cmake --preset conan-debug -DKCORE_ENABLE_PROFILING=ON
+```
 
 See [repository knowledge](docs/README.md) for implementation documentation and
 [AGENTS.md](AGENTS.md) for coding-agent instructions.

@@ -17,13 +17,13 @@ Result<void> validateShaderParameterBlocks(
             std::ranges::find(layout, block.name, &ShaderParameterLayout::name);
         if (parameter == layout.end()) {
             return Error::unexpected(
-                ErrorCode::invalidArgument,
+                kc::ErrorCode::invalidArgument,
                 "Unknown shader parameter block: {}", block.name
             );
         }
         if (block.bytes.size() != parameter->size) {
             return Error::unexpected(
-                ErrorCode::invalidArgument,
+                kc::ErrorCode::invalidArgument,
                 "Shader parameter block size mismatch for {}: expected {}, got "
                 "{}",
                 block.name, parameter->size, block.bytes.size()
@@ -32,7 +32,7 @@ Result<void> validateShaderParameterBlocks(
         const bool uniqueName = names.insert(block.name).second;
         if (not uniqueName) {
             return Error::unexpected(
-                ErrorCode::invalidArgument,
+                kc::ErrorCode::invalidArgument,
                 "Duplicate shader parameter block: {}", block.name
             );
         }
@@ -65,7 +65,7 @@ Result<ShaderStage> shaderStageFromString(const Str& str) {
         return ShaderStage::geometry;
     }
     return Error::unexpected(
-        ErrorCode::invalidArgument, "Invalid shader module stage: {}", str
+        kc::ErrorCode::invalidArgument, "Invalid shader module stage: {}", str
     );
 }
 

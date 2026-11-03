@@ -3,14 +3,14 @@
 #include <Foundation/Foundation.hpp>
 #include <Metal/Metal.hpp>
 #include <QuartzCore/QuartzCore.hpp>
+#include <kcore/Concepts.hh>
 
-#include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/renderer/core/ShaderDataLayout.hh"
 
 namespace sl {
 
-class MetalContext : public NonCopyable, public NonMovable {
+class MetalContext : public kc::NonCopyable, public kc::NonMovable {
    public:
     explicit MetalContext();
     ~MetalContext();

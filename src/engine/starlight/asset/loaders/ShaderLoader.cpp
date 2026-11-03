@@ -1,26 +1,26 @@
 #include "ShaderLoader.hh"
 
 #include <algorithm>
+#include <kcore/serialization/Json.hh>
 #include <unordered_set>
 
-#include "starlight/core/Json.hh"
-#include "starlight/core/Log.hh"
+#include "starlight/core/Core.hh"
 #include "starlight/renderer/core/Texture.hh"
 
 namespace sl {
 
 namespace {
 
-class LoadHelper : public NonMovable, public NonCopyable {
+class LoadHelper : public kc::NonMovable, public kc::NonCopyable {
    public:
     Result<ShaderDescription> load(
-        std::vector<Byte> data, const Json& metadata
+        std::vector<Byte> data, const kc::Json& metadata
     ) &&;
 
    private:
-    Result<void> loadModule(const Json& metadata);
-    Result<void> parseVertexInput(const Json& metadata);
-    Result<void> parseUniforms(const Json& metadata);
+    Result<void> loadModule(const kc::Json& metadata);
+    Result<void> parseVertexInput(const kc::Json& metadata);
+    Result<void> parseUniforms(const kc::Json& metadata);
 
     ShaderDescription m_shaderDescription;
 };
@@ -28,15 +28,16 @@ class LoadHelper : public NonMovable, public NonCopyable {
 }  // namespace
 
 Result<ShaderDescription> ShaderLoader::loadShaderDescription(
-    const Path& path
+    const kc::Path& path
 ) {
-    if (not path.isFile()) {
+    const kc::FileSystem filesystem;
+    if (not filesystem.isFile(path)) {
         return Error::unexpected(
-            ErrorCode::fileNotFound, "Shader file not found: {}", path.str()
+            kc::ErrorCode::fileNotFound, "Shader file not found: {}", path.str()
         );
     }
 
-    const auto shaderSource = File{path}.readBinary();
+    const auto shaderSource = filesystem.readBinary(path);
 
     if (not shaderSource) {
         return Error::unexpected(shaderSource.error());
@@ -44,20 +45,20 @@ Result<ShaderDescription> ShaderLoader::loadShaderDescription(
 
     const auto metadataPath = path + ".json";
 
-    if (not metadataPath.isFile()) {
+    if (not filesystem.isFile(metadataPath)) {
         return Error::unexpected(
-            ErrorCode::fileNotFound, "Shader metadata file not found: {}",
+            kc::ErrorCode::fileNotFound, "Shader metadata file not found: {}",
             metadataPath.str()
         );
     }
 
-    const auto rawMetadata = File{metadataPath}.read();
+    const auto rawMetadata = filesystem.readFile(metadataPath);
 
     if (not rawMetadata) {
         return Error::unexpected(rawMetadata.error());
     }
 
-    auto metadata = parseJson(*rawMetadata);
+    auto metadata = kc::parseJson(*rawMetadata);
 
     if (not metadata) {
         return Error::unexpected(metadata.error());
@@ -69,7 +70,7 @@ Result<ShaderDescription> ShaderLoader::loadShaderDescription(
 namespace {
 
 Result<ShaderDescription> LoadHelper::load(
-    std::vector<Byte> data, const Json& metadata
+    std::vector<Byte> data, const kc::Json& metadata
 ) && {
     auto entrypoints = metadata.find("entryPoints");
 
@@ -100,7 +101,7 @@ Result<ShaderDescription> LoadHelper::load(
     return std::move(m_shaderDescription);
 }
 
-Result<void> LoadHelper::loadModule(const Json& metadata) {
+Result<void> LoadHelper::loadModule(const kc::Json& metadata) {
     ShaderModuleDescription shaderModule;
 
     auto stageStr = metadata.find("stage");
@@ -152,7 +153,7 @@ Result<void> LoadHelper::loadModule(const Json& metadata) {
 
 namespace {
 
-Result<ValueType> parseValueType(const Json& type) {
+Result<ValueType> parseValueType(const kc::Json& type) {
     auto kind = type.find("kind");
 
     if (kind == type.end() || not kind->is_string()) {
@@ -210,7 +211,7 @@ Result<ValueType> parseValueType(const Json& type) {
 
 }  // namespace
 
-Result<void> LoadHelper::parseVertexInput(const Json& parameters) {
+Result<void> LoadHelper::parseVertexInput(const kc::Json& parameters) {
     VertexLayout layout;
 
     for (const auto& parameter : parameters) {
@@ -239,9 +240,9 @@ Result<void> LoadHelper::parseVertexInput(const Json& parameters) {
     return {};
 }
 
-Result<void> LoadHelper::parseUniforms(const Json& metadata) {
+Result<void> LoadHelper::parseUniforms(const kc::Json& metadata) {
     try {
-        const auto number = [](const Json& value) -> u32 {
+        const auto number = [](const kc::Json& value) -> u32 {
             if (not value.is_number_unsigned() ||
                 value.get<u64>() > std::numeric_limits<u32>::max()) {
                 throw std::runtime_error(
@@ -319,9 +320,9 @@ Result<void> LoadHelper::parseUniforms(const Json& metadata) {
                 const auto& location = field.at("binding");
                 table.arrays.push_back(
                     {resourceKind, count,
-                     number(location.value("offset", Json(0u))),
-                     number(array.value("uniformStride", Json(0u))),
-                     number(location.value("index", Json(0u)))}
+                     number(location.value("offset", kc::Json(0u))),
+                     number(array.value("uniformStride", kc::Json(0u))),
+                     number(location.value("index", kc::Json(0u)))}
                 );
             }
             m_shaderDescription.resourceTables.push_back(std::move(table));

@@ -1,23 +1,20 @@
-#include "starlight/core/FlatMap.hh"
-
 #include <gtest/gtest.h>
 
 #include <array>
 #include <concepts>
+#include <kcore/containers/FlatMap.hh>
 #include <memory>
 #include <string>
 #include <utility>
 
 namespace {
 
-using IntMap = sl::FlatMap<int, int>;
+using IntMap = kc::FlatMap<int, int>;
 
-static_assert(std::same_as<
-              decltype(std::declval<IntMap&>().find(0)),
-              int*>);
-static_assert(std::same_as<
-              decltype(std::declval<const IntMap&>().find(0)),
-              const int*>);
+static_assert(std::same_as<decltype(std::declval<IntMap&>().find(0)), int*>);
+static_assert(
+    std::same_as<decltype(std::declval<const IntMap&>().find(0)), const int*>
+);
 
 struct CopyOnly {
     explicit CopyOnly(int value) : value(value) {}
@@ -49,14 +46,14 @@ TEST(FlatMap, FindsInsertedValues) {
 }
 
 TEST(FlatMap, SupportsCopyOnlyAndMoveOnlyValues) {
-    sl::FlatMap<int, CopyOnly> copied;
+    kc::FlatMap<int, CopyOnly> copied;
     const CopyOnly value{42};
     copied.insert(1, value);
 
     ASSERT_NE(copied.find(1), nullptr);
     EXPECT_EQ(copied.find(1)->value, 42);
 
-    sl::FlatMap<int, std::unique_ptr<int>> moved;
+    kc::FlatMap<int, std::unique_ptr<int>> moved;
     auto pointer = std::make_unique<int>(43);
     moved.insert(1, std::move(pointer));
 
@@ -66,7 +63,7 @@ TEST(FlatMap, SupportsCopyOnlyAndMoveOnlyValues) {
 }
 
 TEST(FlatMap, ConstructsValuesInPlace) {
-    sl::FlatMap<int, ConstructedInPlace> map;
+    kc::FlatMap<int, ConstructedInPlace> map;
 
     auto& value = map.emplace(1, 42, "answer");
 
@@ -99,9 +96,9 @@ TEST(FlatMap, VisitsMutableAndConstValues) {
 
     const auto& constMap = map;
     int total = 0;
-    constMap.forEach(
-        [&total](const int&, const int& value) { total += value; }
-    );
+    constMap.forEach([&total](const int&, const int& value) {
+        total += value;
+    });
 
     EXPECT_EQ(total, 32);
 }

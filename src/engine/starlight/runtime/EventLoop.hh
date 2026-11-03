@@ -1,22 +1,23 @@
 #pragma once
 
 #include <atomic>
+#include <kcore/Concepts.hh>
+#include <kcore/Functional.hh>
+#include <kcore/Random.hh>
+#include <kcore/containers/FlatMap.hh>
+#include <kcore/runtime/Thread.hh>
 #include <memory>
 #include <mutex>
 
-#include "Thread.hh"
-#include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
-#include "starlight/core/FlatMap.hh"
-#include "starlight/core/Functional.hh"
-#include "starlight/core/Random.hh"
 #include "starlight/core/Time.hh"
 
 namespace sl {
 
 enum class EventLoopCallState { pendingReschedule, waiting, done, failed };
 
-class EventLoopCall : virtual public NonCopyable, virtual public NonMovable {
+class EventLoopCall : virtual public kc::NonCopyable,
+                      virtual public kc::NonMovable {
    public:
     virtual ~EventLoopCall() = default;
 
@@ -54,10 +55,10 @@ class PollingEventLoopCall : public PollingEventLoopCallBase {
    private:
     bool poll() override { return m_poll(); }
 
-    MoveOnlyFunction<bool()> m_poll;
+    kc::MoveOnlyFunction<bool()> m_poll;
 };
 
-class EventLoop : public Thread {
+class EventLoop : public kc::Thread {
    public:
     explicit EventLoop(const Str& name);
     ~EventLoop();
@@ -80,7 +81,7 @@ class EventLoop : public Thread {
     void run() override;
 
     std::atomic_bool m_running{true};
-    FlatMap<Str, std::unique_ptr<EventLoopCall>> m_calls;
+    kc::FlatMap<Str, std::unique_ptr<EventLoopCall>> m_calls;
     std::mutex m_callsMutex;
 };
 

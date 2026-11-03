@@ -1,6 +1,6 @@
 #include "SDLWindow.hh"
 
-#include "starlight/core/Log.hh"
+#include "starlight/core/Core.hh"
 #include "starlight/event/Events.hh"
 
 namespace sl {

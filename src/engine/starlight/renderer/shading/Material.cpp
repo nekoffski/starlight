@@ -17,7 +17,7 @@ Result<void> validateLayout(std::span<const ShaderParameterLayout> layout) {
                                  names.insert(parameter.name).second;
         if (not validLayout) {
             return Error::unexpected(
-                ErrorCode::invalidArgument,
+                kc::ErrorCode::invalidArgument,
                 "Invalid shader parameter layout: {}", parameter.name
             );
         }
@@ -36,7 +36,7 @@ Result<Material> Material::create(
 ) {
     if (not shaderInterface.handle.valid()) {
         return Error::unexpected(
-            ErrorCode::invalidArgument, "Invalid material shader handle"
+            kc::ErrorCode::invalidArgument, "Invalid material shader handle"
         );
     }
     if (auto r = validateLayout(shaderInterface.parameters); not r) {

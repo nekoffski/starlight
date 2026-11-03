@@ -1,20 +1,22 @@
 #pragma once
 
+#include <kcore/Concepts.hh>
+#include <kcore/Functional.hh>
+
 #include "DeviceBuffer.hh"
 #include "GraphicsPipeline.hh"
 #include "RenderFrameRecorder.hh"
 #include "RenderSurfaceProvider.hh"
-#include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
-#include "starlight/core/Functional.hh"
 #include "starlight/renderer/core/RenderResource.hh"
 #include "starlight/renderer/core/Shader.hh"
 
 namespace sl {
 
-class RenderDevice : public NonCopyable, public NonMovable {
+class RenderDevice : public kc::NonCopyable, public kc::NonMovable {
    public:
-    using RecordFrame = MoveOnlyFunction<Result<void>(RenderFrameRecorder&)>;
+    using RecordFrame =
+        kc::MoveOnlyFunction<Result<void>(RenderFrameRecorder&)>;
 
     virtual ~RenderDevice() = default;
 

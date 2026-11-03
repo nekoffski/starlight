@@ -1,68 +1,15 @@
 #pragma once
 
-#include <fmt/core.h>
-#include <fmt/format.h>
+#include <kcore/Error.hh>
 
-#include <expected>
-#include <optional>
-#include <string>
-
+#include "Core.hh"
 #include "ErrorCode.hh"
 
 namespace sl {
 
-class Error {
-   public:
-    explicit Error(
-        ErrorCode code = ErrorCode::noError,
-        const std::string& message = "No details provided"
-    );
-
-    template <typename... Args>
-    explicit Error(ErrorCode code, const std::string& fmt, Args&&... args)
-        : m_code(code),
-          m_message(
-              fmt::format(fmt::runtime(fmt), std::forward<Args>(args)...)
-          ) {}
-
-    ErrorCode code() const;
-    const std::string& message() const;
-
-    bool valid() const { return m_code != ErrorCode::noError; }
-
-    template <typename... Args>
-    static std::unexpected<Error> unexpected(
-        ErrorCode code, const std::string& fmt, Args&&... args
-    ) {
-        return std::unexpected{Error{code, fmt, std::forward<Args>(args)...}};
-    }
-
-    static std::unexpected<Error> unexpected(const Error& error);
-
-    static std::optional<Error> empty();
-
-    void reset();
-
-   private:
-    ErrorCode m_code;
-    std::string m_message;
-};
+using Error = kc::Error;
 
 template <typename T>
-using Result = std::expected<T, Error>;
+using Result = kc::Result<T>;
 
 }  // namespace sl
-
-template <>
-class fmt::formatter<sl::Error> {
-   public:
-    constexpr auto parse(format_parse_context& ctx) { return ctx.begin(); }
-
-    template <typename Context>
-    constexpr auto format(const sl::Error& error, Context& ctx) const {
-        return fmt::format_to(
-            ctx.out(), "code: {}, details: '{}'", fmt::underlying(error.code()),
-            error.message()
-        );
-    }
-};

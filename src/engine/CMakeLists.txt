@@ -7,17 +7,7 @@ add_library(starlight STATIC
     "starlight/asset/Mesh.cpp"
     "starlight/asset/Texture.cpp"
     # -- core
-    "starlight/core/Core.cpp"
     "starlight/core/Error.cpp"
-    "starlight/core/FileSystem.cpp"
-    "starlight/core/Log.cpp"
-    "starlight/core/Profiler.cpp"
-    "starlight/core/Random.cpp"
-    "starlight/core/String.cpp"
-    "starlight/core/Id.cpp"
-    "starlight/core/Config.cpp"
-    "starlight/core/Handle.cpp"
-    "starlight/core/Json.cpp"
     # -- event
     "starlight/event/EventBus.cpp"
     "starlight/event/EventSystem.cpp"
@@ -39,7 +29,6 @@ add_library(starlight STATIC
     "starlight/platform/Platform.cpp"
     "starlight/platform/sdl/SDLWindow.cpp"
     # -- runtime
-    "starlight/runtime/Thread.cpp"
     "starlight/runtime/EventLoop.cpp"
 )
 
@@ -48,24 +37,17 @@ target_include_directories(starlight
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-find_package(spdlog CONFIG REQUIRED)
-find_package(stduuid CONFIG REQUIRED)
-find_package(GTest CONFIG REQUIRED)
 find_package(stb CONFIG REQUIRED)
 find_package(SDL3 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
-find_package(nlohmann_json CONFIG REQUIRED)
 
 
 target_link_libraries(starlight
     PUBLIC
-        fmt::fmt
-        spdlog::spdlog
-        stduuid::stduuid
+        kcore::kcore
         stb::stb
         sdl::sdl
         glm::glm
-        nlohmann_json::nlohmann_json
 )
 
 if (APPLE)
@@ -119,10 +101,6 @@ if (LINUX)
 
     target_compile_options(starlight PRIVATE -pthread)
 
-endif()
-
-if (SL_ENABLE_PROFILING)
-    target_compile_definitions(starlight PRIVATE SL_ENABLE_PROFILING=1)
 endif()
 
 if (BUILD_TESTING)

@@ -1,6 +1,7 @@
 #include "Shader.hh"
 
-#include "starlight/core/Sync.hh"
+#include <kcore/runtime/Sync.hh>
+
 #include "starlight/core/Time.hh"
 
 namespace sl {
@@ -60,7 +61,7 @@ void ShaderImpl::requestDevice() {
 
     m_eventLoopCall = m_eventLoop.schedule<PollingEventLoopCall>(
         [&, future = std::move(future.value())]() mutable {
-            if (not futureReady(future)) {
+            if (not kc::futureReady(future)) {
                 return false;
             }
 
@@ -90,6 +91,6 @@ ShaderRef::ShaderRef(
     RendererProxy& proxy, const ShaderDescription& description,
     EventLoop& eventLoop
 )
-    : Ref(proxy, description, eventLoop) {}
+    : kc::Ref<detail::ShaderImpl>(proxy, description, eventLoop) {}
 
 }  // namespace sl

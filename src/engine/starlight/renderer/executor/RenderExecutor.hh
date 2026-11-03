@@ -1,22 +1,22 @@
 #pragma once
 
+#include <kcore/Concepts.hh>
+#include <kcore/runtime/Thread.hh>
+#include <kcore/runtime/ThreadSafeQueue.hh>
 #include <memory>
 
 #include "RendererCommand.hh"
 #include "RendererCommandDispatcher.hh"
-#include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/renderer/frontend/Renderer.hh"
-#include "starlight/runtime/Thread.hh"
-#include "starlight/runtime/ThreadSafeQueue.hh"
 
 namespace sl {
 
-class RenderExecutor : public NonCopyable, public NonMovable {
-    using Queue = ThreadSafeQueue<RendererCommand>;
+class RenderExecutor : public kc::NonCopyable, public kc::NonMovable {
+    using Queue = kc::ThreadSafeQueue<RendererCommand>;
 
    public:
-    class DispatcherThread : public Thread {
+    class DispatcherThread : public kc::Thread {
        public:
         explicit DispatcherThread(Renderer& renderer, Queue& queue);
 

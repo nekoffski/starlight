@@ -1,15 +1,16 @@
 #pragma once
 
+#include <kcore/Concepts.hh>
+#include <kcore/Functional.hh>
+
 #include "RenderPass.hh"
-#include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/core/Error.hh"
-#include "starlight/core/Functional.hh"
 #include "starlight/renderer/core/RenderResource.hh"
 
 namespace sl {
 
-class RenderFrameRecorder : public NonCopyable, public NonMovable {
+class RenderFrameRecorder : public kc::NonCopyable, public kc::NonMovable {
    public:
     virtual ~RenderFrameRecorder() = default;
 

@@ -3,8 +3,8 @@
 #include <SDL3/SDL.h>
 
 #include <atomic>
+#include <kcore/Concepts.hh>
 
-#include "starlight/core/Concepts.hh"
 #include "starlight/core/Config.hh"
 #include "starlight/event/EventBus.hh"
 
@@ -20,7 +20,8 @@
 
 namespace sl {
 
-class SDLWindowBase : public virtual NonCopyable, public virtual NonMovable {
+class SDLWindowBase : public virtual kc::NonCopyable,
+                      public virtual kc::NonMovable {
    public:
     explicit SDLWindowBase(const Config& config, EventBus bus);
     ~SDLWindowBase();

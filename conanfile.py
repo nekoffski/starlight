@@ -20,6 +20,8 @@ class StarlightConan(ConanFile):
         self.requires("sdl/3.4.14")
         self.requires("glm/1.0.3")
         self.requires("nlohmann_json/3.12.0")
+        self.requires("yaml-cpp/0.8.0")
+        self.requires("p-ranav-glob/0.0.1")
 
         if self.settings.os == "Macos":
             self.requires("metal-cpp/26")

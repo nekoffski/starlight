@@ -1,19 +1,19 @@
 #pragma once
 
+#include <kcore/Concepts.hh>
+#include <kcore/containers/FlatMap.hh>
 #include <memory>
 
 #include "Metal.hh"
-#include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
-#include "starlight/core/FlatMap.hh"
 #include "starlight/renderer/core/Shader.hh"
 
 namespace sl {
 
-class MetalShader : public NonCopyable, public NonMovable {
+class MetalShader : public kc::NonCopyable, public kc::NonMovable {
     struct Guard {};
 
-    using Functions = FlatMap<ShaderStage, MTL::Function*>;
+    using Functions = kc::FlatMap<ShaderStage, MTL::Function*>;
 
    public:
     static Result<std::unique_ptr<MetalShader>> create(
@@ -24,7 +24,7 @@ class MetalShader : public NonCopyable, public NonMovable {
 
     explicit MetalShader(
         MTL::Library* library, Functions&& functions,
-        const ShaderDescription& description,  Guard
+        const ShaderDescription& description, Guard
     );
     ~MetalShader();
 

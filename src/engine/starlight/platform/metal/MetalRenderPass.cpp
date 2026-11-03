@@ -8,7 +8,7 @@ namespace {
 Result<u32> claimShaderBufferBinding(u64 binding, u32 bindingMask) {
     if (binding >= metalVertexBufferIndex) {
         return Error::unexpected(
-            ErrorCode::invalidArgument,
+            kc::ErrorCode::invalidArgument,
             "Shader buffer binding {} is reserved or out of range", binding
         );
     }
@@ -16,7 +16,7 @@ Result<u32> claimShaderBufferBinding(u64 binding, u32 bindingMask) {
     const u32 bindingBit = 1u << binding;
     if (bindingMask & bindingBit) {
         return Error::unexpected(
-            ErrorCode::invalidArgument,
+            kc::ErrorCode::invalidArgument,
             "Shader buffer binding {} is already in use", binding
         );
     }
@@ -30,7 +30,7 @@ Result<u32> bindUniforms(
 ) {
     if (parameters.size() != uniforms.size()) {
         return Error::unexpected(
-            ErrorCode::invalidArgument,
+            kc::ErrorCode::invalidArgument,
             "Shader parameter block count does not match reflection"
         );
     }
@@ -47,7 +47,7 @@ Result<u32> bindUniforms(
 
         if (not matchingParameter || not supportedSize) {
             return Error::unexpected(
-                ErrorCode::invalidArgument,
+                kc::ErrorCode::invalidArgument,
                 "Invalid shader parameter block: {}", uniform.name
             );
         }
@@ -75,7 +75,7 @@ Result<void> storeResourceId(
 ) {
     if (index >= array.count) {
         return Error::unexpected(
-            ErrorCode::invalidArgument,
+            kc::ErrorCode::invalidArgument,
             "Resource index exceeds shader table capacity"
         );
     }
@@ -137,7 +137,7 @@ Result<Bytes> buildResourceTable(
 
         if (not supportedCount || not validStride || not withinTable) {
             return Error::unexpected(
-                ErrorCode::invalidArgument,
+                kc::ErrorCode::invalidArgument,
                 "Invalid Metal resource array layout"
             );
         }
@@ -162,7 +162,7 @@ Result<void> bindResourceTables(
             table.size > 0 && table.size <= metalMaxInlineBufferSize;
         if (not supportedSize) {
             return Error::unexpected(
-                ErrorCode::invalidArgument,
+                kc::ErrorCode::invalidArgument,
                 "Unsupported Metal resource table layout"
             );
         }
@@ -202,7 +202,7 @@ Result<void> MetalRenderPassEncoder::setPipeline(
 
     if (not pipeline) {
         return Error::unexpected(
-            ErrorCode::invalidArgument, "Invalid graphics pipeline handle"
+            kc::ErrorCode::invalidArgument, "Invalid graphics pipeline handle"
         );
     }
 
@@ -261,7 +261,7 @@ Result<void> MetalRenderPassEncoder::setVertexBuffer(
 
     if (not vertexBuffer) {
         return Error::unexpected(
-            ErrorCode::invalidArgument, "Invalid vertex buffer handle"
+            kc::ErrorCode::invalidArgument, "Invalid vertex buffer handle"
         );
     }
 
@@ -278,7 +278,7 @@ Result<void> MetalRenderPassEncoder::setIndexBuffer(
 
     if (not indexBuffer) {
         return Error::unexpected(
-            ErrorCode::invalidArgument, "Invalid index buffer handle"
+            kc::ErrorCode::invalidArgument, "Invalid index buffer handle"
         );
     }
 

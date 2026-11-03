@@ -1,14 +1,15 @@
 #pragma once
 
+#include <kcore/Concepts.hh>
+#include <kcore/Functional.hh>
+#include <kcore/Random.hh>
+
 #include "details/EventBroker.hh"
-#include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
-#include "starlight/core/Functional.hh"
-#include "starlight/core/Random.hh"
 
 namespace sl {
 
-class EventBus : public NonCopyable {
+class EventBus : public kc::NonCopyable {
     friend class EventSystem;
 
    public:
@@ -18,7 +19,7 @@ class EventBus : public NonCopyable {
     EventBus& operator=(EventBus& oth) = delete;
 
     template <typename T>
-    void on(MoveOnlyFunction<void(const T&)> callback) {
+    void on(kc::MoveOnlyFunction<void(const T&)> callback) {
         m_broker->registerCallback(m_uuid, std::move(callback));
     }
 

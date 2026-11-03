@@ -1,15 +1,15 @@
 #include "AssetSystem.hh"
 
 #include "loaders/ShaderLoader.hh"
-#include "starlight/core/Log.hh"
+#include "starlight/core/Core.hh"
 
 namespace sl {
 
 AssetSystem::AssetSystem(const Config& cfg, RendererProxy proxy)
     : m_cfg(cfg), m_proxy(proxy) {}
 
-Result<ShaderRef> AssetSystem::loadShader(const Path& path) {
-    const auto fullPath = Path::join(m_cfg.paths.assets, path);
+Result<ShaderRef> AssetSystem::loadShader(const kc::Path& path) {
+    const auto fullPath = kc::Path::join(m_cfg.paths.assets, path);
     const auto description = ShaderLoader::loadShaderDescription(fullPath);
 
     if (not description) {

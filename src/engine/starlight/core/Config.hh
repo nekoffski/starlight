@@ -1,8 +1,9 @@
 #pragma once
 
+#include <kcore/io/FileSystem.hh>
+
 #include "Core.hh"
-#include "FileSystem.hh"
-#include "Log.hh"
+#include "starlight/core/Core.hh"
 
 namespace sl {
 
@@ -12,8 +13,8 @@ struct Config {
     };
 
     struct Paths {
-        Path cwd{Path::cwd()};
-        Path assets{Path::join(cwd, "assets")};
+        kc::Path cwd{kc::Path::cwd()};
+        kc::Path assets{kc::Path::join(cwd, "assets")};
     };
 
     struct Renderer {

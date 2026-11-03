@@ -1,6 +1,8 @@
 #pragma once
 
 #include <array>
+#include <kcore/Concepts.hh>
+#include <kcore/IdAllocator.hh>
 #include <unordered_map>
 
 #include "Metal.hh"
@@ -8,14 +10,12 @@
 #include "MetalGraphicsPipeline.hh"
 #include "MetalRenderSurfaceProvider.hh"
 #include "MetalShader.hh"
-#include "starlight/core/Concepts.hh"
 #include "starlight/core/Config.hh"
-#include "starlight/core/Id.hh"
 #include "starlight/renderer/rhi/RenderDevice.hh"
 
 namespace sl {
 
-class MetalResourcePool : public NonCopyable, public NonMovable {
+class MetalResourcePool : public kc::NonCopyable, public kc::NonMovable {
     struct SurfaceWrapper {
         CA::MetalLayer* surface;
         std::shared_ptr<MetalRenderSurfaceProvider> provider;
@@ -79,7 +79,7 @@ class MetalResourcePool : public NonCopyable, public NonMovable {
     SamplerTable m_samplers;
     u32 m_maxTextures;
 
-    IdLake m_idLake;
+    kc::TypeIdAllocator m_idAllocator;
     MetalContext& m_ctx;
 
     std::unordered_map<SurfaceHandle, SurfaceWrapper> m_surfaces;

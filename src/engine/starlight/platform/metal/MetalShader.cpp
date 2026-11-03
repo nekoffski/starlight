@@ -2,9 +2,8 @@
 
 #include <dispatch/dispatch.h>
 
+#include <kcore/Functional.hh>
 #include <ranges>
-
-#include "starlight/core/Functional.hh"
 
 namespace sl {
 
@@ -13,12 +12,12 @@ Result<std::unique_ptr<MetalShader>> MetalShader::create(
 ) {
     if (description.byteCode.empty() || description.stages.empty()) {
         return Error::unexpected(
-            ErrorCode::invalidArgument, "Invalid shader description"
+            kc::ErrorCode::invalidArgument, "Invalid shader description"
         );
     }
 
     auto* pool = NS::AutoreleasePool::alloc()->init();
-    DEFER { pool->release(); };
+    KCORE_DEFER { pool->release(); };
 
     auto* data = dispatch_data_create(
         description.byteCode.data(), description.byteCode.size(), nullptr,
@@ -31,7 +30,7 @@ Result<std::unique_ptr<MetalShader>> MetalShader::create(
         );
     }
 
-    NAMED_DEFER(dataReleaser) { dispatch_release(data); };
+    KCORE_NAMED_DEFER(dataReleaser) { dispatch_release(data); };
 
     NS::Error* nativeError = nullptr;
     auto* library = ctx.device().newLibrary(data, &nativeError);
@@ -43,11 +42,11 @@ Result<std::unique_ptr<MetalShader>> MetalShader::create(
         );
     }
 
-    NAMED_DEFER(libraryReleaser) { library->release(); };
+    KCORE_NAMED_DEFER(libraryReleaser) { library->release(); };
 
     Functions functions;
 
-    NAMED_DEFER(functionsReleaser) {
+    KCORE_NAMED_DEFER(functionsReleaser) {
         functions.forEach([](auto* function) { function->release(); });
     };
 

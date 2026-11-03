@@ -1,16 +1,16 @@
 #pragma once
 
+#include <kcore/Concepts.hh>
 #include <memory>
 
 #include "Metal.hh"
 #include "MetalShader.hh"
-#include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/renderer/rhi/GraphicsPipeline.hh"
 
 namespace sl {
 
-class MetalGraphicsPipeline : public NonCopyable, public NonMovable {
+class MetalGraphicsPipeline : public kc::NonCopyable, public kc::NonMovable {
     struct Guard {};
 
    public:

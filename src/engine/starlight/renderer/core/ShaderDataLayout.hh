@@ -1,13 +1,13 @@
 #pragma once
 
 #include <cstring>
+#include <kcore/containers/FlatMap.hh>
 #include <type_traits>
 #include <utility>
 #include <variant>
 #include <vector>
 
 #include "starlight/core/Core.hh"
-#include "starlight/core/FlatMap.hh"
 
 namespace sl {
 
@@ -27,7 +27,7 @@ struct StructType;
 using DataType = std::variant<ValueType, StructType>;
 
 struct StructType {
-    FlatMap<Str, DataType> members;
+    kc::FlatMap<Str, DataType> members;
 
     u64 size() const;
 };

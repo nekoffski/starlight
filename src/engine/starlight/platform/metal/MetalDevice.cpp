@@ -41,8 +41,8 @@ Result<void> MetalDevice::trySubmitFrame(RecordFrame record) {
 
     auto* autoreleasePool = NS::AutoreleasePool::alloc()->init();
 
-    NAMED_DEFER(latchReleaser) { latch->release(); };
-    NAMED_DEFER(poolReleaser) { autoreleasePool->release(); };
+    KCORE_NAMED_DEFER(latchReleaser) { latch->release(); };
+    KCORE_NAMED_DEFER(poolReleaser) { autoreleasePool->release(); };
 
     auto* commandBuffer = m_ctx.commandQueue().commandBuffer();
 

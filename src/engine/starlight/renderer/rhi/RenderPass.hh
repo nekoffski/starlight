@@ -1,11 +1,11 @@
 #pragma once
 
+#include <kcore/Concepts.hh>
+#include <kcore/Functional.hh>
 #include <span>
 
-#include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/core/Error.hh"
-#include "starlight/core/Functional.hh"
 #include "starlight/math/Math.hh"
 #include "starlight/renderer/core/RenderResource.hh"
 #include "starlight/renderer/core/Shader.hh"
@@ -28,7 +28,7 @@ struct RenderPassDescription {
     std::span<const ColorAttachment> colorAttachments;
 };
 
-class RenderPassEncoder : public NonCopyable, public NonMovable {
+class RenderPassEncoder : public kc::NonCopyable, public kc::NonMovable {
    public:
     virtual ~RenderPassEncoder() = default;
 
@@ -46,6 +46,7 @@ class RenderPassEncoder : public NonCopyable, public NonMovable {
     virtual void drawIndexed(u32 indexCount, u32 instanceCount = 1) = 0;
 };
 
-using RenderPassCallback = MoveOnlyFunction<Result<void>(RenderPassEncoder&)>;
+using RenderPassCallback =
+    kc::MoveOnlyFunction<Result<void>(RenderPassEncoder&)>;
 
 }  // namespace sl

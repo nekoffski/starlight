@@ -1,13 +1,13 @@
 #pragma once
 
+#include <kcore/Concepts.hh>
+#include <kcore/containers/FlatMap.hh>
 #include <queue>
 
 #include "RenderRequest.hh"
 #include "RendererResourcePool.hh"
-#include "starlight/core/Concepts.hh"
 #include "starlight/core/Config.hh"
 #include "starlight/core/Core.hh"
-#include "starlight/core/FlatMap.hh"
 #include "starlight/renderer/core/Primitive.hh"
 #include "starlight/renderer/core/Shader.hh"
 #include "starlight/renderer/rhi/GraphicsPipeline.hh"
@@ -16,7 +16,7 @@
 
 namespace sl {
 
-class Renderer : public NonCopyable, public NonMovable {
+class Renderer : public kc::NonCopyable, public kc::NonMovable {
    public:
     explicit Renderer(const Config& config, RenderDevice& device);
 
@@ -80,7 +80,8 @@ class Renderer : public NonCopyable, public NonMovable {
     std::queue<RenderRequest> m_pendingRequests;
     u64 m_frameNumber{0u};
 
-    FlatMap<GraphicsPipelineDescription, GraphicsPipelineHandle>  // TODO: fixme
+    kc::FlatMap<
+        GraphicsPipelineDescription, GraphicsPipelineHandle>  // TODO: fixme
         m_graphicsPipelines;
 
     RendererResourcePool m_resourcePool;

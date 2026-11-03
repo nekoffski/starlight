@@ -1,9 +1,9 @@
 #pragma once
 
+#include <kcore/Handle.hh>
 #include <variant>
 
 #include "starlight/core/Core.hh"
-#include "starlight/core/Handle.hh"
 
 namespace sl {
 
@@ -18,8 +18,8 @@ enum class ResourceType {
 };
 
 template <ResourceType T>
-struct RenderResourceHandle : HandleBase<ResourceType, T> {
-    using HandleBase<ResourceType, T>::HandleBase;
+struct RenderResourceHandle : kc::HandleBase<ResourceType, T> {
+    using kc::HandleBase<ResourceType, T>::HandleBase;
 };
 
 using SurfaceHandle = RenderResourceHandle<ResourceType::surface>;

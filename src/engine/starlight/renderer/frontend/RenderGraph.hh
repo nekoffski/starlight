@@ -1,15 +1,15 @@
 #pragma once
 
+#include <kcore/Concepts.hh>
 #include <vector>
 
-#include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/renderer/rhi/RenderFrameRecorder.hh"
 #include "starlight/renderer/rhi/RenderPass.hh"
 
 namespace sl {
 
-class RenderGraph : public NonCopyable, public NonMovable {
+class RenderGraph : public kc::NonCopyable, public kc::NonMovable {
     struct PassWrapper {
         RenderPassCallback record;
         std::vector<ColorAttachment> colorAttachments;

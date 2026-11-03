@@ -1,13 +1,15 @@
 #pragma once
 
+#include <kcore/Concepts.hh>
+
 #include "RendererCommand.hh"
-#include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/renderer/frontend/Renderer.hh"
 
 namespace sl {
 
-class RendererCommandDispatcher : public NonCopyable, public NonMovable {
+class RendererCommandDispatcher : public kc::NonCopyable,
+                                  public kc::NonMovable {
    public:
     explicit RendererCommandDispatcher(Renderer& renderer);
 

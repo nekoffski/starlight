@@ -1,6 +1,7 @@
 #include "MetalGraphicsPipeline.hh"
 
-#include "starlight/core/Functional.hh"
+#include <kcore/Functional.hh>
+
 #include "starlight/renderer/core/Vertex.hh"
 
 namespace sl {
@@ -45,7 +46,7 @@ Result<std::unique_ptr<MetalGraphicsPipeline>> MetalGraphicsPipeline::create(
 ) {
     if (description.format != TextureFormat::bgra8unorm) {
         return Error::unexpected(
-            ErrorCode::invalidArgument, "Unsupported texture format"
+            kc::ErrorCode::invalidArgument, "Unsupported texture format"
         );
     }
 
@@ -54,16 +55,16 @@ Result<std::unique_ptr<MetalGraphicsPipeline>> MetalGraphicsPipeline::create(
 
     if (not vertexStage || not fragmentStage) {
         return Error::unexpected(
-            ErrorCode::invalidArgument,
+            kc::ErrorCode::invalidArgument,
             "Graphics shader requires both vertex and fragment stages"
         );
     }
 
     auto* pool = NS::AutoreleasePool::alloc()->init();
-    DEFER { pool->release(); };
+    KCORE_DEFER { pool->release(); };
 
     auto* descriptor = MTL::RenderPipelineDescriptor::alloc()->init();
-    DEFER { descriptor->release(); };
+    KCORE_DEFER { descriptor->release(); };
 
     descriptor->setVertexFunction(vertexStage);
     descriptor->setFragmentFunction(fragmentStage);
@@ -72,14 +73,14 @@ Result<std::unique_ptr<MetalGraphicsPipeline>> MetalGraphicsPipeline::create(
 
     if (not layoutDescription.has_value()) [[unlikely]] {
         return Error::unexpected(
-            ErrorCode::invalidArgument, "Vertex layout is not specified"
+            kc::ErrorCode::invalidArgument, "Vertex layout is not specified"
         );
     }
 
     if (auto r = setVertexDescriptor(layoutDescription.value(), descriptor);
         not r) [[unlikely]] {
         return Error::unexpected(
-            ErrorCode::invalidArgument,
+            kc::ErrorCode::invalidArgument,
             "Failed to create vertex descriptor: {}", r.error()
         );
     }

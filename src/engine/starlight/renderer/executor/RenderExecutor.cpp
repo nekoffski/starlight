@@ -21,7 +21,7 @@ RenderExecutor::Submitter RenderExecutor::createSubmitter() {
 RenderExecutor::DispatcherThread::DispatcherThread(
     Renderer& renderer, Queue& queue
 )
-    : Thread("RenderExecutor"),
+    : kc::Thread("RenderExecutor"),
       m_renderer(renderer),
       m_dispatcher(renderer),
       m_queue(queue) {}

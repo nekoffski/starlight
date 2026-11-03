@@ -1,7 +1,8 @@
 #include "Renderer.hh"
 
+#include <kcore/Functional.hh>
+
 #include "RenderGraph.hh"
-#include "starlight/core/Functional.hh"
 #include "starlight/renderer/core/RenderResource.hh"
 
 namespace sl {
@@ -55,7 +56,7 @@ Result<RenderTarget> Renderer::createTarget(
 
 void Renderer::destroyTarget(RenderTarget target) {
     std::visit(
-        Overloader{
+        kc::Overloader{
             [&](SurfaceHandle surface) { m_device.destroySurface(surface); },
             [&](TextureHandle) {
                 log::panic("Destroying texture render output is not supported");
@@ -84,7 +85,7 @@ u64 Renderer::frameIndex() const {
 
 void Renderer::tryToSubmitFrame() {
     const auto& request = m_pendingRequests.front();
-    NAMED_DEFER(requestDropper) { m_pendingRequests.pop(); };
+    KCORE_NAMED_DEFER(requestDropper) { m_pendingRequests.pop(); };
 
     const auto r = m_device.trySubmitFrame([&](RenderFrameRecorder& context) {
         return recordFrame(context, request);
@@ -126,7 +127,7 @@ Result<ShaderInterface> Renderer::getShaderInterface(
     const auto* description = m_device.getShaderDescription(handle);
     if (not description) {
         return Error::unexpected(
-            ErrorCode::invalidArgument, "Invalid shader handle"
+            kc::ErrorCode::invalidArgument, "Invalid shader handle"
         );
     }
 
@@ -164,7 +165,8 @@ Result<void> Renderer::recordFrame(
                     // TODO: refactor
                     if (not shaderDescription) {
                         return Error::unexpected(
-                            ErrorCode::invalidArgument, "Invalid shader handle"
+                            kc::ErrorCode::invalidArgument,
+                            "Invalid shader handle"
                         );
                     }
 
@@ -172,7 +174,7 @@ Result<void> Renderer::recordFrame(
 
                     if (not vertexLayout.has_value()) {
                         return Error::unexpected(
-                            ErrorCode::invalidArgument,
+                            kc::ErrorCode::invalidArgument,
                             "Shader does not have a vertex layout"
                         );
                     }
@@ -206,14 +208,14 @@ Result<void> Renderer::recordFrame(
 
                         if (not primitive) {
                             return Error::unexpected(
-                                ErrorCode::invalidArgument,
+                                kc::ErrorCode::invalidArgument,
                                 "Invalid primitive handle"
                             );
                         }
 
                         if (primitive->vertexLayout != *vertexLayout) {
                             return Error::unexpected(
-                                ErrorCode::invalidArgument,
+                                kc::ErrorCode::invalidArgument,
                                 "Primitive vertex layout does not match shader "
                                 "vertex layout"
                             );

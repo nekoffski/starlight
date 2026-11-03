@@ -15,13 +15,13 @@ Result<std::unique_ptr<MetalBuffer>> MetalBuffer::create(
 ) {
     if (description.bytes.empty()) {
         return Error::unexpected(
-            ErrorCode::invalidArgument, "Buffer description is empty"
+            kc::ErrorCode::invalidArgument, "Buffer description is empty"
         );
     }
 
     if (description.bytes.size() > ctx.device().maxBufferLength()) {
         return Error::unexpected(
-            ErrorCode::invalidArgument,
+            kc::ErrorCode::invalidArgument,
             "Buffer description exceeds maximum length"
         );
     }

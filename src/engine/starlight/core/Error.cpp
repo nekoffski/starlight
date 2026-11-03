@@ -1,23 +1,52 @@
 #include "Error.hh"
 
 namespace sl {
+namespace {
 
-Error::Error(ErrorCode code, const std::string& message)
-    : m_code(code), m_message(message) {}
+class ErrorCategory final : public std::error_category {
+   public:
+    const char* name() const noexcept override { return "starlight"; }
 
-ErrorCode Error::code() const { return m_code; }
+    std::string message(int value) const override {
+        switch (static_cast<ErrorCode>(value)) {
+            case ErrorCode::rendererCommandRejected:
+                return "Renderer command rejected";
+            case ErrorCode::backendMismatch:
+                return "Backend mismatch";
+            case ErrorCode::surfaceCreationFailed:
+                return "Surface creation failed";
+            case ErrorCode::tooManyFrameRequests:
+                return "Too many frame requests";
+            case ErrorCode::tooManyFramesInFlight:
+                return "Too many frames in flight";
+            case ErrorCode::renderEncodingFailed:
+                return "Render encoding failed";
+            case ErrorCode::renderSurfaceNotDrawable:
+                return "Render surface not drawable";
+            case ErrorCode::shaderParsingError:
+                return "Shader parsing error";
+            case ErrorCode::invalidFuture:
+                return "Invalid future";
+            case ErrorCode::metalError:
+                return "Metal error";
+            case ErrorCode::deviceOperationFailed:
+                return "Device operation failed";
+            case ErrorCode::notImplemented:
+                return "Not implemented";
+        }
+        return "Unknown Starlight error";
+    }
+};
 
-const std::string& Error::message() const { return m_message; }
+}  // namespace
 
-std::unexpected<Error> Error::unexpected(const Error& error) {
-    return std::unexpected{error};
+const std::error_category& errorCategory() noexcept {
+    static ErrorCategory category;
+    return category;
 }
 
-std::optional<Error> Error::empty() { return {}; }
-
-void Error::reset() {
-    m_code = ErrorCode::noError;
-    m_message.clear();
+std::error_code make_error_code(ErrorCode code) noexcept {
+    return {static_cast<int>(code), errorCategory()};
 }
 
 }  // namespace sl

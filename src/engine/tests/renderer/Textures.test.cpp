@@ -76,7 +76,7 @@ class BusyDevice : public sl::RenderDevice {
     ) const override {
         if (not alive) {
             return sl::Error::unexpected(
-                sl::ErrorCode::invalidArgument, "released"
+                kc::ErrorCode::invalidArgument, "released"
             );
         }
         return {};
@@ -189,16 +189,32 @@ TEST(ShaderReflection, ReadsTablesAndUniformsAndRejectsMalformedLayouts) {
              std::chrono::steady_clock::now().time_since_epoch().count()
          ));
     std::filesystem::create_directory(directory);
-    sl::DeferCall cleanup{[&] { std::filesystem::remove_all(directory); }};
+    kc::DeferCall cleanup{[&] { std::filesystem::remove_all(directory); }};
     const auto shader = directory / "shader.bin";
-    std::ofstream(shader) << "compiled shader bytes";
+    const kc::Path shaderPath{shader.string()};
+    const auto missingShader =
+        sl::ShaderLoader::loadShaderDescription(shaderPath);
+    ASSERT_FALSE(missingShader);
+    EXPECT_EQ(missingShader.error().code(), kc::ErrorCode::fileNotFound);
+
+    const std::array<char, 4> binary{'S', '\0', 'L', '\xFF'};
+    std::ofstream(shader, std::ios::binary).write(binary.data(), binary.size());
+    const auto missingMetadata =
+        sl::ShaderLoader::loadShaderDescription(shaderPath);
+    ASSERT_FALSE(missingMetadata);
+    EXPECT_EQ(missingMetadata.error().code(), kc::ErrorCode::fileNotFound);
+
     const auto metadata = shader.string() + ".json";
     const auto load = [&](const char* layout) {
         std::ofstream(metadata) << layout;
         return sl::ShaderLoader::loadShaderDescription(
-            sl::Path{shader.string()}
+            kc::Path{shader.string()}
         );
     };
+    const auto invalidJson = load("{");
+    ASSERT_FALSE(invalidJson);
+    EXPECT_EQ(invalidJson.error().code(), kc::ErrorCode::jsonParsingError);
+
     auto description = load(R"({"entryPoints":[],"globalScope":{"parameters":[
         {"name":"resources","binding":{"index":0},"type":{"kind":"parameterBlock","elementVarLayout":{"type":{
             "sizes":[{"kind":"uniform","value":512}],"fields":[
@@ -207,6 +223,7 @@ TEST(ShaderReflection, ReadsTablesAndUniformsAndRejectsMalformedLayouts) {
         {"name":"draw","binding":{"index":1},"type":{"kind":"constantBuffer","elementVarLayout":{"type":{"sizes":[{"kind":"uniform","value":16}],"fields":[]}}}}
     ]}})");
     ASSERT_TRUE(description) << description.error().message();
+    EXPECT_EQ(description->byteCode, (sl::Bytes{'S', 0, 'L', 255}));
     ASSERT_EQ(description->resourceTables.size(), 1);
     EXPECT_EQ(description->resourceTables[0].arrays[0].count, 64);
     EXPECT_EQ(description->resourceTables[0].arrays[0].stride, 8);

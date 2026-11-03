@@ -4,7 +4,7 @@
 
 #include "Metal.hh"
 
-#include "starlight/core/Log.hh"
+#include "starlight/core/Core.hh"
 
 namespace sl {
 namespace {

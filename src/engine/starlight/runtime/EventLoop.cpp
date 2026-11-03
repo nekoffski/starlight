@@ -4,9 +4,12 @@
 
 namespace sl {
 
-EventLoop::EventLoop(const Str& name) : Thread(name) { start(); }
+EventLoop::EventLoop(const Str& name) : kc::Thread(name) { start(); }
 
-EventLoop::~EventLoop() { stop(); }
+EventLoop::~EventLoop() {
+    stop();
+    join();
+}
 
 void EventLoop::stop() { m_running = false; }
 
@@ -16,7 +19,7 @@ void EventLoop::remove(const Tag<Str>& uuid) {
 }
 
 Tag<Str> EventLoop::scheduleImpl(std::unique_ptr<EventLoopCall> call) {
-    const auto uuid = RandomEngine::get().uuid();
+    const auto uuid = kc::RandomEngine::get().uuid();
     m_calls.insert(uuid, std::move(call));
     return Tag<Str>{uuid};
 }

@@ -1,20 +1,19 @@
 #pragma once
 
 #include <any>
+#include <kcore/Concepts.hh>
+#include <kcore/Functional.hh>
 #include <mutex>
 #include <typeindex>
 #include <unordered_map>
 #include <vector>
 
-#include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
-#include "starlight/core/Functional.hh"
-#include "starlight/core/Log.hh"
 
 namespace sl::details {
 
-class EventBroker : public NonCopyable, public NonMovable {
-    using GenericCallback = MoveOnlyFunction<void(const std::any&)>;
+class EventBroker : public kc::NonCopyable, public kc::NonMovable {
+    using GenericCallback = kc::MoveOnlyFunction<void(const std::any&)>;
     using CallbackMap = std::unordered_map<
         std::type_index, std::unordered_map<Str, GenericCallback>>;
     using EventMap = std::unordered_map<std::type_index, std::vector<std::any>>;
@@ -29,7 +28,7 @@ class EventBroker : public NonCopyable, public NonMovable {
 
     template <typename T>
     void registerCallback(
-        const Str& id, MoveOnlyFunction<void(const T&)> callback
+        const Str& id, kc::MoveOnlyFunction<void(const T&)> callback
     ) {
         registerCallback(
             id, typeid(T), [cb = std::move(callback)](const std::any& event) {

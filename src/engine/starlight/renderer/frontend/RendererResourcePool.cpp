@@ -40,7 +40,7 @@ Result<PrimitiveHandle> RendererResourcePool::createPrimitive(
         );
     }
 
-    PrimitiveHandle handle{m_idLake.acquire<Primitive>()};
+    PrimitiveHandle handle{m_idAllocator.acquire<Primitive>()};
 
     Primitive primitive{
         .vertexLayout = description.vertexLayout,

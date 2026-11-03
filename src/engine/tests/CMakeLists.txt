@@ -1,3 +1,4 @@
+find_package(GTest CONFIG REQUIRED)
 include(GoogleTest)
 
 function(add_starlight_test target)
@@ -12,10 +13,12 @@ add_starlight_test(starlight-event-tests
 
 add_starlight_test(starlight-runtime-tests
     "runtime/ThreadSafeQueue.test.cpp"
+    "runtime/EventLoop.test.cpp"
 )
 
 add_starlight_test(starlight-core-tests
     "core/FlatMap.test.cpp"
+    "core/Error.test.cpp"
 )
 
 add_starlight_test(starlight-renderer-tests

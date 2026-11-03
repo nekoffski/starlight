@@ -22,7 +22,7 @@ Result<CA::MetalDrawable*> MetalRenderFrameRecorder::acquireSurface(
 
     if (not layer) {
         return Error::unexpected(
-            ErrorCode::invalidArgument, "Surface not found"
+            kc::ErrorCode::invalidArgument, "Surface not found"
         );
     }
 

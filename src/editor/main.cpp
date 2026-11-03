@@ -1,14 +1,16 @@
 
 #include <SDL3/SDL.h>
 
+#include <kcore/Functional.hh>
+
 #include "starlight/core/Core.hh"
-#include "starlight/core/Functional.hh"
-#include "starlight/core/Log.hh"
 
 int main() {
     using namespace sl;
 
-    log::init();
+    log::init({
+        .formatPattern = "%^[%d-%m-%Y %T] [Th: %t] %-7l [starlight]: %v %$",
+    });
     log::info("Hello world!");
 
     log::expect(
@@ -18,7 +20,7 @@ int main() {
     auto window = SDL_CreateWindow("Starlight", 800, 600, 0);
     log::expect(window, "Could not create window");
 
-    DEFER {
+    KCORE_DEFER {
         SDL_DestroyWindow(window);
         SDL_Quit();
     };

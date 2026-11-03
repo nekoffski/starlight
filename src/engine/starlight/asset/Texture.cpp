@@ -5,7 +5,7 @@ namespace sl {
 Result<TextureUploadData> makeCheckerboard(u32 size, u32 cellSize) {
     if (size == 0 || size > maxTextureDimension2D || cellSize == 0) {
         return Error::unexpected(
-            ErrorCode::invalidArgument, "Invalid checkerboard dimensions"
+            kc::ErrorCode::invalidArgument, "Invalid checkerboard dimensions"
         );
     }
     TextureUploadData data{.width = size, .height = size};

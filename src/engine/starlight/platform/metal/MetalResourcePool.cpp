@@ -27,7 +27,7 @@ Result<SurfaceHandle> MetalResourcePool::attachSurface(
         MTL::PixelFormatBGRA8Unorm
     );  // TODO: make it configurable
 
-    SurfaceHandle handle{m_idLake.acquire<SurfaceHandle>()};
+    SurfaceHandle handle{m_idAllocator.acquire<SurfaceHandle>()};
 
     m_surfaces.emplace(
         std::make_pair(handle, SurfaceWrapper{layer, metalProvider})
@@ -56,7 +56,7 @@ Result<ShaderHandle> MetalResourcePool::createShader(
         return Error::unexpected(maybeShader.error());
     }
 
-    ShaderHandle handle{m_idLake.acquire<ShaderHandle>()};
+    ShaderHandle handle{m_idAllocator.acquire<ShaderHandle>()};
     m_shaders.emplace(std::make_pair(handle, std::move(maybeShader.value())));
     return handle;
 }
@@ -72,7 +72,7 @@ Result<GraphicsPipelineHandle> MetalResourcePool::createGraphicsPipeline(
 
     if (not shader) {
         return Error::unexpected(
-            ErrorCode::invalidArgument, "Invalid shader handle"
+            kc::ErrorCode::invalidArgument, "Invalid shader handle"
         );
     }
 
@@ -83,7 +83,9 @@ Result<GraphicsPipelineHandle> MetalResourcePool::createGraphicsPipeline(
         return Error::unexpected(maybePipeline.error());
     }
 
-    GraphicsPipelineHandle handle{m_idLake.acquire<GraphicsPipelineHandle>()};
+    GraphicsPipelineHandle handle{
+        m_idAllocator.acquire<GraphicsPipelineHandle>()
+    };
     m_graphicsPipelines.emplace(
         std::make_pair(handle, std::move(maybePipeline.value()))
     );
@@ -113,7 +115,7 @@ Result<DeviceBufferHandle> MetalResourcePool::createBuffer(
         return Error::unexpected(maybeBuffer.error());
     }
 
-    DeviceBufferHandle handle{m_idLake.acquire<DeviceBufferHandle>()};
+    DeviceBufferHandle handle{m_idAllocator.acquire<DeviceBufferHandle>()};
     m_buffers.emplace(std::make_pair(handle, std::move(maybeBuffer.value())));
     return handle;
 }
@@ -135,7 +137,7 @@ Result<TextureHandle> MetalResourcePool::createTexture(
     auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
     if (not m_ctx.device().supportsFamily(MTL::GPUFamilyMetal3)) {
         return Error::unexpected(
-            ErrorCode::invalidArgument,
+            kc::ErrorCode::invalidArgument,
             "Indexed textures require a Metal 3 device"
         );
     }
@@ -149,7 +151,7 @@ Result<TextureHandle> MetalResourcePool::createTexture(
 
     if (not validDimensions || not supportedFormat || not tightlyPackedPixels) {
         return Error::unexpected(
-            ErrorCode::invalidArgument,
+            kc::ErrorCode::invalidArgument,
             "Expected a nonempty, tightly packed RGBA8 image (at most {} x {})",
             maxTextureDimension2D, maxTextureDimension2D
         );
@@ -181,7 +183,7 @@ Result<TextureHandle> MetalResourcePool::createTexture(
         return TextureHandle{index, entry.generation};
     }
     return Error::unexpected(
-        ErrorCode::invalidArgument, "Texture table is full"
+        kc::ErrorCode::invalidArgument, "Texture table is full"
     );
 }
 
@@ -206,7 +208,7 @@ Result<SamplerHandle> MetalResourcePool::createSampler(
 ) {
     if (not m_ctx.device().supportsFamily(MTL::GPUFamilyMetal3)) {
         return Error::unexpected(
-            ErrorCode::invalidArgument,
+            kc::ErrorCode::invalidArgument,
             "Indexed samplers require a Metal 3 device"
         );
     }
@@ -218,7 +220,7 @@ Result<SamplerHandle> MetalResourcePool::createSampler(
 
     if (not supportedFilter || not supportedAddressMode) {
         return Error::unexpected(
-            ErrorCode::invalidArgument, "Invalid sampler description"
+            kc::ErrorCode::invalidArgument, "Invalid sampler description"
         );
     }
     for (u32 index = 0; index < m_samplers.size(); ++index) {
@@ -251,7 +253,7 @@ Result<SamplerHandle> MetalResourcePool::createSampler(
         return SamplerHandle{index, entry.generation};
     }
     return Error::unexpected(
-        ErrorCode::invalidArgument, "Sampler table is full"
+        kc::ErrorCode::invalidArgument, "Sampler table is full"
     );
 }
 
@@ -277,14 +279,14 @@ Result<void> MetalResourcePool::validateResources(
     for (auto handle : resources.textures) {
         if (not getTexture(handle)) {
             return Error::unexpected(
-                ErrorCode::invalidArgument, "Invalid texture dependency"
+                kc::ErrorCode::invalidArgument, "Invalid texture dependency"
             );
         }
     }
     for (auto handle : resources.samplers) {
         if (not getSampler(handle)) {
             return Error::unexpected(
-                ErrorCode::invalidArgument, "Invalid sampler dependency"
+                kc::ErrorCode::invalidArgument, "Invalid sampler dependency"
             );
         }
     }

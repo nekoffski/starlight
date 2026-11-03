@@ -1,16 +1,17 @@
 #pragma once
 
+#include <kcore/Concepts.hh>
+
 #include "RendererProxy.hh"
-#include "frontend/Renderer.hh"
 #include "executor/RenderExecutor.hh"
+#include "frontend/Renderer.hh"
 #include "rhi/RenderDevice.hh"
-#include "starlight/core/Concepts.hh"
 #include "starlight/core/Config.hh"
 #include "starlight/core/Core.hh"
 
 namespace sl {
 
-class RenderingSystem : public NonCopyable, public NonMovable {
+class RenderingSystem : public kc::NonCopyable, public kc::NonMovable {
    public:
     explicit RenderingSystem(const Config& config);
     ~RenderingSystem();

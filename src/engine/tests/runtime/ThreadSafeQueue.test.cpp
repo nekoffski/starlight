@@ -1,15 +1,14 @@
-#include "starlight/runtime/ThreadSafeQueue.hh"
-
 #include <gtest/gtest.h>
 
 #include <chrono>
 #include <future>
+#include <kcore/runtime/ThreadSafeQueue.hh>
 #include <memory>
 
 namespace {
 
 TEST(ThreadSafeQueue, PopsValuesInFirstInFirstOutOrder) {
-    sl::ThreadSafeQueue<int> queue;
+    kc::ThreadSafeQueue<int> queue;
 
     ASSERT_TRUE(queue.push(1));
     ASSERT_TRUE(queue.push(2));
@@ -24,13 +23,13 @@ TEST(ThreadSafeQueue, PopsValuesInFirstInFirstOutOrder) {
 }
 
 TEST(ThreadSafeQueue, TryPopReturnsEmptyWhenNoValueIsAvailable) {
-    sl::ThreadSafeQueue<int> queue;
+    kc::ThreadSafeQueue<int> queue;
 
     EXPECT_FALSE(queue.tryPop().has_value());
 }
 
 TEST(ThreadSafeQueue, PopWaitsUntilAValueIsPushed) {
-    sl::ThreadSafeQueue<int> queue;
+    kc::ThreadSafeQueue<int> queue;
 
     auto popped =
         std::async(std::launch::async, [&queue] { return queue.pop(); });
@@ -51,7 +50,7 @@ TEST(ThreadSafeQueue, PopWaitsUntilAValueIsPushed) {
 }
 
 TEST(ThreadSafeQueue, CloseWakesWaitingPopWithoutAValue) {
-    sl::ThreadSafeQueue<int> queue;
+    kc::ThreadSafeQueue<int> queue;
 
     auto popped =
         std::async(std::launch::async, [&queue] { return queue.pop(); });
@@ -70,7 +69,7 @@ TEST(ThreadSafeQueue, CloseWakesWaitingPopWithoutAValue) {
 }
 
 TEST(ThreadSafeQueue, DrainsQueuedValuesAfterClosureAndRejectsNewOnes) {
-    sl::ThreadSafeQueue<int> queue;
+    kc::ThreadSafeQueue<int> queue;
 
     ASSERT_TRUE(queue.push(1));
     ASSERT_TRUE(queue.push(2));
@@ -92,7 +91,7 @@ TEST(ThreadSafeQueue, DrainsQueuedValuesAfterClosureAndRejectsNewOnes) {
 }
 
 TEST(ThreadSafeQueue, SupportsMoveOnlyValues) {
-    sl::ThreadSafeQueue<std::unique_ptr<int>> queue;
+    kc::ThreadSafeQueue<std::unique_ptr<int>> queue;
     auto value = std::make_unique<int>(42);
 
     ASSERT_TRUE(queue.push(std::move(value)));

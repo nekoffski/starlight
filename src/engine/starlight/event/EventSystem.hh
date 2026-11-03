@@ -1,14 +1,15 @@
 #pragma once
 
+#include <kcore/Concepts.hh>
+#include <kcore/Functional.hh>
+
 #include "EventBus.hh"
 #include "details/EventBroker.hh"
-#include "starlight/core/Concepts.hh"
 #include "starlight/core/Core.hh"
-#include "starlight/core/Functional.hh"
 
 namespace sl {
 
-class EventSystem : public NonCopyable, public NonMovable {
+class EventSystem : public kc::NonCopyable, public kc::NonMovable {
    public:
     explicit EventSystem();
 

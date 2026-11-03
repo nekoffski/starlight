@@ -1,12 +1,12 @@
 #pragma once
 
+#include <kcore/Concepts.hh>
+#include <kcore/Enum.hh>
 #include <span>
 #include <unordered_map>
 
 #include "RenderResource.hh"
 #include "ShaderDataLayout.hh"
-#include "starlight/core/Concepts.hh"
-#include "starlight/core/Enum.hh"
 #include "starlight/core/Error.hh"
 
 namespace sl {
@@ -43,7 +43,7 @@ Result<void> validateShaderParameterBlocks(
     std::span<const ShaderParameterBlock> blocks
 );
 
-SL_BIT_ENUM(ShaderStage);
+KCORE_BIT_ENUM(ShaderStage);
 
 Str shaderStageToStr(ShaderStage stage);
 

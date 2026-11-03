@@ -1,8 +1,9 @@
 #pragma once
 
+#include <kcore/IdAllocator.hh>
+
 #include "starlight/core/Config.hh"
 #include "starlight/core/Core.hh"
-#include "starlight/core/Id.hh"
 #include "starlight/renderer/core/Primitive.hh"
 #include "starlight/renderer/core/RenderResource.hh"
 #include "starlight/renderer/rhi/RenderDevice.hh"
@@ -18,7 +19,7 @@ struct Primitive {
     u32 indexCount;
 };
 
-class RendererResourcePool : public NonCopyable, public NonMovable {
+class RendererResourcePool : public kc::NonCopyable, public kc::NonMovable {
    public:
     explicit RendererResourcePool(const Config& config, RenderDevice& device);
 
@@ -31,7 +32,7 @@ class RendererResourcePool : public NonCopyable, public NonMovable {
    private:
     Config m_config;
     RenderDevice& m_device;
-    IdLake m_idLake;
+    kc::TypeIdAllocator m_idAllocator;
 
     std::unordered_map<PrimitiveHandle, Primitive> m_primitives;
     std::unordered_map<ShaderHandle, ShaderDescription> m_shaderDescriptions;

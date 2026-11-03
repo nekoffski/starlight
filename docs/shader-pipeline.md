@@ -20,6 +20,11 @@ compiled bytes and reflection into
 [`ShaderDescription`](../src/engine/starlight/renderer/core/Shader.hh). The
 renderer receives that value through a command, independently of asset wrappers.
 
+Loading uses [`kc::FileSystem`](../external/kcore/include/kcore/io/FileSystem.hh)
+for path checks and binary/text reads, and kcore's JSON parser for reflection.
+Missing files and invalid JSON return kcore error codes; shader reflection layout
+errors use Starlight's `shaderParsingError` category entry.
+
 ## Reflection and supported blocks
 
 The loader stores one named entry point per stage. Vertex inputs with bindings

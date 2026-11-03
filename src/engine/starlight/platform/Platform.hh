@@ -1,12 +1,13 @@
 #pragma once
 
-#include "starlight/core/Concepts.hh"
+#include <kcore/Concepts.hh>
+
 #include "starlight/core/Config.hh"
 #include "starlight/renderer/rhi/RenderDevice.hh"
 
 namespace sl {
 
-class Platform : public StaticClass {
+class Platform : public kc::StaticClass {
    public:
     static void logInfo();
 
