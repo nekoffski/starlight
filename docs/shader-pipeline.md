@@ -25,6 +25,26 @@ for path checks and binary/text reads, and kcore's JSON parser for reflection.
 Missing files and invalid JSON return kcore error codes; shader reflection layout
 errors use Starlight's `shaderParsingError` category entry.
 
+The loader delegates decoded JSON to the internal
+[`ShaderReflection::parse()`](../src/engine/starlight/asset/loaders/ShaderReflection.cpp)
+function. The parser performs no file I/O and returns a dedicated
+[`ShaderReflection`](../src/engine/starlight/asset/loaders/ShaderReflection.hh)
+value containing stages, vertex layout, uniforms, and resource tables. The loader
+uses `and_then` for reading, JSON decoding, and reflection parsing, then
+`transform` to combine the reflection with owned bytecode into a complete
+`ShaderDescription`. Its parsing helpers handle entry points, vertex inputs,
+parameter blocks, and resource arrays independently. JSON access/conversion
+errors are translated at the parser entry point; semantic checks return `Result`
+errors. Allocation failures are not classified as invalid reflection.
+
+`entryPoints` is required and must be an array. `globalScope` and its `parameters`
+may be absent, but must be an object and array respectively when present.
+Unknown fields are ignored. Bound vertex inputs require three/four-element
+`float32` vectors; unbound inputs are skipped. Numeric layout values must be
+non-negative integers within `u32` range; fractional and oversized values are
+rejected. Parameter-block names must be nonempty and unique, and entry-point
+names must be nonempty.
+
 ## Reflection and supported blocks
 
 The loader stores one named entry point per stage. Vertex inputs with bindings
@@ -43,6 +63,14 @@ retain reflected sizes/locations, including resource array counts, offsets,
 strides, and bindings. These values belong to the compiled target: the same
 Slang shader produces Metal byte offsets/buffer slots and different SPIR-V
 descriptor bindings/groups. They are not interchangeable layouts.
+
+Missing resource-array byte offsets, strides, and descriptor indices default to
+zero. Descriptor-only layouts can have zero uniform byte size; Metal-specific
+layout/residency checks remain in the backend. The
+[`parser tests`](../src/engine/tests/asset/ShaderReflection.test.cpp) exercise
+these Metal/SPIR-V differences directly from JSON, while the
+[`loader test`](../src/engine/tests/renderer/Textures.test.cpp) covers files,
+bytecode, JSON decoding, and reflection together.
 
 Callers provide named `ShaderParameterBlock` byte arrays, matched against the
 shader's reflected names and sizes. They must pack bytes for the compiled
