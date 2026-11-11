@@ -18,6 +18,11 @@ policy (including no ADRs), see [Maintaining knowledge nodes](README.md#maintain
   creates immutable RGBA8 textures and separate samplers. Metal uses indexed
   resource tables plus explicit parameter blocks; the sandbox uploads a procedural
   checkerboard. See [Shader pipeline](shader-pipeline.md) for limits.
+- **Asset lifecycle:** [AssetSystem](../src/engine/starlight/asset/AssetSystem.cpp)
+  stores shader/texture/sampler records behind strong references. Engine-thread updates
+  publish asynchronous renderer creation/replacement and release unused resources.
+  Shader paths share live records; texture replacement supplies complete pixels.
+  See [asset ownership](shader-pipeline.md#engine-thread-asset-ownership).
 - **Transforms:** [Shader parameter blocks](../src/engine/starlight/renderer/core/ShaderDataLayout.hh)
   copy typed values into owned bytes. The sandbox updates a `Mat4f` per item/frame;
   [simple.slang](../assets/shaders/simple.slang) applies it to vertex positions.

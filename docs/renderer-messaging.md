@@ -36,14 +36,14 @@ separate pending-frame queue is bounded by `maxFramesInFlight`.
 | Surface target creation | Waits for the render-thread attach operation. |
 | `getShaderInterface()` | Waits for a copied shader handle and ordinary block names/sizes from the render thread; invalid handles return an error. Does not retain the shader or wait for GPU completion. |
 | Frame submission | Waits for acceptance/rejection by `Renderer::submit()`. Later frame errors are logged without a reply to this caller. |
-| Resource destruction | Reports command acceptance; no destruction acknowledgement. Texture/sampler commands perform the blocking retirement described below. |
+| Resource destruction | Reports command acceptance; no destruction acknowledgement. Shader/texture/sampler commands perform the blocking retirement described below. |
 | `flushRenderer()` | Waits for pending frame requests to be submitted or dropped. It does not call `waitIdle()`. |
 
 Texture creation copies pixels into a Metal texture before replying. The reply
 allows subsequent ordered draw commands to use the handle; it is not a general
 GPU fence. Commands rejected by a closed queue return `rendererCommandRejected`.
 
-## Texture and sampler lifetime
+## Shader, texture, and sampler lifetime
 
 [`RenderRequest::resources`](../src/engine/starlight/renderer/frontend/RenderRequest.hh)
 uses `ShaderResourceDependencies` to declare every texture/sampler a frame might
@@ -63,15 +63,16 @@ declarations. Handles stored by materials are non-owning, and preparation does
 not prove GPU resource liveness; render-thread validation remains authoritative.
 
 [`Renderer::submit()`](../src/engine/starlight/renderer/frontend/Renderer.cpp)
-validates declared handle IDs/generations before accepting a request. A busy
+validates declared texture/sampler handle IDs/generations and scene shader
+handles before accepting a request. A busy
 frame slot leaves the oldest request pending, so FIFO command processing alone
 does not guarantee that a frame is recorded before a later destroy command.
 
-Texture/sampler destruction therefore calls `flush()`, then `waitIdle()`, then
+Shader/texture/sampler destruction therefore calls `flush()`, then `waitIdle()`, then
 releases the resource. Earlier accepted requests are recorded while their
 resources and slots are still valid. Slot reuse happens only after those GPU
 submissions finish. This stalls the render thread on release; the implementation
-has no deferred retirement queue or reference-counting framework.
+has no deferred GPU retirement queue or GPU reference-counting framework.
 
 [`MetalResourcePool`](../src/engine/starlight/platform/metal/MetalResourcePool.cpp)
 owns textures/samplers in separate 64-entry tables. Each free slot retains its
@@ -80,11 +81,22 @@ table index, independent of native argument-buffer slots. Recreated resources
 can reuse indices, but old generations fail validation. Each draw's immutable
 argument-table bytes prevent new resource creation from changing in-flight tables.
 
+Shader destruction also removes and destroys cached graphics pipelines whose
+key contains that shader, after pending frames finish and the device is idle.
+Pipelines for other shaders remain cached. Later submissions with the destroyed
+shader fail acceptance validation. Asset replacement creates a different
+renderer handle; it does not retarget existing materials or request bytes.
+
 Other resource paths retain their existing behavior: primitive destruction
-releases both device buffers but leaves the primitive map entry; shader/buffer
-pool erasure is immediate; scene handles do not retain these resources; shader
-destruction does not invalidate cached pipelines. The texture/sampler guarantee
-does not extend to those paths.
+releases both device buffers but leaves the primitive map entry; device-buffer
+pool erasure is immediate; scene handles do not retain these resources. The
+shader/texture/sampler guarantee does not extend to those paths.
+
+The [engine-thread asset layer](shader-pipeline.md#engine-thread-asset-ownership)
+retains shader, texture, and sampler handles behind strong asset references and submits cleanup from
+`update()`. Asset `shutdown()` waits for creation and release commands while the
+renderer is still running; this ordering is required because executor stop does
+not drain resource commands.
 
 ## Shutdown
 

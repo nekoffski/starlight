@@ -226,14 +226,108 @@ creates a sampler, and puts both indices and dependencies in one CPU material.
 Two instances of the same primitive share that material and supply separate
 rotating, translated/scaled matrices in `transform`.
 
-[`ShaderRef`](../src/engine/starlight/asset/Shader.cpp) retains its current asset
-behavior: an event loop polls asynchronous creation, `waitForDevice()` polls the
-queued state, and destruction requests device shader release. References to the
-asset proxy/event loop do not extend their lifetimes. `requestUpdate()` replaces
-the handle without releasing the previous one or invalidating pipelines. Texture
-support does not redesign these asset ownership rules.
+## Engine-thread asset ownership
+
+[`AssetSystem`](../src/engine/starlight/asset/AssetSystem.cpp) centrally stores
+shader, texture, and sampler records.
+[`ShaderRef`](../src/engine/starlight/asset/Shader.hh),
+[`TextureRef`](../src/engine/starlight/asset/Texture.hh), and
+[`SamplerRef`](../src/engine/starlight/asset/Sampler.hh) are strong, copyable
+references to those records. `ShaderAsset` owns shader loading/reloading behavior;
+`TextureAsset` owns texture creation/replacement behavior. Each receives a value
+`RendererProxy` for submitting commands. `SamplerAsset::create()` queues initial
+sampler creation through an injected proxy. References forward resource-specific
+operations to their asset object. The store constructs references independently
+of `AssetSystem`. References preserve logical asset identity across
+renderer-resource replacement. All asset operations, reference copies, and
+reference destruction belong to the constructing engine thread.
+
+`loadShader()` reads files and parses reflection synchronously, then queues
+renderer creation. Repeated loads of the same lexically normalized configured
+path share the registered record, including pending or failed creation. The
+weak path index does not retain assets. `createTexture()` accepts complete
+`TextureUploadData`; separate calls create distinct assets.
+`createSampler()` accepts `SamplerDescription` and creates an immutable sampler
+asset. Each call creates a separate logical asset, including identical
+descriptions. Textures and samplers have independent lifetimes; material data
+pairs their handles/indices, and one sampler can be declared by multiple materials.
+File reads remain synchronous; image-file decoding is absent.
+
+[`AssetRef`](../src/engine/starlight/asset/Asset.hh) exposes `handle()`,
+`pending()`, `version()`, and `error()`. `handle()` returns a `Result`: empty
+references are invalid, initial creation is `assetNotReady` until published,
+and failed initial creation returns its error. `version()` starts at zero and
+increments on every successful publication. `pending()` remains true until
+`AssetSystem::update()` collects the renderer future, even if the render thread
+has already completed creation. Per-asset creation errors are available on the
+reference; `update()` reports errors submitting retirement commands.
+
+`waitForPending()` blocks the engine thread until already queued renderer
+creation/replacement commands complete, publishes their results through
+`update()`, and waits for requested releases to execute. References can remain
+alive during this wait. Per-asset creation errors remain on their references;
+the wait reports renderer-command/cleanup errors. It also drains earlier accepted
+frames through renderer flushes; it is not a general GPU-completion fence.
+Thread checks use `log::expect` in Debug and Release builds.
+
+`ShaderRef::reload()` rereads the original binary/reflection path.
+`TextureRef::replace()` supplies all new pixels and dimensions; it allocates a
+new renderer texture rather than updating or resampling the old one. Both reject
+overlapping operations with `assetBusy`. The old handle/version stays usable
+while replacement is pending and after a failed replacement. Successful
+publication updates all references to the new handle/version and queues the old
+resource for retirement. A failed record can be retried through the same
+resource-specific operation; loading its shared path alone does not retry it.
+
+[`AssetRecord`](../src/engine/starlight/asset/Asset.hh) and
+[`AssetStore`](../src/engine/starlight/asset/AssetStore.hh)
+share future polling, publication, reference tracking, and cleanup across all
+three resource types. `AssetRecord` keeps lifecycle state private and exposes
+read-only status plus operations for polling and retirement. Resource-specific
+operations register their renderer future with `adoptCreationFuture()`. The store is
+typed by both asset and reference type: `add()` registers a record and returns its reference;
+the static reference factory rewraps cached records. `AssetSystem` uses
+explicit steps to update stores, wait for pending commands, and complete shutdown.
+Updates attempt every store and every record even after a release submission
+fails, then return the first error. Store errors are ordered shader, texture,
+then sampler. Expired shader paths are pruned after those attempts.
+When the store holds the record's last shared reference, `update()` retires its
+renderer resources. `update()` requests release;
+reference destructors do no renderer work. Records whose creation is still
+pending remain registered until its result can be collected and released.
+The store reads `nextRetiredHandle()`, submits its renderer release, and calls
+`confirmReleaseSubmitted()` only after command acceptance. Failed submissions
+retain their handle for a subsequent update. GPU retirement remains the
+renderer's responsibility.
+The asset system has no private polling thread or per-resource locks.
+
+Renderer handles and CPU materials remain non-owning snapshots. Callers retain
+asset references through request preparation and submission. After asset
+replacement, callers must explicitly rebuild materials/parameter bytes and
+unsubmitted requests that captured the previous handles; `version()` allows
+callers to detect publication. Renderer requests contain no asset references.
+Accepted frames are protected by renderer retirement, not CPU reference counts.
+
+`shutdown()` requires every asset reference to be released, otherwise it returns
+`assetInUse`. With the renderer still running, it uses `waitForPending()` to
+collect queued creation results, release remaining resources, and wait for release
+commands to execute. Successful shutdown is idempotent and rejects subsequent creation;
+`update()` after shutdown does nothing. The destructor calls shutdown and
+terminates with an error diagnostic if the lifetime contract is violated or
+cleanup fails. Destroy scene/object references first, then assets, then rendering.
+The [sandbox](../src/sandbox/main.cpp) keeps shader, texture, and sampler
+references alive alongside its material, calls `waitForPending()` at startup, pumps `update()`
+each frame, and releases shader, texture, and sampler references before the
+renderer is destroyed.
 
 ## Checks
+
+[`AssetSystem.test.cpp`](../src/engine/tests/asset/AssetSystem.test.cpp) uses a CPU
+test device with the real renderer executor/command path to check path sharing,
+publication, replacements and errors, independent sampler/texture lifetimes,
+last-reference cleanup, pending creation cleanup, failed retirement retry,
+progress of later records after release rejection, and shutdown. It also checks pending-frame shader retirement, matching
+pipeline cleanup, and stale shader rejection.
 
 [`Materials.test.cpp`](../src/engine/tests/renderer/Materials.test.cpp) covers
 material/draw block validation, dependency union, and independent owned draw

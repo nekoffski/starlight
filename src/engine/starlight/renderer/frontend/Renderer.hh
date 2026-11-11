@@ -45,7 +45,7 @@ class Renderer : public kc::NonCopyable, public kc::NonMovable {
 
     Result<ShaderInterface> getShaderInterface(ShaderHandle handle) const;
 
-    void destroyShader(ShaderHandle handle) { m_device.destroyShader(handle); }
+    void destroyShader(ShaderHandle handle);
 
     Result<PrimitiveHandle> createPrimitive(
         const PrimitiveUploadData& description

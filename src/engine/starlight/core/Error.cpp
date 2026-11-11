@@ -31,6 +31,12 @@ class ErrorCategory final : public std::error_category {
                 return "Metal error";
             case ErrorCode::deviceOperationFailed:
                 return "Device operation failed";
+            case ErrorCode::assetNotReady:
+                return "Asset not ready";
+            case ErrorCode::assetBusy:
+                return "Asset operation pending";
+            case ErrorCode::assetInUse:
+                return "Asset still referenced";
             case ErrorCode::notImplemented:
                 return "Not implemented";
         }

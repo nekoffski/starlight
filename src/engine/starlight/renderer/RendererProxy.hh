@@ -10,9 +10,9 @@
 namespace sl {
 
 class RendererProxy {
-    friend class RenderingSystem;
-
    public:
+    explicit RendererProxy(RenderExecutor::Submitter submitter);
+
     Result<PrimitiveHandle> createPrimitive(
         const PrimitiveUploadData& description
     );
@@ -51,8 +51,6 @@ class RendererProxy {
     Result<void> submit(const RenderRequest& request);
 
    private:
-    explicit RendererProxy(RenderExecutor::Submitter submitter);
-
     RenderExecutor::Submitter m_submitter;
 };
 

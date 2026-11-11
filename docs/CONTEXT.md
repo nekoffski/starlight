@@ -27,8 +27,24 @@ Compiled shader bytes and metadata describing entry points, vertex inputs,
 reflected uniforms, and resource tables.
 
 **Shader reference**:
-The current asset wrapper tracking asynchronous creation of a device shader
-and exposing its handle and creation state.
+A strong reference to a centrally stored engine-thread shader asset. Copies
+share identity; `reload()` replaces its renderer backing after success. The
+reference exposes readiness, errors, a fallible handle, and publication version.
+
+**Texture reference**:
+A strong reference with the same lifecycle as a shader reference. `replace()`
+supplies complete pixels/dimensions for a new renderer backing; it does not
+resample or mutate the existing renderer texture.
+
+**Sampler reference**:
+A strong reference to an immutable sampler asset created from filtering and
+addressing settings. Its lifecycle is independent of texture references;
+materials pair their renderer handles.
+
+**Asset update**:
+The engine-thread operation that collects creation results, publishes successful
+replacements, and requests retirement of superseded or unreferenced resources.
+CPU asset references and renderer handles have separate lifetimes.
 
 **Shader resource dependencies**:
 The textures and samplers that a submitted frame might access, including

@@ -17,6 +17,9 @@ enum class ErrorCode {
     invalidFuture = 13,
     metalError = 14,
     deviceOperationFailed = 15,
+    assetNotReady = 16,
+    assetBusy = 17,
+    assetInUse = 18,
     notImplemented = 1337,
 };
 

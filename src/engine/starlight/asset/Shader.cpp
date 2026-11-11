@@ -1,96 +1,38 @@
 #include "Shader.hh"
 
-#include <kcore/runtime/Sync.hh>
-
-#include "starlight/core/Time.hh"
+#include "loaders/ShaderLoader.hh"
 
 namespace sl {
 
-namespace detail {
+ShaderAsset::ShaderAsset(RendererProxy proxy, kc::Path path)
+    : m_proxy(std::move(proxy)), m_path(std::move(path)) {}
 
-ShaderImpl::ShaderImpl(
-    RendererProxy& proxy, const ShaderDescription& description,
-    EventLoop& eventLoop
-)
-    : m_proxy(proxy), m_description(description), m_eventLoop(eventLoop) {
-    requestDevice();
-}
-
-ShaderImpl::~ShaderImpl() {
-    if (m_eventLoopCall) {
-        m_eventLoop.remove(*m_eventLoopCall);
+Result<void> ShaderAsset::reload() {
+    checkThread();
+    if (pending()) {
+        return Error::unexpected(
+            ErrorCode::assetBusy, "Shader creation or replacement is pending"
+        );
     }
-
-    if (m_handle.valid()) {
-        m_proxy.destroyShader(m_handle);
+    auto description = ShaderLoader::loadShaderDescription(m_path);
+    if (not description) {
+        return fail(description.error());
     }
-}
-
-void ShaderImpl::waitForDevice() {
-    for (;;) {
-        {
-            // TODO: add CV + mutex instead of busy waiting here
-            std::shared_lock lk{m_mutex};
-            if (m_state != BackendResourceState::queued) {
-                break;
-            }
-        }
-        std::this_thread::sleep_for(150ms);
-    }
-}
-
-void ShaderImpl::requestUpdate() { requestDevice(); }
-
-void ShaderImpl::requestDevice() {
-    std::unique_lock lk{m_mutex};
-
-    auto future = m_proxy.createShaderAsync(m_description);
-
+    auto future = m_proxy.createShaderAsync(*description);
     if (not future) {
-        m_error = future.error();
-        m_state = BackendResourceState::failed;
-        return;
+        return fail(future.error());
     }
-
-    m_error.reset();
-    m_state = BackendResourceState::queued;
-
-    if (m_eventLoopCall) {
-        m_eventLoop.remove(*m_eventLoopCall);
-    }
-
-    m_eventLoopCall = m_eventLoop.schedule<PollingEventLoopCall>(
-        [&, future = std::move(future.value())]() mutable {
-            if (not kc::futureReady(future)) {
-                return false;
-            }
-
-            std::unique_lock lk{m_mutex};
-
-            if (auto maybeShaderHandle = future.get(); maybeShaderHandle) {
-                m_handle = maybeShaderHandle.value();
-                m_state = BackendResourceState::created;
-            } else {
-                log::warn(
-                    "Backend request to create shader failed: {}",
-                    maybeShaderHandle.error()
-                );
-                m_error = maybeShaderHandle.error();
-                m_state = BackendResourceState::failed;
-            }
-
-            m_eventLoopCall.reset();
-            return true;
-        }
-    );
+    adoptCreationFuture(std::move(*future));
+    return {};
 }
 
-}  // namespace detail
-
-ShaderRef::ShaderRef(
-    RendererProxy& proxy, const ShaderDescription& description,
-    EventLoop& eventLoop
-)
-    : kc::Ref<detail::ShaderImpl>(proxy, description, eventLoop) {}
+Result<void> ShaderRef::reload() {
+    if (not m_record) {
+        return Error::unexpected(
+            kc::ErrorCode::invalidArgument, "Empty shader reference"
+        );
+    }
+    return m_record->reload();
+}
 
 }  // namespace sl

@@ -28,6 +28,7 @@ add_starlight_test(starlight-renderer-tests
 
 add_starlight_test(starlight-asset-tests
     "asset/ShaderReflection.test.cpp"
+    "asset/AssetSystem.test.cpp"
 )
 
 if (APPLE)

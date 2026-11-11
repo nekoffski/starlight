@@ -1,77 +1,36 @@
 #pragma once
 
-#include <kcore/Concepts.hh>
-#include <kcore/Ref.hh>
-#include <shared_mutex>
+#include <kcore/io/FileSystem.hh>
 
 #include "Asset.hh"
-#include "starlight/core/Core.hh"
-#include "starlight/core/Error.hh"
 #include "starlight/renderer/RendererProxy.hh"
-#include "starlight/renderer/core/Shader.hh"
-#include "starlight/runtime/EventLoop.hh"
 
 namespace sl {
 
-namespace detail {
-
-class ShaderImpl : public kc::NonCopyable, public kc::NonMovable {
+class ShaderAsset : public AssetRecord<ShaderHandle> {
    public:
-    explicit ShaderImpl(
-        RendererProxy& proxy, const ShaderDescription& description,
-        EventLoop& eventLoop
-    );
+    ShaderAsset(RendererProxy proxy, kc::Path path);
 
-    ~ShaderImpl();
-
-    ShaderHandle handle() const {
-        std::shared_lock lk{m_mutex};
-        return m_handle;
-    }
-
-    BackendResourceState state() const {
-        std::shared_lock lk{m_mutex};
-        return m_state;
-    }
-
-    Error error() const {
-        std::shared_lock lk{m_mutex};
-        return m_error;
-    }
-
-    void waitForDevice();
-    void requestUpdate();
+    Result<void> reload();
 
    private:
-    void requestDevice();
-
-    RendererProxy& m_proxy;
-    ShaderDescription m_description;
-    EventLoop& m_eventLoop;
-    ShaderHandle m_handle;
-    Error m_error;
-    Opt<Tag<Str>> m_eventLoopCall;
-    BackendResourceState m_state{BackendResourceState::unknown};
-
-    mutable std::shared_mutex m_mutex;
+    RendererProxy m_proxy;
+    kc::Path m_path;
 };
 
-}  // namespace detail
-
-class ShaderRef : public kc::Ref<detail::ShaderImpl> {
+class ShaderRef : public AssetRef<ShaderAsset> {
    public:
-    explicit ShaderRef(
-        RendererProxy& proxy, const ShaderDescription& description,
-        EventLoop& eventLoop
-    );
+    ShaderRef() = default;
 
-    ShaderHandle handle() const { return data().handle(); }
-    BackendResourceState state() const { return data().state(); }
+    // Reads the original shader path again, then queues a replacement.
+    Result<void> reload();
 
-    void requestUpdate() { data().requestUpdate(); }
+   private:
+    template <typename, typename>
+    friend class AssetStore;
 
-    Error error() const { return data().error(); }
-    void waitForDevice() { data().waitForDevice(); }
+    explicit ShaderRef(std::shared_ptr<ShaderAsset> record)
+        : AssetRef(std::move(record)) {}
 };
 
 }  // namespace sl

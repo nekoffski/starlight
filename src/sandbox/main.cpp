@@ -52,8 +52,6 @@ int main() {
     auto shader = as.loadShader("shaders/simple.metallib");
     log::expect(shader);
 
-    shader->waitForDevice();
-
     auto primitiveData =
         PrimitiveUploadDataBuilder<Vertex3>{}
             .addVertex(Vec3f{0.0f, 0.5f, 0.0f}, Vec3f{1.0f, 0.0f, 0.0f})
@@ -67,24 +65,30 @@ int main() {
 
     auto checkerboard = makeCheckerboard(64, 8);
     log::expect(checkerboard);
-    auto texture = proxy.createTexture(*checkerboard);
+    auto texture = as.createTexture(*checkerboard);
     log::expect(texture);
-    auto sampler = proxy.createSampler({});
+    auto sampler = as.createSampler({});
     log::expect(sampler);
-    KCORE_DEFER {
-        proxy.destroyTexture(*texture);
-        proxy.destroySampler(*sampler);
-    };
+
+    log::expect(as.waitForPending());
+    const auto shaderHandle = shader->handle();
+    const auto textureHandle = texture->handle();
+    const auto samplerHandle = sampler->handle();
+    log::expect(shaderHandle);
+    log::expect(textureHandle);
+    log::expect(samplerHandle);
 
     // Shader table indices are logical resource IDs, not native Metal bindings.
-    const std::array<u32, 4> drawParameters{texture->id, sampler->id, 0, 0};
+    const std::array<u32, 4> drawParameters{
+        textureHandle->id, samplerHandle->id, 0, 0
+    };
 
-    auto shaderInterface = proxy.getShaderInterface(shader->handle());
+    auto shaderInterface = proxy.getShaderInterface(*shaderHandle);
     log::expect(shaderInterface);
     auto material = MaterialBuilder{std::move(*shaderInterface)}
                         .addParameter("draw", drawParameters)
-                        .addTextureDependency(*texture)
-                        .addSamplerDependency(*sampler)
+                        .addTextureDependency(*textureHandle)
+                        .addSamplerDependency(*samplerHandle)
                         .build();
     log::expect(material);
 
@@ -93,6 +97,7 @@ int main() {
 
     const auto animationStart = Clock::now();
     while (running) {
+        log::expect(as.update());
         window->pollEvents();
         es.dispatch();
 

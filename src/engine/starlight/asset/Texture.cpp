@@ -2,6 +2,32 @@
 
 namespace sl {
 
+TextureAsset::TextureAsset(RendererProxy proxy) : m_proxy(std::move(proxy)) {}
+
+Result<void> TextureAsset::replace(const TextureUploadData& data) {
+    checkThread();
+    if (pending()) {
+        return Error::unexpected(
+            ErrorCode::assetBusy, "Texture creation or replacement is pending"
+        );
+    }
+    auto future = m_proxy.createTextureAsync(data);
+    if (not future) {
+        return fail(future.error());
+    }
+    adoptCreationFuture(std::move(*future));
+    return {};
+}
+
+Result<void> TextureRef::replace(const TextureUploadData& data) {
+    if (not m_record) {
+        return Error::unexpected(
+            kc::ErrorCode::invalidArgument, "Empty texture reference"
+        );
+    }
+    return m_record->replace(data);
+}
+
 Result<TextureUploadData> makeCheckerboard(u32 size, u32 cellSize) {
     if (size == 0 || size > maxTextureDimension2D || cellSize == 0) {
         return Error::unexpected(

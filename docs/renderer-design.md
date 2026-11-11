@@ -69,11 +69,13 @@ for the material contract and its non-owning resource handles.
   `bgra8unorm`. Metal requires vertex and fragment shader functions and sets a
   vertex descriptor from the shader's reflected layout, with attributes packed
   in reserved Metal vertex buffer slot 30. The renderer rejects primitives whose layout does
-  not match the shader. The renderer has no pipeline eviction or shader-change
-  invalidation.
+  not match the shader. Destroying a shader removes and destroys its matching
+  cached pipelines after pending frames and GPU work finish.
 
 - **Texture and sampler:** The proxy creates immutable 2D RGBA8 textures from
   owned pixel bytes, and separate reusable nearest/linear, repeat/clamp samplers.
+  The asset system retains shader/texture/sampler handles behind strong references;
+  its engine-thread `update()` publishes replacements and processes cleanup.
   Handles identify stable shader table indices; generations reject stale CPU
   references after release and reuse. Each table has at most 64 entries; texture
   allocation also respects `Config::Renderer::maxTextures`.
@@ -157,10 +159,10 @@ The current `Vertex3` contains position and normal vectors; the demo derives UVs
 from position rather than adding a vertex format. Vertex input reflection
 currently accepts `float32` vectors of three or four elements.
 
-Texture/sampler destruction drains pending frame requests and waits for GPU
-idle before reclaiming resources or slots. This is deliberately blocking;
-there is no deferred retirement queue. Other existing resource destroy paths
-have not acquired this lifetime guarantee. See [Renderer messaging](renderer-messaging.md).
+Shader/texture/sampler destruction drains pending frame requests and waits for
+GPU idle before reclaiming resources or slots. This is deliberately blocking;
+there is no deferred GPU retirement queue. Primitive and device-buffer destroy
+paths have not acquired this lifetime guarantee. See [Renderer messaging](renderer-messaging.md).
 
 ## Source references
 

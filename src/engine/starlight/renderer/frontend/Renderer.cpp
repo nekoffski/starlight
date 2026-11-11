@@ -36,6 +36,13 @@ Result<void> Renderer::submit(const RenderRequest& request) {
     if (not r) {
         return r;
     }
+    for (const auto& item : request.scene.items) {
+        if (not m_device.getShaderDescription(item.shader)) {
+            return Error::unexpected(
+                kc::ErrorCode::invalidArgument, "Invalid shader dependency"
+            );
+        }
+    }
     m_pendingRequests.push(request);
     return {};
 }
@@ -77,6 +84,20 @@ void Renderer::destroySampler(SamplerHandle handle) {
     flush();
     m_device.waitIdle();
     m_device.destroySampler(handle);
+}
+
+void Renderer::destroyShader(ShaderHandle handle) {
+    flush();
+    m_device.waitIdle();
+    std::vector<GraphicsPipelineDescription> expired;
+    m_graphicsPipelines.forEach([&](const auto& description, auto pipeline) {
+        if (description.shader == handle) {
+            m_device.destroyGraphicsPipeline(pipeline);
+            expired.push_back(description);
+        }
+    });
+    m_graphicsPipelines.remove(expired);
+    m_device.destroyShader(handle);
 }
 
 u64 Renderer::frameIndex() const {

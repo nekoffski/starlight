@@ -84,6 +84,10 @@ its compiler profile; bootstrap again afterward.
 - Do not use output parameters. Return values directly, or use `Result<T>` for
   fallible operations; return updated state instead of mutating a caller's output
   argument. Keep required native API output parameters confined to the backend.
+- Prefer explicit control flow when Result combinators obscure sequencing or
+  side effects. Independent asset updates must continue after an error.
+- Use `log::expect` for thread and invariant checks so they remain active in
+  Debug and Release builds.
 - Use existing `Result<T>`/`Error` patterns for fallible operations. Preserve
   resource cleanup and render-thread ownership when changing renderer code.
 - Register new compiled sources and tests in the appropriate `CMakeLists.txt`.
@@ -120,12 +124,23 @@ its compiler profile; bootstrap again afterward.
 - Matrix parameters use GLM `Mat4f` with explicit column-major shader compilation
   and `mul(matrix, vector)`. Preserve agreement between CPU and shader layouts;
   `ShaderParameterBlock::fromValue` copies bytes without packing or transposing.
-- The asset module is due for a separate redesign, including asset ownership.
-  Prioritize the renderer messaging contract over the shape of asset wrappers
-  and helpers; do not make that contract depend on the current `ShaderRef` model.
+- AssetSystem centrally stores shader/texture/sampler records behind strong references.
+  Asset operations and reference lifetimes are engine-thread confined; pump
+  `update()` to publish renderer futures and clean up unused records. Keep the
+  shared lifecycle machinery reusable and resource-specific operations small.
+  ShaderAsset/TextureAsset implement operations through an injected renderer
+  proxy; SamplerAsset queues immutable sampler creation. References forward to
+  their resource objects, and AssetSystem coordinates storage and lifecycle.
+  Keep sampler ownership independent of textures; materials pair their handles.
+  Use `waitForPending()` for blocking startup loading.
+  Callers retain assets alongside non-owning renderer materials and rebuild
+  captured bindings after a successful asset version change. Release references,
+  finish asset shutdown, then stop rendering. Renderer messages remain independent
+  of asset wrappers. See `docs/shader-pipeline.md` for the full contract.
 - For the texture milestone, the goal is the existing triangle sampling a
   procedural checkerboard. Put procedural helpers in `asset/`; image-file
-  loading is out of scope. Keep these helpers replaceable during asset redesign.
+  loading is out of scope. Keep procedural generation independent of asset lifetime
+  management.
 - The first texture slice is immutable 2D RGBA8 with one mip level and initial
   pixel upload at creation, plus separate reusable samplers. Texture updates,
   mip generation, and additional texture types are outside this first slice.
