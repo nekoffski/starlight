@@ -145,6 +145,24 @@ TEST(MetalTextures, SamplesNonzeroIndicesAndRejectsStaleHandles) {
     {
         sl::MetalRenderPassEncoder encoder{resources, nativeEncoder};
         EXPECT_FALSE(encoder.setShaderParameters(shader, {}, usage));
+        {
+            auto staleDependencies = usage;
+            ++staleDependencies.textures.front().generation;
+            const auto r =
+                encoder.setShaderParameters(shader, {}, staleDependencies);
+            ASSERT_FALSE(r);
+            EXPECT_EQ(r.error().message(), "Invalid texture dependency");
+        }
+        {
+            auto invalidTable = shader;
+            invalidTable.resourceTables.front().size = 0;
+            const auto r = encoder.setShaderParameters(invalidTable, {}, usage);
+            ASSERT_FALSE(r);
+            EXPECT_EQ(
+                r.error().message(),
+                "Shader parameter block count does not match reflection"
+            );
+        }
         const auto blocks = std::span(request->scene.items.front().parameters);
         auto invalidShader = shader;
         invalidShader.uniforms.front().binding = sl::metalVertexBufferIndex;

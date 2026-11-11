@@ -380,6 +380,40 @@ TEST_F(Assets, ReloadReadsShaderAgainAndPreservesTheLastGoodVersionOnFailure) {
     EXPECT_EQ(*shader->handle(), current);
 }
 
+TEST_F(Assets, ShaderReloadKeepsPublishedResourceWhenCreationIsRejected) {
+    using Queue = kc::ThreadSafeQueue<RendererCommand>;
+    auto queue = std::make_shared<Queue>();
+    RendererProxy localProxy{RenderExecutor::Submitter{queue}};
+    AssetStore<ShaderAsset, ShaderRef> store{
+        localProxy, &RendererProxy::destroyShader
+    };
+    auto shader = store.create(kc::Path::join(cfg.paths.assets, "shader.bin"));
+    ASSERT_TRUE(shader);
+    auto creation = queue->tryPop();
+    ASSERT_TRUE(creation);
+    const ShaderHandle original{7, 2};
+    std::get<RendererCreateShader>(*creation).completion.set_value(original);
+    ASSERT_TRUE(store.update());
+
+    queue->close();
+    const auto r = shader->reload();
+    ASSERT_FALSE(r);
+    EXPECT_EQ(r.error().code(), ErrorCode::rendererCommandRejected);
+    EXPECT_EQ(shader->error().code(), r.error().code());
+    EXPECT_EQ(shader->error().message(), r.error().message());
+    EXPECT_FALSE(shader->pending());
+    EXPECT_EQ(shader->version(), 1);
+    EXPECT_EQ(*shader->handle(), original);
+
+    shader = ShaderRef{};
+    auto cleanupQueue = std::make_shared<Queue>();
+    localProxy = RendererProxy{RenderExecutor::Submitter{cleanupQueue}};
+    ASSERT_TRUE(store.update());
+    const auto release = cleanupQueue->tryPop();
+    ASSERT_TRUE(release);
+    EXPECT_EQ(std::get<RendererDestroyShader>(*release).handle, original);
+}
+
 TEST_F(Assets, ShaderInterfaceFollowsThePublishedVersion) {
     std::ofstream(directory / "shader.bin.json") << R"({
         "entryPoints": [{"stage": "vertex", "name": "vertexMain", "parameters": []}],

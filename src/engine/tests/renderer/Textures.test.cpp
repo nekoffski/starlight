@@ -196,6 +196,10 @@ TEST(ShaderReflection, ReadsTablesAndUniformsAndRejectsMalformedLayouts) {
         sl::ShaderLoader::loadShaderDescription(shaderPath);
     ASSERT_FALSE(missingShader);
     EXPECT_EQ(missingShader.error().code(), kc::ErrorCode::fileNotFound);
+    EXPECT_EQ(
+        missingShader.error().message(),
+        "Shader file not found: " + shaderPath.str()
+    );
 
     const std::array<char, 4> binary{'S', '\0', 'L', '\xFF'};
     std::ofstream(shader, std::ios::binary).write(binary.data(), binary.size());
@@ -203,6 +207,10 @@ TEST(ShaderReflection, ReadsTablesAndUniformsAndRejectsMalformedLayouts) {
         sl::ShaderLoader::loadShaderDescription(shaderPath);
     ASSERT_FALSE(missingMetadata);
     EXPECT_EQ(missingMetadata.error().code(), kc::ErrorCode::fileNotFound);
+    EXPECT_EQ(
+        missingMetadata.error().message(),
+        "Shader metadata file not found: " + shaderPath.str() + ".json"
+    );
 
     const auto metadata = shader.string() + ".json";
     const auto load = [&](const char* layout) {

@@ -1,5 +1,6 @@
 #include "Material.hh"
 
+#include <kcore/Pipeline.hh>
 #include <string_view>
 #include <unordered_set>
 
@@ -39,16 +40,21 @@ Result<Material> Material::create(
             kc::ErrorCode::invalidArgument, "Invalid material shader handle"
         );
     }
-    if (auto r = validateLayout(shaderInterface.parameters); not r) {
-        return Error::unexpected(r.error());
-    }
-    const auto r = validateShaderParameterBlocks(
-        shaderInterface.parameters, parameters.blocks
-    );
-    if (not r) {
-        return Error::unexpected(r.error());
-    }
-    return Material{std::move(shaderInterface), std::move(parameters)};
+    const auto validateInterface = [&] {
+        return validateLayout(shaderInterface.parameters);
+    };
+    const auto validateParameters = [&] {
+        return validateShaderParameterBlocks(
+            shaderInterface.parameters, parameters.blocks
+        );
+    };
+    const auto createMaterial = [&] {
+        return Material{std::move(shaderInterface), std::move(parameters)};
+    };
+    return kc::startPipeline(validateInterface)
+        .then(validateParameters)
+        .transform(createMaterial)
+        .result();
 }
 
 }  // namespace sl

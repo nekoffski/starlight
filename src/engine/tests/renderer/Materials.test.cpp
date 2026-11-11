@@ -66,6 +66,30 @@ TEST(Material, ValidatesMaterialBlocksAndShaderInterface) {
     EXPECT_FALSE(sl::Material::create(shader, {}));
 }
 
+TEST(Material, ReportsHandleAndLayoutErrorsBeforeBlockErrors) {
+    auto shader = makeShaderInterface();
+    shader.handle = {};
+    shader.parameters.front().size = 0;
+    auto parameters = surfaceParameters();
+    parameters.blocks.front().name = "unknown";
+
+    const auto invalidHandle = sl::Material::create(shader, parameters);
+    ASSERT_FALSE(invalidHandle);
+    EXPECT_EQ(invalidHandle.error().code(), kc::ErrorCode::invalidArgument);
+    EXPECT_EQ(
+        invalidHandle.error().message(), "Invalid material shader handle"
+    );
+
+    shader.handle = makeShaderInterface().handle;
+    const auto invalidLayout = sl::Material::create(shader, parameters);
+    ASSERT_FALSE(invalidLayout);
+    EXPECT_EQ(invalidLayout.error().code(), kc::ErrorCode::invalidArgument);
+    EXPECT_EQ(
+        invalidLayout.error().message(),
+        "Invalid shader parameter layout: surface"
+    );
+}
+
 TEST(MaterialBuilder, BuildsIndependentMaterialSnapshots) {
     auto shader = makeShaderInterface();
     auto surface = surfaceParameters().blocks.front();

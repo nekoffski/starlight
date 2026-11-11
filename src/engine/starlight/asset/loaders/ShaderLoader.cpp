@@ -1,6 +1,6 @@
 #include "ShaderLoader.hh"
 
-#include <kcore/Functional.hh>
+#include <kcore/Pipeline.hh>
 
 #include "ShaderReflection.hh"
 
@@ -16,9 +16,19 @@ Result<ShaderReflection> loadReflection(
             path.str()
         );
     }
-    return filesystem.readFile(path)
-        .and_then(kc::parseJson)
-        .and_then(ShaderReflection::parse);
+    const auto readMetadata = [&] { return filesystem.readFile(path); };
+    return kc::startPipeline(readMetadata)
+        .then(kc::parseJson)
+        .then(ShaderReflection::parse)
+        .result();
+}
+
+void logVertexLayout(const ShaderReflection& reflection) {
+    if (reflection.vertexLayout) {
+        log::debug(
+            "Shader layout: {}", vertexLayoutToString(*reflection.vertexLayout)
+        );
+    }
 }
 
 }  // namespace
@@ -33,24 +43,26 @@ Result<ShaderDescription> ShaderLoader::loadShaderDescription(
         );
     }
 
-    return filesystem.readBinary(path).and_then([&](Bytes byteCode) {
-        return loadReflection(filesystem, path + ".json")
-            .transform([bc = std::move(byteCode)](auto reflection) mutable {
-                if (reflection.vertexLayout) {
-                    log::debug(
-                        "Shader layout: {}",
-                        vertexLayoutToString(*reflection.vertexLayout)
-                    );
-                }
-                return ShaderDescription{
-                    .stages = std::move(reflection.stages),
-                    .byteCode = std::move(bc),
-                    .vertexLayout = std::move(reflection.vertexLayout),
-                    .uniforms = std::move(reflection.uniforms),
-                    .resourceTables = std::move(reflection.resourceTables),
-                };
-            });
-    });
+    const auto readByteCode = [&] { return filesystem.readBinary(path); };
+    const auto attachReflection = [&](Bytes byteCode) {
+        const auto readReflection = [&] {
+            return loadReflection(filesystem, path + ".json");
+        };
+        const auto assembleDescription = [&](ShaderReflection reflection) {
+            return ShaderDescription{
+                .stages = std::move(reflection.stages),
+                .byteCode = std::move(byteCode),
+                .vertexLayout = std::move(reflection.vertexLayout),
+                .uniforms = std::move(reflection.uniforms),
+                .resourceTables = std::move(reflection.resourceTables),
+            };
+        };
+        return kc::startPipeline(readReflection)
+            .inspect(logVertexLayout)
+            .transform(assembleDescription)
+            .result();
+    };
+    return kc::startPipeline(readByteCode).then(attachReflection).result();
 }
 
 }  // namespace sl

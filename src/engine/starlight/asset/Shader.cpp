@@ -1,5 +1,7 @@
 #include "Shader.hh"
 
+#include <kcore/Pipeline.hh>
+
 #include "loaders/ShaderLoader.hh"
 
 namespace sl {
@@ -18,16 +20,20 @@ Result<void> ShaderAsset::reload() {
             ErrorCode::assetBusy, "Shader creation or replacement is pending"
         );
     }
-    auto description = ShaderLoader::loadShaderDescription(m_path);
-    if (not description) {
-        return fail(description.error());
-    }
-    auto future = m_proxy.createShaderAsync(*description);
-    if (not future) {
-        return fail(future.error());
-    }
-    adoptCreationFuture(std::move(*future));
-    return {};
+    const auto loadDescription = [this] {
+        return ShaderLoader::loadShaderDescription(m_path);
+    };
+    const auto queueCreation = [this](const ShaderDescription& description) {
+        return m_proxy.createShaderAsync(description);
+    };
+    const auto adoptFuture = [this](auto future) {
+        adoptCreationFuture(std::move(future));
+    };
+    return kc::startPipeline(loadDescription)
+        .then(queueCreation)
+        .transform(adoptFuture)
+        .recover([this](const Error& error) { return fail(error); })
+        .result();
 }
 
 Result<ShaderInterface> ShaderAsset::interface() {

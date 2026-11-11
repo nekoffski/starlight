@@ -27,6 +27,16 @@ types in `sl` and exposes `kc::log` as `sl::log`. Engine callers use `log::info`
 utilities use kcore headers and names directly, including filesystem operations,
 containers, callbacks, IDs, references, threads, and queues.
 
+[`kc::startPipeline()`](../external/kcore/include/kcore/Pipeline.hh) provides
+eager, synchronous result composition. `then` chains fallible steps, `transform`
+maps values, and `check`/`inspect` preserve values while validating/observing
+them. `mapError` and `recover` handle errors. Success steps stop on failure;
+exceptions propagate. See [kcore's ownership and forwarding rules](../external/kcore/README.md#result-pipelines).
+Shader loading/reload, [material creation](../src/engine/starlight/renderer/shading/Material.cpp),
+and [Metal parameter binding](../src/engine/starlight/platform/metal/MetalRenderPass.cpp)
+use these chains for dependent steps. Asset store updates keep explicit control
+flow to attempt independent cleanup after an error.
+
 [`Error` and `Result<T>`](../src/engine/starlight/core/Error.hh) alias kcore's
 types. Errors hold `std::error_code`, which distinguishes numeric values by
 category. Generic errors use `kc::ErrorCode`; renderer/backend errors use

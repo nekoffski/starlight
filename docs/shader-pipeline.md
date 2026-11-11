@@ -30,10 +30,11 @@ The loader delegates decoded JSON to the internal
 function. The parser performs no file I/O and returns a dedicated
 [`ShaderReflection`](../src/engine/starlight/asset/loaders/ShaderReflection.hh)
 value containing stages, vertex layout, uniforms, and resource tables. The loader
-uses `and_then` for reading, JSON decoding, and reflection parsing, then
-`transform` to combine the reflection with owned bytecode into a complete
-`ShaderDescription`. Its parsing helpers handle entry points, vertex inputs,
-parameter blocks, and resource arrays independently. JSON access/conversion
+uses `kc::startPipeline()` with `then` for reading, JSON decoding, and reflection
+parsing. It reads bytecode before reflection, observes the parsed vertex layout
+with `inspect`, then uses `transform` to assemble a complete `ShaderDescription`.
+Each chain stops at its first error. The reflection parser handles entry points,
+vertex inputs, parameter blocks, and resource arrays independently. JSON access/conversion
 errors are translated at the parser entry point; semantic checks return `Result`
 errors. Allocation failures are not classified as invalid reflection.
 
@@ -282,6 +283,9 @@ frames through renderer flushes; it is not a general GPU-completion fence.
 Thread checks use `log::expect` in Debug and Release builds.
 
 `ShaderRef::reload()` rereads the original binary/reflection path.
+Its resource object chains description loading, renderer creation submission,
+and future adoption. A failure in loading or submission is recorded on the asset
+and returned to the caller; exceptions propagate.
 `TextureRef::replace()` supplies all new pixels and dimensions; it allocates a
 new renderer texture rather than updating or resampling the old one. Both reject
 overlapping operations with `assetBusy`. The old handle/version stays usable

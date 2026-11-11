@@ -1,6 +1,7 @@
 #include "MetalRenderPass.hh"
 
 #include <algorithm>
+#include <kcore/Pipeline.hh>
 
 namespace sl {
 namespace {
@@ -215,21 +216,22 @@ Result<void> MetalRenderPassEncoder::setShaderParameters(
     std::span<const ShaderParameterBlock> parameters,
     const ShaderResourceDependencies& dependencies
 ) {
-    const auto validation = m_resourcePool.validateResources(dependencies);
-    if (not validation) {
-        return validation;
-    }
-
-    const auto bindingMask =
-        bindUniforms(*m_encoder, description.uniforms, parameters);
-    if (not bindingMask) {
-        return Error::unexpected(bindingMask.error());
-    }
-
-    return bindResourceTables(
-        *m_encoder, m_resourcePool, description.resourceTables, dependencies,
-        *bindingMask
-    );
+    const auto validateDependencies = [&] {
+        return m_resourcePool.validateResources(dependencies);
+    };
+    const auto bindParameterBlocks = [&] {
+        return bindUniforms(*m_encoder, description.uniforms, parameters);
+    };
+    const auto bindTables = [&](u32 bindingMask) {
+        return bindResourceTables(
+            *m_encoder, m_resourcePool, description.resourceTables,
+            dependencies, bindingMask
+        );
+    };
+    return kc::startPipeline(validateDependencies)
+        .then(bindParameterBlocks)
+        .then(bindTables)
+        .result();
 }
 
 void MetalRenderPassEncoder::draw(u32 vertexCount) {
