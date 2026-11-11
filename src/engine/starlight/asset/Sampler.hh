@@ -6,10 +6,14 @@
 namespace sl {
 
 class SamplerAsset : public AssetRecord<SamplerHandle> {
-   public:
-    static Result<std::shared_ptr<SamplerAsset>> create(
-        RendererProxy& proxy, const SamplerDescription& description
-    );
+   private:
+    template <typename, typename>
+    friend class AssetStore;
+
+    explicit SamplerAsset(RendererProxy proxy);
+    Result<void> initialize(const SamplerDescription& description);
+
+    RendererProxy m_proxy;
 };
 
 class SamplerRef : public AssetRef<SamplerAsset> {
@@ -20,7 +24,7 @@ class SamplerRef : public AssetRef<SamplerAsset> {
     template <typename, typename>
     friend class AssetStore;
 
-    explicit SamplerRef(std::shared_ptr<SamplerAsset> record)
+    explicit SamplerRef(std::shared_ptr<SamplerAsset> record) noexcept
         : AssetRef(std::move(record)) {}
 };
 

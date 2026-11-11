@@ -1,8 +1,22 @@
 #include "AssetSystem.hh"
 
 #include <array>
+#include <kcore/String.hh>
 
 namespace sl {
+namespace {
+
+Str shaderCacheKey(const kc::Path& path) {
+    kc::Path key{path.isAbsolute() ? "/" : ""};
+    for (const auto& component : kc::split(path.str(), "/")) {
+        if (not component.empty() && component != ".") {
+            key = kc::Path::join(key, component);
+        }
+    }
+    return key.str();
+}
+
+}  // namespace
 
 AssetSystem::AssetSystem(const Config& cfg, RendererProxy proxy)
     : m_assetPath(cfg.paths.assets),
@@ -32,20 +46,22 @@ Result<ShaderRef> AssetSystem::loadShader(const kc::Path& path) {
             kc::ErrorCode::invalidArgument, "Asset system is closed"
         );
     }
-    const auto fullPath = kc::Path::join(m_assetPath, path).normalized();
-    if (const auto found = m_shaderPaths.find(fullPath.str());
+    const auto fullPath = kc::Path::join(m_assetPath, path);
+    const auto key = shaderCacheKey(fullPath);
+    if (const auto found = m_shaderPaths.find(key);
         found != m_shaderPaths.end()) {
         if (auto record = found->second.lock()) {
             return ShaderStore::reference(std::move(record));
         }
     }
-    auto record = std::make_shared<ShaderAsset>(m_proxy, fullPath);
-    const auto r = record->reload();
-    if (not r) {
-        return Error::unexpected(r.error());
+    const auto entry = m_shaderPaths.try_emplace(key).first;
+    auto shader = m_shaders.create(fullPath);
+    if (not shader) {
+        m_shaderPaths.erase(entry);
+        return Error::unexpected(shader.error());
     }
-    m_shaderPaths[fullPath.str()] = record;
-    return m_shaders.add(std::move(record));
+    entry->second = ShaderStore::weakReference(*shader);
+    return shader;
 }
 
 Result<TextureRef> AssetSystem::createTexture(const TextureUploadData& data) {
@@ -55,12 +71,7 @@ Result<TextureRef> AssetSystem::createTexture(const TextureUploadData& data) {
             kc::ErrorCode::invalidArgument, "Asset system is closed"
         );
     }
-    auto record = std::make_shared<TextureAsset>(m_proxy);
-    const auto r = record->replace(data);
-    if (not r) {
-        return Error::unexpected(r.error());
-    }
-    return m_textures.add(std::move(record));
+    return m_textures.create(data);
 }
 
 Result<SamplerRef> AssetSystem::createSampler(
@@ -72,11 +83,7 @@ Result<SamplerRef> AssetSystem::createSampler(
             kc::ErrorCode::invalidArgument, "Asset system is closed"
         );
     }
-    auto record = SamplerAsset::create(m_proxy, description);
-    if (not record) {
-        return Error::unexpected(record.error());
-    }
-    return m_samplers.add(std::move(*record));
+    return m_samplers.create(description);
 }
 
 Result<void> AssetSystem::update() {

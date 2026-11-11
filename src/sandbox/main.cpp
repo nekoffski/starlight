@@ -71,10 +71,8 @@ int main() {
     log::expect(sampler);
 
     log::expect(as.waitForPending());
-    const auto shaderHandle = shader->handle();
     const auto textureHandle = texture->handle();
     const auto samplerHandle = sampler->handle();
-    log::expect(shaderHandle);
     log::expect(textureHandle);
     log::expect(samplerHandle);
 
@@ -83,7 +81,7 @@ int main() {
         textureHandle->id, samplerHandle->id, 0, 0
     };
 
-    auto shaderInterface = proxy.getShaderInterface(*shaderHandle);
+    auto shaderInterface = shader->interface();
     log::expect(shaderInterface);
     auto material = MaterialBuilder{std::move(*shaderInterface)}
                         .addParameter("draw", drawParameters)

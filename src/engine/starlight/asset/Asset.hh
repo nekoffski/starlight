@@ -49,10 +49,14 @@ class AssetRecord {
             m_completion.wait_for(0s) != std::future_status::ready) {
             return;
         }
+        // Keep the completed handle in its future until retirement can succeed.
+        if (m_current) {
+            m_retired.reserve(m_retired.size() + 1);
+        }
         try {
             auto resource = m_completion.get();
             if (not resource) {
-                m_error = resource.error();
+                m_error = std::move(resource.error());
                 return;
             }
             retireCurrent();
@@ -160,7 +164,7 @@ class AssetRef {
 
    protected:
     AssetRef() = default;
-    explicit AssetRef(std::shared_ptr<Record> record)
+    explicit AssetRef(std::shared_ptr<Record> record) noexcept
         : m_record(std::move(record)) {}
     AssetRef(const AssetRef&) = default;
     AssetRef(AssetRef&&) noexcept = default;

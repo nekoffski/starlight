@@ -103,12 +103,21 @@ uniform packing, camera system, or separate model/view/projection API.
 
 ## CPU materials and draw preparation
 
-[`RendererProxy::getShaderInterface()`](../src/engine/starlight/renderer/RendererProxy.cpp)
-queries an existing shader on the render thread. It returns an owned
+[`ShaderRef::interface()`](../src/engine/starlight/asset/Shader.cpp) queries its
+currently published shader through
+[`RendererProxy::getShaderInterface()`](../src/engine/starlight/renderer/RendererProxy.cpp).
+The proxy queries the shader on the render thread and blocks the caller until
+the query completes. Each call builds an owned
 [`ShaderInterface`](../src/engine/starlight/renderer/core/Shader.hh) snapshot:
 the concrete shader handle and ordinary parameter block names/sizes. Native
 binding locations and resource-table layouts remain in the backend description.
 The snapshot neither retains the GPU shader nor follows asset shader updates.
+An empty shader reference returns an invalid-argument error; initial creation
+reports not-ready until published by the asset update. Pending or failed
+replacement keeps the previous shader available. A successful publication makes
+subsequent queries return the new handle and layout; callers rebuild materials
+to capture it. The lower-level proxy query remains available for directly
+managed renderer shaders.
 
 [`Material`](../src/engine/starlight/renderer/shading/Material.hh) is a CPU value
 that captures this interface and a `ShaderParameters` value: named blocks plus
@@ -235,17 +244,19 @@ shader, texture, and sampler records.
 [`SamplerRef`](../src/engine/starlight/asset/Sampler.hh) are strong, copyable
 references to those records. `ShaderAsset` owns shader loading/reloading behavior;
 `TextureAsset` owns texture creation/replacement behavior. Each receives a value
-`RendererProxy` for submitting commands. `SamplerAsset::create()` queues initial
-sampler creation through an injected proxy. References forward resource-specific
+`RendererProxy` for submitting commands. Sampler initialization queues creation
+through an injected proxy. References forward resource-specific
 operations to their asset object. The store constructs references independently
 of `AssetSystem`. References preserve logical asset identity across
 renderer-resource replacement. All asset operations, reference copies, and
 reference destruction belong to the constructing engine thread.
 
 `loadShader()` reads files and parses reflection synchronously, then queues
-renderer creation. Repeated loads of the same lexically normalized configured
-path share the registered record, including pending or failed creation. The
-weak path index does not retain assets. `createTexture()` accepts complete
+renderer creation. Cache keys remove `.` components while preserving `..`, so
+parent traversal through symlinks retains its filesystem meaning. The supplied
+path is used unchanged for binary/reflection loading and reloads. Repeated loads
+with the same cache key share the registered record, including pending or failed
+creation. The weak path index does not retain assets. `createTexture()` accepts complete
 `TextureUploadData`; separate calls create distinct assets.
 `createSampler()` accepts `SamplerDescription` and creates an immutable sampler
 asset. Each call creates a separate logical asset, including identical
@@ -285,8 +296,13 @@ share future polling, publication, reference tracking, and cleanup across all
 three resource types. `AssetRecord` keeps lifecycle state private and exposes
 read-only status plus operations for polling and retirement. Resource-specific
 operations register their renderer future with `adoptCreationFuture()`. The store is
-typed by both asset and reference type: `add()` registers a record and returns its reference;
-the static reference factory rewraps cached records. `AssetSystem` uses
+typed by both asset and reference type: `create()` constructs and registers the
+record before calling its private initializer. Constructors and initializers
+are private to the stores; callers obtain registered references. Failed initial
+setup rolls back empty records. The static reference factory rewraps cached
+records, and its weak counterpart supplies the shader path index. Shader cache
+storage is allocated before starting creation; assigning the resulting weak
+reference requires no allocation. `AssetSystem` uses
 explicit steps to update stores, wait for pending commands, and complete shutdown.
 Updates attempt every store and every record even after a release submission
 fails, then return the first error. Store errors are ordered shader, texture,
@@ -299,6 +315,10 @@ The store reads `nextRetiredHandle()`, submits its renderer release, and calls
 `confirmReleaseSubmitted()` only after command acceptance. Failed submissions
 retain their handle for a subsequent update. GPU retirement remains the
 renderer's responsibility.
+Before consuming a successful creation future, polling reserves space for the
+previous handle's retirement. If allocation fails, the future and current
+handle remain available for retry. Allocation exceptions propagate to the caller;
+accepted creation remains owned by the store.
 The asset system has no private polling thread or per-resource locks.
 
 Renderer handles and CPU materials remain non-owning snapshots. Callers retain
@@ -324,10 +344,17 @@ renderer is destroyed.
 
 [`AssetSystem.test.cpp`](../src/engine/tests/asset/AssetSystem.test.cpp) uses a CPU
 test device with the real renderer executor/command path to check path sharing,
+symlink/parent traversal during loading and reload,
 publication, replacements and errors, independent sampler/texture lifetimes,
 last-reference cleanup, pending creation cleanup, failed retirement retry,
 progress of later records after release rejection, and shutdown. It also checks pending-frame shader retirement, matching
 pipeline cleanup, and stale shader rejection.
+Compile-time checks reject direct construction of shader, texture, and sampler
+implementations. The separate
+[`allocation tests`](../src/engine/tests/asset/AssetAllocation.test.cpp) isolate
+the allocation injector from other executables. They check replacement retry,
+shader-cache setup failure, and allocation points through texture/sampler
+creation, verifying that every accepted creation is released at shutdown.
 
 [`Materials.test.cpp`](../src/engine/tests/renderer/Materials.test.cpp) covers
 material/draw block validation, dependency union, and independent owned draw

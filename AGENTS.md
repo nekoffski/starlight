@@ -64,6 +64,7 @@ its compiler profile; bootstrap again afterward.
 - Match surrounding C++ conventions: `.hh` headers, `.cpp` sources, namespace
   `sl`, and `.clang-format` (Google base, four-space indentation).
 - Reuse kcore's current APIs instead of restoring duplicated utilities. Access
+  paths and filesystem operations through kcore's abstractions. Access
   logging as `log::` through `core/Core.hh`. Generic errors use `kc::ErrorCode`;
   engine/backend errors use Starlight's own `std::error_category`. Preserve
   categories when propagating errors. Ask before moving new facilities to kcore.
@@ -132,6 +133,10 @@ its compiler profile; bootstrap again afterward.
   proxy; SamplerAsset queues immutable sampler creation. References forward to
   their resource objects, and AssetSystem coordinates storage and lifecycle.
   Keep sampler ownership independent of textures; materials pair their handles.
+  Keep resource constructors/initializers private to their typed stores. Register
+  ownership and allocate cache storage before submitting creation; preserve
+  completed futures until retirement bookkeeping can succeed. Preserve symlink
+  semantics in shader loading paths and cache keys.
   Use `waitForPending()` for blocking startup loading.
   Callers retain assets alongside non-owning renderer materials and rebuild
   captured bindings after a successful asset version change. Release references,

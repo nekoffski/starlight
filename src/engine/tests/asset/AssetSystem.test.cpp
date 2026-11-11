@@ -7,10 +7,25 @@
 #include <fstream>
 #include <kcore/Random.hh>
 #include <kcore/runtime/ThreadSafeQueue.hh>
+#include <type_traits>
 
 namespace {
 
 using namespace sl;
+
+static_assert(not std::is_constructible_v<ShaderAsset, RendererProxy>);
+static_assert(
+    not std::is_constructible_v<ShaderAsset, RendererProxy, kc::Path>
+);
+static_assert(not std::is_constructible_v<TextureAsset, RendererProxy>);
+static_assert(not std::is_default_constructible_v<SamplerAsset>);
+
+template <typename Asset>
+concept PublicSamplerFactory =
+    requires(RendererProxy& proxy, const SamplerDescription& description) {
+        Asset::create(proxy, description);
+    };
+static_assert(not PublicSamplerFactory<SamplerAsset>);
 
 class TestEncoder : public RenderPassEncoder {
    public:
@@ -226,6 +241,41 @@ TEST_F(Assets, ReusesPendingShaderPathsAndPublishesToEveryReference) {
     EXPECT_EQ(device.shaders.size(), 1);
 }
 
+TEST_F(Assets, PreservesSymlinkParentPathsForLoadingAndReloading) {
+    const auto pack = directory / "pack";
+    std::filesystem::create_directories(pack / "nested");
+    std::filesystem::create_directory_symlink(
+        pack / "nested", directory / "link"
+    );
+    std::ofstream(pack / "shader.bin", std::ios::binary).put('B');
+    std::filesystem::copy_file(
+        directory / "shader.bin.json", pack / "shader.bin.json"
+    );
+
+    auto linked = assets->loadShader("link/../shader.bin");
+    auto root = assets->loadShader("shader.bin");
+    auto same = assets->loadShader("./link//.././shader.bin");
+    auto absolute = assets->loadShader(
+        kc::Path::join(cfg.paths.assets, "link/../shader.bin")
+    );
+    ASSERT_TRUE(linked);
+    ASSERT_TRUE(root);
+    ASSERT_TRUE(same);
+    ASSERT_TRUE(absolute);
+    EXPECT_EQ(*linked, *same);
+    EXPECT_EQ(*linked, *absolute);
+    EXPECT_NE(*linked, *root);
+    publish();
+    EXPECT_EQ(device.shaders.at(*linked->handle()).byteCode, Bytes{'B'});
+    EXPECT_EQ(device.shaders.at(*root->handle()).byteCode, Bytes{'A'});
+
+    std::ofstream(pack / "shader.bin", std::ios::binary).put('C');
+    ASSERT_TRUE(linked->reload());
+    publish();
+    EXPECT_EQ(device.shaders.at(*same->handle()).byteCode, Bytes{'C'});
+    EXPECT_EQ(device.shaders.at(*root->handle()).byteCode, Bytes{'A'});
+}
+
 TEST_F(Assets, CleansUpOnlyAfterTheLastReferenceAndAnUpdate) {
     auto image = makeCheckerboard(4, 2);
     ASSERT_TRUE(image);
@@ -328,6 +378,55 @@ TEST_F(Assets, ReloadReadsShaderAgainAndPreservesTheLastGoodVersionOnFailure) {
     EXPECT_EQ(r.error().code(), kc::ErrorCode::fileNotFound);
     EXPECT_EQ(shader->error().code(), kc::ErrorCode::fileNotFound);
     EXPECT_EQ(*shader->handle(), current);
+}
+
+TEST_F(Assets, ShaderInterfaceFollowsThePublishedVersion) {
+    std::ofstream(directory / "shader.bin.json") << R"({
+        "entryPoints": [{"stage": "vertex", "name": "vertexMain", "parameters": []}],
+        "globalScope": {"parameters": [{
+            "name": "transform", "binding": {"index": 0},
+            "type": {"kind": "constantBuffer", "elementVarLayout": {"type": {
+                "sizes": [{"kind": "uniform", "value": 64}], "fields": []
+            }}}
+        }]}
+    })";
+    auto shader = assets->loadShader("shader.bin");
+    ASSERT_TRUE(shader);
+    EXPECT_EQ(shader->interface().error().code(), ErrorCode::assetNotReady);
+    publish();
+
+    const ShaderRef& reference = *shader;
+    const auto original = reference.interface();
+    ASSERT_TRUE(original);
+    EXPECT_EQ(original->handle, *shader->handle());
+    ASSERT_EQ(original->parameters.size(), 1);
+    EXPECT_EQ(original->parameters.front().name, "transform");
+    EXPECT_EQ(original->parameters.front().size, 64);
+
+    writeShader('B');
+    ASSERT_TRUE(shader->reload());
+    const auto pending = reference.interface();
+    ASSERT_TRUE(pending);
+    EXPECT_EQ(pending->handle, original->handle);
+    ASSERT_EQ(pending->parameters.size(), 1);
+    EXPECT_EQ(pending->parameters.front().name, "transform");
+    publish();
+
+    const auto replacement = reference.interface();
+    ASSERT_TRUE(replacement);
+    EXPECT_EQ(replacement->handle, *shader->handle());
+    EXPECT_NE(replacement->handle, original->handle);
+    EXPECT_TRUE(replacement->parameters.empty());
+    // Previously returned snapshots retain their captured layout.
+    EXPECT_EQ(original->parameters.front().name, "transform");
+
+    writeShader('!');
+    ASSERT_TRUE(shader->reload());
+    publish();
+    const auto afterFailure = reference.interface();
+    ASSERT_TRUE(afterFailure);
+    EXPECT_EQ(afterFailure->handle, replacement->handle);
+    EXPECT_TRUE(afterFailure->parameters.empty());
 }
 
 TEST_F(Assets, DoesNotCacheUnusedShadersOrDeduplicateProceduralTextures) {
@@ -503,6 +602,9 @@ TEST(AssetReference, EmptyReferencesCannotAccessResources) {
     EXPECT_FALSE(sampler.handle());
     EXPECT_FALSE(shader.handle());
     EXPECT_FALSE(shader.reload());
+    EXPECT_EQ(
+        shader.interface().error().code(), kc::ErrorCode::invalidArgument
+    );
     EXPECT_FALSE(texture.handle());
     EXPECT_FALSE(texture.replace({}));
     EXPECT_FALSE(shader.pending());
@@ -537,32 +639,32 @@ TEST(AssetRetirement, RejectedReleaseKeepsItsHandleAndOtherRecordsProgress) {
     const auto image = makeCheckerboard(4, 2);
     ASSERT_TRUE(image);
 
-    auto firstRecord = std::make_shared<TextureAsset>(proxy);
-    ASSERT_TRUE(firstRecord->replace(*image));
+    auto first = store.create(*image);
+    ASSERT_TRUE(first);
+    auto firstRecord = decltype(store)::weakReference(*first).lock();
     auto creation = queue->tryPop();
     ASSERT_TRUE(creation);
     std::get<RendererCreateTexture>(*creation).completion.set_value(
         TextureHandle{7, 2}
     );
-    auto first = store.add(firstRecord);
     ASSERT_TRUE(store.update());
-    ASSERT_EQ(*first.handle(), (TextureHandle{7, 2}));
+    ASSERT_EQ(*first->handle(), (TextureHandle{7, 2}));
 
-    ASSERT_TRUE(first.replace(*image));
+    ASSERT_TRUE(first->replace(*image));
     creation = queue->tryPop();
     ASSERT_TRUE(creation);
     std::get<RendererCreateTexture>(*creation).completion.set_value(
         TextureHandle{9, 1}
     );
-    auto secondRecord = std::make_shared<TextureAsset>(proxy);
-    ASSERT_TRUE(secondRecord->replace(*image));
+    auto second = store.create(*image);
+    ASSERT_TRUE(second);
+    auto secondRecord = decltype(store)::weakReference(*second).lock();
     creation = queue->tryPop();
     ASSERT_TRUE(creation);
     std::get<RendererCreateTexture>(*creation).completion.set_value(
         TextureHandle{8, 1}
     );
-    auto second = store.add(secondRecord);
-    EXPECT_TRUE(second.pending());
+    EXPECT_TRUE(second->pending());
 
     queue->close();
     const auto r = store.update();
@@ -570,11 +672,11 @@ TEST(AssetRetirement, RejectedReleaseKeepsItsHandleAndOtherRecordsProgress) {
     EXPECT_EQ(r.error().code(), ErrorCode::rendererCommandRejected);
     ASSERT_TRUE(firstRecord->nextRetiredHandle());
     EXPECT_EQ(*firstRecord->nextRetiredHandle(), (TextureHandle{7, 2}));
-    EXPECT_EQ(*first.handle(), (TextureHandle{9, 1}));
-    EXPECT_FALSE(second.pending());
-    EXPECT_EQ(second.version(), 1);
-    ASSERT_TRUE(second.handle());
-    EXPECT_EQ(*second.handle(), (TextureHandle{8, 1}));
+    EXPECT_EQ(*first->handle(), (TextureHandle{9, 1}));
+    EXPECT_FALSE(second->pending());
+    EXPECT_EQ(second->version(), 1);
+    ASSERT_TRUE(second->handle());
+    EXPECT_EQ(*second->handle(), (TextureHandle{8, 1}));
 
     auto retryQueue = std::make_shared<Queue>();
     proxy = RendererProxy{RenderExecutor::Submitter{retryQueue}};

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <kcore/Functional.hh>
 
 #include "Asset.hh"
 #include "starlight/renderer/RendererProxy.hh"
@@ -17,13 +18,32 @@ class AssetStore : public kc::NonCopyable, public kc::NonMovable {
     AssetStore(RendererProxy& proxy, Destroy destroy)
         : m_proxy(proxy), m_destroy(destroy) {}
 
-    Reference add(Entry record) {
+    // Register ownership before initialization can submit renderer commands.
+    template <typename... Args>
+    Result<Reference> create(Args&&... args) {
+        Entry record{new Record(m_proxy)};
+        kc::DeferCall rollback{[&] {
+            if (record->empty()) {
+                std::erase(m_records, record);
+            }
+        }};
         m_records.push_back(record);
+        const auto r = record->initialize(std::forward<Args>(args)...);
+        if (not r) {
+            return Error::unexpected(r.error());
+        }
+        rollback.dismiss();
         return reference(std::move(record));
     }
 
-    static Reference reference(Entry record) {
+    static Reference reference(Entry record) noexcept {
         return Reference{std::move(record)};
+    }
+
+    static std::weak_ptr<Record> weakReference(
+        const Reference& reference
+    ) noexcept {
+        return reference.m_record;
     }
 
     bool hasReferences() const {

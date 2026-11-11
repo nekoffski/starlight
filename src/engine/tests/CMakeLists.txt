@@ -31,6 +31,11 @@ add_starlight_test(starlight-asset-tests
     "asset/AssetSystem.test.cpp"
 )
 
+# Keep the allocation-failure injector in its own executable.
+add_starlight_test(starlight-asset-allocation-tests
+    "asset/AssetAllocation.test.cpp"
+)
+
 if (APPLE)
     add_starlight_test(starlight-metal-texture-tests
         "renderer/MetalTextures.test.cpp"

@@ -4,8 +4,12 @@
 
 namespace sl {
 
-ShaderAsset::ShaderAsset(RendererProxy proxy, kc::Path path)
-    : m_proxy(std::move(proxy)), m_path(std::move(path)) {}
+ShaderAsset::ShaderAsset(RendererProxy proxy) : m_proxy(std::move(proxy)) {}
+
+Result<void> ShaderAsset::initialize(const kc::Path& path) {
+    m_path = path;
+    return reload();
+}
 
 Result<void> ShaderAsset::reload() {
     checkThread();
@@ -26,6 +30,14 @@ Result<void> ShaderAsset::reload() {
     return {};
 }
 
+Result<ShaderInterface> ShaderAsset::interface() {
+    const auto current = handle();
+    if (not current) {
+        return Error::unexpected(current.error());
+    }
+    return m_proxy.getShaderInterface(*current);
+}
+
 Result<void> ShaderRef::reload() {
     if (not m_record) {
         return Error::unexpected(
@@ -33,6 +45,15 @@ Result<void> ShaderRef::reload() {
         );
     }
     return m_record->reload();
+}
+
+Result<ShaderInterface> ShaderRef::interface() const {
+    if (not m_record) {
+        return Error::unexpected(
+            kc::ErrorCode::invalidArgument, "Empty shader reference"
+        );
+    }
+    return m_record->interface();
 }
 
 }  // namespace sl

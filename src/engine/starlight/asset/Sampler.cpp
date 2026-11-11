@@ -2,16 +2,15 @@
 
 namespace sl {
 
-Result<std::shared_ptr<SamplerAsset>> SamplerAsset::create(
-    RendererProxy& proxy, const SamplerDescription& description
-) {
-    auto record = std::make_shared<SamplerAsset>();
-    auto future = proxy.createSamplerAsync(description);
+SamplerAsset::SamplerAsset(RendererProxy proxy) : m_proxy(std::move(proxy)) {}
+
+Result<void> SamplerAsset::initialize(const SamplerDescription& description) {
+    auto future = m_proxy.createSamplerAsync(description);
     if (not future) {
-        return Error::unexpected(future.error());
+        return fail(future.error());
     }
-    record->adoptCreationFuture(std::move(*future));
-    return record;
+    adoptCreationFuture(std::move(*future));
+    return {};
 }
 
 }  // namespace sl
