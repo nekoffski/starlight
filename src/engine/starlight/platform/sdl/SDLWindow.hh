@@ -2,11 +2,12 @@
 
 #include <SDL3/SDL.h>
 
-#include <atomic>
 #include <kcore/Concepts.hh>
+#include <utility>
 
 #include "starlight/core/Config.hh"
 #include "starlight/event/EventBus.hh"
+#include "starlight/window/Window.hh"
 
 #if defined(SL_USE_METAL)
 #include "starlight/platform/metal/MetalRenderSurfaceProvider.hh"
@@ -20,19 +21,32 @@
 
 namespace sl {
 
-class SDLWindowBase : public virtual kc::NonCopyable,
-                      public virtual kc::NonMovable {
+class SDLWindowBase : public Window {
    public:
     explicit SDLWindowBase(const Config& config, EventBus bus);
-    ~SDLWindowBase();
+    ~SDLWindowBase() override;
 
-    void pollEvents(u8 maxPolledEvents = 16u);
+    // Drains SDL's shared queue and routes events to their owning windows.
+    void pollEvents() override;
+    WindowId id() const override;
+
+    bool isPressed(Key key) const override;
+    bool isPressed(MouseButton button) const override;
+
+    bool isFocused() const override;
+    Vec2f mousePosition() const override;
 
    protected:
-    SDL_Window* m_window{nullptr};
-    EventBus m_bus;
+    void checkThread() const;
 
-    inline static std::atomic<u8> s_windowCount{0};
+    SDL_Window* m_window{nullptr};
+
+   private:
+    void handleEvent(const SDL_Event& event);
+    void handleKey(const SDL_KeyboardEvent& event);
+    void handleMouseButton(const SDL_MouseButtonEvent& event);
+
+    EventBus m_bus;
 };
 
 #if defined(SL_USE_METAL)

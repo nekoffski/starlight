@@ -3,6 +3,8 @@
 These knowledge nodes describe the code currently in this repository:
 
 - [Build and setup](../README.md): prerequisites and Makefile workflow.
+- [Windows and input](window-input.md): window queries, SDL input handling, typed
+  notifications, and polling order.
 - [Renderer design](renderer-design.md): frame flow, resources, and backend
   boundaries, grounded in the linked implementation.
 - [Renderer messaging](renderer-messaging.md): payload ownership, replies,

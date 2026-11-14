@@ -27,6 +27,8 @@ Starlight is a C++23 game engine built with CMake and Conan 2. Start with
 - `src/engine/starlight/`: engine library. `core/` has foundational aliases,
   engine configuration and error codes; `runtime/` has the polling event loop,
   `event/` event dispatch, and `asset/` assets and loaders.
+- `src/engine/starlight/window/`: the window interface and physical input types.
+  SDL supplies native keyboard/mouse state; window/input events live in `WindowEvents.hh`.
 - `src/engine/starlight/renderer/`: `frontend/` handles draw preparation, requests,
   and graphs, `executor/` dispatches render-thread commands, `rhi/` defines device interfaces,
   `core/` contains resource descriptions and handles, and `shading/` stores
@@ -95,6 +97,27 @@ its compiler profile; bootstrap again afterward.
   Add or update focused tests for behavioral changes.
 - Run checks appropriate to the change. Report what passed, what was not run,
   and blockers; do not claim runtime or backend support without testing it.
+
+## Window and input contracts
+
+- Keep query methods on the window interface, native state in SDL,
+  and concrete event payloads beside their owning module. Window/input events use
+  `window/WindowEvents.hh`; the application-wide quit request remains in
+  `event/Events.hh`. Keep generic event transport independent of window types.
+  Native handlers translate events into typed notifications through the injected
+  bus. Use SDL's keyboard/mouse queries with per-window focus checks; avoid
+  duplicate button caches and frame-reset machinery. Keep SDL types in the backend.
+- Poll once per engine-loop iteration through one SDL window; the implementation
+  routes the shared queue to each native window's owner and injected bus. Queries
+  work before event dispatch. Window access and lifetimes use the main thread.
+  Balance SDL subsystem references independently for each window.
+  Forward individual window close requests on their owning bus; callers decide
+  when to destroy windows, independently of application-wide quit requests.
+  Record close intent in callbacks and destroy windows after event dispatch
+  returns, respecting the broker's existing subscription-locking contract.
+- Use held-state queries for continuous input and typed events for key/button
+  transitions, movement, and scrolling. Notifications retain the existing bus
+  delivery semantics. See `docs/window-input.md` for query and routing details.
 
 ## Renderer evolution constraints
 

@@ -1,4 +1,5 @@
 
+#include <algorithm>
 #include <kcore/io/FileSystem.hh>
 
 #include "starlight/asset/AssetSystem.hh"
@@ -14,6 +15,7 @@
 #include "starlight/renderer/RenderingSystem.hh"
 #include "starlight/renderer/frontend/RenderRequestBuilder.hh"
 #include "starlight/renderer/shading/MaterialBuilder.hh"
+#include "starlight/window/WindowEvents.hh"
 
 using namespace sl;
 
@@ -91,24 +93,63 @@ int main() {
     log::expect(material);
 
     constexpr std::array horizontalOffsets{-0.5f, 0.5f};
-    constexpr f32 triangleScale = 0.6f;
+    constexpr f32 movementSpeed = 0.8f;
+    constexpr f32 wheelScaleStep = 0.05f;
+    f32 triangleScale = 0.6f;
+    f32 angle = 0.0f;
+    bool rotating = true;
+    Vec2f sceneOffset{0.0f};
 
-    const auto animationStart = Clock::now();
+    mainBus.on<KeyPressedEvent>([&](const auto& event) {
+        if (event.window == window->id() && event.key == Key::escape &&
+            not event.repeat) {
+            running = false;
+        }
+    });
+    mainBus.on<MouseButtonPressedEvent>([&](const auto& event) {
+        if (event.window == window->id() && event.button == MouseButton::left) {
+            rotating = not rotating;
+        }
+    });
+    mainBus.on<MouseWheelEvent>([&](const auto& event) {
+        if (event.window == window->id()) {
+            triangleScale = std::clamp(
+                triangleScale + event.delta.y * wheelScaleStep, 0.1f, 1.5f
+            );
+        }
+    });
+
+    auto previousUpdate = Clock::now();
     while (running) {
         log::expect(as.update());
         window->pollEvents();
         es.dispatch();
 
-        const auto elapsed =
-            std::chrono::duration<f32>(Clock::now() - animationStart).count();
+        const Window& input = *window;
+        if (not running) {
+            break;
+        }
+        const auto now = Clock::now();
+        const auto deltaTime =
+            std::chrono::duration<f32>(now - previousUpdate).count();
+        previousUpdate = now;
+        const Vec2f movement{
+            f32(input.isPressed(Key::d)) - f32(input.isPressed(Key::a)),
+            f32(input.isPressed(Key::w)) - f32(input.isPressed(Key::s))
+        };
+        sceneOffset += movement * movementSpeed * deltaTime;
+        if (rotating) {
+            angle += deltaTime;
+        }
         RenderRequestBuilder requestBuilder;
         requestBuilder.addView({.target = *target})
             .setClearColor({0.2f, 0.2f, 0.6f, 1.0f});
         for (const auto offset : horizontalOffsets) {
-            auto modelToClip =
-                glm::translate(Mat4f{1.0f}, Vec3f{offset, 0.0f, 0.0f});
+            auto modelToClip = glm::translate(
+                Mat4f{1.0f}, Vec3f{offset + sceneOffset.x, sceneOffset.y, 0.0f}
+            );
             modelToClip =
-                glm::rotate(modelToClip, elapsed, Vec3f{0.0f, 0.0f, 1.0f});
+                glm::rotate(modelToClip, angle, Vec3f{0.0f, 0.0f, 1.0f});
             modelToClip = glm::scale(modelToClip, Vec3f{triangleScale});
             requestBuilder.addDraw({
                 .material = *material,
