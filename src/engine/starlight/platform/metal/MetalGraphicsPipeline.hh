@@ -10,6 +10,10 @@
 
 namespace sl {
 
+Result<NS::SharedPtr<MTL::VertexDescriptor>> createMetalVertexDescriptor(
+    const VertexLayout& layout
+);
+
 class MetalGraphicsPipeline : public kc::NonCopyable, public kc::NonMovable {
     struct Guard {};
 

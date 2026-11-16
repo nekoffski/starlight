@@ -1,7 +1,5 @@
 #include "RendererResourcePool.hh"
 
-#include <algorithm>
-#include <array>
 #include <cstring>
 #include <kcore/Functional.hh>
 #include <kcore/Pipeline.hh>
@@ -9,44 +7,27 @@
 namespace sl {
 namespace {
 
-bool isValidVertexType(ValueType type) {
-    constexpr std::array allowedTypes{
-        ValueType::f32_2x1,
-        ValueType::f32_3x1,
-        ValueType::f32_4x1,
-    };
-    return std::ranges::find(allowedTypes, type) != allowedTypes.end();
-}
-
 Result<void> validatePrimitiveLayout(const PrimitiveUploadData& data) {
     constexpr u32 verticesPerTriangle = 3;
     const bool validCounts = data.vertexCount > 0 && data.indexCount > 0 &&
                              data.indexCount % verticesPerTriangle == 0;
-    if (data.vertexLayout.empty() || not validCounts) {
+    if (not validCounts) {
         return Error::unexpected(
             kc::ErrorCode::invalidArgument,
             "Geometry requires a vertex layout, vertices, and triangle indices"
         );
     }
-    for (const auto type : data.vertexLayout) {
-        if (not isValidVertexType(type)) {
-            return Error::unexpected(
-                kc::ErrorCode::invalidArgument,
-                "Unsupported geometry vertex type"
-            );
-        }
-    }
-    return {};
+    return validateVertexLayout(data.vertexLayout);
 }
 
 Result<void> validatePrimitiveByteCounts(const PrimitiveUploadData& data) {
-    const auto stride = LayoutHelper::calculateStride(data.vertexLayout);
-    const bool packedVertices =
+    const auto stride = data.vertexLayout.stride;
+    const bool validVertexBytes =
         data.vertexData.size() % data.vertexCount == 0 &&
         data.vertexData.size() / data.vertexCount == stride;
     const bool packedIndices =
         data.indexData.size() == u64(data.indexCount) * sizeof(u32);
-    if (not packedVertices || not packedIndices) {
+    if (not validVertexBytes || not packedIndices) {
         return Error::unexpected(
             kc::ErrorCode::invalidArgument,
             "Geometry byte counts do not match its layout and counts"

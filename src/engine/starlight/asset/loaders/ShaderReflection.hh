@@ -10,7 +10,7 @@ struct ShaderReflection {
     static Result<ShaderReflection> parse(const kc::Json& metadata);
 
     std::unordered_map<ShaderStage, ShaderModuleDescription> stages;
-    Opt<VertexLayout> vertexLayout;
+    Opt<ShaderVertexInputs> vertexInputs;
     std::vector<ShaderUniform> uniforms;
     std::vector<ShaderResourceTable> resourceTables;
 };

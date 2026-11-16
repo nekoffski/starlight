@@ -85,11 +85,11 @@ Result<ValueType> parseVertexType(const kc::Json& type) {
     }
 }
 
-Result<VertexLayout> parseVertexInputs(const kc::Json& entryPoint) {
-    VertexLayout layout;
+Result<ShaderVertexInputs> parseVertexInputs(const kc::Json& entryPoint) {
+    ShaderVertexInputs inputs;
     for (const auto& parameter : arrayField(entryPoint, "parameters")) {
         if (not parameter.is_object()) {
-            return invalidReflection<VertexLayout>(
+            return invalidReflection<ShaderVertexInputs>(
                 "Expected a vertex parameter object"
             );
         }
@@ -97,7 +97,7 @@ Result<VertexLayout> parseVertexInputs(const kc::Json& entryPoint) {
             continue;
         }
         if (not parameter.at("binding").is_object()) {
-            return invalidReflection<VertexLayout>(
+            return invalidReflection<ShaderVertexInputs>(
                 "Expected a vertex binding object"
             );
         }
@@ -106,9 +106,17 @@ Result<VertexLayout> parseVertexInputs(const kc::Json& entryPoint) {
         if (not type) {
             return Error::unexpected(type.error());
         }
-        layout.push_back(*type);
+        const auto location = parseU32(parameter.at("binding").at("index"));
+        if (not location) {
+            return Error::unexpected(location.error());
+        }
+        inputs.push_back({*location, *type});
     }
-    return layout;
+    const auto r = validateVertexInputs(inputs);
+    if (not r) {
+        return invalidReflection<ShaderVertexInputs>(r.error().message());
+    }
+    return inputs;
 }
 
 Result<u32> parseUniformSize(const kc::Json& element) {
@@ -286,7 +294,7 @@ Result<ShaderReflection> ShaderReflection::parse(const kc::Json& metadata) {
                 if (not layout) {
                     return Error::unexpected(layout.error());
                 }
-                reflection.vertexLayout = std::move(*layout);
+                reflection.vertexInputs = std::move(*layout);
             }
             reflection.stages[module->stage] = std::move(*module);
         }

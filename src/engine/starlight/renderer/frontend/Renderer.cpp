@@ -37,17 +37,31 @@ Result<void> Renderer::submit(const RenderRequest& request) {
         return r;
     }
     for (const auto& item : request.scene.items) {
-        if (not m_device.getShaderDescription(item.shader)) {
+        const auto* shader = m_device.getShaderDescription(item.shader);
+        if (not shader) {
             return Error::unexpected(
                 kc::ErrorCode::invalidArgument, "Invalid shader dependency"
             );
         }
         for (const auto primitive : item.primitives) {
-            if (not m_resourcePool.getPrimitive(primitive)) {
+            const auto* geometry = m_resourcePool.getPrimitive(primitive);
+            if (not geometry) {
                 return Error::unexpected(
                     kc::ErrorCode::invalidArgument,
                     "Invalid primitive dependency"
                 );
+            }
+            if (not shader->vertexInputs) {
+                return Error::unexpected(
+                    kc::ErrorCode::invalidArgument,
+                    "Shader does not declare vertex inputs"
+                );
+            }
+            const auto r = validateVertexCompatibility(
+                geometry->vertexLayout, *shader->vertexInputs
+            );
+            if (not r) {
+                return r;
             }
         }
     }
@@ -210,30 +224,6 @@ Result<void> Renderer::recordFrame(
                         );
                     }
 
-                    const auto& vertexLayout = shaderDescription->vertexLayout;
-
-                    if (not vertexLayout.has_value()) {
-                        return Error::unexpected(
-                            kc::ErrorCode::invalidArgument,
-                            "Shader does not have a vertex layout"
-                        );
-                    }
-
-                    GraphicsPipelineDescription description{
-                        .format = TextureFormat::bgra8unorm,
-                        .shader = renderable.shader,
-                    };
-
-                    auto pipeline = resolveGraphicsPipeline(description);
-
-                    if (not pipeline) [[unlikely]] {
-                        return Error::unexpected(pipeline.error());
-                    }
-
-                    if (auto r = encoder.setPipeline(*pipeline); not r) {
-                        return Error::unexpected(r.error());
-                    }
-
                     const auto parameters = combineShaderParameterBlocks(
                         renderable.parameters, viewParameters
                     );
@@ -255,12 +245,18 @@ Result<void> Renderer::recordFrame(
                             );
                         }
 
-                        if (primitive->vertexLayout != *vertexLayout) {
-                            return Error::unexpected(
-                                kc::ErrorCode::invalidArgument,
-                                "Primitive vertex layout does not match shader "
-                                "vertex layout"
-                            );
+                        GraphicsPipelineDescription description{
+                            .format = TextureFormat::bgra8unorm,
+                            .shader = renderable.shader,
+                            .vertexLayout = primitive->vertexLayout,
+                        };
+                        auto pipeline = resolveGraphicsPipeline(description);
+                        if (not pipeline) {
+                            return Error::unexpected(pipeline.error());
+                        }
+                        r = encoder.setPipeline(*pipeline);
+                        if (not r) {
+                            return r;
                         }
 
                         r = encoder.setVertexBuffer({

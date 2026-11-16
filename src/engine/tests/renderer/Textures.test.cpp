@@ -171,7 +171,7 @@ class RecordingDevice : public BusyDevice {
 
 TEST(RenderViews, RecordsIndependentViewSnapshotsForTheSameScene) {
     RecordingDevice device;
-    device.shaderDescription.vertexLayout = sl::VertexLayout{};
+    device.shaderDescription.vertexInputs = sl::ShaderVertexInputs{};
     device.shaderDescription.uniforms = {
         {0, sizeof(sl::Mat4f), "view"}, {1, sizeof(sl::Mat4f), "transform"}
     };

@@ -67,14 +67,15 @@ for the material contract and its non-owning resource handles.
 - **Target:** The application creates a target from a surface provider, such as
   `SDLWindow`. The Metal device attaches its `CAMetalLayer` and sets its
   pixel format to `BGRA8Unorm`.
-- **Pipeline:** The renderer caches a graphics pipeline by shader handle and
-  color format. On the first use of a pair, it asks the device to create the
-  pipeline; later draws reuse its handle. The current renderer always requests
-  `bgra8unorm`. Metal requires vertex and fragment shader functions and sets a
-  vertex descriptor from the shader's reflected layout, with attributes packed
-  in reserved Metal vertex buffer slot 30. The renderer rejects primitives whose layout does
-  not match the shader. Destroying a shader removes and destroys its matching
-  cached pipelines after pending frames and GPU work finish.
+- **Pipeline:** The renderer caches a graphics pipeline by shader handle,
+  color format, and primitive vertex layout. On first use, it asks the device to
+  create the pipeline; later draws with the same description reuse its handle.
+  The current renderer always requests `bgra8unorm`. Metal requires vertex and
+  fragment shader functions and builds a vertex descriptor using the geometry's
+  explicit attribute locations, byte offsets, and stride in reserved buffer
+  slot 30. Frame acceptance rejects missing or mistyped shader inputs; extra
+  geometry attributes are allowed. Destroying a shader removes and destroys its
+  matching cached pipelines after pending frames and GPU work finish.
 
 - **Texture and sampler:** The proxy creates immutable 2D RGBA8 textures from
   owned pixel bytes, and separate reusable nearest/linear, repeat/clamp samplers.
@@ -100,18 +101,20 @@ limits, and the sandbox's vertex texture coordinates.
 For each view, `Renderer::recordFrame()` adds one color pass named `Main Pass`.
 Its attachment uses the request's clear color, `LoadOp::clear`, and
 `StoreOp::store`. Every pass draws all scene items; a view does not filter the
-scene. For each item, the pass resolves its pipeline, combines the current view's
-blocks with the item's blocks, binds the shader parameters/resource tables, then binds each
-primitive's vertex and index buffers and calls `drawIndexed()` with its index
-count. Metal currently draws triangles with 32-bit indices.
+scene. For each item, the pass combines the current view's blocks with the item's
+blocks and binds the shader parameters/resource tables. For each primitive it
+resolves/binds a pipeline for that primitive's layout, binds vertex/index buffers,
+and calls `drawIndexed()` with its index count. Metal currently draws triangles
+with 32-bit indices.
 
 ```mermaid
 flowchart TD
     Request[RenderRequest] --> Views[For each view]
     Views --> Pass[Add one clear-and-draw color pass]
     Pass --> Items[For each scene item]
-    Items --> Pipeline[Find or create pipeline for shader and BGRA8 format]
-    Pipeline --> Primitives[For each primitive: bind buffers and draw indexed]
+    Items --> Primitives[For each primitive]
+    Primitives --> Pipeline[Find or create pipeline for shader, BGRA8, and vertex layout]
+    Pipeline --> Draw[Bind pipeline and buffers; draw indexed]
 ```
 
 `RenderGraph` is currently a frame-local list of passes. It copies each pass's
@@ -163,7 +166,9 @@ level, initial upload only, and linear RGBA8 storage (no sRGB conversion).
 The current `Vertex3` contains position/normal `float3` fields and `float2`
 texture coordinates. Vertex input reflection, geometry uploads, and Metal vertex
 fetching support `float32` vectors of two, three, or four elements. Attributes
-remain tightly packed in one stream, in reflected array order.
+use one stream with explicit stride, locations, and byte offsets; padding is
+supported. Layouts permit up to 16 attributes at locations 0..15, stride up to
+2048 bytes, and four-byte-aligned stride/offsets.
 
 Shader/texture/sampler/primitive destruction drains pending frame requests and waits for
 GPU idle before reclaiming resources or slots. This is deliberately blocking;

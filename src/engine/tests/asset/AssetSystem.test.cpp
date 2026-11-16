@@ -68,6 +68,7 @@ class TestDevice : public RenderDevice {
     std::unordered_map<DeviceBufferHandle, DeviceBufferDescription> buffers;
     std::vector<Str> events;
     u32 pipelineCount{0};
+    std::vector<GraphicsPipelineDescription> pipelineDescriptions;
     bool busy{false};
     bool failVertexBuffer{false};
     bool failIndexBuffer{false};
@@ -111,8 +112,9 @@ class TestDevice : public RenderDevice {
         textures.erase(handle);
     }
     Result<GraphicsPipelineHandle> createGraphicsPipeline(
-        const GraphicsPipelineDescription&
+        const GraphicsPipelineDescription& description
     ) override {
+        pipelineDescriptions.push_back(description);
         events.push_back("create pipeline");
         return GraphicsPipelineHandle{++pipelineCount};
     }
@@ -332,7 +334,7 @@ TEST(GeometryUpload, RejectsMalformedUploadsBeforeAllocatingBuffers) {
     std::vector<PrimitiveUploadData> invalid;
     invalid.emplace_back();
     auto data = triangleGeometry();
-    data.vertexLayout.clear();
+    data.vertexLayout.attributes.clear();
     invalid.push_back(data);
     data = triangleGeometry();
     data.vertexCount = 0;
@@ -347,7 +349,7 @@ TEST(GeometryUpload, RejectsMalformedUploadsBeforeAllocatingBuffers) {
     data.indexData.push_back(Byte{0});
     invalid.push_back(data);
     data = triangleGeometry();
-    data.vertexLayout.front() = static_cast<ValueType>(-1);
+    data.vertexLayout.attributes.front().type = static_cast<ValueType>(-1);
     invalid.push_back(data);
     data = triangleGeometry();
     const u32 outOfRange = data.vertexCount;
@@ -401,11 +403,13 @@ TEST(GeometryUpload, AcceptsMixedPackedFloatVectors) {
     TestDevice device;
     RendererResourcePool pool{{}, device};
     auto data = triangleGeometry();
-    data.vertexLayout = {
-        ValueType::f32_2x1, ValueType::f32_3x1, ValueType::f32_4x1
-    };
     constexpr u32 packedStride = (2 + 3 + 4) * sizeof(f32);
-    EXPECT_EQ(LayoutHelper::calculateStride(data.vertexLayout), packedStride);
+    data.vertexLayout = {
+        packedStride,
+        {{0, ValueType::f32_2x1, 0},
+         {1, ValueType::f32_3x1, 8},
+         {2, ValueType::f32_4x1, 20}}
+    };
     data.vertexData.resize(data.vertexCount * packedStride);
     const auto primitive = pool.createPrimitive(data);
     ASSERT_TRUE(primitive);
@@ -423,7 +427,9 @@ TEST(GeometryUpload, RejectsUnsupportedFormatsBeforeAllocatingBuffers) {
          {ValueType::u8, ValueType::u16, ValueType::u32, ValueType::u64,
           ValueType::f32, ValueType::f32_4x4}) {
         auto data = triangleGeometry();
-        data.vertexLayout = {format};
+        data.vertexLayout = {
+            u32(LayoutHelper::valueTypeSize(format)), {{0, format, 0}}
+        };
         data.vertexData.resize(
             data.vertexCount * LayoutHelper::valueTypeSize(format)
         );
@@ -434,6 +440,86 @@ TEST(GeometryUpload, RejectsUnsupportedFormatsBeforeAllocatingBuffers) {
     EXPECT_EQ(device.bufferAttempts, 0);
 }
 
+TEST(GeometryUpload, RejectsInvalidExplicitLayoutsBeforeAllocatingBuffers) {
+    TestDevice device;
+    RendererResourcePool pool{{}, device};
+    const auto valid = Vertex3::layout();
+    std::vector<VertexLayout> invalid;
+    for (auto stride : {0u, 2u, maxVertexStride + 4}) {
+        auto layout = valid;
+        layout.stride = stride;
+        invalid.push_back(layout);
+    }
+    auto layout = valid;
+    layout.attributes[0].location = maxVertexAttributes;
+    invalid.push_back(layout);
+    layout = valid;
+    layout.attributes[1].location = layout.attributes[0].location;
+    invalid.push_back(layout);
+    for (auto offset : {1u, valid.stride, std::numeric_limits<u32>::max()}) {
+        layout = valid;
+        layout.attributes[0].offset = offset;
+        invalid.push_back(layout);
+    }
+    for (const auto& badLayout : invalid) {
+        auto data = triangleGeometry();
+        data.vertexLayout = badLayout;
+        const auto primitive = pool.createPrimitive(data);
+        ASSERT_FALSE(primitive);
+        EXPECT_EQ(primitive.error().code(), kc::ErrorCode::invalidArgument);
+    }
+    EXPECT_EQ(device.bufferAttempts, 0);
+}
+
+TEST(GeometryLayout, ReusesExtraAttributesAndCachesEachPhysicalLayout) {
+    TestDevice device;
+    Renderer renderer{{}, device};
+    auto data = triangleGeometry();
+    const auto first = renderer.createPrimitive(data);
+    ASSERT_TRUE(first);
+    data.vertexLayout.stride += sizeof(f32);
+    for (auto& attribute : data.vertexLayout.attributes) {
+        attribute.offset += sizeof(f32);
+    }
+    data.vertexData.resize(data.vertexCount * data.vertexLayout.stride);
+    const auto padded = renderer.createPrimitive(data);
+    ASSERT_TRUE(padded);
+    const auto shader = renderer.createShader(
+        {.byteCode = Bytes{'A'},
+         .vertexInputs = ShaderVertexInputs{{0, ValueType::f32_3x1}}}
+    );
+    ASSERT_TRUE(shader);
+    RenderRequest request{
+        .scene =
+            {.items =
+                 {{.primitives = {*first, *padded, *first},
+                   .shader = *shader}}},
+        .views = {{.target = SurfaceHandle{0}}},
+    };
+    ASSERT_TRUE(renderer.submit(request));
+    renderer.flush();
+    ASSERT_EQ(device.pipelineDescriptions.size(), 2);
+    EXPECT_EQ(device.pipelineDescriptions[0].vertexLayout, Vertex3::layout());
+    EXPECT_EQ(device.pipelineDescriptions[1].vertexLayout, data.vertexLayout);
+    EXPECT_EQ(device.pipelineDescriptions[0].shader, *shader);
+    EXPECT_EQ(device.pipelineDescriptions[1].shader, *shader);
+    ASSERT_TRUE(renderer.submit(request));
+    renderer.flush();
+    EXPECT_EQ(device.pipelineCount, 2);
+
+    for (auto input :
+         {VertexInput{3, ValueType::f32_3x1},
+          VertexInput{0, ValueType::f32_4x1}}) {
+        device.shaders.at(*shader).vertexInputs = ShaderVertexInputs{input};
+        const auto r = renderer.submit(request);
+        ASSERT_FALSE(r);
+        EXPECT_EQ(r.error().code(), kc::ErrorCode::invalidArgument);
+    }
+    renderer.destroyPrimitive(*first);
+    renderer.destroyPrimitive(*padded);
+    renderer.destroyShader(*shader);
+}
+
 TEST(
     GeometryLifetime,
     DrainsAcceptedFramesBeforeReleasingBuffersAndRejectsStaleUses
@@ -442,7 +528,8 @@ TEST(
     Renderer renderer{{}, device};
     const auto primitive = renderer.createPrimitive(triangleGeometry());
     const auto shader = renderer.createShader(
-        {.byteCode = Bytes{'A'}, .vertexLayout = Vertex3::layout()}
+        {.byteCode = Bytes{'A'},
+         .vertexInputs = ShaderVertexInputs{{0, ValueType::f32_3x1}}}
     );
     ASSERT_TRUE(primitive);
     ASSERT_TRUE(shader);
@@ -1002,14 +1089,19 @@ TEST(
     RetiresMatchingPipelinesAfterAcceptedFramesAndRejectsStaleDraws
 ) {
     TestDevice device;
-    ShaderDescription description{.vertexLayout = VertexLayout{}};
+    ShaderDescription description{.vertexInputs = ShaderVertexInputs{}};
     const auto shader = device.createShader(description);
     const auto other = device.createShader(description);
     ASSERT_TRUE(shader);
     ASSERT_TRUE(other);
     Renderer renderer{{}, device};
+    const auto primitive = renderer.createPrimitive(triangleGeometry());
+    ASSERT_TRUE(primitive);
     RenderRequest request{
-        .scene = {.items = {{.shader = *shader}, {.shader = *other}}},
+        .scene =
+            {.items =
+                 {{.primitives = {*primitive}, .shader = *shader},
+                  {.primitives = {*primitive}, .shader = *other}}},
         .views = {{.target = SurfaceHandle{0}}},
     };
     ASSERT_TRUE(renderer.submit(request));
@@ -1030,6 +1122,7 @@ TEST(
     EXPECT_EQ(device.pipelineCount, 2);
     renderer.destroyShader(*other);
     EXPECT_EQ(device.events[device.events.size() - 2], "destroy pipeline 2");
+    renderer.destroyPrimitive(*primitive);
 }
 
 }  // namespace

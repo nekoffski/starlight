@@ -70,7 +70,7 @@ void expectInvalid(const Json& metadata) {
     EXPECT_EQ(reflection.error().code(), sl::ErrorCode::shaderParsingError);
 }
 
-TEST(ShaderReflection, OwnsEntryPointsAndPreservesVertexInputOrder) {
+TEST(ShaderReflection, OwnsEntryPointsAndPreservesVertexInputLocations) {
     Json metadata{
         {"entryPoints", Json::array(
                             {vertexEntryPoint(),
@@ -89,10 +89,12 @@ TEST(ShaderReflection, OwnsEntryPointsAndPreservesVertexInputOrder) {
         reflection->stages.at(sl::ShaderStage::fragment).entryPoint,
         "fragmentMain"
     );
-    ASSERT_TRUE(reflection->vertexLayout);
+    ASSERT_TRUE(reflection->vertexInputs);
     EXPECT_EQ(
-        *reflection->vertexLayout,
-        (sl::VertexLayout{sl::ValueType::f32_3x1, sl::ValueType::f32_4x1})
+        *reflection->vertexInputs,
+        (sl::ShaderVertexInputs{
+            {7, sl::ValueType::f32_3x1}, {2, sl::ValueType::f32_4x1}
+        })
     );
 }
 
@@ -108,10 +110,27 @@ TEST(ShaderReflection, AllowsMissingOptionalGlobalsAndUnknownFields) {
         const auto reflection = ShaderReflection::parse(metadata);
         ASSERT_TRUE(reflection);
         EXPECT_TRUE(reflection->stages.empty());
-        EXPECT_FALSE(reflection->vertexLayout);
+        EXPECT_FALSE(reflection->vertexInputs);
         EXPECT_TRUE(reflection->uniforms.empty());
         EXPECT_TRUE(reflection->resourceTables.empty());
     }
+}
+
+TEST(ShaderReflection, RejectsInvalidAndDuplicateVertexLocations) {
+    for (const auto& location :
+         {Json(-1), Json(0.5), Json(true), Json("0"),
+          Json(sl::maxVertexAttributes),
+          Json(std::numeric_limits<sl::u64>::max())}) {
+        auto entry = vertexEntryPoint();
+        entry["parameters"][0]["binding"]["index"] = location;
+        expectInvalid({{"entryPoints", Json::array({entry})}});
+    }
+    auto entry = vertexEntryPoint();
+    entry["parameters"][0]["binding"].erase("index");
+    expectInvalid({{"entryPoints", Json::array({entry})}});
+    entry = vertexEntryPoint();
+    entry["parameters"][1]["binding"]["index"] = 7;
+    expectInvalid({{"entryPoints", Json::array({entry})}});
 }
 
 TEST(ShaderReflection, AcceptsPackedFloatVectorsAndRejectsOtherVertexTypes) {
@@ -125,9 +144,10 @@ TEST(ShaderReflection, AcceptsPackedFloatVectorsAndRejectsOtherVertexTypes) {
         const auto reflection =
             ShaderReflection::parse({{"entryPoints", Json::array({entry})}});
         ASSERT_TRUE(reflection);
-        ASSERT_TRUE(reflection->vertexLayout);
+        ASSERT_TRUE(reflection->vertexInputs);
         EXPECT_EQ(
-            *reflection->vertexLayout, sl::VertexLayout{formats[count - 2]}
+            *reflection->vertexInputs,
+            (sl::ShaderVertexInputs{{7, formats[count - 2]}})
         );
     }
     for (auto count : {0, 1, 5}) {

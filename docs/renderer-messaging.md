@@ -64,8 +64,9 @@ not prove GPU resource liveness; render-thread validation remains authoritative.
 
 [`Renderer::submit()`](../src/engine/starlight/renderer/frontend/Renderer.cpp)
 validates declared texture/sampler handle IDs/generations and scene shader/primitive
-handles before accepting a request. A busy
-frame slot leaves the oldest request pending, so FIFO command processing alone
+handles before accepting a request. It also checks that each primitive supplies
+every required shader vertex input by location/type; extra attributes are allowed.
+A busy frame slot leaves the oldest request pending, so FIFO command processing alone
 does not guarantee that a frame is recorded before a later destroy command.
 
 Shader/texture/sampler/primitive destruction therefore calls `flush()`, then `waitIdle()`, then

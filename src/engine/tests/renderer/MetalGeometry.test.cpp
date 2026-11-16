@@ -2,6 +2,7 @@
 
 #include <array>
 
+#include "starlight/platform/metal/MetalGraphicsPipeline.hh"
 #include "starlight/platform/metal/MetalRenderPass.hh"
 
 namespace {
@@ -17,7 +18,7 @@ TEST(MetalGeometry, RejectsUnsupportedVertexFormats) {
     }
 }
 
-TEST(MetalGeometry, FetchesMixedPackedFloatVectors) {
+TEST(MetalGeometry, FetchesFloatVectorsWithExplicitOffsetsAndStride) {
     auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
     auto available = NS::TransferPtr(MTL::CreateSystemDefaultDevice());
     if (not available) {
@@ -29,9 +30,9 @@ TEST(MetalGeometry, FetchesMixedPackedFloatVectors) {
         #include <metal_stdlib>
         using namespace metal;
         struct Input {
-            float3 position [[attribute(0)]];
-            float2 uv [[attribute(1)]];
-            float4 color [[attribute(2)]];
+            float3 position [[attribute(7)]];
+            float2 uv [[attribute(2)]];
+            float4 color [[attribute(5)]];
         };
         struct Output { float4 position [[position]]; float4 color; };
         vertex Output vertexMain(Input input [[stage_in]]) {
@@ -59,31 +60,27 @@ TEST(MetalGeometry, FetchesMixedPackedFloatVectors) {
     description->colorAttachments()->object(0)->setPixelFormat(
         MTL::PixelFormatRGBA8Unorm
     );
-    const sl::VertexLayout formats{
-        sl::ValueType::f32_3x1, sl::ValueType::f32_2x1, sl::ValueType::f32_4x1
+    const sl::VertexLayout vertexLayout{
+        .stride = 40,
+        .attributes = {
+            {5, sl::ValueType::f32_4x1, 24},
+            {2, sl::ValueType::f32_2x1, 16},
+            {7, sl::ValueType::f32_3x1, 4},
+            {1, sl::ValueType::f32_2x1, 16}
+        }
     };
-    auto* layout = MTL::VertexDescriptor::vertexDescriptor();
-    sl::u64 offset = 0;
-    for (size_t i = 0; i < formats.size(); ++i) {
-        const auto format = sl::toMetal(formats[i]);
-        ASSERT_TRUE(format);
-        auto* attribute = layout->attributes()->object(i);
-        attribute->setFormat(*format);
-        attribute->setOffset(offset);
-        attribute->setBufferIndex(sl::metalVertexBufferIndex);
-        offset += sl::LayoutHelper::valueTypeSize(formats[i]);
-    }
-    layout->layouts()->object(sl::metalVertexBufferIndex)->setStride(offset);
-    description->setVertexDescriptor(layout);
+    const auto layout = sl::createMetalVertexDescriptor(vertexLayout);
+    ASSERT_TRUE(layout);
+    description->setVertexDescriptor(layout->get());
     auto pipeline = NS::TransferPtr(
         context.device().newRenderPipelineState(description.get(), &error)
     );
     ASSERT_TRUE(pipeline) << sl::parseMetalError(error);
 
-    const std::array<sl::f32, 27> vertices{
-        -1, -1, 0, 0.25f, 0.5f, 0, 0, 0.75f, 1,
-        3,  -1, 0, 0.25f, 0.5f, 0, 0, 0.75f, 1,
-        -1, 3,  0, 0.25f, 0.5f, 0, 0, 0.75f, 1,
+    const std::array<sl::f32, 30> vertices{
+        99, -1, -1, 0, 0.25f, 0.5f, 0, 0, 0.75f, 1,
+        99, 3,  -1, 0, 0.25f, 0.5f, 0, 0, 0.75f, 1,
+        99, -1, 3,  0, 0.25f, 0.5f, 0, 0, 0.75f, 1,
     };
     sl::DeviceBufferDescription upload{
         .usage = sl::DeviceBufferUsage::vertexBuffer

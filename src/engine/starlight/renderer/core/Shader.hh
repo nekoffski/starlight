@@ -21,7 +21,7 @@ struct ShaderModuleDescription {
 struct ShaderDescription {
     std::unordered_map<ShaderStage, ShaderModuleDescription> stages;
     std::vector<Byte> byteCode;
-    Opt<VertexLayout> vertexLayout;
+    Opt<ShaderVertexInputs> vertexInputs;
     std::vector<ShaderUniform> uniforms;
     std::vector<ShaderResourceTable> resourceTables;
 };

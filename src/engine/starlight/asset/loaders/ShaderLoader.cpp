@@ -23,11 +23,14 @@ Result<ShaderReflection> loadReflection(
         .result();
 }
 
-void logVertexLayout(const ShaderReflection& reflection) {
-    if (reflection.vertexLayout) {
-        log::debug(
-            "Shader layout: {}", vertexLayoutToString(*reflection.vertexLayout)
-        );
+void logVertexInputs(const ShaderReflection& reflection) {
+    if (reflection.vertexInputs) {
+        for (const auto& input : *reflection.vertexInputs) {
+            log::debug(
+                "Shader vertex input {}: {}", input.location,
+                valueTypeToString(input.type)
+            );
+        }
     }
 }
 
@@ -52,13 +55,13 @@ Result<ShaderDescription> ShaderLoader::loadShaderDescription(
             return ShaderDescription{
                 .stages = std::move(reflection.stages),
                 .byteCode = std::move(byteCode),
-                .vertexLayout = std::move(reflection.vertexLayout),
+                .vertexInputs = std::move(reflection.vertexInputs),
                 .uniforms = std::move(reflection.uniforms),
                 .resourceTables = std::move(reflection.resourceTables),
             };
         };
         return kc::startPipeline(readReflection)
-            .inspect(logVertexLayout)
+            .inspect(logVertexInputs)
             .transform(assembleDescription)
             .result();
     };

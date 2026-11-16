@@ -20,21 +20,30 @@ shares one primitive across both instances.
 [`RendererResourcePool`](../src/engine/starlight/renderer/frontend/RendererResourcePool.cpp)
 validates uploads before allocating device buffers:
 
-- A nonempty layout containing only `f32_2x1`, `f32_3x1`, and `f32_4x1`
-  vertex attributes. Scalar, integer, matrix, and unknown types are rejected
-  before buffer allocation.
+- A nonempty single-stream layout with explicit stride and per-attribute
+  location, type, and byte offset. Only `f32_2x1`, `f32_3x1`, and `f32_4x1`
+  are supported; other types are rejected before buffer allocation.
+- Unique locations in `0..15`, a positive stride of at most 2048 bytes, and
+  four-byte-aligned stride/offsets. Each attribute must fit within the stride.
 - Positive vertex/index counts, with complete triangles.
-- Tightly packed vertex bytes matching the layout stride and vertex count.
+- Vertex bytes matching the explicit layout stride and vertex count, including
+  padding.
 - Exactly `indexCount` native `u32` indices, all below `vertexCount`.
 
 Validation runs in order: layout and counts, byte sizes, then index bounds.
 Byte-size checks avoid multiplying an untrusted vertex count by the stride.
 Indices are read with `memcpy`, without alignment assumptions about byte storage.
-The layout is one tightly packed stream in attribute order. Shader and geometry
-layouts must still match exactly. [`Vertex3`](../src/engine/starlight/renderer/core/Vertex.hh)
-contains position/normal `float3` fields and `float2` texture coordinates. The
-upload builder requires trivially copyable vertex types; their byte size must
-match the packed layout stride.
+[`VertexLayout`](../src/engine/starlight/renderer/core/ShaderDataLayout.hh)
+describes physical storage independently of the shader's required location/type
+pairs. Frame acceptance checks that every required input is supplied with the
+same type; additional geometry attributes are allowed. Attribute array order
+does not determine byte offsets or locations.
+
+[`Vertex3::layout()`](../src/engine/starlight/renderer/core/Vertex.cpp) uses
+`sizeof(Vertex3)` and `offsetof` for position/normal `float3` fields and `float2`
+texture coordinates. The upload builder requires trivially copyable vertex
+types; their byte size must match the explicit stride. It copies struct bytes
+without repacking; callers must describe the member offsets correctly.
 
 Buffer creation errors preserve their original error categories and messages.
 Scope guards release created buffers if the second allocation, metadata copying,
@@ -64,8 +73,10 @@ allocation failures through geometry registration and verify that every accepted
 creation is eventually released.
 
 Reflection tests cover float2/3/4 inputs. Geometry upload tests check mixed packed
-attributes and rejection of unsupported formats before allocation.
+attributes and rejection of unsupported formats/invalid layouts before allocation.
+Renderer tests check shader input subsets, incompatible inputs, and separate
+cached pipelines for different physical layouts.
 [`MetalGeometry.test.cpp`](../src/engine/tests/renderer/MetalGeometry.test.cpp)
-checks fallible native format conversion and renders mixed float3/float2/float4
-attributes into a pixel for readback; the rendering test skips without a Metal
-device.
+checks fallible native format conversion and renders padded float3/float2/float4
+attributes with nonconsecutive locations through the production Metal descriptor
+helper into a pixel for readback; the rendering test skips without a Metal device.

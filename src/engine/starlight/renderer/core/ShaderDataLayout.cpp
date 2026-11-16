@@ -1,7 +1,8 @@
 #include "ShaderDataLayout.hh"
 
+#include <algorithm>
+#include <array>
 #include <kcore/Functional.hh>
-#include <unordered_map>
 
 namespace sl {
 
@@ -69,26 +70,99 @@ u64 LayoutHelper::dataTypeSize(const DataType& type) {
     );
 }
 
-u64 LayoutHelper::calculateStride(const VertexLayout& layout) {
-    return std::accumulate(
-        layout.begin(), layout.end(), u64{0u},
-        [](u64 acc, ValueType format) -> u64 {
-            return acc + LayoutHelper::valueTypeSize(format);
-        }
-    );
+namespace {
+
+bool isVertexType(ValueType type) {
+    return type == ValueType::f32_2x1 || type == ValueType::f32_3x1 ||
+           type == ValueType::f32_4x1;
 }
 
-Str vertexLayoutToString(const VertexLayout& layout) {
-    Str str = "{";
-    for (const auto& type : layout) {
-        str += valueTypeToString(type) + ", ";
+}  // namespace
+
+Result<void> validateVertexLayout(const VertexLayout& layout) {
+    constexpr u32 componentAlignment = sizeof(f32);
+    const bool validStride = layout.stride > 0 &&
+                             layout.stride <= maxVertexStride &&
+                             layout.stride % componentAlignment == 0;
+    if (not validStride || layout.attributes.empty() ||
+        layout.attributes.size() > maxVertexAttributes) {
+        return Error::unexpected(
+            kc::ErrorCode::invalidArgument,
+            "Invalid vertex stride or attribute count"
+        );
     }
-    if (not layout.empty()) {
-        str.pop_back();
-        str.pop_back();
+    std::array<bool, maxVertexAttributes> seen{};
+    for (const auto& attribute : layout.attributes) {
+        if (attribute.location >= maxVertexAttributes ||
+            not isVertexType(attribute.type)) {
+            return Error::unexpected(
+                kc::ErrorCode::invalidArgument,
+                "Unsupported vertex location or type"
+            );
+        }
+        if (std::exchange(seen[attribute.location], true)) {
+            return Error::unexpected(
+                kc::ErrorCode::invalidArgument,
+                "Duplicate vertex attribute location"
+            );
+        }
+        const auto size = LayoutHelper::valueTypeSize(attribute.type);
+        const bool fitsStride = attribute.offset <= layout.stride &&
+                                size <= layout.stride - attribute.offset;
+        if (not fitsStride || attribute.offset % componentAlignment != 0) {
+            return Error::unexpected(
+                kc::ErrorCode::invalidArgument,
+                "Vertex attribute exceeds stride or is misaligned"
+            );
+        }
     }
-    str += "}";
-    return str;
+    return {};
+}
+
+Result<void> validateVertexInputs(std::span<const VertexInput> inputs) {
+    std::array<bool, maxVertexAttributes> seen{};
+    for (const auto& input : inputs) {
+        if (input.location >= maxVertexAttributes ||
+            not isVertexType(input.type)) {
+            return Error::unexpected(
+                kc::ErrorCode::invalidArgument,
+                "Unsupported shader vertex input"
+            );
+        }
+        if (std::exchange(seen[input.location], true)) {
+            return Error::unexpected(
+                kc::ErrorCode::invalidArgument,
+                "Duplicate shader vertex input location"
+            );
+        }
+    }
+    return {};
+}
+
+Result<void> validateVertexCompatibility(
+    const VertexLayout& layout, std::span<const VertexInput> inputs
+) {
+    auto r = validateVertexLayout(layout);
+    if (not r) {
+        return r;
+    }
+    r = validateVertexInputs(inputs);
+    if (not r) {
+        return r;
+    }
+    for (const auto& input : inputs) {
+        const auto attribute = std::ranges::find(
+            layout.attributes, input.location, &VertexAttribute::location
+        );
+        if (attribute == layout.attributes.end() ||
+            attribute->type != input.type) {
+            return Error::unexpected(
+                kc::ErrorCode::invalidArgument,
+                "Geometry does not supply a required shader vertex input"
+            );
+        }
+    }
+    return {};
 }
 
 u64 StructType::size() const {

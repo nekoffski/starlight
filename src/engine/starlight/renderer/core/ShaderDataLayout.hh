@@ -2,12 +2,13 @@
 
 #include <cstring>
 #include <kcore/containers/FlatMap.hh>
+#include <span>
 #include <type_traits>
 #include <utility>
 #include <variant>
 #include <vector>
 
-#include "starlight/core/Core.hh"
+#include "starlight/core/Error.hh"
 
 namespace sl {
 
@@ -33,17 +34,47 @@ struct StructType {
     u64 size() const;
 };
 
-using VertexLayout = std::vector<ValueType>;
+// Conservative limits shared by the Metal and target Vulkan vertex paths.
+constexpr u32 maxVertexAttributes = 16;
+constexpr u32 maxVertexStride = 2048;
+
+struct VertexInput {
+    u32 location;
+    ValueType type;
+
+    bool operator==(const VertexInput&) const = default;
+};
+
+using ShaderVertexInputs = std::vector<VertexInput>;
+
+struct VertexAttribute {
+    u32 location;
+    ValueType type;
+    u32 offset;
+
+    bool operator==(const VertexAttribute&) const = default;
+};
+
+struct VertexLayout {
+    u32 stride{0};
+    std::vector<VertexAttribute> attributes;
+
+    bool operator==(const VertexLayout&) const = default;
+};
+
+Result<void> validateVertexLayout(const VertexLayout& layout);
+Result<void> validateVertexInputs(std::span<const VertexInput> inputs);
+Result<void> validateVertexCompatibility(
+    const VertexLayout& layout, std::span<const VertexInput> inputs
+);
 
 class LayoutHelper {
    public:
-    static u64 calculateStride(const VertexLayout& layout);
     static u64 valueTypeSize(ValueType format);
     static u64 structTypeSize(const StructType& structType);
     static u64 dataTypeSize(const DataType& dataType);
 };
 
-Str vertexLayoutToString(const VertexLayout& layout);
 Str valueTypeToString(ValueType format);
 
 enum class ShaderResourceKind { texture, sampler };

@@ -49,9 +49,11 @@ names must be nonempty.
 ## Reflection and supported blocks
 
 The loader stores one named entry point per stage. Vertex inputs with bindings
-become a list of types in reflected array order. Numeric locations and semantic
-names are not retained; only `float32` vectors of two/three/four elements are
-parsed.
+become owned `VertexInput` location/type pairs in `ShaderDescription::vertexInputs`.
+Locations come from reflection's binding indices, must be unique, and must be
+less than `maxVertexAttributes` (16). Semantic names are not retained. Only
+`float32` vectors of two/three/four elements are parsed; these requirements do
+not prescribe the geometry's stride or offsets.
 
 Global parameters support constant buffers and parameter blocks containing
 ordinary data, or blocks containing arrays of sampled 2D textures and samplers.
@@ -229,13 +231,16 @@ and reflection parsing do not constitute a working Vulkan backend.
 
 [`MetalShader`](../src/engine/starlight/platform/metal/MetalShader.cpp) loads a
 Metal library and resolves functions by reflected entry-point name. Its copied
-description supplies layouts. Graphics pipelines require vertex/fragment stages,
-use packed reflected vertex attributes, and currently support only BGRA8 color
-outputs. The renderer verifies primitive/shader vertex layout equality and
-propagates buffer-binding errors before drawing.
+description supplies required vertex inputs. Graphics pipelines require
+vertex/fragment stages and currently support only BGRA8 color outputs. Pipeline
+identity includes the shader, color format, and physical `VertexLayout`. Each
+primitive selects a pipeline for its own layout. Frame acceptance requires each
+shader input's location/type to be present; unused geometry attributes are
+allowed. Buffer-binding errors propagate before drawing.
 [`MetalGraphicsPipeline`](../src/engine/starlight/platform/metal/MetalGraphicsPipeline.cpp)
-uses float2/3/4 vertex formats; unsupported types return an error instead of
-terminating during native conversion.
+builds vertex descriptors from explicit locations, byte offsets, and stride in
+one reserved vertex buffer slot. It uses float2/3/4 formats; unsupported types
+return an error instead of terminating during native conversion.
 
 [`Vertex3`](../src/engine/starlight/renderer/core/Vertex.hh) has position and
 normal `float3` fields and a `float2` texture-coordinate field. The
