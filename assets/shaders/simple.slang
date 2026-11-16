@@ -13,9 +13,15 @@ struct DrawParameters {
 ConstantBuffer<DrawParameters> draw;
 
 struct TransformParameters {
-    float4x4 modelToClip;
+    float4x4 modelToWorld;
 };
 ConstantBuffer<TransformParameters> transform;
+
+struct ViewParameters {
+    float4x4 worldToView;
+    float4x4 viewToClip;
+};
+ConstantBuffer<ViewParameters> view;
 
 struct VertexOutput {
     float4 position : SV_Position;
@@ -25,7 +31,8 @@ struct VertexOutput {
 [shader("vertex")]
 VertexOutput vertexMain(float3 position, float3 color) {
     VertexOutput output;
-    output.position = mul(transform.modelToClip, float4(position, 1.0));
+    output.position = mul(view.viewToClip,
+        mul(view.worldToView, mul(transform.modelToWorld, float4(position, 1.0))));
     output.uv = position.xy + 0.5;
     return output;
 }

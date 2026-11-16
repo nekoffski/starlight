@@ -4,6 +4,7 @@
 
 #include "starlight/asset/AssetSystem.hh"
 #include "starlight/asset/Texture.hh"
+#include "starlight/camera/OrbitCameraController.hh"
 #include "starlight/core/Config.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/core/Time.hh"
@@ -93,12 +94,13 @@ int main() {
     log::expect(material);
 
     constexpr std::array horizontalOffsets{-0.5f, 0.5f};
-    constexpr f32 movementSpeed = 0.8f;
     constexpr f32 wheelScaleStep = 0.05f;
     f32 triangleScale = 0.6f;
     f32 angle = 0.0f;
     bool rotating = true;
-    Vec2f sceneOffset{0.0f};
+    EulerCamera camera;
+    OrbitCameraController cameraController;
+    log::expect(camera.setPose({.position = Vec3f{0.0f, 0.0f, 2.0f}}));
 
     mainBus.on<KeyPressedEvent>([&](const auto& event) {
         if (event.window == window->id() && event.key == Key::escape &&
@@ -125,7 +127,6 @@ int main() {
         window->pollEvents();
         es.dispatch();
 
-        const Window& input = *window;
         if (not running) {
             break;
         }
@@ -133,30 +134,38 @@ int main() {
         const auto deltaTime =
             std::chrono::duration<f32>(now - previousUpdate).count();
         previousUpdate = now;
-        const Vec2f movement{
-            f32(input.isPressed(Key::d)) - f32(input.isPressed(Key::a)),
-            f32(input.isPressed(Key::w)) - f32(input.isPressed(Key::s))
-        };
-        sceneOffset += movement * movementSpeed * deltaTime;
+        log::expect(cameraController.update(camera, *window, deltaTime));
         if (rotating) {
             angle += deltaTime;
         }
+        const auto size = window->drawableSize();
+        if (size.x == 0 || size.y == 0) {
+            std::this_thread::sleep_for(50ms);
+            continue;
+        }
+        const auto matrices = camera.matrices(f32(size.x) / f32(size.y));
+        log::expect(matrices);
         RenderRequestBuilder requestBuilder;
-        requestBuilder.addView({.target = *target})
+        requestBuilder
+            .addView({
+                .target = *target,
+                .parameters = {ShaderParameterBlock::fromValue(
+                    "view", *matrices
+                )},
+            })
             .setClearColor({0.2f, 0.2f, 0.6f, 1.0f});
         for (const auto offset : horizontalOffsets) {
-            auto modelToClip = glm::translate(
-                Mat4f{1.0f}, Vec3f{offset + sceneOffset.x, sceneOffset.y, 0.0f}
-            );
-            modelToClip =
-                glm::rotate(modelToClip, angle, Vec3f{0.0f, 0.0f, 1.0f});
-            modelToClip = glm::scale(modelToClip, Vec3f{triangleScale});
+            auto modelToWorld =
+                glm::translate(Mat4f{1.0f}, Vec3f{offset, 0.0f, 0.0f});
+            modelToWorld =
+                glm::rotate(modelToWorld, angle, Vec3f{0.0f, 0.0f, 1.0f});
+            modelToWorld = glm::scale(modelToWorld, Vec3f{triangleScale});
             requestBuilder.addDraw({
                 .material = *material,
                 .primitives = {*primitive},
                 .parameters = {
                     .blocks = {ShaderParameterBlock::fromValue(
-                        "transform", modelToClip
+                        "transform", modelToWorld
                     )}
                 },
             });

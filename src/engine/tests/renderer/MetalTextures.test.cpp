@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "starlight/asset/Texture.hh"
+#include "starlight/camera/Camera.hh"
 #include "starlight/math/Math.hh"
 #include "starlight/platform/metal/MetalRenderPass.hh"
 #include "starlight/renderer/frontend/RenderRequestBuilder.hh"
@@ -54,10 +55,12 @@ TEST(MetalTextures, SamplesNonzeroIndicesAndRejectsStaleHandles) {
         using namespace metal;
         struct Resources { array<texture2d<float>, 2> textures; array<sampler, 2> samplers; };
         struct Params { uint textureIndex; uint samplerIndex; uint2 padding; };
+        struct View { float4x4 worldToView; float4x4 viewToClip; };
         struct Output { float4 position [[position]]; float2 uv; };
-        vertex Output vertexMain(uint id [[vertex_id]], constant float4x4& transform [[buffer(2)]]) {
+        vertex Output vertexMain(uint id [[vertex_id]], constant float4x4& transform [[buffer(2)]],
+            constant View& view [[buffer(3)]]) {
             const float2 positions[3] = {float2(-1,-1),float2(3,-1),float2(-1,3)};
-            return {transform * float4(positions[id],0,1),positions[id] * 0.5 + 0.5};
+            return {view.viewToClip * view.worldToView * transform * float4(positions[id],0,1),positions[id] * 0.5 + 0.5};
         }
         fragment float4 fragmentMain(Output input [[stage_in]],
             constant Resources& resources [[buffer(0)]], constant Params& draw [[buffer(1)]]) {
@@ -111,6 +114,7 @@ TEST(MetalTextures, SamplesNonzeroIndicesAndRejectsStaleHandles) {
     sl::ShaderDescription shader;
     shader.uniforms.push_back({1, 16, "draw"});
     shader.uniforms.push_back({2, sizeof(sl::Mat4f), "transform"});
+    shader.uniforms.push_back({3, sizeof(sl::CameraMatrices), "view"});
     shader.resourceTables.push_back(
         {"resources",
          0,
@@ -123,7 +127,9 @@ TEST(MetalTextures, SamplesNonzeroIndicesAndRejectsStaleHandles) {
         {
             .handle = sl::ShaderHandle{0},
             .parameters =
-                {{"draw", sizeof(indices)}, {"transform", sizeof(sl::Mat4f)}},
+                {{"draw", sizeof(indices)},
+                 {"transform", sizeof(sl::Mat4f)},
+                 {"view", sizeof(sl::CameraMatrices)}},
         },
         {
             .blocks = {sl::ShaderParameterBlock::fromValue("draw", indices)},
@@ -139,7 +145,14 @@ TEST(MetalTextures, SamplesNonzeroIndicesAndRejectsStaleHandles) {
             )}
         },
     };
-    const auto request = sl::RenderRequestBuilder{}.addDraw(draw).build();
+    sl::RenderView view{
+        .target = sl::SurfaceHandle{0},
+        .parameters = {
+            sl::ShaderParameterBlock::fromValue("view", sl::CameraMatrices{})
+        },
+    };
+    const auto request =
+        sl::RenderRequestBuilder{}.addView(view).addDraw(draw).build();
     ASSERT_TRUE(request);
     const auto& usage = request->resources;
     {
@@ -163,7 +176,10 @@ TEST(MetalTextures, SamplesNonzeroIndicesAndRejectsStaleHandles) {
                 "Shader parameter block count does not match reflection"
             );
         }
-        const auto blocks = std::span(request->scene.items.front().parameters);
+        const auto blocks = sl::combineShaderParameterBlocks(
+            request->scene.items.front().parameters,
+            request->views.front().parameters
+        );
         auto invalidShader = shader;
         invalidShader.uniforms.front().binding = sl::metalVertexBufferIndex;
         EXPECT_FALSE(encoder.setShaderParameters(invalidShader, blocks, usage));
@@ -207,12 +223,15 @@ TEST(MetalTextures, SamplesNonzeroIndicesAndRejectsStaleHandles) {
     EXPECT_EQ(pixels[3], sl::Byte(255));
     const auto translation =
         glm::translate(sl::Mat4f{1.0f}, sl::Vec3f{0.5f, 0.0f, 0.0f});
-    const auto modelToClip =
-        glm::scale(translation, sl::Vec3f{0.5f, 0.5f, 1.0f});
+    const auto modelToWorld =
+        glm::scale(sl::Mat4f{1.0f}, sl::Vec3f{0.5f, 0.5f, 1.0f});
     draw.parameters.blocks.front() =
-        sl::ShaderParameterBlock::fromValue("transform", modelToClip);
+        sl::ShaderParameterBlock::fromValue("transform", modelToWorld);
+    view.parameters.front() = sl::ShaderParameterBlock::fromValue(
+        "view", sl::CameraMatrices{.worldToView = translation}
+    );
     const auto transformedRequest =
-        sl::RenderRequestBuilder{}.addDraw(draw).build();
+        sl::RenderRequestBuilder{}.addView(view).addDraw(draw).build();
     ASSERT_TRUE(transformedRequest);
     auto* transformedCommands = context.commandQueue().commandBuffer();
     auto* transformedEncoder = transformedCommands->renderCommandEncoder(pass);
@@ -220,9 +239,12 @@ TEST(MetalTextures, SamplesNonzeroIndicesAndRejectsStaleHandles) {
     transformedEncoder->setRenderPipelineState(pipeline.get());
     {
         sl::MetalRenderPassEncoder encoder{resources, transformedEncoder};
+        const auto blocks = sl::combineShaderParameterBlocks(
+            transformedRequest->scene.items.front().parameters,
+            transformedRequest->views.front().parameters
+        );
         const auto r = encoder.setShaderParameters(
-            shader, transformedRequest->scene.items.front().parameters,
-            transformedRequest->resources
+            shader, blocks, transformedRequest->resources
         );
         ASSERT_TRUE(r) << r.error().message();
         encoder.draw(3);

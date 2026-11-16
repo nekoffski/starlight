@@ -83,24 +83,29 @@ block containing one `float4x4` is 64 bytes on Metal and SPIR-V.
 
 ## Transform matrices
 
-The sandbox supplies a GLM `Mat4f` as the named `transform` block:
+The sandbox supplies a GLM `Mat4f` as the named `transform` block per draw:
 
 ```cpp
-auto block = ShaderParameterBlock::fromValue("transform", modelToClip);
+auto block = ShaderParameterBlock::fromValue("transform", modelToWorld);
 ```
 
 [`simple.slang`](../assets/shaders/simple.slang) declares a
-`ConstantBuffer<TransformParameters>` with a `float4x4 modelToClip` member and
-computes `mul(transform.modelToClip, float4(position, 1.0))` in the vertex shader.
+`ConstantBuffer<TransformParameters>` with a `float4x4 modelToWorld` member. A
+separate `view` block contains `worldToView` and `viewToClip` matrices copied
+from the engine-side [camera](camera.md). The vertex shader computes
+`projection * view * model * position` with nested `mul(matrix, vector)` calls.
 GLM stores matrix columns contiguously, matching the explicit shader compilation
 layout. No CPU transpose or backend-specific transform command is involved.
-The sandbox replaces the matrix block each frame with a rotation built from
-elapsed time. Frame submission owns a copy, so subsequent updates do not mutate
-already accepted requests. UV coordinates remain based on object-space position.
+The sandbox replaces object matrices with translated/scaled rotations and view
+matrices from the orbit-controlled camera each frame. Each RenderView owns its camera blocks,
+and all scene items retain their draw blocks. Frame submission owns a copy, so
+subsequent updates do not mutate already accepted requests. UV coordinates remain
+based on object-space position.
 
 This path establishes 4x4 matrix transfer. Other aggregate layouts still need
 caller-supplied padding compatible with target reflection; there is no automatic
-uniform packing, camera system, or separate model/view/projection API.
+uniform packing. The camera's two-matrix block is 128 bytes on Metal and SPIR-V;
+the single object matrix is 64 bytes. Camera projection does not add depth testing.
 
 ## CPU materials and draw preparation
 
@@ -124,9 +129,9 @@ managed renderer shaders.
 that captures this interface and a `ShaderParameters` value: named blocks plus
 explicit texture/sampler dependencies. Construction validates the supplied
 blocks against the captured layout. Supplied blocks are material-owned; the
-remaining shader blocks must be provided by each draw. Names do not imply scope:
+remaining shader blocks must be provided by the draw or its view. Names do not imply scope:
 the demo's `draw` texture-index block belongs to its material, while `transform`
-is supplied per draw.
+is supplied per draw and `view` per render view.
 
 [`MaterialBuilder`](../src/engine/starlight/renderer/shading/MaterialBuilder.hh)
 provides fluent construction from an owned shader-interface snapshot. It adds
@@ -142,16 +147,17 @@ they do not accept or compose draw inputs.
 [`RenderRequestBuilder`](../src/engine/starlight/renderer/frontend/RenderRequestBuilder.hh)
 collects views, a clear color, and `MaterialDraw` descriptions through fluent
 `addView()`, `setClearColor()`, and `addDraw()` calls. The builder owns the
-primitive handles, draw parameter bytes, and dependency declarations it collects;
+primitive handles, draw/view parameter bytes, and dependency declarations it collects;
 changing or destroying the original draw description does not change them.
 Only the material is borrowed. Its owner must keep it alive and at a stable
 address through every `build()` using that draw, including later builds if the
 builder is retained. Material access must not race with modification/destruction.
 
 `addDraw()` only collects inputs. `build() const` reads current material values,
-combines them with the collected draw blocks, and returns an owned
+combines them with the collected draw blocks, validates the union with every
+view's blocks, and returns an owned
 `Result<RenderRequest>`. It rejects unknown names, wrong sizes, missing blocks,
-and duplicate names, including attempts to replace a material-owned block.
+and duplicate names, including overlaps across material, draw, and view scopes.
 Validation is at block granularity; it does not inspect fields, pack bytes,
 or infer resource use. Material and draw declarations must include every
 resource their bytes can select, including indirect candidates.
@@ -159,7 +165,7 @@ resource their bytes can select, including indirect candidates.
 Block validation is shared with material construction through
 [`validateShaderParameterBlocks()`](../src/engine/starlight/renderer/core/Shader.cpp).
 Material construction validates its own subset; building a request additionally
-requires every shader block to be supplied. A failed build returns no partial
+requires every shader block to be supplied for each draw/view pair. A failed build returns no partial
 request and leaves the builder inputs unchanged. Builds can be repeated without
 consuming the builder. A material value replaced before a later build is read
 again; previously built requests remain unchanged and contain no material refs.

@@ -59,6 +59,8 @@ if (window->isPressed(Key::w)) {
 - `isPressed(MouseButton)` queries `SDL_GetMouseState` and returns false unless
   this window has mouse focus. Keyboard focus and mouse focus can differ.
 - `isFocused()` reports native keyboard focus.
+- `drawableSize()` queries SDL's window size in pixels, used by the camera demo
+  to calculate each view's aspect ratio.
 - `mousePosition()` reports SDL's window-relative coordinates for the
   mouse-focused window, or zero when this window lacks mouse focus.
 - Unknown or out-of-range key/button values read as false. The adapter maps
@@ -79,7 +81,8 @@ callback observe current SDL state, while payloads describe the captured event.
 Events posted during dispatch wait for the next dispatch.
 
 The interface covers keyboard/mouse I/O without text input, action mapping,
-or cursor-capture controls. The sandbox uses held-state WASD movement and typed
+or cursor-capture controls. The sandbox uses the [orbit camera controller](camera.md)
+for held-state orbit/zoom controls, and typed
 events for wheel scaling, a left-click rotation toggle, and Escape to quit.
 
 ## Checks

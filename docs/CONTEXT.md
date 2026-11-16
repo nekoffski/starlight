@@ -56,7 +56,7 @@ table. A CPU handle also carries a generation to distinguish successive resource
 that occupy the same index.
 
 **Shader parameter block**:
-A named block of bytes supplied for a draw item, matching a compiled shader's
+A named block of bytes supplied for a draw item or render view, matching a compiled shader's
 reflected parameter name and size.
 
 **Shader interface**:

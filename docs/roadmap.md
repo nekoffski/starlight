@@ -24,12 +24,13 @@ policy (including no ADRs), see [Maintaining knowledge nodes](README.md#maintain
   Shader paths share live records; texture replacement supplies complete pixels.
   See [asset ownership](shader-pipeline.md#engine-thread-asset-ownership).
 - **Transforms:** [Shader parameter blocks](../src/engine/starlight/renderer/core/ShaderDataLayout.hh)
-  copy typed values into owned bytes. The sandbox updates a `Mat4f` per item/frame;
-  [simple.slang](../assets/shaders/simple.slang) applies it to vertex positions.
+  copy typed values into owned bytes. [Euler cameras](camera.md) calculate view
+  and projection matrices supplied per view; the sandbox updates a model matrix
+  per item/frame. [simple.slang](../assets/shaders/simple.slang) combines them.
 - **CPU materials:** [Material](../src/engine/starlight/renderer/shading/Material.cpp)
   validates and stores shared blocks. Frontend
   [request building](../src/engine/starlight/renderer/frontend/RenderRequestBuilder.cpp)
-  collects owned draw descriptions and composes material/draw blocks and declared
+  collects owned draw/view descriptions and composes material/draw/view blocks and declared
   dependencies at build time, before queueing.
   Two sandbox triangle instances
   share one checkerboard material. GPU handles remain non-owning.

@@ -10,6 +10,7 @@
 #include "starlight/math/Math.hh"
 #include "starlight/renderer/executor/RendererCommandDispatcher.hh"
 #include "starlight/renderer/frontend/Renderer.hh"
+#include "starlight/renderer/rhi/RenderFrameRecorder.hh"
 
 namespace {
 
@@ -124,6 +125,87 @@ class BusyDevice : public sl::RenderDevice {
         events.push_back("destroy sampler");
     }
 };
+
+class CapturedFrame : public sl::RenderFrameRecorder,
+                      public sl::RenderPassEncoder {
+   public:
+    std::vector<std::vector<sl::ShaderParameterBlock>> bindings;
+    std::vector<sl::RenderTarget> targets;
+
+    sl::Result<void> renderPass(
+        const sl::RenderPassDescription& description,
+        const sl::RenderPassCallback& record
+    ) override {
+        targets.push_back(description.colorAttachments.front().target);
+        return record(*this);
+    }
+    sl::Result<void> setPipeline(sl::GraphicsPipelineHandle) override {
+        return {};
+    }
+    sl::Result<void> setVertexBuffer(const sl::DeviceBufferSlice&) override {
+        return {};
+    }
+    sl::Result<void> setIndexBuffer(const sl::DeviceBufferSlice&) override {
+        return {};
+    }
+    sl::Result<void> setShaderParameters(
+        const sl::ShaderDescription&,
+        std::span<const sl::ShaderParameterBlock> parameters,
+        const sl::ShaderResourceDependencies&
+    ) override {
+        bindings.emplace_back(parameters.begin(), parameters.end());
+        return {};
+    }
+    void draw(sl::u32) override {}
+    void drawIndexed(sl::u32, sl::u32) override {}
+};
+
+class RecordingDevice : public BusyDevice {
+   public:
+    CapturedFrame frame;
+
+    sl::Result<void> trySubmitFrame(RecordFrame record) override {
+        return record(frame);
+    }
+};
+
+TEST(RenderViews, RecordsIndependentViewSnapshotsForTheSameScene) {
+    RecordingDevice device;
+    device.shaderDescription.vertexLayout = sl::VertexLayout{};
+    device.shaderDescription.uniforms = {
+        {0, sizeof(sl::Mat4f), "view"}, {1, sizeof(sl::Mat4f), "transform"}
+    };
+    sl::Renderer renderer{{}, device};
+    const auto model =
+        sl::ShaderParameterBlock::fromValue("transform", sl::Mat4f{1.0f});
+    const auto first =
+        sl::ShaderParameterBlock::fromValue("view", sl::Mat4f{1.0f});
+    const auto second = sl::ShaderParameterBlock::fromValue(
+        "view", glm::translate(sl::Mat4f{1.0f}, sl::Vec3f{2, 0, 0})
+    );
+    sl::RenderRequest request{
+        .scene = {.items = {{.shader = device.shader, .parameters = {model}}}},
+        .views = {
+            {.target = sl::SurfaceHandle{0}, .parameters = {first}},
+            {.target = sl::SurfaceHandle{1}, .parameters = {second}}
+        },
+    };
+    ASSERT_TRUE(renderer.submit(request));
+    request.views.front().parameters.front().bytes.clear();
+    ASSERT_TRUE(renderer.tick());
+    ASSERT_EQ(device.frame.bindings.size(), 2);
+    ASSERT_EQ(device.frame.bindings[0].size(), 2);
+    ASSERT_EQ(device.frame.bindings[1].size(), 2);
+    EXPECT_EQ(device.frame.bindings[0][0].bytes, model.bytes);
+    EXPECT_EQ(device.frame.bindings[1][0].bytes, model.bytes);
+    EXPECT_EQ(device.frame.bindings[0][1].bytes, first.bytes);
+    EXPECT_EQ(device.frame.bindings[1][1].bytes, second.bytes);
+    EXPECT_EQ(
+        device.frame.targets, (std::vector<sl::RenderTarget>{
+                                  sl::SurfaceHandle{0}, sl::SurfaceHandle{1}
+                              })
+    );
+}
 
 TEST(ShaderInterface, CopiesShaderLayoutThroughTheCommandPath) {
     BusyDevice device;

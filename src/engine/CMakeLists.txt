@@ -8,6 +8,10 @@ add_library(starlight STATIC
     "starlight/asset/loaders/ShaderReflection.cpp"
     "starlight/asset/Mesh.cpp"
     "starlight/asset/Texture.cpp"
+    # -- camera
+    "starlight/camera/EulerCamera.cpp"
+    "starlight/camera/FlyCameraController.cpp"
+    "starlight/camera/OrbitCameraController.cpp"
     # -- core
     "starlight/core/Error.cpp"
     # -- event

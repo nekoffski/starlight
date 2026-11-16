@@ -30,9 +30,11 @@ ownership and completion boundaries.
 
 The application submits a `RenderRequest` containing a `RenderScene`, one or
 more `RenderView`s, and a clear color. Each scene item has a shader handle, uploaded primitive handles, and named
-parameter blocks, including the sandbox's model-to-clip transform matrix.
+parameter blocks, including the sandbox's model-to-world transform matrix.
 The request also declares the textures and samplers that its
-shaders may access, including indirect accesses. Each view names a render target. The request is
+shaders may access, including indirect accesses. Each view names a render target
+and owns its own shader parameter blocks. The sandbox puts copied view/projection
+matrices there; see [Cameras](camera.md). The request is
 copied into the renderer's pending queue; successful `RendererProxy::submit()`
 means the renderer accepted the request, not that the GPU finished it.
 
@@ -43,7 +45,8 @@ collects draw descriptions and builds those same requests before queueing.
 reusable shader blocks and declared resources and expose read-only access to
 that data; draws supply the remaining blocks. The builder copies draw inputs
 when added and borrows materials until each build. Building validates
-block names/sizes/completeness and combines dependencies into an owned request.
+block names/sizes/completeness across material, draw, and view scopes for every
+draw/view pair and combines dependencies into an owned request.
 The sandbox uses two instances of one primitive with a shared checkerboard
 material and separate transforms. See [Shader pipeline](shader-pipeline.md)
 for the material contract and its non-owning resource handles.
@@ -96,7 +99,8 @@ limits, and the sandbox's generated texture coordinates.
 For each view, `Renderer::recordFrame()` adds one color pass named `Main Pass`.
 Its attachment uses the request's clear color, `LoadOp::clear`, and
 `StoreOp::store`. Every pass draws all scene items; a view does not filter the
-scene. For each item, the pass resolves its pipeline, binds it and the item's shader parameters/resource tables, then binds each
+scene. For each item, the pass resolves its pipeline, combines the current view's
+blocks with the item's blocks, binds the shader parameters/resource tables, then binds each
 primitive's vertex and index buffers and calls `drawIndexed()` with its index
 count. Metal currently draws triangles with 32-bit indices.
 

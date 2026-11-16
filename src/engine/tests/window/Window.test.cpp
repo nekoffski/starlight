@@ -99,6 +99,10 @@ TEST_F(WindowInput, QueriesNativeStateRatherThanInjectedEvents) {
 
     // SDL_PushEvent queues notifications without changing device state.
     auto* native = SDL_GetWindowFromID(window->id().get());
+    int width = 0;
+    int height = 0;
+    ASSERT_TRUE(SDL_GetWindowSizeInPixels(native, &width, &height));
+    EXPECT_EQ(window->drawableSize(), (Vec2u{width, height}));
     const bool keyboardFocus = SDL_GetKeyboardFocus() == native;
     EXPECT_EQ(window->isFocused(), keyboardFocus);
     EXPECT_EQ(

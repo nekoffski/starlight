@@ -12,6 +12,7 @@ namespace sl {
 
 struct RenderView {
     RenderTarget target;
+    std::vector<ShaderParameterBlock> parameters;
 };
 
 struct RenderRequest {

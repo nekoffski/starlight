@@ -35,28 +35,50 @@ ShaderResourceDependencies mergeDependencies(
     };
 }
 
-Result<ShaderParameters> prepareParameters(
-    const Material& material, const ShaderParameters& draw
+Result<void> validateCompleteParameters(
+    std::span<const ShaderParameterLayout> layout,
+    std::span<const ShaderParameterBlock> blocks
 ) {
-    auto parameters = material.parameters();
-    parameters.blocks.insert(
-        parameters.blocks.end(), draw.blocks.begin(), draw.blocks.end()
-    );
-    const auto r = validateShaderParameterBlocks(
-        material.shaderInterface().parameters, parameters.blocks
-    );
+    const auto r = validateShaderParameterBlocks(layout, blocks);
     if (not r) {
-        return Error::unexpected(r.error());
+        return r;
     }
-    for (const auto& parameter : material.shaderInterface().parameters) {
+    for (const auto& parameter : layout) {
         const auto block = std::ranges::find(
-            parameters.blocks, parameter.name, &ShaderParameterBlock::name
+            blocks, parameter.name, &ShaderParameterBlock::name
         );
-        if (block == parameters.blocks.end()) {
+        if (block == blocks.end()) {
             return Error::unexpected(
                 kc::ErrorCode::invalidArgument,
                 "Missing shader parameter block: {}", parameter.name
             );
+        }
+    }
+    return {};
+}
+
+Result<ShaderParameters> prepareParameters(
+    const Material& material, const ShaderParameters& draw,
+    std::span<const RenderView> views
+) {
+    ShaderParameters parameters{
+        .blocks = combineShaderParameterBlocks(
+            material.parameters().blocks, draw.blocks
+        )
+    };
+    const auto& layout = material.shaderInterface().parameters;
+    if (views.empty()) {
+        const auto r = validateCompleteParameters(layout, parameters.blocks);
+        if (not r) {
+            return Error::unexpected(r.error());
+        }
+    }
+    for (const auto& view : views) {
+        const auto blocks =
+            combineShaderParameterBlocks(parameters.blocks, view.parameters);
+        const auto r = validateCompleteParameters(layout, blocks);
+        if (not r) {
+            return Error::unexpected(r.error());
         }
     }
     parameters.resources =
@@ -70,7 +92,8 @@ Result<RenderRequest> RenderRequestBuilder::build() const {
     auto request = m_request;
     for (const auto& draw : m_draws) {
         const auto& material = draw.material.get();
-        auto parameters = prepareParameters(material, draw.parameters);
+        auto parameters =
+            prepareParameters(material, draw.parameters, request.views);
         if (not parameters) {
             return Error::unexpected(parameters.error());
         }

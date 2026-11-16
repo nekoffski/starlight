@@ -43,6 +43,11 @@ Result<void> validateShaderParameterBlocks(
     std::span<const ShaderParameterBlock> blocks
 );
 
+std::vector<ShaderParameterBlock> combineShaderParameterBlocks(
+    std::span<const ShaderParameterBlock> draw,
+    std::span<const ShaderParameterBlock> view
+);
+
 KCORE_BIT_ENUM(ShaderStage);
 
 Str shaderStageToStr(ShaderStage stage);

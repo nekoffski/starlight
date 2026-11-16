@@ -34,6 +34,7 @@ class SDLWindowBase : public Window {
     bool isPressed(MouseButton button) const override;
 
     bool isFocused() const override;
+    Vec2u drawableSize() const override;
     Vec2f mousePosition() const override;
 
    protected:

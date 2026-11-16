@@ -6,6 +6,17 @@
 
 namespace sl {
 
+std::vector<ShaderParameterBlock> combineShaderParameterBlocks(
+    std::span<const ShaderParameterBlock> draw,
+    std::span<const ShaderParameterBlock> view
+) {
+    std::vector<ShaderParameterBlock> blocks;
+    blocks.reserve(draw.size() + view.size());
+    blocks.insert(blocks.end(), draw.begin(), draw.end());
+    blocks.insert(blocks.end(), view.begin(), view.end());
+    return blocks;
+}
+
 Result<void> validateShaderParameterBlocks(
     std::span<const ShaderParameterLayout> layout,
     std::span<const ShaderParameterBlock> blocks

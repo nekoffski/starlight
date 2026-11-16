@@ -29,6 +29,8 @@ Starlight is a C++23 game engine built with CMake and Conan 2. Start with
   `event/` event dispatch, and `asset/` assets and loaders.
 - `src/engine/starlight/window/`: the window interface and physical input types.
   SDL supplies native keyboard/mouse state; window/input events live in `WindowEvents.hh`.
+- `src/engine/starlight/camera/`: camera matrix interface, Euler perspective camera,
+  and window-driven fly/orbit controllers. Rendering receives copied blocks.
 - `src/engine/starlight/renderer/`: `frontend/` handles draw preparation, requests,
   and graphs, `executor/` dispatches render-thread commands, `rhi/` defines device interfaces,
   `core/` contains resource descriptions and handles, and `shading/` stores
@@ -148,6 +150,11 @@ its compiler profile; bootstrap again afterward.
 - Matrix parameters use GLM `Mat4f` with explicit column-major shader compilation
   and `mul(matrix, vector)`. Preserve agreement between CPU and shader layouts;
   `ShaderParameterBlock::fromValue` copies bytes without packing or transposing.
+- Camera pose uses radians and `viewToWorld = T * Ry * Rx * Rz`, with +Y up and
+  zero rotation looking along -Z. Projection explicitly uses right-handed 0..1
+  depth. Keep camera input policy separate from matrix calculation and RHI.
+  RenderView owns per-view blocks; validate material/draw/view completeness for
+  each view and reject overlapping block names. See `docs/camera.md`.
 - AssetSystem centrally stores shader/texture/sampler records behind strong references.
   Asset operations and reference lifetimes are engine-thread confined; pump
   `update()` to publish renderer futures and clean up unused records. Keep the

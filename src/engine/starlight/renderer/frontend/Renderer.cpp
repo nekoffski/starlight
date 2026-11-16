@@ -178,7 +178,9 @@ Result<void> Renderer::recordFrame(
         };
 
         graph.addRenderPass(
-            pass, [&](RenderPassEncoder& encoder) -> Result<void> {
+            pass,
+            [&, viewParameters = view.parameters](RenderPassEncoder& encoder)
+                -> Result<void> {
                 for (const auto& renderable : request.scene.items) {
                     const auto* shaderDescription =
                         m_device.getShaderDescription(renderable.shader);
@@ -215,9 +217,11 @@ Result<void> Renderer::recordFrame(
                         return Error::unexpected(r.error());
                     }
 
+                    const auto parameters = combineShaderParameterBlocks(
+                        renderable.parameters, viewParameters
+                    );
                     auto r = encoder.setShaderParameters(
-                        *shaderDescription, renderable.parameters,
-                        request.resources
+                        *shaderDescription, parameters, request.resources
                     );
                     if (not r) {
                         return r;

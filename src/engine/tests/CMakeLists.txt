@@ -15,6 +15,10 @@ add_starlight_test(starlight-window-tests
     "window/Window.test.cpp"
 )
 
+add_starlight_test(starlight-camera-tests
+    "camera/Camera.test.cpp"
+)
+
 add_starlight_test(starlight-runtime-tests
     "runtime/ThreadSafeQueue.test.cpp"
     "runtime/EventLoop.test.cpp"

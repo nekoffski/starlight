@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 #include "Glm.hh"
 
 namespace sl {
@@ -21,5 +23,16 @@ using Mat3f = glm::mat3;
 using Mat4f = glm::mat4;
 
 using Quat = glm::quat;
+
+inline bool isFinite(const Mat4f& matrix) {
+    for (int column = 0; column < matrix.length(); ++column) {
+        for (int row = 0; row < matrix[column].length(); ++row) {
+            if (not std::isfinite(matrix[column][row])) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
 
 }  // namespace sl

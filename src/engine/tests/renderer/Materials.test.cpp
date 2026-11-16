@@ -2,6 +2,7 @@
 
 #include <array>
 
+#include "starlight/camera/EulerCamera.hh"
 #include "starlight/math/Math.hh"
 #include "starlight/renderer/frontend/RenderRequestBuilder.hh"
 #include "starlight/renderer/shading/Material.hh"
@@ -420,6 +421,97 @@ TEST(RenderRequestBuilder, AllowsAllBlocksToBeMaterialOwnedOrDrawOwned) {
         sl::Material::create({.handle = sl::ShaderHandle{0}}, {});
     ASSERT_TRUE(noParameters);
     EXPECT_TRUE(buildRequest(*noParameters, {}));
+}
+
+TEST(RenderRequestBuilder, SnapshotsSeparateViewParametersForSharedDraws) {
+    auto shader = makeShaderInterface();
+    shader.parameters.push_back({"view", sizeof(sl::CameraMatrices)});
+    const auto material = sl::Material::create(shader, surfaceParameters());
+    ASSERT_TRUE(material);
+    sl::EulerCamera camera;
+    const auto firstCamera = camera.matrices(1.0f);
+    ASSERT_TRUE(firstCamera);
+    sl::RenderView firstView{
+        .target = sl::SurfaceHandle{0},
+        .parameters = {
+            sl::ShaderParameterBlock::fromValue("view", *firstCamera)
+        },
+    };
+    sl::RenderRequestBuilder builder;
+    builder.addView(firstView).addDraw({
+        .material = *material,
+        .parameters = transformParameters(sl::Mat4f{1.0f}),
+    });
+    firstView.parameters.front().bytes.clear();
+    ASSERT_TRUE(camera.setPose({.position = {2, 0, 0}}));
+    const auto secondCamera = camera.matrices(2.0f);
+    ASSERT_TRUE(secondCamera);
+    builder.addView({
+        .target = sl::SurfaceHandle{1},
+        .parameters = {
+            sl::ShaderParameterBlock::fromValue("view", *secondCamera)
+        },
+    });
+    const auto request = builder.build();
+    ASSERT_TRUE(request);
+    ASSERT_EQ(request->views.size(), 2);
+    ASSERT_EQ(request->scene.items.size(), 1);
+    const auto& item = request->scene.items.front();
+    EXPECT_EQ(item.parameters.size(), 2);
+    EXPECT_EQ(
+        request->views[0].parameters[0].bytes,
+        sl::ShaderParameterBlock::fromValue("view", *firstCamera).bytes
+    );
+    EXPECT_EQ(
+        request->views[1].parameters[0].bytes,
+        sl::ShaderParameterBlock::fromValue("view", *secondCamera).bytes
+    );
+    const auto first = sl::combineShaderParameterBlocks(
+        item.parameters, request->views[0].parameters
+    );
+    const auto second = sl::combineShaderParameterBlocks(
+        item.parameters, request->views[1].parameters
+    );
+    EXPECT_NE(first.back().bytes, second.back().bytes);
+    ASSERT_TRUE(camera.setPose({}));
+    EXPECT_EQ(request->views[1].parameters[0].bytes, second.back().bytes);
+}
+
+TEST(RenderRequestBuilder, ValidatesCompleteLayoutForEveryView) {
+    auto shader = makeShaderInterface();
+    shader.parameters.push_back({"view", sizeof(sl::CameraMatrices)});
+    const auto material = sl::Material::create(shader, surfaceParameters());
+    ASSERT_TRUE(material);
+    const auto viewBlock =
+        sl::ShaderParameterBlock::fromValue("view", sl::CameraMatrices{});
+    const auto build = [&](std::vector<sl::ShaderParameterBlock> blocks) {
+        return sl::RenderRequestBuilder{}
+            .addDraw(
+                {.material = *material,
+                 .parameters = transformParameters(sl::Mat4f{1.0f})}
+            )
+            .addView(
+                {.target = sl::SurfaceHandle{0}, .parameters = {viewBlock}}
+            )
+            .addView(
+                {.target = sl::SurfaceHandle{1},
+                 .parameters = std::move(blocks)}
+            )
+            .build();
+    };
+    EXPECT_TRUE(build({viewBlock}));
+    EXPECT_FALSE(build({}));
+    auto bad = viewBlock;
+    bad.bytes.clear();
+    EXPECT_FALSE(build({bad}));
+    bad = viewBlock;
+    bad.name = "unknown";
+    EXPECT_FALSE(build({bad}));
+    EXPECT_FALSE(build({viewBlock, viewBlock}));
+    EXPECT_FALSE(build({viewBlock, surfaceParameters().blocks.front()}));
+    EXPECT_FALSE(
+        build({viewBlock, transformParameters(sl::Mat4f{1.0f}).blocks.front()})
+    );
 }
 
 }  // namespace

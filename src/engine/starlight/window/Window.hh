@@ -22,6 +22,7 @@ class Window : public virtual kc::NonCopyable, public virtual kc::NonMovable {
     virtual bool isPressed(MouseButton button) const = 0;
 
     virtual bool isFocused() const = 0;
+    virtual Vec2u drawableSize() const = 0;
     // Window-relative coordinates, or zero when the window lacks mouse focus.
     virtual Vec2f mousePosition() const = 0;
 };

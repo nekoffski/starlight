@@ -256,6 +256,17 @@ Vec2f SDLWindowBase::mousePosition() const {
     return position;
 }
 
+Vec2u SDLWindowBase::drawableSize() const {
+    checkThread();
+    int width = 0;
+    int height = 0;
+    log::expect(
+        SDL_GetWindowSizeInPixels(m_window, &width, &height),
+        "Could not get drawable size: {}", SDL_GetError()
+    );
+    return {static_cast<u32>(width), static_cast<u32>(height)};
+}
+
 void SDLWindowBase::handleKey(const SDL_KeyboardEvent& event) {
     const auto key = toKey(event.scancode);
     if (key == Key::unknown) {
