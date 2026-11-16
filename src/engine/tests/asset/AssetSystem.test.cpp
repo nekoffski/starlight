@@ -3,10 +3,13 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <kcore/Random.hh>
 #include <kcore/runtime/ThreadSafeQueue.hh>
+#include <limits>
+#include <new>
 #include <type_traits>
 
 namespace {
@@ -19,6 +22,7 @@ static_assert(
 );
 static_assert(not std::is_constructible_v<TextureAsset, RendererProxy>);
 static_assert(not std::is_default_constructible_v<SamplerAsset>);
+static_assert(not std::is_constructible_v<GeometryAsset, RendererProxy>);
 
 template <typename Asset>
 concept PublicSamplerFactory =
@@ -61,9 +65,14 @@ class TestDevice : public RenderDevice {
     std::unordered_map<ShaderHandle, ShaderDescription> shaders;
     std::unordered_map<TextureHandle, TextureUploadData> textures;
     std::unordered_map<SamplerHandle, SamplerDescription> samplers;
+    std::unordered_map<DeviceBufferHandle, DeviceBufferDescription> buffers;
     std::vector<Str> events;
     u32 pipelineCount{0};
     bool busy{false};
+    bool failVertexBuffer{false};
+    bool failIndexBuffer{false};
+    bool throwOnIndexBuffer{false};
+    u32 bufferAttempts{0};
 
     Result<ShaderHandle> createShader(const ShaderDescription& data) override {
         if (data.byteCode == Bytes{'!'}) {
@@ -149,11 +158,28 @@ class TestDevice : public RenderDevice {
     }
     void destroySurface(SurfaceHandle) override {}
     Result<DeviceBufferHandle> createBuffer(
-        const DeviceBufferDescription&
+        const DeviceBufferDescription& description
     ) override {
-        return DeviceBufferHandle{0};
+        ++bufferAttempts;
+        const bool indexBuffer =
+            description.usage == DeviceBufferUsage::indexBuffer;
+        if (indexBuffer && throwOnIndexBuffer) {
+            throw std::bad_alloc{};
+        }
+        if (indexBuffer ? failIndexBuffer : failVertexBuffer) {
+            return Error::unexpected(
+                kc::ErrorCode::invalidArgument,
+                "Injected buffer allocation failure"
+            );
+        }
+        DeviceBufferHandle handle{++m_bufferId};
+        buffers.emplace(handle, description);
+        return handle;
     }
-    void destroyBuffer(DeviceBufferHandle) override {}
+    void destroyBuffer(DeviceBufferHandle handle) override {
+        events.push_back("destroy buffer");
+        EXPECT_EQ(buffers.erase(handle), 1);
+    }
     Result<SamplerHandle> createSampler(
         const SamplerDescription& description
     ) override {
@@ -181,6 +207,7 @@ class TestDevice : public RenderDevice {
     u32 m_shaderId{0};
     u32 m_textureId{0};
     u32 m_samplerId{0};
+    u32 m_bufferId{0};
 };
 
 class Assets : public testing::Test {
@@ -221,6 +248,193 @@ class Assets : public testing::Test {
     std::unique_ptr<AssetSystem> assets;
     std::filesystem::path directory;
 };
+
+PrimitiveUploadData triangleGeometry() {
+    return PrimitiveUploadDataBuilder<Vertex3>{}
+        .addVertex(Vec3f{0, 0, 0}, Vec3f{0, 0, 1})
+        .addVertex(Vec3f{1, 0, 0}, Vec3f{0, 0, 1})
+        .addVertex(Vec3f{0, 1, 0}, Vec3f{0, 0, 1})
+        .addIndices({0, 1, 2})
+        .build();
+}
+
+TEST_F(Assets, GeometryPublishesOwnedBytesAndReleasesAfterLastReference) {
+    auto data = triangleGeometry();
+    const auto vertexBytes = data.vertexData;
+    auto geometry = assets->createGeometry(data);
+    ASSERT_TRUE(geometry);
+    EXPECT_TRUE(geometry->pending());
+    EXPECT_EQ(geometry->handle().error().code(), ErrorCode::assetNotReady);
+    auto retained = *geometry;
+    data.vertexData.clear();
+    data.indexData.clear();
+    publish();
+    ASSERT_TRUE(geometry->handle());
+    EXPECT_EQ(geometry->version(), 1);
+    ASSERT_TRUE(retained.handle());
+    EXPECT_EQ(*retained.handle(), *geometry->handle());
+    ASSERT_EQ(device.buffers.size(), 2);
+    const auto vertex =
+        std::ranges::find_if(device.buffers, [](const auto& entry) {
+            return entry.second.usage == DeviceBufferUsage::vertexBuffer;
+        });
+    ASSERT_NE(vertex, device.buffers.end());
+    EXPECT_EQ(vertex->second.bytes, vertexBytes);
+    geometry = GeometryRef{};
+    publish();
+    EXPECT_EQ(device.buffers.size(), 2);
+    EXPECT_EQ(assets->shutdown().error().code(), ErrorCode::assetInUse);
+    retained = GeometryRef{};
+    EXPECT_EQ(device.buffers.size(), 2);
+    ASSERT_TRUE(assets->waitForPending());
+    EXPECT_TRUE(device.buffers.empty());
+    ASSERT_TRUE(assets->shutdown());
+    EXPECT_FALSE(assets->createGeometry(triangleGeometry()));
+}
+
+TEST_F(Assets, GeometryCreationIsCollectedAfterReferencesDisappear) {
+    {
+        auto geometry = assets->createGeometry(triangleGeometry());
+        ASSERT_TRUE(geometry);
+    }
+    ASSERT_TRUE(assets->waitForPending());
+    EXPECT_TRUE(device.buffers.empty());
+    EXPECT_EQ(
+        device.events,
+        (std::vector<Str>{"idle", "destroy buffer", "destroy buffer"})
+    );
+}
+
+TEST_F(
+    Assets, GeometryReportsValidationAndAllocationErrorsWithoutLeakingBuffers
+) {
+    auto invalid = assets->createGeometry({});
+    ASSERT_TRUE(invalid);
+    publish();
+    EXPECT_FALSE(invalid->pending());
+    EXPECT_EQ(invalid->handle().error().code(), kc::ErrorCode::invalidArgument);
+    EXPECT_EQ(invalid->version(), 0);
+    EXPECT_EQ(device.bufferAttempts, 0);
+
+    device.failIndexBuffer = true;
+    auto failed = assets->createGeometry(triangleGeometry());
+    ASSERT_TRUE(failed);
+    publish();
+    ASSERT_FALSE(failed->handle());
+    EXPECT_EQ(failed->error().code(), kc::ErrorCode::invalidArgument);
+    EXPECT_EQ(failed->error().message(), "Injected buffer allocation failure");
+    EXPECT_TRUE(device.buffers.empty());
+}
+
+TEST(GeometryUpload, RejectsMalformedUploadsBeforeAllocatingBuffers) {
+    TestDevice device;
+    RendererResourcePool pool{{}, device};
+    std::vector<PrimitiveUploadData> invalid;
+    invalid.emplace_back();
+    auto data = triangleGeometry();
+    data.vertexLayout.clear();
+    invalid.push_back(data);
+    data = triangleGeometry();
+    data.vertexCount = 0;
+    invalid.push_back(data);
+    data = triangleGeometry();
+    data.indexCount = 2;
+    invalid.push_back(data);
+    data = triangleGeometry();
+    data.vertexData.pop_back();
+    invalid.push_back(data);
+    data = triangleGeometry();
+    data.indexData.push_back(Byte{0});
+    invalid.push_back(data);
+    data = triangleGeometry();
+    data.vertexLayout.front() = static_cast<ValueType>(-1);
+    invalid.push_back(data);
+    data = triangleGeometry();
+    const u32 outOfRange = data.vertexCount;
+    std::memcpy(data.indexData.data(), &outOfRange, sizeof(outOfRange));
+    invalid.push_back(data);
+    data = triangleGeometry();
+    data.vertexCount = std::numeric_limits<u32>::max();
+    invalid.push_back(data);
+    for (const auto& upload : invalid) {
+        const auto primitive = pool.createPrimitive(upload);
+        ASSERT_FALSE(primitive);
+        EXPECT_EQ(primitive.error().code(), kc::ErrorCode::invalidArgument);
+    }
+    EXPECT_EQ(device.bufferAttempts, 0);
+    EXPECT_TRUE(device.buffers.empty());
+}
+
+TEST(GeometryUpload, CleansUpPartialCreationAndRemovesDestroyedRecords) {
+    TestDevice device;
+    RendererResourcePool pool{{}, device};
+    device.failVertexBuffer = true;
+    EXPECT_FALSE(pool.createPrimitive(triangleGeometry()));
+    EXPECT_TRUE(device.buffers.empty());
+    device.failVertexBuffer = false;
+    device.failIndexBuffer = true;
+    EXPECT_FALSE(pool.createPrimitive(triangleGeometry()));
+    EXPECT_TRUE(device.buffers.empty());
+    device.failIndexBuffer = false;
+    device.throwOnIndexBuffer = true;
+    EXPECT_THROW(pool.createPrimitive(triangleGeometry()), std::bad_alloc);
+    EXPECT_TRUE(device.buffers.empty());
+    device.throwOnIndexBuffer = false;
+    const auto primitive = pool.createPrimitive(triangleGeometry());
+    ASSERT_TRUE(primitive);
+    ASSERT_NE(pool.getPrimitive(*primitive), nullptr);
+    ASSERT_EQ(device.buffers.size(), 2);
+    pool.destroyPrimitive(*primitive);
+    EXPECT_EQ(pool.getPrimitive(*primitive), nullptr);
+    EXPECT_TRUE(device.buffers.empty());
+    const auto events = device.events;
+    pool.destroyPrimitive(*primitive);
+    EXPECT_EQ(device.events, events);
+    const auto next = pool.createPrimitive(triangleGeometry());
+    ASSERT_TRUE(next);
+    EXPECT_NE(*primitive, *next);
+    EXPECT_EQ(pool.getPrimitive(*primitive), nullptr);
+    pool.destroyPrimitive(*next);
+}
+
+TEST(
+    GeometryLifetime,
+    DrainsAcceptedFramesBeforeReleasingBuffersAndRejectsStaleUses
+) {
+    TestDevice device;
+    Renderer renderer{{}, device};
+    const auto primitive = renderer.createPrimitive(triangleGeometry());
+    const auto shader = renderer.createShader(
+        {.byteCode = Bytes{'A'}, .vertexLayout = Vertex3::layout()}
+    );
+    ASSERT_TRUE(primitive);
+    ASSERT_TRUE(shader);
+    RenderRequest request{
+        .scene = {.items = {{.primitives = {*primitive}, .shader = *shader}}},
+        .views = {{.target = SurfaceHandle{0}}},
+    };
+    auto stale = request;
+    ++stale.scene.items.front().primitives.front().generation;
+    EXPECT_FALSE(renderer.submit(stale));
+    ASSERT_TRUE(renderer.submit(request));
+    device.busy = true;
+    ASSERT_TRUE(renderer.tick());
+    EXPECT_EQ(device.events, (std::vector<Str>{"busy"}));
+    renderer.destroyPrimitive(*primitive);
+    EXPECT_EQ(
+        device.events, (std::vector<Str>{
+                           "busy", "create pipeline", "submit", "idle",
+                           "destroy buffer", "destroy buffer"
+                       })
+    );
+    EXPECT_TRUE(device.buffers.empty());
+    const auto rejected = renderer.submit(request);
+    ASSERT_FALSE(rejected);
+    EXPECT_EQ(rejected.error().message(), "Invalid primitive dependency");
+    const auto events = device.events;
+    renderer.destroyPrimitive(*primitive);
+    EXPECT_EQ(device.events, events);
+}
 
 TEST_F(Assets, ReusesPendingShaderPathsAndPublishesToEveryReference) {
     auto shader = assets->loadShader("shader.bin");
@@ -633,6 +847,9 @@ TEST(AssetReference, EmptyReferencesCannotAccessResources) {
     ShaderRef shader;
     TextureRef texture;
     SamplerRef sampler;
+    GeometryRef geometry;
+    EXPECT_FALSE(geometry.handle());
+    EXPECT_FALSE(geometry.pending());
     EXPECT_FALSE(sampler.handle());
     EXPECT_FALSE(shader.handle());
     EXPECT_FALSE(shader.reload());
@@ -644,6 +861,21 @@ TEST(AssetReference, EmptyReferencesCannotAccessResources) {
     EXPECT_FALSE(shader.pending());
     EXPECT_EQ(shader.version(), 0);
     EXPECT_TRUE(shader.error().valid());
+}
+
+TEST(GeometryUpload, RejectedCreationDoesNotLeaveAnAssetRegistered) {
+    using Queue = kc::ThreadSafeQueue<RendererCommand>;
+    auto queue = std::make_shared<Queue>();
+    RendererProxy proxy{RenderExecutor::Submitter{queue}};
+    AssetStore<GeometryAsset, GeometryRef> store{
+        proxy, &RendererProxy::destroyPrimitive
+    };
+    queue->close();
+    const auto geometry = store.create(triangleGeometry());
+    ASSERT_FALSE(geometry);
+    EXPECT_EQ(geometry.error().code(), ErrorCode::rendererCommandRejected);
+    EXPECT_FALSE(store.hasReferences());
+    EXPECT_TRUE(store.update());
 }
 
 struct TestAssetRecord : AssetRecord<TextureHandle> {

@@ -93,9 +93,16 @@ class CommandRenderer {
                     ) {
                         value.completion.set_value(SamplerHandle{++m_created});
                     } else if constexpr (
+                        std::is_same_v<Command, RendererCreatePrimitive>
+                    ) {
+                        value.completion.set_value(
+                            PrimitiveHandle{++m_created}
+                        );
+                    } else if constexpr (
                         std::is_same_v<Command, RendererDestroyShader> ||
                         std::is_same_v<Command, RendererDestroyTexture> ||
-                        std::is_same_v<Command, RendererDestroySampler>
+                        std::is_same_v<Command, RendererDestroySampler> ||
+                        std::is_same_v<Command, RendererDestroyPrimitive>
                     ) {
                         ++m_destroyed;
                     } else if constexpr (
@@ -244,6 +251,18 @@ TEST(AssetAllocation, TextureRegistrationKeepsEveryAcceptedCreationOwned) {
 TEST(AssetAllocation, SamplerRegistrationKeepsEveryAcceptedCreationOwned) {
     verifyCreationHandoff(Config{}, [](AssetSystem& assets) {
         return assets.createSampler({});
+    });
+}
+
+TEST(AssetAllocation, GeometryRegistrationKeepsEveryAcceptedCreationOwned) {
+    const auto data = PrimitiveUploadDataBuilder<Vertex3>{}
+                          .addVertex(Vec3f{0}, Vec3f{0, 0, 1})
+                          .addVertex(Vec3f{1, 0, 0}, Vec3f{0, 0, 1})
+                          .addVertex(Vec3f{0, 1, 0}, Vec3f{0, 0, 1})
+                          .addIndices({0, 1, 2})
+                          .build();
+    verifyCreationHandoff(Config{}, [&](AssetSystem& assets) {
+        return assets.createGeometry(data);
     });
 }
 

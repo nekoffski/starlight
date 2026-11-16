@@ -19,10 +19,13 @@ policy (including no ADRs), see [Maintaining knowledge nodes](README.md#maintain
   resource tables plus explicit parameter blocks; the sandbox uploads a procedural
   checkerboard. See [Shader pipeline](shader-pipeline.md) for limits.
 - **Asset lifecycle:** [AssetSystem](../src/engine/starlight/asset/AssetSystem.cpp)
-  stores shader/texture/sampler records behind strong references. Engine-thread updates
+  stores shader/texture/sampler/geometry records behind strong references. Engine-thread updates
   publish asynchronous renderer creation/replacement and release unused resources.
   Shader paths share live records; texture replacement supplies complete pixels.
   See [asset ownership](shader-pipeline.md#engine-thread-asset-ownership).
+- **Geometry assets:** [GeometryRef](../src/engine/starlight/asset/Geometry.hh)
+  retains immutable uploaded triangles. Uploads validate bytes/indices; release
+  drains accepted frames and waits for GPU idle. See [Geometry assets](geometry.md).
 - **Transforms:** [Shader parameter blocks](../src/engine/starlight/renderer/core/ShaderDataLayout.hh)
   copy typed values into owned bytes. [Euler cameras](camera.md) calculate view
   and projection matrices supplied per view; the sandbox updates a model matrix

@@ -23,7 +23,8 @@ AssetSystem::AssetSystem(const Config& cfg, RendererProxy proxy)
       m_proxy(std::move(proxy)),
       m_shaders(m_proxy, &RendererProxy::destroyShader),
       m_textures(m_proxy, &RendererProxy::destroyTexture),
-      m_samplers(m_proxy, &RendererProxy::destroySampler) {}
+      m_samplers(m_proxy, &RendererProxy::destroySampler),
+      m_geometry(m_proxy, &RendererProxy::destroyPrimitive) {}
 
 AssetSystem::~AssetSystem() { log::expect(shutdown()); }
 
@@ -36,7 +37,7 @@ void AssetSystem::checkThread() const {
 
 bool AssetSystem::hasReferences() const {
     return m_shaders.hasReferences() || m_textures.hasReferences() ||
-           m_samplers.hasReferences();
+           m_samplers.hasReferences() || m_geometry.hasReferences();
 }
 
 Result<ShaderRef> AssetSystem::loadShader(const kc::Path& path) {
@@ -86,13 +87,26 @@ Result<SamplerRef> AssetSystem::createSampler(
     return m_samplers.create(description);
 }
 
+Result<GeometryRef> AssetSystem::createGeometry(
+    const PrimitiveUploadData& data
+) {
+    checkThread();
+    if (m_closed) {
+        return Error::unexpected(
+            kc::ErrorCode::invalidArgument, "Asset system is closed"
+        );
+    }
+    return m_geometry.create(data);
+}
+
 Result<void> AssetSystem::update() {
     checkThread();
     if (m_closed) {
         return {};
     }
     const std::array results{
-        m_shaders.update(), m_textures.update(), m_samplers.update()
+        m_shaders.update(), m_textures.update(), m_samplers.update(),
+        m_geometry.update()
     };
     std::erase_if(m_shaderPaths, [](const auto& entry) {
         return entry.second.expired();

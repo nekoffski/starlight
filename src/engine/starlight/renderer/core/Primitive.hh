@@ -14,8 +14,8 @@ struct PrimitiveUploadData {
     VertexLayout vertexLayout;
     Bytes vertexData;
     Bytes indexData;
-    u32 vertexCount;
-    u32 indexCount;
+    u32 vertexCount{0};
+    u32 indexCount{0};
 };
 
 template <typename T>

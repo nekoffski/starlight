@@ -63,12 +63,12 @@ declarations. Handles stored by materials are non-owning, and preparation does
 not prove GPU resource liveness; render-thread validation remains authoritative.
 
 [`Renderer::submit()`](../src/engine/starlight/renderer/frontend/Renderer.cpp)
-validates declared texture/sampler handle IDs/generations and scene shader
+validates declared texture/sampler handle IDs/generations and scene shader/primitive
 handles before accepting a request. A busy
 frame slot leaves the oldest request pending, so FIFO command processing alone
 does not guarantee that a frame is recorded before a later destroy command.
 
-Shader/texture/sampler destruction therefore calls `flush()`, then `waitIdle()`, then
+Shader/texture/sampler/primitive destruction therefore calls `flush()`, then `waitIdle()`, then
 releases the resource. Earlier accepted requests are recorded while their
 resources and slots are still valid. Slot reuse happens only after those GPU
 submissions finish. This stalls the render thread on release; the implementation
@@ -87,13 +87,12 @@ Pipelines for other shaders remain cached. Later submissions with the destroyed
 shader fail acceptance validation. Asset replacement creates a different
 renderer handle; it does not retarget existing materials or request bytes.
 
-Other resource paths retain their existing behavior: primitive destruction
-releases both device buffers but leaves the primitive map entry; device-buffer
-pool erasure is immediate; scene handles do not retain these resources. The
-shader/texture/sampler guarantee does not extend to those paths.
+Primitive destruction removes its record after releasing both buffers; later
+submissions with a destroyed primitive fail validation. Repeated primitive
+destruction is harmless. Direct device-buffer pool erasure remains immediate.
 
 The [engine-thread asset layer](shader-pipeline.md#engine-thread-asset-ownership)
-retains shader, texture, and sampler handles behind strong asset references and submits cleanup from
+retains shader, texture, sampler, and geometry handles behind strong asset references and submits cleanup from
 `update()`. Asset `shutdown()` waits for creation and release commands while the
 renderer is still running; this ordering is required because executor stop does
 not drain resource commands.

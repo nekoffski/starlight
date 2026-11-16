@@ -61,8 +61,9 @@ for the material contract and its non-owning resource handles.
   bytes, and counts. `PrimitiveUploadDataBuilder<Vertex3>` packs position and
   normal vectors with `u32` indices. Upload creates a buffer for each byte array
   and returns a primitive handle; the resource pool stores the layout, buffer
-  handles, offsets, and index count. The caller can later destroy the primitive
-  through the proxy.
+  handles, offsets, and index count. Upload validates byte sizes and triangle
+  indices before allocating buffers. The sandbox retains a
+  [geometry asset](geometry.md); direct proxy management also remains available.
 - **Target:** The application creates a target from a surface provider, such as
   `SDLWindow`. The Metal device attaches its `CAMetalLayer` and sets its
   pixel format to `BGRA8Unorm`.
@@ -163,10 +164,10 @@ The current `Vertex3` contains position and normal vectors; the demo derives UVs
 from position rather than adding a vertex format. Vertex input reflection
 currently accepts `float32` vectors of three or four elements.
 
-Shader/texture/sampler destruction drains pending frame requests and waits for
+Shader/texture/sampler/primitive destruction drains pending frame requests and waits for
 GPU idle before reclaiming resources or slots. This is deliberately blocking;
-there is no deferred GPU retirement queue. Primitive and device-buffer destroy
-paths have not acquired this lifetime guarantee. See [Renderer messaging](renderer-messaging.md).
+there is no deferred GPU retirement queue. Direct device-buffer destruction is
+immediate. See [Renderer messaging](renderer-messaging.md).
 
 ## Source references
 

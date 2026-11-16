@@ -63,8 +63,8 @@ int main() {
             .addIndices({0, 1, 2})
             .build();
 
-    auto primitive = proxy.createPrimitive(primitiveData);
-    log::expect(primitive);
+    auto geometry = as.createGeometry(primitiveData);
+    log::expect(geometry);
 
     auto checkerboard = makeCheckerboard(64, 8);
     log::expect(checkerboard);
@@ -76,8 +76,10 @@ int main() {
     log::expect(as.waitForPending());
     const auto textureHandle = texture->handle();
     const auto samplerHandle = sampler->handle();
+    const auto primitiveHandle = geometry->handle();
     log::expect(textureHandle);
     log::expect(samplerHandle);
+    log::expect(primitiveHandle);
 
     // Shader table indices are logical resource IDs, not native Metal bindings.
     const std::array<u32, 4> drawParameters{
@@ -162,7 +164,7 @@ int main() {
             modelToWorld = glm::scale(modelToWorld, Vec3f{triangleScale});
             requestBuilder.addDraw({
                 .material = *material,
-                .primitives = {*primitive},
+                .primitives = {*primitiveHandle},
                 .parameters = {
                     .blocks = {ShaderParameterBlock::fromValue(
                         "transform", modelToWorld

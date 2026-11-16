@@ -42,6 +42,14 @@ Result<void> Renderer::submit(const RenderRequest& request) {
                 kc::ErrorCode::invalidArgument, "Invalid shader dependency"
             );
         }
+        for (const auto primitive : item.primitives) {
+            if (not m_resourcePool.getPrimitive(primitive)) {
+                return Error::unexpected(
+                    kc::ErrorCode::invalidArgument,
+                    "Invalid primitive dependency"
+                );
+            }
+        }
     }
     m_pendingRequests.push(request);
     return {};
@@ -84,6 +92,15 @@ void Renderer::destroySampler(SamplerHandle handle) {
     flush();
     m_device.waitIdle();
     m_device.destroySampler(handle);
+}
+
+void Renderer::destroyPrimitive(PrimitiveHandle handle) {
+    if (not m_resourcePool.getPrimitive(handle)) {
+        return;
+    }
+    flush();
+    m_device.waitIdle();
+    m_resourcePool.destroyPrimitive(handle);
 }
 
 void Renderer::destroyShader(ShaderHandle handle) {

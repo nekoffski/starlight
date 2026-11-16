@@ -53,9 +53,7 @@ class Renderer : public kc::NonCopyable, public kc::NonMovable {
         return m_resourcePool.createPrimitive(description);
     }
 
-    void destroyPrimitive(PrimitiveHandle handle) {
-        m_resourcePool.destroyPrimitive(handle);
-    }
+    void destroyPrimitive(PrimitiveHandle handle);
 
    private:
     u64 frameIndex() const;

@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 #include "AssetStore.hh"
+#include "Geometry.hh"
 #include "Sampler.hh"
 #include "Shader.hh"
 #include "Texture.hh"
@@ -19,6 +20,7 @@ class AssetSystem : public kc::NonCopyable, public kc::NonMovable {
     Result<ShaderRef> loadShader(const kc::Path& path);
     Result<TextureRef> createTexture(const TextureUploadData& data);
     Result<SamplerRef> createSampler(const SamplerDescription& description);
+    Result<GeometryRef> createGeometry(const PrimitiveUploadData& data);
 
     Result<void> update();
 
@@ -37,6 +39,7 @@ class AssetSystem : public kc::NonCopyable, public kc::NonMovable {
     using ShaderStore = AssetStore<ShaderAsset, ShaderRef>;
     using TextureStore = AssetStore<TextureAsset, TextureRef>;
     using SamplerStore = AssetStore<SamplerAsset, SamplerRef>;
+    using GeometryStore = AssetStore<GeometryAsset, GeometryRef>;
     using ShaderPaths = std::unordered_map<Str, std::weak_ptr<ShaderAsset>>;
 
     kc::Path m_assetPath;
@@ -44,6 +47,7 @@ class AssetSystem : public kc::NonCopyable, public kc::NonMovable {
     ShaderStore m_shaders;
     TextureStore m_textures;
     SamplerStore m_samplers;
+    GeometryStore m_geometry;
     ShaderPaths m_shaderPaths;
     const std::thread::id m_thread{std::this_thread::get_id()};
     bool m_closed{false};

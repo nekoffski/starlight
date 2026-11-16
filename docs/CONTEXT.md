@@ -18,6 +18,10 @@ A selection of uploaded primitives drawn with one shader in a scene.
 Uploaded vertex and index data with the vertex layout and draw count needed to
 draw it. It is distinct from the currently empty asset-level mesh concept.
 
+**Geometry reference**:
+A strong reference to an immutable, centrally stored geometry asset backed by
+one renderer primitive. Copies share ownership; release follows the asset update.
+
 **Render target**:
 The destination selected by a view. Surface destinations are implemented;
 the declared texture destination is not implemented.

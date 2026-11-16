@@ -155,7 +155,7 @@ its compiler profile; bootstrap again afterward.
   depth. Keep camera input policy separate from matrix calculation and RHI.
   RenderView owns per-view blocks; validate material/draw/view completeness for
   each view and reject overlapping block names. See `docs/camera.md`.
-- AssetSystem centrally stores shader/texture/sampler records behind strong references.
+- AssetSystem centrally stores shader/texture/sampler/geometry records behind strong references.
   Asset operations and reference lifetimes are engine-thread confined; pump
   `update()` to publish renderer futures and clean up unused records. Keep the
   shared lifecycle machinery reusable and resource-specific operations small.
@@ -168,6 +168,9 @@ its compiler profile; bootstrap again afterward.
   completed futures until retirement bookkeeping can succeed. Preserve symlink
   semantics in shader loading paths and cache keys.
   Use `waitForPending()` for blocking startup loading.
+  GeometryRef retains one immutable uploaded primitive. Preserve upload byte/index
+  validation and primitive retirement: drain accepted frames, wait for GPU idle,
+  then release buffers and erase the primitive record. See `docs/geometry.md`.
   Callers retain assets alongside non-owning renderer materials and rebuild
   captured bindings after a successful asset version change. Release references,
   finish asset shutdown, then stop rendering. Renderer messages remain independent

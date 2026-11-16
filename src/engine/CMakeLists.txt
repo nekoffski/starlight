@@ -2,6 +2,7 @@
 add_library(starlight STATIC
     # -- asset
     "starlight/asset/AssetSystem.cpp"
+    "starlight/asset/Geometry.cpp"
     "starlight/asset/Shader.cpp"
     "starlight/asset/Sampler.cpp"
     "starlight/asset/loaders/ShaderLoader.cpp"
