@@ -17,6 +17,8 @@ Str valueTypeToString(ValueType type) {
             return "u64";
         case ValueType::f32:
             return "f32";
+        case ValueType::f32_2x1:
+            return "f32_2x1";
         case ValueType::f32_3x1:
             return "f32_3x1";
         case ValueType::f32_4x1:
@@ -39,6 +41,8 @@ u64 LayoutHelper::valueTypeSize(ValueType format) {
             return 8;
         case ValueType::f32:
             return 4;
+        case ValueType::f32_2x1:
+            return 8;
         case ValueType::f32_3x1:
             return 12;
         case ValueType::f32_4x1:

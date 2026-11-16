@@ -55,12 +55,19 @@ Str parseMetalError(NS::Error* error) {
     return Str{description->utf8String()};
 }
 
-MTL::VertexFormat toMetal(const ValueType& type) {
+Result<MTL::VertexFormat> toMetal(ValueType type) {
     switch (type) {
+        case ValueType::f32_2x1:
+            return MTL::VertexFormatFloat2;
         case ValueType::f32_3x1:
             return MTL::VertexFormatFloat3;
+        case ValueType::f32_4x1:
+            return MTL::VertexFormatFloat4;
         default:
-            log::panic("Unsupported vertex type: {}", static_cast<int>(type));
+            return Error::unexpected(
+                kc::ErrorCode::invalidArgument, "Unsupported vertex type: {}",
+                static_cast<int>(type)
+            );
     }
 }
 

@@ -11,9 +11,9 @@ namespace {
 
 bool isValidVertexType(ValueType type) {
     constexpr std::array allowedTypes{
-        ValueType::u8,      ValueType::u16,     ValueType::u32,
-        ValueType::u64,     ValueType::f32,     ValueType::f32_3x1,
-        ValueType::f32_4x1, ValueType::f32_4x4,
+        ValueType::f32_2x1,
+        ValueType::f32_3x1,
+        ValueType::f32_4x1,
     };
     return std::ranges::find(allowedTypes, type) != allowedTypes.end();
 }
@@ -31,7 +31,8 @@ Result<void> validatePrimitiveLayout(const PrimitiveUploadData& data) {
     for (const auto type : data.vertexLayout) {
         if (not isValidVertexType(type)) {
             return Error::unexpected(
-                kc::ErrorCode::invalidArgument, "Invalid geometry vertex type"
+                kc::ErrorCode::invalidArgument,
+                "Unsupported geometry vertex type"
             );
         }
     }

@@ -29,11 +29,11 @@ struct VertexOutput {
 };
 
 [shader("vertex")]
-VertexOutput vertexMain(float3 position, float3 color) {
+VertexOutput vertexMain(float3 position, float3 normal, float2 texCoord) {
     VertexOutput output;
     output.position = mul(view.viewToClip,
         mul(view.worldToView, mul(transform.modelToWorld, float4(position, 1.0))));
-    output.uv = position.xy + 0.5;
+    output.uv = texCoord;
     return output;
 }
 

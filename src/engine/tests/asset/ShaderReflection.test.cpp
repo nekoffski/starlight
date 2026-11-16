@@ -114,6 +114,32 @@ TEST(ShaderReflection, AllowsMissingOptionalGlobalsAndUnknownFields) {
     }
 }
 
+TEST(ShaderReflection, AcceptsPackedFloatVectorsAndRejectsOtherVertexTypes) {
+    const sl::ValueType formats[]{
+        sl::ValueType::f32_2x1, sl::ValueType::f32_3x1, sl::ValueType::f32_4x1
+    };
+    for (sl::u32 count = 2; count <= 4; ++count) {
+        auto entry = vertexEntryPoint();
+        entry["parameters"].erase(1);
+        entry["parameters"][0]["type"]["elementCount"] = count;
+        const auto reflection =
+            ShaderReflection::parse({{"entryPoints", Json::array({entry})}});
+        ASSERT_TRUE(reflection);
+        ASSERT_TRUE(reflection->vertexLayout);
+        EXPECT_EQ(
+            *reflection->vertexLayout, sl::VertexLayout{formats[count - 2]}
+        );
+    }
+    for (auto count : {0, 1, 5}) {
+        auto entry = vertexEntryPoint();
+        entry["parameters"][0]["type"]["elementCount"] = count;
+        expectInvalid({{"entryPoints", Json::array({entry})}});
+    }
+    auto entry = vertexEntryPoint();
+    entry["parameters"][0]["type"]["elementType"]["scalarType"] = "uint32";
+    expectInvalid({{"entryPoints", Json::array({entry})}});
+}
+
 TEST(ShaderReflection, ReadsUniformAndMetalResourceLayouts) {
     auto metadata = metadataWithBlock(resourceBlock());
     metadata["globalScope"]["parameters"].push_back(uniformBlock());

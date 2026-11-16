@@ -13,23 +13,24 @@ Result<void> setVertexDescriptor(
     MTL::RenderPipelineDescriptor* descriptor
 ) {
     auto* layout = MTL::VertexDescriptor::vertexDescriptor();
-    auto stride = LayoutHelper::calculateStride(layoutDescription);
-
-    // single buffer as for now
-    layout->layouts()->object(metalVertexBufferIndex)->setStride(stride);
-
     u64 offset = 0u;
 
     for (u64 i = 0; i < layoutDescription.size(); ++i) {
+        const auto format = toMetal(layoutDescription[i]);
+        if (not format) {
+            return Error::unexpected(format.error());
+        }
         auto* attribute = layout->attributes()->object(i);
         const auto size = LayoutHelper::valueTypeSize(layoutDescription[i]);
 
-        attribute->setFormat(toMetal(layoutDescription[i]));
+        attribute->setFormat(*format);
         attribute->setOffset(offset);
         attribute->setBufferIndex(metalVertexBufferIndex);
 
         offset += size;
     }
+
+    layout->layouts()->object(metalVertexBufferIndex)->setStride(offset);
 
     descriptor->colorAttachments()->object(0)->setPixelFormat(
         MTL::PixelFormatBGRA8Unorm
@@ -77,12 +78,9 @@ Result<std::unique_ptr<MetalGraphicsPipeline>> MetalGraphicsPipeline::create(
         );
     }
 
-    if (auto r = setVertexDescriptor(layoutDescription.value(), descriptor);
-        not r) [[unlikely]] {
-        return Error::unexpected(
-            kc::ErrorCode::invalidArgument,
-            "Failed to create vertex descriptor: {}", r.error()
-        );
+    const auto r = setVertexDescriptor(*layoutDescription, descriptor);
+    if (not r) [[unlikely]] {
+        return Error::unexpected(r.error());
     }
 
     NS::Error* error = nullptr;

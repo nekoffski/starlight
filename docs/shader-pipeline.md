@@ -40,7 +40,7 @@ errors. Allocation failures are not classified as invalid reflection.
 
 `entryPoints` is required and must be an array. `globalScope` and its `parameters`
 may be absent, but must be an object and array respectively when present.
-Unknown fields are ignored. Bound vertex inputs require three/four-element
+Unknown fields are ignored. Bound vertex inputs require two/three/four-element
 `float32` vectors; unbound inputs are skipped. Numeric layout values must be
 non-negative integers within `u32` range; fractional and oversized values are
 rejected. Parameter-block names must be nonempty and unique, and entry-point
@@ -50,7 +50,8 @@ names must be nonempty.
 
 The loader stores one named entry point per stage. Vertex inputs with bindings
 become a list of types in reflected array order. Numeric locations and semantic
-names are not retained; only `float32` vectors of three/four elements are parsed.
+names are not retained; only `float32` vectors of two/three/four elements are
+parsed.
 
 Global parameters support constant buffers and parameter blocks containing
 ordinary data, or blocks containing arrays of sampled 2D textures and samplers.
@@ -99,8 +100,8 @@ layout. No CPU transpose or backend-specific transform command is involved.
 The sandbox replaces object matrices with translated/scaled rotations and view
 matrices from the orbit-controlled camera each frame. Each RenderView owns its camera blocks,
 and all scene items retain their draw blocks. Frame submission owns a copy, so
-subsequent updates do not mutate already accepted requests. UV coordinates remain
-based on object-space position.
+subsequent updates do not mutate already accepted requests. UV coordinates come
+from the vertex texture-coordinate attribute.
 
 This path establishes 4x4 matrix transfer. Other aggregate layouts still need
 caller-supplied padding compatible with target reflection; there is no automatic
@@ -232,11 +233,14 @@ description supplies layouts. Graphics pipelines require vertex/fragment stages,
 use packed reflected vertex attributes, and currently support only BGRA8 color
 outputs. The renderer verifies primitive/shader vertex layout equality and
 propagates buffer-binding errors before drawing.
+[`MetalGraphicsPipeline`](../src/engine/starlight/platform/metal/MetalGraphicsPipeline.cpp)
+uses float2/3/4 vertex formats; unsupported types return an error instead of
+terminating during native conversion.
 
-[`Vertex3`](../src/engine/starlight/renderer/core/Vertex.hh) still has position and
-normal `float3` fields. The [sandbox](../src/sandbox/main.cpp) preserves its
-existing triangle data; the shader's second input remains named `color` but is
-unused. UV coordinates are generated from position. The sandbox uploads a
+[`Vertex3`](../src/engine/starlight/renderer/core/Vertex.hh) has position and
+normal `float3` fields and a `float2` texture-coordinate field. The
+[sandbox](../src/sandbox/main.cpp) supplies UVs explicitly; the shader's normal
+input is currently unused. The sandbox uploads a
 checkerboard from [`asset/Texture.cpp`](../src/engine/starlight/asset/Texture.cpp),
 creates a sampler, and puts both indices and dependencies in one CPU material.
 Two instances of the same primitive share that material and supply separate

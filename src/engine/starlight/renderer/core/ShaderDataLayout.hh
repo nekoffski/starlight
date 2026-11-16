@@ -17,6 +17,7 @@ enum class ValueType {
     u32,
     u64,
     f32,
+    f32_2x1,
     f32_3x1,
     f32_4x1,
     f32_4x4,

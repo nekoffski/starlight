@@ -58,9 +58,9 @@ for the material contract and its non-owning resource handles.
   assets ask the proxy to create a device shader. The Metal implementation loads
   the bytes as a Metal library and looks up those entry points.
 - **Primitive:** `PrimitiveUploadData` contains vertex layout, vertex and index
-  bytes, and counts. `PrimitiveUploadDataBuilder<Vertex3>` packs position and
-  normal vectors with `u32` indices. Upload creates a buffer for each byte array
-  and returns a primitive handle; the resource pool stores the layout, buffer
+  bytes, and counts. `PrimitiveUploadDataBuilder<Vertex3>` packs position/normal
+  vectors and texture coordinates with `u32` indices. Upload creates a buffer for
+  each byte array and returns a primitive handle; the resource pool stores the layout, buffer
   handles, offsets, and index count. Upload validates byte sizes and triangle
   indices before allocating buffers. The sandbox retains a
   [geometry asset](geometry.md); direct proxy management also remains available.
@@ -93,7 +93,7 @@ renders to surfaces only. Sampling textures does not implement texture render
 targets; the Metal recorder continues to reject those.
 
 See [Shader pipeline](shader-pipeline.md) for the table layout, reflection
-limits, and the sandbox's generated texture coordinates.
+limits, and the sandbox's vertex texture coordinates.
 
 ## Recording a request
 
@@ -160,9 +160,10 @@ outputs, lighting, or depth attachments. Materials are CPU parameter values,
 not a surface shading model, GPU material table, or pass-specific shader system.
 Sampled textures have one mip
 level, initial upload only, and linear RGBA8 storage (no sRGB conversion).
-The current `Vertex3` contains position and normal vectors; the demo derives UVs
-from position rather than adding a vertex format. Vertex input reflection
-currently accepts `float32` vectors of three or four elements.
+The current `Vertex3` contains position/normal `float3` fields and `float2`
+texture coordinates. Vertex input reflection, geometry uploads, and Metal vertex
+fetching support `float32` vectors of two, three, or four elements. Attributes
+remain tightly packed in one stream, in reflected array order.
 
 Shader/texture/sampler/primitive destruction drains pending frame requests and waits for
 GPU idle before reclaiming resources or slots. This is deliberately blocking;

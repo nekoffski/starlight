@@ -72,13 +72,15 @@ Result<ValueType> parseVertexType(const kc::Json& type) {
         return Error::unexpected(count.error());
     }
     switch (*count) {
+        case 2:
+            return ValueType::f32_2x1;
         case 3:
             return ValueType::f32_3x1;
         case 4:
             return ValueType::f32_4x1;
         default:
             return invalidReflection<ValueType>(
-                "Vertex inputs require three or four elements"
+                "Vertex inputs require two, three, or four elements"
             );
     }
 }

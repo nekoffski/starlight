@@ -20,7 +20,9 @@ shares one primitive across both instances.
 [`RendererResourcePool`](../src/engine/starlight/renderer/frontend/RendererResourcePool.cpp)
 validates uploads before allocating device buffers:
 
-- A nonempty layout containing defined `ValueType` values.
+- A nonempty layout containing only `f32_2x1`, `f32_3x1`, and `f32_4x1`
+  vertex attributes. Scalar, integer, matrix, and unknown types are rejected
+  before buffer allocation.
 - Positive vertex/index counts, with complete triangles.
 - Tightly packed vertex bytes matching the layout stride and vertex count.
 - Exactly `indexCount` native `u32` indices, all below `vertexCount`.
@@ -28,8 +30,11 @@ validates uploads before allocating device buffers:
 Validation runs in order: layout and counts, byte sizes, then index bounds.
 Byte-size checks avoid multiplying an untrusted vertex count by the stride.
 Indices are read with `memcpy`, without alignment assumptions about byte storage.
-This validates the upload's shape; it does not add native vertex formats or
-change shader/geometry layout matching.
+The layout is one tightly packed stream in attribute order. Shader and geometry
+layouts must still match exactly. [`Vertex3`](../src/engine/starlight/renderer/core/Vertex.hh)
+contains position/normal `float3` fields and `float2` texture coordinates. The
+upload builder requires trivially copyable vertex types; their byte size must
+match the packed layout stride.
 
 Buffer creation errors preserve their original error categories and messages.
 Scope guards release created buffers if the second allocation, metadata copying,
@@ -57,3 +62,10 @@ and accepted-frame release ordering. The
 [`allocation tests`](../src/engine/tests/asset/AssetAllocation.test.cpp) inject
 allocation failures through geometry registration and verify that every accepted
 creation is eventually released.
+
+Reflection tests cover float2/3/4 inputs. Geometry upload tests check mixed packed
+attributes and rejection of unsupported formats before allocation.
+[`MetalGeometry.test.cpp`](../src/engine/tests/renderer/MetalGeometry.test.cpp)
+checks fallible native format conversion and renders mixed float3/float2/float4
+attributes into a pixel for readback; the rendering test skips without a Metal
+device.

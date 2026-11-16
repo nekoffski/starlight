@@ -55,13 +55,21 @@ int main() {
     auto shader = as.loadShader("shaders/simple.metallib");
     log::expect(shader);
 
-    auto primitiveData =
-        PrimitiveUploadDataBuilder<Vertex3>{}
-            .addVertex(Vec3f{0.0f, 0.5f, 0.0f}, Vec3f{1.0f, 0.0f, 0.0f})
-            .addVertex(Vec3f{-0.5f, -0.5f, 0.0f}, Vec3f{0.0f, 0.0f, 1.0f})
-            .addVertex(Vec3f{0.5f, -0.5f, 0.0f}, Vec3f{0.0f, 1.0f, 0.0f})
-            .addIndices({0, 1, 2})
-            .build();
+    auto primitiveData = PrimitiveUploadDataBuilder<Vertex3>{}
+                             .addVertex(
+                                 Vec3f{0.0f, 0.5f, 0.0f},
+                                 Vec3f{0.0f, 0.0f, 1.0f}, Vec2f{0.5f, 1.0f}
+                             )
+                             .addVertex(
+                                 Vec3f{-0.5f, -0.5f, 0.0f},
+                                 Vec3f{0.0f, 0.0f, 1.0f}, Vec2f{0.0f, 0.0f}
+                             )
+                             .addVertex(
+                                 Vec3f{0.5f, -0.5f, 0.0f},
+                                 Vec3f{0.0f, 0.0f, 1.0f}, Vec2f{1.0f, 0.0f}
+                             )
+                             .addIndices({0, 1, 2})
+                             .build();
 
     auto geometry = as.createGeometry(primitiveData);
     log::expect(geometry);

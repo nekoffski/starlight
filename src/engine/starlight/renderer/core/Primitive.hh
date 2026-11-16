@@ -19,7 +19,7 @@ struct PrimitiveUploadData {
 };
 
 template <typename T>
-    requires requires {
+    requires std::is_trivially_copyable_v<T> && requires {
         { T::layout() } -> std::same_as<VertexLayout>;
     }
 class PrimitiveUploadDataBuilder {

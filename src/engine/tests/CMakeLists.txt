@@ -45,6 +45,10 @@ add_starlight_test(starlight-asset-allocation-tests
 )
 
 if (APPLE)
+    add_starlight_test(starlight-metal-geometry-tests
+        "renderer/MetalGeometry.test.cpp"
+    )
+
     add_starlight_test(starlight-metal-texture-tests
         "renderer/MetalTextures.test.cpp"
     )

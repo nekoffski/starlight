@@ -6,6 +6,7 @@
 #include <kcore/Concepts.hh>
 
 #include "starlight/core/Core.hh"
+#include "starlight/core/Error.hh"
 #include "starlight/renderer/core/ShaderDataLayout.hh"
 
 namespace sl {
@@ -28,6 +29,6 @@ constexpr u32 metalVertexBufferIndex = 30;
 constexpr u32 metalMaxInlineBufferSize = 4096;
 
 Str parseMetalError(NS::Error* error);
-MTL::VertexFormat toMetal(const ValueType& type);
+Result<MTL::VertexFormat> toMetal(ValueType type);
 
 }  // namespace sl

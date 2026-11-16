@@ -397,6 +397,43 @@ TEST(GeometryUpload, CleansUpPartialCreationAndRemovesDestroyedRecords) {
     pool.destroyPrimitive(*next);
 }
 
+TEST(GeometryUpload, AcceptsMixedPackedFloatVectors) {
+    TestDevice device;
+    RendererResourcePool pool{{}, device};
+    auto data = triangleGeometry();
+    data.vertexLayout = {
+        ValueType::f32_2x1, ValueType::f32_3x1, ValueType::f32_4x1
+    };
+    constexpr u32 packedStride = (2 + 3 + 4) * sizeof(f32);
+    EXPECT_EQ(LayoutHelper::calculateStride(data.vertexLayout), packedStride);
+    data.vertexData.resize(data.vertexCount * packedStride);
+    const auto primitive = pool.createPrimitive(data);
+    ASSERT_TRUE(primitive);
+    ASSERT_NE(pool.getPrimitive(*primitive), nullptr);
+    EXPECT_EQ(pool.getPrimitive(*primitive)->vertexLayout, data.vertexLayout);
+    EXPECT_EQ(device.buffers.size(), 2);
+    pool.destroyPrimitive(*primitive);
+    EXPECT_TRUE(device.buffers.empty());
+}
+
+TEST(GeometryUpload, RejectsUnsupportedFormatsBeforeAllocatingBuffers) {
+    TestDevice device;
+    RendererResourcePool pool{{}, device};
+    for (auto format :
+         {ValueType::u8, ValueType::u16, ValueType::u32, ValueType::u64,
+          ValueType::f32, ValueType::f32_4x4}) {
+        auto data = triangleGeometry();
+        data.vertexLayout = {format};
+        data.vertexData.resize(
+            data.vertexCount * LayoutHelper::valueTypeSize(format)
+        );
+        const auto primitive = pool.createPrimitive(data);
+        ASSERT_FALSE(primitive);
+        EXPECT_EQ(primitive.error().code(), kc::ErrorCode::invalidArgument);
+    }
+    EXPECT_EQ(device.bufferAttempts, 0);
+}
+
 TEST(
     GeometryLifetime,
     DrainsAcceptedFramesBeforeReleasingBuffersAndRejectsStaleUses
