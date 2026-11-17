@@ -19,15 +19,24 @@ resource dependencies. Primitive selections include a handle and optional index
 range; these values are copied too. Handles in that copy do not themselves own GPU objects.
 
 [`RendererCommand`](../src/engine/starlight/renderer/executor/RendererCommand.hh)
-is a variant of payloads and promises. Submitters reference the shared
+is a variant of payloads and promises.
+[`RendererCommandSubmitter`](../src/engine/starlight/renderer/executor/RendererCommandSubmitter.hh)
+is a standalone queue endpoint returned by `RenderExecutor::createSubmitter()`.
+It references the shared
 [`kc::ThreadSafeQueue`](../external/kcore/include/kcore/runtime/ThreadSafeQueue.hh) weakly and
-move commands into it. Missing/closed queues reject submission. Queue insertion
+moves commands into it. Missing/closed queues reject submission. Queue insertion
 is mutex-serialized; concurrent callers have no additional ordering protocol.
+`RendererProxy` depends on this submitter and command data without including
+the executor or frontend renderer implementation headers.
 
 [`RenderExecutor`](../src/engine/starlight/renderer/executor/RenderExecutor.cpp)
 dispatches at most one command and calls `Renderer::tick()` each loop.
 [`RendererCommandDispatcher`](../src/engine/starlight/renderer/executor/RendererCommandDispatcher.cpp)
-routes commands and fulfills promises. The command queue is unbounded; only the
+routes commands and fulfills promises through an exhaustive `std::visit()`
+visitor. Its typed handlers live in the implementation; the dispatcher header
+exposes only construction and `dispatch()`. Every command variant alternative
+requires a handler, with missing handlers rejected at compile time.
+The command queue is unbounded; only the
 separate pending-frame queue is bounded by `maxFramesInFlight`.
 
 ## Replies

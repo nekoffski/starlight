@@ -34,6 +34,7 @@ add_library(starlight STATIC
     "starlight/renderer/frontend/RenderRequestBuilder.cpp"
     "starlight/renderer/executor/RenderExecutor.cpp"
     "starlight/renderer/executor/RendererCommandDispatcher.cpp"
+    "starlight/renderer/executor/RendererCommandSubmitter.cpp"
     # -- platform
     "starlight/platform/Platform.cpp"
     "starlight/platform/sdl/SDLWindow.cpp"

@@ -3,10 +3,10 @@
 #include <kcore/Concepts.hh>
 
 #include "RendererCommand.hh"
-#include "starlight/core/Core.hh"
-#include "starlight/renderer/frontend/Renderer.hh"
 
 namespace sl {
+
+class Renderer;
 
 class RendererCommandDispatcher : public kc::NonCopyable,
                                   public kc::NonMovable {
@@ -14,20 +14,6 @@ class RendererCommandDispatcher : public kc::NonCopyable,
     explicit RendererCommandDispatcher(Renderer& renderer);
 
     void dispatch(RendererCommand command);
-
-    void operator()(RendererCreateTexture command);
-    void operator()(RendererDestroyTexture command);
-    void operator()(RendererCreateSampler command);
-    void operator()(RendererDestroySampler command);
-    void operator()(RendererNoop command);
-    void operator()(RendererFlush command);
-    void operator()(RendererCreateSurfaceTarget command);
-    void operator()(RendererSubmit command);
-    void operator()(RendererCreateShader command);
-    void operator()(RendererDestroyShader command);
-    void operator()(RendererGetShaderInterface command);
-    void operator()(RendererCreatePrimitive command);
-    void operator()(RendererDestroyPrimitive command);
 
    private:
     Renderer& m_renderer;

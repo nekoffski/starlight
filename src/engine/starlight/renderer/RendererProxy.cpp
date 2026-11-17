@@ -21,7 +21,7 @@ Result<void> waitForReply(Result<std::future<void>> completion) {
 
 }  // namespace
 
-RendererProxy::RendererProxy(RenderExecutor::Submitter submitter)
+RendererProxy::RendererProxy(RendererCommandSubmitter submitter)
     : m_submitter(std::move(submitter)) {}
 
 Result<PrimitiveHandle> RendererProxy::createPrimitive(

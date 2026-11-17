@@ -71,7 +71,7 @@ class CommandRenderer {
     }
 
     RendererProxy proxy() {
-        return RendererProxy{RenderExecutor::Submitter{m_queue}};
+        return RendererProxy{RendererCommandSubmitter{m_queue}};
     }
     u32 created() const { return m_created; }
     u32 destroyed() const { return m_destroyed; }

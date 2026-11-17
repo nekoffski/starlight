@@ -15,7 +15,9 @@
 
 #include "starlight/geometry/GeometryDataBuilder.hh"
 #include "starlight/geometry/Vertex.hh"
+#include "starlight/renderer/executor/RenderExecutor.hh"
 #include "starlight/renderer/frontend/RenderRequestBuilder.hh"
+#include "starlight/renderer/frontend/Renderer.hh"
 
 namespace {
 
@@ -288,7 +290,7 @@ GeometryData quadGeometry() {
 
 TEST(RendererProxy, ClosedAndExpiredQueuesRejectEveryOperation) {
     auto queue = std::make_shared<kc::ThreadSafeQueue<RendererCommand>>();
-    RendererProxy proxy{RenderExecutor::Submitter{queue}};
+    RendererProxy proxy{RendererCommandSubmitter{queue}};
     queue->close();
 
     const auto rejects = [](const auto& result) {
@@ -320,7 +322,7 @@ TEST(RendererProxy, ClosedAndExpiredQueuesRejectEveryOperation) {
 
 TEST(RendererProxy, AsyncCreationOwnsPayloadAndWaitsForRenderThreadReply) {
     auto queue = std::make_shared<kc::ThreadSafeQueue<RendererCommand>>();
-    RendererProxy proxy{RenderExecutor::Submitter{queue}};
+    RendererProxy proxy{RendererCommandSubmitter{queue}};
     ShaderDescription description{.byteCode = Bytes{'A'}};
     auto completion = proxy.createShaderAsync(description);
     ASSERT_TRUE(completion);
@@ -944,7 +946,7 @@ TEST_F(Assets, ReloadReadsShaderAgainAndPreservesTheLastGoodVersionOnFailure) {
 TEST_F(Assets, ShaderReloadKeepsPublishedResourceWhenCreationIsRejected) {
     using Queue = kc::ThreadSafeQueue<RendererCommand>;
     auto queue = std::make_shared<Queue>();
-    RendererProxy localProxy{RenderExecutor::Submitter{queue}};
+    RendererProxy localProxy{RendererCommandSubmitter{queue}};
     AssetStore<ShaderAsset, ShaderRef> store{
         localProxy, &RendererProxy::destroyShader
     };
@@ -968,7 +970,7 @@ TEST_F(Assets, ShaderReloadKeepsPublishedResourceWhenCreationIsRejected) {
 
     shader = ShaderRef{};
     auto cleanupQueue = std::make_shared<Queue>();
-    localProxy = RendererProxy{RenderExecutor::Submitter{cleanupQueue}};
+    localProxy = RendererProxy{RendererCommandSubmitter{cleanupQueue}};
     ASSERT_TRUE(store.update());
     const auto release = cleanupQueue->tryPop();
     ASSERT_TRUE(release);
@@ -1213,7 +1215,7 @@ TEST(AssetReference, EmptyReferencesCannotAccessResources) {
 TEST(GeometryUpload, RejectedCreationDoesNotLeaveAnAssetRegistered) {
     using Queue = kc::ThreadSafeQueue<RendererCommand>;
     auto queue = std::make_shared<Queue>();
-    RendererProxy proxy{RenderExecutor::Submitter{queue}};
+    RendererProxy proxy{RendererCommandSubmitter{queue}};
     AssetStore<GeometryAsset, GeometryRef> store{
         proxy, &RendererProxy::destroyPrimitive
     };
@@ -1245,7 +1247,7 @@ TEST(AssetCreation, BrokenPromiseBecomesAnError) {
 TEST(AssetRetirement, RejectedReleaseKeepsItsHandleAndOtherRecordsProgress) {
     using Queue = kc::ThreadSafeQueue<RendererCommand>;
     auto queue = std::make_shared<Queue>();
-    RendererProxy proxy{RenderExecutor::Submitter{queue}};
+    RendererProxy proxy{RendererCommandSubmitter{queue}};
     AssetStore<TextureAsset, TextureRef> store{
         proxy, &RendererProxy::destroyTexture
     };
@@ -1292,7 +1294,7 @@ TEST(AssetRetirement, RejectedReleaseKeepsItsHandleAndOtherRecordsProgress) {
     EXPECT_EQ(*second->handle(), (TextureHandle{8, 1}));
 
     auto retryQueue = std::make_shared<Queue>();
-    proxy = RendererProxy{RenderExecutor::Submitter{retryQueue}};
+    proxy = RendererProxy{RendererCommandSubmitter{retryQueue}};
     ASSERT_TRUE(store.update());
     EXPECT_FALSE(firstRecord->nextRetiredHandle());
     const auto release = retryQueue->tryPop();

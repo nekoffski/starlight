@@ -1,5 +1,7 @@
 #include "RenderExecutor.hh"
 
+#include "starlight/renderer/frontend/Renderer.hh"
+
 namespace sl {
 
 RenderExecutor::RenderExecutor(Renderer& renderer)
@@ -14,8 +16,8 @@ void RenderExecutor::stop() {
     m_runner.join();
 }
 
-RenderExecutor::Submitter RenderExecutor::createSubmitter() {
-    return Submitter{m_queue};
+RendererCommandSubmitter RenderExecutor::createSubmitter() {
+    return RendererCommandSubmitter{m_queue};
 }
 
 RenderExecutor::DispatcherThread::DispatcherThread(
@@ -39,16 +41,6 @@ void RenderExecutor::DispatcherThread::run() {
         m_renderer.tick();
     }
     m_renderer.flush();
-}
-
-RenderExecutor::Submitter::Submitter(std::shared_ptr<Queue> queue)
-    : m_queue(std::move(queue)) {}
-
-bool RenderExecutor::Submitter::submit(RendererCommand command) {
-    if (auto q = m_queue.lock(); q) {
-        return q->push(std::move(command));
-    }
-    return false;
 }
 
 }  // namespace sl

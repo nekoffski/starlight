@@ -1,7 +1,7 @@
 #pragma once
 
 #include "core/Shader.hh"
-#include "executor/RenderExecutor.hh"
+#include "executor/RendererCommandSubmitter.hh"
 #include "frontend/RenderRequest.hh"
 #include "rhi/RenderSurfaceProvider.hh"
 #include "starlight/core/Core.hh"
@@ -12,7 +12,7 @@ namespace sl {
 
 class RendererProxy {
    public:
-    explicit RendererProxy(RenderExecutor::Submitter submitter);
+    explicit RendererProxy(RendererCommandSubmitter submitter);
 
     Result<PrimitiveHandle> createPrimitive(const GeometryData& description);
     Result<std::future<Result<PrimitiveHandle>>> createPrimitiveAsync(
@@ -63,7 +63,7 @@ class RendererProxy {
         return completion;
     }
 
-    RenderExecutor::Submitter m_submitter;
+    RendererCommandSubmitter m_submitter;
 };
 
 }  // namespace sl
