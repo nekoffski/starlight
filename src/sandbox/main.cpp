@@ -11,8 +11,7 @@
 #include "starlight/core/Time.hh"
 #include "starlight/event/EventSystem.hh"
 #include "starlight/event/Events.hh"
-#include "starlight/geometry/GeometryDataBuilder.hh"
-#include "starlight/geometry/Vertex.hh"
+#include "starlight/geometry/ProceduralGeometry.hh"
 #include "starlight/math/Math.hh"
 #include "starlight/platform/Platform.hh"
 #include "starlight/platform/sdl/SDLWindow.hh"
@@ -74,27 +73,8 @@ int main() {
     auto shader = as.loadShader("shaders/simple.metallib");
     log::expect(shader);
 
-    auto primitiveData = GeometryDataBuilder<Vertex3>{}
-                             .addVertex(
-                                 Vec3f{-0.5f, 0.5f, 0.0f},
-                                 Vec3f{0.0f, 0.0f, 1.0f}, Vec2f{0.0f, 1.0f}
-                             )
-                             .addVertex(
-                                 Vec3f{-0.5f, -0.5f, 0.0f},
-                                 Vec3f{0.0f, 0.0f, 1.0f}, Vec2f{0.0f, 0.0f}
-                             )
-                             .addVertex(
-                                 Vec3f{0.5f, -0.5f, 0.0f},
-                                 Vec3f{0.0f, 0.0f, 1.0f}, Vec2f{1.0f, 0.0f}
-                             )
-                             .addVertex(
-                                 Vec3f{0.5f, 0.5f, 0.0f},
-                                 Vec3f{0.0f, 0.0f, 1.0f}, Vec2f{1.0f, 1.0f}
-                             )
-                             .addIndices({0, 1, 2, 0, 2, 3})
-                             .build();
-
-    auto geometry = as.createGeometry(primitiveData);
+    const auto cubeData = ProceduralGeometry::cube();
+    auto geometry = as.createGeometry(cubeData);
     log::expect(geometry);
 
     auto checkerboard = makeCheckerboard(64, 8);
@@ -129,16 +109,15 @@ int main() {
     const std::array sectionMaterials{
         std::cref(*material), std::cref(*smoothMaterial)
     };
-    constexpr u32 indicesPerSection = 3;
+    constexpr u32 indicesPerFace = 6;
 
-    constexpr std::array horizontalOffsets{-0.5f, 0.5f};
     constexpr f32 wheelScaleStep = 0.05f;
-    f32 geometryScale = 0.6f;
+    f32 geometryScale = 1.0f;
     f32 angle = 0.0f;
     bool rotating = true;
     EulerCamera camera;
     OrbitCameraController cameraController;
-    log::expect(camera.setPose({.position = Vec3f{0.0f, 0.0f, 2.0f}}));
+    log::expect(camera.setPose({.position = Vec3f{0.0f, 0.0f, 3.0f}}));
 
     mainBus.on<KeyPressedEvent>([&](const auto& event) {
         if (event.window == window->id() && event.key == Key::escape &&
@@ -192,29 +171,25 @@ int main() {
                 )},
             })
             .setClearColor({0.2f, 0.2f, 0.6f, 1.0f});
-        for (const auto offset : horizontalOffsets) {
-            auto modelToWorld =
-                glm::translate(Mat4f{1.0f}, Vec3f{offset, 0.0f, 0.0f});
-            modelToWorld =
-                glm::rotate(modelToWorld, angle, Vec3f{0.0f, 0.0f, 1.0f});
-            modelToWorld = glm::scale(modelToWorld, Vec3f{geometryScale});
-            for (u32 section = 0; section < sectionMaterials.size();
-                 ++section) {
-                requestBuilder.addDraw({
-                    .material = sectionMaterials[section].get(),
-                    .primitives =
-                        {{.primitive = *primitiveHandle,
-                          .indexRange =
-                              IndexRange{
-                                  section * indicesPerSection, indicesPerSection
-                              }}},
-                    .parameters = {
-                        .blocks = {ShaderParameterBlock::fromValue(
-                            "transform", modelToWorld
-                        )}
-                    },
-                });
-            }
+        auto modelToWorld = glm::rotate(
+            Mat4f{1.0f}, angle, glm::normalize(Vec3f{0.5f, 1.0f, 0.25f})
+        );
+        modelToWorld = glm::scale(modelToWorld, Vec3f{geometryScale});
+        for (u32 firstIndex = 0; firstIndex < cubeData.indexCount;
+             firstIndex += indicesPerFace) {
+            const auto materialIndex =
+                (firstIndex / indicesPerFace) % sectionMaterials.size();
+            requestBuilder.addDraw({
+                .material = sectionMaterials[materialIndex].get(),
+                .primitives =
+                    {{.primitive = *primitiveHandle,
+                      .indexRange = IndexRange{firstIndex, indicesPerFace}}},
+                .parameters = {
+                    .blocks = {ShaderParameterBlock::fromValue(
+                        "transform", modelToWorld
+                    )}
+                },
+            });
         }
 
         auto request = requestBuilder.build();

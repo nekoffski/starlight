@@ -99,8 +99,8 @@ from the engine-side [camera](camera.md). The vertex shader computes
 `projection * view * model * position` with nested `mul(matrix, vector)` calls.
 GLM stores matrix columns contiguously, matching the explicit shader compilation
 layout. No CPU transpose or backend-specific transform command is involved.
-The sandbox replaces object matrices with translated/scaled rotations and view
-matrices from the orbit-controlled camera each frame. Each RenderView owns its camera blocks,
+The sandbox replaces the cube's object matrix with a tilted-axis rotation and
+uniform scale, and view matrices from the orbit-controlled camera each frame. Each RenderView owns its camera blocks,
 and all scene items retain their draw blocks. Frame submission owns a copy, so
 subsequent updates do not mutate already accepted requests. UV coordinates come
 from the vertex texture-coordinate attribute.
@@ -245,13 +245,22 @@ return an error instead of terminating during native conversion.
 [`Vertex3`](../src/engine/starlight/geometry/Vertex.hh) has position and
 normal `float3` fields and a `float2` texture-coordinate field. The
 [sandbox](../src/sandbox/main.cpp) supplies UVs explicitly; the shader's normal
-input is currently unused. The sandbox uploads a
+input is transformed into view space along with position. The sandbox uploads a
 checkerboard from [`asset/Texture.cpp`](../src/engine/starlight/asset/Texture.cpp),
-creates a sampler, and puts both indices and dependencies in one CPU material.
-The sandbox uploads one quad with two triangle sections. Each section selects an
-index range and uses a checkerboard material with its own nearest/linear sampler.
-Two instances share that geometry and the section materials, supplying separate
-rotating, translated/scaled matrices in `transform`.
+creates nearest/linear samplers, and pairs each sampler with the texture in a CPU
+material containing the indices and resource dependencies.
+The sandbox uploads the CPU geometry returned by
+[`ProceduralGeometry::cube()`](../src/engine/starlight/geometry/ProceduralGeometry.cpp). Each of its six faces
+selects a six-index range and alternates checkerboard materials using nearest
+and linear samplers. All faces receive the same rotating/uniformly scaled
+`transform` matrix.
+
+The shader passes view-space position and normal to the fragment stage. Its
+normal transform is appropriate for the sandbox's rotation and uniform scale.
+The fragment shader rejects faces pointing away from the camera and modulates
+the checkerboard with a fixed ambient/directional diffuse term. This makes the
+isolated convex cube readable without a depth attachment; it does not implement
+general occlusion between objects or a renderer lighting system.
 
 ## Engine-thread asset ownership
 

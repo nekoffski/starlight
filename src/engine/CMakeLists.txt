@@ -20,6 +20,7 @@ add_library(starlight STATIC
     "starlight/event/EventSystem.cpp"
     "starlight/event/details/EventBroker.cpp"
     # -- geometry
+    "starlight/geometry/ProceduralGeometry.cpp"
     "starlight/geometry/Vertex.cpp"
     # -- renderer
     "starlight/renderer/core/Shader.cpp"

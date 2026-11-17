@@ -47,9 +47,9 @@ that data; draws supply the remaining blocks. The builder copies draw inputs
 when added and borrows materials until each build. Building validates
 block names/sizes/completeness across material, draw, and view scopes for every
 draw/view pair and combines dependencies into an owned request.
-The sandbox uses two instances of one quad primitive with separate transforms.
-Each instance selects two triangle ranges with nearest/linear checkerboard
-materials. See [Shader pipeline](shader-pipeline.md)
+The sandbox spins one procedural cube about a tilted axis. Its six face ranges
+alternate nearest/linear checkerboard materials and share one uploaded primitive.
+See [Shader pipeline](shader-pipeline.md)
 for the material contract and its non-owning resource handles.
 
 ## Resources used by a scene
@@ -162,7 +162,9 @@ finish.
 The implemented backend is Metal. `Platform::createRenderDevice()` selects it
 for Metal builds; the Vulkan branch has no device implementation. The renderer
 has no compute or copy passes, render graph dependency tracking, texture
-outputs, lighting, or depth attachments. Materials are CPU parameter values,
+outputs, a renderer lighting system, or depth attachments. The sandbox shader
+adds a fixed view-space diffuse/ambient term and rejects backfaces for its single
+convex cube; this does not provide depth testing or general scene occlusion. Materials are CPU parameter values,
 not a surface shading model, GPU material table, or pass-specific shader system.
 Sampled textures have one mip
 level, initial upload only, and linear RGBA8 storage (no sRGB conversion).

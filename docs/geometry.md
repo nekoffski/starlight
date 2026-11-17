@@ -13,9 +13,9 @@ Copies of a reference retain the same geometry. Independent creation calls make
 distinct assets. References expose the shared asset readiness/error/version
 interface; they stay on the asset system's engine thread. Retain a reference
 through draw preparation and submission, then release it before asset shutdown.
-The [sandbox](../src/sandbox/main.cpp) creates a quad through this path and shares
-one primitive across both instances. Each instance draws its two triangle
-sections with separate nearest/linear checkerboard materials.
+The [sandbox](../src/sandbox/main.cpp) uploads one procedural cube and spins it
+about a tilted axis. Its six face ranges alternate nearest/linear checkerboard
+materials while sharing the same uploaded vertex/index buffers.
 
 ## CPU geometry data
 
@@ -39,6 +39,16 @@ The proxy copies it into the owned renderer command. Source data can be modified
 or discarded after the call. `GeometryAsset` retains the uploaded handle rather
 than keeping a permanent CPU copy; source-data retention belongs to the caller.
 Draw selections and GPU-backed primitive handles remain renderer concepts.
+
+## Procedural cube
+
+[`ProceduralGeometry::cube()`](../src/engine/starlight/geometry/ProceduralGeometry.cpp) returns owned CPU
+`GeometryData` for a unit cube centered at the origin, spanning `-0.5..0.5` on
+each axis. It uses 24 `Vertex3` vertices: each face has four independent vertices
+with a flat outward normal and UVs covering `0..1`. Each face occupies six
+consecutive `u32` indices (two counterclockwise triangles when viewed from
+outside), giving 36 indices in total. The helper uses the typed builder and has
+no asset-system or renderer dependency beyond shared layout value types.
 
 ## Validation and creation
 
@@ -138,3 +148,6 @@ attributes with nonconsecutive locations through the production Metal descriptor
 helper into a pixel for readback. It selects differently colored indexed sections
 with both a nonzero buffer binding offset and first index. The rendering test
 skips without a Metal device.
+
+[`Cube.test.cpp`](../src/engine/tests/geometry/Cube.test.cpp) checks dimensions,
+counts, face normals, UV coverage, index bounds, and outward triangle winding.

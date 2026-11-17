@@ -34,6 +34,10 @@ add_starlight_test(starlight-renderer-tests
     "renderer/Materials.test.cpp"
 )
 
+add_starlight_test(starlight-geometry-tests
+    "geometry/Cube.test.cpp"
+)
+
 add_starlight_test(starlight-asset-tests
     "asset/ShaderReflection.test.cpp"
     "asset/AssetSystem.test.cpp"
