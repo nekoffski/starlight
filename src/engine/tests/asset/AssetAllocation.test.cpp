@@ -10,10 +10,12 @@
 #include <optional>
 #include <thread>
 #include <type_traits>
+#include <unordered_set>
 
 #include "starlight/asset/AssetSystem.hh"
 #include "starlight/geometry/GeometryDataBuilder.hh"
 #include "starlight/geometry/Vertex.hh"
+#include "starlight/renderer/frontend/Renderer.hh"
 
 namespace {
 
@@ -162,6 +164,264 @@ void verifyCreationHandoff(const Config& cfg, auto&& create) {
 struct Record : AssetRecord<TextureHandle> {
     using AssetRecord::adoptCreationFuture;
 };
+
+// Track pipeline ownership without allocating after either injection hook.
+class PipelineDevice : public RenderDevice,
+                       public RenderFrameRecorder,
+                       public RenderPassEncoder {
+   public:
+    kc::MoveOnlyFunction<void()> afterPipelineCreation;
+    kc::MoveOnlyFunction<void()> afterWaitIdle;
+    std::unordered_set<GraphicsPipelineHandle> pipelines;
+    std::unordered_set<ShaderHandle> shaders{ShaderHandle{1}, ShaderHandle{2}};
+    u32 createdPipelines{0};
+    u32 duplicateDestructions{0};
+    bool boundStalePipeline{false};
+    Error pipelineError;
+    Error recordingError;
+
+    Result<GraphicsPipelineHandle> createGraphicsPipeline(
+        const GraphicsPipelineDescription&
+    ) override {
+        if (pipelineError.valid()) {
+            return Error::unexpected(pipelineError);
+        }
+        const GraphicsPipelineHandle handle{++createdPipelines};
+        pipelines.insert(handle);
+        if (afterPipelineCreation) {
+            afterPipelineCreation();
+        }
+        return handle;
+    }
+    void destroyGraphicsPipeline(GraphicsPipelineHandle handle) override {
+        if (pipelines.erase(handle) != 1) {
+            ++duplicateDestructions;
+        }
+    }
+    const ShaderDescription* getShaderDescription(
+        ShaderHandle handle
+    ) const override {
+        return shaders.contains(handle) ? &m_shader : nullptr;
+    }
+    void destroyShader(ShaderHandle handle) override { shaders.erase(handle); }
+    void waitIdle() override {
+        if (afterWaitIdle) {
+            afterWaitIdle();
+        }
+    }
+    Result<void> trySubmitFrame(RecordFrame record) override {
+        recordingError.reset();
+        const auto r = record(*this);
+        if (not r) {
+            recordingError = r.error();
+        }
+        return r;
+    }
+    Result<void> renderPass(
+        const RenderPassDescription&, const RenderPassCallback& record
+    ) override {
+        return record(*this);
+    }
+    Result<void> setPipeline(GraphicsPipelineHandle handle) override {
+        boundStalePipeline |= not pipelines.contains(handle);
+        return {};
+    }
+    Result<void> setVertexBuffer(const DeviceBufferSlice&) override {
+        return {};
+    }
+    Result<void> setIndexBuffer(const DeviceBufferSlice&) override {
+        return {};
+    }
+    Result<void> setShaderParameters(
+        const ShaderDescription&, std::span<const ShaderParameterBlock>,
+        const ShaderResourceDependencies&
+    ) override {
+        return {};
+    }
+    void draw(u32) override {}
+    void drawIndexed(const IndexedDrawDescription&) override {}
+    Result<DeviceBufferHandle> createBuffer(
+        const DeviceBufferDescription&
+    ) override {
+        return DeviceBufferHandle{++m_bufferId};
+    }
+    void destroyBuffer(DeviceBufferHandle) override {}
+    Result<SurfaceHandle> attachSurface(
+        std::shared_ptr<RenderSurfaceProvider>
+    ) override {
+        return SurfaceHandle{};
+    }
+    void destroySurface(SurfaceHandle) override {}
+    Result<ShaderHandle> createShader(const ShaderDescription&) override {
+        return ShaderHandle{1};
+    }
+    Result<TextureHandle> createTexture(const TextureUploadData&) override {
+        return TextureHandle{};
+    }
+    void destroyTexture(TextureHandle) override {}
+    Result<SamplerHandle> createSampler(const SamplerDescription&) override {
+        return SamplerHandle{};
+    }
+    void destroySampler(SamplerHandle) override {}
+    Result<void> validateResources(
+        const ShaderResourceDependencies&
+    ) const override {
+        return {};
+    }
+
+   private:
+    ShaderDescription m_shader{.vertexInputs = ShaderVertexInputs{}};
+    u32 m_bufferId{0};
+};
+
+GeometryData pipelineGeometry() {
+    return GeometryDataBuilder<Vertex3>{}
+        .addVertex(Vec3f{0}, Vec3f{0, 0, 1})
+        .addVertex(Vec3f{1, 0, 0}, Vec3f{0, 0, 1})
+        .addVertex(Vec3f{0, 1, 0}, Vec3f{0, 0, 1})
+        .addIndices({0, 1, 2})
+        .build();
+}
+
+RenderRequest pipelineRequest(
+    PrimitiveHandle primitive, ShaderHandle shader = ShaderHandle{1}
+) {
+    return {
+        .scene =
+            {.items =
+                 {{.primitives = {{.primitive = primitive}},
+                   .shader = shader}}},
+        .views = {{.target = SurfaceHandle{0}}},
+    };
+}
+
+TEST(PipelineAllocation, CacheInsertionFailureReleasesPipelineAndCanRetry) {
+    PipelineDevice device;
+    Renderer renderer{{}, device};
+    auto primitive = renderer.createPrimitive(pipelineGeometry());
+    ASSERT_TRUE(primitive);
+    const auto request = pipelineRequest(*primitive);
+    ASSERT_TRUE(renderer.submit(request));
+
+    std::optional<AllocationFailure> failure;
+    device.afterPipelineCreation = [&] { failure.emplace(0); };
+    bool threw = false;
+    try {
+        renderer.tick();
+    } catch (const std::bad_alloc&) {
+        threw = true;
+    }
+    const bool injected = failure && failure->triggered();
+    failure.reset();
+    device.afterPipelineCreation = {};
+    ASSERT_TRUE(injected);
+    EXPECT_TRUE(threw);
+    EXPECT_EQ(device.createdPipelines, 1);
+    EXPECT_TRUE(device.pipelines.empty());
+
+    ASSERT_TRUE(renderer.submit(request));
+    renderer.tick();
+    ASSERT_TRUE(renderer.submit(request));
+    renderer.tick();
+    EXPECT_EQ(device.createdPipelines, 2);
+    EXPECT_EQ(device.pipelines.size(), 1);
+    EXPECT_FALSE(device.boundStalePipeline);
+    renderer.destroyShader(ShaderHandle{1});
+    EXPECT_TRUE(device.pipelines.empty());
+    EXPECT_EQ(device.duplicateDestructions, 0);
+    renderer.destroyPrimitive(*primitive);
+}
+
+TEST(PipelineAllocation, RetirementAllocatesBeforeDestroyingAnyPipeline) {
+    constexpr size_t maxRetirementAllocationPoints = 16;
+    for (size_t allowed = 0; allowed < maxRetirementAllocationPoints;
+         ++allowed) {
+        PipelineDevice device;
+        Renderer renderer{{}, device};
+        auto data = pipelineGeometry();
+        auto primitive = renderer.createPrimitive(data);
+        data.vertexLayout.attributes.pop_back();
+        auto otherLayout = renderer.createPrimitive(data);
+        ASSERT_TRUE(primitive);
+        ASSERT_TRUE(otherLayout);
+        auto request = pipelineRequest(*primitive);
+        request.scene.items.front().primitives.push_back(
+            {.primitive = *otherLayout}
+        );
+        request.scene.items.push_back(
+            {.primitives = {{.primitive = *primitive}},
+             .shader = ShaderHandle{2}}
+        );
+        ASSERT_TRUE(renderer.submit(request));
+        renderer.tick();
+        ASSERT_EQ(device.pipelines.size(), 3);
+
+        std::optional<AllocationFailure> failure;
+        device.afterWaitIdle = [&] { failure.emplace(allowed); };
+        bool threw = false;
+        try {
+            renderer.destroyShader(ShaderHandle{1});
+        } catch (const std::bad_alloc&) {
+            threw = true;
+        }
+        const bool injected = failure && failure->triggered();
+        failure.reset();
+        device.afterWaitIdle = {};
+        if (injected) {
+            EXPECT_TRUE(threw);
+            EXPECT_EQ(device.pipelines.size(), 3);
+            EXPECT_TRUE(device.shaders.contains(ShaderHandle{1}));
+            ASSERT_TRUE(renderer.submit(request));
+            renderer.tick();
+            EXPECT_EQ(device.createdPipelines, 3);
+            EXPECT_FALSE(device.boundStalePipeline);
+            renderer.destroyShader(ShaderHandle{1});
+        }
+        EXPECT_EQ(device.pipelines.size(), 1);
+        EXPECT_FALSE(device.shaders.contains(ShaderHandle{1}));
+        EXPECT_TRUE(device.shaders.contains(ShaderHandle{2}));
+        ASSERT_TRUE(
+            renderer.submit(pipelineRequest(*primitive, ShaderHandle{2}))
+        );
+        renderer.tick();
+        EXPECT_EQ(device.createdPipelines, 3);
+        renderer.destroyShader(ShaderHandle{2});
+        EXPECT_TRUE(device.pipelines.empty());
+        EXPECT_EQ(device.duplicateDestructions, 0);
+        renderer.destroyPrimitive(*primitive);
+        renderer.destroyPrimitive(*otherLayout);
+        if (not injected) {
+            EXPECT_FALSE(threw);
+            return;
+        }
+    }
+    FAIL() << "Never retired without an injected allocation failure";
+}
+
+TEST(PipelineErrors, PreservesBackendErrorAndRetriesWithoutCachingFailure) {
+    PipelineDevice device;
+    Renderer renderer{{}, device};
+    auto primitive = renderer.createPrimitive(pipelineGeometry());
+    ASSERT_TRUE(primitive);
+    const auto request = pipelineRequest(*primitive);
+    device.pipelineError =
+        Error{kc::ErrorCode::invalidArgument, "Unsupported pipeline"};
+    ASSERT_TRUE(renderer.submit(request));
+    renderer.tick();
+    EXPECT_EQ(device.recordingError.code(), kc::ErrorCode::invalidArgument);
+    EXPECT_EQ(device.recordingError.message(), "Unsupported pipeline");
+    EXPECT_EQ(device.createdPipelines, 0);
+    EXPECT_TRUE(device.pipelines.empty());
+
+    device.pipelineError.reset();
+    ASSERT_TRUE(renderer.submit(request));
+    renderer.tick();
+    EXPECT_FALSE(device.recordingError.valid());
+    EXPECT_EQ(device.createdPipelines, 1);
+    renderer.destroyShader(ShaderHandle{1});
+    EXPECT_TRUE(device.pipelines.empty());
+    renderer.destroyPrimitive(*primitive);
+}
 
 TEST(AssetAllocation, ReplacementKeepsItsFutureUntilPublicationCanSucceed) {
     const TextureHandle original{1};

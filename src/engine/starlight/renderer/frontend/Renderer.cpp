@@ -133,13 +133,17 @@ void Renderer::destroyPrimitive(PrimitiveHandle handle) {
 void Renderer::destroyShader(ShaderHandle handle) {
     flush();
     m_device.waitIdle();
+    // Finish fallible bookkeeping before destroying any cached pipeline.
     std::vector<GraphicsPipelineDescription> expired;
-    m_graphicsPipelines.forEach([&](const auto& description, auto pipeline) {
+    m_graphicsPipelines.forEach([&](const auto& description, auto) {
         if (description.shader == handle) {
-            m_device.destroyGraphicsPipeline(pipeline);
             expired.push_back(description);
         }
     });
+    for (const auto& description : expired) {
+        const auto* pipeline = m_graphicsPipelines.find(description);
+        m_device.destroyGraphicsPipeline(*pipeline);
+    }
     m_graphicsPipelines.remove(expired);
     m_device.destroyShader(handle);
 }
@@ -169,16 +173,16 @@ Result<GraphicsPipelineHandle> Renderer::resolveGraphicsPipeline(
         return *pipeline;
     }
 
-    auto maybePipeline = m_device.createGraphicsPipeline(description);
-
-    if (not maybePipeline) {
-        return Error::unexpected(
-            ErrorCode::deviceOperationFailed,
-            "Failed to create graphics pipeline: {}", maybePipeline.error()
-        );
+    auto pipeline = m_device.createGraphicsPipeline(description);
+    if (not pipeline) {
+        return Error::unexpected(pipeline.error());
     }
-
-    return m_graphicsPipelines.emplace(description, *maybePipeline);
+    try {
+        return m_graphicsPipelines.emplace(description, *pipeline);
+    } catch (...) {
+        m_device.destroyGraphicsPipeline(*pipeline);
+        throw;
+    }
 }
 
 Result<ShaderInterface> Renderer::getShaderInterface(

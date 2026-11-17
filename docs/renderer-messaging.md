@@ -110,6 +110,11 @@ argument-table bytes prevent new resource creation from changing in-flight table
 
 Shader destruction also removes and destroys cached graphics pipelines whose
 key contains that shader, after pending frames finish and the device is idle.
+It collects every matching cache key before destroying any pipeline. Allocation
+failure during that collection propagates without destroying the shader or any
+cached pipeline, so a caller that handles the exception can retry retirement.
+The executor's [kcore thread wrapper](../external/kcore/src/runtime/Thread.cpp)
+still treats uncaught worker exceptions as fatal.
 Pipelines for other shaders remain cached. Later submissions with the destroyed
 shader fail acceptance validation. Asset replacement creates a different
 renderer handle; it does not retarget existing materials or request bytes.

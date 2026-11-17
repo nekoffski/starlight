@@ -77,6 +77,13 @@ for the material contract and its non-owning resource handles.
   slot 30. Frame acceptance rejects missing or mistyped shader inputs; extra
   geometry attributes are allowed. Destroying a shader removes and destroys its
   matching cached pipelines after pending frames and GPU work finish.
+  Device creation errors retain their original category and message. If cache
+  insertion throws, the renderer destroys the newly created pipeline before
+  propagating the exception. Shader retirement collects all matching cache keys
+  before destroying any pipeline; a bookkeeping allocation failure leaves the
+  shader and cached pipelines alive for retry. The
+  [allocation tests](../src/engine/tests/asset/AssetAllocation.test.cpp) exercise
+  these failure paths without native GPU allocations.
 
 - **Texture and sampler:** The proxy creates immutable 2D RGBA8 textures from
   owned pixel bytes, and separate reusable nearest/linear, repeat/clamp samplers.
