@@ -12,7 +12,7 @@ namespace sl {
 // Only the material is borrowed; it must outlive every build using this draw.
 struct MaterialDraw {
     std::reference_wrapper<const Material> material;
-    std::vector<PrimitiveHandle> primitives;
+    std::vector<PrimitiveDraw> primitives;
     ShaderParameters parameters;
 };
 

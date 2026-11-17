@@ -47,8 +47,9 @@ that data; draws supply the remaining blocks. The builder copies draw inputs
 when added and borrows materials until each build. Building validates
 block names/sizes/completeness across material, draw, and view scopes for every
 draw/view pair and combines dependencies into an owned request.
-The sandbox uses two instances of one primitive with a shared checkerboard
-material and separate transforms. See [Shader pipeline](shader-pipeline.md)
+The sandbox uses two instances of one quad primitive with separate transforms.
+Each instance selects two triangle ranges with nearest/linear checkerboard
+materials. See [Shader pipeline](shader-pipeline.md)
 for the material contract and its non-owning resource handles.
 
 ## Resources used by a scene
@@ -104,8 +105,10 @@ Its attachment uses the request's clear color, `LoadOp::clear`, and
 scene. For each item, the pass combines the current view's blocks with the item's
 blocks and binds the shader parameters/resource tables. For each primitive it
 resolves/binds a pipeline for that primitive's layout, binds vertex/index buffers,
-and calls `drawIndexed()` with its index count. Metal currently draws triangles
-with 32-bit indices.
+and calls `drawIndexed()` with the selected range's count and first index.
+Selections without a range draw the whole primitive. Acceptance validates range
+bounds and complete triangle alignment. Metal draws triangles with 32-bit
+indices and converts first-index offsets to bytes inside the backend.
 
 ```mermaid
 flowchart TD

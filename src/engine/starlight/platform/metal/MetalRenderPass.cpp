@@ -240,19 +240,19 @@ void MetalRenderPassEncoder::draw(u32 vertexCount) {
     );
 }
 
-void MetalRenderPassEncoder::drawIndexed(u32 indexCount, u32 instanceCount) {
-    u64 indexBufferOffset = 0u;
+void MetalRenderPassEncoder::drawIndexed(const IndexedDrawDescription& draw) {
+    u64 indexBufferOffset = u64(draw.firstIndex) * sizeof(u32);
     MTL::Buffer* indexBuffer = nullptr;
 
     if (m_indexBuffer) {
         indexBuffer = &m_indexBuffer->buffer->handle();
-        indexBufferOffset = m_indexBuffer->offset;
+        indexBufferOffset += m_indexBuffer->offset;
     }
 
     m_encoder->drawIndexedPrimitives(
-        MTL::PrimitiveType::PrimitiveTypeTriangle, indexCount,
+        MTL::PrimitiveType::PrimitiveTypeTriangle, draw.indexCount,
         MTL::IndexType::IndexTypeUInt32, indexBuffer, indexBufferOffset,
-        instanceCount
+        draw.instanceCount
     );
 }
 

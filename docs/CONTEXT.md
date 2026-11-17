@@ -12,11 +12,19 @@ A scene, views, and clear color submitted together for rendering.
 Acceptance is distinct from completion of the frame on the GPU.
 
 **Render item**:
-A selection of uploaded primitives drawn with one shader in a scene.
+A collection of primitive draw selections drawn with one shader in a scene.
 
 **Primitive**:
 Uploaded vertex and index data with the vertex layout and draw count needed to
-draw it. It is distinct from the currently empty asset-level mesh concept.
+draw it. It is distinct from the asset-level mesh declaration.
+
+**Primitive draw**:
+A non-owning selection of an uploaded primitive with an optional index range.
+An absent range selects all indices. Several selections can share one primitive.
+
+**Index range**:
+A first index and positive index count selecting complete triangles from an
+uploaded primitive. Both values count index elements, not bytes.
 
 **Geometry reference**:
 A strong reference to an immutable, centrally stored geometry asset backed by

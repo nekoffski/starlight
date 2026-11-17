@@ -17,6 +17,8 @@ struct Primitive {
     u32 vertexBufferOffset;
     u32 indexBufferOffset;
     u32 indexCount;
+
+    Result<IndexRange> resolveIndexRange(const Opt<IndexRange>& range) const;
 };
 
 class RendererResourcePool : public kc::NonCopyable, public kc::NonMovable {

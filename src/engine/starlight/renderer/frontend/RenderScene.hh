@@ -9,7 +9,7 @@
 namespace sl {
 
 struct RenderItem {
-    std::vector<PrimitiveHandle> primitives;
+    std::vector<PrimitiveDraw> primitives;
     ShaderHandle shader;
     std::vector<ShaderParameterBlock> parameters;
 };

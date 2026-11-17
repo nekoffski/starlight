@@ -202,12 +202,12 @@ TEST(
     std::array draws{
         sl::MaterialDraw{
             .material = *material,
-            .primitives = {sl::PrimitiveHandle{1}},
+            .primitives = {{.primitive = sl::PrimitiveHandle{1}}},
             .parameters = transformParameters(left),
         },
         sl::MaterialDraw{
             .material = *material,
-            .primitives = {sl::PrimitiveHandle{1}},
+            .primitives = {{.primitive = sl::PrimitiveHandle{1}}},
             .parameters = transformParameters(right),
         },
     };
@@ -270,7 +270,9 @@ TEST(RenderRequestBuilder, OwnsDrawDescriptionsBeforeBuild) {
     ASSERT_TRUE(material);
     sl::MaterialDraw draw{
         .material = *material,
-        .primitives = {sl::PrimitiveHandle{1}},
+        .primitives =
+            {{.primitive = sl::PrimitiveHandle{1},
+              .indexRange = sl::IndexRange{3, 6}}},
         .parameters = transformParameters(sl::Mat4f{1.0f}),
     };
     draw.parameters.resources.textures = {sl::TextureHandle{5, 2}};
@@ -287,7 +289,10 @@ TEST(RenderRequestBuilder, OwnsDrawDescriptionsBeforeBuild) {
     ASSERT_EQ(request->scene.items.size(), 1);
     EXPECT_EQ(
         request->scene.items.front().primitives,
-        (std::vector<sl::PrimitiveHandle>{{1}})
+        (std::vector<sl::PrimitiveDraw>{
+            {.primitive = sl::PrimitiveHandle{1},
+             .indexRange = sl::IndexRange{3, 6}}
+        })
     );
     EXPECT_EQ(
         request->scene.items.front().parameters.back().bytes,
@@ -379,7 +384,7 @@ TEST(RenderRequestBuilder, PreparedRequestsOutliveCpuMaterials) {
         ASSERT_TRUE(material);
         const std::array draws{sl::MaterialDraw{
             .material = *material,
-            .primitives = {sl::PrimitiveHandle{1}},
+            .primitives = {{.primitive = sl::PrimitiveHandle{1}}},
             .parameters = transformParameters(sl::Mat4f{1.0f}),
         }};
         auto prepared =

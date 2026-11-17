@@ -43,13 +43,17 @@ Result<void> Renderer::submit(const RenderRequest& request) {
                 kc::ErrorCode::invalidArgument, "Invalid shader dependency"
             );
         }
-        for (const auto primitive : item.primitives) {
-            const auto* geometry = m_resourcePool.getPrimitive(primitive);
+        for (const auto& draw : item.primitives) {
+            const auto* geometry = m_resourcePool.getPrimitive(draw.primitive);
             if (not geometry) {
                 return Error::unexpected(
                     kc::ErrorCode::invalidArgument,
                     "Invalid primitive dependency"
                 );
+            }
+            const auto indices = geometry->resolveIndexRange(draw.indexRange);
+            if (not indices) {
+                return Error::unexpected(indices.error());
             }
             if (not shader->vertexInputs) {
                 return Error::unexpected(
@@ -234,9 +238,9 @@ Result<void> Renderer::recordFrame(
                         return r;
                     }
 
-                    for (const auto& primitiveHandle : renderable.primitives) {
+                    for (const auto& draw : renderable.primitives) {
                         const auto& primitive =
-                            m_resourcePool.getPrimitive(primitiveHandle);
+                            m_resourcePool.getPrimitive(draw.primitive);
 
                         if (not primitive) {
                             return Error::unexpected(
@@ -274,7 +278,15 @@ Result<void> Renderer::recordFrame(
                         if (not r) {
                             return r;
                         }
-                        encoder.drawIndexed(primitive->indexCount);
+                        const auto indices =
+                            primitive->resolveIndexRange(draw.indexRange);
+                        if (not indices) {
+                            return Error::unexpected(indices.error());
+                        }
+                        encoder.drawIndexed({
+                            .indexCount = indices->indexCount,
+                            .firstIndex = indices->firstIndex,
+                        });
                     }
                 }
                 return {};

@@ -13,7 +13,8 @@ original arrays after the proxy call. Sampler descriptions are also values.
 Surface creation instead carries a shared surface provider.
 
 Frame submission copies views, scene items, parameter-block bytes, and declared
-resource dependencies. Handles in that copy do not themselves own GPU objects.
+resource dependencies. Primitive selections include a handle and optional index
+range; these values are copied too. Handles in that copy do not themselves own GPU objects.
 
 [`RendererCommand`](../src/engine/starlight/renderer/executor/RendererCommand.hh)
 is a variant of payloads and promises. Submitters reference the shared
@@ -66,6 +67,8 @@ not prove GPU resource liveness; render-thread validation remains authoritative.
 validates declared texture/sampler handle IDs/generations and scene shader/primitive
 handles before accepting a request. It also checks that each primitive supplies
 every required shader vertex input by location/type; extra attributes are allowed.
+Primitive index ranges must be nonempty, aligned to complete triangles, and
+within the uploaded index count. An absent range selects the whole primitive.
 A busy frame slot leaves the oldest request pending, so FIFO command processing alone
 does not guarantee that a frame is recorded before a later destroy command.
 

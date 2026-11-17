@@ -227,7 +227,7 @@ cannot overwrite geometry. `metalVertexBufferIndex` names that reservation and
 resource IDs, and residency calls stay in the Metal backend. SPIR-V compilation
 and reflection parsing do not constitute a working Vulkan backend.
 
-## Device shaders and the triangle
+## Device shaders and geometry
 
 [`MetalShader`](../src/engine/starlight/platform/metal/MetalShader.cpp) loads a
 Metal library and resolves functions by reflected entry-point name. Its copied
@@ -248,7 +248,9 @@ normal `float3` fields and a `float2` texture-coordinate field. The
 input is currently unused. The sandbox uploads a
 checkerboard from [`asset/Texture.cpp`](../src/engine/starlight/asset/Texture.cpp),
 creates a sampler, and puts both indices and dependencies in one CPU material.
-Two instances of the same primitive share that material and supply separate
+The sandbox uploads one quad with two triangle sections. Each section selects an
+index range and uses a checkerboard material with its own nearest/linear sampler.
+Two instances share that geometry and the section materials, supplying separate
 rotating, translated/scaled matrices in `transform`.
 
 ## Engine-thread asset ownership

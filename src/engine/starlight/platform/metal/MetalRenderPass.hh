@@ -30,7 +30,7 @@ class MetalRenderPassEncoder : public RenderPassEncoder {
     ) override;
 
     void draw(u32 vertexCount) override;
-    void drawIndexed(u32 indexCount, u32 instanceCount = 1) override;
+    void drawIndexed(const IndexedDrawDescription& draw) override;
 
    private:
     MetalResourcePool& m_resourcePool;

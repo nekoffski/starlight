@@ -18,7 +18,7 @@ TEST(MetalGeometry, RejectsUnsupportedVertexFormats) {
     }
 }
 
-TEST(MetalGeometry, FetchesFloatVectorsWithExplicitOffsetsAndStride) {
+TEST(MetalGeometry, FetchesExplicitLayoutsAndSelectsIndexRanges) {
     auto pool = NS::TransferPtr(NS::AutoreleasePool::alloc()->init());
     auto available = NS::TransferPtr(MTL::CreateSystemDefaultDevice());
     if (not available) {
@@ -77,10 +77,13 @@ TEST(MetalGeometry, FetchesFloatVectorsWithExplicitOffsetsAndStride) {
     );
     ASSERT_TRUE(pipeline) << sl::parseMetalError(error);
 
-    const std::array<sl::f32, 30> vertices{
-        99, -1, -1, 0, 0.25f, 0.5f, 0, 0, 0.75f, 1,
-        99, 3,  -1, 0, 0.25f, 0.5f, 0, 0, 0.75f, 1,
-        99, -1, 3,  0, 0.25f, 0.5f, 0, 0, 0.75f, 1,
+    const std::array<sl::f32, 60> vertices{
+        99, -1, -1, 0, 0.25f, 0.5f,  0, 0, 0.75f, 1,
+        99, 3,  -1, 0, 0.25f, 0.5f,  0, 0, 0.75f, 1,
+        99, -1, 3,  0, 0.25f, 0.5f,  0, 0, 0.75f, 1,
+        99, -1, -1, 0, 0.75f, 0.25f, 0, 0, 0.5f,  1,
+        99, 3,  -1, 0, 0.75f, 0.25f, 0, 0, 0.5f,  1,
+        99, -1, 3,  0, 0.75f, 0.25f, 0, 0, 0.5f,  1,
     };
     sl::DeviceBufferDescription upload{
         .usage = sl::DeviceBufferUsage::vertexBuffer
@@ -89,6 +92,13 @@ TEST(MetalGeometry, FetchesFloatVectorsWithExplicitOffsetsAndStride) {
     std::memcpy(upload.bytes.data(), vertices.data(), sizeof(vertices));
     const auto buffer = resources.createBuffer(upload);
     ASSERT_TRUE(buffer);
+    // The prefix distinguishes the binding offset from the draw's first index.
+    const std::array<sl::u32, 9> indices{3, 4, 5, 0, 1, 2, 3, 4, 5};
+    upload.usage = sl::DeviceBufferUsage::indexBuffer;
+    upload.bytes.resize(sizeof(indices));
+    std::memcpy(upload.bytes.data(), indices.data(), sizeof(indices));
+    const auto indexBuffer = resources.createBuffer(upload);
+    ASSERT_TRUE(indexBuffer);
     auto* targetDescription = MTL::TextureDescriptor::texture2DDescriptor(
         MTL::PixelFormatRGBA8Unorm, 1, 1, false
     );
@@ -101,24 +111,34 @@ TEST(MetalGeometry, FetchesFloatVectorsWithExplicitOffsetsAndStride) {
     pass->colorAttachments()->object(0)->setTexture(target.get());
     pass->colorAttachments()->object(0)->setLoadAction(MTL::LoadActionClear);
     pass->colorAttachments()->object(0)->setStoreAction(MTL::StoreActionStore);
-    auto* commands = context.commandQueue().commandBuffer();
-    auto* nativeEncoder = commands->renderCommandEncoder(pass);
-    ASSERT_NE(nativeEncoder, nullptr);
-    nativeEncoder->setRenderPipelineState(pipeline.get());
-    {
-        sl::MetalRenderPassEncoder encoder{resources, nativeEncoder};
-        ASSERT_TRUE(encoder.setVertexBuffer({.handle = *buffer, .offset = 0}));
-        encoder.draw(3);
+    for (const auto firstIndex : {0u, 3u}) {
+        auto* commands = context.commandQueue().commandBuffer();
+        auto* nativeEncoder = commands->renderCommandEncoder(pass);
+        ASSERT_NE(nativeEncoder, nullptr);
+        nativeEncoder->setRenderPipelineState(pipeline.get());
+        {
+            sl::MetalRenderPassEncoder encoder{resources, nativeEncoder};
+            ASSERT_TRUE(
+                encoder.setVertexBuffer({.handle = *buffer, .offset = 0})
+            );
+            ASSERT_TRUE(encoder.setIndexBuffer(
+                {.handle = *indexBuffer, .offset = 3 * sizeof(sl::u32)}
+            ));
+            encoder.drawIndexed({.indexCount = 3, .firstIndex = firstIndex});
+        }
+        commands->commit();
+        commands->waitUntilCompleted();
+        ASSERT_EQ(commands->status(), MTL::CommandBufferStatusCompleted);
+        std::array<sl::Byte, 4> pixel;
+        target->getBytes(
+            pixel.data(), pixel.size(), MTL::Region(0, 0, 1, 1), 0
+        );
+        EXPECT_NEAR(pixel[0], firstIndex == 0 ? 64 : 191, 1);
+        EXPECT_NEAR(pixel[1], firstIndex == 0 ? 128 : 64, 1);
+        EXPECT_NEAR(pixel[2], firstIndex == 0 ? 191 : 128, 1);
+        EXPECT_EQ(pixel[3], 255);
     }
-    commands->commit();
-    commands->waitUntilCompleted();
-    ASSERT_EQ(commands->status(), MTL::CommandBufferStatusCompleted);
-    std::array<sl::Byte, 4> pixel;
-    target->getBytes(pixel.data(), pixel.size(), MTL::Region(0, 0, 1, 1), 0);
-    EXPECT_NEAR(pixel[0], 64, 1);
-    EXPECT_NEAR(pixel[1], 128, 1);
-    EXPECT_NEAR(pixel[2], 191, 1);
-    EXPECT_EQ(pixel[3], 255);
+    resources.destroyBuffer(*indexBuffer);
     resources.destroyBuffer(*buffer);
 }
 

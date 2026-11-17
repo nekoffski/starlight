@@ -12,6 +12,8 @@
 #include <new>
 #include <type_traits>
 
+#include "starlight/renderer/frontend/RenderRequestBuilder.hh"
+
 namespace {
 
 using namespace sl;
@@ -33,35 +35,47 @@ static_assert(not PublicSamplerFactory<SamplerAsset>);
 
 class TestEncoder : public RenderPassEncoder {
    public:
+    std::vector<IndexRange> indexedDraws;
+    std::vector<DeviceBufferSlice> indexBindings;
+    std::vector<std::vector<ShaderParameterBlock>> parameterBindings;
+
     Result<void> setPipeline(GraphicsPipelineHandle) override { return {}; }
     Result<void> setVertexBuffer(const DeviceBufferSlice&) override {
         return {};
     }
-    Result<void> setIndexBuffer(const DeviceBufferSlice&) override {
+    Result<void> setIndexBuffer(const DeviceBufferSlice& slice) override {
+        indexBindings.push_back(slice);
         return {};
     }
     Result<void> setShaderParameters(
-        const ShaderDescription&, std::span<const ShaderParameterBlock>,
+        const ShaderDescription&,
+        std::span<const ShaderParameterBlock> parameters,
         const ShaderResourceDependencies&
     ) override {
+        parameterBindings.emplace_back(parameters.begin(), parameters.end());
         return {};
     }
     void draw(u32) override {}
-    void drawIndexed(u32, u32) override {}
+    void drawIndexed(const IndexedDrawDescription& draw) override {
+        indexedDraws.push_back({draw.firstIndex, draw.indexCount});
+    }
 };
 
 class TestRecorder : public RenderFrameRecorder {
    public:
+    TestEncoder encoder;
+
     Result<void> renderPass(
         const RenderPassDescription&, const RenderPassCallback& record
     ) override {
-        TestEncoder encoder;
         return record(encoder);
     }
 };
 
 class TestDevice : public RenderDevice {
    public:
+    TestRecorder recorder;
+
     std::unordered_map<ShaderHandle, ShaderDescription> shaders;
     std::unordered_map<TextureHandle, TextureUploadData> textures;
     std::unordered_map<SamplerHandle, SamplerDescription> samplers;
@@ -126,7 +140,6 @@ class TestDevice : public RenderDevice {
             events.push_back("busy");
             return Error::unexpected(ErrorCode::tooManyFramesInFlight, "busy");
         }
-        TestRecorder recorder;
         const auto r = record(recorder);
         if (r) {
             events.push_back("submit");
@@ -257,6 +270,16 @@ PrimitiveUploadData triangleGeometry() {
         .addVertex(Vec3f{1, 0, 0}, Vec3f{0, 0, 1})
         .addVertex(Vec3f{0, 1, 0}, Vec3f{0, 0, 1})
         .addIndices({0, 1, 2})
+        .build();
+}
+
+PrimitiveUploadData quadGeometry() {
+    return PrimitiveUploadDataBuilder<Vertex3>{}
+        .addVertex(Vec3f{-1, -1, 0}, Vec3f{0, 0, 1})
+        .addVertex(Vec3f{1, -1, 0}, Vec3f{0, 0, 1})
+        .addVertex(Vec3f{1, 1, 0}, Vec3f{0, 0, 1})
+        .addVertex(Vec3f{-1, 1, 0}, Vec3f{0, 0, 1})
+        .addIndices({0, 1, 2, 0, 2, 3})
         .build();
 }
 
@@ -492,7 +515,10 @@ TEST(GeometryLayout, ReusesExtraAttributesAndCachesEachPhysicalLayout) {
     RenderRequest request{
         .scene =
             {.items =
-                 {{.primitives = {*first, *padded, *first},
+                 {{.primitives =
+                       {{.primitive = *first},
+                        {.primitive = *padded},
+                        {.primitive = *first}},
                    .shader = *shader}}},
         .views = {{.target = SurfaceHandle{0}}},
     };
@@ -534,11 +560,14 @@ TEST(
     ASSERT_TRUE(primitive);
     ASSERT_TRUE(shader);
     RenderRequest request{
-        .scene = {.items = {{.primitives = {*primitive}, .shader = *shader}}},
+        .scene =
+            {.items =
+                 {{.primitives = {{.primitive = *primitive}},
+                   .shader = *shader}}},
         .views = {{.target = SurfaceHandle{0}}},
     };
     auto stale = request;
-    ++stale.scene.items.front().primitives.front().generation;
+    ++stale.scene.items.front().primitives.front().primitive.generation;
     EXPECT_FALSE(renderer.submit(stale));
     ASSERT_TRUE(renderer.submit(request));
     device.busy = true;
@@ -558,6 +587,112 @@ TEST(
     const auto events = device.events;
     renderer.destroyPrimitive(*primitive);
     EXPECT_EQ(device.events, events);
+}
+
+TEST(GeometryRanges, RejectsInvalidRangesBeforeAcceptingFrames) {
+    TestDevice device;
+    Renderer renderer{{}, device};
+    const auto primitive = renderer.createPrimitive(quadGeometry());
+    const auto shader = renderer.createShader(
+        {.byteCode = Bytes{'A'}, .vertexInputs = ShaderVertexInputs{}}
+    );
+    ASSERT_TRUE(primitive);
+    ASSERT_TRUE(shader);
+    RenderRequest request{
+        .scene =
+            {.items =
+                 {{.primitives = {{.primitive = *primitive}},
+                   .shader = *shader}}},
+        .views = {{.target = SurfaceHandle{0}}},
+    };
+    for (const auto range :
+         {IndexRange{0, 0}, IndexRange{1, 3}, IndexRange{0, 2},
+          IndexRange{6, 3}, IndexRange{3, 6},
+          IndexRange{std::numeric_limits<u32>::max(), 3},
+          IndexRange{3, std::numeric_limits<u32>::max()}}) {
+        request.scene.items.front().primitives.front().indexRange = range;
+        const auto r = renderer.submit(request);
+        ASSERT_FALSE(r);
+        EXPECT_EQ(r.error().code(), kc::ErrorCode::invalidArgument);
+        EXPECT_FALSE(renderer.tick());
+    }
+    EXPECT_EQ(device.pipelineCount, 0);
+    renderer.destroyPrimitive(*primitive);
+    renderer.destroyShader(*shader);
+}
+
+TEST(GeometryRanges, SharesBuffersAcrossMaterialsAndRetainsAcceptedSections) {
+    TestDevice device;
+    Renderer renderer{{}, device};
+    const auto primitive = renderer.createPrimitive(quadGeometry());
+    const auto shader = renderer.createShader({
+        .byteCode = Bytes{'A'},
+        .vertexInputs = ShaderVertexInputs{{0, ValueType::f32_3x1}},
+        .uniforms = {{0, sizeof(u32), "surface"}},
+    });
+    ASSERT_TRUE(primitive);
+    ASSERT_TRUE(shader);
+    const auto interface = renderer.getShaderInterface(*shader);
+    ASSERT_TRUE(interface);
+    const auto left = Material::create(
+        *interface,
+        {.blocks = {ShaderParameterBlock::fromValue("surface", u32{3})}}
+    );
+    const auto right = Material::create(
+        *interface,
+        {.blocks = {ShaderParameterBlock::fromValue("surface", u32{9})}}
+    );
+    ASSERT_TRUE(left);
+    ASSERT_TRUE(right);
+    auto request = RenderRequestBuilder{}
+                       .addView({.target = SurfaceHandle{0}})
+                       .addView({.target = SurfaceHandle{1}})
+                       .addDraw(
+                           {.material = *left,
+                            .primitives =
+                                {{.primitive = *primitive,
+                                  .indexRange = IndexRange{0, 3}}}}
+                       )
+                       .addDraw(
+                           {.material = *right,
+                            .primitives =
+                                {{.primitive = *primitive,
+                                  .indexRange = IndexRange{3, 3}}}}
+                       )
+                       .build();
+    ASSERT_TRUE(request);
+    const auto submitted = *request;
+    ASSERT_TRUE(renderer.submit(*request));
+    device.busy = true;
+    renderer.tick();
+    EXPECT_TRUE(device.recorder.encoder.indexedDraws.empty());
+    request->scene.items.clear();
+    renderer.destroyPrimitive(*primitive);
+
+    const auto& encoder = device.recorder.encoder;
+    EXPECT_EQ(
+        encoder.indexedDraws,
+        (std::vector<IndexRange>{{0, 3}, {3, 3}, {0, 3}, {3, 3}})
+    );
+    ASSERT_EQ(encoder.indexBindings.size(), 4);
+    for (const auto& binding : encoder.indexBindings) {
+        EXPECT_EQ(binding.handle, encoder.indexBindings.front().handle);
+        EXPECT_EQ(binding.offset, 0);
+    }
+    ASSERT_EQ(encoder.parameterBindings.size(), 4);
+    EXPECT_EQ(
+        encoder.parameterBindings[0].front().bytes,
+        left->parameters().blocks.front().bytes
+    );
+    EXPECT_EQ(
+        encoder.parameterBindings[1].front().bytes,
+        right->parameters().blocks.front().bytes
+    );
+    EXPECT_EQ(device.bufferAttempts, 2);
+    EXPECT_EQ(std::ranges::count(device.events, "destroy buffer"), 2);
+    EXPECT_TRUE(device.buffers.empty());
+    EXPECT_FALSE(renderer.submit(submitted));
+    renderer.destroyShader(*shader);
 }
 
 TEST_F(Assets, ReusesPendingShaderPathsAndPublishesToEveryReference) {
@@ -1100,8 +1235,10 @@ TEST(
     RenderRequest request{
         .scene =
             {.items =
-                 {{.primitives = {*primitive}, .shader = *shader},
-                  {.primitives = {*primitive}, .shader = *other}}},
+                 {{.primitives = {{.primitive = *primitive}},
+                   .shader = *shader},
+                  {.primitives = {{.primitive = *primitive}},
+                   .shader = *other}}},
         .views = {{.target = SurfaceHandle{0}}},
     };
     ASSERT_TRUE(renderer.submit(request));

@@ -157,7 +157,7 @@ class CapturedFrame : public sl::RenderFrameRecorder,
         return {};
     }
     void draw(sl::u32) override {}
-    void drawIndexed(sl::u32, sl::u32) override {}
+    void drawIndexed(const sl::IndexedDrawDescription&) override {}
 };
 
 class RecordingDevice : public BusyDevice {

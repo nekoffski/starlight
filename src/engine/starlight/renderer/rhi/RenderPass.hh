@@ -28,6 +28,12 @@ struct RenderPassDescription {
     std::span<const ColorAttachment> colorAttachments;
 };
 
+struct IndexedDrawDescription {
+    u32 indexCount{0};
+    u32 firstIndex{0};
+    u32 instanceCount{1};
+};
+
 class RenderPassEncoder : public kc::NonCopyable, public kc::NonMovable {
    public:
     virtual ~RenderPassEncoder() = default;
@@ -43,7 +49,7 @@ class RenderPassEncoder : public kc::NonCopyable, public kc::NonMovable {
     ) = 0;
 
     virtual void draw(u32 vertexCount) = 0;
-    virtual void drawIndexed(u32 indexCount, u32 instanceCount = 1) = 0;
+    virtual void drawIndexed(const IndexedDrawDescription& draw) = 0;
 };
 
 using RenderPassCallback =

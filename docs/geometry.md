@@ -12,8 +12,9 @@ Copies of a reference retain the same geometry. Independent creation calls make
 distinct assets. References expose the shared asset readiness/error/version
 interface; they stay on the asset system's engine thread. Retain a reference
 through draw preparation and submission, then release it before asset shutdown.
-The [sandbox](../src/sandbox/main.cpp) creates its triangle through this path and
-shares one primitive across both instances.
+The [sandbox](../src/sandbox/main.cpp) creates a quad through this path and shares
+one primitive across both instances. Each instance draws its two triangle
+sections with separate nearest/linear checkerboard materials.
 
 ## Validation and creation
 
@@ -50,6 +51,35 @@ Scope guards release created buffers if the second allocation, metadata copying,
 or primitive registration fails. Ownership transfers to the primitive pool after
 both buffers and their record are created.
 
+## Draw sections
+
+[`PrimitiveDraw`](../src/engine/starlight/renderer/core/Primitive.hh) pairs a
+non-owning primitive handle with an optional `IndexRange`. `RenderItem` and
+`MaterialDraw` store these selections; the request builder copies them into the
+owned request. Omitting the range draws the whole primitive:
+
+```cpp
+.primitives = {{.primitive = handle}}
+// Select the second triangle from the same upload:
+.primitives = {{.primitive = handle, .indexRange = IndexRange{3, 3}}}
+```
+
+`firstIndex` and `indexCount` are measured in index elements, not bytes.
+[`Primitive::resolveIndexRange()`](../src/engine/starlight/renderer/frontend/RendererResourcePool.cpp)
+requires a positive count, both values divisible by three, and a range inside
+the uploaded index count. Bounds checks use subtraction to avoid overflow.
+[`Renderer::submit()`](../src/engine/starlight/renderer/frontend/Renderer.cpp)
+rejects invalid ranges before accepting a frame. Explicit zero counts are
+invalid; they do not mean the whole primitive. Indices still address the full
+uploaded vertex array; range selection does not rebase them.
+
+Different material draws can reference different ranges of one primitive.
+Selections do not allocate or own buffers. The renderer resolves each range and
+passes an `IndexedDrawDescription` with named `indexCount`, `firstIndex`, and
+`instanceCount` fields through `RenderPassEncoder::drawIndexed()`. The first index
+defaults to zero and the instance count to one. Metal adds the first index's byte
+offset to the bound index-buffer offset.
+
 ## Release and accepted frames
 
 The [asset store](../src/engine/starlight/asset/AssetStore.hh) requests release
@@ -75,8 +105,12 @@ creation is eventually released.
 Reflection tests cover float2/3/4 inputs. Geometry upload tests check mixed packed
 attributes and rejection of unsupported formats/invalid layouts before allocation.
 Renderer tests check shader input subsets, incompatible inputs, and separate
-cached pipelines for different physical layouts.
+cached pipelines for different physical layouts. Range tests cover invalid and
+overflowing selections, two materials/views sharing one buffer pair, copied
+request selections, and accepted sections finishing before primitive retirement.
 [`MetalGeometry.test.cpp`](../src/engine/tests/renderer/MetalGeometry.test.cpp)
 checks fallible native format conversion and renders padded float3/float2/float4
 attributes with nonconsecutive locations through the production Metal descriptor
-helper into a pixel for readback; the rendering test skips without a Metal device.
+helper into a pixel for readback. It selects differently colored indexed sections
+with both a nonzero buffer binding offset and first index. The rendering test
+skips without a Metal device.

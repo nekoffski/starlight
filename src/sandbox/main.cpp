@@ -20,6 +20,22 @@
 
 using namespace sl;
 
+namespace {
+
+Result<Material> makeCheckerboardMaterial(
+    const ShaderInterface& shader, TextureHandle texture, SamplerHandle sampler
+) {
+    // Shader table indices are logical IDs, not native Metal bindings.
+    const std::array<u32, 4> drawParameters{texture.id, sampler.id, 0, 0};
+    return MaterialBuilder{shader}
+        .addParameter("draw", drawParameters)
+        .addTextureDependency(texture)
+        .addSamplerDependency(sampler)
+        .build();
+}
+
+}  // namespace
+
 int main() {
     Config cfg;
 
@@ -57,8 +73,8 @@ int main() {
 
     auto primitiveData = PrimitiveUploadDataBuilder<Vertex3>{}
                              .addVertex(
-                                 Vec3f{0.0f, 0.5f, 0.0f},
-                                 Vec3f{0.0f, 0.0f, 1.0f}, Vec2f{0.5f, 1.0f}
+                                 Vec3f{-0.5f, 0.5f, 0.0f},
+                                 Vec3f{0.0f, 0.0f, 1.0f}, Vec2f{0.0f, 1.0f}
                              )
                              .addVertex(
                                  Vec3f{-0.5f, -0.5f, 0.0f},
@@ -68,7 +84,11 @@ int main() {
                                  Vec3f{0.5f, -0.5f, 0.0f},
                                  Vec3f{0.0f, 0.0f, 1.0f}, Vec2f{1.0f, 0.0f}
                              )
-                             .addIndices({0, 1, 2})
+                             .addVertex(
+                                 Vec3f{0.5f, 0.5f, 0.0f},
+                                 Vec3f{0.0f, 0.0f, 1.0f}, Vec2f{1.0f, 1.0f}
+                             )
+                             .addIndices({0, 1, 2, 0, 2, 3})
                              .build();
 
     auto geometry = as.createGeometry(primitiveData);
@@ -80,32 +100,37 @@ int main() {
     log::expect(texture);
     auto sampler = as.createSampler({});
     log::expect(sampler);
+    auto smoothSampler = as.createSampler({.filter = TextureFilter::linear});
+    log::expect(smoothSampler);
 
     log::expect(as.waitForPending());
     const auto textureHandle = texture->handle();
     const auto samplerHandle = sampler->handle();
+    const auto smoothSamplerHandle = smoothSampler->handle();
     const auto primitiveHandle = geometry->handle();
     log::expect(textureHandle);
     log::expect(samplerHandle);
+    log::expect(smoothSamplerHandle);
     log::expect(primitiveHandle);
 
-    // Shader table indices are logical resource IDs, not native Metal bindings.
-    const std::array<u32, 4> drawParameters{
-        textureHandle->id, samplerHandle->id, 0, 0
-    };
-
-    auto shaderInterface = shader->interface();
+    const auto shaderInterface = shader->interface();
     log::expect(shaderInterface);
-    auto material = MaterialBuilder{std::move(*shaderInterface)}
-                        .addParameter("draw", drawParameters)
-                        .addTextureDependency(*textureHandle)
-                        .addSamplerDependency(*samplerHandle)
-                        .build();
+    const auto material = makeCheckerboardMaterial(
+        *shaderInterface, *textureHandle, *samplerHandle
+    );
+    const auto smoothMaterial = makeCheckerboardMaterial(
+        *shaderInterface, *textureHandle, *smoothSamplerHandle
+    );
     log::expect(material);
+    log::expect(smoothMaterial);
+    const std::array sectionMaterials{
+        std::cref(*material), std::cref(*smoothMaterial)
+    };
+    constexpr u32 indicesPerSection = 3;
 
     constexpr std::array horizontalOffsets{-0.5f, 0.5f};
     constexpr f32 wheelScaleStep = 0.05f;
-    f32 triangleScale = 0.6f;
+    f32 geometryScale = 0.6f;
     f32 angle = 0.0f;
     bool rotating = true;
     EulerCamera camera;
@@ -125,8 +150,8 @@ int main() {
     });
     mainBus.on<MouseWheelEvent>([&](const auto& event) {
         if (event.window == window->id()) {
-            triangleScale = std::clamp(
-                triangleScale + event.delta.y * wheelScaleStep, 0.1f, 1.5f
+            geometryScale = std::clamp(
+                geometryScale + event.delta.y * wheelScaleStep, 0.1f, 1.5f
             );
         }
     });
@@ -169,16 +194,24 @@ int main() {
                 glm::translate(Mat4f{1.0f}, Vec3f{offset, 0.0f, 0.0f});
             modelToWorld =
                 glm::rotate(modelToWorld, angle, Vec3f{0.0f, 0.0f, 1.0f});
-            modelToWorld = glm::scale(modelToWorld, Vec3f{triangleScale});
-            requestBuilder.addDraw({
-                .material = *material,
-                .primitives = {*primitiveHandle},
-                .parameters = {
-                    .blocks = {ShaderParameterBlock::fromValue(
-                        "transform", modelToWorld
-                    )}
-                },
-            });
+            modelToWorld = glm::scale(modelToWorld, Vec3f{geometryScale});
+            for (u32 section = 0; section < sectionMaterials.size();
+                 ++section) {
+                requestBuilder.addDraw({
+                    .material = sectionMaterials[section].get(),
+                    .primitives =
+                        {{.primitive = *primitiveHandle,
+                          .indexRange =
+                              IndexRange{
+                                  section * indicesPerSection, indicesPerSection
+                              }}},
+                    .parameters = {
+                        .blocks = {ShaderParameterBlock::fromValue(
+                            "transform", modelToWorld
+                        )}
+                    },
+                });
+            }
         }
 
         auto request = requestBuilder.build();

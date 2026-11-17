@@ -62,6 +62,26 @@ Result<void> validatePrimitiveUpload(const PrimitiveUploadData& data) {
 
 }  // namespace
 
+Result<IndexRange> Primitive::resolveIndexRange(
+    const Opt<IndexRange>& range
+) const {
+    const auto indices = range.value_or(IndexRange{0, indexCount});
+    constexpr u32 indicesPerTriangle = 3;
+    const bool completeTriangles =
+        indices.indexCount > 0 &&
+        indices.firstIndex % indicesPerTriangle == 0 &&
+        indices.indexCount % indicesPerTriangle == 0;
+    const bool withinBuffer =
+        indices.firstIndex <= indexCount &&
+        indices.indexCount <= indexCount - indices.firstIndex;
+    if (not completeTriangles || not withinBuffer) {
+        return Error::unexpected(
+            kc::ErrorCode::invalidArgument, "Invalid primitive index range"
+        );
+    }
+    return indices;
+}
+
 RendererResourcePool::RendererResourcePool(
     const Config& config, RenderDevice& device
 )
