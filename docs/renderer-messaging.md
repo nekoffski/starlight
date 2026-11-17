@@ -32,6 +32,13 @@ separate pending-frame queue is bounded by `maxFramesInFlight`.
 
 ## Replies
 
+[`RendererProxy`](../src/engine/starlight/renderer/RendererProxy.hh) keeps typed
+public operations and shares command enqueueing through private `enqueue()` and
+`enqueueWithReply()` helpers. The latter obtains a command's future before
+moving it into the queue. Synchronous operations use `waitForReply()` in the
+implementation to propagate queue rejection or wait for the render-thread reply;
+`flushRenderer()` uses the same path with its void reply.
+
 | Operation | Result and completion boundary |
 | --- | --- |
 | Async shader/primitive/texture/sampler creation | `Result<future<Result<Handle>>>`: outer result means queue acceptance; future reports render-thread creation success/failure. |

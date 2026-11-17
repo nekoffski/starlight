@@ -50,6 +50,19 @@ class RendererProxy {
     Result<void> submit(const RenderRequest& request);
 
    private:
+    Result<void> enqueue(RendererCommand command, const char* rejectionMessage);
+
+    template <typename Command>
+    auto enqueueWithReply(Command command, const char* rejectionMessage)
+        -> Result<decltype(command.completion.get_future())> {
+        auto completion = command.completion.get_future();
+        const auto r = enqueue(std::move(command), rejectionMessage);
+        if (not r) {
+            return Error::unexpected(r.error());
+        }
+        return completion;
+    }
+
     RenderExecutor::Submitter m_submitter;
 };
 

@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <chrono>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
@@ -283,6 +284,91 @@ GeometryData quadGeometry() {
         .addVertex(Vec3f{-1, 1, 0}, Vec3f{0, 0, 1})
         .addIndices({0, 1, 2, 0, 2, 3})
         .build();
+}
+
+TEST(RendererProxy, ClosedAndExpiredQueuesRejectEveryOperation) {
+    auto queue = std::make_shared<kc::ThreadSafeQueue<RendererCommand>>();
+    RendererProxy proxy{RenderExecutor::Submitter{queue}};
+    queue->close();
+
+    const auto rejects = [](const auto& result) {
+        ASSERT_FALSE(result);
+        EXPECT_EQ(result.error().code(), ErrorCode::rendererCommandRejected);
+    };
+    const auto checkOperations = [&] {
+        rejects(proxy.createPrimitive({}));
+        rejects(proxy.createPrimitiveAsync({}));
+        rejects(proxy.destroyPrimitive({}));
+        rejects(proxy.createShader({}));
+        rejects(proxy.createShaderAsync({}));
+        rejects(proxy.destroyShader({}));
+        rejects(proxy.getShaderInterface({}));
+        rejects(proxy.createTexture({}));
+        rejects(proxy.createTextureAsync({}));
+        rejects(proxy.destroyTexture({}));
+        rejects(proxy.createSampler({}));
+        rejects(proxy.createSamplerAsync({}));
+        rejects(proxy.destroySampler({}));
+        rejects(proxy.createRenderTarget({}));
+        rejects(proxy.submit({}));
+        rejects(proxy.flushRenderer());
+    };
+    checkOperations();
+    queue.reset();
+    checkOperations();
+}
+
+TEST(RendererProxy, AsyncCreationOwnsPayloadAndWaitsForRenderThreadReply) {
+    auto queue = std::make_shared<kc::ThreadSafeQueue<RendererCommand>>();
+    RendererProxy proxy{RenderExecutor::Submitter{queue}};
+    ShaderDescription description{.byteCode = Bytes{'A'}};
+    auto completion = proxy.createShaderAsync(description);
+    ASSERT_TRUE(completion);
+    description.byteCode.clear();
+    EXPECT_EQ(
+        completion->wait_for(std::chrono::seconds{0}),
+        std::future_status::timeout
+    );
+
+    auto command = queue->tryPop();
+    ASSERT_TRUE(command);
+    auto& creation = std::get<RendererCreateShader>(*command);
+    EXPECT_EQ(creation.description.byteCode, Bytes{'A'});
+    creation.completion.set_value(ShaderHandle{42});
+    auto shader = completion->get();
+    ASSERT_TRUE(shader);
+    EXPECT_EQ(*shader, ShaderHandle{42});
+}
+
+TEST(RendererProxy, SynchronousCallsReturnRenderThreadResults) {
+    Config cfg;
+    TestDevice device;
+    Renderer renderer{cfg, device};
+    RenderExecutor executor{renderer};
+    RendererProxy proxy{executor.createSubmitter()};
+    executor.start();
+
+    auto shader = proxy.createShader({.byteCode = Bytes{'A'}});
+    ASSERT_TRUE(shader);
+    auto interface = proxy.getShaderInterface(*shader);
+    ASSERT_TRUE(interface);
+    EXPECT_EQ(interface->handle, *shader);
+
+    auto failedShader = proxy.createShader({.byteCode = Bytes{'!'}});
+    ASSERT_FALSE(failedShader);
+    EXPECT_EQ(failedShader.error().code(), ErrorCode::deviceOperationFailed);
+    EXPECT_EQ(failedShader.error().message(), "Shader creation failed");
+
+    auto failedTexture = proxy.createTexture({});
+    ASSERT_FALSE(failedTexture);
+    EXPECT_EQ(failedTexture.error().code(), kc::ErrorCode::invalidArgument);
+    EXPECT_EQ(failedTexture.error().message(), "Invalid texture");
+
+    EXPECT_TRUE(proxy.createRenderTarget({}));
+    EXPECT_TRUE(proxy.submit({}));
+    EXPECT_TRUE(proxy.destroyShader(*shader));
+    ASSERT_TRUE(proxy.flushRenderer());
+    EXPECT_TRUE(device.shaders.empty());
 }
 
 TEST_F(Assets, GeometryPublishesOwnedBytesAndReleasesAfterLastReference) {

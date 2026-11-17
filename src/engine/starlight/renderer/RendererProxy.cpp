@@ -1,207 +1,154 @@
 #include "RendererProxy.hh"
 
 namespace sl {
+namespace {
+
+template <typename T>
+Result<T> waitForReply(Result<std::future<Result<T>>> completion) {
+    if (not completion) {
+        return Error::unexpected(completion.error());
+    }
+    return completion->get();
+}
+
+Result<void> waitForReply(Result<std::future<void>> completion) {
+    if (not completion) {
+        return Error::unexpected(completion.error());
+    }
+    completion->get();
+    return {};
+}
+
+}  // namespace
+
+RendererProxy::RendererProxy(RenderExecutor::Submitter submitter)
+    : m_submitter(std::move(submitter)) {}
 
 Result<PrimitiveHandle> RendererProxy::createPrimitive(
     const GeometryData& description
 ) {
-    if (auto future = createPrimitiveAsync(description); future) {
-        return future->get();
-    } else {
-        return Error::unexpected(future.error());
-    }
+    return waitForReply(createPrimitiveAsync(description));
 }
 
 Result<std::future<Result<PrimitiveHandle>>>
 RendererProxy::createPrimitiveAsync(const GeometryData& description) {
-    RendererCreatePrimitive cmd{description};
-    auto completion = cmd.completion.get_future();
-
-    if (not m_submitter.submit(std::move(cmd))) {
-        return Error::unexpected(
-            ErrorCode::rendererCommandRejected,
-            "Could not submit renderer upload primitive command"
-        );
-    }
-
-    return completion;
+    return enqueueWithReply(
+        RendererCreatePrimitive{description},
+        "Could not submit renderer upload primitive command"
+    );
 }
 
 Result<void> RendererProxy::destroyPrimitive(PrimitiveHandle primitive) {
-    RendererDestroyPrimitive cmd{primitive};
-
-    if (not m_submitter.submit(std::move(cmd))) {
-        return Error::unexpected(
-            ErrorCode::rendererCommandRejected,
-            "Could not submit renderer destroy primitive command"
-        );
-    }
-    return {};
-}
-
-Result<std::future<Result<ShaderHandle>>> RendererProxy::createShaderAsync(
-    const ShaderDescription& description
-) {
-    RendererCreateShader cmd{description};
-    auto completion = cmd.completion.get_future();
-
-    if (not m_submitter.submit(std::move(cmd))) {
-        return Error::unexpected(
-            ErrorCode::rendererCommandRejected,
-            "Could not submit renderer create shader command"
-        );
-    }
-
-    return completion;
+    return enqueue(
+        RendererDestroyPrimitive{primitive},
+        "Could not submit renderer destroy primitive command"
+    );
 }
 
 Result<ShaderHandle> RendererProxy::createShader(
     const ShaderDescription& description
 ) {
-    if (auto future = createShaderAsync(description); future) {
-        return future->get();
-    } else {
-        return Error::unexpected(future.error());
-    }
+    return waitForReply(createShaderAsync(description));
+}
+
+Result<std::future<Result<ShaderHandle>>> RendererProxy::createShaderAsync(
+    const ShaderDescription& description
+) {
+    return enqueueWithReply(
+        RendererCreateShader{description},
+        "Could not submit renderer create shader command"
+    );
 }
 
 Result<void> RendererProxy::destroyShader(ShaderHandle handle) {
-    RendererDestroyShader cmd{handle};
-
-    if (not m_submitter.submit(std::move(cmd))) {
-        return Error::unexpected(
-            ErrorCode::rendererCommandRejected,
-            "Could not submit renderer destroy shader command"
-        );
-    }
-    return {};
+    return enqueue(
+        RendererDestroyShader{handle},
+        "Could not submit renderer destroy shader command"
+    );
 }
 
 Result<ShaderInterface> RendererProxy::getShaderInterface(ShaderHandle handle) {
-    RendererGetShaderInterface command{handle};
-    auto completion = command.completion.get_future();
-    if (not m_submitter.submit(std::move(command))) {
-        return Error::unexpected(
-            ErrorCode::rendererCommandRejected,
-            "Renderer shader interface command rejected"
-        );
-    }
-    return completion.get();
+    return waitForReply(enqueueWithReply(
+        RendererGetShaderInterface{handle},
+        "Renderer shader interface command rejected"
+    ));
 }
 
 Result<void> RendererProxy::flushRenderer() {
-    RendererFlush cmd;
-    auto completion = cmd.completion.get_future();
-
-    if (not m_submitter.submit(std::move(cmd))) {
-        return Error::unexpected(
-            ErrorCode::rendererCommandRejected,
-            "Could not submit renderer flush command"
-        );
-    }
-    completion.get();
-    return {};
+    return waitForReply(enqueueWithReply(
+        RendererFlush{}, "Could not submit renderer flush command"
+    ));
 }
 
 Result<RenderTarget> RendererProxy::createRenderTarget(
     std::shared_ptr<RenderSurfaceProvider> window
 ) {
-    RendererCreateSurfaceTarget cmd{std::move(window)};
-    auto completion = cmd.completion.get_future();
-
-    if (not m_submitter.submit(std::move(cmd))) {
-        return Error::unexpected(
-            ErrorCode::rendererCommandRejected,
-            "Could not submit renderer create surface command"
-        );
-    }
-
-    return completion.get();
+    return waitForReply(enqueueWithReply(
+        RendererCreateSurfaceTarget{std::move(window)},
+        "Could not submit renderer create surface command"
+    ));
 }
 
 Result<void> RendererProxy::submit(const RenderRequest& request) {
-    RendererSubmit cmd;
-    cmd.request = request;
-    auto completion = cmd.completion.get_future();
-
-    if (not m_submitter.submit(std::move(cmd))) {
-        return Error::unexpected(
-            ErrorCode::rendererCommandRejected,
-            "Could not submit renderer submit command"
-        );
-    }
-    return completion.get();
+    return waitForReply(enqueueWithReply(
+        RendererSubmit{.request = request},
+        "Could not submit renderer submit command"
+    ));
 }
 
 Result<TextureHandle> RendererProxy::createTexture(
     const TextureUploadData& description
 ) {
-    auto future = createTextureAsync(description);
-    if (not future) {
-        return Error::unexpected(future.error());
-    }
-    return future->get();
+    return waitForReply(createTextureAsync(description));
 }
 
 Result<std::future<Result<TextureHandle>>> RendererProxy::createTextureAsync(
     const TextureUploadData& description
 ) {
-    RendererCreateTexture command{description};
-    auto completion = command.completion.get_future();
-    if (not m_submitter.submit(std::move(command))) {
-        return Error::unexpected(
-            ErrorCode::rendererCommandRejected,
-            "Renderer create texture command rejected"
-        );
-    }
-    return completion;
+    return enqueueWithReply(
+        RendererCreateTexture{description},
+        "Renderer create texture command rejected"
+    );
 }
 
 Result<void> RendererProxy::destroyTexture(TextureHandle handle) {
-    if (not m_submitter.submit(RendererDestroyTexture{handle})) {
-        return Error::unexpected(
-            ErrorCode::rendererCommandRejected,
-            "Renderer destroy texture command rejected"
-        );
-    }
-    return {};
+    return enqueue(
+        RendererDestroyTexture{handle},
+        "Renderer destroy texture command rejected"
+    );
 }
 
 Result<SamplerHandle> RendererProxy::createSampler(
     const SamplerDescription& description
 ) {
-    auto future = createSamplerAsync(description);
-    if (not future) {
-        return Error::unexpected(future.error());
-    }
-    return future->get();
+    return waitForReply(createSamplerAsync(description));
 }
 
 Result<std::future<Result<SamplerHandle>>> RendererProxy::createSamplerAsync(
     const SamplerDescription& description
 ) {
-    RendererCreateSampler command{description};
-    auto completion = command.completion.get_future();
-    if (not m_submitter.submit(std::move(command))) {
-        return Error::unexpected(
-            ErrorCode::rendererCommandRejected,
-            "Renderer create sampler command rejected"
-        );
-    }
-    return completion;
+    return enqueueWithReply(
+        RendererCreateSampler{description},
+        "Renderer create sampler command rejected"
+    );
 }
 
 Result<void> RendererProxy::destroySampler(SamplerHandle handle) {
-    if (not m_submitter.submit(RendererDestroySampler{handle})) {
+    return enqueue(
+        RendererDestroySampler{handle},
+        "Renderer destroy sampler command rejected"
+    );
+}
+
+Result<void> RendererProxy::enqueue(
+    RendererCommand command, const char* rejectionMessage
+) {
+    if (not m_submitter.submit(std::move(command))) {
         return Error::unexpected(
-            ErrorCode::rendererCommandRejected,
-            "Renderer destroy sampler command rejected"
+            ErrorCode::rendererCommandRejected, rejectionMessage
         );
     }
     return {};
 }
-
-RendererProxy::RendererProxy(RenderExecutor::Submitter submitter)
-    : m_submitter(submitter) {}
 
 }  // namespace sl
