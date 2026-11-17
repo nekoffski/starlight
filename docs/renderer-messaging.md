@@ -66,8 +66,9 @@ declarations. Handles stored by materials are non-owning, and preparation does
 not prove GPU resource liveness; render-thread validation remains authoritative.
 
 [`Renderer::submit()`](../src/engine/starlight/renderer/frontend/Renderer.cpp)
-validates declared texture/sampler handle IDs/generations and scene shader/primitive
-handles before accepting a request. It also checks that each primitive supplies
+calls `validateRequest()` to check queue capacity, declared texture/sampler
+handle IDs/generations, and scene shader/primitive handles before copying a
+request into the pending queue. It also checks that each primitive supplies
 every required shader vertex input by location/type; extra attributes are allowed.
 Primitive index ranges must be nonempty, aligned to complete triangles, and
 within the uploaded index count. An absent range selects the whole primitive.

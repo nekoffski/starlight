@@ -131,12 +131,19 @@ class CapturedFrame : public sl::RenderFrameRecorder,
    public:
     std::vector<std::vector<sl::ShaderParameterBlock>> bindings;
     std::vector<sl::RenderTarget> targets;
+    sl::Opt<sl::RenderTarget> unavailableTarget;
+    sl::Error parameterError;
 
     sl::Result<void> renderPass(
         const sl::RenderPassDescription& description,
         const sl::RenderPassCallback& record
     ) override {
         targets.push_back(description.colorAttachments.front().target);
+        if (unavailableTarget && targets.back() == *unavailableTarget) {
+            return sl::Error::unexpected(
+                sl::ErrorCode::renderSurfaceNotDrawable, "Target is unavailable"
+            );
+        }
         return record(*this);
     }
     sl::Result<void> setPipeline(sl::GraphicsPipelineHandle) override {
@@ -154,6 +161,9 @@ class CapturedFrame : public sl::RenderFrameRecorder,
         const sl::ShaderResourceDependencies&
     ) override {
         bindings.emplace_back(parameters.begin(), parameters.end());
+        if (parameterError.valid()) {
+            return sl::Error::unexpected(parameterError);
+        }
         return {};
     }
     void draw(sl::u32) override {}
@@ -163,9 +173,15 @@ class CapturedFrame : public sl::RenderFrameRecorder,
 class RecordingDevice : public BusyDevice {
    public:
     CapturedFrame frame;
+    sl::Error recordingError;
 
     sl::Result<void> trySubmitFrame(RecordFrame record) override {
-        return record(frame);
+        recordingError.reset();
+        const auto r = record(frame);
+        if (not r) {
+            recordingError = r.error();
+        }
+        return r;
     }
 };
 
@@ -205,6 +221,65 @@ TEST(RenderViews, RecordsIndependentViewSnapshotsForTheSameScene) {
                                   sl::SurfaceHandle{0}, sl::SurfaceHandle{1}
                               })
     );
+}
+
+TEST(RenderViews, SkipsUnavailableTargetAndRecordsTheNextView) {
+    RecordingDevice device;
+    device.frame.unavailableTarget = sl::SurfaceHandle{0};
+    sl::Renderer renderer{{}, device};
+    const auto first = sl::ShaderParameterBlock::fromValue("view", sl::u32{1});
+    const auto second = sl::ShaderParameterBlock::fromValue("view", sl::u32{2});
+    const sl::RenderRequest request{
+        .scene = {.items = {{.shader = device.shader}}},
+        .views = {
+            {.target = sl::SurfaceHandle{0}, .parameters = {first}},
+            {.target = sl::SurfaceHandle{1}, .parameters = {second}}
+        },
+    };
+    ASSERT_TRUE(renderer.submit(request));
+    EXPECT_TRUE(renderer.tick());
+    EXPECT_FALSE(renderer.tick());
+    EXPECT_FALSE(device.recordingError.valid());
+    EXPECT_EQ(
+        device.frame.targets, (std::vector<sl::RenderTarget>{
+                                  sl::SurfaceHandle{0}, sl::SurfaceHandle{1}
+                              })
+    );
+    ASSERT_EQ(device.frame.bindings.size(), 1);
+    ASSERT_EQ(device.frame.bindings.front().size(), 1);
+    EXPECT_EQ(device.frame.bindings.front().front().bytes, second.bytes);
+}
+
+TEST(RenderViews, RecordingErrorStopsTheFrameAndAllowsLaterRequests) {
+    RecordingDevice device;
+    device.frame.parameterError = sl::Error{
+        kc::ErrorCode::invalidArgument, "Injected parameter binding failure"
+    };
+    sl::Renderer renderer{{}, device};
+    const sl::RenderRequest request{
+        .scene =
+            {.items = {{.shader = device.shader}, {.shader = device.shader}}},
+        .views = {
+            {.target = sl::SurfaceHandle{0}}, {.target = sl::SurfaceHandle{1}}
+        },
+    };
+    ASSERT_TRUE(renderer.submit(request));
+    EXPECT_TRUE(renderer.tick());
+    EXPECT_FALSE(renderer.tick());
+    EXPECT_EQ(device.recordingError.code(), kc::ErrorCode::invalidArgument);
+    EXPECT_EQ(
+        device.recordingError.message(), "Injected parameter binding failure"
+    );
+    EXPECT_EQ(device.frame.bindings.size(), 1);
+    EXPECT_EQ(device.frame.targets.size(), 1);
+
+    device.frame.parameterError.reset();
+    ASSERT_TRUE(renderer.submit(request));
+    EXPECT_TRUE(renderer.tick());
+    EXPECT_FALSE(renderer.tick());
+    EXPECT_FALSE(device.recordingError.valid());
+    EXPECT_EQ(device.frame.bindings.size(), 5);
+    EXPECT_EQ(device.frame.targets.size(), 3);
 }
 
 TEST(ShaderInterface, CopiesShaderLayoutThroughTheCommandPath) {

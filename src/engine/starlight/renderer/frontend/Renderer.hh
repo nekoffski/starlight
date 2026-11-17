@@ -3,6 +3,7 @@
 #include <kcore/Concepts.hh>
 #include <kcore/containers/FlatMap.hh>
 #include <queue>
+#include <span>
 
 #include "RenderRequest.hh"
 #include "RendererResourcePool.hh"
@@ -54,7 +55,10 @@ class Renderer : public kc::NonCopyable, public kc::NonMovable {
     void destroyPrimitive(PrimitiveHandle handle);
 
    private:
-    u64 frameIndex() const;
+    using GraphicsPipelineCache =
+        kc::FlatMap<GraphicsPipelineDescription, GraphicsPipelineHandle>;
+
+    Result<void> validateRequest(const RenderRequest& request);
 
     void tryToSubmitFrame();
 
@@ -66,19 +70,28 @@ class Renderer : public kc::NonCopyable, public kc::NonMovable {
         RenderFrameRecorder& context, const RenderRequest& request
     );
 
-    Result<void> validatePipelineLayout(
-        const GraphicsPipelineDescription& description
+    Result<void> recordView(
+        RenderPassEncoder& encoder, const RenderRequest& request,
+        std::span<const ShaderParameterBlock> viewParameters
+    );
+
+    Result<void> recordItem(
+        RenderPassEncoder& encoder, const RenderItem& item,
+        std::span<const ShaderParameterBlock> viewParameters,
+        const ShaderResourceDependencies& resources
+    );
+
+    Result<void> recordPrimitive(
+        RenderPassEncoder& encoder, ShaderHandle shader,
+        const PrimitiveDraw& draw
     );
 
     Config m_config;
     RenderDevice& m_device;
 
     std::queue<RenderRequest> m_pendingRequests;
-    u64 m_frameNumber{0u};
 
-    kc::FlatMap<
-        GraphicsPipelineDescription, GraphicsPipelineHandle>  // TODO: fixme
-        m_graphicsPipelines;
+    GraphicsPipelineCache m_graphicsPipelines;
 
     RendererResourcePool m_resourcePool;
 };

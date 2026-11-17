@@ -1,6 +1,7 @@
 #include "Renderer.hh"
 
 #include <kcore/Functional.hh>
+#include <kcore/Pipeline.hh>
 
 #include "RenderGraph.hh"
 #include "starlight/renderer/core/RenderResource.hh"
@@ -27,6 +28,15 @@ void Renderer::flush() {
 }
 
 Result<void> Renderer::submit(const RenderRequest& request) {
+    const auto r = validateRequest(request);
+    if (not r) {
+        return r;
+    }
+    m_pendingRequests.push(request);
+    return {};
+}
+
+Result<void> Renderer::validateRequest(const RenderRequest& request) {
     if (m_pendingRequests.size() >= m_config.renderer.maxFramesInFlight) {
         return Error::unexpected(
             ErrorCode::tooManyFrameRequests, "Too many frame requests"
@@ -69,7 +79,6 @@ Result<void> Renderer::submit(const RenderRequest& request) {
             }
         }
     }
-    m_pendingRequests.push(request);
     return {};
 }
 
@@ -135,10 +144,6 @@ void Renderer::destroyShader(ShaderHandle handle) {
     m_device.destroyShader(handle);
 }
 
-u64 Renderer::frameIndex() const {
-    return m_frameNumber % m_config.renderer.maxFramesInFlight;
-}
-
 void Renderer::tryToSubmitFrame() {
     const auto& request = m_pendingRequests.front();
     KCORE_NAMED_DEFER(requestDropper) { m_pendingRequests.pop(); };
@@ -155,7 +160,6 @@ void Renderer::tryToSubmitFrame() {
         }
         return;
     }
-    m_frameNumber++;
 }
 
 Result<GraphicsPipelineHandle> Renderer::resolveGraphicsPipeline(
@@ -212,89 +216,103 @@ Result<void> Renderer::recordFrame(
             .label = "Main Pass", .colorAttachments = std::span(&attachment, 1)
         };
 
-        graph.addRenderPass(
-            pass,
-            [&, viewParameters = view.parameters](RenderPassEncoder& encoder)
-                -> Result<void> {
-                for (const auto& renderable : request.scene.items) {
-                    const auto* shaderDescription =
-                        m_device.getShaderDescription(renderable.shader);
-
-                    // TODO: refactor
-                    if (not shaderDescription) {
-                        return Error::unexpected(
-                            kc::ErrorCode::invalidArgument,
-                            "Invalid shader handle"
-                        );
-                    }
-
-                    const auto parameters = combineShaderParameterBlocks(
-                        renderable.parameters, viewParameters
-                    );
-                    auto r = encoder.setShaderParameters(
-                        *shaderDescription, parameters, request.resources
-                    );
-                    if (not r) {
-                        return r;
-                    }
-
-                    for (const auto& draw : renderable.primitives) {
-                        const auto& primitive =
-                            m_resourcePool.getPrimitive(draw.primitive);
-
-                        if (not primitive) {
-                            return Error::unexpected(
-                                kc::ErrorCode::invalidArgument,
-                                "Invalid primitive handle"
-                            );
-                        }
-
-                        GraphicsPipelineDescription description{
-                            .format = TextureFormat::bgra8unorm,
-                            .shader = renderable.shader,
-                            .vertexLayout = primitive->vertexLayout,
-                        };
-                        auto pipeline = resolveGraphicsPipeline(description);
-                        if (not pipeline) {
-                            return Error::unexpected(pipeline.error());
-                        }
-                        r = encoder.setPipeline(*pipeline);
-                        if (not r) {
-                            return r;
-                        }
-
-                        r = encoder.setVertexBuffer({
-                            .handle = primitive->vertexBuffer,
-                            .offset = primitive->vertexBufferOffset,
-                        });
-                        if (not r) {
-                            return r;
-                        }
-
-                        r = encoder.setIndexBuffer({
-                            .handle = primitive->indexBuffer,
-                            .offset = primitive->indexBufferOffset,
-                        });
-                        if (not r) {
-                            return r;
-                        }
-                        const auto indices =
-                            primitive->resolveIndexRange(draw.indexRange);
-                        if (not indices) {
-                            return Error::unexpected(indices.error());
-                        }
-                        encoder.drawIndexed({
-                            .indexCount = indices->indexCount,
-                            .firstIndex = indices->firstIndex,
-                        });
-                    }
-                }
-                return {};
-            }
-        );
+        auto recordPass = [this, &request, view](RenderPassEncoder& encoder) {
+            return recordView(encoder, request, view.parameters);
+        };
+        graph.addRenderPass(pass, std::move(recordPass));
     }
 
     return graph.record(recorder);
+}
+
+Result<void> Renderer::recordView(
+    RenderPassEncoder& encoder, const RenderRequest& request,
+    std::span<const ShaderParameterBlock> viewParameters
+) {
+    for (const auto& item : request.scene.items) {
+        const auto r =
+            recordItem(encoder, item, viewParameters, request.resources);
+        if (not r) {
+            return r;
+        }
+    }
+    return {};
+}
+
+Result<void> Renderer::recordItem(
+    RenderPassEncoder& encoder, const RenderItem& item,
+    std::span<const ShaderParameterBlock> viewParameters,
+    const ShaderResourceDependencies& resources
+) {
+    const auto* shader = m_device.getShaderDescription(item.shader);
+    if (not shader) {
+        return Error::unexpected(
+            kc::ErrorCode::invalidArgument, "Invalid shader handle"
+        );
+    }
+    const auto parameters =
+        combineShaderParameterBlocks(item.parameters, viewParameters);
+    const auto r = encoder.setShaderParameters(*shader, parameters, resources);
+    if (not r) {
+        return r;
+    }
+    for (const auto& draw : item.primitives) {
+        const auto r = recordPrimitive(encoder, item.shader, draw);
+        if (not r) {
+            return r;
+        }
+    }
+    return {};
+}
+
+Result<void> Renderer::recordPrimitive(
+    RenderPassEncoder& encoder, ShaderHandle shader, const PrimitiveDraw& draw
+) {
+    const auto* primitive = m_resourcePool.getPrimitive(draw.primitive);
+    if (not primitive) {
+        return Error::unexpected(
+            kc::ErrorCode::invalidArgument, "Invalid primitive handle"
+        );
+    }
+    GraphicsPipelineDescription description{
+        .format = TextureFormat::bgra8unorm,
+        .shader = shader,
+        .vertexLayout = primitive->vertexLayout,
+    };
+    const auto resolvePipeline = [&] {
+        return resolveGraphicsPipeline(description);
+    };
+    const auto bindPipeline = [&](GraphicsPipelineHandle pipeline) {
+        return encoder.setPipeline(pipeline);
+    };
+    const auto bindVertexBuffer = [&] {
+        return encoder.setVertexBuffer({
+            .handle = primitive->vertexBuffer,
+            .offset = primitive->vertexBufferOffset,
+        });
+    };
+    const auto bindIndexBuffer = [&] {
+        return encoder.setIndexBuffer({
+            .handle = primitive->indexBuffer,
+            .offset = primitive->indexBufferOffset,
+        });
+    };
+    const auto resolveIndices = [&] {
+        return primitive->resolveIndexRange(draw.indexRange);
+    };
+    const auto drawIndices = [&](const IndexRange& indices) {
+        encoder.drawIndexed({
+            .indexCount = indices.indexCount,
+            .firstIndex = indices.firstIndex,
+        });
+    };
+    return kc::startPipeline(resolvePipeline)
+        .then(bindPipeline)
+        .then(bindVertexBuffer)
+        .then(bindIndexBuffer)
+        .then(resolveIndices)
+        .transform(drawIndices)
+        .result();
 }
 
 }  // namespace sl

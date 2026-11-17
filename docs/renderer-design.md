@@ -110,6 +110,17 @@ Selections without a range draw the whole primitive. Acceptance validates range
 bounds and complete triangle alignment. Metal draws triangles with 32-bit
 indices and converts first-index offsets to bytes inside the backend.
 
+The recording helpers follow that sequence: `recordFrame()` builds the graph,
+`recordView()` visits scene items, `recordItem()` combines and binds parameters,
+and `recordPrimitive()` resolves the pipeline, binds buffers, and draws a range.
+Its kcore pipeline sequences pipeline/buffer binding, index-range resolution, and
+drawing; the first error skips all later steps.
+Graph callbacks own copied view parameters and borrow the accepted request while
+the graph is recorded within `recordFrame()`. Errors propagate back through the
+helpers; `RenderGraph` continues past unavailable surfaces and stops on other
+recording errors. [Renderer tests](../src/engine/tests/renderer/Textures.test.cpp)
+cover view snapshots, unavailable surfaces, and failed-frame recovery.
+
 ```mermaid
 flowchart TD
     Request[RenderRequest] --> Views[For each view]
@@ -139,8 +150,8 @@ graphics render passes are implemented.
 number of frame slots, each guarded by a latch released when its command buffer
 completes. If the next slot is busy, the device returns
 `tooManyFramesInFlight`; the renderer keeps the request and retries it on a
-later tick. On successful submission, it removes the request and advances its
-frame number. Other recording or submission errors are logged and the request
+later tick. On successful submission, it removes the request; Metal advances its
+own frame slot. Other recording or submission errors are logged and the request
 is dropped.
 
 For a surface pass, the Metal recorder gets a drawable from the surface layer
