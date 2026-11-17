@@ -2,8 +2,6 @@
 
 #include <kcore/Functional.hh>
 
-#include "starlight/renderer/core/Vertex.hh"
-
 namespace sl {
 
 Result<NS::SharedPtr<MTL::VertexDescriptor>> createMetalVertexDescriptor(

@@ -5,6 +5,7 @@
 #include <variant>
 
 #include "starlight/core/Error.hh"
+#include "starlight/geometry/GeometryData.hh"
 #include "starlight/renderer/core/Primitive.hh"
 #include "starlight/renderer/core/Shader.hh"
 #include "starlight/renderer/frontend/RenderRequest.hh"
@@ -43,7 +44,7 @@ struct RendererGetShaderInterface {
 };
 
 struct RendererCreatePrimitive {
-    PrimitiveUploadData description;
+    GeometryData description;
     std::promise<Result<PrimitiveHandle>> completion;
 };
 

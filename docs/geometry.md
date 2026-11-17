@@ -1,7 +1,8 @@
 # Geometry assets
 
 [`AssetSystem::createGeometry()`](../src/engine/starlight/asset/AssetSystem.cpp)
-accepts `PrimitiveUploadData` and returns a strong
+accepts owned CPU [`GeometryData`](../src/engine/starlight/geometry/GeometryData.hh)
+and returns a strong
 [`GeometryRef`](../src/engine/starlight/asset/Geometry.hh). Creation uses the
 existing asynchronous primitive command; the command owns copies of the vertex
 and index bytes. `update()` publishes the resulting `PrimitiveHandle`, or exposes
@@ -15,6 +16,29 @@ through draw preparation and submission, then release it before asset shutdown.
 The [sandbox](../src/sandbox/main.cpp) creates a quad through this path and shares
 one primitive across both instances. Each instance draws its two triangle
 sections with separate nearest/linear checkerboard materials.
+
+## CPU geometry data
+
+[`geometry/GeometryData.hh`](../src/engine/starlight/geometry/GeometryData.hh)
+contains the vertex layout, owned vertex/index bytes, and counts. It has no asset
+reference or uploaded resource handle. The layout uses the shared value types
+in `renderer/core/ShaderDataLayout.hh`; no device or renderer instance is needed
+to construct the data.
+
+[`GeometryDataBuilder<T>`](../src/engine/starlight/geometry/GeometryDataBuilder.hh)
+is an optional typed producer for procedural geometry. Its `GeometryVertex`
+concept requires trivially copyable vertices with `T::layout()` returning
+`VertexLayout`. It copies vertex bytes, preserving their explicit stride and
+member offsets. [`Vertex3`](../src/engine/starlight/geometry/Vertex.hh) is one
+CPU vertex definition; other supported definitions can supply their own layout.
+Callers can also populate `GeometryData` directly with bulk bytes and counts.
+
+The same value is accepted by `AssetSystem::createGeometry()` and
+[`RendererProxy::createPrimitiveAsync()`](../src/engine/starlight/renderer/RendererProxy.cpp).
+The proxy copies it into the owned renderer command. Source data can be modified
+or discarded after the call. `GeometryAsset` retains the uploaded handle rather
+than keeping a permanent CPU copy; source-data retention belongs to the caller.
+Draw selections and GPU-backed primitive handles remain renderer concepts.
 
 ## Validation and creation
 
@@ -40,7 +64,7 @@ pairs. Frame acceptance checks that every required input is supplied with the
 same type; additional geometry attributes are allowed. Attribute array order
 does not determine byte offsets or locations.
 
-[`Vertex3::layout()`](../src/engine/starlight/renderer/core/Vertex.cpp) uses
+[`Vertex3::layout()`](../src/engine/starlight/geometry/Vertex.cpp) uses
 `sizeof(Vertex3)` and `offsetof` for position/normal `float3` fields and `float2`
 texture coordinates. The upload builder requires trivially copyable vertex
 types; their byte size must match the explicit stride. It copies struct bytes

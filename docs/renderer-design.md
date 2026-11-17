@@ -58,11 +58,11 @@ for the material contract and its non-owning resource handles.
   metadata with entry point names, stages, vertex inputs, and uniforms. Shader
   assets ask the proxy to create a device shader. The Metal implementation loads
   the bytes as a Metal library and looks up those entry points.
-- **Primitive:** `PrimitiveUploadData` contains vertex layout, vertex and index
-  bytes, and counts. `PrimitiveUploadDataBuilder<Vertex3>` packs position/normal
-  vectors and texture coordinates with `u32` indices. Upload creates a buffer for
-  each byte array and returns a primitive handle; the resource pool stores the layout, buffer
-  handles, offsets, and index count. Upload validates byte sizes and triangle
+- **Primitive:** CPU `GeometryData` from the `geometry/` module contains vertex
+  layout, vertex/index bytes, and counts. `GeometryDataBuilder<Vertex3>` copies
+  position/normal vectors and texture coordinates with `u32` indices. Upload
+  creates a buffer for each byte array and returns a primitive handle; the
+  resource pool stores the layout, buffer handles, offsets, and index count. Upload validates byte sizes and triangle
   indices before allocating buffers. The sandbox retains a
   [geometry asset](geometry.md); direct proxy management also remains available.
 - **Target:** The application creates a target from a surface provider, such as
@@ -181,8 +181,9 @@ immediate. See [Renderer messaging](renderer-messaging.md).
 ## Source references
 
 - [ShaderLoader](../src/engine/starlight/asset/loaders/ShaderLoader.cpp) and
-  [Vertex3](../src/engine/starlight/renderer/core/Vertex.hh)
-- [Primitive upload data](../src/engine/starlight/renderer/core/Primitive.hh) and
+  [Vertex3](../src/engine/starlight/geometry/Vertex.hh)
+- [CPU geometry data](../src/engine/starlight/geometry/GeometryData.hh),
+  [typed builder](../src/engine/starlight/geometry/GeometryDataBuilder.hh), and
   [RendererResourcePool](../src/engine/starlight/renderer/frontend/RendererResourcePool.cpp)
 - [Renderer](../src/engine/starlight/renderer/frontend/Renderer.cpp) and
   [RenderGraph](../src/engine/starlight/renderer/frontend/RenderGraph.cpp)

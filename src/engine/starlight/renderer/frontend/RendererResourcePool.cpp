@@ -7,7 +7,7 @@
 namespace sl {
 namespace {
 
-Result<void> validatePrimitiveLayout(const PrimitiveUploadData& data) {
+Result<void> validatePrimitiveLayout(const GeometryData& data) {
     constexpr u32 verticesPerTriangle = 3;
     const bool validCounts = data.vertexCount > 0 && data.indexCount > 0 &&
                              data.indexCount % verticesPerTriangle == 0;
@@ -20,7 +20,7 @@ Result<void> validatePrimitiveLayout(const PrimitiveUploadData& data) {
     return validateVertexLayout(data.vertexLayout);
 }
 
-Result<void> validatePrimitiveByteCounts(const PrimitiveUploadData& data) {
+Result<void> validatePrimitiveByteCounts(const GeometryData& data) {
     const auto stride = data.vertexLayout.stride;
     const bool validVertexBytes =
         data.vertexData.size() % data.vertexCount == 0 &&
@@ -36,7 +36,7 @@ Result<void> validatePrimitiveByteCounts(const PrimitiveUploadData& data) {
     return {};
 }
 
-Result<void> validatePrimitiveIndices(const PrimitiveUploadData& data) {
+Result<void> validatePrimitiveIndices(const GeometryData& data) {
     for (u32 i = 0; i < data.indexCount; ++i) {
         u32 index;
         std::memcpy(
@@ -53,7 +53,7 @@ Result<void> validatePrimitiveIndices(const PrimitiveUploadData& data) {
     return {};
 }
 
-Result<void> validatePrimitiveUpload(const PrimitiveUploadData& data) {
+Result<void> validatePrimitiveUpload(const GeometryData& data) {
     return kc::startPipeline([&] { return validatePrimitiveLayout(data); })
         .then([&] { return validatePrimitiveByteCounts(data); })
         .then([&] { return validatePrimitiveIndices(data); })
@@ -88,7 +88,7 @@ RendererResourcePool::RendererResourcePool(
     : m_config(config), m_device(device) {}
 
 Result<PrimitiveHandle> RendererResourcePool::createPrimitive(
-    const PrimitiveUploadData& description
+    const GeometryData& description
 ) {
     const auto r = validatePrimitiveUpload(description);
     if (not r) {

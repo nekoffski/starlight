@@ -7,8 +7,8 @@ These knowledge nodes describe the code currently in this repository:
   notifications, and polling order.
 - [Cameras](camera.md): Euler pose, perspective matrices, fly/orbit controllers, and
   per-view shader parameters.
-- [Geometry assets](geometry.md): managed triangle geometry, upload validation,
-  and safe primitive retirement.
+- [Geometry assets](geometry.md): CPU geometry data/builders, managed uploaded
+  geometry, draw sections, upload validation, and safe primitive retirement.
 - [Renderer design](renderer-design.md): frame flow, resources, and backend
   boundaries, grounded in the linked implementation.
 - [Renderer messaging](renderer-messaging.md): payload ownership, replies,

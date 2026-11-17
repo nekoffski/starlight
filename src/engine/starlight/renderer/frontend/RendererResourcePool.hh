@@ -4,6 +4,7 @@
 
 #include "starlight/core/Config.hh"
 #include "starlight/core/Core.hh"
+#include "starlight/geometry/GeometryData.hh"
 #include "starlight/renderer/core/Primitive.hh"
 #include "starlight/renderer/core/RenderResource.hh"
 #include "starlight/renderer/rhi/RenderDevice.hh"
@@ -25,9 +26,7 @@ class RendererResourcePool : public kc::NonCopyable, public kc::NonMovable {
    public:
     explicit RendererResourcePool(const Config& config, RenderDevice& device);
 
-    Result<PrimitiveHandle> createPrimitive(
-        const PrimitiveUploadData& description
-    );
+    Result<PrimitiveHandle> createPrimitive(const GeometryData& description);
     void destroyPrimitive(PrimitiveHandle handle);
     Primitive* getPrimitive(PrimitiveHandle handle);
 

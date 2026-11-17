@@ -47,9 +47,7 @@ class Renderer : public kc::NonCopyable, public kc::NonMovable {
 
     void destroyShader(ShaderHandle handle);
 
-    Result<PrimitiveHandle> createPrimitive(
-        const PrimitiveUploadData& description
-    ) {
+    Result<PrimitiveHandle> createPrimitive(const GeometryData& description) {
         return m_resourcePool.createPrimitive(description);
     }
 

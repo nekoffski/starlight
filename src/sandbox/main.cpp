@@ -1,4 +1,5 @@
 
+
 #include <algorithm>
 #include <kcore/io/FileSystem.hh>
 
@@ -10,6 +11,8 @@
 #include "starlight/core/Time.hh"
 #include "starlight/event/EventSystem.hh"
 #include "starlight/event/Events.hh"
+#include "starlight/geometry/GeometryDataBuilder.hh"
+#include "starlight/geometry/Vertex.hh"
 #include "starlight/math/Math.hh"
 #include "starlight/platform/Platform.hh"
 #include "starlight/platform/sdl/SDLWindow.hh"
@@ -71,7 +74,7 @@ int main() {
     auto shader = as.loadShader("shaders/simple.metallib");
     log::expect(shader);
 
-    auto primitiveData = PrimitiveUploadDataBuilder<Vertex3>{}
+    auto primitiveData = GeometryDataBuilder<Vertex3>{}
                              .addVertex(
                                  Vec3f{-0.5f, 0.5f, 0.0f},
                                  Vec3f{0.0f, 0.0f, 1.0f}, Vec2f{0.0f, 1.0f}

@@ -6,6 +6,7 @@
 #include "rhi/RenderSurfaceProvider.hh"
 #include "starlight/core/Core.hh"
 #include "starlight/core/Error.hh"
+#include "starlight/geometry/GeometryData.hh"
 
 namespace sl {
 
@@ -13,11 +14,9 @@ class RendererProxy {
    public:
     explicit RendererProxy(RenderExecutor::Submitter submitter);
 
-    Result<PrimitiveHandle> createPrimitive(
-        const PrimitiveUploadData& description
-    );
+    Result<PrimitiveHandle> createPrimitive(const GeometryData& description);
     Result<std::future<Result<PrimitiveHandle>>> createPrimitiveAsync(
-        const PrimitiveUploadData& description
+        const GeometryData& description
     );
     Result<void> destroyPrimitive(PrimitiveHandle primitive);
 

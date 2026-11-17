@@ -12,6 +12,8 @@
 #include <new>
 #include <type_traits>
 
+#include "starlight/geometry/GeometryDataBuilder.hh"
+#include "starlight/geometry/Vertex.hh"
 #include "starlight/renderer/frontend/RenderRequestBuilder.hh"
 
 namespace {
@@ -264,8 +266,8 @@ class Assets : public testing::Test {
     std::filesystem::path directory;
 };
 
-PrimitiveUploadData triangleGeometry() {
-    return PrimitiveUploadDataBuilder<Vertex3>{}
+GeometryData triangleGeometry() {
+    return GeometryDataBuilder<Vertex3>{}
         .addVertex(Vec3f{0, 0, 0}, Vec3f{0, 0, 1})
         .addVertex(Vec3f{1, 0, 0}, Vec3f{0, 0, 1})
         .addVertex(Vec3f{0, 1, 0}, Vec3f{0, 0, 1})
@@ -273,8 +275,8 @@ PrimitiveUploadData triangleGeometry() {
         .build();
 }
 
-PrimitiveUploadData quadGeometry() {
-    return PrimitiveUploadDataBuilder<Vertex3>{}
+GeometryData quadGeometry() {
+    return GeometryDataBuilder<Vertex3>{}
         .addVertex(Vec3f{-1, -1, 0}, Vec3f{0, 0, 1})
         .addVertex(Vec3f{1, -1, 0}, Vec3f{0, 0, 1})
         .addVertex(Vec3f{1, 1, 0}, Vec3f{0, 0, 1})
@@ -354,7 +356,7 @@ TEST_F(
 TEST(GeometryUpload, RejectsMalformedUploadsBeforeAllocatingBuffers) {
     TestDevice device;
     RendererResourcePool pool{{}, device};
-    std::vector<PrimitiveUploadData> invalid;
+    std::vector<GeometryData> invalid;
     invalid.emplace_back();
     auto data = triangleGeometry();
     data.vertexLayout.attributes.clear();

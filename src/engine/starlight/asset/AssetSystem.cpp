@@ -87,9 +87,7 @@ Result<SamplerRef> AssetSystem::createSampler(
     return m_samplers.create(description);
 }
 
-Result<GeometryRef> AssetSystem::createGeometry(
-    const PrimitiveUploadData& data
-) {
+Result<GeometryRef> AssetSystem::createGeometry(const GeometryData& data) {
     checkThread();
     if (m_closed) {
         return Error::unexpected(

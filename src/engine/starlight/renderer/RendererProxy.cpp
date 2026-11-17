@@ -3,7 +3,7 @@
 namespace sl {
 
 Result<PrimitiveHandle> RendererProxy::createPrimitive(
-    const PrimitiveUploadData& description
+    const GeometryData& description
 ) {
     if (auto future = createPrimitiveAsync(description); future) {
         return future->get();
@@ -13,7 +13,7 @@ Result<PrimitiveHandle> RendererProxy::createPrimitive(
 }
 
 Result<std::future<Result<PrimitiveHandle>>>
-RendererProxy::createPrimitiveAsync(const PrimitiveUploadData& description) {
+RendererProxy::createPrimitiveAsync(const GeometryData& description) {
     RendererCreatePrimitive cmd{description};
     auto completion = cmd.completion.get_future();
 

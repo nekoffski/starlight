@@ -14,6 +14,10 @@ Acceptance is distinct from completion of the frame on the GPU.
 **Render item**:
 A collection of primitive draw selections drawn with one shader in a scene.
 
+**Geometry data**:
+Owned CPU vertex/index bytes, layout, and counts. It can be constructed without
+an asset system or renderer instance and is copied when submitted for upload.
+
 **Primitive**:
 Uploaded vertex and index data with the vertex layout and draw count needed to
 draw it. It is distinct from the asset-level mesh declaration.

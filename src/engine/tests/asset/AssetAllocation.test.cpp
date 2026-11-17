@@ -12,6 +12,8 @@
 #include <type_traits>
 
 #include "starlight/asset/AssetSystem.hh"
+#include "starlight/geometry/GeometryDataBuilder.hh"
+#include "starlight/geometry/Vertex.hh"
 
 namespace {
 
@@ -255,7 +257,7 @@ TEST(AssetAllocation, SamplerRegistrationKeepsEveryAcceptedCreationOwned) {
 }
 
 TEST(AssetAllocation, GeometryRegistrationKeepsEveryAcceptedCreationOwned) {
-    const auto data = PrimitiveUploadDataBuilder<Vertex3>{}
+    const auto data = GeometryDataBuilder<Vertex3>{}
                           .addVertex(Vec3f{0}, Vec3f{0, 0, 1})
                           .addVertex(Vec3f{1, 0, 0}, Vec3f{0, 0, 1})
                           .addVertex(Vec3f{0, 1, 0}, Vec3f{0, 0, 1})

@@ -20,7 +20,7 @@ class AssetSystem : public kc::NonCopyable, public kc::NonMovable {
     Result<ShaderRef> loadShader(const kc::Path& path);
     Result<TextureRef> createTexture(const TextureUploadData& data);
     Result<SamplerRef> createSampler(const SamplerDescription& description);
-    Result<GeometryRef> createGeometry(const PrimitiveUploadData& data);
+    Result<GeometryRef> createGeometry(const GeometryData& data);
 
     Result<void> update();
 

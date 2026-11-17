@@ -242,7 +242,7 @@ builds vertex descriptors from explicit locations, byte offsets, and stride in
 one reserved vertex buffer slot. It uses float2/3/4 formats; unsupported types
 return an error instead of terminating during native conversion.
 
-[`Vertex3`](../src/engine/starlight/renderer/core/Vertex.hh) has position and
+[`Vertex3`](../src/engine/starlight/geometry/Vertex.hh) has position and
 normal `float3` fields and a `float2` texture-coordinate field. The
 [sandbox](../src/sandbox/main.cpp) supplies UVs explicitly; the shader's normal
 input is currently unused. The sandbox uploads a

@@ -31,6 +31,8 @@ Starlight is a C++23 game engine built with CMake and Conan 2. Start with
   SDL supplies native keyboard/mouse state; window/input events live in `WindowEvents.hh`.
 - `src/engine/starlight/camera/`: camera matrix interface, Euler perspective camera,
   and window-driven fly/orbit controllers. Rendering receives copied blocks.
+- `src/engine/starlight/geometry/`: owned CPU geometry data, typed procedural
+  builders, and vertex definitions. Assets and renderer uploads consume the same data.
 - `src/engine/starlight/renderer/`: `frontend/` handles draw preparation, requests,
   and graphs, `executor/` dispatches render-thread commands, `rhi/` defines device interfaces,
   `core/` contains resource descriptions and handles, and `shading/` stores

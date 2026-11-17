@@ -7,7 +7,9 @@ and update these facts from code during development.
 ## Commands and owned payloads
 
 [`RendererProxy`](../src/engine/starlight/renderer/RendererProxy.cpp) copies shader,
-primitive, and texture upload descriptions into value commands. Commands own
+CPU geometry, and texture upload descriptions into value commands. Primitive
+creation accepts [`GeometryData`](../src/engine/starlight/geometry/GeometryData.hh)
+from the CPU geometry module. Commands own
 bytecode, reflection, vertex/index bytes, or pixels; callers can change or free
 original arrays after the proxy call. Sampler descriptions are also values.
 Surface creation instead carries a shared surface provider.
