@@ -47,6 +47,10 @@ public operations and shares command enqueueing through private `enqueue()` and
 moving it into the queue. Synchronous operations use `waitForReply()` in the
 implementation to propagate queue rejection or wait for the render-thread reply;
 `flushRenderer()` uses the same path with its void reply.
+If a synchronous reply is abandoned, `waitForReply()` catches
+`std::future_error` and returns `invalidFuture`. Async creation still exposes
+the raw future; its caller handles future exceptions. Asset future polling
+already converts those exceptions into `invalidFuture`.
 
 | Operation | Result and completion boundary |
 | --- | --- |
@@ -117,15 +121,28 @@ destruction is harmless. Direct device-buffer pool erasure remains immediate.
 The [engine-thread asset layer](shader-pipeline.md#engine-thread-asset-ownership)
 retains shader, texture, sampler, and geometry handles behind strong asset references and submits cleanup from
 `update()`. Asset `shutdown()` waits for creation and release commands while the
-renderer is still running; this ordering is required because executor stop does
-not drain resource commands.
+renderer is still running; cleanup can submit additional release commands, which
+would be rejected after executor stop closes the queue.
 
 ## Shutdown
 
-Executor stop closes the queue and joins the worker. The worker checks closure
-before popping its next command, then flushes pending frames. It does not drain
-remaining resource commands or explicitly fail their promises on that exit path.
-Callers cannot rely on all accepted commands executing during shutdown.
+[`RenderExecutor::stop()`](../src/engine/starlight/renderer/executor/RenderExecutor.cpp)
+closes submission and joins the worker. On normal shutdown of a started executor,
+the worker drains all commands accepted before closure, including creation,
+release, and reply-bearing commands, in queue order. It continues ticking the
+renderer between commands and flushes pending frames before exiting. Operation
+failures still travel through their ordinary replies; later frame errors retain
+their existing logging/drop behavior.
+
+The worker observes closure before trying to pop: it exits only when that pop
+finds an empty queue already known to be closed. This prevents a final accepted
+push from being missed during shutdown. Calls after closure are rejected.
+Stopping repeatedly is harmless. If the worker was never started, stop discards
+queued commands without executing renderer operations; their abandoned promises
+make async futures ready with `std::future_error` instead of leaving them pending.
+The [proxy/executor tests](../src/engine/tests/asset/AssetSystem.test.cpp) cover
+closure while commands are pending, reply results, and frame-before-release
+ordering.
 
 [`RenderingSystem::stop()`](../src/engine/starlight/renderer/RenderingSystem.cpp)
 then calls `RenderDevice::waitIdle()`. Per-slot latches in

@@ -8,15 +8,27 @@ Result<T> waitForReply(Result<std::future<Result<T>>> completion) {
     if (not completion) {
         return Error::unexpected(completion.error());
     }
-    return completion->get();
+    try {
+        return completion->get();
+    } catch (const std::future_error& e) {
+        return Error::unexpected(
+            ErrorCode::invalidFuture, "Renderer reply failed: {}", e.what()
+        );
+    }
 }
 
 Result<void> waitForReply(Result<std::future<void>> completion) {
     if (not completion) {
         return Error::unexpected(completion.error());
     }
-    completion->get();
-    return {};
+    try {
+        completion->get();
+        return {};
+    } catch (const std::future_error& e) {
+        return Error::unexpected(
+            ErrorCode::invalidFuture, "Renderer reply failed: {}", e.what()
+        );
+    }
 }
 
 }  // namespace

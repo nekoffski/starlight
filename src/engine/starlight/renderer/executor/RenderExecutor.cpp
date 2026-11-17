@@ -14,6 +14,9 @@ void RenderExecutor::start() { m_runner.start(); }
 void RenderExecutor::stop() {
     m_queue->close();
     m_runner.join();
+    // Abandon queued replies if the worker was never started.
+    while (m_queue->tryPop()) {
+    }
 }
 
 RendererCommandSubmitter RenderExecutor::createSubmitter() {
@@ -30,13 +33,12 @@ RenderExecutor::DispatcherThread::DispatcherThread(
 
 void RenderExecutor::DispatcherThread::run() {
     for (;;) {
-        if (m_queue.closed()) {
-            log::info("renderer command queue has been closed");
-            break;
-        }
-
+        // Observe closure first: an empty pop must not race a final push.
+        const bool queueClosed = m_queue.closed();
         if (auto command = m_queue.tryPop(); command) [[likely]] {
             m_dispatcher.dispatch(std::move(*command));
+        } else if (queueClosed) {
+            break;
         }
         m_renderer.tick();
     }

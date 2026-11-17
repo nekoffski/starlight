@@ -22,6 +22,9 @@ class RenderExecutor : public kc::NonCopyable, public kc::NonMovable {
     ~RenderExecutor();
 
     void start();
+
+    // Close submission and join the worker after draining accepted commands.
+    // Without a worker, discard queued commands and abandon their replies.
     void stop();
 
     RendererCommandSubmitter createSubmitter();

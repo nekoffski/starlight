@@ -9,8 +9,10 @@
 #include <fstream>
 #include <kcore/Random.hh>
 #include <kcore/runtime/ThreadSafeQueue.hh>
+#include <latch>
 #include <limits>
 #include <new>
+#include <thread>
 #include <type_traits>
 
 #include "starlight/geometry/GeometryDataBuilder.hh"
@@ -371,6 +373,131 @@ TEST(RendererProxy, SynchronousCallsReturnRenderThreadResults) {
     EXPECT_TRUE(proxy.destroyShader(*shader));
     ASSERT_TRUE(proxy.flushRenderer());
     EXPECT_TRUE(device.shaders.empty());
+}
+
+TEST(RendererProxy, AbandonedSynchronousRepliesBecomeErrors) {
+    const auto checkReply = [](auto operation) {
+        auto queue = std::make_shared<kc::ThreadSafeQueue<RendererCommand>>();
+        RendererProxy proxy{RendererCommandSubmitter{queue}};
+        std::jthread discardReply{[queue] { (void)queue->pop(); }};
+        const auto r = operation(proxy);
+        ASSERT_FALSE(r);
+        EXPECT_EQ(r.error().code(), ErrorCode::invalidFuture);
+    };
+    checkReply([](RendererProxy& proxy) { return proxy.createShader({}); });
+    checkReply([](RendererProxy& proxy) { return proxy.submit({}); });
+    checkReply([](RendererProxy& proxy) { return proxy.flushRenderer(); });
+}
+
+TEST(RenderExecutor, StopBeforeStartAbandonsQueuedReplies) {
+    TestDevice device;
+    Renderer renderer{{}, device};
+    RenderExecutor executor{renderer};
+    RendererProxy proxy{executor.createSubmitter()};
+    auto shader = proxy.createShaderAsync({});
+    ASSERT_TRUE(shader);
+
+    executor.stop();
+    ASSERT_EQ(
+        shader->wait_for(std::chrono::seconds{0}), std::future_status::ready
+    );
+    EXPECT_THROW((void)shader->get(), std::future_error);
+    EXPECT_TRUE(device.shaders.empty());
+    EXPECT_FALSE(proxy.createShaderAsync({}));
+    executor.stop();
+}
+
+TEST(RenderExecutor, StopDrainsCommandsAndPreservesFrameRetirementOrder) {
+    class BlockingDevice : public TestDevice {
+       public:
+        std::latch shaderStarted{1};
+        std::latch finishShader{1};
+
+        Result<ShaderHandle> createShader(
+            const ShaderDescription& description
+        ) override {
+            shaderStarted.count_down();
+            finishShader.wait();
+            return TestDevice::createShader(description);
+        }
+    } device;
+
+    Renderer renderer{{}, device};
+    RenderExecutor executor{renderer};
+    auto submitter = executor.createSubmitter();
+    RendererProxy proxy{submitter};
+    executor.start();
+    auto texture = proxy.createTexture({.width = 1});
+    auto sampler = proxy.createSampler({});
+    ASSERT_TRUE(texture);
+    ASSERT_TRUE(sampler);
+    auto shader = proxy.createShaderAsync({});
+    ASSERT_TRUE(shader);
+    device.shaderStarted.wait();
+
+    // Queue all work behind the blocked command, then close before resuming it.
+    auto failedTexture = proxy.createTextureAsync({});
+    auto geometry = proxy.createPrimitiveAsync(triangleGeometry());
+    RendererSubmit frame{
+        .request = {
+            .resources = {.textures = {*texture}, .samplers = {*sampler}}
+        }
+    };
+    auto frameReply = frame.completion.get_future();
+    const bool frameAccepted = submitter.submit(std::move(frame));
+    const auto releaseTexture = proxy.destroyTexture(*texture);
+    const auto releaseSampler = proxy.destroySampler(*sampler);
+    RendererFlush flush;
+    auto flushReply = flush.completion.get_future();
+    const bool flushAccepted = submitter.submit(std::move(flush));
+    device.busy = true;
+
+    std::jthread resumeOnClosure{[submitter, &device]() mutable {
+        while (submitter.submit(RendererNoop{})) {
+            std::this_thread::yield();
+        }
+        device.finishShader.count_down();
+    }};
+    executor.stop();
+
+    ASSERT_TRUE(failedTexture);
+    ASSERT_TRUE(geometry);
+    EXPECT_TRUE(frameAccepted);
+    EXPECT_TRUE(releaseTexture);
+    EXPECT_TRUE(releaseSampler);
+    EXPECT_TRUE(flushAccepted);
+    ASSERT_EQ(
+        shader->wait_for(std::chrono::seconds{0}), std::future_status::ready
+    );
+    EXPECT_TRUE(shader->get());
+    ASSERT_EQ(
+        geometry->wait_for(std::chrono::seconds{0}), std::future_status::ready
+    );
+    EXPECT_TRUE(geometry->get());
+    ASSERT_EQ(
+        failedTexture->wait_for(std::chrono::seconds{0}),
+        std::future_status::ready
+    );
+    auto failure = failedTexture->get();
+    ASSERT_FALSE(failure);
+    EXPECT_EQ(failure.error().code(), kc::ErrorCode::invalidArgument);
+    ASSERT_EQ(
+        frameReply.wait_for(std::chrono::seconds{0}), std::future_status::ready
+    );
+    EXPECT_TRUE(frameReply.get());
+    ASSERT_EQ(
+        flushReply.wait_for(std::chrono::seconds{0}), std::future_status::ready
+    );
+    EXPECT_NO_THROW(flushReply.get());
+    EXPECT_TRUE(device.textures.empty());
+    EXPECT_TRUE(device.samplers.empty());
+    EXPECT_EQ(device.buffers.size(), 2);
+    const std::vector<Str> expectedEvents{
+        "busy", "submit", "idle", "destroy texture", "idle", "destroy sampler"
+    };
+    EXPECT_EQ(device.events, expectedEvents);
+    EXPECT_FALSE(proxy.createShaderAsync({}));
+    executor.stop();
 }
 
 TEST_F(Assets, GeometryPublishesOwnedBytesAndReleasesAfterLastReference) {
